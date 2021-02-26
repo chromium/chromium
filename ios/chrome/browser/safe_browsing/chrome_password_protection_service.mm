@@ -21,7 +21,6 @@
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/features.h"
-#include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "components/safe_browsing/ios/password_protection/password_protection_request_ios.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -36,7 +35,6 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "ios/chrome/browser/safe_browsing/user_population.h"
-#import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
@@ -76,14 +74,6 @@ using ShowWarningCallback =
     safe_browsing::PasswordProtectionService::ShowWarningCallback;
 
 namespace {
-
-// Returns true if the command line has an artificial unsafe cached verdict.
-bool HasArtificialCachedVerdict() {
-  std::string phishing_url_string =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          safe_browsing::kArtificialCachedPhishGuardVerdictFlag);
-  return !phishing_url_string.empty();
-}
 
 // Given a |web_state|, returns a timestamp of its last committed
 // navigation.
@@ -176,44 +166,6 @@ void ChromePasswordProtectionService::ShowModalWarning(
         weak_factory_.GetWeakPtr(), request_ios->web_state(), password_type);
     std::move(callback).Run(warning_text, std::move(completion_callback));
   }
-}
-
-// Stores |verdict| based on its |trigger_type|, |url|, reused |password_type|,
-// |verdict| and |receive_time|.
-void ChromePasswordProtectionService::CacheVerdict(
-    const GURL& url,
-    LoginReputationClientRequest::TriggerType trigger_type,
-    ReusedPasswordAccountType password_type,
-    const LoginReputationClientResponse& verdict,
-    const base::Time& receive_time) {
-  if (!CanGetReputationOfURL(url) || IsIncognito())
-    return;
-  VerdictCacheManagerFactory::GetForBrowserState(browser_state_)
-      ->CachePhishGuardVerdict(trigger_type, password_type, verdict,
-                               receive_time);
-}
-
-// Looks up the cached verdict response. If verdict is not available or is
-// expired, return VERDICT_TYPE_UNSPECIFIED. Can be called on any thread.
-LoginReputationClientResponse::VerdictType
-ChromePasswordProtectionService::GetCachedVerdict(
-    const GURL& url,
-    LoginReputationClientRequest::TriggerType trigger_type,
-    ReusedPasswordAccountType password_type,
-    LoginReputationClientResponse* out_response) {
-  if (HasArtificialCachedVerdict() ||
-      (url.is_valid() && CanGetReputationOfURL(url))) {
-    return VerdictCacheManagerFactory::GetForBrowserState(browser_state_)
-        ->GetCachedPhishGuardVerdict(url, trigger_type, password_type,
-                                     out_response);
-  }
-  return LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED;
-}
-
-int ChromePasswordProtectionService::GetStoredVerdictCount(
-    LoginReputationClientRequest::TriggerType trigger_type) {
-  return VerdictCacheManagerFactory::GetForBrowserState(browser_state_)
-      ->GetStoredPhishGuardVerdictCount(trigger_type);
 }
 
 void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(

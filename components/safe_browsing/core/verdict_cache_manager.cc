@@ -14,7 +14,6 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -389,8 +388,7 @@ VerdictCacheManager::VerdictCacheManager(
     ScheduleNextCleanUpAfterInterval(
         base::TimeDelta::FromSeconds(kCleanUpIntervalInitSecond));
   }
-  CacheArtificialRealTimeUrlVerdict();
-  CacheArtificialPhishGuardVerdict();
+  CacheArtificialVerdict();
 }
 
 void VerdictCacheManager::Shutdown() {
@@ -850,7 +848,7 @@ size_t VerdictCacheManager::GetRealTimeUrlCheckVerdictCountForURL(
   return verdict_dictionary ? verdict_dictionary->DictSize() : 0;
 }
 
-void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict() {
+void VerdictCacheManager::CacheArtificialVerdict() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kUnsafeUrlFlag);
@@ -877,32 +875,6 @@ void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict() {
                                      {history::URLRow(artificial_unsafe_url)});
   CacheRealTimeUrlVerdict(artificial_unsafe_url, response, base::Time::Now(),
                           /*store_old_cache=*/false);
-}
-
-void VerdictCacheManager::CacheArtificialPhishGuardVerdict() {
-  std::string phishing_url_string =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kArtificialCachedPhishGuardVerdictFlag);
-  if (phishing_url_string.empty())
-    return;
-
-  GURL artificial_unsafe_url(phishing_url_string);
-  if (!artificial_unsafe_url.is_valid())
-    return;
-
-  has_artificial_unsafe_url_ = true;
-
-  ReusedPasswordAccountType reused_password_account_type;
-  reused_password_account_type.set_account_type(
-      ReusedPasswordAccountType::SAVED_PASSWORD);
-
-  LoginReputationClientResponse verdict;
-  verdict.set_verdict_type(LoginReputationClientResponse::PHISHING);
-  verdict.set_cache_expression(artificial_unsafe_url.GetContent());
-  verdict.set_cache_duration_sec(3000);
-  CachePhishGuardVerdict(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-                         reused_password_account_type, verdict,
-                         base::Time::Now());
 }
 
 void VerdictCacheManager::StopCleanUpTimerForTesting() {

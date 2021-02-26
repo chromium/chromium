@@ -11,12 +11,6 @@
 
 // Stores a credential to the password store.
 + (NSError*)storeCredentialWithUsername:(NSString*)username
-                               password:(NSString*)password
-                                    URL:(NSURL*)URL;
-
-// Stores a credential to the password store. Associates the current WebState's
-// last committed URL with the credential.
-+ (NSError*)storeCredentialWithUsername:(NSString*)username
                                password:(NSString*)password;
 
 // Clears any credentials that were stored during a test run.

@@ -30,7 +30,6 @@ RequestCancelerIOS::~RequestCancelerIOS() {
 }
 
 void RequestCancelerIOS::WebStateDestroyed(web::WebState* web_state) {
-  web_state_->RemoveObserver(this);
   web_state_ = nullptr;
   request_->Cancel(/*timed_out=*/false);
 }
