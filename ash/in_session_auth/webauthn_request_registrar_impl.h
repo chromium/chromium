@@ -31,6 +31,8 @@ class WebAuthnRequestRegistrarImpl : public WebAuthnRequestRegistrar {
  private:
   uint32_t DoRegister(aura::Window* window);
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   aura::WindowTracker window_tracker_;
 };
 
