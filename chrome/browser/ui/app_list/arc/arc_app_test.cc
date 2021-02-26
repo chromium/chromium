@@ -23,11 +23,13 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/arc/test/fake_arc_session.h"
+#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -229,6 +231,12 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
 }
 
 void ArcAppTest::TearDown() {
+  if (intent_helper_instance_) {
+    arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
+        intent_helper_instance_.get());
+    intent_helper_instance_.reset();
+    intent_helper_bridge_.reset();
+  }
   app_instance_.reset();
   arc_play_store_enabled_preference_handler_.reset();
   arc_session_manager_.reset();
@@ -256,6 +264,17 @@ void ArcAppTest::RestartArcInstance() {
   app_instance_ = std::make_unique<arc::FakeAppInstance>(arc_app_list_pref_);
   bridge_service->app()->SetInstance(app_instance_.get());
   WaitForInstanceReady(bridge_service->app());
+}
+
+void ArcAppTest::SetUpIntentHelper() {
+  DCHECK(profile_);
+  auto* arc_bridge_service = arc_service_manager_->arc_bridge_service();
+  intent_helper_bridge_ = std::make_unique<arc::ArcIntentHelperBridge>(
+      profile_, arc_bridge_service);
+  intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
+  arc_bridge_service->intent_helper()->SetInstance(
+      intent_helper_instance_.get());
+  WaitForInstanceReady(arc_bridge_service->intent_helper());
 }
 
 const user_manager::User* ArcAppTest::CreateUserAndLogin() {

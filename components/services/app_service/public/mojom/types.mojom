@@ -339,6 +339,7 @@ struct Intent {
   url.mojom.Url? drive_share_url;
   string? share_text; // Text to share. e.g. Share link to other app.
   string? share_title; // Title for the share.
+  string? start_type; // Start type.
 };
 
 // Represents a group of |app_ids| that is no longer preferred app of their

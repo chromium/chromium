@@ -205,6 +205,15 @@ apps::mojom::IntentPtr CreateShareIntentFromText(
   return intent;
 }
 
+apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,
+                                               const std::string& start_type) {
+  auto intent = apps::mojom::Intent::New();
+  intent->action = kIntentActionMain;
+  intent->activity_name = activity;
+  intent->start_type = start_type;
+  return intent;
+}
+
 bool ConditionValueMatches(
     const std::string& value,
     const apps::mojom::ConditionValuePtr& condition_value) {
