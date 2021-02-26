@@ -77,8 +77,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Profile.AppCount" units="units" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+<histogram name="Profile.AppCount" units="units" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>The number of installed apps when a profile is opened.</summary>
 </histogram>
 
@@ -89,8 +90,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The frequency of selection of each avatar.</summary>
 </histogram>
 
-<histogram name="Profile.BookmarksSize" units="MB" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+<histogram name="Profile.BookmarksSize" units="MB" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Size of the bookmarks database.</summary>
 </histogram>
 
@@ -123,8 +125,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Profile.CookiesSize" units="MB" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+<histogram name="Profile.CookiesSize" units="MB" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Size of the cookies database.</summary>
 </histogram>
 
@@ -224,13 +227,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Profile.ExtensionSize" units="MB" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+<histogram name="Profile.ExtensionSize" units="MB" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Size of the extension cookies database.</summary>
 </histogram>
 
-<histogram name="Profile.FaviconsSize" units="MB" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+<histogram name="Profile.FaviconsSize" units="MB" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Size of the favicons database.</summary>
 </histogram>
 
@@ -264,9 +269,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Profile.HistorySize" units="MB" expires_after="M82">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
+<histogram name="Profile.HistorySize" units="MB" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Size of the history database.</summary>
 </histogram>
 
@@ -611,19 +616,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Profile.TopSitesSize" units="MB" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+<histogram name="Profile.TopSitesSize" units="MB" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Size of the top sites database.</summary>
 </histogram>
 
 <histogram name="Profile.TotalHistorySize" units="MB"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+    expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Total size of all history databases.</summary>
 </histogram>
 
-<histogram name="Profile.TotalSize" units="MB" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+<histogram name="Profile.TotalSize" units="MB" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Total size of the profile data (excluding sub-folders).</summary>
 </histogram>
 
@@ -709,13 +717,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.VisitedLinksSize" units="MB"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+    expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Size of the visited links database.</summary>
 </histogram>
 
-<histogram name="Profile.WebDataSize" units="MB" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+<histogram name="Profile.WebDataSize" units="MB" expires_after="2022-01-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>Size of the web data database.</summary>
 </histogram>
 
