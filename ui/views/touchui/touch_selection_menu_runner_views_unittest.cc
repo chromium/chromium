@@ -142,7 +142,7 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, RunningActionClosesProperly) {
       this, menu_anchor, handle_size, GetContext());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
-  // Tap the first action on the menu and check taht the menu is closed
+  // Tap the first action on the menu and check that the menu is closed
   // properly.
   LabelButton* button = test_api.GetFirstButton();
   DCHECK(button);
