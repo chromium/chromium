@@ -309,6 +309,14 @@ class IndexedDBBackingStoreTest : public testing::Test {
         base::SequencedTaskRunnerHandle::Get(),
         base::SequencedTaskRunnerHandle::Get());
 
+    // Needed to get the QuotaClient bound.
+    {
+      base::RunLoop run_loop;
+      idb_context_->IDBTaskRunner()->PostTask(FROM_HERE,
+                                              run_loop.QuitClosure());
+      run_loop.Run();
+    }
+
     CreateFactoryAndBackingStore();
 
     // useful keys and values during tests

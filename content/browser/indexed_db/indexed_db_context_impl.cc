@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
@@ -28,6 +30,8 @@
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
+#include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -41,6 +45,8 @@
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/database/database_identifier.h"
@@ -141,42 +147,55 @@ IndexedDBContextImpl::IndexedDBContextImpl(
       force_keep_session_state_(false),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       clock_(clock),
+      quota_client_(std::make_unique<IndexedDBQuotaClient>(*this)),
+      quota_client_wrapper_(
+          std::make_unique<storage::QuotaClientCallbackWrapper>(
+              quota_client_.get())),
+      quota_client_receiver_(quota_client_wrapper_.get()),
       filesystem_proxy_(storage::CreateFilesystemProxy()) {
   IDB_TRACE("init");
 
-  // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-  quota_manager_proxy_->RegisterLegacyClient(
-      base::MakeRefCounted<IndexedDBQuotaClient>(this),
+  // QuotaManagerProxy::RegisterClient() must be called during construction
+  // until crbug.com/1182630 is fixed.
+  mojo::PendingRemote<storage::mojom::QuotaClient> quota_client_remote;
+  mojo::PendingReceiver<storage::mojom::QuotaClient> quota_client_receiver =
+      quota_client_remote.InitWithNewPipeAndPassReceiver();
+  quota_manager_proxy_->RegisterClient(
+      std::move(quota_client_remote),
       storage::QuotaClientType::kIndexedDatabase,
       {blink::mojom::StorageType::kTemporary});
 
   // This is safe because the IndexedDBContextImpl must be destructed on the
   // IDBTaskRunner, and this task will always happen before that.
-  if (blob_storage_context || file_system_access_context) {
-    idb_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](mojo::Remote<storage::mojom::BlobStorageContext>*
-                   blob_storage_context,
-               mojo::Remote<storage::mojom::FileSystemAccessContext>*
-                   file_system_access_context,
-               mojo::PendingRemote<storage::mojom::BlobStorageContext>
-                   pending_blob_storage_context,
-               mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-                   pending_file_system_access_context) {
-              if (pending_blob_storage_context) {
-                blob_storage_context->Bind(
-                    std::move(pending_blob_storage_context));
-              }
-              if (pending_file_system_access_context) {
-                file_system_access_context->Bind(
-                    std::move(pending_file_system_access_context));
-              }
-            },
-            &blob_storage_context_, &file_system_access_context_,
-            std::move(blob_storage_context),
-            std::move(file_system_access_context)));
-  }
+  idb_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::Remote<storage::mojom::BlobStorageContext>*
+                 blob_storage_context,
+             mojo::Remote<storage::mojom::FileSystemAccessContext>*
+                 file_system_access_context,
+             mojo::Receiver<storage::mojom::QuotaClient>* quota_client_receiver,
+             mojo::PendingRemote<storage::mojom::BlobStorageContext>
+                 pending_blob_storage_context,
+             mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
+                 pending_file_system_access_context,
+             mojo::PendingReceiver<storage::mojom::QuotaClient>
+                 quota_client_pending_receiver) {
+            quota_client_receiver->Bind(
+                std::move(quota_client_pending_receiver));
+            if (pending_blob_storage_context) {
+              blob_storage_context->Bind(
+                  std::move(pending_blob_storage_context));
+            }
+            if (pending_file_system_access_context) {
+              file_system_access_context->Bind(
+                  std::move(pending_file_system_access_context));
+            }
+          },
+          &blob_storage_context_, &file_system_access_context_,
+          &quota_client_receiver_, std::move(blob_storage_context),
+          std::move(file_system_access_context),
+          std::move(quota_client_receiver)));
 }
 
 void IndexedDBContextImpl::Bind(

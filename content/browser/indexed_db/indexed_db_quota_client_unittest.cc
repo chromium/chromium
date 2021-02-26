@@ -76,60 +76,60 @@ class IndexedDBQuotaClientTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  static int64_t GetOriginUsage(scoped_refptr<storage::QuotaClient> client,
+  static int64_t GetOriginUsage(storage::mojom::QuotaClient& client,
                                 const url::Origin& origin,
                                 StorageType type) {
     int result = -1;
     base::RunLoop loop;
-    client->GetOriginUsage(origin, type,
-                           base::BindLambdaForTesting([&](int64_t usage) {
-                             result = usage;
-                             loop.Quit();
-                           }));
+    client.GetOriginUsage(origin, type,
+                          base::BindLambdaForTesting([&](int64_t usage) {
+                            result = usage;
+                            loop.Quit();
+                          }));
     loop.Run();
     EXPECT_GT(result, -1);
     return result;
   }
 
   static std::vector<url::Origin> GetOriginsForType(
-      scoped_refptr<storage::QuotaClient> client,
+      storage::mojom::QuotaClient& client,
       StorageType type) {
     std::vector<url::Origin> result;
     base::RunLoop loop;
-    client->GetOriginsForType(type,
-                              base::BindLambdaForTesting(
-                                  [&](const std::vector<url::Origin>& origins) {
-                                    result = origins;
-                                    loop.Quit();
-                                  }));
+    client.GetOriginsForType(type,
+                             base::BindLambdaForTesting(
+                                 [&](const std::vector<url::Origin>& origins) {
+                                   result = origins;
+                                   loop.Quit();
+                                 }));
     loop.Run();
     return result;
   }
 
   static std::vector<url::Origin> GetOriginsForHost(
-      scoped_refptr<storage::QuotaClient> client,
+      storage::mojom::QuotaClient& client,
       StorageType type,
       const std::string& host) {
     std::vector<url::Origin> result;
     base::RunLoop loop;
-    client->GetOriginsForHost(type, host,
-                              base::BindLambdaForTesting(
-                                  [&](const std::vector<url::Origin>& origins) {
-                                    result = origins;
-                                    loop.Quit();
-                                  }));
+    client.GetOriginsForHost(type, host,
+                             base::BindLambdaForTesting(
+                                 [&](const std::vector<url::Origin>& origins) {
+                                   result = origins;
+                                   loop.Quit();
+                                 }));
     loop.Run();
     return result;
   }
 
   static blink::mojom::QuotaStatusCode DeleteOriginData(
-      scoped_refptr<storage::QuotaClient> client,
+      storage::mojom::QuotaClient& client,
       const url::Origin& origin,
       StorageType type) {
     blink::mojom::QuotaStatusCode result =
         blink::mojom::QuotaStatusCode::kUnknown;
     base::RunLoop loop;
-    client->DeleteOriginData(
+    client.DeleteOriginData(
         origin, type,
         base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode code) {
           result = code;
@@ -181,7 +181,7 @@ class IndexedDBQuotaClientTest : public testing::Test {
 };
 
 TEST_F(IndexedDBQuotaClientTest, GetOriginUsage) {
-  auto client = base::MakeRefCounted<IndexedDBQuotaClient>(idb_context());
+  IndexedDBQuotaClient client(*idb_context());
 
   AddFakeIndexedDB(kOriginA, 6);
   AddFakeIndexedDB(kOriginB, 3);
@@ -194,7 +194,7 @@ TEST_F(IndexedDBQuotaClientTest, GetOriginUsage) {
 }
 
 TEST_F(IndexedDBQuotaClientTest, GetOriginsForHost) {
-  auto client = base::MakeRefCounted<IndexedDBQuotaClient>(idb_context());
+  IndexedDBQuotaClient client(*idb_context());
 
   EXPECT_EQ(kOriginA.host(), kOriginB.host());
   EXPECT_NE(kOriginA.host(), kOriginOther.host());
@@ -218,7 +218,7 @@ TEST_F(IndexedDBQuotaClientTest, GetOriginsForHost) {
 }
 
 TEST_F(IndexedDBQuotaClientTest, GetOriginsForType) {
-  auto client = base::MakeRefCounted<IndexedDBQuotaClient>(idb_context());
+  IndexedDBQuotaClient client(*idb_context());
 
   EXPECT_TRUE(GetOriginsForType(client, kTemp).empty());
 
@@ -229,7 +229,7 @@ TEST_F(IndexedDBQuotaClientTest, GetOriginsForType) {
 }
 
 TEST_F(IndexedDBQuotaClientTest, DeleteOrigin) {
-  auto client = base::MakeRefCounted<IndexedDBQuotaClient>(idb_context());
+  IndexedDBQuotaClient client(*idb_context());
 
   AddFakeIndexedDB(kOriginA, 1000);
   AddFakeIndexedDB(kOriginB, 50);

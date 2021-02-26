@@ -11,8 +11,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/common/content_export.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_task.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -23,18 +24,18 @@ class IndexedDBContextImpl;
 
 // Integrates IndexedDB with the quota management system.
 //
-// Instances are constructed on the UI thread, and then exclusively used on the
-// IO thread by the quota system.
-class IndexedDBQuotaClient : public storage::QuotaClient {
+// Each instance is owned by an IndexedDBContextImpl.
+class IndexedDBQuotaClient : public storage::mojom::QuotaClient {
  public:
   CONTENT_EXPORT explicit IndexedDBQuotaClient(
-      scoped_refptr<IndexedDBContextImpl> indexed_db_context);
+      IndexedDBContextImpl& indexed_db_context);
 
   IndexedDBQuotaClient(const IndexedDBQuotaClient&) = delete;
   IndexedDBQuotaClient& operator=(const IndexedDBQuotaClient&) = delete;
 
+  CONTENT_EXPORT ~IndexedDBQuotaClient() override;
+
   // QuotaClient implementation:
-  void OnQuotaManagerDestroyed() override;
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;
@@ -50,11 +51,14 @@ class IndexedDBQuotaClient : public storage::QuotaClient {
                              PerformStorageCleanupCallback callback) override;
 
  private:
-  ~IndexedDBQuotaClient() override;
-
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
-
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Raw pointer use is safe here because the IndexedDBContextImpl owns this.
+  IndexedDBContextImpl& indexed_db_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<IndexedDBQuotaClient> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content
