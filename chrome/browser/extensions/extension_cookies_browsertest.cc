@@ -12,6 +12,8 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -36,6 +38,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,36 +74,18 @@ const char* kSameSiteNoneAttribute = "; SameSite=None; Secure";
 const char* kSameSiteLaxAttribute = "; SameSite=Lax";
 const char* kSameSiteStrictAttribute = "; SameSite=Strict";
 
-// Tests for special handling of SameSite cookies for extensions:
-// A request should be treated as first-party for the purposes of SameSite
-// cookies if either
-//  1) the request initiator is an extension with access to the requested URL,
-//  2) the site_for_cookies is an extension with access to the requested URL,
-//     and the request initiator (if it exists) is same-site to the requested
-//     URL and also the extension has access to it.
-// See ChromeExtensionsRendererClient::WillSendRequest().
-//
-// The test fixture param is whether or not the new SameSite features are
-// enabled.
-class ExtensionSameSiteCookiesTest
-    : public ExtensionBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+std::vector<std::string> AsCookies(const std::string& cookie_line) {
+  return base::SplitString(cookie_line, ";", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+}
+
+// Base class for special handling of cookies for extensions.
+class ExtensionCookiesTest : public ExtensionBrowserTest {
  public:
-  ExtensionSameSiteCookiesTest()
-      : test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::Feature> samesite_features = {
-        net::features::kSameSiteByDefaultCookies,
-        net::features::kCookiesWithoutSameSiteMustBeSecure};
-    if (AreSameSiteFeaturesEnabled()) {
-      feature_list_.InitWithFeatures(samesite_features /* enabled */, {});
-    } else {
-      feature_list_.InitWithFeatures({}, samesite_features /* disabled */);
-    }
-  }
-  ~ExtensionSameSiteCookiesTest() = default;
-  ExtensionSameSiteCookiesTest(const ExtensionSameSiteCookiesTest&) = delete;
-  ExtensionSameSiteCookiesTest& operator=(const ExtensionSameSiteCookiesTest&) =
-      delete;
+  ExtensionCookiesTest() : test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  ~ExtensionCookiesTest() override = default;
+  ExtensionCookiesTest(const ExtensionCookiesTest&) = delete;
+  ExtensionCookiesTest& operator=(const ExtensionCookiesTest&) = delete;
 
   void SetUpOnMainThread() override {
     constexpr int kMaxNumberOfCookieRequestsFromSingleTest = 9;
@@ -129,44 +114,6 @@ class ExtensionSameSiteCookiesTest
   }
 
  protected:
-  // Sets an array of cookies with various SameSite values.
-  // These cookies are set directly into the cookie store, simulating being set
-  // from a "strictly same-site" request context.
-  void SetCookies(const std::string& host, Profile* profile) {
-    GURL url = test_server()->GetURL(host, "/");
-    content::SetCookie(browser()->profile(), url,
-                       base::StrCat({kNoneCookie, kSameSiteNoneAttribute}));
-    content::SetCookie(browser()->profile(), url,
-                       base::StrCat({kLaxCookie, kSameSiteLaxAttribute}));
-    content::SetCookie(browser()->profile(), url,
-                       base::StrCat({kStrictCookie, kSameSiteStrictAttribute}));
-    content::SetCookie(browser()->profile(), url, kUnspecifiedCookie);
-  }
-  void SetCookies(const std::string& host) {
-    SetCookies(host, browser()->profile());
-  }
-
-  // Expect that all cookies, including SameSite cookies, are present.
-  void ExpectSameSiteCookies(const std::string& cookie_header) {
-    EXPECT_THAT(cookie_header, testing::HasSubstr(kNoneCookie));
-    EXPECT_THAT(cookie_header, testing::HasSubstr(kLaxCookie));
-    EXPECT_THAT(cookie_header, testing::HasSubstr(kStrictCookie));
-    EXPECT_THAT(cookie_header, testing::HasSubstr(kUnspecifiedCookie));
-  }
-
-  // Expect that only cookies without SameSite are present.
-  void ExpectNoSameSiteCookies(const std::string& cookie_header) {
-    EXPECT_THAT(cookie_header, testing::HasSubstr(kNoneCookie));
-    EXPECT_THAT(cookie_header, testing::Not(testing::HasSubstr(kLaxCookie)));
-    EXPECT_THAT(cookie_header, testing::Not(testing::HasSubstr(kStrictCookie)));
-    if (AreSameSiteFeaturesEnabled()) {
-      EXPECT_THAT(cookie_header,
-                  testing::Not(testing::HasSubstr(kUnspecifiedCookie)));
-    } else {
-      EXPECT_THAT(cookie_header, testing::HasSubstr(kUnspecifiedCookie));
-    }
-  }
-
   // Navigates to the extension page in the main frame. Returns a pointer to the
   // RenderFrameHost of the main frame.
   content::RenderFrameHost* NavigateMainFrameToExtensionPage() {
@@ -203,6 +150,16 @@ class ExtensionSameSiteCookiesTest
     return child_frame;
   }
 
+  // Sets a vector of cookies directly into the cookie store, simulating being
+  // set from a "strictly same-site" request context.
+  void SetCookies(const std::string& host,
+                  const std::vector<std::string>& cookies) {
+    GURL url = test_server()->GetURL(host, "/");
+    for (const std::string& cookie : cookies) {
+      content::SetCookie(browser()->profile(), url, cookie);
+    }
+  }
+
   // Makes a request to |host| from the context of |frame|, then returns the
   // cookies that were sent on that request.
   std::string FetchCookies(content::RenderFrameHost* frame,
@@ -224,6 +181,7 @@ class ExtensionSameSiteCookiesTest
     if (!messages.PopMessage(&result)) {
       EXPECT_TRUE(messages.WaitForMessage(&result));
     }
+    base::TrimString(result, "\"", &result);
     return result;
   }
 
@@ -281,19 +239,21 @@ class ExtensionSameSiteCookiesTest
     http_response.Done();
   }
 
-  const Extension* MakeExtension() {
+  virtual const Extension* MakeExtension() = 0;
+
+  const Extension* MakeExtension(
+      const std::vector<std::string>& host_patterns) {
     ChromeTestExtensionLoader loader(profile());
     DictionaryBuilder manifest;
-    manifest.Set("name", "SameSite cookies test extension")
+    manifest.Set("name", "Cookies test extension")
         .Set("version", "1")
         .Set("manifest_version", 2)
         .Set("web_accessible_resources", ListBuilder().Append("*.html").Build())
         .Set("content_security_policy", kCspHeader)
-        .Set("permissions", ListBuilder()
-                                .Append(kPermissionPattern1)
-                                .Append(kPermissionPattern1Sub)
-                                .Append(kPermissionPattern2)
-                                .Build());
+        .Set("permissions",
+             ListBuilder()
+                 .Append(host_patterns.begin(), host_patterns.end())
+                 .Build());
     extension_dir_->WriteFile(FILE_PATH_LITERAL("empty.html"), "");
     extension_dir_->WriteFile(FILE_PATH_LITERAL("script.js"), "");
     extension_dir_->WriteManifest(manifest.ToJSON());
@@ -304,8 +264,6 @@ class ExtensionSameSiteCookiesTest
     DCHECK(extension);
     return extension;
   }
-
-  bool AreSameSiteFeaturesEnabled() { return GetParam(); }
 
   // The test server needs to be HTTPS because a SameSite=None cookie must be
   // Secure.
@@ -331,6 +289,74 @@ class ExtensionSameSiteCookiesTest
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestExtensionDir> extension_dir_;
   const Extension* extension_ = nullptr;
+};
+
+// Tests for special handling of SameSite cookies for extensions:
+// A request should be treated as first-party for the purposes of SameSite
+// cookies if either
+//  1) the request initiator is an extension with access to the requested URL,
+//  2) the site_for_cookies is an extension with access to the requested URL,
+//     and the request initiator (if it exists) is same-site to the requested
+//     URL and also the extension has access to it.
+// See URLLoader::ShouldForceIgnoreSiteForCookies().
+//
+// The test fixture param is whether or not the new SameSite features are
+// enabled.
+class ExtensionSameSiteCookiesTest
+    : public ExtensionCookiesTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ExtensionSameSiteCookiesTest() {
+    std::vector<base::Feature> samesite_features = {
+        net::features::kSameSiteByDefaultCookies,
+        net::features::kCookiesWithoutSameSiteMustBeSecure};
+    if (AreSameSiteFeaturesEnabled()) {
+      feature_list_.InitWithFeatures(samesite_features /* enabled */, {});
+    } else {
+      feature_list_.InitWithFeatures({}, samesite_features /* disabled */);
+    }
+  }
+  ~ExtensionSameSiteCookiesTest() override = default;
+  ExtensionSameSiteCookiesTest(const ExtensionSameSiteCookiesTest&) = delete;
+  ExtensionSameSiteCookiesTest& operator=(const ExtensionSameSiteCookiesTest&) =
+      delete;
+
+ protected:
+  // Sets an array of cookies with various SameSite values.
+  void SetCookies(const std::string& host) {
+    ExtensionCookiesTest::SetCookies(
+        host, {
+                  base::StrCat({kNoneCookie, kSameSiteNoneAttribute}),
+                  base::StrCat({kLaxCookie, kSameSiteLaxAttribute}),
+                  base::StrCat({kStrictCookie, kSameSiteStrictAttribute}),
+                  kUnspecifiedCookie,
+              });
+  }
+
+  // Expect that all cookies, including SameSite cookies, are present.
+  void ExpectSameSiteCookies(const std::string& cookie_header) {
+    EXPECT_THAT(
+        AsCookies(cookie_header),
+        testing::UnorderedElementsAre(kNoneCookie, kLaxCookie, kStrictCookie,
+                                      kUnspecifiedCookie));
+  }
+
+  // Expect that only cookies without SameSite are present.
+  void ExpectNoSameSiteCookies(const std::string& cookie_header) {
+    std::vector<std::string> expected = {kNoneCookie};
+    if (!AreSameSiteFeaturesEnabled()) {
+      expected.push_back(kUnspecifiedCookie);
+    }
+    EXPECT_THAT(AsCookies(cookie_header),
+                testing::UnorderedElementsAreArray(expected));
+  }
+
+  const Extension* MakeExtension() override {
+    return ExtensionCookiesTest::MakeExtension(
+        {kPermissionPattern1, kPermissionPattern1Sub, kPermissionPattern2});
+  }
+
+  bool AreSameSiteFeaturesEnabled() { return GetParam(); }
 };
 
 // Tests where the extension page initiates the request.
@@ -879,9 +905,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExtensionSameSiteCookiesTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, ExtensionSameSiteCookiesTest, ::testing::Bool());
 
 }  // namespace
 
