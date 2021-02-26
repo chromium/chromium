@@ -5,6 +5,8 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/browsing_data/access_context_audit_service.h"
+#include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
@@ -23,14 +25,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/browsing_data/access_context_audit_service.h"
-#include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
-#endif  // !defined(OS_ANDROID)
-
 namespace {
 
-#if !defined(OS_ANDROID)
 void RecordOriginStorageAccess(const url::Origin& origin,
                                AccessContextAuditDatabase::StorageAPIType type,
                                content::WebContents* web_contents) {
@@ -41,7 +37,6 @@ void RecordOriginStorageAccess(const url::Origin& origin,
     access_context_audit_service->RecordStorageAPIAccess(
         origin, type, url::Origin::Create(web_contents->GetLastCommittedURL()));
 }
-#endif  // !defined(OS_ANDROID)
 
 }  // namespace
 
@@ -52,7 +47,6 @@ namespace chrome {
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-#if !defined(OS_ANDROID)
   auto* access_context_audit_service =
       AccessContextAuditServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
@@ -61,7 +55,6 @@ PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
         std::make_unique<AccessContextAuditService::CookieAccessHelper>(
             access_context_audit_service);
   }
-#endif  // !defined(OS_ANDROID)
 }
 
 PageSpecificContentSettingsDelegate::~PageSpecificContentSettingsDelegate() =
@@ -199,67 +192,53 @@ void PageSpecificContentSettingsDelegate::OnContentBlocked(
 
 void PageSpecificContentSettingsDelegate::OnCacheStorageAccessAllowed(
     const url::Origin& origin) {
-#if !defined(OS_ANDROID)
   RecordOriginStorageAccess(
       origin, AccessContextAuditDatabase::StorageAPIType::kCacheStorage,
       web_contents());
-#endif  // !defined(OS_ANDROID)
 }
 
 void PageSpecificContentSettingsDelegate::OnCookieAccessAllowed(
     const net::CookieList& accessed_cookies) {
-#if !defined(OS_ANDROID)
   if (cookie_access_helper_) {
     cookie_access_helper_->RecordCookieAccess(
         accessed_cookies,
         url::Origin::Create(web_contents()->GetLastCommittedURL()));
   }
-#endif  // !defined(OS_ANDROID)
 }
 
 void PageSpecificContentSettingsDelegate::OnDomStorageAccessAllowed(
     const url::Origin& origin) {
-#if !defined(OS_ANDROID)
   RecordOriginStorageAccess(
       origin, AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
       web_contents());
-#endif  // !defined(OS_ANDROID)
 }
 
 void PageSpecificContentSettingsDelegate::OnFileSystemAccessAllowed(
     const url::Origin& origin) {
-#if !defined(OS_ANDROID)
   RecordOriginStorageAccess(
       origin, AccessContextAuditDatabase::StorageAPIType::kFileSystem,
       web_contents());
-#endif  // !defined(OS_ANDROID)
 }
 
 void PageSpecificContentSettingsDelegate::OnIndexedDBAccessAllowed(
     const url::Origin& origin) {
-#if !defined(OS_ANDROID)
   RecordOriginStorageAccess(
       origin, AccessContextAuditDatabase::StorageAPIType::kIndexedDB,
       web_contents());
-#endif  // !defined(OS_ANDROID)
 }
 
 void PageSpecificContentSettingsDelegate::OnServiceWorkerAccessAllowed(
     const url::Origin& origin) {
-#if !defined(OS_ANDROID)
   RecordOriginStorageAccess(
       origin, AccessContextAuditDatabase::StorageAPIType::kServiceWorker,
       web_contents());
-#endif  // !defined(OS_ANDROID)
 }
 
 void PageSpecificContentSettingsDelegate::OnWebDatabaseAccessAllowed(
     const url::Origin& origin) {
-#if !defined(OS_ANDROID)
   RecordOriginStorageAccess(
       origin, AccessContextAuditDatabase::StorageAPIType::kWebDatabase,
       web_contents());
-#endif  // !defined(OS_ANDROID)
 }
 
 void PageSpecificContentSettingsDelegate::DidFinishNavigation(
