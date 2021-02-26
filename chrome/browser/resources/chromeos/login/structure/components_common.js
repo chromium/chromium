@@ -20,7 +20,6 @@ function loadCommonComponents() {
 // <include src="../gaia_buttons.js">
 // <include src="../gaia_header.js">
 // <include src="../gaia_input_form.js">
-// <include src="../navigation_bar.js">
 
 // <include src="../oobe_a11y_option.js">
 // <include src="../network_select_login.js">

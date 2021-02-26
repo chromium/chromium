@@ -28,27 +28,3 @@
     </cr-button>
   </template>
 </dom-module>
-
-<!--
-  Material design icon button with a special styling.
-
-  `gaia-icon-button` does not include any icon-set, so containing elements
-  should import the icon-set needed for the specified |icon|.
-
-  Example:
-    <gaia-icon-button icon="close"></gaia-icon>
-
-  Attributes:
-    'icon' - a name of icon from material design set to show on button.
-    'disabled' - button is disabled when the attribute is set.
-    'aria-label' - accessibility label.
--->
-<dom-module id="gaia-icon-button">
-  <template>
-    <link rel="stylesheet" href="gaia_icon_button.css">
-    <div>
-      <cr-icon-button id="iconButton" iron-icon="[[icon]]" on-click="onClick_"
-          disabled="[[disabled]]" aria-label$="[[ariaLabel]]"></cr-icon-button>
-    </div>
-  </template>
-</dom-module>
