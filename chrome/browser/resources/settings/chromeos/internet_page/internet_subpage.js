@@ -859,12 +859,9 @@ Polymer({
       return false;
     }
 
-    if (this.deviceState.type === mojom.NetworkType.kCellular ||
-        this.deviceState.type === mojom.NetworkType.kTether) {
-      return this.networkStateList_.length > 0;
-    }
-
-    return false;
+    // Only shown if the currently-active subpage is for Cellular networks.
+    return !!this.deviceState &&
+        this.deviceState.type === mojom.NetworkType.kCellular;
   },
 
   /**

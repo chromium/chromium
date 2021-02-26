@@ -63,18 +63,28 @@ suite('InternetSubpage', function() {
     internetSubpage.deviceState = mojoApi_.getDeviceStateForTest(type);
   }
 
-  function setCellularNetworks() {
+  /**
+   * @param {!Array<!chromeos.networkConfig.mojom.NetworkStateProperties>=}
+   *     opt_networks Networks to set. If left undefined, default networks will
+   *     be set.
+   */
+  function addCellularNetworks(opt_networks) {
     const mojom = chromeos.networkConfig.mojom;
-    mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether);
-    setNetworksForTest(mojom.NetworkType.kCellular, [
+
+    const networks = opt_networks || [
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular1'),
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether2'),
-    ]);
+    ];
+
+    mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether);
+    setNetworksForTest(mojom.NetworkType.kCellular, networks);
     internetSubpage.tetherDeviceState = {
       type: mojom.NetworkType.kTether,
       deviceState: mojom.DeviceStateType.kEnabled
     };
+    internetSubpage.cellularDeviceState =
+        mojoApi_.getDeviceStateForTest(mojom.NetworkType.kCellular);
   }
 
   function initSubpage(isUpdatedCellularUiEnabled) {
@@ -221,7 +231,7 @@ suite('InternetSubpage', function() {
         function() {
           initSubpage(false /* isUpdatedCellularUiEnabled */);
           const mojom = chromeos.networkConfig.mojom;
-          setCellularNetworks();
+          addCellularNetworks();
           return flushAsync().then(() => {
             assertEquals(3, internetSubpage.networkStateList_.length);
             const toggle = internetSubpage.$$('#deviceEnabledButton');
@@ -241,7 +251,7 @@ suite('InternetSubpage', function() {
         function() {
           initSubpage(true /* isUpdatedCellularUiEnabled */);
           const mojom = chromeos.networkConfig.mojom;
-          setCellularNetworks();
+          addCellularNetworks();
           return flushAsync().then(() => {
             assertEquals(3, internetSubpage.networkStateList_.length);
             const toggle = internetSubpage.$$('#deviceEnabledButton');
@@ -253,6 +263,19 @@ suite('InternetSubpage', function() {
             assertEquals(3, cellularNetworkList.networks.length);
             const tetherToggle = internetSubpage.$$('#tetherEnabledButton');
             assertFalse(!!tetherToggle);
+          });
+        });
+
+    // Regression test for https://crbug.com/1182406.
+    test(
+        'Cellular subpage with no networks w/ updatedCellularActivationUi flag',
+        function() {
+          initSubpage(true /* isUpdatedCellularUiEnabled */);
+          addCellularNetworks([] /* networks */);
+          return flushAsync().then(() => {
+            const cellularNetworkList =
+                internetSubpage.$$('#cellularNetworkList');
+            assertTrue(!!cellularNetworkList);
           });
         });
 
