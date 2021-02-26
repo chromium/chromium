@@ -209,7 +209,7 @@ void ReportingContext::SendToReportingAPI(Report* report,
     const FeaturePolicyViolationReportBody* body =
         static_cast<FeaturePolicyViolationReportBody*>(report->body());
     GetReportingService()->QueueFeaturePolicyViolationReport(
-        url, body->featureId(), body->disposition(), "Feature policy violation",
+        url, body->featureId(), body->disposition(), body->message(),
         body->sourceFile(), line_number, column_number);
   } else if (type == ReportType::kIntervention) {
     // Send the intervention report.
@@ -223,9 +223,8 @@ void ReportingContext::SendToReportingAPI(Report* report,
         static_cast<DocumentPolicyViolationReportBody*>(report->body());
     // Send the document policy violation report.
     GetReportingService()->QueueDocumentPolicyViolationReport(
-        url, endpoint, body->featureId(), body->disposition(),
-        "Document policy violation", body->sourceFile(), line_number,
-        column_number);
+        url, endpoint, body->featureId(), body->disposition(), body->message(),
+        body->sourceFile(), line_number, column_number);
   }
 }
 
