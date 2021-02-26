@@ -849,6 +849,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionTab& proto) {
   VISIT_ENUM(favicon_type);
   VISIT(favicon_source);
   VISIT_REP(variation_id);
+  VISIT_ENUM(browser_type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionWindow& proto) {
