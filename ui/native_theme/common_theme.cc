@@ -482,8 +482,6 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
           color_scheme);
 
     // Throbber
-    case NativeTheme::kColorId_ThrobberLightColor:
-      return SkColorSetRGB(0xF4, 0xF8, 0xFD);
     case NativeTheme::kColorId_ThrobberWaitingColor:
       return SkColorSetRGB(0xA6, 0xA6, 0xA6);
     case NativeTheme::kColorId_ThrobberSpinningColor:

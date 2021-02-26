@@ -362,7 +362,6 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_ThrobberSpinningColor:
       return GetFgColor("GtkSpinner#spinner");
     case ui::NativeTheme::kColorId_ThrobberWaitingColor:
-    case ui::NativeTheme::kColorId_ThrobberLightColor:
       return GetFgColor("GtkSpinner#spinner:disabled");
 
     // Alert icons

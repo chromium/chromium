@@ -631,7 +631,6 @@ base::Optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
     case kColorId_TooltipIcon:
     case kColorId_TooltipText:
     case kColorId_ThrobberSpinningColor:
-    case kColorId_ThrobberLightColor:
     case kColorId_AlertSeverityLow:
     case kColorId_AlertSeverityMedium:
     case kColorId_AlertSeverityHigh:

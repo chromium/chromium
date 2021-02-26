@@ -153,7 +153,6 @@
   /* Colors for the material spinner (aka throbber). */                        \
   OP(kColorId_ThrobberSpinningColor),                                          \
   OP(kColorId_ThrobberWaitingColor),                                           \
-  OP(kColorId_ThrobberLightColor),                                             \
   /* Colors for Bubble Border */                                               \
   OP(kColorId_BubbleBorder),                                                   \
   /* Colors for Footnote Container. */                                         \

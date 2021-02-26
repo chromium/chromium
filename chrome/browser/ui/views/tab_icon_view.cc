@@ -93,10 +93,11 @@ void TabIconView::PaintThrobber(gfx::Canvas* canvas) {
   if (throbber_start_time_ == base::TimeTicks())
     throbber_start_time_ = base::TimeTicks::Now();
 
-  gfx::PaintThrobberSpinning(canvas, GetLocalBounds(),
-                             GetNativeTheme()->GetSystemColor(
-                                 ui::NativeTheme::kColorId_ThrobberLightColor),
-                             base::TimeTicks::Now() - throbber_start_time_);
+  gfx::PaintThrobberSpinning(
+      canvas, GetLocalBounds(),
+      GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_ThrobberSpinningColor),
+      base::TimeTicks::Now() - throbber_start_time_);
 }
 
 void TabIconView::PaintFavicon(gfx::Canvas* canvas,

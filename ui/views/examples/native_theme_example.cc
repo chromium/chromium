@@ -158,7 +158,6 @@ std::unique_ptr<View> CreateAllColorsView() {
   InsertColorRow(layout, COLOR_LABEL_ARGS(kColorId_TableHeaderSeparator));
   InsertColorRow(layout, COLOR_LABEL_ARGS(kColorId_ThrobberSpinningColor));
   InsertColorRow(layout, COLOR_LABEL_ARGS(kColorId_ThrobberWaitingColor));
-  InsertColorRow(layout, COLOR_LABEL_ARGS(kColorId_ThrobberLightColor));
   InsertColorRow(layout, COLOR_LABEL_ARGS(kColorId_AlertSeverityLow));
   InsertColorRow(layout, COLOR_LABEL_ARGS(kColorId_AlertSeverityMedium));
   InsertColorRow(layout, COLOR_LABEL_ARGS(kColorId_AlertSeverityHigh));
