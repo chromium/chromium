@@ -19,11 +19,6 @@ extern const char kAutofillCacheQueryResponsesDescription[];
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];
 
-// Title and description for the flag to control enabling Google-issued cards in
-// autofill suggestions.
-extern const char kAutofillEnableGoogleIssuedCardName[];
-extern const char kAutofillEnableGoogleIssuedCardDescription[];
-
 // Title and description for the flag to control offers in downstream.
 extern const char kAutofillEnableOffersInDownstreamName[];
 extern const char kAutofillEnableOffersInDownstreamDescription[];
