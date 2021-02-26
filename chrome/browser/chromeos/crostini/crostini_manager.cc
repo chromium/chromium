@@ -245,7 +245,6 @@ class CrostiniManager::CrostiniRestarter
   }
 
   void AddObserver(CrostiniManager::RestartObserver* observer) {
-    observer->set_restart_id(restart_id_);
     observer_list_.AddObserver(observer);
   }
 
@@ -2169,16 +2168,23 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
   auto restarter = std::make_unique<CrostiniRestarter>(
       profile_, this, container_id, std::move(options), std::move(callback));
   auto restart_id = restarter->restart_id();
-  if (observer)
-    restarter->AddObserver(observer);
   restarters_by_container_.emplace(container_id, restart_id);
   restarters_by_id_[restart_id] = std::move(restarter);
+
+  // Observers should observe the first restarter which actually runs.
+  if (observer) {
+    observer->set_restart_id(restart_id);
+    auto range = restarters_by_container_.equal_range(container_id);
+    auto restarting_id = range.first->second;
+    restarters_by_id_[restarting_id]->AddObserver(observer);
+  }
+
   if (restarters_by_container_.count(container_id) > 1) {
     VLOG(1) << "Already restarting " << container_id;
   } else {
-    // ::Restart needs to be called after the restarter is inserted into
+    // Restart() needs to be called after the restarter is inserted into
     // restarters_by_id_ because some tests will make the restart process
-    // complete before ::Restart returns.
+    // complete before Restart() returns.
     restarters_by_id_[restart_id]->Restart();
   }
 

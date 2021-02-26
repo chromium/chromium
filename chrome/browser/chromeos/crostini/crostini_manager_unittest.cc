@@ -1780,6 +1780,40 @@ TEST_F(CrostiniManagerRestartTest, ComponentUpdateInProgress) {
   ExpectCrostiniRestartResult(CrostiniResult::SUCCESS);
 }
 
+TEST_F(CrostiniManagerRestartTest, AllObservers) {
+  class TestObserver : public CrostiniManager::RestartObserver {
+   public:
+    void OnStageStarted(mojom::InstallerState stage) override { ++count; }
+    int count = 0;
+  };
+  TestObserver observer2;
+
+  int observer1_count = 0;
+  on_stage_started_ =
+      base::BindLambdaForTesting([&](mojom::InstallerState state) {
+        ++observer1_count;
+        if (state == mojom::InstallerState::kStartTerminaVm) {
+          // Add a second Restarter with observer while first is starting.
+          crostini_manager()->RestartCrostini(
+              container_id(),
+              base::BindOnce(
+                  &CrostiniManagerRestartTest::RestartCrostiniCallback,
+                  base::Unretained(this), run_loop()->QuitClosure()),
+              &observer2);
+        }
+      });
+
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), base::DoNothing::Once()),
+      this);
+  run_loop()->Run();
+  EXPECT_EQ(2, restart_crostini_callback_count_);
+  EXPECT_EQ(8, observer1_count);
+  EXPECT_EQ(5, observer2.count);
+}
+
 class CrostiniManagerEnterpriseReportingTest
     : public CrostiniManagerRestartTest {
  public:
