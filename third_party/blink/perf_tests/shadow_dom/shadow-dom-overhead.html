@@ -42,20 +42,20 @@ PerfTestRunner.measureValue({
     description: 'This benchmark tests the overhead of declarative Shadow DOM',
     unit: 'percent',
     run: function() {
-      let total_overhead = 0;
-      let total_samples = 0;
+      let samples = [];
       for (let i = 0; i < 100; i++) {
         const t1 = measureParse(lightDomHtml1);
         const t2 = measureParse(shadowHtml);
         const t3 = measureParse(lightDomHtml2);
         if (t2 > t1 && t3 > t1) {
-          total_overhead += (t2-t1) / (t3-t1);
-          ++total_samples;
+          samples.push((t2-t1) / (t3-t1));
         }
       }
-      PerfTestRunner.assert_true(total_samples>3,'Too many skipped measurements');
+      PerfTestRunner.assert_true(samples.length > 3,'Too many skipped measurements');
       // The result is the total overhead, in *percent*, *per shadow root*.
-      return 100*total_overhead/total_samples;
-    }
+      return 100*median(samples);
+    },
+    warmUpCount: 2,
+    iterationCount: 30,
 });
 </script>

@@ -27,6 +27,18 @@
     return html;
   }
 
+  function getPolyfillMarkup(escapeClosingTag) {
+    escapeClosingTag = escapeClosingTag ?? true;
+    return `<script>
+      document.querySelectorAll('${lightDomElementName}').forEach(element => {
+        const shadowRoot = element.parentNode.attachShadow({ mode: 'open' });
+        shadowRoot.replaceChildren(...Array.from(element.childNodes));
+        element.remove();
+      });
+      <${escapeClosingTag ? '\/' : '/'}script>
+    }`
+  }
+
   const domParser = new DOMParser();
   function parseHtml(html) {
     return domParser.parseFromString(html, 'text/html', {includeShadowRoots: true});
@@ -50,6 +62,26 @@
     return PerfTestRunner.now() - start;
   }
 
+  async function measureLoadTimeIframe(html) {
+    return new Promise((resolve, reject) => {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.srcdoc = html;
+      iframe.onload = () => {
+        resolve(PerfTestRunner.now() - start);
+        iframe.remove();
+      };
+      let start = PerfTestRunner.now();
+      document.body.appendChild(iframe);
+    });
+  }
+
+  function median(data) {
+    data.sort();
+    const middle = Math.floor(data.length / 2);
+    return data.length % 2 ? data[middle] : (data[middle - 1] + data[middle]) / 2;
+  }
+
   // Do some double-checks that things are working:
   function testParse(html) {
     const test_div = document.createElement('div');
@@ -67,5 +99,8 @@
   window.measureParse = measureParse;
   window.parseAndAppend = parseAndAppend;
   window.measureParseAndAppend = measureParseAndAppend;
+  window.measureLoadTimeIframe = measureLoadTimeIframe;
   window.getShadowMarkup = getShadowMarkup;
+  window.getPolyfillMarkup = getPolyfillMarkup;
+  window.median = median;
 })();
