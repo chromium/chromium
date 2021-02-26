@@ -2040,11 +2040,11 @@
       'android_no_proguard', 'use_java_coverage',
     ],
 
-    # TODO(crbug/1018431): Add 'resource_whitelisting' back once bug fixed.
-    # No symbols to prevent linker file too large error.
+    # No symbols to prevent linker file too large error on
+    # android_webview_unittests target.
     'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage': [
       'gpu_tests', 'android', 'release_bot', 'arm64',
-      'static_angle', 'android_fastbuild', 'webview_google',
+      'resource_whitelisting', 'static_angle', 'android_fastbuild', 'webview_google',
       'android_no_proguard', 'use_clang_coverage',
     ],
 
