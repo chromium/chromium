@@ -503,6 +503,9 @@
 
 // Starts mediators owned by this coordinator.
 - (void)startMediators {
+  self.viewController.reauthHandler =
+      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
+
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
         agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
@@ -512,9 +515,6 @@
         [[IncognitoReauthMediator alloc] initWithConsumer:self.viewController
                                               reauthAgent:reauthAgent];
   }
-
-  self.viewController.reauthHandler =
-      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
 }
 
 #pragma mark - ActivityServiceCommands

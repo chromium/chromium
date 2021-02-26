@@ -4889,11 +4889,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       self.blockingView.translatesAutoresizingMaskIntoConstraints = NO;
       self.blockingView.layer.zPosition = FLT_MAX;
 
+      DCHECK(self.reauthHandler);
       [self.blockingView.authenticateButton
                  addTarget:self.reauthHandler
                     action:@selector(authenticateIncognitoContent)
           forControlEvents:UIControlEventTouchUpInside];
 
+      DCHECK(self.dispatcher);
       [self.blockingView.tabSwitcherButton
                  addTarget:self.dispatcher
                     action:@selector(displayRegularTabSwitcherInGridLayout)

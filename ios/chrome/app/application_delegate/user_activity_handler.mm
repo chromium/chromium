@@ -443,6 +443,13 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
     return;
   }
 
+  // Do not handle the parameters that are/were already handled.
+  if (connectionInformation.startupParametersAreBeingHandled) {
+    return;
+  }
+
+  connectionInformation.startupParametersAreBeingHandled = YES;
+
   if (!connectionInformation.startupParameters.URLs.empty() &&
       !connectionInformation.startupParameters.isUnexpectedMode) {
     [self openMultipleTabsWithConnectionInformation:connectionInformation

@@ -747,6 +747,9 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsWithExternalFile) {
   [[[connectionInformationMock stub] andReturn:startupParams]
       startupParameters];
   [[connectionInformationMock expect] setStartupParameters:nil];
+  [[[connectionInformationMock expect] andReturnValue:@NO]
+      startupParametersAreBeingHandled];
+  [[connectionInformationMock expect] setStartupParametersAreBeingHandled:YES];
 
   MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
 
@@ -791,6 +794,9 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsNonU2F) {
       [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
   [[[connectionInformationMock stub] andReturn:startupParams]
       startupParameters];
+  [[[connectionInformationMock expect] andReturnValue:@NO]
+      startupParametersAreBeingHandled];
+  [[connectionInformationMock expect] setStartupParametersAreBeingHandled:YES];
   [[connectionInformationMock expect] setStartupParameters:nil];
 
   MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
@@ -861,6 +867,9 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
       [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
   [[[connectionInformationMock stub] andReturn:startupParams]
       startupParameters];
+  [[[connectionInformationMock expect] andReturnValue:@NO]
+      startupParametersAreBeingHandled];
+  [[connectionInformationMock expect] setStartupParametersAreBeingHandled:YES];
   [[connectionInformationMock expect] setStartupParameters:nil];
 
   StubBrowserInterfaceProvider* interfaceProvider =

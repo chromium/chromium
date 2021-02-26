@@ -260,6 +260,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   std::unique_ptr<ScopedUIBlocker> _firstRunUIBlocker;
 }
 @synthesize startupParameters = _startupParameters;
+@synthesize startupParametersAreBeingHandled =
+    _startupParametersAreBeingHandled;
 
 - (instancetype)initWithSceneState:(SceneState*)sceneState {
   self = [super init];
@@ -339,6 +341,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (BOOL)isSettingsViewPresented {
   return self.settingsNavigationController ||
          self.signinCoordinator.isSettingsViewPresented;
+}
+
+- (void)setStartupParameters:(AppStartupParameters*)parameters {
+  _startupParameters = parameters;
+  self.startupParametersAreBeingHandled = NO;
 }
 
 #pragma mark - SceneStateObserver
@@ -1968,11 +1975,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
     if (reauthAgent.authenticationRequired) {
+      void (^wrappedDismissModalCompletion)() = dismissModalsCompletion;
       dismissModalsCompletion = ^{
         [reauthAgent
             authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
               if (success) {
-                dismissModalsCompletion();
+                wrappedDismissModalCompletion();
+              } else {
+                // Do not open the tab, but still call completion.
+                completion();
               }
             }];
       };

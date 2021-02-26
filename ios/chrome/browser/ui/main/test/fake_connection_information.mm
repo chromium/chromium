@@ -11,5 +11,7 @@
 @implementation FakeConnectionInformation
 
 @synthesize startupParameters = _startupParameters;
+@synthesize startupParametersAreBeingHandled =
+    _startupParametersAreBeingHandled;
 
 @end
