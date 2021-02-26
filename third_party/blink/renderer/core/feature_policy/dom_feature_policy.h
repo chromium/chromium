@@ -57,6 +57,8 @@ class CORE_EXPORT DOMFeaturePolicy : public ScriptWrappable {
     return context_->GetSecurityContext().GetFeaturePolicy();
   }
 
+  virtual bool IsIFramePolicy() const { return false; }
+
   Member<ExecutionContext> context_;
 
  private:

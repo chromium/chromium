@@ -31669,6 +31669,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3827" label="StorageFoundationFlush"/>
   <int value="3828" label="StorageFoundationFlushSync"/>
   <int value="3829" label="UnrestrictedSharedArrayBuffer"/>
+  <int value="4000" label="FeaturePolicyJSAPIAllowsFeatureIFrame"/>
+  <int value="4001" label="FeaturePolicyJSAPIAllowsFeatureDocument"/>
+  <int value="4002" label="FeaturePolicyJSAPIAllowsFeatureOriginIFrame"/>
+  <int value="4003" label="FeaturePolicyJSAPIAllowsFeatureOriginDocument"/>
+  <int value="4004" label="FeaturePolicyJSAPIAllowedFeaturesIFrame"/>
+  <int value="4005" label="FeaturePolicyJSAPIAllowedFeaturesDocument"/>
+  <int value="4006" label="FeaturePolicyJSAPIFeaturesIFrame"/>
+  <int value="4007" label="FeaturePolicyJSAPIFeaturesDocument"/>
+  <int value="4008" label="FeaturePolicyJSAPIGetAllowlistIFrame"/>
+  <int value="4009" label="FeaturePolicyJSAPIGetAllowlistDocument"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

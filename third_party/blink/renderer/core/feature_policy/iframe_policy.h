@@ -41,6 +41,8 @@ class IFramePolicy final : public DOMFeaturePolicy {
  protected:
   const FeaturePolicy* GetPolicy() const override { return policy_.get(); }
 
+  bool IsIFramePolicy() const override { return true; }
+
  private:
   std::unique_ptr<FeaturePolicy> policy_;
 };
