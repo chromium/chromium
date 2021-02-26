@@ -51,9 +51,13 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
   MockVideoCaptureImpl(const media::VideoCaptureSessionId& session_id,
                        PauseResumeCallback* pause_callback,
                        base::OnceClosure destruct_callback)
-      : VideoCaptureImpl(session_id, base::ThreadTaskRunnerHandle::Get()),
+      : VideoCaptureImpl(session_id,
+                         base::ThreadTaskRunnerHandle::Get(),
+                         Platform::Current()->GetGpuFactories()),
         pause_callback_(pause_callback),
-        destruct_callback_(std::move(destruct_callback)) {}
+        destruct_callback_(std::move(destruct_callback)) {
+    SetVideoCaptureHostForTesting(this);
+  }
 
   ~MockVideoCaptureImpl() override { std::move(destruct_callback_).Run(); }
 
@@ -119,12 +123,11 @@ class MockVideoCaptureImplManager : public WebVideoCaptureImplManager {
   ~MockVideoCaptureImplManager() override {}
 
  private:
-  std::unique_ptr<VideoCaptureImpl> CreateVideoCaptureImplForTesting(
+  base::SequenceBound<VideoCaptureImpl> CreateVideoCaptureImpl(
       const media::VideoCaptureSessionId& session_id) const override {
-    auto video_capture_impl = std::make_unique<MockVideoCaptureImpl>(
-        session_id, pause_callback_, stop_capture_callback_);
-    video_capture_impl->SetVideoCaptureHostForTesting(video_capture_impl.get());
-    return std::move(video_capture_impl);
+    return base::SequenceBound<MockVideoCaptureImpl>(
+        Platform::Current()->GetIOTaskRunner(), session_id, pause_callback_,
+        stop_capture_callback_);
   }
 
   PauseResumeCallback* const pause_callback_;

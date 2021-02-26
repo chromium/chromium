@@ -55,7 +55,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
     : public media::mojom::blink::VideoCaptureObserver {
  public:
   VideoCaptureImpl(media::VideoCaptureSessionId session_id,
-                   scoped_refptr<base::SequencedTaskRunner> main_task_runner);
+                   scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+                   media::GpuVideoAcceleratorFactories* gpu_factories);
   ~VideoCaptureImpl() override;
 
   // Stop/resume delivering video frames to clients, based on flag |suspend|.

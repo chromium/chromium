@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
@@ -104,7 +105,8 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   void OnFrameDropped(const media::VideoCaptureSessionId& id,
                       media::VideoCaptureFrameDropReason reason);
 
-  virtual std::unique_ptr<VideoCaptureImpl> CreateVideoCaptureImplForTesting(
+  // Virtual for tests.
+  virtual base::SequenceBound<VideoCaptureImpl> CreateVideoCaptureImpl(
       const media::VideoCaptureSessionId& session_id) const;
 
   // Get the feedback callback for the corresponding capture session.
