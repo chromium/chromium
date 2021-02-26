@@ -18,8 +18,12 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.InstallTrigger;
@@ -46,6 +50,19 @@ public class PwaBottomSheetController
 
     /** The controller used to show the bottom sheet. */
     private BottomSheetController mBottomSheetController;
+
+    /** The observer used to set the bottom sheet content priority. */
+    private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
+        @Override
+        public void onSheetStateChanged(@SheetState int state) {
+            // When our sheet is not fully expanded, lower its priority to make sure
+            // other (high-priority) sheets in the queue can be shown.
+            int priority = (isBottomSheetVisible() && state == SheetState.FULL)
+                    ? ContentPriority.HIGH
+                    : ContentPriority.LOW;
+            mPwaBottomSheetContent.setPriority(priority);
+        }
+    };
 
     /** The Bottom Sheet content class for showing our content. */
     private PwaInstallBottomSheetContent mPwaBottomSheetContent;
@@ -140,6 +157,7 @@ public class PwaBottomSheetController
 
     @Override
     public void onViewDismissed() {
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
         mWebContentsObserver = null;
         mPwaBottomSheetContent = null;
         destroy();
@@ -197,6 +215,7 @@ public class PwaBottomSheetController
         PropertyModelChangeProcessor.create(
                 mModel, view, AddToHomescreenBottomSheetViewBinder::bind);
 
+        mBottomSheetController.addObserver(mBottomSheetObserver);
         if (!mBottomSheetController.requestShowContent(mPwaBottomSheetContent, true)) {
             // TODO(finnur): Investigate whether retrying is feasible (and how).
             return;

@@ -24,10 +24,17 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     @VisibleForTesting
     protected final AddToHomescreenViewDelegate mDelegate;
 
+    /** This content's priority. */
+    private @ContentPriority int mPriority = ContentPriority.LOW;
+
     public PwaInstallBottomSheetContent(
             PwaInstallBottomSheetView view, AddToHomescreenViewDelegate delegate) {
         mView = view;
         mDelegate = delegate;
+    }
+
+    public void setPriority(@ContentPriority int priority) {
+        mPriority = priority;
     }
 
     // BottomSheetContent:
@@ -61,9 +68,7 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getPriority() {
-        // The bottom sheet is the result of a user action, either when triggered by the
-        // 'Install app' command in the App Menu or when navigating to a PWA. Hence HIGH priority.
-        return BottomSheetContent.ContentPriority.HIGH;
+        return mPriority;
     }
 
     @Override
