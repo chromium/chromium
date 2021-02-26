@@ -176,7 +176,7 @@ class AutocompleteProviderClient {
   virtual bool IsTabOpenWithURL(const GURL& url,
                                 const AutocompleteInput* input) = 0;
 
-  // Returns whether any browser update is ready.
+  // Returns whether user is currently allowed to enter incognito mode.
   virtual bool IsIncognitoModeAvailable() const;
 };
 
