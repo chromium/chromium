@@ -168,8 +168,6 @@ target(tracing_lib_type, "cpp") {
         "stack_sampling/stack_unwinder_android.cc",
         "stack_sampling/stack_unwinder_android.h",
       ]
-      deps += [ "//buildtools/third_party/libunwind" ]
-      include_dirs = [ "//buildtools/third_party/libunwind/trunk/include" ]
     }
   }  # !is_ios && !is_nacl
 }
