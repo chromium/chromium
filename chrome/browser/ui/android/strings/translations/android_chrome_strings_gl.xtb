@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">Memoria insuficiente para descargar o contido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando...</translation>
 <translation id="1383876407941801731">Buscar</translation>
+<translation id="1384704387250346179">Traducir imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Dispositivo activo hai <ph name="LAST_UPDATED" />días</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">Non facer seguimento</translation>
@@ -97,6 +98,7 @@
 <translation id="1692118695553449118">A sincronización está activada</translation>
 <translation id="1697284962337958118">Engadir a</translation>
 <translation id="1718835860248848330">Última hora</translation>
+<translation id="1724977129262658800">Para poder editar o contrasinal, desbloquea a pantalla</translation>
 <translation id="173522743738009831">Acerca do illamento de procesos de privacidade</translation>
 <translation id="1736419249208073774">Explorar</translation>
 <translation id="1749561566933687563">Sincroniza os teus marcadores</translation>
@@ -139,7 +141,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> (botón <ph name="LINK_NAME" />)</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> quere sincronizarse</translation>
 <translation id="2000419248597011803">Envía buscas e cookies da barra de enderezos e da caixa de busca ao motor de busca predeterminado</translation>
-<translation id="2001360696084428949">Tenta conectar o teu teléfono mediante un cable USB</translation>
 <translation id="2002537628803770967">Tarxetas de crédito e enderezos que usan Google Pay</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
 <translation id="2017836877785168846">Borra o historial e os completados automáticos na barra de enderezos.</translation>
@@ -283,7 +284,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2923908459366352541">O nome non é válido</translation>
 <translation id="2932150158123903946">Almacenamento de Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">A pestana de vista previa está pechada</translation>
-<translation id="2946377063371973287">Parece que a conexión está tardando bastante…</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> e <ph name="PARENT_NAME_2" /> xestionan esta conta.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> páxina sen ler}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páxinas sen ler}}</translation>
 <translation id="2962095958535813455">Cambiouse ás pestanas do modo de incógnito</translation>
@@ -691,6 +691,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5765780083710877561">Descrición:</translation>
 <translation id="5767013862801005129">Pestana <ph name="TAB_TITLE" />, restaurada</translation>
 <translation id="5776970333778123608">Datos non importantes</translation>
+<translation id="5780792035410621042">Para poder copiar os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="5793665092639000975">Espazo utilizado: <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Busca e navegación</translation>
 <translation id="5797070761912323120">Google pode utilizar o teu historial para personalizar a Busca, os anuncios e outros servizos seus.</translation>
@@ -1028,6 +1029,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Cargar previamente as páxinas para que a navegación e as buscas sexan máis rápidas</translation>
+<translation id="7986497153528221272">Para poder ver os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="7998918019931843664">Abre de novo a pestana pechada</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8013372441983637696">Borrar tamén deste dispositivo os teus datos de Chrome</translation>

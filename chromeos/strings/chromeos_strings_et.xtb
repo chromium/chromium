@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
 <translation id="3838338534323494292">Uus parool</translation>
 <translation id="3865414814144988605">Eraldusvõime</translation>
+<translation id="387301095347517405">See arv näitab, mitu korda on teie seadme aku läbinud täieliku laadimistsükli</translation>
 <translation id="3941014780699102620">Hosti lahendamine ebaõnnestus</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Veenduge, et skanner oleks sisse lülitatud ja teie võrgus või otseühenduse kaudu saadaval</translation>
 <translation id="4170700058716978431">EBAÕNNESTUS</translation>
 <translation id="4176463684765177261">Keelatud</translation>
-<translation id="4222698289790462549">Praegune kiirus</translation>
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB <ph name="TOTAL_MEMORY" />-st on saadaval.</translation>
 <translation id="4238516577297848345">Ühtegi prinditööd pole pooleli</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
@@ -208,7 +207,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} katse jäänud}other{{0} katset jäänud}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Kuva aruanne</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Perekond</translation>
@@ -253,7 +251,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="649050271426829538">Peatatud – paberiummistus</translation>
 <translation id="6517239166834772319">Avastamine</translation>
 <translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>
-<translation id="6532051501443766164">Peida aruanne</translation>
 <translation id="65587193855025101">Tasaskanner</translation>
 <translation id="6564646048574748301">Ebaõnnestus – printeriga ei saa ühendust</translation>
 <translation id="6618744767048954150">Pooleli</translation>
@@ -345,7 +342,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
 <translation id="8798441408945964110">Teenusepakkuja nimi</translation>
-<translation id="880791622116642296">See arv näitab, mitu korda on teie seadme aku läbinud täieliku laadimistsükli</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8845001906332463065">Otsige abi</translation>
 <translation id="8881098542468797602">Test õnnestus</translation>

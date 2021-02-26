@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Alle Dateien</translation>
 <translation id="1810764548349082891">Keine Vorschau verfügbar</translation>
 <translation id="1812302367230252929">Amharisch (Transliteration)</translation>
+<translation id="1813278315230285598">Dienste</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Vorsicht:<ph name="END_BOLD" />Hierbei handelt es sich um Temporärdateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Informationen werden geladen…</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">Unerwarteter Fehler beim Verschieben: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finnisch</translation>
 <translation id="1942765061641586207">Bildauflösung</translation>
-<translation id="1943097386230153518">Neuen Dienst installieren</translation>
 <translation id="1972984168337863910">Erweiterte Dateiinformationen maximieren</translation>
+<translation id="1984456723671657197">Dieser Dateityp wird nicht unterstützt. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="1995337122023280937">Zum Dateispeicherort</translation>
 <translation id="2001796770603320721">In Drive verwalten</translation>
 <translation id="2009067268969781306">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
@@ -652,7 +653,6 @@
 <translation id="7839804798877833423">Zum Abrufen dieser Dateien werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
 <translation id="7846076177841592234">Auswahl aufheben</translation>
 <translation id="7853966320808728790">Französisch – Bépo</translation>
-<translation id="7864662577698025113">Neuen Dienst hinzufügen</translation>
 <translation id="7868774406711971383">Polnisch</translation>
 <translation id="7873831373602885875">Speichern in "<ph name="FOLDER_NAME" />" nicht möglich. Alle Änderungen werden im Ordner "Downloads" in <ph name="DOWNLOADS_FOLDER" /> gespeichert.</translation>
 <translation id="7874321682039004450">Philippinisch</translation>
@@ -667,6 +667,7 @@
 <translation id="7972920761225148017">Französisch (Schweiz)</translation>
 <translation id="7980421588063892270">Englisch (USA) mit Colemak-Tastatur</translation>
 <translation id="7982283708762922719">Größe</translation>
+<translation id="79907182588096956">Diese Datei wurde für Computer mit Windows-Software entwickelt. Sie ist nicht mit Ihrem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="8008366997883261463">Jack Russell</translation>
 <translation id="8028993641010258682">Größe</translation>
 <translation id="803771048473350947">Datei</translation>
@@ -746,6 +747,7 @@
 <translation id="8900820606136623064">Ungarisch</translation>
 <translation id="8919081441417203123">Dänisch</translation>
 <translation id="8965697826696209160">Nicht genügend Speicherplatz.</translation>
+<translation id="8970501467542182729">Diese Datei wurde für Computer mit Macintosh-Software entwickelt. Sie ist nicht mit Ihrem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="8997962250644902079">Chinesisch (traditionell) (Pinyin)</translation>
 <translation id="9017798300203431059">Russisch – phonetisch</translation>
 <translation id="9034924485347205037">Linux-Dateien</translation>

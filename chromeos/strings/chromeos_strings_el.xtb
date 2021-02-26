@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Μη έγκυρο PIN.</translation>
 <translation id="3838338534323494292">Νέος κωδικός πρόσβασης</translation>
 <translation id="3865414814144988605">Ανάλυση</translation>
+<translation id="387301095347517405">Ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
 <translation id="3942420633017001071">Διαγνωστικά</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Βεβαιωθείτε ότι ο σαρωτής είναι ενεργοποιημένος και διαθέσιμος μέσω του δικτύου σας ή μέσω άμεσης σύνδεσης.</translation>
 <translation id="4170700058716978431">ΑΠΕΤΥΧΕ</translation>
 <translation id="4176463684765177261">Απενεργοποιημένη</translation>
-<translation id="4222698289790462549">Τρέχουσα ταχύτητα</translation>
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Διαθέσιμα <ph name="AVAILABLE_MEMORY" /> GB από τα <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
 <translation id="4378373042927530923">Δεν εκτελέστηκε</translation>
@@ -208,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Απομένει {0} προσπάθεια}other{Απομένουν {0} προσπάθειες}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Προβολή αναφοράς</translation>
 <translation id="5669267381087807207">Ενεργοπ.</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Οικογένεια</translation>
@@ -253,7 +251,6 @@
 <translation id="649050271426829538">Διακοπή - Εμπλοκή χαρτιού</translation>
 <translation id="6517239166834772319">Εξερεύνηση</translation>
 <translation id="6527081081771465939">Άγνωστο πρωτόκολλο ασφαλείας Wi-Fi</translation>
-<translation id="6532051501443766164">Απόκρυψη αναφοράς</translation>
 <translation id="65587193855025101">Επίπεδος</translation>
 <translation id="6564646048574748301">Σφάλμα - Δεν είναι δυνατή η πρόσβαση στον εκτυπωτή</translation>
 <translation id="6618744767048954150">Σε εξέλιξη</translation>
@@ -345,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8798441408945964110">Όνομα παρόχου</translation>
-<translation id="880791622116642296">Αυτός είναι ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>

@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3865414814144988605">Rozlišení</translation>
+<translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
 <translation id="3941014780699102620">Hostitele se nepodařilo vyřešit</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Zkontrolujte, zda je skener zapnutý a dostupný v síti nebo přes přímé připojení.</translation>
 <translation id="4170700058716978431">NEZDAŘILO SE</translation>
 <translation id="4176463684765177261">Vypnuto</translation>
-<translation id="4222698289790462549">Aktuální rychlost</translation>
 <translation id="4227825898293920515">Platnost hesla vyprší za <ph name="TIME" /></translation>
-<translation id="4228041325992544252">K dispozici je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Nemáte žádné probíhající tiskové úlohy</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4378373042927530923">Nespuštěno</translation>
@@ -208,7 +207,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zbývá {0} pokus}few{Zbývají {0} pokusy}many{Zbývá {0} pokusu}other{Zbývá {0} pokusů}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Zobrazit přehled</translation>
 <translation id="5669267381087807207">Aktivování</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodina</translation>
@@ -253,7 +251,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="649050271426829538">Zastaveno – zasekl se papír</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Neznámý bezpečnostní protokol Wi-Fi</translation>
-<translation id="6532051501443766164">Skrýt přehled</translation>
 <translation id="65587193855025101">Předlohové sklo</translation>
 <translation id="6564646048574748301">Tisk selhal – tiskárna není dostupná</translation>
 <translation id="6618744767048954150">Probíhá</translation>
@@ -345,7 +342,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8798441408945964110">Název poskytovatele</translation>
-<translation id="880791622116642296">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8881098542468797602">Test byl úspěšný</translation>

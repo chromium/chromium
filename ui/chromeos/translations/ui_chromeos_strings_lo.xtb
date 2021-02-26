@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">ທຸກໄຟລ​໌​</translation>
 <translation id="1810764548349082891">ບໍ່ມີຕົວຢ່າງສະແດງ</translation>
 <translation id="1812302367230252929">ການແປທັບສັບພາສາອາມຮາຣິກ</translation>
+<translation id="1813278315230285598">ການ​ບໍ​ລິ​ການ</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ລະວັງ:<ph name="END_BOLD" />  ໄຟລ໌ເຫຼົ່ານີ​ແມ່ນ​ໄຟລ໌ຊົ່ວຄາວ ແລະອາດຈະຖືກລຶບໄປໂດຍອັດຕະໂນມັດ ເພື່ອໃຫ້ມີບ່ອນ​ວ່າງດິສກ໌.  <ph name="BEGIN_LINK" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ນົກເພັນກວິນ</translation>
 <translation id="183183971458492120">ກຳລັງໂຫຼດຂໍ້ມູນ...</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">ຍ້າຍບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ພາສາແຟງລັງ</translation>
 <translation id="1942765061641586207">ຄວາມລະອຽດຂອງຮູບ</translation>
-<translation id="1943097386230153518">ຕິດຕັ້ງການບໍລິການໃໝ່</translation>
 <translation id="1972984168337863910">ຂະຫຍາຍແຜງຄຳຕິຊົມໄຟລ໌</translation>
+<translation id="1984456723671657197">ບໍ່ຮອງຮັບໄຟລ໌ປະເພດນີ້. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="1995337122023280937">ໄປຫາສະຖານທີ່ຂອງໄຟລ໌</translation>
 <translation id="2001796770603320721">ຈັດການໃນ Drive</translation>
 <translation id="2009067268969781306">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
@@ -651,7 +652,6 @@
 <translation id="7839804798877833423">ການໄປເອົາໄຟລ​໌​ເຫຼົ່າ​ນີ້​ຈະ​ໃຊ້​ຂໍ້ມູນມືຖືປະ​ມານ <ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">ຍົກ​ເລີກ​ການ​ເລືອກ</translation>
 <translation id="7853966320808728790">BÉPO ພາ​ສາ​ຝ​ຣັ່ງ</translation>
-<translation id="7864662577698025113">ເພີ່ມການບໍລິການໃໝ່</translation>
 <translation id="7868774406711971383">ພາສາໂພລິຊ</translation>
 <translation id="7873831373602885875">ບໍ່ສາມາດບັນທຶກໄວ້ໃນ <ph name="FOLDER_NAME" /> ໄດ້. ການແກ້ໄຂທັງໝົດຈະຖືກບັນທຶກໄວ້ໃນ <ph name="DOWNLOADS_FOLDER" /> ຢູ່ໃນໂຟນເດີການດາວໂຫຼດ.</translation>
 <translation id="7874321682039004450">ພາສາຟິລິບປິໂນ</translation>
@@ -666,6 +666,7 @@
 <translation id="7972920761225148017">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
 <translation id="7980421588063892270">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Colemak</translation>
 <translation id="7982283708762922719">ລວງສູງ</translation>
+<translation id="79907182588096956">ໄຟລ໌ນີ້ຖືກອອກແບບມາສຳລັບຄອມພິວເຕີສ່ວນບຸກຄົນທີ່ໃຊ້ຊອບແວ Windows. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="8008366997883261463">ໝາ</translation>
 <translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
 <translation id="803771048473350947">ໄຟລ໌</translation>
@@ -745,6 +746,7 @@
 <translation id="8900820606136623064">ພາສາຮັງກາຣີ</translation>
 <translation id="8919081441417203123">ພາສາເດັນມາກ</translation>
 <translation id="8965697826696209160">ບໍ່ມີເນື້ອທີ່ພຽງພໍ.</translation>
+<translation id="8970501467542182729">ໄຟລ໌ນີ້ຖືກອອກແບບມາສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="8997962250644902079">ພາສາຈີນ (ຕົວຫຍໍ້) ພິນອິນ</translation>
 <translation id="9017798300203431059">ການ​ອອກສຽງພາ​ສາ​ລັດ​ເຊຍ</translation>
 <translation id="9034924485347205037">ໄຟລ໌ Linux</translation>

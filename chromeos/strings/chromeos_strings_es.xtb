@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3488065109653206955">Activación parcial</translation>
 <translation id="3527036260304016759">No se ha podido imprimir - Error desconocido</translation>
+<translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>
 <translation id="357889014807611375">Wi‑Fi de uso medido</translation>
 <translation id="3595596368722241419">Batería al máximo</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
@@ -116,6 +117,7 @@
 <translation id="3820172043799983114">PIN no válido.</translation>
 <translation id="3838338534323494292">Contraseña nueva</translation>
 <translation id="3865414814144988605">Resolución</translation>
+<translation id="387301095347517405">El número de veces que la batería ha tenido un ciclo de carga completo</translation>
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
@@ -128,9 +130,7 @@
 <translation id="4155551848414053977">Comprueba que el escáner esté activado y que esté disponible a través de tu red o de una conexión directa</translation>
 <translation id="4170700058716978431">ERROR</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
-<translation id="4222698289790462549">Velocidad actual</translation>
 <translation id="4227825898293920515">La contraseña caducará dentro de <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles.</translation>
 <translation id="4238516577297848345">No hay ningún trabajo de impresión en curso</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4378373042927530923">Sin ejecutar</translation>
@@ -206,7 +206,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento.}other{Quedan {0} intentos.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Ver informe</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -251,7 +250,6 @@
 <translation id="649050271426829538">Detenido: atasco de papel</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>
-<translation id="6532051501443766164">Ocultar informe</translation>
 <translation id="65587193855025101">Escáner de superficie plana</translation>
 <translation id="6564646048574748301">No se ha podido imprimir - Impresora inaccesible</translation>
 <translation id="6618744767048954150">En curso</translation>
@@ -331,6 +329,7 @@
 <translation id="8477551185774834963">La latencia DNS supera ligeramente el umbral permitido</translation>
 <translation id="8483248364096924578">Dirección IP</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
+<translation id="8503836310948963452">Solo unos minutos más...</translation>
 <translation id="8576249514688522074">No inicializado</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
 <translation id="8675354002693747642">Clave precompartida</translation>
@@ -342,7 +341,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8798441408945964110">Nombre del proveedor</translation>
-<translation id="880791622116642296">Este es el número de veces que se ha cargado totalmente tu batería</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8881098542468797602">Prueba completada correctamente</translation>
@@ -362,6 +360,7 @@
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9149391708638971077">Realizar prueba de memoria</translation>
+<translation id="9173638680043580060">Queda menos de 1 minuto</translation>
 <translation id="9190063653747922532">L2TP/IPsec + Clave precompartida</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Sin activar</translation>

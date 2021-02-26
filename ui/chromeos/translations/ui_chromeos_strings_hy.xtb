@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Բոլոր ֆայլերը</translation>
 <translation id="1810764548349082891">Նախադիտումը հասանելի չէ</translation>
 <translation id="1812302367230252929">ամհարերեն (տառադարձություն)</translation>
+<translation id="1813278315230285598">Services</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Ուշադրություն.<ph name="END_BOLD" /> Այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել սկավառակի վրա տարածք ազատելու համար: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Պինգվին</translation>
 <translation id="183183971458492120">Տեղեկությունները բեռնվում են...</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">Չհաջողվեց տեղափոխել։ Անսպասելի սխալ առաջացավ՝ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Ֆիննական</translation>
 <translation id="1942765061641586207">Պատկերի լուծաչափը</translation>
-<translation id="1943097386230153518">Տեղադրել նոր ծառայություն</translation>
 <translation id="1972984168337863910">Ծավալել ֆայլերի մասին կարծիք հայտնելու վահանակները</translation>
+<translation id="1984456723671657197">Ֆայլի այս տեսակը չի աջակցվում: <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել Chrome OS-ում։</translation>
 <translation id="1995337122023280937">Անցնել ֆայլի տեղադրություն</translation>
 <translation id="2001796770603320721">Կառավարել Drive-ում</translation>
 <translation id="2009067268969781306">Ֆորմատավորման արդյունքում կրիչի վրա պահված բոլոր տվյալները կջնջվեն: Այս գործողությունը հնարավոր չէ հետարկել:</translation>
@@ -651,7 +652,6 @@
 <translation id="7839804798877833423">Այս ֆայլերը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>
 <translation id="7846076177841592234">Չեղարկել ընտրվածքը</translation>
 <translation id="7853966320808728790">Ֆրանսիական BÉPO</translation>
-<translation id="7864662577698025113">Ավելացնել նոր ծառայություն</translation>
 <translation id="7868774406711971383">լեհերեն</translation>
 <translation id="7873831373602885875">Չհաջողվեց պահել «<ph name="FOLDER_NAME" />» պանակում։ Բոլոր փոփոխությունները կպահվեն «<ph name="DOWNLOADS_FOLDER" />» պանակում:</translation>
 <translation id="7874321682039004450">տագալերեն</translation>
@@ -666,6 +666,7 @@
 <translation id="7972920761225148017">ֆրանսերեն (Շվեյցարիա)</translation>
 <translation id="7980421588063892270">անգլերեն (ԱՄՆ)՝ Colemak ստեղնաշարով</translation>
 <translation id="7982283708762922719">Բարձրություն</translation>
+<translation id="79907182588096956">Այս ֆայլը նախատեսված է Windows ծրագրակազմով համակարգչի համար։ Այն համատեղելի չէ Chrome OS-ով աշխատող ձեր սարքի հետ: <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել Chrome OS-ում։</translation>
 <translation id="8008366997883261463">Շուն</translation>
 <translation id="8028993641010258682">Չափ</translation>
 <translation id="803771048473350947">Ֆայլ</translation>
@@ -745,6 +746,7 @@
 <translation id="8900820606136623064">Հունգարական</translation>
 <translation id="8919081441417203123">Դանիական</translation>
 <translation id="8965697826696209160">Բավարար տարածք չկա:</translation>
+<translation id="8970501467542182729">Այս ֆայլը նախատեսված է Macintosh ծրագրակազմով համակարգչի համար։ Այն համատեղելի չէ Chrome OS-ով աշխատող ձեր սարքի հետ: <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել Chrome OS-ում։</translation>
 <translation id="8997962250644902079">չինարեն փինյին (ավանդական)</translation>
 <translation id="9017798300203431059">Ռուսական հնչյունային</translation>
 <translation id="9034924485347205037">Լինուքսի ֆայլեր</translation>

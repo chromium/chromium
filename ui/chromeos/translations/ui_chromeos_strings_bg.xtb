@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Всички файлове</translation>
 <translation id="1810764548349082891">Няма налична визуализация</translation>
 <translation id="1812302367230252929">Амхарски (транслитерация)</translation>
+<translation id="1813278315230285598">Услуги</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание:<ph name="END_BOLD" /> Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Информацията се зарежда...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Преместването не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">финландски</translation>
 <translation id="1942765061641586207">Разделителна способност на изображението</translation>
-<translation id="1943097386230153518">Инсталиране на нова услуга</translation>
 <translation id="1972984168337863910">Разгъване на панелите с информация за файловете</translation>
 <translation id="1984456723671657197">Този файлов тип не се поддържа. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>
 <translation id="1995337122023280937">Към местоположението на файла</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">При извличането на тези файлове ще се използват приблизително <ph name="FILE_SIZE" /> мобилни данни.</translation>
 <translation id="7846076177841592234">Анулиране на избора</translation>
 <translation id="7853966320808728790">френски (BÉPO)</translation>
-<translation id="7864662577698025113">Добавяне на нова услуга</translation>
 <translation id="7868774406711971383">Полски</translation>
 <translation id="7873831373602885875">Запазването в(ъв) „<ph name="FOLDER_NAME" />“ не е възможно. Всички редакции ще се съхранят в(ъв) „<ph name="DOWNLOADS_FOLDER" />“ в папката „Изтегляния“.</translation>
 <translation id="7874321682039004450">Филипински</translation>

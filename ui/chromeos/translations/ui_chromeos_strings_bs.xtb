@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Svi fajlovi</translation>
 <translation id="1810764548349082891">Nema dostupnog pregleda</translation>
 <translation id="1812302367230252929">amharski (transliteracija)</translation>
+<translation id="1813278315230285598">Usluge</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Oprez:<ph name="END_BOLD" />  Ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Učitavanje informacija…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Premještanje nije uspjelo, došlo je do neočekivane greške: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finska</translation>
 <translation id="1942765061641586207">Rezolucija slike</translation>
-<translation id="1943097386230153518">Instaliraj novu uslugu</translation>
 <translation id="1972984168337863910">Proširivanje ploča za povratne informacije o fajlovima</translation>
 <translation id="1984456723671657197">Ova vrsta fajla nije podržana. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova na Chrome OS-u.</translation>
 <translation id="1995337122023280937">Posjeti lokaciju fajla</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Preuzimanje ovih fajlova potrošit će otprilike <ph name="FILE_SIZE" /> podataka na mobilnoj mreži.</translation>
 <translation id="7846076177841592234">Otkazivanje odabira</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
-<translation id="7864662577698025113">Dodajte novu uslugu</translation>
 <translation id="7868774406711971383">poljski</translation>
 <translation id="7873831373602885875">Nije moguće sačuvati folder <ph name="FOLDER_NAME" />. Sve izmjene će se sačuvati u folderu <ph name="DOWNLOADS_FOLDER" /> u folderu Preuzimanja.</translation>
 <translation id="7874321682039004450">filipino</translation>

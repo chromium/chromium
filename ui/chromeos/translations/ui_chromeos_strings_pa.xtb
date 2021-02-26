@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">ਸਾਰੀਆਂ ਫਾਈਲਾਂ</translation>
 <translation id="1810764548349082891">ਕੋਈ ਪੂਰਵ-ਝਲਕ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="1812302367230252929">ਅਮਹਾਰੀ ਲਿਪੀਅੰਤਰਨ</translation>
+<translation id="1813278315230285598">ਸੇਵਾਵਾਂ</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ਸਾਵਧਾਨੀ:<ph name="END_BOLD" />  ਇਹ ਫਾਈਲਾਂ ਅਸਥਾਈ ਹਨ ਅਤੇ ਡਿਸਕ ਸਪੇਸ ਨੂੰ ਖਾਲੀ ਕਰਨ ਲਈ ਆਟੋਮੈਟਿਕਲੀ ਮਿਟਾਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ਪੈਂਗਵਿਨ</translation>
 <translation id="183183971458492120">ਜਾਣਕਾਰੀ ਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">ਜਗ੍ਹਾ ਬਦਲਣਾ ਅਸਫਲ ਰਿਹਾ, ਅਣਕਿਆਸੀ ਗੜਬੜ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ਫਿਨਿਸ਼</translation>
 <translation id="1942765061641586207">ਚਿੱਤਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
-<translation id="1943097386230153518">ਨਵੀਂ ਸੇਵਾ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="1972984168337863910">ਫ਼ਾਈਲਾਂ ਦੇ ਪ੍ਰਤੀਕਰਮ ਪੈਨਲਾਂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="1995337122023280937">ਫ਼ਾਈਲ ਟਿਕਾਣੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="2001796770603320721">'ਡਰਾਈਵ' ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -651,7 +651,6 @@
 <translation id="7839804798877833423">ਇਹਨਾਂ ਫਾਈਲਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਨਾਲ ਇਹ ਲਗਭਗ <ph name="FILE_SIZE" /> ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਣਗੀਆਂ।</translation>
 <translation id="7846076177841592234">ਚੋਣ ਰੱਦ ਕਰੋ</translation>
 <translation id="7853966320808728790">ਫਰਾਂਸੀਸੀ BÉPO</translation>
-<translation id="7864662577698025113">ਨਵੀਂ ਸੇਵਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7868774406711971383">ਪੋਲਿਸ਼</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਸਾਰੇ ਸੰਪਾਦਨ ਡਾਊਨਲੋਡ ਫੋਲਡਰ ਵਿੱਚ <ph name="DOWNLOADS_FOLDER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="7874321682039004450">ਫਿਲੀਪੀਨੋ</translation>

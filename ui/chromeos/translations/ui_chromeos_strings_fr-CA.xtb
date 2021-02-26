@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Tous les fichiers</translation>
 <translation id="1810764548349082891">Aucun aperçu disponible</translation>
 <translation id="1812302367230252929">Amharique (translittération)</translation>
+<translation id="1813278315230285598">Services</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Attention<ph name="END_BOLD" />. Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />.</translation>
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="183183971458492120">Chargement des informations en cours…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Échec du transfert en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finnois</translation>
 <translation id="1942765061641586207">Résolution de l'image</translation>
-<translation id="1943097386230153518">Installer un nouveau service</translation>
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
 <translation id="1984456723671657197">Ce type de fichier n'est pas pris en charge. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
 <translation id="1995337122023280937">Accéder au dossier du fichier</translation>
@@ -654,7 +654,6 @@
 <translation id="7839804798877833423">L'obtention de ces fichiers utilisera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7853966320808728790">BÉPO français</translation>
-<translation id="7864662577698025113">Ajouter un nouveau service</translation>
 <translation id="7868774406711971383">Polonais</translation>
 <translation id="7873831373602885875">Impossible d'enregistrer les fichiers dans le dossier <ph name="FOLDER_NAME" />. Toutes les modifications seront enregistrées dans le dossier <ph name="DOWNLOADS_FOLDER" /> du dossier Téléchargements.</translation>
 <translation id="7874321682039004450">Tagalog</translation>

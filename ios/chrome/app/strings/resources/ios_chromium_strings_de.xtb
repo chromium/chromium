@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chromium an Google senden.</translation>
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1257458525759135959">Um Bilder zu speichern, geben Sie Chromium unter "Einstellungen" die Berechtigung zum Hinzufügen von Fotos</translation>
+<translation id="1289216811211435351">Zu Chromium wechseln</translation>
 <translation id="1361748954329991663">Chromium ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt Ihr Gerät neuere Versionen von Chromium möglicherweise nicht mehr.</translation>
 <translation id="1431818719585918472">Erlauben Sie Chromium, Ihre Inkognitotabs zu sperren.</translation>
 <translation id="1472013873724362412">Dieses Konto funktioniert in Chromium nicht. Wenden Sie sich an Ihren Domainadministrator oder melden Sie sich mit einem Google-Standardkonto an.</translation>
@@ -33,6 +34,7 @@
 <translation id="4099085513035183040">Wird von Chromium Beta nicht unterstützt</translation>
 <translation id="4166206055865952171">Chromium als Standardbrowser festlegen</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, haben Sie in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Sie können jetzt Chromium jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
 <translation id="4787850887676698916">Hier werden Tabs angezeigt, die Sie auf Ihren anderen Geräten in Chromium geöffnet haben.</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
@@ -43,6 +45,7 @@
 <translation id="5521125884468363740">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
 <translation id="5573014823074921752">Chromium-Tipp: Wenn Sie weitere Tab-Optionen sehen möchten, berühren und halten Sie die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Diese befindet sich unten oder oben auf dem Bildschirm.</translation>
 <translation id="5700709190537129682">Chromium kann Ihre Passwörter nicht prüfen</translation>
+<translation id="5742135483959137648">Chromium zum Öffnen von Links verwenden</translation>
 <translation id="5777187867430702742">Chromium-Seite</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
 <translation id="5945387852661427312">Sie melden sich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und geben dem Administrator der Domain Kontrolle über Ihre Chromium-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn Sie sich von Chromium abmelden, werden Ihre Daten auf dem Gerät gelöscht, bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
@@ -61,6 +64,7 @@
 <translation id="7208566199746267865">Mit Chromium sparen Sie Zeit, da Sie Ihre Konten im Web verwenden können. In den Einstellungen haben Sie die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="725427773388857052">Chromium kann helfen, Sie vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="7269362888766543920">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstallieren Sie diese Add-ons.</translation>
+<translation id="7313655110045230863">Wenn Sie Chromium als Ihren Standardbrowser festlegen möchten, öffnen Sie die Einstellungen. Tippen Sie dort auf „Standard-Browser-App“ und wählen Sie Chromium aus.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Die ausgewählten Daten wurden aus Chromium und von allen synchronisierten Geräten entfernt. Eventuell finden Sie unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für Ihr Google-Konto.</translation>
 <translation id="7400689562045506105">Chromium überall nutzen</translation>

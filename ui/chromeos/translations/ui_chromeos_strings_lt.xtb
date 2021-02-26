@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Visi failai</translation>
 <translation id="1810764548349082891">Peržiūra negalima</translation>
 <translation id="1812302367230252929">Amharų k. transliteracija</translation>
+<translation id="1813278315230285598">Paslaugos</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Perspėjimas:<ph name="END_BOLD" /> šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvinas</translation>
 <translation id="183183971458492120">Įkeliama informacija...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Nepavyko perkelti, netikėta klaida: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Suomių</translation>
 <translation id="1942765061641586207">Vaizdo skyra</translation>
-<translation id="1943097386230153518">Naujos paslaugos diegimas</translation>
 <translation id="1972984168337863910">Išskleisti failų atsiliepimų skydelius</translation>
 <translation id="1984456723671657197">Šio tipo failas nepalaikomas. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
 <translation id="1995337122023280937">Eiti į failo vietą</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Šiems failams gauti reikės apytiksliai <ph name="FILE_SIZE" /> duomenų mobiliesiems.</translation>
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
 <translation id="7853966320808728790">Prancūziška BÉPO</translation>
-<translation id="7864662577698025113">Pridėti naują paslaugą</translation>
 <translation id="7868774406711971383">Lenkų k.</translation>
 <translation id="7873831373602885875">Nepavyko išsaugoti aplanke „<ph name="FOLDER_NAME" />“. Visi pakeitimai bus išsaugoti „Atsisiuntimų“ aplanko aplanke „<ph name="DOWNLOADS_FOLDER" />“.</translation>
 <translation id="7874321682039004450">Filipiniečių k.</translation>

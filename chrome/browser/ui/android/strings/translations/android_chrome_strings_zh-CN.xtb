@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Chrome 无法更新。更多选项</translation>
 <translation id="1332501820983677155">Google Chrome 功能快捷键</translation>
 <translation id="133857033449832692">正在下载<ph name="LANG" />…</translation>
+<translation id="1344653310988386453">包含指向突出显示的内容的链接</translation>
 <translation id="1347468774581902829">管理我的活动记录</translation>
 <translation id="1360432990279830238">退出帐号并关闭同步功能？</translation>
 <translation id="1373696734384179344">内存不足，无法下载所选内容。</translation>
@@ -138,7 +139,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />按钮</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> 希望与以下所选设备配对：</translation>
 <translation id="2000419248597011803">将一些 Cookie 以及地址栏和搜索框中的搜索字词发送给您的默认搜索引擎</translation>
-<translation id="2001360696084428949">不妨尝试使用 USB 线连接手机</translation>
 <translation id="2002537628803770967">Google Pay 中存储的信用卡和地址信息</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 个文件}other{# 个文件}}</translation>
 <translation id="2017836877785168846">清除历史记录和地址栏中的自动补全项。</translation>
@@ -282,7 +282,6 @@
 <translation id="2923908459366352541">名称无效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 存储数据</translation>
 <translation id="2942036813789421260">预览标签页已关闭</translation>
-<translation id="2946377063371973287">这种连接方式似乎要花费很长时间…</translation>
 <translation id="2956410042958133412">该帐号由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
 <translation id="2962095958535813455">已切换到无痕模式标签页</translation>
@@ -660,6 +659,7 @@
 <translation id="5599941490345670218">Google 助理可帮您在各网站上完成所需操作</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
 <translation id="5620928963363755975">通过“更多选项”按钮在“下载内容”中查找您的文件和网页</translation>
+<translation id="562168087174703495">无法创建指向突出显示的内容的链接。请改为分享页面链接。</translation>
 <translation id="562289928968387744">管理回应</translation>
 <translation id="5626134646977739690">名字：</translation>
 <translation id="5628604359369369630">未读 - 可离线阅读</translation>
@@ -773,6 +773,7 @@
 <translation id="6312687380483398334">Web 应用（安静）</translation>
 <translation id="6316139424528454185">Android 版本不受支持</translation>
 <translation id="6324034347079777476">Android 系统同步功能已停用</translation>
+<translation id="6324977638108296054">无法创建指向突出显示的内容的链接</translation>
 <translation id="6333140779060797560">通过<ph name="APPLICATION" />分享</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="6341580099087024258">询问文件保存位置</translation>
@@ -804,6 +805,7 @@
 <translation id="6477928892249167417">这些网站似乎对您很重要：</translation>
 <translation id="6482749332252372425">未能成功下载 <ph name="FILE_NAME" />，因为存储空间不足。</translation>
 <translation id="6489610539826642779">阅读清单<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">创建指向突出显示的内容的链接</translation>
 <translation id="6496823230996795692">如果您是首次使用<ph name="APP_NAME" />，则需连接到互联网。</translation>
 <translation id="6508722015517270189">重新启动 Chrome</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -1024,6 +1026,7 @@
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">预加载网页，以便实现更快速的浏览和搜索</translation>
+<translation id="7986497153528221272">若要查看密码，请先在设备上设置屏幕锁定</translation>
 <translation id="7998918019931843664">重新打开关闭的标签页</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8013372441983637696">同时从此设备中清除您的 Chrome 数据</translation>

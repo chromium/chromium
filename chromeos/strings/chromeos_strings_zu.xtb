@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Iphinikhodi engavumelekile</translation>
 <translation id="3838338534323494292">Iphasiwedi entsha</translation>
 <translation id="3865414814144988605">Isixazululo</translation>
+<translation id="387301095347517405">Inani lezikhathi ibhethri yakho ebe nomjikelezo wokushaja ogcwele ngayo</translation>
 <translation id="3941014780699102620">Yehlulekile ukulungisa umsingathi</translation>
 <translation id="3942420633017001071">Ukuxilonga</translation>
 <translation id="3967822245660637423">Ukulanda kuqedile</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Qiniseka ukuthi iskena sivuliwe futhi siyatholakala ngenethiwekhi yakho noma nge-Direct connection</translation>
 <translation id="4170700058716978431">YEHLULEKILE</translation>
 <translation id="4176463684765177261">Kukhutshaziwe</translation>
-<translation id="4222698289790462549">Isivinini Samanje</translation>
 <translation id="4227825898293920515">Iphasiwedi iphelelwa isikhathi ngo-<ph name="TIME" /></translation>
-<translation id="4228041325992544252">Kuno-<ph name="AVAILABLE_MEMORY" /> GB kokungu-<ph name="TOTAL_MEMORY" /> GB otholakalayo.</translation>
 <translation id="4238516577297848345">Ayikho imisebenzi yokuphrinta eqhubekayo</translation>
 <translation id="4297501883039923494">Imile - Iphutha elingaziwa</translation>
 <translation id="4378373042927530923">Akuqaliswanga</translation>
@@ -208,7 +207,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{kusele umzamo ongu-{0}}one{kusele imizamo engu-{0}}other{kusele imizamo engu-{0}}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">I-GTC</translation>
-<translation id="5635169860413004179">Bona Umbiko</translation>
 <translation id="5669267381087807207">Yenza isebenze</translation>
 <translation id="5670702108860320605">I-BSSID</translation>
 <translation id="5691511426247308406">Umndeni</translation>
@@ -253,7 +251,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="649050271426829538">Imile - Ukujema kwephepha</translation>
 <translation id="6517239166834772319">Hlola</translation>
 <translation id="6527081081771465939">Iphrothokholi yokuvikeleka kwe-WiFi engaziwa</translation>
-<translation id="6532051501443766164">Fihla Umbiko</translation>
 <translation id="65587193855025101">I-Flatbed</translation>
 <translation id="6564646048574748301">Yehlulekile - Iphrinta ayifinyeleleki</translation>
 <translation id="6618744767048954150">Uyagijima</translation>
@@ -345,7 +342,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Okuzenzakalelayo</translation>
 <translation id="8798441408945964110">Igama lomhlinzeki</translation>
-<translation id="880791622116642296">Leli yinani lezikhathi ibhethri lako elibe ngazo emjikelezweni wokushajwa ngokugcwele</translation>
 <translation id="8814190375133053267">I-Wi-Fi</translation>
 <translation id="8845001906332463065">Thola usizo</translation>
 <translation id="8881098542468797602">Ukuhlola kuphumelele</translation>

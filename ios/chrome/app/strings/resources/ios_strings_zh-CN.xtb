@@ -174,6 +174,7 @@
 <translation id="2780046210906776326">没有电子邮件帐号</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">无法创建链接</translation>
 <translation id="2800683595868705743">离开标签页切换器</translation>
 <translation id="2815198996063984598">2. 点按“默认浏览器应用”</translation>
 <translation id="2830972654601096923">管理地址…</translation>
@@ -467,6 +468,7 @@
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
 <translation id="5955891643922670672">正在查看离线版本</translation>
 <translation id="5957613098218939406">更多选项</translation>
+<translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
 <translation id="5964480694698977962">创建新的无痕式标签页。</translation>
 <translation id="5965679971710331625">您已登录</translation>
 <translation id="5979837087407522202">搜索密码</translation>
@@ -615,6 +617,7 @@
 <translation id="734758817008927353">卡片信息保存选项</translation>
 <translation id="7348502496356775519">添加书签</translation>
 <translation id="7383797227493018512">阅读清单</translation>
+<translation id="7398893703713203428">创建链接</translation>
 <translation id="739941347996872055">上一个标签页</translation>
 <translation id="7400418766976504921">网址</translation>
 <translation id="7409985198648820906">有 <ph name="UNREAD_COUNT" /> 篇未读文章。</translation>

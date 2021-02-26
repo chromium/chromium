@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Lahat ng file</translation>
 <translation id="1810764548349082891">Walang available na preview</translation>
 <translation id="1812302367230252929">Amharic Transliteration</translation>
+<translation id="1813278315230285598">Services</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Mag-ingat:<ph name="END_BOLD" /> Ang mga file na ito ay pansamantala at maaaring awtomatikong tanggalin upang magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Nilo-load ang impormasyon...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Hindi nailipat, nagkaroon ng hindi inaasahang error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finnish</translation>
 <translation id="1942765061641586207">Resolution ng larawan</translation>
-<translation id="1943097386230153518">Mag-install ng bagong serbisyo</translation>
 <translation id="1972984168337863910">I-expand ang mga panel ng feedback ng mga file</translation>
 <translation id="1984456723671657197">Hindi sinusuportahan ang ganitong uri ng file. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa Chrome OS.</translation>
 <translation id="1995337122023280937">Pumunta sa lokasyon ng file</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Ang pagkuha sa mga file na ito ay gagamit ng humigit-kumulang <ph name="FILE_SIZE" /> (na) mobile data.</translation>
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
 <translation id="7853966320808728790">French na BÉPO</translation>
-<translation id="7864662577698025113">Magdagdag ng bagong serbisyo</translation>
 <translation id="7868774406711971383">Polish</translation>
 <translation id="7873831373602885875">Hindi maaaring mag-save sa <ph name="FOLDER_NAME" />. Mase-save ang lahat ng pag-edit sa <ph name="DOWNLOADS_FOLDER" /> sa folder na Mga Download.</translation>
 <translation id="7874321682039004450">Filipino</translation>

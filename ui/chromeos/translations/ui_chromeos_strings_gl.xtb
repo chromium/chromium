@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Todos os ficheiros</translation>
 <translation id="1810764548349082891">Non hai vistas previas dispoñibles</translation>
 <translation id="1812302367230252929">Amhárico (transliteración)</translation>
+<translation id="1813278315230285598">Servizos</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Precaución:<ph name="END_BOLD" />  Estes ficheiros son temporais e é posible que se eliminen automaticamente para liberar espazo no disco.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingüín</translation>
 <translation id="183183971458492120">Cargando información…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Non se puido realizar o movemento debido a un erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finés</translation>
 <translation id="1942765061641586207">Resolución da imaxe</translation>
-<translation id="1943097386230153518">Instalar servizo novo</translation>
 <translation id="1972984168337863910">Despregar paneis de comentarios de ficheiros</translation>
 <translation id="1984456723671657197">Este tipo de ficheiro non é compatible. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
 <translation id="1995337122023280937">Ir á localización do ficheiro</translation>
@@ -652,7 +652,6 @@
 <translation id="7839804798877833423">A recuperación destes ficheiros ocupará aproximadamente <ph name="FILE_SIZE" /> de datos móbiles.</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
 <translation id="7853966320808728790">BÉPO francés</translation>
-<translation id="7864662577698025113">Engadir servizo novo</translation>
 <translation id="7868774406711971383">Polaco</translation>
 <translation id="7873831373602885875">Non se pode gardar en <ph name="FOLDER_NAME" />. Todas as edicións gardaranse en <ph name="DOWNLOADS_FOLDER" /> no cartafol Descargas.</translation>
 <translation id="7874321682039004450">Filipino</translation>

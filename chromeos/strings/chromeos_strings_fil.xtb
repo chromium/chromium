@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Di-wasto ang PIN.</translation>
 <translation id="3838338534323494292">Bagong password</translation>
 <translation id="3865414814144988605">Resolution</translation>
+<translation id="387301095347517405">Ang dami ng beses na na-full charge ang iyong baterya</translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
 <translation id="4170700058716978431">NABIGO</translation>
 <translation id="4176463684765177261">Hindi pinapaganana</translation>
-<translation id="4222698289790462549">Kasalukuyang Bilis</translation>
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB sa <ph name="TOTAL_MEMORY" /> GB ang available.</translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
 <translation id="4378373042927530923">Hindi Tumakbo</translation>
@@ -208,7 +207,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} pagsubok na lang ang natitira}one{{0} pagsubok na lang ang natitira}other{{0} na pagsubok na lang ang natitira}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Tingnan ang Ulat</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Pamilya</translation>
@@ -253,7 +251,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="649050271426829538">Huminto - Nagka-paper jam</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Hindi alam na panseguridad na protocol ng WiFi</translation>
-<translation id="6532051501443766164">Itago ang Ulat</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Hindi na-print - Hindi makakonekta sa printer</translation>
 <translation id="6618744767048954150">Tumatakbo</translation>
@@ -345,7 +342,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Pangalan ng provider</translation>
-<translation id="880791622116642296">Ito ang bilang ng mga pagkakataong na-full charge ang iyong baterya</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>

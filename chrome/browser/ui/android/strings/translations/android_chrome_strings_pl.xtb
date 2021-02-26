@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">Za mało pamięci, by pobrać te treści.</translation>
 <translation id="1376578503827013741">Obliczam…</translation>
 <translation id="1383876407941801731">Szukaj</translation>
+<translation id="1384704387250346179">Przetłumacz obraz za pomocą Obiektywu Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktywność <ph name="LAST_UPDATED" /> dni temu</translation>
 <translation id="1397811292916898096">Szukaj w <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">„Bez śledzenia”</translation>
@@ -97,6 +98,7 @@
 <translation id="1692118695553449118">Synchronizacja jest włączona</translation>
 <translation id="1697284962337958118">Dodaj do</translation>
 <translation id="1718835860248848330">Ostatnia godzina</translation>
+<translation id="1724977129262658800">Odblokuj, aby edytować hasło</translation>
 <translation id="173522743738009831">Piaskownica prywatności – informacje</translation>
 <translation id="1736419249208073774">Odkrywaj</translation>
 <translation id="1749561566933687563">Synchronizuj swoje zakładki</translation>
@@ -139,7 +141,6 @@
 <translation id="1987739130650180037">Przycisk <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> chce się sparować</translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
-<translation id="2001360696084428949">Spróbuj podłączyć telefon, używając kabla USB</translation>
 <translation id="2002537628803770967">Karty kredytowe i adresy z Google Pay</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="2017836877785168846">Usuwa historię i wpisy autouzupełniania w pasku adresu.</translation>
@@ -283,7 +284,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2923908459366352541">Nazwa jest nieprawidłowa.</translation>
 <translation id="2932150158123903946">Dane aplikacji Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Karta podglądu jest zamknięta</translation>
-<translation id="2946377063371973287">Nawiązywanie połączenia trwa trochę za długo…</translation>
 <translation id="2956410042958133412">Tym kontem zarządzają <ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nieprzeczytana strona}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytane strony}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytanych stron}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytanej strony}}</translation>
 <translation id="2962095958535813455">Przełączono na karty incognito</translation>
@@ -358,13 +358,13 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3414952576877147120">Rozmiar:</translation>
 <translation id="3429160811076349561">Funkcje próbne są wyłączone</translation>
 <translation id="3443221991560634068">Ponownie załaduj bieżącą stronę</translation>
-<translation id="3451542610083122179">Piaskownica prywatności to trwająca inicjatywa, która pomaga chronić Cię przed mechanizmami śledzącymi.
+<translation id="3451542610083122179">Piaskownica prywatności to inicjatywa, która pomaga chronić Cię przed mechanizmami śledzącymi.
 
-W przypadku ważnych usług, takich jak wyświetlanie trafnych reklam czy pomiar wydajności strony, witryny polegają dziś na wielu technologiach, takich jak pliki cookie innych firm.
+W przypadku ważnych usług, na przykład wyświetlania trafnych reklam czy pomiaru wydajności strony, witryny polegają dziś na wielu technologiach, takich jak pliki cookie innych firm.
 
 Piaskownica prywatności zachowuje najważniejsze funkcje otwartej sieci, tworząc lepsze metody świadczenia tych usług – nie uszkadzając stron i jednocześnie chroniąc użytkownika przed ukradkowym śledzeniem w witrynach.
 
-Piaskownica prywatności jest ciągle opracowywana i jest dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+Prace nad rozwojem piaskownicy prywatności wciąż trwają. Jest ona dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Możesz wybrać wyszukiwarkę</translation>
 <translation id="3492207499832628349">Nowa karta incognito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o proponowanej treści</translation>
@@ -691,6 +691,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5765780083710877561">Opis:</translation>
 <translation id="5767013862801005129">Przywrócono kartę <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Nieistotne dane</translation>
+<translation id="5780792035410621042">Aby skopiować hasła, najpierw ustaw blokadę ekranu na urządzeniu</translation>
 <translation id="5793665092639000975">Zajmują <ph name="SPACE_USED" /> z <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Wyszukiwanie i przeglądanie</translation>
 <translation id="5797070761912323120">Google może korzystać z Twojej historii, by personalizować wyniki wyszukiwania, reklamy i działanie innych usług</translation>
@@ -1028,6 +1029,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7971136598759319605">Aktywność 1 dzień temu</translation>
 <translation id="7975379999046275268">Wyświetl podgląd strony <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Ładuj wstępnie strony, by przyspieszyć przeglądanie i wyszukiwanie</translation>
+<translation id="7986497153528221272">Aby wyświetlić hasła, najpierw ustaw blokadę ekranu na urządzeniu</translation>
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
 <translation id="8013372441983637696">Usuń też swoje dane Chrome z tego urządzenia</translation>

@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Все файлы</translation>
 <translation id="1810764548349082891">Предпросмотр недоступен</translation>
 <translation id="1812302367230252929">Амхарский, транслитерация</translation>
+<translation id="1813278315230285598">Службы</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание!<ph name="END_BOLD" /> Эти файлы являются временными и могут быть автоматически удалены, чтобы освободить место на диске. <ph name="BEGIN_LINK" />Подробнее...<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Загрузка данных…</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">Произошла непредвиденная ошибка. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Финский</translation>
 <translation id="1942765061641586207">Разрешение изображения</translation>
-<translation id="1943097386230153518">Установить новый сервис</translation>
 <translation id="1972984168337863910">Развернуть панель с информацией о файлах</translation>
+<translation id="1984456723671657197">Этот тип файла не поддерживается. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="1995337122023280937">Перейти к местоположению файла</translation>
 <translation id="2001796770603320721">Открыть на Google Диске</translation>
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
@@ -652,7 +653,6 @@
 <translation id="7839804798877833423">При загрузке этих файлов по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7853966320808728790">Французская (BÉPO)</translation>
-<translation id="7864662577698025113">Добавить новый сервис</translation>
 <translation id="7868774406711971383">Польский</translation>
 <translation id="7873831373602885875">Не удается сохранить файлы в папке "<ph name="FOLDER_NAME" />". Изменения будут сохранены здесь: "Загрузки" &gt; <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="7874321682039004450">Филиппинский</translation>
@@ -667,6 +667,7 @@
 <translation id="7972920761225148017">Французский (Швейцария)</translation>
 <translation id="7980421588063892270">Английский (США), раскладка Colemak</translation>
 <translation id="7982283708762922719">Высота</translation>
+<translation id="79907182588096956">Этот файл разработан для ПК под управлением Windows. Его нельзя открыть в системе Chrome OS, установленной на вашем устройстве. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="8008366997883261463">Собака</translation>
 <translation id="8028993641010258682">Размер</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -746,6 +747,7 @@
 <translation id="8900820606136623064">Венгерский</translation>
 <translation id="8919081441417203123">Датский</translation>
 <translation id="8965697826696209160">Недостаточно свободного места.</translation>
+<translation id="8970501467542182729">Этот файл разработан для ПК под управлением macOS. Его нельзя открыть в системе Chrome OS, установленной на вашем устройстве. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="8997962250644902079">Китайский (традиционный), пиньинь</translation>
 <translation id="9017798300203431059">Русская (фонетическая)</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>

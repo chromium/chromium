@@ -129,9 +129,7 @@
 <translation id="4155551848414053977">Optični bralnik mora biti vklopljen in na voljo prek omrežja ali neposredne povezave.</translation>
 <translation id="4170700058716978431">NI USPEL</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
-<translation id="4222698289790462549">Trenutna hitrost</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Na voljo je <ph name="AVAILABLE_MEMORY" /> GB od skupno <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4378373042927530923">Ni se izvedlo</translation>
@@ -208,7 +206,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Na voljo imate še {0} poskus}one{Na voljo imate še {0} poskus}two{Na voljo imate še {0} poskusa}few{Na voljo imate še {0} poskuse}other{Na voljo imate še {0} poskusov}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Ogled poročila</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Družina</translation>
@@ -253,7 +250,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>
 <translation id="6517239166834772319">Raziskovanje</translation>
 <translation id="6527081081771465939">Neznani varnostni protokol za Wi-Fi</translation>
-<translation id="6532051501443766164">Skrij poročilo</translation>
 <translation id="65587193855025101">Plosko</translation>
 <translation id="6564646048574748301">Napaka – tiskalnik je nedosegljiv</translation>
 <translation id="6618744767048954150">Preverjanje poteka</translation>
@@ -345,7 +341,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Privzeto</translation>
 <translation id="8798441408945964110">Ime ponudnika</translation>
-<translation id="880791622116642296">To je število ciklov popolnega polnjenja baterije.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>

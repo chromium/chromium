@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">كل الملفات</translation>
 <translation id="1810764548349082891">لا تتوفر معاينة</translation>
 <translation id="1812302367230252929">تحويل صوتي إلى اللغة الأمهرية</translation>
+<translation id="1813278315230285598">الخدمات</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />تنبيه:<ph name="END_BOLD" />  هذه الملفات مؤقتة وقد يتم حذفها تلقائيًا لتوفير مساحة على القرص.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">بطريق</translation>
 <translation id="183183971458492120">جارٍ تحميل المعلومات...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">تعذَّر النقل، خطأ غير متوقِّع: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">الفنلندية</translation>
 <translation id="1942765061641586207">دقة الصورة</translation>
-<translation id="1943097386230153518">تثبيت خدمة جديدة</translation>
 <translation id="1972984168337863910">توسيع لوحات تعليقات الملفات</translation>
 <translation id="1984456723671657197">‏نوع الملف هذا غير متوافق. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على "نظام التشغيل Chrome"</translation>
 <translation id="1995337122023280937">الانتقال إلى موقع الملف</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">سيؤدي جلب هذه الملفات إلى استخدام حوالي <ph name="FILE_SIZE" /> من بيانات الجوال.</translation>
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
 <translation id="7853966320808728790">‏BÉPO الفرنسية</translation>
-<translation id="7864662577698025113">إضافة خدمة جديدة</translation>
 <translation id="7868774406711971383">البولندية</translation>
 <translation id="7873831373602885875">يتعذَّر الحفظ في <ph name="FOLDER_NAME" />. وسيتم حفظ جميع التعديلات في <ph name="DOWNLOADS_FOLDER" /> في مجلَّد مجلد "المحتوى الذي تم تنزيله".</translation>
 <translation id="7874321682039004450">الفلبينية</translation>

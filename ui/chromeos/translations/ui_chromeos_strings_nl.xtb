@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Alle bestanden</translation>
 <translation id="1810764548349082891">Geen voorbeeld beschikbaar</translation>
 <translation id="1812302367230252929">Amhaars (transliteratie)</translation>
+<translation id="1813278315230285598">Services</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Let op:<ph name="END_BOLD" /> Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguïn</translation>
 <translation id="183183971458492120">Informatie laden…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Verplaatsen mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Afbeeldingsresolutie</translation>
-<translation id="1943097386230153518">Nieuwe service installeren</translation>
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
 <translation id="1984456723671657197">Dit bestandstype wordt niet ondersteund. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="1995337122023280937">Naar bestandslocatie</translation>
@@ -654,7 +654,6 @@
 <translation id="7839804798877833423">Voor het ophalen van deze bestanden wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
 <translation id="7846076177841592234">Selectie opheffen</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
-<translation id="7864662577698025113">Nieuwe service toevoegen</translation>
 <translation id="7868774406711971383">Pools</translation>
 <translation id="7873831373602885875">Kan niet opslaan in <ph name="FOLDER_NAME" />. Alle bewerkingen worden opgeslagen in <ph name="DOWNLOADS_FOLDER" /> in de map Downloads.</translation>
 <translation id="7874321682039004450">Filipijns</translation>

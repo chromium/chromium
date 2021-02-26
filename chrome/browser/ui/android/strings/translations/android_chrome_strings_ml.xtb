@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Chrome അപ്‌ഡേറ്റ് ചെയ്യാനാവില്ല. കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="1332501820983677155">Google Chrome ഫീച്ചർ കുറുക്കുവഴികൾ</translation>
 <translation id="133857033449832692"><ph name="LANG" /> ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
+<translation id="1344653310988386453">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് ഉൾപ്പെടുത്തുക</translation>
 <translation id="1347468774581902829">ആക്റ്റിവിറ്റി മാനേജ് ചെയ്യുക</translation>
 <translation id="1360432990279830238">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കണോ?</translation>
 <translation id="1373696734384179344">തിരഞ്ഞെടുത്ത ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിന് ആവശ്യമായ മെമ്മറിയില്ല.</translation>
@@ -138,7 +139,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> ബട്ടൺ</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> ജോടിയാക്കാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="2000419248597011803">നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിനിലേക്ക് വിലാസ ബാറിൽ നിന്നും തിരയൽ ബോക്‌സിൽ നിന്നുമുള്ള തിരയലുകളും കുറച്ച് കുക്കികളും അയയ്ക്കുന്നു</translation>
-<translation id="2001360696084428949">USB കേബിൾ ഉപയോഗിച്ച് നിങ്ങളുടെ ഫോൺ കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുക</translation>
 <translation id="2002537628803770967">Google Pay ഉപയോഗിക്കുന്ന ക്രെഡിറ്റ് കാർഡുകളും വിലാസങ്ങളും</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ഫയല്‍}other{# ഫയലുകൾ}}</translation>
 <translation id="2017836877785168846">വിലാസ ബാറിലെ ചരിത്രവും സ്വയം പൂർത്തീകരണങ്ങളും മായ്ക്കുന്നു.</translation>
@@ -282,7 +282,6 @@
 <translation id="2923908459366352541">പേര് അസാധുവാണ്</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> സ്‌റ്റോറേജ്</translation>
 <translation id="2942036813789421260">പ്രിവ്യു ടാബ് അടച്ചു</translation>
-<translation id="2946377063371973287">കണക്റ്റ് ചെയ്യാൻ ഒരുപാട് സമയമെടുക്കുന്നുവെന്ന് തോന്നുന്നു…</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" />, <ph name="PARENT_NAME_2" /> എന്നിവരാണ് ഈ അക്കൗണ്ട് നിയന്ത്രിക്കുന്നത്.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{വായിക്കാത്ത <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> പേജ്}other{വായിക്കാത്ത <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> പേജുകൾ}}</translation>
 <translation id="2962095958535813455">ആൾമാറാട്ട ടാബുകളിലേക്ക് മാറി</translation>
@@ -302,6 +301,7 @@
 <translation id="3058498974290601450">നിങ്ങൾക്ക് ഏത് സമയത്തും ക്രമീകരണത്തിൽ സമന്വയം ഓണാക്കാവുന്നതാണ്</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="3062802207422175757">Chrome-ൽ നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളിലെ ലേഖനങ്ങൾ കാണൂ</translation>
+<translation id="3070005020161560471">സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="3089395242580810162">അദൃശ്യ ടാബിൽ തുറക്കുക</translation>
 <translation id="3098745985164956033">മെച്ചപ്പെട്ട വിവരണങ്ങൾ നിങ്ങൾക്ക് നൽകുന്നതിന് ചില ചിത്രങ്ങൾ Google-ന് അയയ്ക്കുന്നു</translation>
 <translation id="3114507951000454849">ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ <ph name="NEWS_ICON" /></translation>
@@ -623,6 +623,7 @@
 <translation id="5355191726083956201">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നു</translation>
 <translation id="5357811892247919462">ടാബ് സ്വീകരിച്ചു</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ടാബ് തുറന്നിരിക്കുന്നു, ടാബുകൾ മാറാനായി ടാപ്പ് ചെയ്യുക}other{<ph name="OPEN_TABS_MANY" /> ടാബുകൾ തുറന്നിരിക്കുന്നു, മാറാനായി ടാപ്പ് ചെയ്യുക}}</translation>
+<translation id="5375577065097716013">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയവ<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">ചില സൈറ്റുകളെ മാത്രം അനുവദിക്കുക</translation>
 <translation id="5414836363063783498">പരിശോധിച്ചുറപ്പിക്കുന്നു...</translation>
 <translation id="5423934151118863508">നിങ്ങളുടെ ഏറ്റവുമധികം സന്ദർശിച്ച പേജുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
@@ -658,6 +659,7 @@
 <translation id="5599941490345670218">നിങ്ങൾക്കായി വെബ്‌സെെറ്റുകളിലുടനീളം പ്രവർത്തനങ്ങൾ പൂർത്തിയാക്കാൻ Google Assistant-ന് കഴിയും</translation>
 <translation id="5620163320393916465">സംരക്ഷിച്ച പാസ്‌വേഡുകളൊന്നുമില്ല</translation>
 <translation id="5620928963363755975">'കൂടുതൽ ഓപ്‌ഷനുകൾ' ബട്ടണിൽ നിന്നും, ഡൗൺലോഡുകളിൽ നിന്നും നിങ്ങളുടെ ഫയലുകളും ‌പേജുകളും കണ്ടെത്തുക</translation>
+<translation id="562168087174703495">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല. പേജിലേക്കുള്ള ലിങ്ക് പങ്കിടുക.</translation>
 <translation id="562289928968387744">പ്രതികരണങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5626134646977739690">നാമം:</translation>
 <translation id="5628604359369369630">വായിക്കാത്തവ - ഓഫ്‌ലൈനിൽ ലഭ്യമാണ്</translation>
@@ -771,6 +773,7 @@
 <translation id="6312687380483398334">വെബ്‌ ആപ്പുകൾ (നിശബ്‌ദം)</translation>
 <translation id="6316139424528454185">Android പതിപ്പ് പിന്തുണയ്‌ക്കുന്നതല്ല</translation>
 <translation id="6324034347079777476">Android സിസ്‌റ്റം സമന്വയിപ്പിക്കൽ പ്രവർത്തനരഹിതമാക്കി</translation>
+<translation id="6324977638108296054">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> വഴി പങ്കിടുക</translation>
 <translation id="6337234675334993532">എന്‍ക്രിപ്ഷന്‍</translation>
 <translation id="6341580099087024258">ഫയലുകൾ എവിടെയാണ് സംരക്ഷിക്കേണ്ടതെന്ന് ചോദിക്കുക</translation>
@@ -802,6 +805,7 @@
 <translation id="6477928892249167417">ഈ സൈറ്റുകൾ നിങ്ങൾക്ക് പ്രാധാന്യമുള്ളവയാകാം:</translation>
 <translation id="6482749332252372425">സ്‌റ്റോറേജ് ഇടമില്ലാത്തതിനാൽ <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="6489610539826642779">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക്</translation>
 <translation id="6496823230996795692"><ph name="APP_NAME" /> ആദ്യമായി ഉപയോഗിക്കാൻ, ഇന്‍റര്‍നെറ്റിലേക്ക് കണക്റ്റുചെയ്യുക.</translation>
 <translation id="6508722015517270189">Chrome റീസ്‌റ്റാർട്ടുചെയ്യുക</translation>
 <translation id="6527303717912515753">പങ്കിടുക</translation>
@@ -1000,6 +1004,7 @@
 <translation id="784934925303690534">സമയ ശ്രേണി</translation>
 <translation id="7851858861565204677">മറ്റ് ഉപകരണങ്ങൾ</translation>
 <translation id="7857691613771368249">ഫയലുകൾ എപ്പോൾ സംരക്ഷിക്കണമെന്ന് ചോദിക്കുക</translation>
+<translation id="7859988229622350291">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="7875915731392087153">ഇമെയിൽ സൃഷ്‌ടിക്കുക</translation>
 <translation id="7876243839304621966">എല്ലാം നീക്കംചെയ്യുക</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{നിങ്ങൾക്ക് വായിക്കാത്ത <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> പേജ് ഉണ്ട്}other{നിങ്ങൾക്ക് വായിക്കാത്ത <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> പേജുകൾ ഉണ്ട്}}</translation>
@@ -1021,6 +1026,7 @@
 <translation id="7971136598759319605">ഒരു ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> പേജ് പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="7981313251711023384">കൂടുതൽ വേഗത്തിൽ ബ്രൗസ് ചെയ്യാനും തിരയാനും പേജുകൾ റീലോഡ് ചെയ്യുക</translation>
+<translation id="7986497153528221272">പാസ്‌വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ സ്‌ക്രീൻ ലോക്ക് സജ്ജീകരിക്കുക</translation>
 <translation id="7998918019931843664">അടച്ച ടാബ് വീണ്ടും തുറക്കുക</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
 <translation id="8013372441983637696">കൂടാതെ ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ Chrome ഡാറ്റ മായ്ക്കുക</translation>
@@ -1076,6 +1082,7 @@
 <translation id="8310344678080805313">സ്റ്റാൻഡേർഡ് ടാബുകൾ</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ഡൊമെയ്‌നും കൂടുതൽ സൈറ്റുകളും</translation>
 <translation id="8327155640814342956">മികച്ച ബ്രൗസിംഗ് അനുഭവത്തിന് Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="834313815369870491">സൈറ്റുകൾ ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="8349013245300336738">ഉപയോഗിച്ച ഡാറ്റയുടെ അളവിനനുസരിച്ച് അടുക്കുക</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ഡൗൺലോഡുകൾ പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="8364299278605033898">ജനപ്രിയ വെബ്‌സൈറ്റുകൾ കാണുക</translation>

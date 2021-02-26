@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">כל הקבצים</translation>
 <translation id="1810764548349082891">אין תצוגה מקדימה זמינה</translation>
 <translation id="1812302367230252929">תעתיק אמהרית</translation>
+<translation id="1813278315230285598">שירותים</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />זהירות:<ph name="END_BOLD" /> קבצים אלה הם זמניים והם עלולים להימחק באופן אוטומטי כדי לפנות נפח דיסק. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">פינגווין</translation>
 <translation id="183183971458492120">טעינת מידע…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">ההעברה נכשלה, שגיאה לא צפויה: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">פינית</translation>
 <translation id="1942765061641586207">רזולוציית תמונה</translation>
-<translation id="1943097386230153518">התקנת שירות חדש</translation>
 <translation id="1972984168337863910">הרחבת חלוניות המשוב של קבצים</translation>
 <translation id="1984456723671657197">‏סוג הקובץ הזה אינו נתמך. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-Chrome OS.</translation>
 <translation id="1995337122023280937">מעבר אל מיקום הקובץ</translation>
@@ -654,7 +654,6 @@
 <translation id="7839804798877833423">הבאת קבצים אלה תצרוך בערך <ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
 <translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7853966320808728790">‏BÉPO - צרפתית</translation>
-<translation id="7864662577698025113">הוספת שירות חדש</translation>
 <translation id="7868774406711971383">פולנית</translation>
 <translation id="7873831373602885875">לא ניתן לשמור בתיקייה <ph name="FOLDER_NAME" />. כל העריכות יישמרו בתיקייה<ph name="DOWNLOADS_FOLDER" /> שנמצאת בתיקיית ההורדות.</translation>
 <translation id="7874321682039004450">פיליפינית</translation>

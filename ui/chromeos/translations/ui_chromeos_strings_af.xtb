@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Alle lêers</translation>
 <translation id="1810764548349082891">Geen voorskou beskikbaar nie</translation>
 <translation id="1812302367230252929">Amhaarse transliterasie</translation>
+<translation id="1813278315230285598">Dienste</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Wees versigtig:<ph name="END_BOLD" /> Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pikkewyn</translation>
 <translation id="183183971458492120">Laai tans inligting …</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Kon nie skuif nie; 'n onverwagse fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Prentresolusie</translation>
-<translation id="1943097386230153518">Installeer nuwe diens</translation>
 <translation id="1972984168337863910">Vou lêersterugvoerpanele uit</translation>
 <translation id="1984456723671657197">Hierdie lêertipe word nie gesteun nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="1995337122023280937">Gaan na lêerligging toe</translation>
@@ -652,7 +652,6 @@
 <translation id="7839804798877833423">Dit sal ongeveer <ph name="FILE_SIZE" /> mobiele data gebruik om hierdie lêers te gaan haal.</translation>
 <translation id="7846076177841592234">Kanselleer keuse</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
-<translation id="7864662577698025113">Voeg nuwe diens by</translation>
 <translation id="7868774406711971383">Pools</translation>
 <translation id="7873831373602885875">Kan nie in <ph name="FOLDER_NAME" /> stoor nie. Alle wysigings sal in <ph name="DOWNLOADS_FOLDER" /> in die Aflaaie-vouer gestoor word.</translation>
 <translation id="7874321682039004450">Filippyns</translation>

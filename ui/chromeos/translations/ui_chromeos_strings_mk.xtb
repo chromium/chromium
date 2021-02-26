@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Сите датотеки</translation>
 <translation id="1810764548349082891">Не е достапен преглед</translation>
 <translation id="1812302367230252929">транслитерација на амхарски</translation>
+<translation id="1813278315230285598">Услуги</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание:<ph name="END_BOLD" /> Овие датотеки се привремени и може да се бришат автоматски за да се ослободи простор на дискот. <ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Се вчитуваат информации…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Потегот не успеа, неочекувана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">фински</translation>
 <translation id="1942765061641586207">Резолуција на слика</translation>
-<translation id="1943097386230153518">Инсталирајте нова услуга</translation>
 <translation id="1972984168337863910">Проширете ги таблите со повратни информации за датотеките</translation>
 <translation id="1984456723671657197">Типов датотека не е поддржан. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
 <translation id="1995337122023280937">Оди на локацијата на датотеката</translation>
@@ -652,7 +652,6 @@
 <translation id="7839804798877833423">Земањето на овие датотеки ќе користи приближно <ph name="FILE_SIZE" /> од мобилните податоци.</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7853966320808728790">Француска BÉPO</translation>
-<translation id="7864662577698025113">Додај нова услуга</translation>
 <translation id="7868774406711971383">полски</translation>
 <translation id="7873831373602885875">Не може да се зачува во „<ph name="FOLDER_NAME" />“. Сите измени ќе се зачуваат во „<ph name="DOWNLOADS_FOLDER" />“ во папката „Преземања“.</translation>
 <translation id="7874321682039004450">филипински</translation>

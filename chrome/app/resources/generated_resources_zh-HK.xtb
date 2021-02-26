@@ -327,7 +327,6 @@
 <translation id="1361872463926621533">啟動時播放音效</translation>
 <translation id="1362865166188278099">發生機件故障。請檢查打印機</translation>
 <translation id="1363585519747660921">USB 列印機需要設定</translation>
-<translation id="1364664799726141130">您已驗證的帳戶無權存取此裝置。請確保您驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1369149969991017342">按鈕控制 (使用一或兩個按鈕就能操控電腦)</translation>
 <translation id="1372841398847029212">同步至您的帳戶</translation>
@@ -842,6 +841,7 @@
 <translation id="1909880997794698664">您確定要讓這部裝置永久使用 Kiosk 模式嗎？</translation>
 <translation id="1910721550319506122">歡迎！</translation>
 <translation id="1915073950770830761">Canary</translation>
+<translation id="1916260783734263714">目前的分頁</translation>
 <translation id="1916502483199172559">預設紅色圖示</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1919345977826869612">廣告</translation>
@@ -1053,6 +1053,7 @@
 <translation id="2157474325782140681">如要取得其他功能，請使用此 Chromebook 的專用插座。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
 <translation id="2157875535253991059">這個頁面已顯示為全螢幕。</translation>
+<translation id="2158475082070321257">複製突顯文字的連結</translation>
 <translation id="216169395504480358">新增 Wi-Fi…</translation>
 <translation id="2162155940152307086">當您離開同步處理設定頁面後，系統就會啟用同步處理功能</translation>
 <translation id="2162838847352058695">禁止網站自動下載多個檔案</translation>
@@ -2539,6 +2540,7 @@
 <translation id="383161972796689579">裝置擁有者已停用新增使用者功能</translation>
 <translation id="3834728400518755610">Linux 需要關閉，麥克風設定的變更才會生效。關閉 Linux 即可繼續。</translation>
 <translation id="3834775135533257713">「<ph name="TO_INSTALL_APP_NAME" />」應用程式和「<ph name="INSTALLED_APP_NAME" />」發生衝突，因此無法新增。</translation>
+<translation id="3835233591525155343">您的裝置使用狀態</translation>
 <translation id="3835522725882634757">糟糕！這個伺服器傳送了「<ph name="PRODUCT_NAME" />」無法判讀的數據。請<ph name="BEGIN_LINK" />報告錯誤<ph name="END_LINK" />，同時提供<ph name="BEGIN2_LINK" />原始清單<ph name="END2_LINK" />。</translation>
 <translation id="383669374481694771">這個選項會提供此裝置的一般資料和使用情况 (例如電量、系統及應用程式活動和錯誤)。這些資料將會用來改善 Android。部分彙整資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改良應用程式和產品。</translation>
 <translation id="3838085852053358637">無法載入擴充程式</translation>
@@ -2698,6 +2700,7 @@
 <translation id="3984135167056005094">請勿包括電郵地址</translation>
 <translation id="3984159763196946143">無法啟動示範模式</translation>
 <translation id="3984431586879874039">要允許此網站查看您的安全密鑰嗎？</translation>
+<translation id="398477389655464998">複製突顯文字的連結</translation>
 <translation id="3986705137476756801">暫時關閉即時字幕</translation>
 <translation id="3987544746655539083">繼續禁止此網站存取您的位置</translation>
 <translation id="3987938432087324095">很抱歉，無法辨識您的語音指令。</translation>
@@ -3009,6 +3012,7 @@
 <translation id="4400367121200150367">永不儲存密碼的網站會在這裡顯示</translation>
 <translation id="4400632832271803360">按住啟動器鍵，即可切換最上排按鍵的執行動作</translation>
 <translation id="4400963414856942668">按一下「星號」即可將分頁加入書籤</translation>
+<translation id="4402755511846832236">禁止網站取得此裝置的使用狀態</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
 <translation id="4404136731284211429">重新掃瞄</translation>
 <translation id="4404843640767531781">您的家長已封鎖「<ph name="APP_NAME" />」。請要求家長授權使用此應用程式。</translation>
@@ -3325,6 +3329,7 @@
 <translation id="4756378406049221019">停止/重新載入</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4759238208242260848">下載</translation>
+<translation id="4759387251871503426">您可透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。您向網站和應用程式授予的權限，可能會套用到所有帳戶。如果不要讓網站和應用程式存取您的帳戶資料，請以訪客身分登入 <ph name="DEVICE_TYPE" />，或透過<ph name="LINK_2_BEGIN" />無痕式視窗<ph name="LINK_2_END" />瀏覽網頁。</translation>
 <translation id="4761104368405085019">使用您的麥克風</translation>
 <translation id="4762718786438001384">裝置磁碟的儲存空間嚴重不足</translation>
 <translation id="4763408175235639573">系統在您瀏覽此網頁時已設定下列 Cookie</translation>
@@ -3381,6 +3386,7 @@
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> 無法透過 <ph name="NETWORK_NAME" /> 連線至互聯網，請選擇其他網絡。<ph name="LEARN_MORE_LINK_START" />瞭解詳情<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">在列印伺服器中找到 1 部打印機</translation>
+<translation id="4836046166855586901">在網站要求知道您是否正在使用此裝置時詢問您</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回使用「Google 搜尋」嗎？</translation>
 <translation id="4837926214103741331">您無權使用這部裝置。如需登入權限，請與裝置擁有者聯絡。</translation>
@@ -4563,7 +4569,6 @@
 <translation id="6226777517901268232">私密金鑰檔案 (選用)</translation>
 <translation id="6227280783235722609">擴充程式</translation>
 <translation id="6229849828796482487">解除連接 Wi-Fi 網絡</translation>
-<translation id="6229890768313448549">無法載入 Google Play《服務條款》，請重試。</translation>
 <translation id="6231782223312638214">建議</translation>
 <translation id="6231881193380278751">在網址中新增查詢參數以自動重新整理網頁：chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">電池</translation>
@@ -5277,6 +5282,7 @@
 <translation id="7036706669646341689">Linux 需要 <ph name="DISK_SIZE" /> 的空間。如要增加可用空間，請刪除裝置內的檔案。</translation>
 <translation id="7037509989619051237">要預覽的文字</translation>
 <translation id="7038632520572155338">按鈕控制</translation>
+<translation id="7038710352229712897">為<ph name="USER_NAME" />新增另一個 Google 帳戶</translation>
 <translation id="7039326228527141150">存取來自 <ph name="VENDOR_NAME" /> 的 USB 裝置</translation>
 <translation id="7039912931802252762">Microsoft 智能卡登入</translation>
 <translation id="7039951224110875196">為子女建立 Google 帳戶</translation>
@@ -5412,7 +5418,6 @@
 <translation id="7201118060536064622">已刪除「<ph name="DELETED_ITEM_NAME" />」</translation>
 <translation id="7201420661433230412">查看檔案</translation>
 <translation id="7203150201908454328">已展開</translation>
-<translation id="7203408606151127798">不同裝置互相配合得更出色、做事更有效率，還有更多優勢待您發掘</translation>
 <translation id="7206693748120342859">正在下載 <ph name="PLUGIN_NAME" />…</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="7207457272187520234">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>
@@ -6223,7 +6228,6 @@
 <translation id="810185532889603849">自訂顏色</translation>
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>
 <translation id="8102139037507939978">移除 system_logs.txt 中的個人識別資料。</translation>
-<translation id="8102159139658438129">前往「<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />」查看已連接手機的選項</translation>
 <translation id="8107015733319732394">正在為 <ph name="DEVICE_TYPE" /> 安裝「Google Play 商店」。這可能需時幾分鐘。</translation>
 <translation id="810728361871746125">螢幕解像度</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{沒有第三方 Cookie}=1{已封鎖 1 個第三方 Cookie}other{已封鎖 # 個第三方 Cookie}}</translation>
@@ -6470,6 +6474,7 @@
 <translation id="8400146488506985033">管理使用者</translation>
 <translation id="8401432541486058167">請輸入與智能資訊卡相關聯的 PIN。</translation>
 <translation id="8403562727702715619">最近使用過的 Google 雲端硬碟檔案</translation>
+<translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8407199357649073301">記錄等級：</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />網絡，正在連線</translation>
 <translation id="8409413588194360210">付款處理常式</translation>
@@ -6630,6 +6635,7 @@
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 太大，無法進行安全檢查。您可開啟的檔案大小上限為 50 MB。</translation>
 <translation id="8615618338313291042">無痕模式應用程式：<ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">將<ph name="CONTACT_NAME" />加入聯絡人</translation>
+<translation id="8617269623452051934">您的裝置使用狀態</translation>
 <translation id="8617748779076050570">安全連線 ID：<ph name="CONNECTION_ID" /></translation>
 <translation id="8619803522055190423">投射陰影</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />：<ph name="ERROR" /></translation>
@@ -6853,7 +6859,6 @@
 <translation id="883062543841130884">替代項目</translation>
 <translation id="8830779999439981481">正在重新啟動以套用更新</translation>
 <translation id="8830796635868321089">無法以目前的 Proxy 設定啟動更新檢查，請調整<ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
-<translation id="8831140208248705279">將 <ph name="DEVICE_TYPE" /> 與 Android 手機配合使用，享受更優質的體驗。連接這兩部裝置後，您便可從電腦發短訊、分享互聯網連線，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8832781841902333794">您的設定檔</translation>
 <translation id="8834039744648160717">網絡設定由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="8835786707922974220">請確保您可隨時存取已儲存的密碼</translation>
@@ -7219,7 +7224,6 @@
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共用 Chrome 分頁和音效。</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>
-<translation id="949052952791086881">管理員要求此使用者在裝置在線時登入</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="956500788634395331">保護您免受可能有害的擴充程式影響</translation>
 <translation id="957960681186851048">此網站曾嘗試自動下載多個檔案</translation>

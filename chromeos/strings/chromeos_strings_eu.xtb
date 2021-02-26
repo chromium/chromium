@@ -38,7 +38,7 @@
 <translation id="1662989795263954667">Geldituta: ez dago tintarik</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS bidezko ebazlea badago</translation>
-<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> eta <ph name="SECOND_MANAGER" /> domeinuek kudeatzen dute</translation>
+<translation id="1717874160321062422">Kudeatzaileak: <ph name="FIRST_MANAGER" /> eta <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Eskaneatzeko prozesua bertan behera uzten</translation>
 <translation id="1851218745569890714">Bideo-konferentziak</translation>
@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">Inprimaketa</translation>
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
+<translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
 <translation id="357889014807611375">wifi neurtua</translation>
 <translation id="3595596368722241419">Bateria beteta dago</translation>
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
@@ -116,6 +117,7 @@
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
 <translation id="3838338534323494292">Pasahitz berria</translation>
 <translation id="3865414814144988605">Bereizmena</translation>
+<translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
 <translation id="3942420633017001071">Diagnostikoak</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
@@ -128,9 +130,7 @@
 <translation id="4155551848414053977">Ziurtatu eskanerra piztuta dagoela eta sarearen edo konexio zuzenaren bidez erabilgarri dagoela</translation>
 <translation id="4170700058716978431">EZ DA GAINDITU</translation>
 <translation id="4176463684765177261">Desgaituta</translation>
-<translation id="4222698289790462549">Une honetako abiadura</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB daude erabilgarri.</translation>
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4378373042927530923">Ez da exekutatu</translation>
@@ -207,7 +207,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} saiaketa gelditzen da}other{{0} saiakera gelditzen dira}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Ikusi txostena</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -252,7 +251,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="649050271426829538">Geldituta: papera trabatuta dago</translation>
 <translation id="6517239166834772319">Arakatu</translation>
 <translation id="6527081081771465939">Wifiaren segurtasun-protokoloa ezezaguna da</translation>
-<translation id="6532051501443766164">Ezkutatu txostena</translation>
 <translation id="65587193855025101">Eskaner horizontala</translation>
 <translation id="6564646048574748301">Hutsegitea - Inprimagailua ez da aurkitu</translation>
 <translation id="6618744767048954150">Abian</translation>
@@ -332,6 +330,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8477551185774834963">DNSaren itxarote-denbora onartzen den atalasetik apur bat gorago dago</translation>
 <translation id="8483248364096924578">IP helbidea</translation>
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
+<translation id="8503836310948963452">Minutu gutxi batzuk baino ez…</translation>
 <translation id="8576249514688522074">Hasieratu gabe</translation>
 <translation id="8620617069779373398">Ibiltaritza-egoera</translation>
 <translation id="8675354002693747642">Aurrez partekatutako gakoa</translation>
@@ -343,7 +342,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
 <translation id="8798441408945964110">Hornitzailearen izena</translation>
-<translation id="880791622116642296">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen adierazten du zenbaki honek</translation>
 <translation id="8814190375133053267">Wi-Fi konexioa</translation>
 <translation id="8845001906332463065">Lortu laguntza</translation>
 <translation id="8881098542468797602">Gainditu da proba</translation>
@@ -363,6 +361,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. orria eskaneatzen</translation>
 <translation id="9111102763498581341">Desblokeatu</translation>
 <translation id="9149391708638971077">Egin memoriaren proba</translation>
+<translation id="9173638680043580060">Minutu bat baino gutxiago geratzen da</translation>
 <translation id="9190063653747922532">L2TP/IPsec + aurrez partekatutako gakoa</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ez da aktibatu</translation>

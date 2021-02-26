@@ -174,6 +174,7 @@
 <translation id="2780046210906776326">மின்னஞ்சல் கணக்குகள் எதுவுமில்லை</translation>
 <translation id="2781331604911854368">ஆன் செய்யப்பட்டுள்ளது</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">இணைப்பை உருவாக்க முடியவில்லை</translation>
 <translation id="2800683595868705743">தாவல் மாற்றியிலிருந்து வெளியேறு</translation>
 <translation id="2815198996063984598">2. இயல்பு உலாவி ஆப்ஸ் என்பதைத் தட்டவும்</translation>
 <translation id="2830972654601096923">முகவரிகளை நிர்வகி...</translation>
@@ -188,7 +189,7 @@
 <translation id="288655811176831528">தாவலை மூடு</translation>
 <translation id="2898963176829412617">புதிய கோப்புறை…</translation>
 <translation id="2916171785467530738">தேடல்கள் மற்றும் URLகளைத் தன்னிரப்புதல்</translation>
-<translation id="291754862089661335">இந்த ஃப்ரேமில் QR அல்லது பார் குறியீடு தெரியும்படி வைக்கவும்</translation>
+<translation id="291754862089661335">இந்த ஃபிரேமில் QR அல்லது பார் குறியீடு தெரியும்படி வைக்கவும்</translation>
 <translation id="2921219216347069551">பக்கத்தைப் பகிர முடியவில்லை</translation>
 <translation id="2923448633003185837">ஒட்டிவிட்டுச் செல்</translation>
 <translation id="292639812446257861">படிக்காததாகக் குறி</translation>
@@ -467,6 +468,7 @@
 <translation id="5948291296578561264">உங்கள் பட நூலகத்தில் படங்களைச் சேமிக்க இது அனுமதிக்கும்.</translation>
 <translation id="5955891643922670672">ஆஃப்லைன் பதிப்பைப் பார்க்கிறீர்கள்</translation>
 <translation id="5957613098218939406">கூடுதல் விருப்பங்கள்</translation>
+<translation id="5963939892571022323">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை உருவாக்க முடியவில்லை.</translation>
 <translation id="5964480694698977962">புதிய மறைநிலைத் தாவலை உருவாக்கு</translation>
 <translation id="5965679971710331625">உள்நுழைந்துள்ளீர்கள்</translation>
 <translation id="5979837087407522202">கடவுச்சொற்களைத் தேடு</translation>
@@ -615,6 +617,7 @@
 <translation id="734758817008927353">கார்டை சேமிப்பதற்கான விருப்பத்தேர்வுகள்</translation>
 <translation id="7348502496356775519">புத்தகக்குறி</translation>
 <translation id="7383797227493018512">வாசிப்புப் பட்டியல்</translation>
+<translation id="7398893703713203428">இணைப்பை உருவாக்கு</translation>
 <translation id="739941347996872055">முந்தைய தாவல்</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906">படிக்காத கட்டுரைகள் <ph name="UNREAD_COUNT" /> உள்ளன.</translation>

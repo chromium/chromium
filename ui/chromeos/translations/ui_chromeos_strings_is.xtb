@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Allar skrár</translation>
 <translation id="1810764548349082891">Forskoðun ekki tiltæk</translation>
 <translation id="1812302367230252929">Amharíska umritun</translation>
+<translation id="1813278315230285598">Þjónusta</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Varúð:<ph name="END_BOLD" /> Þessar skrár eru til bráðabirgða og þeim kann að vera eytt sjálfkrafa til að losa um diskpláss. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Mörgæs</translation>
 <translation id="183183971458492120">Sækir upplýsingar...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Flutningur mistókst, óvænt villa: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finnskt</translation>
 <translation id="1942765061641586207">Upplausn myndar</translation>
-<translation id="1943097386230153518">Setja upp nýja þjónustu</translation>
 <translation id="1972984168337863910">Stækka svæði með ábendingum fyrir skrár</translation>
 <translation id="1984456723671657197">Þessi skráargerð er ekki studd. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í Chrome OS.</translation>
 <translation id="1995337122023280937">Fara í staðsetningu skráar</translation>
@@ -652,7 +652,6 @@
 <translation id="7839804798877833423">Um það bil <ph name="FILE_SIZE" /> af farsímagögnum verða notuð til að sækja þessar skrár.</translation>
 <translation id="7846076177841592234">Hætta við val</translation>
 <translation id="7853966320808728790">Franskt BÉPO</translation>
-<translation id="7864662577698025113">Bæta nýrri þjónustu við</translation>
 <translation id="7868774406711971383">Pólska</translation>
 <translation id="7873831373602885875">Ekki tókst að vista í <ph name="FOLDER_NAME" />. Allar breytingar verða vistaðar í <ph name="DOWNLOADS_FOLDER" /> í möppunni Niðurhal.</translation>
 <translation id="7874321682039004450">Filippseyska</translation>

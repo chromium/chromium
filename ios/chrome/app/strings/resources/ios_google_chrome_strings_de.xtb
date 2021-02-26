@@ -18,6 +18,7 @@
 <translation id="257708665678654955">Soll Google Chrome beim nächsten Mal eine Übersetzung von Seiten dieser Website anbieten, die auf <ph name="LANGUAGE_NAME" /> sind?</translation>
 <translation id="2695886661449553974">Chrome konnte nicht nach Updates suchen. Versuchen Sie es später noch einmal.</translation>
 <translation id="2732745070297234559">Chrome konnte nicht alle Passwörter prüfen. Versuchen Sie es morgen noch einmal.</translation>
+<translation id="2740105938841089077">Chrome zum Öffnen von Links verwenden</translation>
 <translation id="2919738076569633423">Wenn Sie Chrome nutzen, stimmen Sie damit den <ph name="BEGIN_LINK_TOS" />Nutzungsbedingungen<ph name="END_LINK_TOS" /> zu.</translation>
 <translation id="3030414234702425231">Sie melden sich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden Ihre Chrome-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
 <translation id="3148688391461398285">Profitieren Sie von einer besseren Nutzererfahrung in Chrome auf Grundlage Ihres Standorts.</translation>
@@ -52,6 +53,7 @@
 <translation id="5854621639439811139">Chrome-Tipp: Manche Schaltflächen wie "Zurück", "Weiter" und "Suche" befinden sich jetzt unten auf dem Bildschirm.</translation>
 <translation id="6036420186814142909">Google Chrome bietet Funktionen, mit denen Sie Ihre Internetdaten und die Ladezeit von Webseiten verwalten können.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">Zu Chrome wechseln</translation>
 <translation id="6238746320622508509">Erlauben Sie Chrome, Ihre Inkognitotabs zu sperren.</translation>
 <translation id="6573431926118603307">Hier werden Tabs angezeigt, die Sie auf Ihren anderen Geräten in Chrome geöffnet haben.</translation>
 <translation id="6600954340915313787">In Chrome kopiert</translation>
@@ -59,6 +61,7 @@
 <translation id="6648150602980899529">Sie melden sich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und geben dem Administrator der Domain Kontrolle über Ihre Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn Sie sich von Chrome abmelden, werden Ihre Daten auf dem Gerät gelöscht, bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
 <translation id="6676840375528380067">Ihre Chrome-Daten von diesem Gerät löschen?</translation>
 <translation id="6822673484890854830">Chrome konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
+<translation id="6964931465519938134">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
 <translation id="7161390184744336561">Google Chrome ist veraltet</translation>
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>
@@ -68,6 +71,7 @@
 <translation id="7265369419224458312">Greifen Sie hier auf die Tabs zu, die Sie auf Ihrem Computer geöffnet haben. Öffnen Sie dazu Chrome auf Ihrem Computer und wählen Sie im Menü "In Chrome anmelden…" aus.</translation>
 <translation id="7272930098487145294">Um Bilder zu speichern, geben Sie Chrome unter "Einstellungen" die Berechtigung zum Hinzufügen von Fotos</translation>
 <translation id="7400722733683201933">Über Google Chrome</translation>
+<translation id="7501046334262221972">Wenn Sie Chrome als Ihren Standardbrowser festlegen möchten, öffnen Sie die Einstellungen. Tippen Sie dort auf „Standard-Browser-App“ und wählen Sie Chrome aus.</translation>
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
 <translation id="7662994914830945754">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chrome verwenden</translation>

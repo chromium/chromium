@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Sve datoteke</translation>
 <translation id="1810764548349082891">Pregled nije dostupan</translation>
 <translation id="1812302367230252929">transliteracija amharskog</translation>
+<translation id="1813278315230285598">Usluge</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Oprez:<ph name="END_BOLD" /> Ove datoteke su privremene i mogu da se automatski izbrišu da bi se oslobodio prostor na disku. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Informacije se učitavaju...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Premeštanje nije uspelo, neočekivana greška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finski</translation>
 <translation id="1942765061641586207">Rezolucija slike</translation>
-<translation id="1943097386230153518">Instalirajte novu uslugu</translation>
 <translation id="1972984168337863910">Proširi okna za povratne informacije o datotekama</translation>
 <translation id="1984456723671657197">Ovaj tip fajla nije podržan. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u Chrome OS-u.</translation>
 <translation id="1995337122023280937">Idi na lokaciju datoteke</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Preuzimanje ovih datoteka će iskoristiti oko <ph name="FILE_SIZE" /> podataka za mobilne uređaje.</translation>
 <translation id="7846076177841592234">Otkaži izbor</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
-<translation id="7864662577698025113">Dodajte novu uslugu</translation>
 <translation id="7868774406711971383">poljski</translation>
 <translation id="7873831373602885875">Čuvanje u direktorijumu <ph name="FOLDER_NAME" /> nije uspelo. Sve izmene biće sačuvane u direktorijumu <ph name="DOWNLOADS_FOLDER" /> u direktorijumu Podešavanja.</translation>
 <translation id="7874321682039004450">filipinski</translation>

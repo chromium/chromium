@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Бардык файлдар</translation>
 <translation id="1810764548349082891">Алдын ала көрүү мүмкүнчүлүгү жок</translation>
 <translation id="1812302367230252929">Амхарча (транслитерация)</translation>
+<translation id="1813278315230285598">Кызматтар</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Эскертүү:<ph name="END_BOLD" /> Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн. <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Маалымат жүктөлүүдө...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Жылбай калды, күтүүсүз ката кетти: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Финче</translation>
 <translation id="1942765061641586207">Сүрөттүн чечилиши</translation>
-<translation id="1943097386230153518">Жаңы кызматты орнотуу</translation>
 <translation id="1972984168337863910">Файлдардын маалымат камтылган панелдерин жайып көрсөтүү</translation>
 <translation id="1984456723671657197">Бул файл түрү колдоого алынбайт. Файлдарды Chrome OS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="1995337122023280937">Файл жайгашкан папкага өтүү</translation>
@@ -652,7 +652,6 @@
 <translation id="7839804798877833423">Бул файлдар алынганда болжол менен мобилдик дайындардын <ph name="FILE_SIZE" /> колдонулат.</translation>
 <translation id="7846076177841592234">Тандоону жокко чыгаруу</translation>
 <translation id="7853966320808728790">Французча BÉPO</translation>
-<translation id="7864662577698025113">Жаңы кызматты кошуу</translation>
 <translation id="7868774406711971383">Полякча</translation>
 <translation id="7873831373602885875">Түзөтүүлөр <ph name="FOLDER_NAME" /> папкасында сакталбай койду. Алар <ph name="DOWNLOADS_FOLDER" /> папкасынын ичиндеги "Жүктөлүп алынгандар" папкасында сакталат.</translation>
 <translation id="7874321682039004450">Филиппинче</translation>

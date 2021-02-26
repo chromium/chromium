@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">ყველა ფაილი</translation>
 <translation id="1810764548349082891">გადახედვა მიუწვდომელია</translation>
 <translation id="1812302367230252929">ამჰარული ტრანსლიტერაცია</translation>
+<translation id="1813278315230285598">სერვისები</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />გაფრთხილება:<ph name="END_BOLD" /> ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასანთავისუფლებლად. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">პინგვინი</translation>
 <translation id="183183971458492120">მიმდინარეობს ინფორმაციის ჩატვირთვა…</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">გადაადგილება ვერ მოხერხდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ფინური</translation>
 <translation id="1942765061641586207">სურათის გარჩევადობა</translation>
-<translation id="1943097386230153518">ახალი სერვისის ინსტალაცია</translation>
 <translation id="1972984168337863910">ფაილების გამოხმაურების არეების გაფართოება</translation>
+<translation id="1984456723671657197">ამ ტიპის ფაილი მხარდაუჭერელია. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> Chrome OS-ზე ფაილების გახსნის შესახებ.</translation>
 <translation id="1995337122023280937">ფაილის მდებარეობაზე გადასვლა</translation>
 <translation id="2001796770603320721">Google Drive-ში მართვა</translation>
 <translation id="2009067268969781306">დისკის დაფორმატება წაშლის მასში შენახულ ყველა მონაცემს. ამ ქმედებას ვერ გააუქმებთ.</translation>
@@ -651,7 +652,6 @@
 <translation id="7839804798877833423">ამ ფაილების შერჩევას გამოყენებული იქნება დაახლოებით <ph name="FILE_SIZE" /> მობილური მონაცემებისა.</translation>
 <translation id="7846076177841592234">შერჩევის გაუქმება</translation>
 <translation id="7853966320808728790">ფრანგული BÉPO</translation>
-<translation id="7864662577698025113">ახალი სერვისის დამატება</translation>
 <translation id="7868774406711971383">პოლონური</translation>
 <translation id="7873831373602885875">„<ph name="FOLDER_NAME" />“-ში შენახვა ვერ ხერხდება. ყველა ცვლილება შეინახება ჩამოტვირთვების საქაღალდეში მდებარე „<ph name="DOWNLOADS_FOLDER" />“-ში.</translation>
 <translation id="7874321682039004450">ფილიპინური</translation>
@@ -666,6 +666,7 @@
 <translation id="7972920761225148017">ფრანგული (შვეიცარია)</translation>
 <translation id="7980421588063892270">ინგლისური (აშშ) Colemak კლავიატურით</translation>
 <translation id="7982283708762922719">სიმაღლე</translation>
+<translation id="79907182588096956">ეს ფაილი განკუთვნილია პერსონალური კომპიუტერისთვის, რომელიც იყენებს Windows-ის პროგრამულ უზრუნველყოფას. ის შეუთავსებელია თქვენს მოწყობილობასთან, რომელზეც გაშვებულია Chrome OS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> Chrome OS-ზე ფაილების გახსნის შესახებ.</translation>
 <translation id="8008366997883261463">ჯეკ რასელ ტერიერი</translation>
 <translation id="8028993641010258682">ზომა</translation>
 <translation id="803771048473350947">ფაილი</translation>
@@ -745,6 +746,7 @@
 <translation id="8900820606136623064">უნგრული</translation>
 <translation id="8919081441417203123">დანიური</translation>
 <translation id="8965697826696209160">საკმარისი ადგილი არ არის.</translation>
+<translation id="8970501467542182729">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. ის შეუთავსებელია თქვენს მოწყობილობასთან, რომელზეც გაშვებულია Chrome OS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> Chrome OS-ზე ფაილების გახსნის შესახებ.</translation>
 <translation id="8997962250644902079">ჩინური (ტრადიციული) პინ-ინი</translation>
 <translation id="9017798300203431059">რუსული ფონეტიკური</translation>
 <translation id="9034924485347205037">Linux ფაილები</translation>

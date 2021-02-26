@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Усе файлы</translation>
 <translation id="1810764548349082891">Перадпрагляд недаступны</translation>
 <translation id="1812302367230252929">Амхарская (транслітарацыя)</translation>
+<translation id="1813278315230285598">Сэрвісы</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Увага!<ph name="END_BOLD" />  Гэта часовыя файлы, яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Ідзе загрузка інфармацыі...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Перамяшчэнне не ўдалося, нечаканая памылка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Фінская</translation>
 <translation id="1942765061641586207">Раздзяляльнасць відарыса</translation>
-<translation id="1943097386230153518">Усталяваць новае пашырэнне</translation>
 <translation id="1972984168337863910">Разгарнуць панэлі водгукаў для файлаў</translation>
 <translation id="1984456723671657197">Гэты тып файла не падтрымліваецца. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="1995337122023280937">Адкрыць месцазнаходжанне файла</translation>
@@ -652,7 +652,6 @@
 <translation id="7839804798877833423">Каб атрымаць гэтыя файлы, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
 <translation id="7853966320808728790">Французская раскладка клавіятуры BÉPO</translation>
-<translation id="7864662577698025113">Дадаць новы сэрвіс</translation>
 <translation id="7868774406711971383">Польская</translation>
 <translation id="7873831373602885875">Не ўдалося захаваць змены ў папку "<ph name="FOLDER_NAME" />". Яны будуць захаваны ў папцы "<ph name="DOWNLOADS_FOLDER" />", якая знаходзіцца ў папцы "Спампоўкі".</translation>
 <translation id="7874321682039004450">Філіпіна</translation>

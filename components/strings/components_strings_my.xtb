@@ -254,6 +254,7 @@
 <translation id="1803264062614276815">ကဒ်ကိုင်ဆောင်သူ၏ အမည်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1807528111851433570">အစ စာမျက်နှာ</translation>
+<translation id="1812527064848182527">အလျားလိုက်</translation>
 <translation id="1821930232296380041">မမှန်ကန်သည့် တောင်းဆိုချက် သို့မဟုတ် တောင်းဆိုမှု သတ်မှတ်ချက်များ</translation>
 <translation id="1822540298136254167">သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များနှင့် ကြည့်ထားချိန်</translation>
 <translation id="1826516787628120939">စစ်ကြည့်နေ</translation>
@@ -591,6 +592,7 @@
 <translation id="3270847123878663523">&amp;ပြန်စီမှုကို တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="3274521967729236597">ပါကိုင်</translation>
 <translation id="3282497668470633863">ကတ်ပေါ်ရှိ အမည်ကို ထည့်ပါ</translation>
+<translation id="3286372614333682499">ဒေါင်လိုက်</translation>
 <translation id="3287510313208355388">အွန်လိုင်းတက်သည့်အချိန် ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> မူဝါဒအကြောင်း ပိုမိုလေ့လာပါ</translation>
 <translation id="3295444047715739395">Chrome ဆက်တင်များတွင် သင့်စကားဝှက်များကို ကြည့်ရှုစီမံပါ</translation>
@@ -1456,7 +1458,7 @@
 <translation id="6645291930348198241">ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာများ သုံးခြင်း။</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{ဝဘ်ဆိုက် ၁ ခုမှ (သင်၏ Google အကောင့်မှနေ၍ ထွက်သွားမည်မဟုတ်ပါ)}other{ဝဘ်ဆိုက် # ခုမှ (သင်၏ Google အကောင့်မှနေ၍ ထွက်သွားမည်မဟုတ်ပါ)}}</translation>
 <translation id="6648459603387803038">သင့်စီမံခန့်ခွဲသူက သင်၏ဘရောင်ဇာ စနစ်ထည့်သွင်းမှုကို အဝေးမှ ပြောင်းလဲနိုင်ပါသည်။ ဤစက်ပေါ်ရှိ လုပ်ဆောင်ချက်များကိုလည်း Chrome ပြင်ပမှ စီမံခန့်ခွဲထားခြင်း ဖြစ်နိုင်သည်။</translation>
-<translation id="6648524591329069940">Serif စာလုံးကွပ်ဖောင့်</translation>
+<translation id="6648524591329069940">Serif ဖောင့်</translation>
 <translation id="6651270836885078973">စီမံခန့်ခွဲသူ-</translation>
 <translation id="6652101503459149953">'Windows ဟယ်လို' သုံးရန်</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
@@ -1777,7 +1779,7 @@
 <translation id="79338296614623784">မှန်ကန်သောဖုန်းနံပါတ်ကို ထည့်ပါ</translation>
 <translation id="7934052535022478634">ငွေပေးချေမှု ပြီးစီးပါပြီ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> သည် ကာကွယ်ထားသည့် အကြောင်းအရာကို ဖွင့်လိုသည်။ သင့်စက်ပစ္စည်း၏ အထောက်အထားကို Google က စိစစ်သွားပါမည်။</translation>
-<translation id="7935031712718413217">လိပ်စာအတုအယောင် ပြုလုပ်ပြီး စာပို့နိုင်သော URL</translation>
+<translation id="7935031712718413217">အယောင်ဆောင် URL ဖြစ်နိုင်သည်</translation>
 <translation id="7935318582918952113">DOM စစ်ထုတ်ပေးသူ</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> တွင် သက်တမ်းကုန်မည်</translation>
 <translation id="7938958445268990899">ဆာဗာ၏ အသိမှတ်ပြုလက်မှတ် မမှန်ကန်ပါ။</translation>

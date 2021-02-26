@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Sve datoteke</translation>
 <translation id="1810764548349082891">Pregled nije dostupan</translation>
 <translation id="1812302367230252929">transliteracija za amharski</translation>
+<translation id="1813278315230285598">Usluge</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Oprez:<ph name="END_BOLD" /> Ove su datoteke privremene i mogu se automatski izbrisati za oslobađanje prostora na disku. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Učitavanje podataka...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Premještanje nije uspjelo, neočekivana pogreška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finski</translation>
 <translation id="1942765061641586207">Razlučivost slike</translation>
-<translation id="1943097386230153518">Instaliraj novu uslugu</translation>
 <translation id="1972984168337863910">Proširi ploče povratnih informacija o datotekama</translation>
 <translation id="1984456723671657197">Ta vrsta datoteke nije podržana. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju datoteka u OS-u Chrome.</translation>
 <translation id="1995337122023280937">Otvorite lokaciju datoteke</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Dohvaćanje tih datoteka potrošit će približno <ph name="FILE_SIZE" /> mobilnih podataka.</translation>
 <translation id="7846076177841592234">Poništi odabir</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
-<translation id="7864662577698025113">Dodaj novu uslugu</translation>
 <translation id="7868774406711971383">poljski</translation>
 <translation id="7873831373602885875">Spremanje u mapu <ph name="FOLDER_NAME" /> nije moguće. Sva uređivanja spremit će se u mapu <ph name="DOWNLOADS_FOLDER" /> u mapi Preuzimanja.</translation>
 <translation id="7874321682039004450">filipinski</translation>

@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
 <translation id="3865414814144988605">የምስል ጥራት</translation>
+<translation id="387301095347517405">ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ጊዜ ብዛት</translation>
 <translation id="3941014780699102620">ለአስተናጋጅ መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="3942420633017001071">ምርመራ</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">ቃኚው መብራቱን እና በእርስዎ አውታረ መረብ ወይም በቀጥታ ግንኙነት በኩል የሚገኝ መሆኑን ያረጋግጡ</translation>
 <translation id="4170700058716978431">አልተሳካም</translation>
 <translation id="4176463684765177261">ተሰናክሏል</translation>
-<translation id="4222698289790462549">የአሁኑ ፍጥነት</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> ጊባ ከሚገኘው <ph name="TOTAL_MEMORY" /> ጊባ።</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
 <translation id="4378373042927530923">አታሂድ</translation>
@@ -208,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ሙከራ ቀርቷል}one{{0} ሙከራዎች ቀርተዋል}other{{0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />፦ <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">ሪፖርትን ይመልከቱ</translation>
 <translation id="5669267381087807207">በማግበር ላይ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ቤተሰብ</translation>
@@ -253,7 +251,6 @@
 <translation id="649050271426829538">ቆሟል - የወረቀት መታጨቅ</translation>
 <translation id="6517239166834772319">ያስሱ</translation>
 <translation id="6527081081771465939">ያልታወቀ የWiFi ደህንነት ፕሮቶኮል</translation>
-<translation id="6532051501443766164">ሪፖርትን ደብቅ</translation>
 <translation id="65587193855025101">ጠፍጣፋ ወለል</translation>
 <translation id="6564646048574748301">አልተሳካም - አታሚ የማይደረስበት ነው</translation>
 <translation id="6618744767048954150">በማሄድ ላይ</translation>
@@ -345,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
 <translation id="8798441408945964110">የአቅራቢ ስም</translation>
-<translation id="880791622116642296">ይህ ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ብዛት ነው</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
 <translation id="8881098542468797602">ሙከራ ተሳክቷል</translation>

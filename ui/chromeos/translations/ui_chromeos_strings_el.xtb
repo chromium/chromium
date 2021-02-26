@@ -78,6 +78,7 @@
 <translation id="1807938677607439181">Όλα τα αρχεία</translation>
 <translation id="1810764548349082891">Δεν υπάρχει διαθέσιμη προεπισκόπηση</translation>
 <translation id="1812302367230252929">Μεταγραφή σε Αμχαρικά</translation>
+<translation id="1813278315230285598">Υπηρεσίες</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Προσοχή:<ph name="END_BOLD" /> Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Πιγκουίνος</translation>
 <translation id="183183971458492120">Γίνεται φόρτωση των πληροφοριών…</translation>
@@ -93,7 +94,6 @@
 <translation id="1936717151811561466">Φινλανδικά
 </translation>
 <translation id="1942765061641586207">Ανάλυση εικόνας</translation>
-<translation id="1943097386230153518">Εγκατάσταση νέας υπηρεσίας</translation>
 <translation id="1972984168337863910">Ανάπτυξη πλαισίων σχολίων αρχείων</translation>
 <translation id="1984456723671657197">Δεν υποστηρίζεται αυτός ο τύπος αρχείου. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="1995337122023280937">Μετάβαση στην τοποθεσία αρχείου</translation>
@@ -670,7 +670,6 @@
 <translation id="7839804798877833423">Για την ανάκτηση αυτών των αρχείων θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
 <translation id="7853966320808728790">Γαλλικά BÉPO</translation>
-<translation id="7864662577698025113">Προσθήκη νέας υπηρεσίας</translation>
 <translation id="7868774406711971383">Πολωνικά</translation>
 <translation id="7873831373602885875">Δεν είναι δυνατή η αποθήκευση στο <ph name="FOLDER_NAME" />. Όλες οι τροποποιήσεις θα αποθηκεύονται στο <ph name="DOWNLOADS_FOLDER" />, στον φάκελο Λήψεις.</translation>
 <translation id="7874321682039004450">Φιλιππινέζικα</translation>

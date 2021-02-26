@@ -174,6 +174,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2780046210906776326">Aucun compte messag.</translation>
 <translation id="2781331604911854368">Activé</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">Impossible de créer le lien</translation>
 <translation id="2800683595868705743">Quitter le sélecteur d'onglets</translation>
 <translation id="2815198996063984598">2. Appuyez sur "Navigateur par défaut"</translation>
 <translation id="2830972654601096923">Gérer les adresses…</translation>
@@ -467,6 +468,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5948291296578561264">Cela vous permet d'enregistrer des photos dans votre photothèque.</translation>
 <translation id="5955891643922670672">Affichage de la version hors connexion</translation>
 <translation id="5957613098218939406">Plus d'options</translation>
+<translation id="5963939892571022323">Échec de la création d'un lien vers le texte en surbrillance.</translation>
 <translation id="5964480694698977962">Créer un onglet de navigation privée</translation>
 <translation id="5965679971710331625">Vous êtes connecté</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
@@ -615,6 +617,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="734758817008927353">Options d'enregistrement de la carte</translation>
 <translation id="7348502496356775519">Ajouter aux favoris</translation>
 <translation id="7383797227493018512">Liste de lecture</translation>
+<translation id="7398893703713203428">Créer un lien</translation>
 <translation id="739941347996872055">Onglet précédent</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articles non lus.</translation>

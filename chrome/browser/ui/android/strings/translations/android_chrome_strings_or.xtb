@@ -138,7 +138,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> ବଟନ୍</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> ପେୟାର୍‌ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="2000419248597011803">ଆପଣଙ୍କର ଡିଫଲ୍ଟ ସନ୍ଧାନ ଇଞ୍ଜିନ୍‌କୁ ଠିକଣା ବାର୍‌ ଏବଂ ସନ୍ଧାନ ବାକ୍ସରୁ କିଛି କୁକୀ ଏବଂ ସନ୍ଧାନ ପଠାନ୍ତୁ</translation>
-<translation id="2001360696084428949">ଆପଣଙ୍କ ଫୋନକୁ ଏକ USB କେବୁଲ ମାଧ୍ୟମରେ ସଂଯୋଗ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2002537628803770967">Google Pay ବ୍ୟବହାର କରୁଥିବା କ୍ରେଡିଟ୍ କାର୍ଡ ଓ ଠିକଣାଗୁଡ଼ିକ</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#ଟି ଫାଇଲ୍}other{#ଟି ଫାଇଲ୍}}</translation>
 <translation id="2017836877785168846">ଠିକଣା ବାର୍‌ରେ ଥିବା ଇତିବୃତ୍ତି ଓ ଅଟୋକମ୍ପ୍ଲିସେନ୍‍ଗୁଡ଼ିକୁ ଖାଲି କରନ୍ତୁ।</translation>
@@ -282,7 +281,6 @@
 <translation id="2923908459366352541">ନାମ ଅବୈଧ ଅଟେ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ଷ୍ଟୋରେଜ୍</translation>
 <translation id="2942036813789421260">ପ୍ରିଭ୍ୟୁ ଟାବ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
-<translation id="2946377063371973287">ସଂଯୋଗ ପାଇଁ ଅଧିକ ସମୟ ଲାଗୁଛି ବୋଲି ମନେ ହେଉଛି…</translation>
 <translation id="2956410042958133412">ଏହି ଆକାଉଣ୍ଟ <ph name="PARENT_NAME_1" /> ଏବଂ <ph name="PARENT_NAME_2" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା}}</translation>
 <translation id="2962095958535813455">ଇନ୍‍କଗ୍ନିଟୋ ଟାବ୍‍କୁ ସ୍ଵିଚ୍ କରନ୍ତୁ</translation>
@@ -302,6 +300,7 @@
 <translation id="3058498974290601450">ଯେକୌଣସି ସମୟରେ ସେଟିଂସ୍‌ରେ ଆପଣ ସିଙ୍କ୍‌ ଚାଲୁ କରିପାରିବେ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />ଟି ବୁକ୍‌ମାର୍କ}other{<ph name="BOOKMARKS_COUNT_MANY" />ଟି ବୁକ୍‌ମାର୍କ}}</translation>
 <translation id="3062802207422175757">Chromeରେ ଆପଣଙ୍କ ଆଗ୍ରହଗୁଡ଼ିକ ବିଷୟରେ ଆର୍ଟିକିଲ୍</translation>
+<translation id="3070005020161560471">ସ୍ୱଚାଳିତ ଭାବେ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="3089395242580810162">ଇନ୍‌କଗ୍‌ନିଟୋ ଟାବ୍‌ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="3098745985164956033">ଆପଣଙ୍କ ପାଇଁ ବର୍ଣ୍ଣନାକୁ ଉନ୍ନତ କରିବା ନିମନ୍ତେ କିଛି ଛବି Googleକୁ ପଠାଯାଇଛି</translation>
 <translation id="3114507951000454849">ଆଜିର ସମାଚାର ପଢ଼ନ୍ତୁ <ph name="NEWS_ICON" /></translation>
@@ -351,10 +350,18 @@
 <translation id="3384347053049321195">ଛବି ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="3387650086002190359">ଫାଇଲ୍ ସିଷ୍ଟମ୍‌ରେ ତ୍ରୁଟି ଥିବା ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହେଲା।</translation>
 <translation id="3389286852084373014">ଟେକ୍ସଟ୍ ବହୁତ ଲମ୍ବା ଅଟେ</translation>
+<translation id="3391512812407811893">Privacy Sandbox ଟ୍ରାଏଲ୍</translation>
 <translation id="3398320232533725830">ବୁକ୍‌ମାର୍କ ପରିଚାଳକ ଖୋଲନ୍ତୁ</translation>
 <translation id="3414952576877147120">ଆକାର:</translation>
 <translation id="3429160811076349561">ଟ୍ରାଏଲ୍ ଫିଚରଗୁଡ଼ିକ ବନ୍ଦ ଅଛି</translation>
 <translation id="3443221991560634068">ବର୍ତ୍ତମାନର ପୃଷ୍ଠାକୁ ରିଲୋଡ୍ କରନ୍ତୁ</translation>
+<translation id="3451542610083122179">Privacy Sandbox ହେଉଛି ଓପନ ୱେବକୁ ସଂରକ୍ଷିତ କରିବା ପାଇଁ ଏକ ଚାଲୁଥିବା ଇନିସିଏଟିଭ୍ ଯାହା ଟ୍ରାକିଂ କାର୍ଯ୍ୟ ପ୍ରଣାଳୀଠାରୁ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିବ।
+
+ଆଜି, ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ଦେଖାଇବା ଏବଂ ଏକ ସାଇଟର ପରଫରମାନ୍ସର ପରିମାପ କରିବା ପରି ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ସେବାଗୁଡ଼ିକ ପାଇଁ, ୱେବସାଇଟଗୁଡ଼ିକ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ପରି ଅନେକ ଟେକ୍ନୋଲୋଜି ଉପରେ ନିର୍ଭର କରେ।
+
+Privacy Sandbox ସେବାଗୁଡ଼ିକୁ ସମ୍ପାଦନ କରିବା ପାଇଁ ଉନ୍ନତ ଉପାୟଗୁଡ଼ିକ ତିଆରି କରି – ସାଇଟଗୁଡ଼ିକର କାର୍ଯ୍ୟରେ କ୍ଷତି ନକରି ସମଗ୍ର ୱେବରେ ଆପଣଙ୍କୁ ଗୋପନ ଭାବେ ଟ୍ରାକ୍ ହେବାରୁ ପ୍ରତିବନ୍ଧିତ କରିବା ସମୟରେ ଓପନ ୱେବର ଗୁରୁତ୍ୱକୁ ସଂରକ୍ଷିତ ରଖିଥାଏ।
+
+Privacy Sandbox ଏବେ ବି ବିକଶିତ ହେଉଛି ଏବଂ ଚୟନିତ ଅଞ୍ଚଳଗୁଡ଼ିକରେ ଉପଲବ୍ଧ ଅଛି। ବର୍ତ୍ତମାନ ପାଇଁ, ସାଇଟଗୁଡ଼ିକ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ପରି ବର୍ତ୍ତମାନର ୱେବ୍ ଟେକ୍ନୋଲୋଜିଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ସମୟରେ Privacy Sandbox ବ୍ୟବହାର କରି ଦେଖିପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">ଆପଣ ଆପଣଙ୍କର ସର୍ଚ୍ଚ ଇଞ୍ଜିନ୍ ବାଛିପାରିବେ</translation>
 <translation id="3492207499832628349">ନୂଆ ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="3493531032208478708">ପ୍ରସ୍ତାବିତ ବିଷୟବସ୍ତୁ ବିଷୟରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -592,6 +599,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1ଟି ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି।}other{# ଟି ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି।}}</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5184329579814168207">Chromeରେ ଖୋଲନ୍ତୁ</translation>
+<translation id="5191251636205085390">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଲକ୍ଷ୍ୟ ରଖୁଥିବା ନୂଆ ଟେକ୍ନୋଲୋଜିଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ ଏବଂ ସେଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="5193988420012215838">ଆପଣଙ୍କର କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
 <translation id="5199929503336119739">ୱର୍କ ପ୍ରୋଫାଇଲ୍‌</translation>
 <translation id="5210286577605176222">ପୂର୍ବବର୍ତ୍ତୀ ଟାବ୍‍କୁ ଯାଆନ୍ତୁ</translation>
@@ -614,6 +622,7 @@
 <translation id="5355191726083956201">ଉନ୍ନତ ସୁରକ୍ଷା ଚାଲୁ ଅଛି</translation>
 <translation id="5357811892247919462">ଟାବ୍ ପ୍ରାପ୍ତ ହୋଇଛି</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" />ଟି ଖୋଲାଥିବା ଟାବ୍, ଟାବ୍‌ଗୁଡ଼ିକ ସ୍ୱିଚ୍ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ}other{<ph name="OPEN_TABS_MANY" />ଟି ଖୋଲାଥିବା ଟାବ୍, ଟାବ୍‌ଗୁଡ଼ିକ ସ୍ୱିଚ୍ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ}}</translation>
+<translation id="5375577065097716013">Google Lens ସହ ଛବି ଖୋଜନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">କେବଳ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍‌ଗୁଡିକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="5414836363063783498">ଯାଞ୍ଚ କରୁଛି…</translation>
 <translation id="5423934151118863508">ଆପଣଙ୍କ ଦ୍ୱାରା ସବୁଠାରୁ ଅଧିକ ଦେଖାଯାଇଥିବା ପୃଷ୍ଠା ଏଠାରେ ଦେଖାଯିବ</translation>
@@ -991,6 +1000,7 @@
 <translation id="784934925303690534">ସମୟ ପରିସୀମା</translation>
 <translation id="7851858861565204677">ଅନ୍ୟ ଡିଭାଇସ୍‌</translation>
 <translation id="7857691613771368249">କେତେବେଳେ ଫାଇଲଗୁଡ଼ିକ ସେଭ୍ କରିବାକୁ ହେବ, ପଚାରନ୍ତୁ</translation>
+<translation id="7859988229622350291">କେବେ ବି ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="7875915731392087153">ଇମେଲ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7876243839304621966">ସବୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ଆପଣଙ୍କର <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା ଅଛି}other{ଆପଣଙ୍କର <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା ଅଛି}}</translation>
@@ -1012,6 +1022,7 @@
 <translation id="7971136598759319605">1 ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /> ପୃଷ୍ଠାର ପୂର୍ବାବଲୋକନ କରନ୍ତୁ</translation>
 <translation id="7981313251711023384">ଦ୍ରୁତତର ବ୍ରାଉଜିଂ ଓ ସନ୍ଧାନ ପାଇଁ ପୃଷ୍ଠା ପ୍ରିଲୋଡ୍ କରନ୍ତୁ</translation>
+<translation id="7986497153528221272">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିବାକୁ, ପ୍ରଥମେ ଆପଣଙ୍କ ଡିଭାଇସରେ ଏକ ସ୍କ୍ରିନ୍ ଲକ୍ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="7998918019931843664">ବନ୍ଦ ହୋଇଥିବା ଟାବ୍ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
 <translation id="8013372441983637696">ଏହି ଡିଭାଇସ୍‍ରୁ ଆପଣଙ୍କର Chrome ଡାଟା ମଧ୍ୟ ଖାଲି କରନ୍ତୁ</translation>
@@ -1067,6 +1078,7 @@
 <translation id="8310344678080805313">ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ୍‌</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ଏବଂ ଅଧିକ ସାଇଟ୍</translation>
 <translation id="8327155640814342956">ଉତ୍ତମ ବ୍ରାଉଜିଂ ଅନୁଭୂତି ପାଇଁ Chrome ଅପ୍‌ଡେଟ୍ କରିବା ପାଇଁ ଖୋଲନ୍ତୁ</translation>
+<translation id="834313815369870491">ସାଇଟଗୁଡ଼ିକୁ କେବେ ବି ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8349013245300336738">ବ୍ୟବହାର କରାଯାଇଥିବା ଡାଟାର ପରିମାଣର କ୍ରମରେ ସଜାନ୍ତୁ</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" />ଟି ଡାଉନଲୋଡ୍ ରିଷ୍ଟୋର୍ କରାଯାଇଛି</translation>
 <translation id="8364299278605033898">ଲୋକପ୍ରିୟ ୱେବ୍‍ସାଇଟ୍‌ଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>

@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Toate fișierele</translation>
 <translation id="1810764548349082891">Nicio previzualizare disponibilă</translation>
 <translation id="1812302367230252929">Amharică, transliterație</translation>
+<translation id="1813278315230285598">Servicii</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Atenție:<ph name="END_BOLD" /> aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Se încarcă informațiile…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Mutarea nu a reușit, eroare neprevăzută: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandeză</translation>
 <translation id="1942765061641586207">Rezoluția imaginii</translation>
-<translation id="1943097386230153518">Instalează un serviciu nou</translation>
 <translation id="1972984168337863910">Extinde panourile cu feedback privind fișierele</translation>
 <translation id="1984456723671657197">Acest tip de fișier nu este acceptat. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="1995337122023280937">Accesează locația fișierului</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Preluarea acestor fișiere va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>
 <translation id="7846076177841592234">Anulează selecția</translation>
 <translation id="7853966320808728790">Franceză BÉPO</translation>
-<translation id="7864662577698025113">Adaugă un serviciu nou</translation>
 <translation id="7868774406711971383">Poloneză</translation>
 <translation id="7873831373602885875">Nu se poate salva în <ph name="FOLDER_NAME" />. Toate editările vor fi salvate în <ph name="DOWNLOADS_FOLDER" /> în dosarul Descărcări.</translation>
 <translation id="7874321682039004450">Filipineză</translation>

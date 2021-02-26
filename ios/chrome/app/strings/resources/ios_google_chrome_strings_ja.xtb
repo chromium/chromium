@@ -31,6 +31,7 @@
 <translation id="3533694711092285624">保存されているパスワードがありません。パスワードを保存すると Chrome で確認できるようになります。</translation>
 <translation id="3706101708757577809">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>
+<translation id="38949020760388809">このデバイスから Chrome データを削除するかどうかを選択してください。</translation>
 <translation id="3980220367029651214">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> へ切り替えます。既存の Chrome データは <ph name="DOMAIN" /> で管理されています。データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> で保持されます。</translation>
 <translation id="3984746313391923992">組織が Chrome にログインしないように求めています。</translation>
 <translation id="3988789688219830639">Google Chrome で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
@@ -71,6 +72,7 @@
 <translation id="7265369419224458312">パソコンで開いたタブにこちらからアクセスできます。パソコンでChromeを開き、メニューから[Chromeにログイン]を選択してください。</translation>
 <translation id="7272930098487145294">画像を保存するには、[設定] をタップして写真への追加を Chrome に許可してください</translation>
 <translation id="7400722733683201933">Google Chrome について</translation>
+<translation id="7501046334262221972">Chrome をデフォルトのブラウザにするには、[設定] を開き、[デフォルトのブラウザ App] をタップして、Chrome を選択します。</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>
 <translation id="7626032353295482388">Chrome へようこそ</translation>
 <translation id="7662994914830945754">どのデバイスからでも Chrome で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>

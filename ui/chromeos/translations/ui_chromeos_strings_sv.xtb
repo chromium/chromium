@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Alla filer</translation>
 <translation id="1810764548349082891">Ingen förhandsgranskning</translation>
 <translation id="1812302367230252929">amhariska, translitterering</translation>
+<translation id="1813278315230285598">Tjänster</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Varning!<ph name="END_BOLD" />  De här filerna är tillfälliga och kan tas bort automatiskt för att frigöra utrymme på hårddisken.  <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Läser in information …</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Flytten misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finska</translation>
 <translation id="1942765061641586207">Bildupplösning</translation>
-<translation id="1943097386230153518">Installera ny tjänst</translation>
 <translation id="1972984168337863910">Utöka panel med information om filåtgärder</translation>
 <translation id="1984456723671657197">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="1995337122023280937">Gå till filens plats</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Att hämta dessa filer kräver ungefär <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Rensa val</translation>
 <translation id="7853966320808728790">franska (BÉPO)</translation>
-<translation id="7864662577698025113">Lägg till ny tjänst</translation>
 <translation id="7868774406711971383">polska</translation>
 <translation id="7873831373602885875">Det går inte att spara i <ph name="FOLDER_NAME" />. Alla ändringar sparas i <ph name="DOWNLOADS_FOLDER" /> i mappen Nedladdningar.</translation>
 <translation id="7874321682039004450">filipino</translation>

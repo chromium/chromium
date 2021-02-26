@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Усі файли</translation>
 <translation id="1810764548349082891">Попередній перегляд недоступний</translation>
 <translation id="1812302367230252929">Амхарська, транслітерація</translation>
+<translation id="1813278315230285598">Служби</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Увага:<ph name="END_BOLD" /> ці файли тимчасові, і можуть автоматично видалятися, щоб звільнити місце на диску. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Завантаження інформації…</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">Не вдалося перемістити, неочікувана помилка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Фінська</translation>
 <translation id="1942765061641586207">Роздільна здатність зображення</translation>
-<translation id="1943097386230153518">Установити новий сервіс</translation>
 <translation id="1972984168337863910">Розгортаються панелі відгуків про файли</translation>
+<translation id="1984456723671657197">Цей тип файлу не підтримується. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="1995337122023280937">Відкрити місце розташування файлу</translation>
 <translation id="2001796770603320721">Керувати на Диску</translation>
 <translation id="2009067268969781306">Якщо відформатувати диск, усі збережені на ньому дані буде видалено. Цю дію не можна відмінити.</translation>
@@ -652,7 +653,6 @@
 <translation id="7839804798877833423">Для отримання цих файлів буде використано приблизно <ph name="FILE_SIZE" /> мобільного передавання даних.</translation>
 <translation id="7846076177841592234">Скасувати вибір</translation>
 <translation id="7853966320808728790">Французька клавіатура BÉPO</translation>
-<translation id="7864662577698025113">Додати нові сервіси</translation>
 <translation id="7868774406711971383">Польська</translation>
 <translation id="7873831373602885875">Не вдалося зберегти в папці "<ph name="FOLDER_NAME" />". Усі зміни буде збережено в папці "<ph name="DOWNLOADS_FOLDER" />" (папка "Завантаження").</translation>
 <translation id="7874321682039004450">Філіппінська</translation>
@@ -667,6 +667,7 @@
 <translation id="7972920761225148017">Французька (Швейцарія)</translation>
 <translation id="7980421588063892270">Англійська (США), розкладка Colemak</translation>
 <translation id="7982283708762922719">Висота</translation>
+<translation id="79907182588096956">Цей файл створено для ПК з програмним забезпеченням Windows. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="8008366997883261463">Собака</translation>
 <translation id="8028993641010258682">Розмір</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -746,6 +747,7 @@
 <translation id="8900820606136623064">Угорська</translation>
 <translation id="8919081441417203123">Данська</translation>
 <translation id="8965697826696209160">Недостатньо місця.</translation>
+<translation id="8970501467542182729">Цей файл створено для комп'ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="8997962250644902079">Китайська (традиційна), піньїнь</translation>
 <translation id="9017798300203431059">Російська (фонетична)</translation>
 <translation id="9034924485347205037">Файли Linux</translation>

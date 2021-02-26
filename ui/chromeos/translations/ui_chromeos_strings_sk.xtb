@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Všetky súbory</translation>
 <translation id="1810764548349082891">Ukážka nie je k dispozícii</translation>
 <translation id="1812302367230252929">Amharská klávesnica (prepis)</translation>
+<translation id="1813278315230285598">Služby</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" /> Upozornenie: <ph name="END_BOLD" /> Tieto súbory sú dočasné a kvôli uvoľneniu miesta na disku môžu byť automaticky odstránené. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Tučniak</translation>
 <translation id="183183971458492120">Načítavajú sa informácie…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Presun zlyhal, neočakávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fínčina</translation>
 <translation id="1942765061641586207">Rozlíšenie obrázka</translation>
-<translation id="1943097386230153518">Inštalovať novú službu</translation>
 <translation id="1972984168337863910">Rozbaliť panely so spätnou väzbou týkajúcou sa súborov</translation>
 <translation id="1984456723671657197">Tento typ súboru nie je podporovaný. <ph name="BEGIN_LINK_HELP" />Ďalšie informácie o otváraní súborov v systéme Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="1995337122023280937">Prejsť na umiestnenie súboru</translation>
@@ -653,7 +653,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7839804798877833423">Načítanie týchto súborov spotrebuje približne <ph name="FILE_SIZE" /> mobilných dát.</translation>
 <translation id="7846076177841592234">Zrušiť výber</translation>
 <translation id="7853966320808728790">Francúzština – BÉPO</translation>
-<translation id="7864662577698025113">Pridať novú službu</translation>
 <translation id="7868774406711971383">Poľská klávesnica</translation>
 <translation id="7873831373602885875">Úpravy sa nedajú uložiť do priečinka <ph name="FOLDER_NAME" />. Všetky úpravy sa uložia do priečinka <ph name="DOWNLOADS_FOLDER" /> v Stiahnutých súboroch.</translation>
 <translation id="7874321682039004450">Filipínska klávesnica</translation>

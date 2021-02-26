@@ -174,6 +174,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2780046210906776326">No hay cuentas de correo</translation>
 <translation id="2781331604911854368">Activado</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">No se puede crear el enlace</translation>
 <translation id="2800683595868705743">Salir de la función de cambio de pestaña</translation>
 <translation id="2815198996063984598">2. Toca Aplicación de navegador predeterminada.</translation>
 <translation id="2830972654601096923">Gestionar tus direcciones...</translation>
@@ -467,6 +468,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5948291296578561264">Esta acción te permite guardar fotos en tu biblioteca.</translation>
 <translation id="5955891643922670672">Viendo versión sin conexión</translation>
 <translation id="5957613098218939406">Más opciones</translation>
+<translation id="5963939892571022323">No se puede crear un enlace a la parte destacada.</translation>
 <translation id="5964480694698977962">Crear nueva pestaña de incógnito.</translation>
 <translation id="5965679971710331625">Has iniciado sesión</translation>
 <translation id="5979837087407522202">Buscar contraseñas</translation>
@@ -615,6 +617,7 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="734758817008927353">Opciones para guardar una tarjeta</translation>
 <translation id="7348502496356775519">Añadir a marcadores</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
+<translation id="7398893703713203428">Crear enlace</translation>
 <translation id="739941347996872055">Pestaña anterior</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artículos no leídos.</translation>

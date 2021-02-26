@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">Недостатъчно памет за изтегляне на избраното съдържание.</translation>
 <translation id="1376578503827013741">Изчислява се…</translation>
 <translation id="1383876407941801731">Търсене</translation>
+<translation id="1384704387250346179">Превод с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Активно преди <ph name="LAST_UPDATED" /> дни</translation>
 <translation id="1397811292916898096">Търсене чрез <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">Заявка „Do Not Track“</translation>
@@ -97,6 +98,7 @@
 <translation id="1692118695553449118">Синхронизирането е включено</translation>
 <translation id="1697284962337958118">Добавяне към</translation>
 <translation id="1718835860248848330">Последния час</translation>
+<translation id="1724977129262658800">Отключете, за да редактирате паролата си</translation>
 <translation id="173522743738009831">Всичко за Privacy Sandbox</translation>
 <translation id="1736419249208073774">Разглеждане</translation>
 <translation id="1749561566933687563">Синхронизирайте отметките си</translation>
@@ -139,7 +141,6 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> бутон „<ph name="LINK_NAME" />“</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> иска да се сдвои</translation>
 <translation id="2000419248597011803">Изпраща някои „бисквитки“ и заявките за търсене от адресната лента и полето за търсене до стандартната ви търсеща машина</translation>
-<translation id="2001360696084428949">Опитайте да свържете телефона си с USB кабел</translation>
 <translation id="2002537628803770967">Кредитни карти и адреси посредством Google Pay</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файла}}</translation>
 <translation id="2017836877785168846">Изчиства историята и автоматичните довършвания в адресната лента.</translation>
@@ -283,7 +284,6 @@
 <translation id="2923908459366352541">Името е невалидно</translation>
 <translation id="2932150158123903946">Хранилище на Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">Разделът за визуализация е затворен</translation>
-<translation id="2946377063371973287">Установяването на връзката много се забави…</translation>
 <translation id="2956410042958133412">Този профил се управлява от <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
 <translation id="2962095958535813455">Превключихте към разделите в режим „инкогнито“</translation>
@@ -691,6 +691,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5765780083710877561">Описание:</translation>
 <translation id="5767013862801005129">Бе възстановен раздел със заглавие <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Маловажни данни</translation>
+<translation id="5780792035410621042">За да копирате пароли, първо настройте заключване на екрана на устройството си</translation>
 <translation id="5793665092639000975">Използвано място: <ph name="SPACE_USED" /> от <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Търсене и сърфиране</translation>
 <translation id="5797070761912323120">Възможно е да използваме историята ви, за да персонализираме търсенето, рекламите и други услуги на Google</translation>
@@ -1028,6 +1029,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7971136598759319605">Активно преди 1 ден</translation>
 <translation id="7975379999046275268">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Предварително зареждане на страниците с цел по-бързо сърфиране и търсене</translation>
+<translation id="7986497153528221272">За да видите паролите, първо настройте заключване на екрана на устройството си</translation>
 <translation id="7998918019931843664">Повторно отваряне на затворения раздел</translation>
 <translation id="8004582292198964060">Браузър</translation>
 <translation id="8013372441983637696">Изчистване на данните ви в Chrome и от това устройство</translation>
