@@ -136,10 +136,10 @@ bool ShouldPutLogsInHomeDirectory() {
   return !redirect_logging;
 }
 
-ServiceControllerProxy::BootupConfigPtr CreateBootupConfig(
+chromeos::libassistant::mojom::BootupConfigPtr CreateBootupConfig(
     const base::Optional<std::string>& s3_server_uri_override,
     const base::Optional<std::string>& device_id_override) {
-  auto result = ServiceControllerProxy::BootupConfig::New();
+  auto result = chromeos::libassistant::mojom::BootupConfig::New();
   result->s3_server_uri_override = s3_server_uri_override;
   result->device_id_override = device_id_override;
   result->log_in_home_dir = ShouldPutLogsInHomeDirectory();
@@ -151,7 +151,7 @@ ServiceControllerProxy::BootupConfigPtr CreateBootupConfig(
 // Observer that will receive all speech recognition related events,
 // and forwards them to all |AssistantInteractionSubscriber|.
 class SpeechRecognitionObserverWrapper
-    : public libassistant::mojom::SpeechRecognitionObserver {
+    : public chromeos::libassistant::mojom::SpeechRecognitionObserver {
  public:
   explicit SpeechRecognitionObserverWrapper(
       const base::ObserverList<AssistantInteractionSubscriber>* observers)
@@ -169,7 +169,7 @@ class SpeechRecognitionObserverWrapper
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  // libassistant::mojom::SpeechRecognitionObserver implementation:
+  // chromeos::libassistant::mojom::SpeechRecognitionObserver implementation:
   void OnSpeechLevelUpdated(float speech_level_in_decibels) override {
     for (auto& it : interaction_subscribers_)
       it.OnSpeechLevelUpdated(speech_level_in_decibels);
@@ -773,8 +773,8 @@ void AssistantManagerServiceImpl::OnCommunicationError(int error_code) {
 }
 
 void AssistantManagerServiceImpl::OnStateChanged(
-    libassistant::mojom::ServiceState new_state) {
-  using libassistant::mojom::ServiceState;
+    chromeos::libassistant::mojom::ServiceState new_state) {
+  using chromeos::libassistant::mojom::ServiceState;
 
   DVLOG(1) << "Libassistant service state changed to " << new_state;
   switch (new_state) {
@@ -1023,7 +1023,7 @@ AssistantManagerServiceImpl::main_task_runner() {
   return context_->main_task_runner();
 }
 
-AssistantProxy::DisplayController&
+chromeos::libassistant::mojom::DisplayController&
 AssistantManagerServiceImpl::display_controller() {
   return assistant_proxy_->display_controller();
 }

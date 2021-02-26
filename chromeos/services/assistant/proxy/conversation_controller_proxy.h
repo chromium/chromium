@@ -16,14 +16,12 @@
 namespace chromeos {
 namespace assistant {
 
-using chromeos::libassistant::mojom::ConversationController;
-
 // Component supporting conversation related functionalities, includes the
 // ability to start an interaction, register action module, etc.
 class ConversationControllerProxy {
  public:
   explicit ConversationControllerProxy(
-      mojo::PendingRemote<ConversationController>
+      mojo::PendingRemote<chromeos::libassistant::mojom::ConversationController>
           conversation_controller_remote);
   ConversationControllerProxy(const ConversationControllerProxy&) = delete;
   ConversationControllerProxy& operator=(const ConversationControllerProxy&) =
@@ -31,7 +29,8 @@ class ConversationControllerProxy {
   ~ConversationControllerProxy();
 
   void AddConversationObserver(
-      mojo::PendingRemote<libassistant::mojom::ConversationObserver> observer);
+      mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
+          observer);
 
   // Starts a new Assistant text interaction. If |allow_tts| is true, the
   // result will contain TTS. |conversation_id| is a unique identifier of
@@ -55,7 +54,8 @@ class ConversationControllerProxy {
   void SendAssistantFeedback(const AssistantFeedback& feedback);
 
  private:
-  mojo::Remote<ConversationController> conversation_controller_remote_;
+  mojo::Remote<chromeos::libassistant::mojom::ConversationController>
+      conversation_controller_remote_;
 };
 
 }  // namespace assistant

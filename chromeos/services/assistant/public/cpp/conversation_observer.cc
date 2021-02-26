@@ -10,7 +10,7 @@ namespace assistant {
 ConversationObserver::ConversationObserver() = default;
 ConversationObserver::~ConversationObserver() = default;
 
-mojo::PendingRemote<libassistant::mojom::ConversationObserver>
+mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
 ConversationObserver::BindNewPipeAndPassRemote() {
   DCHECK(!remote_observer_.is_bound());
 

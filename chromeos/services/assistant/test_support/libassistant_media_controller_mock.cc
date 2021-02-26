@@ -11,7 +11,7 @@ LibassistantMediaControllerMock::LibassistantMediaControllerMock() = default;
 LibassistantMediaControllerMock::~LibassistantMediaControllerMock() = default;
 
 void LibassistantMediaControllerMock::Bind(
-    mojo::PendingReceiver<libassistant::mojom::MediaController>
+    mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>
         pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
 }

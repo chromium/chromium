@@ -17,58 +17,65 @@ namespace assistant {
 // Fake implementation of the Libassistant Mojom service.
 // It allows hooks to read and control the state of the service.
 class FakeLibassistantService
-    : public libassistant::mojom::LibassistantService {
+    : public chromeos::libassistant::mojom::LibassistantService {
  public:
   FakeLibassistantService();
   FakeLibassistantService(FakeLibassistantService&) = delete;
   FakeLibassistantService& operator=(FakeLibassistantService&) = delete;
   ~FakeLibassistantService() override;
 
-  void Bind(mojo::PendingReceiver<libassistant::mojom::LibassistantService>
-                pending_receiver);
+  void Bind(
+      mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+          pending_receiver);
   void Unbind();
 
   FakeServiceController& service_controller() { return service_controller_; }
 
   // Return the receiver that was passed into the last Bind() call.
-  mojo::PendingReceiver<libassistant::mojom::MediaController>
+  mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>
   GetMediaControllerPendingReceiver();
-  mojo::PendingRemote<libassistant::mojom::MediaDelegate>
+  mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
   GetMediaDelegatePendingRemote();
-  mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+  mojo::PendingReceiver<
+      chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
   GetSpeakerIdEnrollmentControllerPendingReceiver();
 
   // mojom::LibassistantService implementation:
   void Bind(
-      mojo::PendingReceiver<libassistant::mojom::AudioInputController>
+      mojo::PendingReceiver<chromeos::libassistant::mojom::AudioInputController>
           audio_input_controller,
-      mojo::PendingReceiver<libassistant::mojom::ConversationController>
+      mojo::PendingReceiver<
+          chromeos::libassistant::mojom::ConversationController>
           conversation_controller,
-      mojo::PendingReceiver<libassistant::mojom::DisplayController>
+      mojo::PendingReceiver<chromeos::libassistant::mojom::DisplayController>
           display_controller,
-      mojo::PendingReceiver<libassistant::mojom::MediaController>
+      mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>
           media_controller,
-      mojo::PendingReceiver<libassistant::mojom::ServiceController>
+      mojo::PendingReceiver<chromeos::libassistant::mojom::ServiceController>
           service_controller,
-      mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+      mojo::PendingReceiver<
+          chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
           speaker_id_enrollment_controller,
-      mojo::PendingRemote<libassistant::mojom::AudioOutputDelegate>
+      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
           audio_output_delegate,
-      mojo::PendingRemote<libassistant::mojom::MediaDelegate> media_delegate,
-      mojo::PendingRemote<libassistant::mojom::PlatformDelegate>
+      mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
+          media_delegate,
+      mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
           platform_delegate) override;
   void AddSpeechRecognitionObserver(
-      mojo::PendingRemote<libassistant::mojom::SpeechRecognitionObserver>
-          observer) override {}
+      mojo::PendingRemote<
+          chromeos::libassistant::mojom::SpeechRecognitionObserver> observer)
+      override {}
 
  private:
-  mojo::Receiver<libassistant::mojom::LibassistantService> receiver_;
+  mojo::Receiver<chromeos::libassistant::mojom::LibassistantService> receiver_;
 
-  mojo::PendingReceiver<libassistant::mojom::MediaController>
+  mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>
       media_controller_pending_receiver_;
-  mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+  mojo::PendingReceiver<
+      chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
       speaker_id_enrollment_controller_pending_receiver_;
-  mojo::PendingRemote<libassistant::mojom::MediaDelegate>
+  mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
       media_delegate_pending_remote_;
 
   FakeServiceController service_controller_;

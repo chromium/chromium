@@ -16,7 +16,7 @@ namespace chromeos {
 namespace assistant {
 
 namespace {
-using libassistant::mojom::PlaybackState;
+using chromeos::libassistant::mojom::PlaybackState;
 using media_session::mojom::MediaSessionAction;
 using media_session::mojom::MediaSessionInfo;
 using media_session::mojom::MediaSessionInfoPtr;
@@ -87,9 +87,9 @@ class MediaHost::ChromeosMediaStateObserver
       }
     }
 
-    libassistant::mojom::MediaStatePtr media_state =
-        libassistant::mojom::MediaState::New();
-    media_state->metadata = libassistant::mojom::MediaMetadata::New();
+    chromeos::libassistant::mojom::MediaStatePtr media_state =
+        chromeos::libassistant::mojom::MediaState::New();
+    media_state->metadata = chromeos::libassistant::mojom::MediaMetadata::New();
 
     // Set media metadata.
     if (media_metadata_.has_value()) {
@@ -134,11 +134,11 @@ class MediaHost::ChromeosMediaStateObserver
 ////////////////////////////////////////////////////////////////////////////////
 
 // Helper class that will observe media changes in Libassisstant and sync them
-// to either ||MediaHost::interaction_subscribers_|,
-// ||MediaHost::chromeos_media_controller_| or
-// ||MediaHost::media_session_|.
+// to either |MediaHost::interaction_subscribers_|,
+// |MediaHost::chromeos_media_controller_| or
+// |MediaHost::media_session_|.
 class MediaHost::LibassistantMediaDelegate
-    : public libassistant::mojom::MediaDelegate {
+    : public chromeos::libassistant::mojom::MediaDelegate {
  public:
   explicit LibassistantMediaDelegate(
       MediaHost* parent,
@@ -151,9 +151,9 @@ class MediaHost::LibassistantMediaDelegate
   ~LibassistantMediaDelegate() override = default;
 
  private:
-  // libassistant::mojom::MediaDelegate implementation:
+  // chromeos::libassistant::mojom::MediaDelegate implementation:
   void OnPlaybackStateChanged(
-      libassistant::mojom::MediaStatePtr new_state) override {
+      chromeos::libassistant::mojom::MediaStatePtr new_state) override {
     parent_->media_session_->NotifyMediaSessionMetadataChanged(*new_state);
   }
 
@@ -223,7 +223,7 @@ MediaHost::MediaHost(AssistantClient* assistant_client,
 MediaHost::~MediaHost() = default;
 
 void MediaHost::Initialize(
-    libassistant::mojom::MediaController* libassistant_controller,
+    chromeos::libassistant::mojom::MediaController* libassistant_controller,
     mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
         media_delegate) {
   // Initialize can only be called once.
@@ -264,7 +264,7 @@ MediaHost::libassistant_media_controller() {
 
 void MediaHost::UpdateMediaState(
     const base::UnguessableToken& media_session_id,
-    libassistant::mojom::MediaStatePtr media_state) {
+    chromeos::libassistant::mojom::MediaStatePtr media_state) {
   // MediaSession Integrated providers (include the libassistant internal
   // media provider) will trigger media state change event. Only update the
   // external media status if the state changes is triggered by external
@@ -279,7 +279,7 @@ void MediaHost::UpdateMediaState(
 
 void MediaHost::ResetMediaState() {
   libassistant_media_controller().SetExternalPlaybackState(
-      libassistant::mojom::MediaState::New());
+      chromeos::libassistant::mojom::MediaState::New());
 }
 
 void MediaHost::StartObservingMediaController() {

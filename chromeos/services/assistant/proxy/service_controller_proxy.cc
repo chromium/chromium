@@ -25,7 +25,8 @@ namespace assistant {
 
 namespace {
 
-using libassistant::mojom::ServiceState;
+using chromeos::libassistant::mojom::AuthenticationTokenPtr;
+using chromeos::libassistant::mojom::ServiceState;
 
 struct StartArguments {
   StartArguments() = default;
@@ -49,14 +50,14 @@ void InitializeAssistantManager(
       arguments.assistant_manager_delegate);
 }
 
-std::vector<libassistant::mojom::AuthenticationTokenPtr>
-ToMojomAuthenticationTokens(const ServiceControllerProxy::AuthTokens& tokens) {
-  std::vector<libassistant::mojom::AuthenticationTokenPtr> result;
+std::vector<AuthenticationTokenPtr> ToMojomAuthenticationTokens(
+    const ServiceControllerProxy::AuthTokens& tokens) {
+  std::vector<AuthenticationTokenPtr> result;
 
   for (const std::pair<std::string, std::string>& token : tokens) {
-    result.emplace_back(libassistant::mojom::AuthenticationTokenPtr(
-        base::in_place, /*gaia_id=*/token.first,
-        /*access_token=*/token.second));
+    result.emplace_back(AuthenticationTokenPtr(base::in_place,
+                                               /*gaia_id=*/token.first,
+                                               /*access_token=*/token.second));
   }
 
   return result;
@@ -79,7 +80,7 @@ ServiceControllerProxy::~ServiceControllerProxy() = default;
 
 void ServiceControllerProxy::Start(
     assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
-    BootupConfigPtr bootup_config,
+    chromeos::libassistant::mojom::BootupConfigPtr bootup_config,
     const AuthTokens& auth_tokens) {
   // We need to initialize the |AssistantManager| once it's created and before
   // it's started, so we register a callback to do just that.
@@ -113,7 +114,8 @@ void ServiceControllerProxy::SetAuthTokens(const AuthTokens& tokens) {
 }
 
 void ServiceControllerProxy::AddAndFireStateObserver(
-    ::mojo::PendingRemote<libassistant::mojom::StateObserver> observer) {
+    mojo::PendingRemote<chromeos::libassistant::mojom::StateObserver>
+        observer) {
   service_controller_remote_->AddAndFireStateObserver(std::move(observer));
 }
 

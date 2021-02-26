@@ -104,11 +104,11 @@ enum class AssistantQueryResponseType {
 // enabled/disabled in settings or switches to a non-primary profile.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
     : public AssistantManagerService,
-      public ::chromeos::assistant::action::AssistantActionObserver,
+      public chromeos::assistant::action::AssistantActionObserver,
       public assistant_client::ConversationStateListener,
       public assistant_client::AssistantManagerDelegate,
       public AppListEventSubscriber,
-      private libassistant::mojom::StateObserver,
+      private chromeos::libassistant::mojom::StateObserver,
       public ConversationObserver {
  public:
   static void ResetIsFirstInitFlagForTesting();
@@ -220,8 +220,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   base::Thread& GetBackgroundThreadForTesting();
 
  private:
-  // libassistant::mojom::StateObserver implementation:
-  void OnStateChanged(libassistant::mojom::ServiceState new_state) override;
+  // chromeos::libassistant::mojom::StateObserver implementation:
+  void OnStateChanged(
+      chromeos::libassistant::mojom::ServiceState new_state) override;
 
   void InitAssistant(const base::Optional<UserInfo>& user);
   void OnServiceStarted();
@@ -262,7 +263,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
   ConversationControllerProxy& conversation_controller_proxy();
-  AssistantProxy::DisplayController& display_controller();
+  chromeos::libassistant::mojom::DisplayController& display_controller();
   ServiceControllerProxy& service_controller();
   const ServiceControllerProxy& service_controller() const;
   base::Thread& background_thread();
@@ -310,7 +311,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::string receive_url_response_;
 
   // Configuration passed to libassistant.
-  ServiceControllerProxy::BootupConfigPtr bootup_config_;
+  chromeos::libassistant::mojom::BootupConfigPtr bootup_config_;
 
   base::TimeDelta stop_interactioin_delay_ =
       base::TimeDelta::FromMilliseconds(500);

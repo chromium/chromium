@@ -20,21 +20,21 @@ void AudioOutputDelegateImpl::Bind(
 }
 
 void AudioOutputDelegateImpl::RequestAudioFocus(
-    libassistant::mojom::AudioOutputStreamType stream_type) {
+    chromeos::libassistant::mojom::AudioOutputStreamType stream_type) {
   // TODO(wutao): Fix the libassistant behavior.
   // Currently this is called with |STREAM_TTS| and |STREAM_ALARM| when
   // requesting focus. When releasing focus it calls with |STREAM_MEDIA|.
   // libassistant media code path does not request focus.
   switch (stream_type) {
-    case libassistant::mojom::AudioOutputStreamType::kAlarmStream:
+    case chromeos::libassistant::mojom::AudioOutputStreamType::kAlarmStream:
       media_session_->RequestAudioFocus(
           media_session::mojom::AudioFocusType::kGainTransientMayDuck);
       break;
-    case libassistant::mojom::AudioOutputStreamType::kTtsStream:
+    case chromeos::libassistant::mojom::AudioOutputStreamType::kTtsStream:
       media_session_->RequestAudioFocus(
           media_session::mojom::AudioFocusType::kGainTransient);
       break;
-    case libassistant::mojom::AudioOutputStreamType::kMediaStream:
+    case chromeos::libassistant::mojom::AudioOutputStreamType::kMediaStream:
       media_session_->AbandonAudioFocusIfNeeded();
       break;
   }

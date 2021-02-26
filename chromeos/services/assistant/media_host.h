@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   ~MediaHost();
 
   void Initialize(
-      libassistant::mojom::MediaController* libassistant_controller,
+      chromeos::libassistant::mojom::MediaController* libassistant_controller,
       mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
           media_delegate);
 
@@ -57,10 +57,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   class LibassistantMediaDelegate;
   class ChromeosMediaStateObserver;
 
-  libassistant::mojom::MediaController& libassistant_media_controller();
+  chromeos::libassistant::mojom::MediaController&
+  libassistant_media_controller();
 
-  void UpdateMediaState(const base::UnguessableToken& media_session_id,
-                        libassistant::mojom::MediaStatePtr media_state);
+  void UpdateMediaState(
+      const base::UnguessableToken& media_session_id,
+      chromeos::libassistant::mojom::MediaStatePtr media_state);
   void ResetMediaState();
 
   void StartObservingMediaController();
@@ -70,8 +72,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   const base::ObserverList<AssistantInteractionSubscriber>* const
       interaction_subscribers_;
   // Owned by our parent |AssistantManagerServiceImpl|.
-  libassistant::mojom::MediaController* libassistant_media_controller_ =
-      nullptr;
+  chromeos::libassistant::mojom::MediaController*
+      libassistant_media_controller_ = nullptr;
 
   std::unique_ptr<AssistantMediaSession> media_session_;
   mojo::Remote<media_session::mojom::MediaController>

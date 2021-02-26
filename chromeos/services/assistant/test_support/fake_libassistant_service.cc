@@ -14,7 +14,7 @@ FakeLibassistantService::FakeLibassistantService() : receiver_(this) {}
 FakeLibassistantService::~FakeLibassistantService() = default;
 
 void FakeLibassistantService::Bind(
-    mojo::PendingReceiver<libassistant::mojom::LibassistantService>
+    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
         pending_receiver) {
   EXPECT_FALSE(receiver_.is_bound())
       << "Cannot bind the LibassistantService twice";
@@ -26,41 +26,44 @@ void FakeLibassistantService::Unbind() {
   service_controller().Unbind();
 }
 
-mojo::PendingReceiver<libassistant::mojom::MediaController>
+mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>
 FakeLibassistantService::GetMediaControllerPendingReceiver() {
   EXPECT_TRUE(media_controller_pending_receiver_.is_valid());
   return std::move(media_controller_pending_receiver_);
 }
 
-mojo::PendingRemote<libassistant::mojom::MediaDelegate>
+mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
 FakeLibassistantService::GetMediaDelegatePendingRemote() {
   EXPECT_TRUE(media_delegate_pending_remote_.is_valid());
   return std::move(media_delegate_pending_remote_);
 }
 
-mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+mojo::PendingReceiver<
+    chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
 FakeLibassistantService::GetSpeakerIdEnrollmentControllerPendingReceiver() {
   EXPECT_TRUE(speaker_id_enrollment_controller_pending_receiver_.is_valid());
   return std::move(speaker_id_enrollment_controller_pending_receiver_);
 }
 
 void FakeLibassistantService::Bind(
-    mojo::PendingReceiver<libassistant::mojom::AudioInputController>
+    mojo::PendingReceiver<chromeos::libassistant::mojom::AudioInputController>
         audio_input_controller,
-    mojo::PendingReceiver<libassistant::mojom::ConversationController>
+    mojo::PendingReceiver<chromeos::libassistant::mojom::ConversationController>
         conversation_controller,
-    mojo::PendingReceiver<libassistant::mojom::DisplayController>
+    mojo::PendingReceiver<chromeos::libassistant::mojom::DisplayController>
         display_controller,
-    mojo::PendingReceiver<libassistant::mojom::MediaController>
+    mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>
         media_controller,
-    mojo::PendingReceiver<libassistant::mojom::ServiceController>
+    mojo::PendingReceiver<chromeos::libassistant::mojom::ServiceController>
         service_controller,
-    mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+    mojo::PendingReceiver<
+        chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
         speaker_id_enrollment_controller,
-    mojo::PendingRemote<libassistant::mojom::AudioOutputDelegate>
+    mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
         audio_output_delegate,
-    mojo::PendingRemote<libassistant::mojom::MediaDelegate> media_delegate,
-    mojo::PendingRemote<libassistant::mojom::PlatformDelegate>
+    mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
+        media_delegate,
+    mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
         platform_delegate) {
   service_controller_.Bind(std::move(service_controller));
   media_controller_pending_receiver_ = std::move(media_controller);

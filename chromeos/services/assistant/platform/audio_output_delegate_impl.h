@@ -25,9 +25,9 @@ class AudioOutputDelegateImpl
 
   void Bind(mojo::PendingReceiver<AudioOutputDelegate> pending_receiver);
 
-  // libassistant::mojom::AudioOutputDelegate implementation:
-  void RequestAudioFocus(
-      libassistant::mojom::AudioOutputStreamType stream_type) override;
+  // chromeos::libassistant::mojom::AudioOutputDelegate implementation:
+  void RequestAudioFocus(chromeos::libassistant::mojom::AudioOutputStreamType
+                             stream_type) override;
   void AbandonAudioFocusIfNeeded() override;
   void AddMediaSessionObserver(
       mojo::PendingRemote<::media_session::mojom::MediaSessionObserver>

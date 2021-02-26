@@ -20,7 +20,8 @@ LibassistantServiceHostImpl::LibassistantServiceHostImpl(
 LibassistantServiceHostImpl::~LibassistantServiceHostImpl() = default;
 
 void LibassistantServiceHostImpl::Launch(
-    mojo::PendingReceiver<LibassistantServiceMojom> receiver) {
+    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+        receiver) {
   base::AutoLock lock(libassistant_service_lock_);
   DCHECK(!libassistant_service_);
   libassistant_service_ =

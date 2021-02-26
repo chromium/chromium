@@ -54,7 +54,8 @@ void AssistantProxy::LaunchLibassistantService() {
 }
 
 void AssistantProxy::LaunchLibassistantServiceOnBackgroundThread(
-    mojo::PendingReceiver<LibassistantServiceMojom> client) {
+    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+        client) {
   DCHECK(background_task_runner()->BelongsToCurrentThread());
   DCHECK(libassistant_service_host_);
   libassistant_service_host_->Launch(std::move(client));
@@ -78,22 +79,28 @@ void AssistantProxy::BindControllers(
     LibassistantServiceHost* host,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory) {
-  mojo::PendingRemote<AudioInputControllerMojom>
+  mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
       pending_audio_input_controller_remote;
-  mojo::PendingRemote<AudioOutputDelegateMojom>
+  mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
       pending_audio_output_delegate_remote;
-  mojo::PendingRemote<ConversationControllerMojom>
+  mojo::PendingRemote<chromeos::libassistant::mojom::ConversationController>
       pending_conversation_controller_remote;
-  mojo::PendingRemote<MediaDelegateMojom> pending_media_delegate_remote;
-  mojo::PendingRemote<PlatformDelegateMojom> pending_platform_delegate_remote;
-  mojo::PendingRemote<ServiceControllerMojom> pending_service_controller_remote;
-  mojo::PendingRemote<SpeakerIdEnrollmentControllerMojom>
+  mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
+      pending_media_delegate_remote;
+  mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
+      pending_platform_delegate_remote;
+  mojo::PendingRemote<chromeos::libassistant::mojom::ServiceController>
+      pending_service_controller_remote;
+  mojo::PendingRemote<
+      chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
       pending_speaker_id_enrollment_controller_remote;
 
-  mojo::PendingReceiver<MediaDelegateMojom> pending_media_delegate =
-      pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
-  mojo::PendingReceiver<PlatformDelegateMojom> pending_platform_delegate =
-      pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
+      pending_media_delegate =
+          pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
+      pending_platform_delegate =
+          pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
   pending_audio_output_delegate_receiver_ =
       pending_audio_output_delegate_remote.InitWithNewPipeAndPassReceiver();
   libassistant_service_remote_->Bind(
@@ -168,12 +175,14 @@ ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {
   return *conversation_controller_proxy_;
 }
 
-AssistantProxy::DisplayController& AssistantProxy::display_controller() {
+chromeos::libassistant::mojom::DisplayController&
+AssistantProxy::display_controller() {
   DCHECK(display_controller_remote_.is_bound());
   return *display_controller_remote_.get();
 }
 
-AssistantProxy::MediaController& AssistantProxy::media_controller() {
+chromeos::libassistant::mojom::MediaController&
+AssistantProxy::media_controller() {
   DCHECK(media_controller_remote_.is_bound());
   return *media_controller_remote_.get();
 }

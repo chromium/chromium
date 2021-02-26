@@ -36,10 +36,9 @@ class AssistantSettingsImpl : public AssistantSettings {
                         AssistantManagerServiceImpl* assistant_manager_service);
   ~AssistantSettingsImpl() override;
 
-  void Initialize(
-      mojo::PendingRemote<
-          ::chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
-          enrollment_controller_remote);
+  void Initialize(mojo::PendingRemote<
+                  chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+                      enrollment_controller_remote);
 
   // AssistantSettings overrides:
   void GetSettings(const std::string& selector,
@@ -56,7 +55,7 @@ class AssistantSettingsImpl : public AssistantSettings {
 
  private:
   void HandleSpeakerIdEnrollmentStatusSync(
-      libassistant::mojom::SpeakerIdEnrollmentStatusPtr status);
+      chromeos::libassistant::mojom::SpeakerIdEnrollmentStatusPtr status);
   void HandleDeviceAppsStatusSync(base::OnceCallback<void(bool)> callback,
                                   const std::string& settings);
 
@@ -69,7 +68,7 @@ class AssistantSettingsImpl : public AssistantSettings {
   ServiceContext* const context_;
   AssistantManagerServiceImpl* const assistant_manager_service_;
 
-  mojo::Remote<::chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+  mojo::Remote<chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
       speaker_id_enrollment_remote_;
 
   base::WeakPtrFactory<AssistantSettingsImpl> weak_factory_{this};

@@ -23,7 +23,7 @@ void PlatformDelegateImpl::BindAudioStreamFactory(
 
 void PlatformDelegateImpl::BindAudioDecoderFactory(
     mojo::PendingReceiver<
-        ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
+        chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
   AssistantClient::Get()->RequestAudioDecoderFactory(std::move(receiver));
 }
 
@@ -33,7 +33,7 @@ void PlatformDelegateImpl::BindBatteryMonitor(
 }
 
 void PlatformDelegateImpl::BindNetworkConfig(
-    mojo::PendingReceiver<::chromeos::network_config::mojom::CrosNetworkConfig>
+    mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {
   AssistantClient::Get()->RequestNetworkConfig(std::move(receiver));
 }

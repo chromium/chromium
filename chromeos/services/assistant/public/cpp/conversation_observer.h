@@ -15,16 +15,16 @@ namespace assistant {
 // Default implementation of |mojom::ConversationObserver|, which allow child
 // child classes to only implement handlers they are interested in.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
-    : public libassistant::mojom::ConversationObserver {
+    : public chromeos::libassistant::mojom::ConversationObserver {
  public:
-  // libassistant::mojom::ConversationObserver:
+  // chromeos::libassistant::mojom::ConversationObserver:
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override {}
   void OnTtsStarted(bool due_to_error) override {}
   void OnHtmlResponse(const std::string& response,
                       const std::string& fallback) override {}
 
-  mojo::PendingRemote<libassistant::mojom::ConversationObserver>
+  mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
   BindNewPipeAndPassRemote();
 
  protected:
@@ -32,8 +32,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
   ~ConversationObserver() override;
 
  private:
-  mojo::Receiver<libassistant::mojom::ConversationObserver> remote_observer_{
-      this};
+  mojo::Receiver<chromeos::libassistant::mojom::ConversationObserver>
+      remote_observer_{this};
 };
 
 }  // namespace assistant

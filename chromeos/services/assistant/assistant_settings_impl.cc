@@ -46,8 +46,7 @@ AssistantSettingsImpl::~AssistantSettingsImpl() = default;
 
 void AssistantSettingsImpl::Initialize(
     mojo::PendingRemote<
-        ::chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
-        remote) {
+        chromeos::libassistant::mojom::SpeakerIdEnrollmentController> remote) {
   speaker_id_enrollment_remote_.Bind(std::move(remote));
 }
 
@@ -173,7 +172,7 @@ void AssistantSettingsImpl::SyncDeviceAppsStatus(
 }
 
 void AssistantSettingsImpl::HandleSpeakerIdEnrollmentStatusSync(
-    libassistant::mojom::SpeakerIdEnrollmentStatusPtr status) {
+    chromeos::libassistant::mojom::SpeakerIdEnrollmentStatusPtr status) {
   if (!status->user_model_exists) {
     // If hotword is enabled but there is no voice model found, launch the
     // enrollment flow.

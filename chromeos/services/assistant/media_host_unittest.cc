@@ -23,9 +23,9 @@ namespace assistant {
 
 namespace {
 
-using libassistant::mojom::MediaState;
-using libassistant::mojom::MediaStatePtr;
-using libassistant::mojom::PlaybackState;
+using chromeos::libassistant::mojom::MediaState;
+using chromeos::libassistant::mojom::MediaStatePtr;
+using chromeos::libassistant::mojom::PlaybackState;
 using media_session::mojom::MediaSessionInfo;
 using ::testing::_;
 
@@ -88,7 +88,7 @@ class MediaControllerMock : public media_session::mojom::MediaController {
       (::media_session::mojom::MediaSessionImageType type,
        int32_t minimum_size_px,
        int32_t desired_size_px,
-       ::mojo::PendingRemote<media_session::mojom::MediaControllerImageObserver>
+       mojo::PendingRemote<media_session::mojom::MediaControllerImageObserver>
            observer));
   MOCK_METHOD(void, SeekTo, (::base::TimeDelta seek_time));
   MOCK_METHOD(void, ScrubTo, (::base::TimeDelta seek_time));
@@ -132,12 +132,12 @@ class FakeMediaControllerManager
 
   // media_session::mojom::MediaControllerManager implementation:
   void CreateMediaControllerForSession(
-      ::mojo::PendingReceiver<media_session::mojom::MediaController> receiver,
+      mojo::PendingReceiver<media_session::mojom::MediaController> receiver,
       const ::base::UnguessableToken& request_id) override {
     NOTIMPLEMENTED();
   }
   void CreateActiveMediaController(
-      ::mojo::PendingReceiver<media_session::mojom::MediaController> receiver)
+      mojo::PendingReceiver<media_session::mojom::MediaController> receiver)
       override {
     media_controller_.Bind(std::move(receiver));
   }
@@ -211,7 +211,7 @@ class MediaHostTest : public testing::Test {
     return libassistant_controller_;
   }
 
-  libassistant::mojom::MediaDelegate& libassistant_media_delegate() {
+  chromeos::libassistant::mojom::MediaDelegate& libassistant_media_delegate() {
     return *libassistant_media_delegate_;
   }
 
@@ -284,7 +284,8 @@ class MediaHostTest : public testing::Test {
   FakeMediaControllerManager media_controller_manager_;
   ScopedAssistantClient assistant_client_;
   testing::StrictMock<LibassistantMediaControllerMock> libassistant_controller_;
-  mojo::Remote<libassistant::mojom::MediaDelegate> libassistant_media_delegate_;
+  mojo::Remote<chromeos::libassistant::mojom::MediaDelegate>
+      libassistant_media_delegate_;
   std::unique_ptr<MediaHost> media_host_;
 };
 
@@ -477,7 +478,7 @@ TEST_F(MediaHostTest, ShouldForwardLibassistantMediaSessionUpdates) {
               MediaSessionMetadataChanged(expected_output));
 
   auto input = MediaState::New();
-  input->metadata = libassistant::mojom::MediaMetadata::New();
+  input->metadata = chromeos::libassistant::mojom::MediaMetadata::New();
   input->metadata->title = "the title";
   input->metadata->artist = "the artist";
   input->metadata->album = "the album";

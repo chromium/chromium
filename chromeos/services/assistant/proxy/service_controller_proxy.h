@@ -36,8 +36,6 @@ class ServiceControllerProxy {
  public:
   // Each authentication token exists of a [gaia_id, access_token] tuple.
   using AuthTokens = std::vector<std::pair<std::string, std::string>>;
-  using BootupConfig = libassistant::mojom::BootupConfig;
-  using BootupConfigPtr = libassistant::mojom::BootupConfigPtr;
 
   ServiceControllerProxy(
       LibassistantServiceHost* host,
@@ -55,7 +53,7 @@ class ServiceControllerProxy {
   // Start() can only be called when the service is stopped.
   void Start(
       assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
-      BootupConfigPtr bootup_config,
+      chromeos::libassistant::mojom::BootupConfigPtr bootup_config,
       const AuthTokens& auth_tokens);
   // Stop and destroy the |AssistantManager| and all related objects.
   void Stop();
@@ -67,7 +65,8 @@ class ServiceControllerProxy {
   void SetAuthTokens(const AuthTokens& tokens);
 
   void AddAndFireStateObserver(
-      ::mojo::PendingRemote<libassistant::mojom::StateObserver> observer);
+      mojo::PendingRemote<chromeos::libassistant::mojom::StateObserver>
+          observer);
 
  private:
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory();

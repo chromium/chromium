@@ -33,9 +33,10 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   LibassistantServiceHostImpl& operator=(LibassistantServiceHostImpl&) = delete;
   ~LibassistantServiceHostImpl() override;
 
-  // LibassistantServiceHostImpl implementation:
+  // LibassistantServiceHost implementation:
   void Launch(
-      mojo::PendingReceiver<LibassistantServiceMojom> receiver) override;
+      mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+          receiver) override;
   void Stop() override;
   void SetInitializeCallback(InitializeCallback) override;
 

@@ -10,14 +10,16 @@ namespace chromeos {
 namespace assistant {
 
 ConversationControllerProxy::ConversationControllerProxy(
-    mojo::PendingRemote<ConversationController> conversation_controller_remote)
+    mojo::PendingRemote<chromeos::libassistant::mojom::ConversationController>
+        conversation_controller_remote)
     : conversation_controller_remote_(
           std::move(conversation_controller_remote)) {}
 
 ConversationControllerProxy::~ConversationControllerProxy() = default;
 
 void ConversationControllerProxy::AddConversationObserver(
-    mojo::PendingRemote<libassistant::mojom::ConversationObserver> observer) {
+    mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
+        observer) {
   conversation_controller_remote_->AddRemoteObserver(std::move(observer));
 }
 

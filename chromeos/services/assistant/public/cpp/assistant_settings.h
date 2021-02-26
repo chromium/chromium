@@ -17,17 +17,16 @@ namespace chromeos {
 namespace assistant {
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) SpeakerIdEnrollmentClient
-    : public ::chromeos::libassistant::mojom::SpeakerIdEnrollmentClient {
+    : public chromeos::libassistant::mojom::SpeakerIdEnrollmentClient {
  public:
   SpeakerIdEnrollmentClient();
   ~SpeakerIdEnrollmentClient() override;
 
-  mojo::PendingRemote<
-      ::chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
+  mojo::PendingRemote<chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
   BindNewPipeAndPassRemote();
 
  private:
-  mojo::Receiver<::chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
+  mojo::Receiver<chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
       client_{this};
 };
 

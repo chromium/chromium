@@ -54,7 +54,8 @@ class AssistantMediaSessionTest : public testing::Test {
   ScopedAssistantClient client;
   testing::StrictMock<LibassistantMediaControllerMock>
       libassistant_media_controller_;
-  mojo::Remote<libassistant::mojom::MediaDelegate> libassistant_media_delegate_;
+  mojo::Remote<chromeos::libassistant::mojom::MediaDelegate>
+      libassistant_media_delegate_;
   MediaHost media_host_{AssistantClient::Get(),
                         /*interaction_subscribers=*/nullptr};
   AssistantMediaSession assistant_media_session_{&media_host_};
