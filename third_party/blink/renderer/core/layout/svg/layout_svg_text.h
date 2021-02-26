@@ -27,11 +27,10 @@
 namespace blink {
 
 class LayoutSVGInlineText;
-class SVGTextElement;
 
 class LayoutSVGText final : public LayoutSVGBlock {
  public:
-  explicit LayoutSVGText(SVGTextElement*);
+  explicit LayoutSVGText(Element*);
   ~LayoutSVGText() override;
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;

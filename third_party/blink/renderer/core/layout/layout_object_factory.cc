@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
@@ -54,6 +55,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -345,6 +347,14 @@ LayoutObject* LayoutObjectFactory::CreateRubyText(Node* node,
                                                   const ComputedStyle& style,
                                                   LegacyLayout legacy) {
   return CreateObject<LayoutRubyText, LayoutNGRubyText>(*node, style, legacy);
+}
+
+LayoutObject* LayoutObjectFactory::CreateSVGText(Node& node,
+                                                 const ComputedStyle& style,
+                                                 LegacyLayout legacy) {
+  const bool disable_ng_for_type = !RuntimeEnabledFeatures::SVGTextNGEnabled();
+  return CreateObject<LayoutBlockFlow, LayoutNGSVGText, LayoutSVGText>(
+      node, style, legacy, disable_ng_for_type);
 }
 
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(

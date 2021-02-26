@@ -535,6 +535,8 @@ blink_core_sources_layout = [
   "ng/ng_text_decoration_offset.cc",
   "ng/ng_text_decoration_offset.h",
   "ng/ng_unpositioned_float.h",
+  "ng/svg/layout_ng_svg_text.cc",
+  "ng/svg/layout_ng_svg_text.h",
   "ng/table/interface_casting.h",
   "ng/table/layout_ng_table.cc",
   "ng/table/layout_ng_table.h",

@@ -64,11 +64,13 @@ const LayoutSVGText* FindTextRoot(const LayoutObject* start) {
 
 }  // namespace
 
-LayoutSVGText::LayoutSVGText(SVGTextElement* node)
-    : LayoutSVGBlock(node),
+LayoutSVGText::LayoutSVGText(Element* node)
+    : LayoutSVGBlock(To<SVGElement>(node)),
       needs_reordering_(false),
       needs_positioning_values_update_(false),
-      needs_text_metrics_update_(false) {}
+      needs_text_metrics_update_(false) {
+  DCHECK(IsA<SVGTextElement>(node));
+}
 
 LayoutSVGText::~LayoutSVGText() {
   DCHECK(descendant_text_nodes_.IsEmpty());

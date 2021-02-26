@@ -102,6 +102,10 @@ class LayoutObjectFactory {
                                       const ComputedStyle& style,
                                       LegacyLayout legacy);
 
+  static LayoutObject* CreateSVGText(Node& node,
+                                     const ComputedStyle& style,
+                                     LegacyLayout legacy);
+
   // Anonoymous creation methods
 
   // |child_forces_legacy| true if creating parents boxes for legacy child.
