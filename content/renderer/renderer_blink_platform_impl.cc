@@ -1026,6 +1026,12 @@ void RendererBlinkPlatformImpl::SetActiveURL(const blink::WebURL& url,
 
 //------------------------------------------------------------------------------
 
+SkBitmap* RendererBlinkPlatformImpl::GetSadPageBitmap() {
+  return GetContentClient()->renderer()->GetSadWebViewBitmap();
+}
+
+//------------------------------------------------------------------------------
+
 blink::mojom::CodeCacheHost& RendererBlinkPlatformImpl::GetCodeCacheHost() {
   if (!code_cache_host_) {
     code_cache_host_ = mojo::SharedRemote<blink::mojom::CodeCacheHost>(

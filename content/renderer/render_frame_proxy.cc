@@ -19,7 +19,6 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/agent_scheduling_group.h"
-#include "content/renderer/child_frame_compositing_helper.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
@@ -77,29 +76,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
       scope, proxy.get(), proxy->blink_interface_registry_.get(),
       proxy->GetRemoteAssociatedInterfaces(), proxy_frame_token);
 
-  blink::WebFrameWidget* ancestor_widget = nullptr;
-  bool parent_is_local = false;
-
-  // A top level frame proxy doesn't have a RenderWidget pointer. The pointer
-  // is to an ancestor local frame's RenderWidget and there are no ancestors.
-  if (frame_to_replace->GetWebFrame()->Parent()) {
-    if (frame_to_replace->GetWebFrame()->Parent()->IsWebLocalFrame()) {
-      // If the frame was a local frame, get its local root's RenderWidget.
-      ancestor_widget = frame_to_replace->GetLocalRootWebFrameWidget();
-      parent_is_local = true;
-    } else {
-      // Otherwise, grab the pointer from the parent RenderFrameProxy, as
-      // it would already have the correct pointer. A proxy with a proxy child
-      // must be created before its child, so the first proxy in a descendant
-      // chain is either the root or has a local parent frame.
-      RenderFrameProxy* parent = RenderFrameProxy::FromWebFrame(
-          frame_to_replace->GetWebFrame()->Parent()->ToWebRemoteFrame());
-      ancestor_widget = parent->ancestor_web_frame_widget_;
-    }
-  }
-
-  proxy->Init(web_frame, frame_to_replace->render_view(), ancestor_widget,
-              parent_is_local);
+  proxy->Init(web_frame, frame_to_replace->render_view());
   return proxy.release();
 }
 
@@ -127,7 +104,6 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
       new RenderFrameProxy(agent_scheduling_group, routing_id));
   proxy->devtools_frame_token_ = devtools_frame_token;
   RenderViewImpl* render_view = nullptr;
-  blink::WebFrameWidget* ancestor_widget = nullptr;
   blink::WebRemoteFrame* web_frame = nullptr;
 
   blink::WebFrame* opener = nullptr;
@@ -157,10 +133,9 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
         proxy->blink_interface_registry_.get(),
         proxy->GetRemoteAssociatedInterfaces(), frame_token, opener);
     render_view = parent->render_view();
-    ancestor_widget = parent->ancestor_web_frame_widget_;
   }
 
-  proxy->Init(web_frame, render_view, ancestor_widget, false);
+  proxy->Init(web_frame, render_view);
 
   // Initialize proxy's WebRemoteFrame with the security origin and other
   // replicated information.
@@ -188,8 +163,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyForPortal(
       blink::mojom::TreeScopeType::kDocument, proxy.get(),
       proxy->blink_interface_registry_.get(),
       proxy->GetRemoteAssociatedInterfaces(), frame_token, portal_element);
-  proxy->Init(web_frame, parent->render_view(),
-              parent->GetLocalRootWebFrameWidget(), true);
+  proxy->Init(web_frame, parent->render_view());
   return proxy.release();
 }
 
@@ -238,22 +212,16 @@ RenderFrameProxy::~RenderFrameProxy() {
 }
 
 void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
-                            RenderViewImpl* render_view,
-                            blink::WebFrameWidget* ancestor_widget,
-                            bool parent_is_local) {
+                            RenderViewImpl* render_view) {
   CHECK(web_frame);
   CHECK(render_view);
 
   web_frame_ = web_frame;
   render_view_ = render_view;
-  ancestor_web_frame_widget_ = ancestor_widget;
 
   std::pair<FrameProxyMap::iterator, bool> result =
       g_frame_proxy_map.Get().insert(std::make_pair(web_frame_, this));
   CHECK(result.second) << "Inserted a duplicate item.";
-
-  if (parent_is_local)
-    compositing_helper_ = std::make_unique<ChildFrameCompositingHelper>(this);
 }
 
 void RenderFrameProxy::SetReplicatedState(
@@ -334,31 +302,8 @@ bool RenderFrameProxy::Send(IPC::Message* message) {
   return agent_scheduling_group_.Send(message);
 }
 
-void RenderFrameProxy::ChildProcessGone() {
-  remote_process_gone_ = true;
-  compositing_helper_->ChildFrameGone(
-      ancestor_web_frame_widget_->GetOriginalScreenInfo().device_scale_factor);
-}
-
 void RenderFrameProxy::DidStartLoading() {
   web_frame_->DidStartLoading();
-}
-
-void RenderFrameProxy::WillSynchronizeVisualProperties(
-    bool capture_sequence_number_changed,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& compositor_viewport_size) {
-  DCHECK(ancestor_web_frame_widget_);
-  DCHECK(surface_id.is_valid());
-  DCHECK(!remote_process_gone_);
-
-  // If we're synchronizing surfaces, then use an infinite deadline to ensure
-  // everything is synchronized.
-  cc::DeadlinePolicy deadline = capture_sequence_number_changed
-                                    ? cc::DeadlinePolicy::UseInfiniteDeadline()
-                                    : cc::DeadlinePolicy::UseDefaultDeadline();
-  compositing_helper_->SetSurfaceId(surface_id, compositor_viewport_size,
-                                    deadline);
 }
 
 void RenderFrameProxy::FrameDetached(DetachType type) {
@@ -430,34 +375,6 @@ void RenderFrameProxy::Navigate(
 
 base::UnguessableToken RenderFrameProxy::GetDevToolsFrameToken() {
   return devtools_frame_token_;
-}
-
-cc::Layer* RenderFrameProxy::GetLayer() {
-  return embedded_layer_.get();
-}
-
-void RenderFrameProxy::SetLayer(scoped_refptr<cc::Layer> layer,
-                                bool is_surface_layer) {
-  // |ancestor_web_frame_widget_| can be null if this is a proxy for a remote
-  // main frame, or a subframe of that proxy. However, we should not be setting
-  // a layer on such a proxy (the layer is used for embedding a child proxy).
-  DCHECK(ancestor_web_frame_widget_);
-
-  if (web_frame())
-    web_frame()->SetCcLayer(layer.get(), is_surface_layer);
-  embedded_layer_ = std::move(layer);
-}
-
-SkBitmap* RenderFrameProxy::GetSadPageBitmap() {
-  return GetContentClient()->renderer()->GetSadWebViewBitmap();
-}
-
-bool RenderFrameProxy::RemoteProcessGone() const {
-  return remote_process_gone_;
-}
-
-void RenderFrameProxy::DidSetFrameSinkId() {
-  remote_process_gone_ = false;
 }
 
 mojom::RenderFrameProxyHost* RenderFrameProxy::GetFrameProxyHost() {

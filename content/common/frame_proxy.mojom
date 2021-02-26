@@ -21,8 +21,6 @@ interface RenderFrameProxyHost {
 // Mojo interface for communicating from RenderFrameProxyHost to
 // RenderFrameProxy. Implemented by renderer processes, called by the browser
 // process.
+// TODO(https://crbug.com/1166719): Remove this interface.
 interface RenderFrameProxy {
-  // Notifies the remote frame that the process rendering the child frame's
-  // contents has terminated.
-  ChildProcessGone();
 };

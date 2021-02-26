@@ -19,10 +19,6 @@
 #include "ui/events/types/scroll_types.h"
 #include "v8/include/v8.h"
 
-namespace cc {
-class Layer;
-}
-
 namespace blink {
 
 namespace mojom {
@@ -97,9 +93,6 @@ class WebRemoteFrame : public WebFrame {
                                             AssociatedInterfaceProvider*,
                                             const RemoteFrameToken& frame_token,
                                             WebFrame* opener) = 0;
-
-  // Layer for the in-process compositor.
-  virtual void SetCcLayer(cc::Layer*, bool is_surface_layer) = 0;
 
   // Set security origin replicated from another process.
   virtual void SetReplicatedOrigin(

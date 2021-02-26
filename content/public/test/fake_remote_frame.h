@@ -93,6 +93,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   void DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+  void ChildProcessGone() override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

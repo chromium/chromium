@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/child_frame_compositing_helper.h"
+#include "third_party/blink/renderer/core/frame/child_frame_compositing_helper.h"
 
 #include <utility>
 
@@ -11,15 +11,15 @@
 #include "cc/layers/surface_layer.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
-#include "content/renderer/child_frame_compositor.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/blink/renderer/core/frame/child_frame_compositor.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
 
-namespace content {
+namespace blink {
 
 ChildFrameCompositingHelper::ChildFrameCompositingHelper(
     ChildFrameCompositor* child_frame_compositor)
@@ -32,8 +32,7 @@ ChildFrameCompositingHelper::~ChildFrameCompositingHelper() {
     crash_ui_layer_->ClearClient();
 }
 
-void ChildFrameCompositingHelper::ChildFrameGone(
-    float device_scale_factor) {
+void ChildFrameCompositingHelper::ChildFrameGone(float device_scale_factor) {
   surface_id_ = viz::SurfaceId();
   device_scale_factor_ = device_scale_factor;
 
@@ -42,13 +41,13 @@ void ChildFrameCompositingHelper::ChildFrameGone(
   crash_ui_layer_->SetIsDrawable(true);
 
   bool is_surface_layer = false;
-  child_frame_compositor_->SetLayer(crash_ui_layer_, is_surface_layer);
+  child_frame_compositor_->SetCcLayer(crash_ui_layer_, is_surface_layer);
 }
 
 void ChildFrameCompositingHelper::SetSurfaceId(
     const viz::SurfaceId& surface_id,
     const gfx::Size& frame_size_in_dip,
-    const cc::DeadlinePolicy& deadline) {
+    bool capture_sequence_number_changed) {
   if (surface_id_ == surface_id)
     return;
 
@@ -59,12 +58,17 @@ void ChildFrameCompositingHelper::SetSurfaceId(
   surface_layer_->SetSurfaceHitTestable(true);
   surface_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
+  // If we're synchronizing surfaces, then use an infinite deadline to ensure
+  // everything is synchronized.
+  cc::DeadlinePolicy deadline = capture_sequence_number_changed
+                                    ? cc::DeadlinePolicy::UseInfiniteDeadline()
+                                    : cc::DeadlinePolicy::UseDefaultDeadline();
   surface_layer_->SetSurfaceId(surface_id, deadline);
 
   // TODO(lfg): Investigate if it's possible to propagate the information
   // about the child surface's opacity. https://crbug.com/629851.
-  child_frame_compositor_->SetLayer(surface_layer_,
-                                    true /* is_surface_layer */);
+  child_frame_compositor_->SetCcLayer(surface_layer_,
+                                      true /* is_surface_layer */);
 
   UpdateVisibility(true);
 
@@ -72,7 +76,7 @@ void ChildFrameCompositingHelper::SetSurfaceId(
 }
 
 void ChildFrameCompositingHelper::UpdateVisibility(bool visible) {
-  cc::Layer* layer = child_frame_compositor_->GetLayer();
+  const scoped_refptr<cc::Layer>& layer = child_frame_compositor_->GetCcLayer();
   if (layer) {
     layer->SetIsDrawable(visible);
     layer->SetHitTestable(visible);
@@ -130,4 +134,4 @@ bool ChildFrameCompositingHelper::FillsBoundsCompletely() const {
   return true;
 }
 
-}  // namespace content
+}  // namespace blink

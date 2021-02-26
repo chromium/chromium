@@ -102,23 +102,6 @@ unsigned RemoteFrameClientImpl::BackForwardLength() {
   return 2;
 }
 
-void RemoteFrameClientImpl::WillSynchronizeVisualProperties(
-    bool capture_sequence_number_changed,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& compositor_viewport_size) {
-  web_frame_->Client()->WillSynchronizeVisualProperties(
-      capture_sequence_number_changed, surface_id,
-      compositor_viewport_size);
-}
-
-bool RemoteFrameClientImpl::RemoteProcessGone() const {
-  return web_frame_->Client()->RemoteProcessGone();
-}
-
-void RemoteFrameClientImpl::DidSetFrameSinkId() {
-  web_frame_->Client()->DidSetFrameSinkId();
-}
-
 AssociatedInterfaceProvider*
 RemoteFrameClientImpl::GetRemoteAssociatedInterfaces() {
   return web_frame_->Client()->GetRemoteAssociatedInterfaces();

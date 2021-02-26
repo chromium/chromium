@@ -49,17 +49,6 @@ class WebRemoteFrameClient {
           blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
           initiator_policy_container_keep_alive_handle) {}
 
-  virtual void WillSynchronizeVisualProperties(
-      bool capture_sequence_number_changed,
-      const viz::SurfaceId& surface_id,
-      const gfx::Size& compositor_viewport_size) {}
-
-  virtual bool RemoteProcessGone() const { return false; }
-
-  // This is a temporary workaround for https://crbug.com/1166729.
-  // TODO(https://crbug.com/1166722): Remove this once the migration is done.
-  virtual void DidSetFrameSinkId() {}
-
   // Returns an AssociatedInterfaceProvider the frame can use to request
   // associated interfaces from the browser.
   virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;

@@ -991,6 +991,10 @@ interface RemoteFrame {
   // Notifies this remote frame that its associated compositing
   // destination (RenderWidgetHostView) has changed.
   SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
+
+  // Notifies the remote frame that the process rendering the child frame's
+  // contents has terminated.
+  ChildProcessGone();
 };
 
 // Implemented in Blink, this interface defines main-frame-specific methods that

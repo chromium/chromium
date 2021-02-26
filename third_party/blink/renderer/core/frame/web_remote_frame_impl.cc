@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/frame/remote_frame_client_impl.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
@@ -213,10 +214,6 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
   Frame* previous_sibling_frame =
       previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
-  SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
-      frame_client_.Get(), page, owner, parent_frame, previous_sibling_frame,
-      insert_type, GetRemoteFrameToken(), window_agent_factory,
-      interface_registry_, associated_interface_provider_));
 
   // If this is not a top-level frame, we need to send FrameVisualProperties to
   // the remote renderer process. Some of the properties are inherited from the
@@ -225,20 +222,24 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
   // hence the code to traverse up through FrameOwner.
   WebFrameWidget* ancestor_widget = nullptr;
   if (parent) {
-    while (parent && !parent->IsWebLocalFrame())
-      parent = parent->Parent();
-    if (parent) {
+    if (parent->IsWebLocalFrame()) {
       ancestor_widget =
           To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidget();
     }
   } else if (owner && owner->IsLocal()) {
-    ancestor_widget =
-        WebLocalFrameImpl::FromFrame(To<HTMLFrameOwnerElement>(owner)
-                                         ->GetDocument()
-                                         .GetFrame()
-                                         ->LocalFrameRoot())
-            ->FrameWidget();
+    // Never gets to this point without |owner| being a portal element.
+    auto* owner_element = To<HTMLFrameOwnerElement>(owner);
+    DCHECK(owner_element->IsHTMLPortalElement());
+    LocalFrame& local_frame =
+        owner_element->GetDocument().GetFrame()->LocalFrameRoot();
+    ancestor_widget = WebLocalFrameImpl::FromFrame(local_frame)->FrameWidget();
   }
+
+  SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
+      frame_client_.Get(), page, owner, parent_frame, previous_sibling_frame,
+      insert_type, GetRemoteFrameToken(), window_agent_factory,
+      interface_registry_, associated_interface_provider_, ancestor_widget));
+
   if (ancestor_widget)
     InitializeFrameVisualProperties(ancestor_widget, View());
 
@@ -274,11 +275,6 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
   ToCoreFrame(*child)->SetOpenerDoNotNotify(opener_frame);
   return child;
-}
-
-void WebRemoteFrameImpl::SetCcLayer(cc::Layer* layer,
-                                    bool is_surface_layer) {
-  GetFrame()->SetCcLayer(layer, is_surface_layer);
 }
 
 void WebRemoteFrameImpl::SetCoreFrame(RemoteFrame* frame) {

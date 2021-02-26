@@ -73,6 +73,7 @@
 #include "ui/base/resource/scale_factor.h"
 
 class SkCanvas;
+class SkBitmap;
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -770,6 +771,11 @@ class BLINK_PLATFORM_EXPORT Platform {
   // keys and is usually set for the duration of processing an IPC message. To
   // unset pass an empty WebURL and WebString.
   virtual void SetActiveURL(const WebURL& url, const WebString& top_url) {}
+
+  // Sad Page -----------------------------------------------------
+
+  // Returns a sad page bitmap used when the child frame has crashed.
+  virtual SkBitmap* GetSadPageBitmap() { return nullptr; }
 
  private:
   static void InitializeMainThreadCommon(Platform* platform,

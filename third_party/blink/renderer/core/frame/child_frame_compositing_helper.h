@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_CHILD_FRAME_COMPOSITING_HELPER_H_
-#define CONTENT_RENDERER_CHILD_FRAME_COMPOSITING_HELPER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CHILD_FRAME_COMPOSITING_HELPER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CHILD_FRAME_COMPOSITING_HELPER_H_
 
 #include <stdint.h>
 
@@ -15,7 +15,7 @@
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/surface_layer.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "content/common/content_export.h"
+#include "third_party/blink/renderer/core/core_export.h"
 
 namespace cc {
 class PictureLayer;
@@ -25,16 +25,11 @@ namespace gfx {
 class Size;
 }
 
-namespace viz {
-class SurfaceId;
-}
-
-namespace content {
+namespace blink {
 
 class ChildFrameCompositor;
 
-class CONTENT_EXPORT ChildFrameCompositingHelper
-    : public cc::ContentLayerClient {
+class CORE_EXPORT ChildFrameCompositingHelper : public cc::ContentLayerClient {
  public:
   explicit ChildFrameCompositingHelper(
       ChildFrameCompositor* child_frame_compositor);
@@ -42,7 +37,7 @@ class CONTENT_EXPORT ChildFrameCompositingHelper
 
   void SetSurfaceId(const viz::SurfaceId& surface_id,
                     const gfx::Size& frame_size_in_dip,
-                    const cc::DeadlinePolicy& deadline);
+                    bool capture_sequence_number_changed);
   void UpdateVisibility(bool visible);
   void ChildFrameGone(float device_scale_factor);
 
@@ -64,6 +59,6 @@ class CONTENT_EXPORT ChildFrameCompositingHelper
   DISALLOW_COPY_AND_ASSIGN(ChildFrameCompositingHelper);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_CHILD_FRAME_COMPOSITING_HELPER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CHILD_FRAME_COMPOSITING_HELPER_H_

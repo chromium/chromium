@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/frame/child_frame_compositing_helper.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -94,7 +96,8 @@ RemoteFrame::RemoteFrame(
     const RemoteFrameToken& frame_token,
     WindowAgentFactory* inheriting_agent_factory,
     InterfaceRegistry* interface_registry,
-    AssociatedInterfaceProvider* associated_interface_provider)
+    AssociatedInterfaceProvider* associated_interface_provider,
+    WebFrameWidget* ancestor_widget)
     : Frame(client,
             page,
             owner,
@@ -108,6 +111,7 @@ RemoteFrame::RemoteFrame(
       // object until a FrameSinkId is provided.
       parent_local_surface_id_allocator_(
           std::make_unique<viz::ParentLocalSurfaceIdAllocator>()),
+      ancestor_widget_(ancestor_widget),
       interface_registry_(interface_registry
                               ? interface_registry
                               : InterfaceRegistry::GetEmptyInterfaceRegistry()),
@@ -136,6 +140,8 @@ RemoteFrame::RemoteFrame(
   UpdateInheritedEffectiveTouchActionIfPossible();
   UpdateVisibleToHitTesting();
   Initialize();
+  if (ancestor_widget)
+    compositing_helper_ = std::make_unique<ChildFrameCompositingHelper>(this);
 }
 
 RemoteFrame::~RemoteFrame() {
@@ -283,6 +289,45 @@ bool RemoteFrame::DetachImpl(FrameDetachType type) {
   return true;
 }
 
+const scoped_refptr<cc::Layer>& RemoteFrame::GetCcLayer() {
+  return cc_layer_;
+}
+
+void RemoteFrame::SetCcLayer(scoped_refptr<cc::Layer> layer,
+                             bool is_surface_layer) {
+  // |ancestor_widget_| can be null if this is a proxy for a remote
+  // main frame, or a subframe of that proxy. However, we should not be setting
+  // a layer on such a proxy (the layer is used for embedding a child proxy).
+  DCHECK(ancestor_widget_);
+  DCHECK(Owner());
+
+  cc_layer_ = std::move(layer);
+  is_surface_layer_ = is_surface_layer;
+  if (cc_layer_ && is_surface_layer_) {
+    static_cast<cc::SurfaceLayer&>(*cc_layer_)
+        .SetHasPointerEventsNone(IsIgnoredForHitTest());
+  }
+  HTMLFrameOwnerElement* owner = To<HTMLFrameOwnerElement>(Owner());
+  owner->SetNeedsCompositingUpdate();
+
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // New layers for remote frames are controlled by Blink's embedder.
+    // To ensure the new surface is painted, we need to repaint the frame
+    // owner's PaintLayer.
+    LayoutBoxModelObject* layout_object = owner->GetLayoutBoxModelObject();
+    if (layout_object && layout_object->Layer())
+      layout_object->Layer()->SetNeedsRepaint();
+  }
+
+  // Schedule an animation so that a new frame is produced with the updated
+  // layer, otherwise this local root's visible content may not be up to date.
+  owner->GetDocument().GetFrame()->View()->ScheduleAnimation();
+}
+
+SkBitmap* RemoteFrame::GetSadPageBitmap() {
+  return Platform::Current()->GetSadPageBitmap();
+}
+
 bool RemoteFrame::DetachDocument() {
   return DetachChildren();
 }
@@ -423,8 +468,8 @@ void RemoteFrame::DidChangeVisibleToHitTesting() {
   if (!cc_layer_ || !is_surface_layer_)
     return;
 
-  static_cast<cc::SurfaceLayer*>(cc_layer_)->SetHasPointerEventsNone(
-      IsIgnoredForHitTest());
+  static_cast<cc::SurfaceLayer&>(*cc_layer_)
+      .SetHasPointerEventsNone(IsIgnoredForHitTest());
 }
 
 void RemoteFrame::SetReplicatedFeaturePolicyHeader(
@@ -809,9 +854,7 @@ viz::FrameSinkId RemoteFrame::GetFrameSinkId() {
 }
 
 void RemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
-  // This is a temporary workaround for https://crbug.com/1166729.
-  // TODO(https://crbug.com/1166722): Remove this once the migration is done.
-  Client()->DidSetFrameSinkId();
+  remote_process_gone_ = false;
 
   // The same ParentLocalSurfaceIdAllocator cannot provide LocalSurfaceIds for
   // two different frame sinks, so recreate it here.
@@ -826,6 +869,12 @@ void RemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
   ResendVisualProperties();
 }
 
+void RemoteFrame::ChildProcessGone() {
+  remote_process_gone_ = true;
+  compositing_helper_->ChildFrameGone(
+      ancestor_widget_->GetOriginalScreenInfo().device_scale_factor);
+}
+
 bool RemoteFrame::IsIgnoredForHitTest() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   if (!owner || !owner->GetLayoutObject())
@@ -833,34 +882,6 @@ bool RemoteFrame::IsIgnoredForHitTest() const {
 
   return owner->OwnerType() == mojom::blink::FrameOwnerElementType::kPortal ||
          !visible_to_hit_testing_;
-}
-
-void RemoteFrame::SetCcLayer(cc::Layer* cc_layer, bool is_surface_layer) {
-  DCHECK(Owner());
-
-  cc_layer_ = cc_layer;
-  is_surface_layer_ = is_surface_layer;
-  if (cc_layer_) {
-    if (is_surface_layer) {
-      static_cast<cc::SurfaceLayer*>(cc_layer_)->SetHasPointerEventsNone(
-          IsIgnoredForHitTest());
-    }
-  }
-  HTMLFrameOwnerElement* owner = To<HTMLFrameOwnerElement>(Owner());
-  owner->SetNeedsCompositingUpdate();
-
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // New layers for remote frames are controlled by Blink's embedder.
-    // To ensure the new surface is painted, we need to repaint the frame
-    // owner's PaintLayer.
-    LayoutBoxModelObject* layout_object = owner->GetLayoutBoxModelObject();
-    if (layout_object && layout_object->Layer())
-      layout_object->Layer()->SetNeedsRepaint();
-  }
-
-  // Schedule an animation so that a new frame is produced with the updated
-  // layer, otherwise this local root's visible content may not be up to date.
-  owner->GetDocument().GetFrame()->View()->ScheduleAnimation();
 }
 
 void RemoteFrame::AdvanceFocus(mojom::blink::FocusType type,
@@ -895,7 +916,7 @@ void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
 }
 
 bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
-  if (!GetFrameSinkId().is_valid() || Client()->RemoteProcessGone())
+  if (!GetFrameSinkId().is_valid() || remote_process_gone_)
     return false;
 
   bool capture_sequence_number_changed =
@@ -947,9 +968,13 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
 
   viz::SurfaceId surface_id(frame_sink_id_,
                             pending_visual_properties_.local_surface_id);
-  Client()->WillSynchronizeVisualProperties(
-      capture_sequence_number_changed, surface_id,
-      pending_visual_properties_.compositor_viewport.size());
+  DCHECK(ancestor_widget_);
+  DCHECK(surface_id.is_valid());
+  DCHECK(!remote_process_gone_);
+
+  compositing_helper_->SetSurfaceId(
+      surface_id, pending_visual_properties_.compositor_viewport.size(),
+      capture_sequence_number_changed);
 
   bool rect_changed = !sent_visual_properties_ ||
                       sent_visual_properties_->screen_space_rect !=

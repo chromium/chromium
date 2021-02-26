@@ -16,10 +16,6 @@
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-namespace cc {
-class Layer;
-}
-
 namespace blink {
 
 class FrameOwner;
@@ -83,7 +79,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
                                     AssociatedInterfaceProvider*,
                                     const RemoteFrameToken& frame_token,
                                     WebFrame* opener) override;
-  void SetCcLayer(cc::Layer*, bool is_surface_layer) override;
   void SetReplicatedOrigin(
       const WebSecurityOrigin&,
       bool is_potentially_trustworthy_opaque_origin) override;

@@ -35,12 +35,6 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_keep_alive_handle) override;
   unsigned BackForwardLength() override;
-  void WillSynchronizeVisualProperties(
-      bool capture_sequence_number_changed,
-      const viz::SurfaceId& surface_id,
-      const gfx::Size& compositor_viewport_size) override;
-  bool RemoteProcessGone() const override;
-  void DidSetFrameSinkId() override;
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
 
   WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }

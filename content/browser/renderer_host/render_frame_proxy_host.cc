@@ -492,7 +492,7 @@ void RenderFrameProxyHost::DidUpdateVisualProperties(
 }
 
 void RenderFrameProxyHost::ChildProcessGone() {
-  GetAssociatedRenderFrameProxy()->ChildProcessGone();
+  GetAssociatedRemoteFrame()->ChildProcessGone();
 }
 
 void RenderFrameProxyHost::DidFocusFrame() {

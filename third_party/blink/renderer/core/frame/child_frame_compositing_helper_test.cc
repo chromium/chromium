@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/child_frame_compositing_helper.h"
+#include "third_party/blink/renderer/core/frame/child_frame_compositing_helper.h"
 
 #include "cc/layers/layer.h"
-#include "content/renderer/child_frame_compositor.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/child_frame_compositor.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 
@@ -20,10 +20,10 @@ class MockChildFrameCompositor : public ChildFrameCompositor {
     sad_page_bitmap_.allocN32Pixels(width, height);
   }
 
-  cc::Layer* GetLayer() override { return layer_.get(); }
+  const scoped_refptr<cc::Layer>& GetCcLayer() override { return layer_; }
 
-  void SetLayer(scoped_refptr<cc::Layer> layer,
-                bool is_surface_layer) override {
+  void SetCcLayer(scoped_refptr<cc::Layer> layer,
+                  bool is_surface_layer) override {
     layer_ = std::move(layer);
   }
 
@@ -71,8 +71,7 @@ TEST_F(ChildFrameCompositingHelperTest, ChildFrameGoneClearsFallback) {
 
   const viz::SurfaceId surface_id = MakeSurfaceId(viz::FrameSinkId(1, 1), 1);
   const gfx::Size frame_size_in_dip(100, 100);
-  compositing_helper()->SetSurfaceId(surface_id, frame_size_in_dip,
-                                     cc::DeadlinePolicy::UseDefaultDeadline());
+  compositing_helper()->SetSurfaceId(surface_id, frame_size_in_dip, false);
   EXPECT_EQ(surface_id, compositing_helper()->surface_id());
 
   // Reporting that the child frame is gone should clear the surface id.
@@ -80,4 +79,4 @@ TEST_F(ChildFrameCompositingHelperTest, ChildFrameGoneClearsFallback) {
   EXPECT_FALSE(compositing_helper()->surface_id().is_valid());
 }
 
-}  // namespace content
+}  // namespace blink

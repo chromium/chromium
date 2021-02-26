@@ -105,4 +105,5 @@ void FakeRemoteFrame::DidUpdateVisualProperties(
 
 void FakeRemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {}
 
+void FakeRemoteFrame::ChildProcessGone() {}
 }  // namespace content
