@@ -14,6 +14,7 @@
 #include "ui/views/controls/slider.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -25,20 +26,34 @@ SliderExample::SliderExample()
 SliderExample::~SliderExample() = default;
 
 void SliderExample::CreateExampleView(View* container) {
-  label_ = container->AddChildView(std::make_unique<Label>());
-  slider_ = container->AddChildView(std::make_unique<Slider>(this));
-
-  slider_->SetValue(0.5);
-
   container->SetLayoutManager(std::make_unique<BoxLayout>(
-      BoxLayout::Orientation::kHorizontal, gfx::Insets(3), 3));
+      BoxLayout::Orientation::kVertical, gfx::Insets(3), 3));
+
+  auto* const container_default =
+      container->AddChildView(std::make_unique<BoxLayoutView>());
+  container_default->SetBetweenChildSpacing(3);
+  label_default_ = container_default->AddChildView(std::make_unique<Label>());
+  slider_default_ =
+      container_default->AddChildView(std::make_unique<Slider>(this));
+  slider_default_->SetValue(0.5);
+
+  auto* const container_minimal =
+      container->AddChildView(std::make_unique<BoxLayoutView>());
+  container_minimal->SetBetweenChildSpacing(3);
+  label_minimal_ = container_minimal->AddChildView(std::make_unique<Label>());
+  slider_minimal_ =
+      container_minimal->AddChildView(std::make_unique<Slider>(this));
+  slider_minimal_->SetValue(0.5);
+  slider_minimal_->SetRenderingStyle(Slider::RenderingStyle::kMinimalStyle);
 }
 
 void SliderExample::SliderValueChanged(Slider* sender,
                                        float value,
                                        float old_value,
                                        SliderChangeReason reason) {
-  label_->SetText(base::ASCIIToUTF16(base::StringPrintf("%.3lf", value)));
+  auto* const label =
+      (sender == slider_default_) ? label_default_ : label_minimal_;
+  label->SetText(base::ASCIIToUTF16(base::StringPrintf("%.3lf", value)));
 }
 
 }  // namespace examples

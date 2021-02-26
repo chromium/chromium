@@ -23,10 +23,8 @@ class VIEWS_EXAMPLES_EXPORT ToggleButtonExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 
  private:
-  // The only control in this test.
-  ToggleButton* button_ = nullptr;
-
-  int count_ = 0;
+  int count_1_ = 0;
+  int count_2_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(ToggleButtonExample);
 };
