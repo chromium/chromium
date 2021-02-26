@@ -74749,6 +74749,7 @@ would be helpful to identify which type is being sent.
   <int value="25" label="Chrome Reengagement 1"/>
   <int value="26" label="Chrome Reengagement 2"/>
   <int value="27" label="Chrome Reengagement 3"/>
+  <int value="28" label="Price Drop Alerts"/>
 </enum>
 
 <enum name="TabBackgroundLoadStatus">
