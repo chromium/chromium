@@ -33,7 +33,7 @@ class MODULES_EXPORT StorageBucketManager final
                                               NavigatorBase& navigator,
                                               ExceptionState& exception_state);
 
-  StorageBucketManager(NavigatorBase& navigator, ExecutionContext* context);
+  explicit StorageBucketManager(NavigatorBase& navigator);
   ~StorageBucketManager() override = default;
 
   ScriptPromise open(ScriptState* script_state,
@@ -50,6 +50,8 @@ class MODULES_EXPORT StorageBucketManager final
   void Trace(Visitor*) const override;
 
  private:
+  mojom::blink::BucketManagerHost* GetBucketManager(ScriptState* script_state);
+
   void DidOpen(ScriptPromiseResolver* resolver,
                mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote);
   void DidGetKeys(ScriptPromiseResolver* resolver,

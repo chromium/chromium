@@ -43,16 +43,10 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
 
 const char StorageBucketManager::kSupplementName[] = "StorageBucketManager";
 
-StorageBucketManager::StorageBucketManager(NavigatorBase& navigator,
-                                           ExecutionContext* context)
+StorageBucketManager::StorageBucketManager(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
-      ExecutionContextClient(context),
-      manager_remote_(context) {
-  context->GetBrowserInterfaceBroker().GetInterface(
-      manager_remote_.BindNewPipeAndPassReceiver(
-          context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  DCHECK(manager_remote_.is_bound());
-}
+      ExecutionContextClient(navigator.GetExecutionContext()),
+      manager_remote_(navigator.GetExecutionContext()) {}
 
 StorageBucketManager* StorageBucketManager::storageBuckets(
     ScriptState* script_state,
@@ -61,8 +55,7 @@ StorageBucketManager* StorageBucketManager::storageBuckets(
   auto* supplement =
       Supplement<NavigatorBase>::From<StorageBucketManager>(navigator);
   if (!supplement) {
-    auto* context = ExecutionContext::From(script_state);
-    supplement = MakeGarbageCollected<StorageBucketManager>(navigator, context);
+    supplement = MakeGarbageCollected<StorageBucketManager>(navigator);
     Supplement<NavigatorBase>::ProvideTo(navigator, supplement);
   }
   return supplement;
@@ -78,10 +71,10 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
   mojom::blink::BucketPoliciesPtr bucket_policies =
       ToMojoBucketPolicies(options);
 
-  manager_remote_->OpenBucket(
-      name, std::move(bucket_policies),
-      WTF::Bind(&StorageBucketManager::DidOpen, WrapPersistent(this),
-                WrapPersistent(resolver)));
+  GetBucketManager(script_state)
+      ->OpenBucket(name, std::move(bucket_policies),
+                   WTF::Bind(&StorageBucketManager::DidOpen,
+                             WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -90,9 +83,9 @@ ScriptPromise StorageBucketManager::keys(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  manager_remote_->Keys(WTF::Bind(&StorageBucketManager::DidGetKeys,
-                                  WrapPersistent(this),
-                                  WrapPersistent(resolver)));
+  GetBucketManager(script_state)
+      ->Keys(WTF::Bind(&StorageBucketManager::DidGetKeys, WrapPersistent(this),
+                       WrapPersistent(resolver)));
   return promise;
 }
 
@@ -102,10 +95,24 @@ ScriptPromise StorageBucketManager::Delete(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  manager_remote_->DeleteBucket(
-      name, WTF::Bind(&StorageBucketManager::DidDelete, WrapPersistent(this),
-                      WrapPersistent(resolver)));
+  GetBucketManager(script_state)
+      ->DeleteBucket(name,
+                     WTF::Bind(&StorageBucketManager::DidDelete,
+                               WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
+}
+
+mojom::blink::BucketManagerHost* StorageBucketManager::GetBucketManager(
+    ScriptState* script_state) {
+  if (!manager_remote_.is_bound()) {
+    ExecutionContext* context = ExecutionContext::From(script_state);
+    mojo::PendingReceiver<mojom::blink::BucketManagerHost> receiver =
+        manager_remote_.BindNewPipeAndPassReceiver(
+            context->GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
+    context->GetBrowserInterfaceBroker().GetInterface(std::move(receiver));
+  }
+  DCHECK(manager_remote_.is_bound());
+  return manager_remote_.get();
 }
 
 void StorageBucketManager::DidOpen(
