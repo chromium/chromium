@@ -39,6 +39,12 @@
         padding-inline-end: 0;
         padding-inline-start: 0;
       }
+
+      .settings-box.indented,
+      settings-toggle-button.indented {
+        margin-inline-start: calc(var(--cr-section-indent-padding) +
+                                  var(--cr-section-indent-width));
+      }
     </style>
     <template is="dom-if" if="[[!isKioskModeActive_]]">
       <div class="settings-box row first">
@@ -125,18 +131,16 @@
             </controlled-radio-button>
           </settings-radio-group>
         </div>
-        <div class="sub-item">
-          <settings-toggle-button
-              class="sub-item"
-              pref="{{prefs.settings.a11y.screen_magnifier_focus_following}}"
-              label="$i18n{screenMagnifierFocusFollowingLabel}"
-              deep-link-focus-id$=
-                  "[[Setting.kFullscreenMagnifierFocusFollowing]]">
-          </settings-toggle-button>
-        </div>
+        <settings-toggle-button
+            class="indented hr"
+            pref="{{prefs.settings.a11y.screen_magnifier_focus_following}}"
+            label="$i18n{screenMagnifierFocusFollowingLabel}"
+            deep-link-focus-id$=
+                "[[Setting.kFullscreenMagnifierFocusFollowing]]">
+        </settings-toggle-button>
       </template>
-      <div class="settings-box continuation">
-        <div class="start sub-item settings-box-text" aria-hidden="true">
+      <div class="settings-box indented">
+        <div class="start settings-box-text" aria-hidden="true">
           $i18n{screenMagnifierZoomLabel}
         </div>
         <settings-dropdown-menu label="$i18n{screenMagnifierZoomLabel}"
