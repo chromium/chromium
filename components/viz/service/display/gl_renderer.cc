@@ -3957,12 +3957,10 @@ void GLRenderer::ScheduleOutputSurfaceAsOverlay() {
   DCHECK(texture_id || IsContextLost());
   // Output surface is also z-order 0.
   int plane_z_order = 0;
-  // Output surface always uses the full texture.
-  gfx::RectF uv_rect(0.f, 0.f, 1.f, 1.f);
 
   context_support_->ScheduleOverlayPlane(
       plane_z_order, overlay_candidate.transform, texture_id,
-      ToNearestRect(overlay_candidate.display_rect), uv_rect,
+      ToNearestRect(overlay_candidate.display_rect), overlay_candidate.uv_rect,
       overlay_candidate.enable_blending, overlay_candidate.gpu_fence_id);
 }
 

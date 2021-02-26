@@ -110,6 +110,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
 
   bool SupportsDmabuf() const;
   bool SupportsAcquireFence() const;
+  bool SupportsViewporter() const;
 
   // ozone::mojom::WaylandBufferManagerHost overrides:
   //

@@ -2220,7 +2220,8 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
   EXPECT_TRUE(connection_->buffer_manager_host());
 
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, false);
+  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, true,
+                                  false);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id1 = 1;

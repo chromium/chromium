@@ -805,6 +805,10 @@ bool WaylandBufferManagerHost::SupportsAcquireFence() const {
   return !!connection_->linux_explicit_synchronization_v1();
 }
 
+bool WaylandBufferManagerHost::SupportsViewporter() const {
+  return !!connection_->viewporter();
+}
+
 void WaylandBufferManagerHost::SetWaylandBufferManagerGpu(
     mojo::PendingAssociatedRemote<ozone::mojom::WaylandBufferManagerGpu>
         buffer_manager_gpu_associated) {

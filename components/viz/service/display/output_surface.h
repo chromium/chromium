@@ -79,6 +79,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     bool supports_post_sub_buffer = false;
     // Whether this OutputSurface supports commit overlay planes.
     bool supports_commit_overlay_planes = false;
+    // Whether this OutputSurface permits scheduling an isothetic sub-rectangle
+    // (i.e. viewport) of its contents for display, allowing the DirectRenderer
+    // to apply resize optimization by padding to its width/height.
+    bool supports_viewporter = false;
     // Whether this OutputSurface supports gpu vsync callbacks.
     bool supports_gpu_vsync = false;
     // OutputSurface's orientation mode.

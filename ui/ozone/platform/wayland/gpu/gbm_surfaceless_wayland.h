@@ -62,6 +62,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   void SetRelyOnImplicitSync() override;
   bool SupportsPlaneGpuFences() const override;
   bool SupportsOverridePlatformSize() const override;
+  bool SupportsViewporter() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
  private:

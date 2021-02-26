@@ -241,6 +241,7 @@ void OutputPresenterGL::InitializeCapabilities(
   capabilities->supports_post_sub_buffer = gl_surface_->SupportsPostSubBuffer();
   capabilities->supports_commit_overlay_planes =
       gl_surface_->SupportsCommitOverlayPlanes();
+  capabilities->supports_viewporter = gl_surface_->SupportsViewporter();
 
   // Set supports_surfaceless to enable overlays.
   capabilities->supports_surfaceless = true;
@@ -358,11 +359,10 @@ void OutputPresenterGL::SchedulePrimaryPlane(
 
   // Output surface is also z-order 0.
   constexpr int kPlaneZOrder = 0;
-  // Output surface always uses the full texture.
-  constexpr gfx::RectF kUVRect(0.f, 0.f, 1.0f, 1.0f);
   gl_surface_->ScheduleOverlayPlane(kPlaneZOrder, plane.transform, gl_image,
-                                    ToNearestRect(plane.display_rect), kUVRect,
-                                    plane.enable_blending, std::move(fence));
+                                    ToNearestRect(plane.display_rect),
+                                    plane.uv_rect, plane.enable_blending,
+                                    std::move(fence));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {

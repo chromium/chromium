@@ -87,6 +87,8 @@ interface WaylandBufferManagerGpu {
   // instance to avoid using zwp_linux_dmabuf protocol by setting
   // |supports_dma_buf| to false, which results in using wl_egl_surface in a
   // single process mode, and software rendering in a multiple process mode.
+  // |supports_viewporter| indicates whether the Wayland server implements
+  // wp_viewporter extension to support cropping and scaling buffers.
   // |supports_acquire_fence| indicates whether acquire fences can be submitted
   // with buffers for wayland servers to wait on before accessing buffer
   // contents.
@@ -94,6 +96,7 @@ interface WaylandBufferManagerGpu {
              map<gfx.mojom.BufferFormat,
                  array<uint64>> buffer_formats_with_modifiers,
              bool supports_dma_buf,
+             bool supports_viewporter,
              bool supports_acquire_fence);
 
   // Signals about swap completion.

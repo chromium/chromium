@@ -521,15 +521,18 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
     return false;
   }
 
-  color_space_ = color_space;
-  image_size_ = size;
   overlay_transform_ = transform;
 
   if (needs_background_image_ && !background_image_) {
     background_image_ =
-        presenter_->AllocateBackgroundImage(color_space_, gfx::Size(4, 4));
+        presenter_->AllocateBackgroundImage(color_space, gfx::Size(4, 4));
     background_image_is_scheduled_ = false;
   }
+
+  if (color_space_ == color_space && image_size_ == size)
+    return true;
+  color_space_ = color_space;
+  image_size_ = size;
 
   bool success = RecreateImages();
   if (!success) {

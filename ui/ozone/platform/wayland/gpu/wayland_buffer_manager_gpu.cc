@@ -45,6 +45,7 @@ void WaylandBufferManagerGpu::Initialize(
     const base::flat_map<::gfx::BufferFormat, std::vector<uint64_t>>&
         buffer_formats_with_modifiers,
     bool supports_dma_buf,
+    bool supports_viewporter,
     bool supports_acquire_fence) {
   DCHECK(supported_buffer_formats_with_modifiers_.empty());
   supported_buffer_formats_with_modifiers_ = buffer_formats_with_modifiers;
@@ -53,6 +54,7 @@ void WaylandBufferManagerGpu::Initialize(
   if (!supports_dma_buf)
     set_gbm_device(nullptr);
 #endif
+  supports_viewporter_ = supports_viewporter;
   supports_acquire_fence_ = supports_acquire_fence;
 
   BindHostInterface(std::move(remote_host));

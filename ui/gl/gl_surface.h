@@ -257,6 +257,10 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   virtual bool IsSurfaceless() const;
 
+  // Returns true if this surface permits scheduling an isothetic sub-rectangle
+  // (i.e. viewport) of its contents for display.
+  virtual bool SupportsViewporter() const;
+
   virtual gfx::SurfaceOrigin GetOrigin() const;
 
   // Returns true if SwapBuffers or PostSubBuffers causes a flip, such that
@@ -389,6 +393,7 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool ScheduleDCLayer(const ui::DCRendererLayerParams& params) override;
   bool SetEnableDCLayers(bool enable) override;
   bool IsSurfaceless() const override;
+  bool SupportsViewporter() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
   bool BuffersFlipped() const override;
   bool SupportsDCLayers() const override;

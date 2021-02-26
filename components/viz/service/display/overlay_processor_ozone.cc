@@ -31,7 +31,7 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->transform = primary_plane.transform;
   ozone_candidate->format = primary_plane.format;
   ozone_candidate->display_rect = primary_plane.display_rect;
-  ozone_candidate->crop_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
+  ozone_candidate->crop_rect = primary_plane.uv_rect;
   ozone_candidate->clip_rect = gfx::ToEnclosingRect(primary_plane.display_rect);
   ozone_candidate->is_clipped = false;
   ozone_candidate->is_opaque = !primary_plane.enable_blending;

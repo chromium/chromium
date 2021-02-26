@@ -193,6 +193,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
   gfx::Size CalculateTextureSizeForRenderPass(
       const AggregatedRenderPass* render_pass);
+  gfx::Size CalculateSizeForOutputSurface(
+      const gfx::Size& device_viewport_size);
 
   void FlushPolygons(
       base::circular_deque<std::unique_ptr<DrawPolygon>>* poly_list,
@@ -356,9 +358,15 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   DrawingFrame current_frame_;
   bool current_frame_valid_ = false;
 
+  // Time of most recent reshape that ended up with |device_viewport_size_| !=
+  // |reshape_surface_size_|.
+  base::TimeTicks last_viewport_resize_time_;
+
   // Cached values given to Reshape(). The |reshape_buffer_format_| is optional
-  // to prevent use of uninitialized values.
+  // to prevent use of uninitialized values. This may be larger than the
+  // |device_viewport_size_| that users see.
   gfx::Size reshape_surface_size_;
+  gfx::Size device_viewport_size_;
   float reshape_device_scale_factor_ = 0.f;
   gfx::ColorSpace reshape_color_space_;
   base::Optional<gfx::BufferFormat> reshape_buffer_format_;

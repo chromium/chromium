@@ -51,6 +51,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       const base::flat_map<::gfx::BufferFormat, std::vector<uint64_t>>&
           buffer_formats_with_modifiers,
       bool supports_dma_buf,
+      bool supports_viewporter,
       bool supports_acquire_fence) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
@@ -128,6 +129,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 #endif
 
   bool supports_acquire_fence() const { return supports_acquire_fence_; }
+  bool supports_viewporter() const { return supports_viewporter_; }
 
   // Adds a WaylandBufferManagerGpu binding.
   void AddBindingWaylandBufferManagerGpu(
@@ -182,6 +184,10 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 #endif
   // Whether Wayland server allows buffer submission with acquire fence.
   bool supports_acquire_fence_ = false;
+
+  // Whether Wayland server implements wp_viewporter extension to support
+  // cropping and scaling buffers.
+  bool supports_viewporter_ = false;
 
   mojo::Receiver<ozone::mojom::WaylandBufferManagerGpu> receiver_{this};
 

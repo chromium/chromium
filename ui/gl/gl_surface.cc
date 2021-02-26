@@ -181,6 +181,10 @@ bool GLSurface::IsSurfaceless() const {
   return false;
 }
 
+bool GLSurface::SupportsViewporter() const {
+  return false;
+}
+
 gfx::SurfaceOrigin GLSurface::GetOrigin() const {
   return gfx::SurfaceOrigin::kBottomLeft;
 }
@@ -455,6 +459,10 @@ bool GLSurfaceAdapter::SetEnableDCLayers(bool enable) {
 
 bool GLSurfaceAdapter::IsSurfaceless() const {
   return surface_->IsSurfaceless();
+}
+
+bool GLSurfaceAdapter::SupportsViewporter() const {
+  return surface_->SupportsViewporter();
 }
 
 gfx::SurfaceOrigin GLSurfaceAdapter::GetOrigin() const {

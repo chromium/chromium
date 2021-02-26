@@ -84,7 +84,8 @@ class WaylandBufferManagerTest : public WaylandTest {
     // callback and bind the interface again if the manager failed.
     manager_host_->SetTerminateGpuCallback(callback_.Get());
     auto interface_ptr = manager_host_->BindInterface();
-    buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, false);
+    buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, true,
+                                    false);
   }
 
  protected:
@@ -120,7 +121,7 @@ class WaylandBufferManagerTest : public WaylandTest {
             // same).
             buffer_manager_gpu_ = std::make_unique<WaylandBufferManagerGpu>();
             buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false,
-                                            false);
+                                            true, false);
           }));
     }
   }

@@ -33,6 +33,7 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_util.h"
 
@@ -297,6 +298,8 @@ void DirectRenderer::DrawFrame(
       current_frame()->display_color_spaces.GetOutputBufferFormat(
           current_frame()->root_render_pass->content_color_usage,
           frame_has_alpha);
+  gfx::Size surface_resource_size =
+      CalculateSizeForOutputSurface(device_viewport_size);
   if (overlay_processor_) {
     // Display transform and viewport size are needed for overlay validator on
     // Android SurfaceControl, and viewport size is need on Windows. These need
@@ -317,8 +320,9 @@ void DirectRenderer::DrawFrame(
       // enough because they're all created with identical properties.
       current_frame()->output_surface_plane =
           overlay_processor_->ProcessOutputSurfaceAsOverlay(
-              device_viewport_size, frame_buffer_format, frame_color_space,
-              frame_has_alpha, output_surface_->GetOverlayMailbox());
+              device_viewport_size, surface_resource_size, frame_buffer_format,
+              frame_color_space, frame_has_alpha,
+              output_surface_->GetOverlayMailbox());
       primary_plane = &(current_frame()->output_surface_plane.value());
     }
 
@@ -350,12 +354,12 @@ void DirectRenderer::DrawFrame(
   // viewport size is never set.
   bool use_stencil = overdraw_feedback_;
   bool needs_full_frame_redraw = false;
-  if (device_viewport_size != reshape_surface_size_ ||
+  if (surface_resource_size != reshape_surface_size_ ||
       device_scale_factor != reshape_device_scale_factor_ ||
       frame_color_space != reshape_color_space_ ||
       frame_buffer_format != reshape_buffer_format_ ||
       use_stencil != reshape_use_stencil_) {
-    reshape_surface_size_ = device_viewport_size;
+    reshape_surface_size_ = surface_resource_size;
     reshape_device_scale_factor_ = device_scale_factor;
     reshape_color_space_ = frame_color_space;
     reshape_buffer_format_ = frame_buffer_format;
@@ -877,11 +881,57 @@ gfx::Size DirectRenderer::CalculateTextureSizeForRenderPass(
   int width = render_pass->output_rect.width();
   int height = render_pass->output_rect.height();
   if (!settings_->dont_round_texture_sizes_for_pixel_tests) {
-    int multiple = 64;
+    constexpr int multiple = 64;
     width = cc::MathUtil::CheckedRoundUp(width, multiple);
     height = cc::MathUtil::CheckedRoundUp(height, multiple);
   }
   return gfx::Size(width, height);
+}
+
+// TODO(fangzhoug): There should be metrics recording the amount of unused
+// buffer area and number of reallocations to quantify the trade-off.
+gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
+    const gfx::Size& requested_viewport_size) {
+  // We're not able to clip back buffers if output surface does not support
+  // clipping.
+  if (requested_viewport_size == surface_size_for_swap_buffers() ||
+      !output_surface_->capabilities().supports_viewporter ||
+      settings_->dont_round_texture_sizes_for_pixel_tests) {
+    device_viewport_size_ = requested_viewport_size;
+    return requested_viewport_size;
+  }
+
+  // If 1 second has passed since last |device_viewport_size_| change, shrink
+  // OutputSurface size to |device_viewport_size_|.
+  if (device_viewport_size_ == requested_viewport_size &&
+      (base::TimeTicks::Now() - last_viewport_resize_time_) >=
+          base::TimeDelta::FromSeconds(1)) {
+    return requested_viewport_size;
+  }
+
+  // Round the size of the output surface to a multiple of 256 pixels. This
+  // allows backings to be more easily reused during a resize operation.
+  const int request_width = requested_viewport_size.width();
+  const int request_height = requested_viewport_size.height();
+  int surface_width = surface_size_for_swap_buffers().width();
+  int surface_height = surface_size_for_swap_buffers().height();
+  constexpr int multiple = 256;
+
+  // If |request_width| or |request_height| is already a multiple of |multiple|,
+  // round up extra |multiple| pixels s.t. we always have some amount of
+  // padding.
+  if (request_width > surface_width)
+    surface_width =
+        cc::MathUtil::CheckedRoundUp(request_width + multiple - 1, multiple);
+  if (request_height > surface_height)
+    surface_height =
+        cc::MathUtil::CheckedRoundUp(request_height + multiple - 1, multiple);
+
+  if (requested_viewport_size != device_viewport_size_)
+    last_viewport_resize_time_ = base::TimeTicks::Now();
+
+  device_viewport_size_ = requested_viewport_size;
+  return gfx::Size(surface_width, surface_height);
 }
 
 void DirectRenderer::SetCurrentFrameForTesting(const DrawingFrame& frame) {

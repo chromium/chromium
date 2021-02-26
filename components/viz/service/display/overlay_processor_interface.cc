@@ -162,13 +162,18 @@ bool OverlayProcessorInterface::DisableSplittingQuads() const {
 OverlayProcessorInterface::OutputSurfaceOverlayPlane
 OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
     const gfx::Size& viewport_size,
+    const gfx::Size& resource_size,
     const gfx::BufferFormat& buffer_format,
     const gfx::ColorSpace& color_space,
     bool has_alpha,
     const gpu::Mailbox& mailbox) {
   OutputSurfaceOverlayPlane overlay_plane;
   overlay_plane.transform = gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
-  overlay_plane.resource_size = viewport_size;
+  overlay_plane.uv_rect = gfx::RectF(
+      0.f, 0.f,
+      viewport_size.width() / static_cast<float>(resource_size.width()),
+      viewport_size.height() / static_cast<float>(resource_size.height()));
+  overlay_plane.resource_size = resource_size;
   overlay_plane.format = buffer_format;
   overlay_plane.color_space = color_space;
   overlay_plane.enable_blending = has_alpha;

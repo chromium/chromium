@@ -186,6 +186,10 @@ bool GbmSurfacelessWayland::SupportsOverridePlatformSize() const {
   return true;
 }
 
+bool GbmSurfacelessWayland::SupportsViewporter() const {
+  return buffer_manager_->supports_viewporter();
+}
+
 gfx::SurfaceOrigin GbmSurfacelessWayland::GetOrigin() const {
   // GbmSurfacelessWayland's y-axis is flipped compare to GL - (0,0) is at top
   // left corner.

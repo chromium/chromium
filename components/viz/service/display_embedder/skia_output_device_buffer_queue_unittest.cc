@@ -633,8 +633,9 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ReshapeWithInFlightSurfaces) {
 
   SwapBuffers();
 
-  output_device_->Reshape(screen_size, 1.0f, gfx::ColorSpace(), kDefaultFormat,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  output_device_->Reshape(
+      gfx::Size(screen_size.width() - 1, screen_size.height() - 1), 1.0f,
+      gfx::ColorSpace(), kDefaultFormat, gfx::OVERLAY_TRANSFORM_NONE);
 
   // swap completion callbacks should not be cleared.
   EXPECT_EQ(1u, swap_completion_callbacks().size());

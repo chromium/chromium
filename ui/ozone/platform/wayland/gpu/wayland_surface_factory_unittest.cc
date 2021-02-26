@@ -178,7 +178,8 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
     WaylandTest::SetUp();
 
     auto manager_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(std::move(manager_ptr), {}, false, false);
+    buffer_manager_gpu_->Initialize(std::move(manager_ptr), {}, false, true,
+                                    false);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();
