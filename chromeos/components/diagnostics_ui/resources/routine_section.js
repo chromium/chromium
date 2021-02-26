@@ -244,8 +244,7 @@ Polymer({
 
   /** @private */
   onLearnMoreClicked_() {
-    // TODO(joonbug): Update this link with a p-link
-    window.open('https://support.google.com/chromebook/answer/6309225');
+    window.open('https://support.google.com/chromebook?p=diagnostics_app');
   },
 
   /** @protected */
