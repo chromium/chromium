@@ -6,7 +6,11 @@
 #define CHROME_BROWSER_TASK_MANAGER_WEB_CONTENTS_TAGS_H_
 
 #include "base/macros.h"
-#include "extensions/common/view_type.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/mojom/view_type.mojom.h"
+#endif
 
 class BackgroundContents;
 
@@ -69,6 +73,7 @@ class WebContentsTags {
   // by |web_contents|.
   static void CreateForGuestContents(content::WebContents* web_contents);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Tag a WebContents that belongs to |extension| so that it shows up in the
   // task manager. Calling this function creates a ExtensionTag, and attaches
   // it to |web_contents|. If an instance is already attached, this does
@@ -77,7 +82,8 @@ class WebContentsTags {
   // |web_contents| must be of a non-tab, non-guest view, or
   // non-background contents Extension.
   static void CreateForExtension(content::WebContents* web_contents,
-                                 extensions::ViewType view_type);
+                                 extensions::mojom::ViewType view_type);
+#endif
 
   // Tag a WebContents created for a Portal so that it shows up in the task
   // manager. Calling this function creates a PortalTag, and attaches it to

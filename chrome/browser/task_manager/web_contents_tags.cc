@@ -9,8 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/view_type_utils.h"
-#include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
 #if !defined(OS_ANDROID)
@@ -29,6 +27,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/view_type_utils.h"
 #endif
 
 namespace task_manager {
@@ -58,10 +57,10 @@ bool IsExtensionWebContents(content::WebContents* contents) {
   if (guest_view::GuestViewBase::IsGuest(contents))
     return false;
 
-  extensions::ViewType view_type = extensions::GetViewType(contents);
-  return (view_type != extensions::VIEW_TYPE_INVALID &&
-          view_type != extensions::VIEW_TYPE_TAB_CONTENTS &&
-          view_type != extensions::VIEW_TYPE_BACKGROUND_CONTENTS);
+  extensions::mojom::ViewType view_type = extensions::GetViewType(contents);
+  return (view_type != extensions::mojom::ViewType::kInvalid &&
+          view_type != extensions::mojom::ViewType::kTabContents &&
+          view_type != extensions::mojom::ViewType::kBackgroundContents);
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -143,10 +142,12 @@ void WebContentsTags::CreateForGuestContents(
 #endif  // !defined(OS_ANDROID)
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
-void WebContentsTags::CreateForExtension(content::WebContents* web_contents,
-                                         extensions::ViewType view_type) {
-#if !defined(OS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS)
+void WebContentsTags::CreateForExtension(
+    content::WebContents* web_contents,
+    extensions::mojom::ViewType view_type) {
+#if !defined(OS_ANDROID)
   DCHECK(IsExtensionWebContents(web_contents));
 
   if (!WebContentsTag::FromWebContents(web_contents)) {
@@ -154,8 +155,9 @@ void WebContentsTags::CreateForExtension(content::WebContents* web_contents,
                    base::WrapUnique(new ExtensionTag(web_contents, view_type)),
                    WebContentsTag::kTagKey);
   }
-#endif  // !defined(OS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !defined(OS_ANDROID)
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 void WebContentsTags::CreateForPortal(content::WebContents* web_contents) {

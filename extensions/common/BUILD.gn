@@ -47,6 +47,7 @@ if (enable_extensions) {
       "mojom/keep_alive.mojom",
       "mojom/renderer.mojom",
       "mojom/url_pattern_set.mojom",
+      "mojom/view_type.mojom",
     ]
 
     public_deps = [
@@ -337,8 +338,8 @@ if (enable_extensions) {
       "value_counter.h",
       "verifier_formats.cc",
       "verifier_formats.h",
-      "view_type.cc",
-      "view_type.h",
+      "view_type_util.cc",
+      "view_type_util.h",
     ]
 
     configs += [

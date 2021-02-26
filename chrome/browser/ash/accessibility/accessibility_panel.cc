@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/webview/webview.h"
@@ -50,7 +51,8 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
   web_contents_observer_.reset(
       new AccessibilityPanelWebContentsObserver(web_contents_, this));
   web_contents_->SetDelegate(this);
-  extensions::SetViewType(web_contents_, extensions::VIEW_TYPE_COMPONENT);
+  extensions::SetViewType(web_contents_,
+                          extensions::mojom::ViewType::kComponent);
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents_);
   web_view->LoadInitialURL(GURL(content_url));

@@ -21,8 +21,8 @@
 #include "extensions/browser/deferred_start_render_host.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/stack_frame.h"
-#include "extensions/common/view_type.h"
 
 namespace content {
 class BrowserContext;
@@ -51,7 +51,8 @@ class ExtensionHost : public DeferredStartRenderHost,
  public:
   ExtensionHost(const Extension* extension,
                 content::SiteInstance* site_instance,
-                const GURL& url, ViewType host_type);
+                const GURL& url,
+                mojom::ViewType host_type);
   ~ExtensionHost() override;
 
   // This may be null if the extension has been or is being unloaded.
@@ -69,7 +70,7 @@ class ExtensionHost : public DeferredStartRenderHost,
 
   content::BrowserContext* browser_context() { return browser_context_; }
 
-  ViewType extension_host_type() const { return extension_host_type_; }
+  mojom::ViewType extension_host_type() const { return extension_host_type_; }
 
   // Returns the last committed URL of the associated WebContents.
   const GURL& GetLastCommittedURL() const;
@@ -213,7 +214,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   std::unordered_map<int, std::string> unacked_messages_;
 
   // The type of view being hosted.
-  ViewType extension_host_type_;
+  mojom::ViewType extension_host_type_;
 
   // Measures how long since the ExtensionHost object was created. This can be
   // used to measure the responsiveness of UI. For example, it's important to

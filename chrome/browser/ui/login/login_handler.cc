@@ -52,6 +52,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 using content::BrowserThread;
@@ -543,7 +544,7 @@ void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
     const auto* guest =
         guest_view::GuestViewBase::FromWebContents(web_contents());
     if (guest && extensions::GetViewType(guest->owner_web_contents()) !=
-                     extensions::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+                     extensions::mojom::ViewType::kExtensionBackgroundPage) {
       BuildViewAndNotify(authority, explanation, nullptr);
       return;
     }

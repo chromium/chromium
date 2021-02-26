@@ -51,16 +51,16 @@ namespace extensions {
 ExtensionHost::ExtensionHost(const Extension* extension,
                              SiteInstance* site_instance,
                              const GURL& url,
-                             ViewType host_type)
+                             mojom::ViewType host_type)
     : delegate_(ExtensionsBrowserClient::Get()->CreateExtensionHostDelegate()),
       extension_(extension),
       extension_id_(extension->id()),
       browser_context_(site_instance->GetBrowserContext()),
       initial_url_(url),
       extension_host_type_(host_type) {
-  DCHECK(host_type == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE ||
-         host_type == VIEW_TYPE_EXTENSION_DIALOG ||
-         host_type == VIEW_TYPE_EXTENSION_POPUP);
+  DCHECK(host_type == mojom::ViewType::kExtensionBackgroundPage ||
+         host_type == mojom::ViewType::kExtensionDialog ||
+         host_type == mojom::ViewType::kExtensionPopup);
   host_contents_ = WebContents::Create(
       WebContents::CreateParams(browser_context_, site_instance)),
   content::WebContentsObserver::Observe(host_contents_.get());
@@ -82,7 +82,7 @@ ExtensionHost::ExtensionHost(const Extension* extension,
 ExtensionHost::~ExtensionHost() {
   ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
 
-  if (extension_host_type_ == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE &&
+  if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage &&
       extension_ && BackgroundInfo::HasLazyBackgroundPage(extension_) &&
       load_start_.get()) {
     UMA_HISTOGRAM_LONG_TIMES("Extensions.EventPageActiveTime2",
@@ -191,7 +191,7 @@ void ExtensionHost::LoadInitialURL() {
 }
 
 bool ExtensionHost::IsBackgroundPage() const {
-  DCHECK_EQ(extension_host_type_, VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
+  DCHECK_EQ(extension_host_type_, mojom::ViewType::kExtensionBackgroundPage);
   return true;
 }
 
@@ -258,7 +258,7 @@ void ExtensionHost::DidStopLoading() {
 }
 
 void ExtensionHost::OnDidStopFirstLoad() {
-  DCHECK_EQ(extension_host_type_, VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
+  DCHECK_EQ(extension_host_type_, mojom::ViewType::kExtensionBackgroundPage);
   // Nothing to do for background pages.
 }
 
@@ -269,7 +269,7 @@ void ExtensionHost::DocumentAvailableInMainFrame() {
     return;
   document_element_available_ = true;
 
-  if (extension_host_type_ == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+  if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {
     ExtensionSystem::Get(browser_context_)
         ->runtime_data()
         ->SetBackgroundPageReady(extension_->id(), true);
@@ -448,8 +448,8 @@ bool ExtensionHost::CheckMediaAccessPermission(
 }
 
 bool ExtensionHost::IsNeverComposited(content::WebContents* web_contents) {
-  ViewType view_type = extensions::GetViewType(web_contents);
-  return view_type == extensions::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE;
+  mojom::ViewType view_type = extensions::GetViewType(web_contents);
+  return view_type == extensions::mojom::ViewType::kExtensionBackgroundPage;
 }
 
 content::PictureInPictureResult ExtensionHost::EnterPictureInPicture(
@@ -466,7 +466,7 @@ void ExtensionHost::ExitPictureInPicture() {
 
 void ExtensionHost::RecordStopLoadingUMA() {
   CHECK(load_start_.get());
-  if (extension_host_type_ == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+  if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {
     if (extension_ && BackgroundInfo::HasLazyBackgroundPage(extension_)) {
       UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.EventPageLoadTime2",
                                  load_start_->Elapsed());
@@ -474,7 +474,7 @@ void ExtensionHost::RecordStopLoadingUMA() {
       UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.BackgroundPageLoadTime2",
                                  load_start_->Elapsed());
     }
-  } else if (extension_host_type_ == VIEW_TYPE_EXTENSION_POPUP) {
+  } else if (extension_host_type_ == mojom::ViewType::kExtensionPopup) {
     UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.PopupLoadTime2",
                                load_start_->Elapsed());
     UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.PopupCreateTime",

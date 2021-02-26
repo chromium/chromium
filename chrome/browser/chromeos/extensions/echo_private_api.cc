@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace echo_api = extensions::api::echo_private;
 
@@ -246,7 +247,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
     web_contents = GetSenderWebContents();
 
     if (!web_contents || extensions::GetViewType(web_contents) !=
-                             extensions::VIEW_TYPE_APP_WINDOW) {
+                             extensions::mojom::ViewType::kAppWindow) {
       Respond(Error("Not called from an app window - the tabId is required."));
       return;
     }

@@ -48,6 +48,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 using base::StringPrintf;
@@ -324,8 +325,8 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
         }
       }
 
-      extensions::ViewType type = extensions::GetViewType(contents);
-      if (type == extensions::VIEW_TYPE_BACKGROUND_CONTENTS) {
+      extensions::mojom::ViewType type = extensions::GetViewType(contents);
+      if (type == extensions::mojom::ViewType::kBackgroundContents) {
         process.titles.push_back(base::UTF8ToUTF16(page_url.spec()));
         process.renderer_type =
             ProcessMemoryInformation::RENDERER_BACKGROUND_APP;

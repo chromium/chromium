@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_host_queue.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
 using content::SiteInstance;
@@ -57,8 +58,8 @@ BackgroundContents::BackgroundContents(
   } else {
     web_contents_ = WebContents::Create(create_params);
   }
-  extensions::SetViewType(
-      web_contents_.get(), extensions::VIEW_TYPE_BACKGROUND_CONTENTS);
+  extensions::SetViewType(web_contents_.get(),
+                          extensions::mojom::ViewType::kBackgroundContents);
   web_contents_->SetDelegate(this);
   content::WebContentsObserver::Observe(web_contents_.get());
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
@@ -122,7 +123,7 @@ void BackgroundContents::AddNewContents(
 }
 
 bool BackgroundContents::IsNeverComposited(content::WebContents* web_contents) {
-  DCHECK_EQ(extensions::VIEW_TYPE_BACKGROUND_CONTENTS,
+  DCHECK_EQ(extensions::mojom::ViewType::kBackgroundContents,
             extensions::GetViewType(web_contents));
   return true;
 }

@@ -29,10 +29,8 @@ std::unique_ptr<RendererTask> ExtensionTag::CreateTask(
 }
 
 ExtensionTag::ExtensionTag(content::WebContents* web_contents,
-                           const extensions::ViewType view_type)
-    : WebContentsTag(web_contents),
-      view_type_(view_type) {
-}
+                           const extensions::mojom::ViewType view_type)
+    : WebContentsTag(web_contents), view_type_(view_type) {}
 
 ExtensionTag::~ExtensionTag() {
 }

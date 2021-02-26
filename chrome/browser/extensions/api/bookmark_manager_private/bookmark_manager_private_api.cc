@@ -42,6 +42,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -432,7 +433,7 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
   content::WebContents* web_contents = GetSenderWebContents();
-  if (GetViewType(web_contents) != VIEW_TYPE_TAB_CONTENTS) {
+  if (GetViewType(web_contents) != mojom::ViewType::kTabContents) {
     NOTREACHED();
     return Error(kUnknownErrorDoNotUse);
   }
@@ -478,7 +479,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
     return Error(error);
 
   content::WebContents* web_contents = GetSenderWebContents();
-  DCHECK_EQ(VIEW_TYPE_TAB_CONTENTS, GetViewType(web_contents));
+  DCHECK_EQ(mojom::ViewType::kTabContents, GetViewType(web_contents));
 
   size_t drop_index;
   if (params->index)

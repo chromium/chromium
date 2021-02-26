@@ -179,6 +179,7 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -451,7 +452,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::SetViewType(web_contents, extensions::VIEW_TYPE_TAB_CONTENTS);
+  extensions::SetViewType(web_contents,
+                          extensions::mojom::ViewType::kTabContents);
 
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents);

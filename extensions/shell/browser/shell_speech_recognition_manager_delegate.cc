@@ -12,6 +12,7 @@
 #include "content/public/browser/speech_recognition_session_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 using content::BrowserThread;
 using content::SpeechRecognitionManager;
@@ -107,10 +108,11 @@ void ShellSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   if (render_frame_host) {
     WebContents* web_contents =
         WebContents::FromRenderFrameHost(render_frame_host);
-    extensions::ViewType view_type = extensions::GetViewType(web_contents);
+    extensions::mojom::ViewType view_type =
+        extensions::GetViewType(web_contents);
 
-    if (view_type == extensions::VIEW_TYPE_APP_WINDOW ||
-        view_type == extensions::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+    if (view_type == extensions::mojom::ViewType::kAppWindow ||
+        view_type == extensions::mojom::ViewType::kExtensionBackgroundPage) {
       allowed = true;
       check_permission = true;
     } else {

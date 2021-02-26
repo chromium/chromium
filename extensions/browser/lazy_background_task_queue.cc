@@ -22,7 +22,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace extensions {
 
@@ -175,7 +175,8 @@ void LazyBackgroundTaskQueue::Observe(
       // events for it.
       ExtensionHost* host =
           content::Details<ExtensionHost>(details).ptr();
-      if (host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+      if (host->extension_host_type() ==
+          mojom::ViewType::kExtensionBackgroundPage) {
         CHECK(host->has_loaded_once());
         ProcessPendingTasks(host, host->browser_context(), host->extension());
       }
@@ -190,8 +191,8 @@ void LazyBackgroundTaskQueue::Observe(
           content::Source<content::BrowserContext>(source).ptr();
       ExtensionHost* host =
            content::Details<ExtensionHost>(details).ptr();
-      if (host->extension() &&
-          host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+      if (host->extension() && host->extension_host_type() ==
+                                   mojom::ViewType::kExtensionBackgroundPage) {
         ProcessPendingTasks(NULL, browser_context, host->extension());
       }
       break;

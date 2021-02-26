@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -131,7 +132,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                       int embedder_process_id,
                       int view_instance_id) override;
   void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
-                                     ViewType view_type) override;
+                                     mojom::ViewType view_type) override;
   scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
       content::BrowserContext* context) override;
   std::unique_ptr<content::BluetoothChooser> CreateBluetoothChooser(

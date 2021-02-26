@@ -14,6 +14,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 class Browser;
 
@@ -40,7 +41,7 @@ class ExtensionViewHost
   ExtensionViewHost(const Extension* extension,
                     content::SiteInstance* site_instance,
                     const GURL& url,
-                    ViewType host_type,
+                    mojom::ViewType host_type,
                     Browser* browser);
   ~ExtensionViewHost() override;
 
@@ -114,7 +115,7 @@ class ExtensionViewHost
 
  private:
   // Returns whether the provided event is a raw escape keypress in a
-  // VIEW_TYPE_EXTENSION_POPUP.
+  // mojom::ViewType::kExtensionPopup.
   bool IsEscapeInPopup(const content::NativeWebKeyboardEvent& event) const;
 
   // The browser associated with the ExtensionView, if any.

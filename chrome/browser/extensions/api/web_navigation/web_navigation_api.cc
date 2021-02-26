@@ -25,6 +25,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "net/base/net_errors.h"
 
 namespace GetFrame = extensions::api::web_navigation::GetFrame;
@@ -95,7 +96,8 @@ void WebNavigationEventRouter::OnTabStripModelChanged(
     if (!tab_observer) {
       // If you hit this DCHECK(), please add reproduction steps to
       // http://crbug.com/109464.
-      DCHECK(GetViewType(replace->old_contents) != VIEW_TYPE_TAB_CONTENTS);
+      DCHECK(GetViewType(replace->old_contents) !=
+             mojom::ViewType::kTabContents);
       return;
     }
     if (!FrameNavigationState::IsValidUrl(replace->old_contents->GetURL()) ||
@@ -124,7 +126,7 @@ void WebNavigationEventRouter::RecordNewWebContents(
   if (!tab_observer) {
     // If you hit this DCHECK(), please add reproduction steps to
     // http://crbug.com/109464.
-    DCHECK(GetViewType(source_web_contents) != VIEW_TYPE_TAB_CONTENTS);
+    DCHECK(GetViewType(source_web_contents) != mojom::ViewType::kTabContents);
     return;
   }
   const FrameNavigationState& frame_navigation_state =

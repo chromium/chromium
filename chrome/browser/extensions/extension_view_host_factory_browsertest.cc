@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace extensions {
 
@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
         ExtensionViewHostFactory::CreatePopupHost(extension->url(), browser());
     EXPECT_EQ(extension.get(), host->extension());
     EXPECT_EQ(browser_context, host->browser_context());
-    EXPECT_EQ(VIEW_TYPE_EXTENSION_POPUP, host->extension_host_type());
+    EXPECT_EQ(mojom::ViewType::kExtensionPopup, host->extension_host_type());
   }
 
   {
@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
                                                    browser()->profile());
     EXPECT_EQ(extension.get(), host->extension());
     EXPECT_EQ(browser_context, host->browser_context());
-    EXPECT_EQ(VIEW_TYPE_EXTENSION_DIALOG, host->extension_host_type());
+    EXPECT_EQ(mojom::ViewType::kExtensionDialog, host->extension_host_type());
   }
 }
 

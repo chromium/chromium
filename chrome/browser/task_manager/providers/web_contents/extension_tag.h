@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/extension_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace task_manager {
 
@@ -24,10 +25,10 @@ class ExtensionTag : public WebContentsTag {
   friend class WebContentsTags;
 
   ExtensionTag(content::WebContents* web_contents,
-               const extensions::ViewType view_type);
+               const extensions::mojom::ViewType view_type);
 
   // The ViewType of the extension WebContents this tag is attached to.
-  const extensions::ViewType view_type_;
+  const extensions::mojom::ViewType view_type_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionTag);
 };

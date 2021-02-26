@@ -52,6 +52,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 using content::BrowserContext;
 
@@ -183,7 +184,7 @@ struct ProcessManager::BackgroundPageData {
 // Data of a RenderFrameHost associated with an extension.
 struct ProcessManager::ExtensionRenderFrameData {
   // The type of the view.
-  extensions::ViewType view_type = VIEW_TYPE_INVALID;
+  extensions::mojom::ViewType view_type = extensions::mojom::ViewType::kInvalid;
 
   // Whether the view is keeping the lazy background page alive or not.
   bool has_keepalive = false;
@@ -191,17 +192,17 @@ struct ProcessManager::ExtensionRenderFrameData {
   // Returns whether the view can keep the lazy background page alive or not.
   bool CanKeepalive() const {
     switch (view_type) {
-      case VIEW_TYPE_APP_WINDOW:
-      case VIEW_TYPE_BACKGROUND_CONTENTS:
-      case VIEW_TYPE_COMPONENT:
-      case VIEW_TYPE_EXTENSION_DIALOG:
-      case VIEW_TYPE_EXTENSION_GUEST:
-      case VIEW_TYPE_EXTENSION_POPUP:
-      case VIEW_TYPE_TAB_CONTENTS:
+      case extensions::mojom::ViewType::kAppWindow:
+      case extensions::mojom::ViewType::kBackgroundContents:
+      case extensions::mojom::ViewType::kComponent:
+      case extensions::mojom::ViewType::kExtensionDialog:
+      case extensions::mojom::ViewType::kExtensionGuest:
+      case extensions::mojom::ViewType::kExtensionPopup:
+      case extensions::mojom::ViewType::kTabContents:
         return true;
 
-      case VIEW_TYPE_INVALID:
-      case VIEW_TYPE_EXTENSION_BACKGROUND_PAGE:
+      case extensions::mojom::ViewType::kInvalid:
+      case extensions::mojom::ViewType::kExtensionBackgroundPage:
         return false;
     }
     NOTREACHED();
@@ -391,7 +392,7 @@ bool ProcessManager::CreateBackgroundHost(const Extension* extension,
   DVLOG(1) << "CreateBackgroundHost " << extension->id();
   ExtensionHost* host =
       new ExtensionHost(extension, GetSiteInstanceForURL(url).get(), url,
-                        VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
+                        mojom::ViewType::kExtensionBackgroundPage);
   host->CreateRendererSoon();
   OnBackgroundHostCreated(host);
   return true;
@@ -689,7 +690,8 @@ void ProcessManager::OnBackgroundHostCreated(ExtensionHost* host) {
 
 void ProcessManager::CloseBackgroundHost(ExtensionHost* host) {
   ExtensionId extension_id = host->extension_id();
-  CHECK(host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
+  CHECK(host->extension_host_type() ==
+        mojom::ViewType::kExtensionBackgroundPage);
   delete host;
   // |host| should deregister itself from our structures.
   CHECK(background_hosts_.find(host) == background_hosts_.end());
@@ -883,7 +885,7 @@ const Extension* ProcessManager::GetExtensionForAgentHost(
   // Ignore unrelated notifications.
   if (!web_contents || web_contents->GetBrowserContext() != browser_context_)
     return nullptr;
-  if (GetViewType(web_contents) != VIEW_TYPE_EXTENSION_BACKGROUND_PAGE)
+  if (GetViewType(web_contents) != mojom::ViewType::kExtensionBackgroundPage)
     return nullptr;
   return GetExtensionForWebContents(web_contents);
 }
@@ -1002,7 +1004,8 @@ void ProcessManager::OnExtensionHostDestroyed(ExtensionHost* host) {
 
 void ProcessManager::OnExtensionHostShouldClose(ExtensionHost* host) {
   TRACE_EVENT0("browser,startup", "ProcessManager::OnExtensionHostShouldClose");
-  DCHECK(host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
+  DCHECK(host->extension_host_type() ==
+         mojom::ViewType::kExtensionBackgroundPage);
   CloseBackgroundHost(host);
 }
 

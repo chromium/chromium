@@ -703,10 +703,9 @@ void ChromeContentBrowserClientExtensionsPart::OverrideWebkitPrefs(
   if (!site_url.SchemeIs(kExtensionScheme))
     return;
 
-  ViewType view_type = GetViewType(web_contents);
   const Extension* extension =
       registry->enabled_extensions().GetByID(site_url.host());
-  extension_webkit_preferences::SetPreferences(extension, view_type, web_prefs);
+  extension_webkit_preferences::SetPreferences(extension, web_prefs);
 }
 
 void ChromeContentBrowserClientExtensionsPart::BrowserURLHandlerCreated(

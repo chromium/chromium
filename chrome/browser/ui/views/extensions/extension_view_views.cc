@@ -15,7 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -38,7 +38,8 @@ ExtensionViewViews::~ExtensionViewViews() {
 }
 
 void ExtensionViewViews::Init() {
-  if (host_->extension_host_type() == extensions::VIEW_TYPE_EXTENSION_POPUP) {
+  if (host_->extension_host_type() ==
+      extensions::mojom::ViewType::kExtensionPopup) {
     DCHECK(container_);
 
     // This will set the max popup bounds for the duration of the popup's

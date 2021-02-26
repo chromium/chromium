@@ -40,6 +40,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -94,7 +95,7 @@ class PopupHostWatcher : public content::NotificationObserver {
     const ExtensionHost* host =
         content::Details<const ExtensionHost>(details).ptr();
     DCHECK(host);
-    if (host->extension_host_type() != VIEW_TYPE_EXTENSION_POPUP)
+    if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
       return;
 
     ++(type == NOTIFICATION_EXTENSION_HOST_CREATED ? created_ : destroyed_);

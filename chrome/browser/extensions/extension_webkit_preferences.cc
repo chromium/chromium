@@ -14,7 +14,6 @@
 namespace extension_webkit_preferences {
 
 void SetPreferences(const extensions::Extension* extension,
-                    extensions::ViewType render_view_type,
                     blink::web_pref::WebPreferences* webkit_prefs) {
   if (!extension)
     return;

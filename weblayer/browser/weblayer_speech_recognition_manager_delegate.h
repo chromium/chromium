@@ -54,8 +54,8 @@ class WebLayerSpeechRecognitionManagerDelegate
   bool FilterProfanities(int render_process_id) override;
 
  private:
-  // Checks for VIEW_TYPE_TAB_CONTENTS host in the UI thread and notifies back
-  // the result in the IO thread through |callback|.
+  // Checks for mojom::ViewType::kTabContents host in the UI thread and notifies
+  // back the result in the IO thread through |callback|.
   static void CheckRenderFrameType(
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
       int render_process_id,

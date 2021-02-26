@@ -17,6 +17,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/runtime_data.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
@@ -35,7 +36,7 @@ CastExtensionHost::CastExtensionHost(
     : extensions::ExtensionHost(extension,
                                 site_instance.get(),
                                 initial_url,
-                                extensions::VIEW_TYPE_EXTENSION_POPUP),
+                                extensions::mojom::ViewType::kExtensionPopup),
       browser_context_(browser_context) {
   DCHECK(browser_context_);
 }

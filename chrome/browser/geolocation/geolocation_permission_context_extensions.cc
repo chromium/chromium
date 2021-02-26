@@ -17,6 +17,7 @@
 #include "extensions/browser/suggest_permission_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 using extensions::APIPermission;
 using extensions::ExtensionRegistry;
@@ -88,9 +89,9 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
     }
   }
 
-  extensions::ViewType view_type = extensions::GetViewType(web_contents);
-  if (view_type != extensions::VIEW_TYPE_TAB_CONTENTS &&
-      view_type != extensions::VIEW_TYPE_INVALID) {
+  extensions::mojom::ViewType view_type = extensions::GetViewType(web_contents);
+  if (view_type != extensions::mojom::ViewType::kTabContents &&
+      view_type != extensions::mojom::ViewType::kInvalid) {
     // The tab may have gone away, or the request may not be from a tab at all.
     // TODO(mpcomplete): the request could be from a background page or
     // extension popup (web_contents will have a different ViewType). But why do

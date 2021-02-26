@@ -31,7 +31,6 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/service_worker/worker_id_set.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/view_type.h"
 
 class GURL;
 

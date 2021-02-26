@@ -24,7 +24,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "url/origin.h"
@@ -209,7 +209,8 @@ void ExtensionWebContentsObserver::DidFinishNavigation(
 void ExtensionWebContentsObserver::MediaPictureInPictureChanged(
     bool is_picture_in_picture) {
   DCHECK(initialized_);
-  if (GetViewType(web_contents()) == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+  if (GetViewType(web_contents()) ==
+      mojom::ViewType::kExtensionBackgroundPage) {
     ProcessManager* const process_manager =
         ProcessManager::Get(browser_context_);
     const Extension* const extension =
@@ -240,7 +241,8 @@ bool ExtensionWebContentsObserver::OnMessageReceived(
 
 void ExtensionWebContentsObserver::PepperInstanceCreated() {
   DCHECK(initialized_);
-  if (GetViewType(web_contents()) == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+  if (GetViewType(web_contents()) ==
+      mojom::ViewType::kExtensionBackgroundPage) {
     ProcessManager* const process_manager =
         ProcessManager::Get(browser_context_);
     const Extension* const extension =
@@ -253,7 +255,8 @@ void ExtensionWebContentsObserver::PepperInstanceCreated() {
 
 void ExtensionWebContentsObserver::PepperInstanceDeleted() {
   DCHECK(initialized_);
-  if (GetViewType(web_contents()) == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+  if (GetViewType(web_contents()) ==
+      mojom::ViewType::kExtensionBackgroundPage) {
     ProcessManager* const process_manager =
         ProcessManager::Get(browser_context_);
     const Extension* const extension =

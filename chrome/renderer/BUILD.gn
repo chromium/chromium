@@ -319,6 +319,7 @@ static_library("renderer") {
       "//chrome/common/extensions/api",
       "//components/guest_view/renderer",
       "//extensions:extensions_resources",
+      "//extensions/common:mojom",
       "//extensions/renderer",
       "//media/cast:net",
       "//media/cast:receiver",

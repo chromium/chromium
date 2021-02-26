@@ -26,6 +26,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 using content::BrowserThread;
@@ -146,13 +147,13 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
-  extensions::ViewType view_type = extensions::GetViewType(web_contents);
+  extensions::mojom::ViewType view_type = extensions::GetViewType(web_contents);
 
-  if (view_type == extensions::VIEW_TYPE_TAB_CONTENTS ||
-      view_type == extensions::VIEW_TYPE_APP_WINDOW ||
-      view_type == extensions::VIEW_TYPE_COMPONENT ||
-      view_type == extensions::VIEW_TYPE_EXTENSION_POPUP ||
-      view_type == extensions::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
+  if (view_type == extensions::mojom::ViewType::kTabContents ||
+      view_type == extensions::mojom::ViewType::kAppWindow ||
+      view_type == extensions::mojom::ViewType::kComponent ||
+      view_type == extensions::mojom::ViewType::kExtensionPopup ||
+      view_type == extensions::mojom::ViewType::kExtensionBackgroundPage) {
     // If it is a tab, we can check for permission. For apps, this means
     // manifest would be checked for permission.
     allowed = true;

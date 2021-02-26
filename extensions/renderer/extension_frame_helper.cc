@@ -44,17 +44,17 @@ base::LazyInstance<std::set<const ExtensionFrameHelper*>>::DestructorAtExit
 // Returns true if the render frame corresponding with |frame_helper| matches
 // the given criteria.
 bool RenderFrameMatches(const ExtensionFrameHelper* frame_helper,
-                        ViewType match_view_type,
+                        mojom::ViewType match_view_type,
                         int match_window_id,
                         int match_tab_id,
                         const std::string& match_extension_id) {
-  if (match_view_type != VIEW_TYPE_INVALID &&
+  if (match_view_type != mojom::ViewType::kInvalid &&
       frame_helper->view_type() != match_view_type)
     return false;
 
   // Not all frames have a valid ViewType, e.g. devtools, most GuestViews, and
   // unclassified detached WebContents.
-  if (frame_helper->view_type() == VIEW_TYPE_INVALID)
+  if (frame_helper->view_type() == mojom::ViewType::kInvalid)
     return false;
 
   // This logic matches ExtensionWebContentsObserver::GetExtensionFromFrame.
@@ -134,7 +134,7 @@ std::vector<content::RenderFrame*> ExtensionFrameHelper::GetExtensionFrames(
     const std::string& extension_id,
     int browser_window_id,
     int tab_id,
-    ViewType view_type) {
+    mojom::ViewType view_type) {
   std::vector<content::RenderFrame*> render_frames;
   for (const ExtensionFrameHelper* helper : g_frame_helpers.Get()) {
     if (RenderFrameMatches(helper, view_type, browser_window_id, tab_id,
@@ -150,7 +150,7 @@ v8::Local<v8::Array> ExtensionFrameHelper::GetV8MainFrames(
     const std::string& extension_id,
     int browser_window_id,
     int tab_id,
-    ViewType view_type) {
+    mojom::ViewType view_type) {
   // WebFrame::ScriptCanAccess uses the isolate's current context. We need to
   // make sure that the current context is the one we're expecting.
   DCHECK(context == context->GetIsolate()->GetCurrentContext());
@@ -184,7 +184,7 @@ v8::Local<v8::Array> ExtensionFrameHelper::GetV8MainFrames(
 content::RenderFrame* ExtensionFrameHelper::GetBackgroundPageFrame(
     const std::string& extension_id) {
   for (const ExtensionFrameHelper* helper : g_frame_helpers.Get()) {
-    if (RenderFrameMatches(helper, VIEW_TYPE_EXTENSION_BACKGROUND_PAGE,
+    if (RenderFrameMatches(helper, mojom::ViewType::kExtensionBackgroundPage,
                            extension_misc::kUnknownWindowId,
                            extension_misc::kUnknownTabId, extension_id)) {
       blink::WebLocalFrame* web_frame = helper->render_frame()->GetWebFrame();
@@ -245,7 +245,7 @@ bool ExtensionFrameHelper::IsContextForEventPage(const ScriptContext* context) {
   return context->extension() && render_frame &&
          BackgroundInfo::HasLazyBackgroundPage(context->extension()) &&
          ExtensionFrameHelper::Get(render_frame)->view_type() ==
-              VIEW_TYPE_EXTENSION_BACKGROUND_PAGE;
+             mojom::ViewType::kExtensionBackgroundPage;
 }
 
 void ExtensionFrameHelper::BindLocalFrame(
@@ -300,8 +300,8 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
   // document immediately. The chrome.app.window.create() callback (if any)
   // needs to be called prior to the new window's 'load' event. The parser will
   // be resumed when it happens. It doesn't apply to sandboxed pages.
-  if (view_type_ == VIEW_TYPE_APP_WINDOW && render_frame()->IsMainFrame() &&
-      !has_started_first_navigation_ &&
+  if (view_type_ == mojom::ViewType::kAppWindow &&
+      render_frame()->IsMainFrame() && !has_started_first_navigation_ &&
       GURL(document_loader->GetUrl()).SchemeIs(kExtensionScheme) &&
       !ScriptContext::IsSandboxedPage(document_loader->GetUrl())) {
     document_loader->BlockParser();
@@ -449,9 +449,9 @@ void ExtensionFrameHelper::OnUpdateBrowserWindowId(int browser_window_id) {
   browser_window_id_ = browser_window_id;
 }
 
-void ExtensionFrameHelper::OnNotifyRendererViewType(ViewType type) {
+void ExtensionFrameHelper::OnNotifyRendererViewType(mojom::ViewType type) {
   // TODO(devlin): It'd be really nice to be able to
-  // DCHECK_EQ(VIEW_TYPE_INVALID, view_type_) here.
+  // DCHECK_EQ(mojom::ViewType::kInvalid, view_type_) here.
   view_type_ = type;
 }
 

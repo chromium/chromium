@@ -58,13 +58,13 @@ class ExtensionViewHost::AssociatedWebContentsObserver
 ExtensionViewHost::ExtensionViewHost(const Extension* extension,
                                      content::SiteInstance* site_instance,
                                      const GURL& url,
-                                     ViewType host_type,
+                                     mojom::ViewType host_type,
                                      Browser* browser)
     : ExtensionHost(extension, site_instance, url, host_type),
       browser_(browser) {
   // Not used for panels, see PanelHost.
-  DCHECK(host_type == VIEW_TYPE_EXTENSION_DIALOG ||
-         host_type == VIEW_TYPE_EXTENSION_POPUP);
+  DCHECK(host_type == mojom::ViewType::kExtensionDialog ||
+         host_type == mojom::ViewType::kExtensionPopup);
 
   // The browser should always be associated with the same original profile as
   // this view host. The profiles may not be identical (i.e., one may be the
@@ -86,7 +86,7 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
   // The popup itself cannot be zoomed, but we must specify a zoom level to use.
   // Otherwise, if a user zooms a page of the same extension, the popup would
   // use the per-origin zoom level.
-  if (host_type == VIEW_TYPE_EXTENSION_POPUP) {
+  if (host_type == mojom::ViewType::kExtensionPopup) {
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetForWebContents(host_contents());
     zoom_map->SetTemporaryZoomLevel(
@@ -143,7 +143,7 @@ void ExtensionViewHost::LoadInitialURL() {
   }
 
   // Popups may spawn modal dialogs, which need positioning information.
-  if (extension_host_type() == VIEW_TYPE_EXTENSION_POPUP) {
+  if (extension_host_type() == mojom::ViewType::kExtensionPopup) {
     web_modal::WebContentsModalDialogManager::CreateForWebContents(
         host_contents());
     web_modal::WebContentsModalDialogManager::FromWebContents(host_contents())
@@ -291,8 +291,9 @@ content::WebContents* ExtensionViewHost::GetAssociatedWebContents() const {
 content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {
   if (associated_web_contents_)
     return associated_web_contents_;
-  return (extension_host_type() == VIEW_TYPE_EXTENSION_POPUP) ? host_contents()
-                                                              : nullptr;
+  return (extension_host_type() == mojom::ViewType::kExtensionPopup)
+             ? host_contents()
+             : nullptr;
 }
 
 void ExtensionViewHost::Observe(int type,
@@ -307,7 +308,7 @@ void ExtensionViewHost::Observe(int type,
 
 bool ExtensionViewHost::IsEscapeInPopup(
     const content::NativeWebKeyboardEvent& event) const {
-  return extension_host_type() == VIEW_TYPE_EXTENSION_POPUP &&
+  return extension_host_type() == mojom::ViewType::kExtensionPopup &&
          event.GetType() ==
              content::NativeWebKeyboardEvent::Type::kRawKeyDown &&
          event.windows_key_code == ui::VKEY_ESCAPE;

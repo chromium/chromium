@@ -414,21 +414,21 @@ void ChromeExtensionsBrowserClient::CleanUpWebView(
 
 void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
     content::WebContents* web_contents,
-    ViewType view_type) {
+    mojom::ViewType view_type) {
   switch (view_type) {
-    case VIEW_TYPE_APP_WINDOW:
-    case VIEW_TYPE_COMPONENT:
-    case VIEW_TYPE_EXTENSION_BACKGROUND_PAGE:
-    case VIEW_TYPE_EXTENSION_DIALOG:
-    case VIEW_TYPE_EXTENSION_POPUP:
+    case mojom::ViewType::kAppWindow:
+    case mojom::ViewType::kComponent:
+    case mojom::ViewType::kExtensionBackgroundPage:
+    case mojom::ViewType::kExtensionDialog:
+    case mojom::ViewType::kExtensionPopup:
       // These are the only types that are tracked by the ExtensionTag.
       task_manager::WebContentsTags::CreateForExtension(web_contents,
                                                         view_type);
       return;
 
-    case VIEW_TYPE_BACKGROUND_CONTENTS:
-    case VIEW_TYPE_EXTENSION_GUEST:
-    case VIEW_TYPE_TAB_CONTENTS:
+    case mojom::ViewType::kBackgroundContents:
+    case mojom::ViewType::kExtensionGuest:
+    case mojom::ViewType::kTabContents:
       // Those types are tracked by other tags:
       // BACKGROUND_CONTENTS --> task_manager::BackgroundContentsTag.
       // GUEST --> extensions::ChromeGuestViewManagerDelegate.
@@ -438,7 +438,7 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
       // locations, and they must be ignored here.
       return;
 
-    case VIEW_TYPE_INVALID:
+    case mojom::ViewType::kInvalid:
       NOTREACHED();
       return;
   }

@@ -4259,6 +4259,7 @@ static_library("browser") {
       deps += [
         "//extensions/browser",
         "//extensions/browser/api:api_implementations",
+        "//extensions/common:mojom",
       ]
     }
 

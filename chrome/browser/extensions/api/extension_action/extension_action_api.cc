@@ -43,6 +43,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/image_util.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -609,7 +610,7 @@ void BrowserActionOpenPopupFunction::Observe(
     return;
 
   ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
-  if (host->extension_host_type() != VIEW_TYPE_EXTENSION_POPUP ||
+  if (host->extension_host_type() != mojom::ViewType::kExtensionPopup ||
       host->extension()->id() != extension_->id())
     return;
 

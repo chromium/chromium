@@ -48,6 +48,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -261,7 +262,7 @@ void AppWindow::Init(const GURL& url,
   initial_url_ = url;
 
   content::WebContentsObserver::Observe(web_contents());
-  SetViewType(web_contents(), VIEW_TYPE_APP_WINDOW);
+  SetViewType(web_contents(), mojom::ViewType::kAppWindow);
   app_delegate_->InitWebContents(web_contents());
 
   ExtensionWebContentsObserver::GetForWebContents(web_contents())->

@@ -893,6 +893,7 @@ static_library("extensions") {
     "//extensions/browser/updater",
     "//extensions/buildflags",
     "//extensions/common",
+    "//extensions/common:mojom",
     "//extensions/common/api",
     "//extensions/strings",
     "//google_apis",

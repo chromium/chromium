@@ -49,6 +49,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/gfx/geometry/rect.h"
@@ -166,7 +167,8 @@ void WebUILoginView::InitializeWebView(views::WebView* web_view,
   // LoginHandlerViews uses a constrained window for the password manager view.
   WebContentsModalDialogManager::CreateForWebContents(web_contents);
 
-  extensions::SetViewType(web_contents, extensions::VIEW_TYPE_COMPONENT);
+  extensions::SetViewType(web_contents,
+                          extensions::mojom::ViewType::kComponent);
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents);
   blink::RendererPreferences* prefs = web_contents->GetMutableRendererPrefs();
