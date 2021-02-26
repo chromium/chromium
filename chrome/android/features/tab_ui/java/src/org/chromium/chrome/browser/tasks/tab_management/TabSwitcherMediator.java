@@ -73,7 +73,8 @@ class TabSwitcherMediator
 
     // This should be the same as TabListCoordinator.GRID_LAYOUT_SPAN_COUNT for the selected tab
     // to be on the 2nd row.
-    static final int INITIAL_SCROLL_INDEX_OFFSET = 2;
+    static final int INITIAL_SCROLL_INDEX_OFFSET_GTS = 2;
+    static final int INITIAL_SCROLL_INDEX_OFFSET_CAROUSEL = 1;
 
     private static final int DEFAULT_TOP_PADDING = 0;
 
@@ -658,9 +659,11 @@ class TabSwitcherMediator
     }
 
     private void setInitialScrollIndexOffset() {
+        int offset = mMode == TabListMode.CAROUSEL ? INITIAL_SCROLL_INDEX_OFFSET_CAROUSEL
+                                                   : INITIAL_SCROLL_INDEX_OFFSET_GTS;
         int initialPosition = Math.max(
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index()
-                        - INITIAL_SCROLL_INDEX_OFFSET,
+                        - offset,
                 0);
         // In MRU order, selected Tab is always at the first position.
         if (mShowTabsInMruOrder) initialPosition = 0;
