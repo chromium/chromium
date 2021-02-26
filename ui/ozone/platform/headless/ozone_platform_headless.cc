@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/ime/input_method_minimal.h"
@@ -28,6 +29,10 @@
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/constants/dbus_switches.h"
+#endif
 
 #if defined(OS_FUCHSIA)
 #include "ui/base/ime/fuchsia/input_method_fuchsia.h"
@@ -135,6 +140,12 @@ OzonePlatform* CreateOzonePlatformHeadless() {
   if (cmd->HasSwitch(switches::kOzoneDumpFile))
     location = cmd->GetSwitchValuePath(switches::kOzoneDumpFile);
   cmd->AppendSwitch(switches::kDisableRunningAsSystemCompositor);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Disable USB input.
+  cmd->AppendSwitch(chromeos::switches::kCrosDisksFake);
+#endif
+
   return new OzonePlatformHeadless(location);
 }
 
