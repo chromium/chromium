@@ -65,7 +65,8 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     // TODO(fivedots): Remove this switch once Storage Foundation is enabled
     // by default.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "NativeIO");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "StorageFoundationAPI");
   }
 
   GURL GetURL(const std::string& host) {

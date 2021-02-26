@@ -189,7 +189,8 @@ class CookieSettingsTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(fivedots): Remove this switch once Storage Foundation is enabled
     // by default.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "NativeIO");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "StorageFoundationAPI");
     ContentSettingsTest::SetUpCommandLine(command_line);
   }
 

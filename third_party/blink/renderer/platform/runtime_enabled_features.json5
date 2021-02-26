@@ -1363,11 +1363,6 @@
       status: "stable",
     },
     {
-      name: "NativeIO",
-      origin_trial_feature_name: "StorageFoundationAPI",
-      status: "experimental",
-    },
-    {
       name: "NavigatorContentUtils",
       // Android does not yet support NavigatorContentUtils.
       status: {"Android": "", "default": "stable"},
@@ -1946,6 +1941,11 @@
     },
     {
       name: "StorageBuckets",
+      status: "experimental",
+    },
+    {
+      name: "StorageFoundationAPI",
+      origin_trial_feature_name: "StorageFoundationAPI",
       status: "experimental",
     },
     {

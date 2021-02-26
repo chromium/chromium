@@ -395,7 +395,6 @@ class BrowsingDataRemoverBrowserTest
     ExpectCookieTreeModelCount(0);
   }
 
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   int GetMediaLicenseCount() {
     base::RunLoop run_loop;
@@ -503,7 +502,8 @@ class BrowsingDataRemoverBrowserTest
     // it uses the External Clear Key CDM.
     RegisterClearKeyCdm(command_line);
 #endif
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "NativeIO");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "StorageFoundationAPI");
   }
 };
 
