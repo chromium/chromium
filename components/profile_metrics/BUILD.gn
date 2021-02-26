@@ -13,3 +13,16 @@ static_library("profile_metrics") {
 
   deps = [ "//base" ]
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  android_library("browser_profile_type_enum_java") {
+    srcjar_deps = [ ":browser_profile_type_enum_javagen" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  java_cpp_enum("browser_profile_type_enum_javagen") {
+    sources = [ "browser_profile_type.h" ]
+  }
+}

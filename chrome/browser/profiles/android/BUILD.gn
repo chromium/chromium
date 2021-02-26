@@ -13,6 +13,7 @@ android_library("java") {
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/preferences:java",
     "//components/embedder_support/android:browser_context_java",
+    "//components/profile_metrics:browser_profile_type_enum_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

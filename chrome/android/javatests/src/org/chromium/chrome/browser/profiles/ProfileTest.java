@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -136,6 +137,39 @@ public class ProfileTest {
             Assert.assertNotSame("Two calls to OTRProfileID.CreateUnique with the same prefix"
                             + "should return different objects.",
                     profileID1, profileID2);
+        });
+    }
+
+    @Test
+    @LargeTest
+    public void testBrowserProfileTypeFromRegularProfile() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(BrowserProfileType.REGULAR,
+                    Profile.getBrowserProfileTypeFromProfile(mRegularProfile));
+        });
+    }
+
+    @Test
+    @LargeTest
+    public void testBrowserProfileTypeFromPrimaryOTRProfile() throws Exception {
+        // Open an new Incognito Tab page to create a new primary OTR profile.
+        sActivityTestRule.loadUrlInNewTab("about:blank", true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Profile primaryOTRProfile = mRegularProfile.getPrimaryOTRProfile();
+            Assert.assertEquals(BrowserProfileType.INCOGNITO,
+                    Profile.getBrowserProfileTypeFromProfile(primaryOTRProfile));
+        });
+    }
+
+    @Test
+    @LargeTest
+    public void testBrowserProfileTypeFromNonPrimaryOTRProfile() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OTRProfileID otrProfileID = new OTRProfileID("test::OTRProfile");
+            Profile nonPrimaryOtrProfile = mRegularProfile.getOffTheRecordProfile(otrProfileID);
+            Assert.assertEquals(BrowserProfileType.OTHER_OFF_THE_RECORD_PROFILE,
+                    Profile.getBrowserProfileTypeFromProfile(nonPrimaryOtrProfile));
         });
     }
 }
