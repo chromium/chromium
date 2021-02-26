@@ -1038,7 +1038,7 @@ const char kEnablePciguardUiName[] =
     "Enable Pciguard (Thunderbolt + USB4 tunneling) UI for settings";
 const char kEnablePciguardUiDescription[] =
     "Enable toggling Pciguard settings through the Settings App. By default, "
-    "this flag is disabled.";
+    "this flag is enabled.";
 
 const char kEnablePixelCanvasRecordingName[] = "Enable pixel canvas recording";
 const char kEnablePixelCanvasRecordingDescription[] =
