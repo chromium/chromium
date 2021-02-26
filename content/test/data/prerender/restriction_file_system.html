@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test the File System Access API during prerendering</title>
+</head>
+<body>
+<script>
+
+let willActivate = false;
+let resolveFunc;
+let rejectFunc;
+
+const result = new Promise((resolve, reject) => {
+  resolveFunc = resolve;
+  rejectFunc = reject;
+});
+
+function setWillActivate() {
+  willActivate = true;
+}
+
+async function startShowOpenFilePicker() {
+  try {
+    const [fileHandle] = await window.showOpenFilePicker();
+    // showOpenFilePicker() is expected to be deferred until the prerendered
+    // page is activated. So`willActivate` should be true here.
+    if (!willActivate) {
+      rejectFunc('did not activate');
+    } else {
+      resolveFunc(fileHandle.name);
+    }
+  } catch (err) {
+    rejectFunc(err);
+  }
+}
+
+function runLoop() {
+  return new Promise(resolve => {
+    setTimeout(resolve, 0);
+  });
+}
+
+</script>
+</body>
+</html>

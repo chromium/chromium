@@ -6,6 +6,8 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -13,6 +15,8 @@
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
+#include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -36,6 +40,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -1115,6 +1121,80 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, IndexedDBAccess) {
   // Read the added object from the initial page.
   EXPECT_EQ(prerender_value, EvalJs(shell()->web_contents(),
                                     JsReplace("readData($1);", prerender_key)));
+}
+
+class PrerenderFileSystemAccessBrowserTest : public PrerenderBrowserTest {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ContentBrowserTest::SetUp();
+  }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderFileSystemAccessBrowserTest,
+                         testing::Values(kWebContents, kMPArch),
+                         ToString);
+
+// TODO(https://crbug.com/1182032): Now File System Access API is not supported
+// on Android. Enable this browser test after https://crbug.com/1011535 is
+// fixed.
+#if defined(OS_ANDROID)
+#define MAYBE_DeferFileSystemAccess DISABLED_DeferFileSystemAccess
+#else
+#define MAYBE_DeferFileSystemAccess DeferFileSystemAccess
+#endif
+
+// Tests that access to local file system is deferred on prerendering pages.
+IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
+                       MAYBE_DeferFileSystemAccess) {
+  // This test is only meaningful with activation.
+  if (IsActivationDisabled())
+    return;
+  base::FilePath temp_file;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file));
+  }
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({temp_file}, &dialog_params));
+
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/restriction_file_system.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
+      prerender_host->GetPrerenderedMainFrameHostForTesting());
+
+  // Access `temp_file` on the prerendered page.
+  ExecuteScriptAsync(prerender_contents, "startShowOpenFilePicker();");
+  // Run a event loop so the page can fail the test.
+  EXPECT_TRUE(ExecJs(prerender_contents, "runLoop();"));
+
+  // Inform the prerendered page that it will be activated and activate it.
+  EXPECT_TRUE(ExecJs(prerender_contents, "setWillActivate();"));
+  NavigateWithLocation(kPrerenderingUrl);
+
+  // `temp_file` should be selected after `willActivate` was set to true,
+  // otherwise the prerendered page will throw an error.
+  EXPECT_EQ(temp_file.BaseName().AsUTF8Unsafe(),
+            EvalJs(prerender_contents, "result;"));
+
+  ui::SelectFileDialog::SetFactory(nullptr);
 }
 
 // - End: Tests for Mojo capability control methodology restrictions ===========
