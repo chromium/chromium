@@ -69,6 +69,18 @@ const char kDisableCheckingUserPermissionsForTesting[] =
 const char kDisableModelDownloadVerificationForTesting[] =
     "disable-model-download-verification";
 
+// Disables the fetching of models and overrides the file path and metadata to
+// be used for the session to use what's passed via command-line instead of what
+// is already stored.
+//
+// We expect that the string be a comma-separated string of model overrides with
+// each model override be: OPTIMIZATION_TARGET_STRING:file_path or
+// OPTIMIZATION_TARGET_STRING:file_path:base64_encoded_any_proto_model_metadata.
+//
+// It is possible this only works on Desktop since file paths are less easily
+// accessible on Android, but may work.
+const char kModelOverride[] = "optimization-guide-model-override";
+
 bool IsHintComponentProcessingDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHintsProtoOverride);
 }
@@ -155,6 +167,68 @@ bool ShouldOverrideCheckingUserPermissionsToFetchHintsForTesting() {
 bool ShouldSkipModelDownloadVerificationForTesting() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kDisableModelDownloadVerificationForTesting);
+}
+
+bool IsModelOverridePresent() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(kModelOverride);
+}
+
+base::Optional<
+    std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
+GetModelOverrideForOptimizationTarget(
+    optimization_guide::proto::OptimizationTarget optimization_target) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kModelOverride))
+    return base::nullopt;
+
+  std::string model_override_switch_value =
+      command_line->GetSwitchValueASCII(kModelOverride);
+  std::vector<std::string> model_overrides =
+      base::SplitString(model_override_switch_value, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  for (const auto& model_override : model_overrides) {
+    std::vector<std::string> override_parts = base::SplitString(
+        model_override, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (override_parts.size() != 2 && override_parts.size() != 3) {
+      // Input is malformed.
+      DLOG(ERROR) << "Invalid string format provided to the Model Override";
+      return base::nullopt;
+    }
+
+    optimization_guide::proto::OptimizationTarget recv_optimization_target;
+    if (!optimization_guide::proto::OptimizationTarget_Parse(
+            override_parts[0], &recv_optimization_target)) {
+      // Optimization target is invalid.
+      DLOG(ERROR)
+          << "Invalid optimization target provided to the Model Override";
+      return base::nullopt;
+    }
+    if (optimization_target != recv_optimization_target)
+      continue;
+
+    if (override_parts.size() == 2) {
+      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>
+          file_path_and_metadata =
+              std::make_pair(override_parts[1], base::nullopt);
+      return file_path_and_metadata;
+    }
+    std::string binary_pb;
+    if (!base::Base64Decode(override_parts[2], &binary_pb)) {
+      DLOG(ERROR) << "Invalid base64 encoding of the Model Override";
+      return base::nullopt;
+    }
+    optimization_guide::proto::Any model_metadata;
+    if (!model_metadata.ParseFromString(binary_pb)) {
+      DLOG(ERROR) << "Invalid model metadata provided to the Model Override";
+      return base::nullopt;
+    }
+    std::pair<std::string, base::Optional<optimization_guide::proto::Any>>
+        file_path_and_metadata =
+            std::make_pair(override_parts[1], model_metadata);
+    return file_path_and_metadata;
+  }
+  return base::nullopt;
 }
 
 }  // namespace switches

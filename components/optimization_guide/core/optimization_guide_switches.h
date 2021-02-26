@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
 namespace proto {
@@ -30,6 +31,7 @@ extern const char kPurgeModelAndFeaturesStore[];
 extern const char kDisableFetchingHintsAtNavigationStartForTesting[];
 extern const char kDisableCheckingUserPermissionsForTesting[];
 extern const char kDisableModelDownloadVerificationForTesting[];
+extern const char kModelOverride[];
 
 // Returns whether the hint component should be processed.
 // Available hint components are only processed if a proto override isn't being
@@ -75,6 +77,16 @@ bool ShouldOverrideCheckingUserPermissionsToFetchHintsForTesting();
 
 // Returns true if the verification of model downloads should be skipped.
 bool ShouldSkipModelDownloadVerificationForTesting();
+
+// Returns whether at least one model was provided via command-line.
+bool IsModelOverridePresent();
+
+// Returns the file path string and metadata for the model provided via
+// command-line for |optimization_target|, if applicable.
+base::Optional<
+    std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
+GetModelOverrideForOptimizationTarget(
+    optimization_guide::proto::OptimizationTarget optimization_target);
 
 }  // namespace switches
 }  // namespace optimization_guide

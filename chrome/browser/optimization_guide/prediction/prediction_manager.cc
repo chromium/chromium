@@ -190,6 +190,31 @@ bool ShouldFetchModelsAndHostModelFeatures(Profile* profile) {
          !profile->IsOffTheRecord();
 }
 
+std::unique_ptr<optimization_guide::proto::PredictionModel>
+BuildPredictionModelFromCommandLineForOptimizationTarget(
+    optimization_guide::proto::OptimizationTarget optimization_target) {
+  base::Optional<
+      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
+      model_file_path_and_metadata =
+          optimization_guide::switches::GetModelOverrideForOptimizationTarget(
+              optimization_target);
+  if (!model_file_path_and_metadata)
+    return nullptr;
+
+  std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
+      std::make_unique<optimization_guide::proto::PredictionModel>();
+  prediction_model->mutable_model_info()->set_optimization_target(
+      optimization_target);
+  prediction_model->mutable_model_info()->set_version(123);
+  if (model_file_path_and_metadata->second) {
+    *prediction_model->mutable_model_info()->mutable_model_metadata() =
+        model_file_path_and_metadata->second.value();
+  }
+  prediction_model->mutable_model()->set_download_url(
+      model_file_path_and_metadata->first);
+  return prediction_model;
+}
+
 }  // namespace
 
 namespace optimization_guide {
@@ -633,6 +658,9 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
 void PredictionManager::FetchModelsAndHostModelFeatures() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (switches::IsModelOverridePresent())
+    return;
+
   if (!ShouldFetchModelsAndHostModelFeatures(profile_))
     return;
 
@@ -830,6 +858,9 @@ void PredictionManager::UpdatePredictionModels(
 }
 
 void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
+  if (switches::IsModelOverridePresent())
+    return;
+
   DCHECK(model.model_info().has_version() &&
          model.model_info().has_optimization_target());
 
@@ -942,6 +973,16 @@ void PredictionManager::LoadPredictionModels(
     const base::flat_set<proto::OptimizationTarget>& optimization_targets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(host_model_features_loaded_);
+
+  if (switches::IsModelOverridePresent()) {
+    for (proto::OptimizationTarget optimization_target : optimization_targets) {
+      std::unique_ptr<proto::PredictionModel> prediction_model =
+          BuildPredictionModelFromCommandLineForOptimizationTarget(
+              optimization_target);
+      OnLoadPredictionModel(std::move(prediction_model));
+    }
+    return;
+  }
 
   OptimizationGuideStore::EntryKey model_entry_key;
   for (const auto& optimization_target : optimization_targets) {

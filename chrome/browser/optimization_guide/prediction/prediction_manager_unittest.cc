@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -841,6 +842,72 @@ TEST_F(PredictionManagerTest,
           /*model_metadata=*/base::nullopt, &observer2));
   RunUntilIdle();
 #endif
+}
+
+TEST_F(PredictionManagerTest,
+       AddObserverForOptimizationTargetModelCommandLineOverride) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
+
+  optimization_guide::proto::Any metadata;
+  metadata.set_type_url("sometypeurl");
+  std::string encoded_metadata;
+  metadata.SerializeToString(&encoded_metadata);
+  base::Base64Encode(encoded_metadata, &encoded_metadata);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kModelOverride,
+      "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:somefilepath:" + encoded_metadata);
+
+  CreatePredictionManager();
+
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
+  proto::Any model_metadata;
+  model_metadata.set_type_url("whatever");
+  prediction_model_fetcher()->SetExpectedModelMetadataForOptimizationTarget(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_metadata);
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_metadata, &observer);
+  SetStoreInitialized(/* load_models= */ false,
+                      /* load_host_model_features= */ false,
+                      /* have_models_in_store= */ false);
+
+  // Make sure no models are fetched.
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+
+  EXPECT_TRUE(prediction_manager()->GetRegisteredOptimizationTargets().contains(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_EQ(observer
+                .last_received_model_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->first.value()
+                .type_url(),
+            "sometypeurl");
+  EXPECT_EQ(observer
+                .last_received_model_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->second.value(),
+            FILE_PATH_LITERAL("somefilepath"));
+
+  // Now reset observer. New model downloads should not update the observer.
+  observer.Reset();
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(1);
+  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever2"), &model);
+  prediction_manager()->OnModelReady(model);
+  RunUntilIdle();
+
+  // Last received path should not have been updated since the observer was
+  // reset and override is in place.
+  EXPECT_FALSE(observer
+                   .last_received_model_for_target(
+                       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                   .has_value());
 }
 
 TEST_F(PredictionManagerTest,
