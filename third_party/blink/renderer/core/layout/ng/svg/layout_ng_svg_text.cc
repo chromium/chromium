@@ -18,4 +18,13 @@ const char* LayoutNGSVGText::GetName() const {
   return "LayoutNGSVGText";
 }
 
+bool LayoutNGSVGText::IsOfType(LayoutObjectType type) const {
+  return type == kLayoutObjectSVG || LayoutNGBlockFlow::IsOfType(type);
+}
+
+bool LayoutNGSVGText::CreatesNewFormattingContext() const {
+  NOT_DESTROYED();
+  return true;
+}
+
 }  // namespace blink

@@ -15,7 +15,12 @@ class LayoutNGSVGText final : public LayoutNGBlockFlow {
   explicit LayoutNGSVGText(Element* element);
 
  private:
+  // LayoutObject override:
   const char* GetName() const override;
+  bool IsOfType(LayoutObjectType type) const override;
+
+  // LayoutBox override:
+  bool CreatesNewFormattingContext() const override;
 };
 
 }  // namespace blink
