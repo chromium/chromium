@@ -7246,6 +7246,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDrawPredictedPointsDescription, kOsAll,
      MULTI_VALUE_TYPE(kDrawPredictedPointsChoices)},
 
+    {"enable-tflite-language-detection",
+     flag_descriptions::kTFLiteLanguageDetectionName,
+     flag_descriptions::kTFLiteLanguageDetectionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionEnabled)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
