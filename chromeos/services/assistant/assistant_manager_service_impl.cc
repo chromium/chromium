@@ -564,6 +564,11 @@ void AssistantManagerServiceImpl::OnInteractionFinished(
   }
 }
 
+void AssistantManagerServiceImpl::OnHtmlResponse(const std::string& html,
+                                                 const std::string& fallback) {
+  receive_inline_response_ = true;
+}
+
 void AssistantManagerServiceImpl::OnScheduleWait(int id, int time_ms) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnScheduleWait, id, time_ms);
   DCHECK(features::IsWaitSchedulingEnabled());
@@ -593,16 +598,6 @@ void AssistantManagerServiceImpl::OnShowContextualQueryFallback() {
   // Show fallback text.
   OnShowText(l10n_util::GetStringUTF8(
       IDS_ASSISTANT_SCREEN_CONTEXT_QUERY_FALLBACK_TEXT));
-}
-
-void AssistantManagerServiceImpl::OnShowHtml(const std::string& html,
-                                             const std::string& fallback) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnShowHtml, html, fallback);
-
-  receive_inline_response_ = true;
-
-  for (auto& it : interaction_subscribers_)
-    it.OnHtmlResponse(html, fallback);
 }
 
 void AssistantManagerServiceImpl::OnShowSuggestions(

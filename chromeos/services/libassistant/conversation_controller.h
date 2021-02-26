@@ -5,17 +5,17 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_CONVERSATION_CONTROLLER_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_CONVERSATION_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "base/optional.h"
+#include "base/sequence_checker.h"
+#include "chromeos/assistant/internal/action/assistant_action_observer.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-namespace assistant_client {
-class AssistantManagerInternal;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace assistant {
@@ -30,7 +30,8 @@ class ServiceController;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     : public mojom::ConversationController,
-      public AssistantManagerObserver {
+      public AssistantManagerObserver,
+      public ::chromeos::assistant::action::AssistantActionObserver {
  public:
   using AssistantNotification = ::chromeos::assistant::AssistantNotification;
   using AssistantFeedback = ::chromeos::assistant::AssistantFeedback;
@@ -61,6 +62,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void AddRemoteObserver(
       mojo::PendingRemote<mojom::ConversationObserver> observer) override;
 
+  // ::chromeos::assistant::action::AssistantActionObserver
+  void OnShowHtml(const std::string& html_content,
+                  const std::string& fallback) override;
+
   const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
     return &observers_;
   }
@@ -79,6 +84,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   ServiceController* const service_controller_;
 
   std::unique_ptr<assistant::action::CrosActionModule> action_module_;
+
+  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
+  base::WeakPtrFactory<ConversationController> weak_factory_{this};
 };
 
 }  // namespace libassistant

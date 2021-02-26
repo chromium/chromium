@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
       base::OnceCallback<void(assistant_client::AssistantManager*,
                               assistant_client::AssistantManagerInternal*)>;
 
-  explicit LibassistantService(
+  LibassistantService(
       mojo::PendingReceiver<mojom::LibassistantService> receiver,
       assistant::AssistantManagerServiceDelegate* delegate);
   LibassistantService(LibassistantService&) = delete;

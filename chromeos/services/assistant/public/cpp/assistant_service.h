@@ -92,10 +92,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
   virtual void OnInteractionStarted(
       const AssistantInteractionMetadata& metadata) {}
 
-  // Assistant got Html response with fallback text from server.
-  virtual void OnHtmlResponse(const std::string& response,
-                              const std::string& fallback) {}
-
   // Assistant got suggestions response from server.
   virtual void OnSuggestionsResponse(
       const std::vector<AssistantSuggestion>& response) {}

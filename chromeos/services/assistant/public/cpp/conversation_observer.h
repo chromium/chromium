@@ -21,6 +21,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override {}
   void OnTtsStarted(bool due_to_error) override {}
+  void OnHtmlResponse(const std::string& response,
+                      const std::string& fallback) override {}
 
   mojo::PendingRemote<libassistant::mojom::ConversationObserver>
   BindNewPipeAndPassRemote();

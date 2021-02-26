@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
@@ -17,14 +19,28 @@
 namespace chromeos {
 namespace libassistant {
 
+namespace {
+// A macro which ensures we are running on the main thread.
+#define ENSURE_MOJOM_THREAD(method, ...)                                    \
+  if (!mojom_task_runner_->RunsTasksInCurrentSequence()) {                  \
+    mojom_task_runner_->PostTask(                                           \
+        FROM_HERE,                                                          \
+        base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
+    return;                                                                 \
+  }
+}  // namespace
+
 ConversationController::ConversationController(
     ServiceController* service_controller)
     : receiver_(this),
       service_controller_(service_controller),
       action_module_(std::make_unique<assistant::action::CrosActionModule>(
           assistant::features::IsAppSupportEnabled(),
-          assistant::features::IsWaitSchedulingEnabled())) {
+          assistant::features::IsWaitSchedulingEnabled())),
+      mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(service_controller_);
+
+  action_module_->AddObserver(this);
 }
 
 ConversationController::~ConversationController() = default;
@@ -136,6 +152,16 @@ void ConversationController::SendAssistantFeedback(
 void ConversationController::AddRemoteObserver(
     mojo::PendingRemote<mojom::ConversationObserver> observer) {
   observers_.Add(std::move(observer));
+}
+
+// Called from Libassistant thread.
+void ConversationController::OnShowHtml(const std::string& html_content,
+                                        const std::string& fallback) {
+  ENSURE_MOJOM_THREAD(&ConversationController::OnShowHtml, html_content,
+                      fallback);
+
+  for (auto& observer : observers_)
+    observer->OnHtmlResponse(html_content, fallback);
 }
 
 void ConversationController::SendVoicelessInteraction(

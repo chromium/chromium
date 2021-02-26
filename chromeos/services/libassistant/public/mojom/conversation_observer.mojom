@@ -14,6 +14,10 @@ interface ConversationObserver{
   // Libassistant is speaking TTS response. |due_to_error| is true if TTS
   // is started due to an error that occurred during the conversation.
   OnTtsStarted(bool due_to_error);
+
+  // Assistant got Html response with fallback text from server.
+  // Note that fallback message is always empty since it has been deprecated.
+  OnHtmlResponse(string response, string fallback);
 };
 
 enum AssistantInteractionResolution {

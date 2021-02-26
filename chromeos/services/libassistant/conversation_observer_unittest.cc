@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/test/task_environment.h"
+#include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
@@ -17,6 +20,30 @@ namespace libassistant {
 
 namespace {
 
+// Helper class to fire interaction response handlers for tests.
+class CrosActionModuleHelper {
+ public:
+  explicit CrosActionModuleHelper(
+      assistant::action::CrosActionModule* action_module)
+      : action_module_(*action_module) {}
+  CrosActionModuleHelper(const CrosActionModuleHelper&) = delete;
+  CrosActionModuleHelper& operator=(const CrosActionModuleHelper&) = delete;
+  ~CrosActionModuleHelper() = default;
+
+  void ShowHtml(const std::string& html) {
+    for (auto* observer : action_observers())
+      observer->OnShowHtml(html, /*fallback=*/"");
+  }
+
+ private:
+  const std::vector<assistant::action::AssistantActionObserver*>&
+  action_observers() {
+    return action_module_.GetActionObserversForTesting();
+  }
+
+  const assistant::action::CrosActionModule& action_module_;
+};
+
 class ConversationObserverMock : public mojom::ConversationObserver {
  public:
   ConversationObserverMock() = default;
@@ -29,6 +56,9 @@ class ConversationObserverMock : public mojom::ConversationObserver {
               OnInteractionFinished,
               (chromeos::assistant::AssistantInteractionResolution resolution));
   MOCK_METHOD(void, OnTtsStarted, (bool due_to_error));
+  MOCK_METHOD(void,
+              OnHtmlResponse,
+              (const std::string& response, const std::string& fallback));
 
   mojo::PendingRemote<mojom::ConversationObserver> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -54,10 +84,18 @@ class ConversationObserverTest : public ::testing::Test {
         observer_mock_.BindNewPipeAndPassRemote());
 
     service_tester_.Start();
+
+    action_module_helper_ = std::make_unique<CrosActionModuleHelper>(
+        static_cast<assistant::action::CrosActionModule*>(
+            service_tester_.assistant_manager_internal().action_module()));
   }
 
   assistant_client::ConversationStateListener& conversation_state_listener() {
     return *service_tester_.assistant_manager().conversation_state_listener();
+  }
+
+  CrosActionModuleHelper& action_module_helper() {
+    return *action_module_helper_.get();
   }
 
   ConversationObserverMock& observer_mock() { return observer_mock_; }
@@ -66,6 +104,7 @@ class ConversationObserverTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment environment_;
   ::testing::StrictMock<ConversationObserverMock> observer_mock_;
   LibassistantServiceTester service_tester_;
+  std::unique_ptr<CrosActionModuleHelper> action_module_helper_;
 };
 
 TEST_F(ConversationObserverTest,
@@ -105,6 +144,15 @@ TEST_F(ConversationObserverTest,
   EXPECT_CALL(observer_mock(), OnTtsStarted(/*due_to_error=*/true));
 
   conversation_state_listener().OnRespondingStarted(true);
+  observer_mock().FlushForTesting();
+}
+
+TEST_F(ConversationObserverTest, ShouldReceiveOnHtmlResponse) {
+  const std::string fake_html = "<h1>Hello world!</h1>";
+  EXPECT_CALL(observer_mock(), OnHtmlResponse(fake_html, ""));
+
+  // Fallback is always empty since it has been deprecated.
+  action_module_helper().ShowHtml(/*html=*/fake_html);
   observer_mock().FlushForTesting();
 }
 

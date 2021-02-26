@@ -179,8 +179,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // AssistantActionObserver overrides:
   void OnScheduleWait(int id, int time_ms) override;
   void OnShowContextualQueryFallback() override;
-  void OnShowHtml(const std::string& html,
-                  const std::string& fallback) override;
   void OnShowSuggestions(
       const std::vector<action::Suggestion>& suggestions) override;
   void OnShowText(const std::string& text) override;
@@ -199,6 +197,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // chromeos::assistant::ConversationObserver overrides:
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override;
+  void OnHtmlResponse(const std::string& response,
+                      const std::string& fallback) override;
 
   // AssistantManagerDelegate overrides:
   void OnConversationTurnStartedInternal(

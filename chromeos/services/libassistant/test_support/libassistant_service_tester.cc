@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/libassistant/test_support/libassistant_service_tester.h"
+
 #include "base/base_paths.h"
 #include "services/network/test/test_url_loader_factory.h"
 
