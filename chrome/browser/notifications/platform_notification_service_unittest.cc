@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -213,10 +214,12 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
   data.vibration_pattern = vibration_pattern;
   data.silent = true;
   data.actions.resize(2);
-  data.actions[0].type = blink::mojom::NotificationActionType::BUTTON;
-  data.actions[0].title = base::ASCIIToUTF16("Button 1");
-  data.actions[1].type = blink::mojom::NotificationActionType::TEXT;
-  data.actions[1].title = base::ASCIIToUTF16("Button 2");
+  data.actions[0] = blink::mojom::NotificationAction::New();
+  data.actions[0]->type = blink::mojom::NotificationActionType::BUTTON;
+  data.actions[0]->title = base::ASCIIToUTF16("Button 1");
+  data.actions[1] = blink::mojom::NotificationAction::New();
+  data.actions[1]->type = blink::mojom::NotificationActionType::TEXT;
+  data.actions[1]->title = base::ASCIIToUTF16("Button 2");
 
   NotificationResources notification_resources;
   notification_resources.action_icons.resize(data.actions.size());
@@ -266,10 +269,12 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
   data.notification_data.renotify = false;
   data.notification_data.tag = "tag";
   data.notification_data.silent = true;
-  blink::PlatformNotificationAction action1, action2, action3;
-  data.notification_data.actions.push_back(action1);
-  data.notification_data.actions.push_back(action2);
-  data.notification_data.actions.push_back(action3);
+  auto action1 = blink::mojom::NotificationAction::New();
+  data.notification_data.actions.push_back(std::move(action1));
+  auto action2 = blink::mojom::NotificationAction::New();
+  data.notification_data.actions.push_back(std::move(action2));
+  auto action3 = blink::mojom::NotificationAction::New();
+  data.notification_data.actions.push_back(std::move(action3));
   data.notification_data.require_interaction = false;
   data.num_clicks = 3;
   data.num_action_button_clicks = 1;

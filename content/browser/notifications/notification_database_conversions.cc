@@ -148,26 +148,26 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
   notification_data->actions.clear();
 
   for (const auto& payload_action : payload.actions()) {
-    blink::PlatformNotificationAction action;
+    auto action = blink::mojom::NotificationAction::New();
 
     switch (payload_action.type()) {
       case NotificationDatabaseDataProto::NotificationAction::BUTTON:
-        action.type = blink::mojom::NotificationActionType::BUTTON;
+        action->type = blink::mojom::NotificationActionType::BUTTON;
         break;
       case NotificationDatabaseDataProto::NotificationAction::TEXT:
-        action.type = blink::mojom::NotificationActionType::TEXT;
+        action->type = blink::mojom::NotificationActionType::TEXT;
         break;
       default:
         NOTREACHED();
     }
 
-    action.action = payload_action.action();
-    action.title = base::UTF8ToUTF16(payload_action.title());
-    action.icon = GURL(payload_action.icon());
+    action->action = payload_action.action();
+    action->title = base::UTF8ToUTF16(payload_action.title());
+    action->icon = GURL(payload_action.icon());
     if (payload_action.has_placeholder()) {
-      action.placeholder = base::UTF8ToUTF16(payload_action.placeholder());
+      action->placeholder = base::UTF8ToUTF16(payload_action.placeholder());
     }
-    notification_data->actions.push_back(action);
+    notification_data->actions.push_back(std::move(action));
   }
 
   if (payload.has_show_trigger_timestamp()) {
@@ -234,12 +234,11 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
                       notification_data.data.size());
   }
 
-  for (const blink::PlatformNotificationAction& action :
-       notification_data.actions) {
+  for (const auto& action : notification_data.actions) {
     NotificationDatabaseDataProto::NotificationAction* payload_action =
         payload->add_actions();
 
-    switch (action.type) {
+    switch (action->type) {
       case blink::mojom::NotificationActionType::BUTTON:
         payload_action->set_type(
             NotificationDatabaseDataProto::NotificationAction::BUTTON);
@@ -249,15 +248,15 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
             NotificationDatabaseDataProto::NotificationAction::TEXT);
         break;
       default:
-        NOTREACHED() << "Unknown action type: " << action.type;
+        NOTREACHED() << "Unknown action type: " << action->type;
     }
 
-    payload_action->set_action(action.action);
-    payload_action->set_title(base::UTF16ToUTF8(action.title));
-    payload_action->set_icon(action.icon.spec());
+    payload_action->set_action(action->action);
+    payload_action->set_title(base::UTF16ToUTF8(action->title));
+    payload_action->set_icon(action->icon.spec());
 
-    if (action.placeholder) {
-      payload_action->set_placeholder(base::UTF16ToUTF8(*action.placeholder));
+    if (action->placeholder) {
+      payload_action->set_placeholder(base::UTF16ToUTF8(*action->placeholder));
     }
   }
 

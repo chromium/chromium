@@ -14,44 +14,10 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
-#include "third_party/blink/public/mojom/notifications/notification.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
-
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::NotificationActionDataView,
-                 blink::PlatformNotificationAction> {
-  static blink::mojom::NotificationActionType type(
-      const blink::PlatformNotificationAction& action) {
-    return action.type;
-  }
-
-  static const std::string& action(
-      const blink::PlatformNotificationAction& action) {
-    return action.action;
-  }
-
-  static const base::string16& title(
-      const blink::PlatformNotificationAction& action) {
-    return action.title;
-  }
-
-  static const GURL& icon(const blink::PlatformNotificationAction& action) {
-    return action.icon;
-  }
-
-  static const base::Optional<base::string16>& placeholder(
-      const blink::PlatformNotificationAction& action) {
-    return action.placeholder;
-  }
-
-  static bool Read(
-      blink::mojom::NotificationActionDataView notification_action,
-      blink::PlatformNotificationAction* platform_notification_action);
-};
 
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
@@ -122,7 +88,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
                            data.data.size());
   }
 
-  static const std::vector<blink::PlatformNotificationAction>& actions(
+  static const std::vector<blink::mojom::NotificationActionPtr>& actions(
       const blink::PlatformNotificationData& data) {
     return data.actions;
   }

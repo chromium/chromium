@@ -62,19 +62,22 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.data.assign(data, data + base::size(data));
 
   notification_data.actions.resize(2);
-  notification_data.actions[0].type =
+  notification_data.actions[0] = blink::mojom::NotificationAction::New();
+  notification_data.actions[0]->type =
       blink::mojom::NotificationActionType::BUTTON;
-  notification_data.actions[0].action = "buttonAction";
-  notification_data.actions[0].title = base::ASCIIToUTF16("Button Title!");
-  notification_data.actions[0].icon = GURL("https://example.com/aButton.png");
-  notification_data.actions[0].placeholder = base::nullopt;
+  notification_data.actions[0]->action = "buttonAction";
+  notification_data.actions[0]->title = base::ASCIIToUTF16("Button Title!");
+  notification_data.actions[0]->icon = GURL("https://example.com/aButton.png");
+  notification_data.actions[0]->placeholder = base::nullopt;
 
-  notification_data.actions[1].type =
+  notification_data.actions[1] = blink::mojom::NotificationAction::New();
+  notification_data.actions[1]->type =
       blink::mojom::NotificationActionType::TEXT;
-  notification_data.actions[1].action = "textAction";
-  notification_data.actions[1].title = base::ASCIIToUTF16("Reply Button Title");
-  notification_data.actions[1].icon = GURL("https://example.com/reply.png");
-  notification_data.actions[1].placeholder =
+  notification_data.actions[1]->action = "textAction";
+  notification_data.actions[1]->title =
+      base::ASCIIToUTF16("Reply Button Title");
+  notification_data.actions[1]->icon = GURL("https://example.com/reply.png");
+  notification_data.actions[1]->placeholder =
       base::ASCIIToUTF16("Placeholder Text");
 
   PlatformNotificationData roundtrip_notification_data;
@@ -103,16 +106,16 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
             roundtrip_notification_data.actions.size());
   for (size_t i = 0; i < notification_data.actions.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Action index: %zd", i));
-    EXPECT_EQ(notification_data.actions[i].type,
-              roundtrip_notification_data.actions[i].type);
-    EXPECT_EQ(notification_data.actions[i].action,
-              roundtrip_notification_data.actions[i].action);
-    EXPECT_EQ(notification_data.actions[i].title,
-              roundtrip_notification_data.actions[i].title);
-    EXPECT_EQ(notification_data.actions[i].icon,
-              roundtrip_notification_data.actions[i].icon);
-    EXPECT_EQ(notification_data.actions[i].placeholder,
-              roundtrip_notification_data.actions[i].placeholder);
+    EXPECT_EQ(notification_data.actions[i]->type,
+              roundtrip_notification_data.actions[i]->type);
+    EXPECT_EQ(notification_data.actions[i]->action,
+              roundtrip_notification_data.actions[i]->action);
+    EXPECT_EQ(notification_data.actions[i]->title,
+              roundtrip_notification_data.actions[i]->title);
+    EXPECT_EQ(notification_data.actions[i]->icon,
+              roundtrip_notification_data.actions[i]->icon);
+    EXPECT_EQ(notification_data.actions[i]->placeholder,
+              roundtrip_notification_data.actions[i]->placeholder);
   }
   EXPECT_EQ(roundtrip_notification_data.show_trigger_timestamp,
             notification_data.show_trigger_timestamp);
@@ -186,7 +189,8 @@ TEST(NotificationStructTraitsTest, TooManyActions) {
 
   notification_data.actions.resize(kActions);
   for (size_t i = 0; i < kActions; ++i) {
-    notification_data.actions[i].title = base::ASCIIToUTF16("action title");
+    notification_data.actions[i] = blink::mojom::NotificationAction::New();
+    notification_data.actions[i]->title = base::ASCIIToUTF16("action title");
   }
 
   PlatformNotificationData platform_notification_data;

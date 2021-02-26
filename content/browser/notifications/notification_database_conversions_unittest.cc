@@ -90,13 +90,13 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
       base::Time::FromJsTime(kShowTriggerTimestamp);
   notification_data.data = developer_data;
   for (size_t i = 0; i < blink::kNotificationMaxActions; i++) {
-    blink::PlatformNotificationAction notification_action;
-    notification_action.type = kNotificationActionType;
-    notification_action.action = base::NumberToString(i);
-    notification_action.title = base::NumberToString16(i);
-    notification_action.icon = GURL(kNotificationActionIconUrl);
-    notification_action.placeholder = base::NumberToString16(i);
-    notification_data.actions.push_back(notification_action);
+    auto notification_action = blink::mojom::NotificationAction::New();
+    notification_action->type = kNotificationActionType;
+    notification_action->action = base::NumberToString(i);
+    notification_action->title = base::NumberToString16(i);
+    notification_action->icon = GURL(kNotificationActionIconUrl);
+    notification_action->placeholder = base::NumberToString16(i);
+    notification_data.actions.push_back(std::move(notification_action));
   }
 
   NotificationDatabaseData database_data;
@@ -178,25 +178,27 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   ASSERT_EQ(notification_data.actions.size(),
             copied_notification_data.actions.size());
   for (size_t i = 0; i < notification_data.actions.size(); ++i) {
-    EXPECT_EQ(notification_data.actions[i].type,
-              copied_notification_data.actions[i].type);
-    EXPECT_EQ(notification_data.actions[i].action,
-              copied_notification_data.actions[i].action);
-    EXPECT_EQ(notification_data.actions[i].title,
-              copied_notification_data.actions[i].title);
-    EXPECT_EQ(notification_data.actions[i].icon,
-              copied_notification_data.actions[i].icon);
-    EXPECT_EQ(notification_data.actions[i].placeholder,
-              copied_notification_data.actions[i].placeholder);
-    EXPECT_TRUE(copied_notification_data.actions[i].placeholder);
+    EXPECT_EQ(notification_data.actions[i]->type,
+              copied_notification_data.actions[i]->type);
+    EXPECT_EQ(notification_data.actions[i]->action,
+              copied_notification_data.actions[i]->action);
+    EXPECT_EQ(notification_data.actions[i]->title,
+              copied_notification_data.actions[i]->title);
+    EXPECT_EQ(notification_data.actions[i]->icon,
+              copied_notification_data.actions[i]->icon);
+    EXPECT_EQ(notification_data.actions[i]->placeholder,
+              copied_notification_data.actions[i]->placeholder);
+    EXPECT_TRUE(copied_notification_data.actions[i]->placeholder);
   }
 }
 
 TEST(NotificationDatabaseConversionsTest, ActionDeserializationIsNotAdditive) {
   NotificationDatabaseData database_data;
 
-  for (size_t i = 0; i < blink::kNotificationMaxActions; ++i)
-    database_data.notification_data.actions.emplace_back();
+  for (size_t i = 0; i < blink::kNotificationMaxActions; ++i) {
+    database_data.notification_data.actions.emplace_back(
+        blink::mojom::NotificationAction::New());
+  }
 
   std::string serialized_data;
   NotificationDatabaseData copied_database_data;
@@ -228,9 +230,9 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeActionTypes) {
   for (blink::mojom::NotificationActionType action_type : action_types) {
     blink::PlatformNotificationData notification_data;
 
-    blink::PlatformNotificationAction action;
-    action.type = action_type;
-    notification_data.actions.push_back(action);
+    auto action = blink::mojom::NotificationAction::New();
+    action->type = action_type;
+    notification_data.actions.push_back(std::move(action));
 
     NotificationDatabaseData database_data;
     database_data.notification_data = notification_data;
@@ -243,7 +245,7 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeActionTypes) {
     ASSERT_TRUE(
         DeserializeNotificationDatabaseData(serialized_data, &copied_data));
 
-    EXPECT_EQ(action_type, copied_data.notification_data.actions[0].type);
+    EXPECT_EQ(action_type, copied_data.notification_data.actions[0]->type);
   }
 }
 
@@ -297,12 +299,12 @@ TEST(NotificationDatabaseConversionsTest,
 
 TEST(NotificationDatabaseConversionsTest,
      SerializeAndDeserializeNullPlaceholder) {
-  blink::PlatformNotificationAction action;
-  action.type = kNotificationActionType;
-  action.placeholder = base::nullopt;  // null string.
+  auto action = blink::mojom::NotificationAction::New();
+  action->type = kNotificationActionType;
+  action->placeholder = base::nullopt;  // null string.
 
   blink::PlatformNotificationData notification_data;
-  notification_data.actions.push_back(action);
+  notification_data.actions.push_back(std::move(action));
 
   NotificationDatabaseData database_data;
   database_data.notification_data = notification_data;
@@ -315,7 +317,7 @@ TEST(NotificationDatabaseConversionsTest,
   ASSERT_TRUE(
       DeserializeNotificationDatabaseData(serialized_data, &copied_data));
 
-  EXPECT_FALSE(copied_data.notification_data.actions[0].placeholder);
+  EXPECT_FALSE(copied_data.notification_data.actions[0]->placeholder);
 }
 
 TEST(NotificationDatabaseConversionsTest,
