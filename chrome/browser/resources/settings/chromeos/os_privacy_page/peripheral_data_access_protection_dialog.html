@@ -10,6 +10,10 @@
 <dom-module id="settings-peripheral-data-access-protection-dialog">
   <template>
     <style include="settings-shared">
+      #dataAccesProtectionDialogSubDescription {
+        padding-top: 10px;
+      }
+
       cr-dialog::part(dialog) {
         width: 370px;
       }
@@ -20,7 +24,10 @@
         $i18n{peripheralDataAccessProtectionWarningTitle}
       </div>
       <div slot="body">
-        $i18n{peripheralDataAccessProtectionWarningDescription}
+        <div>$i18n{peripheralDataAccessProtectionWarningDescription}</div>
+        <div id="dataAccesProtectionDialogSubDescription">
+          $i18n{peripheralDataAccessProtectionWarningSubDescription}
+        </div>
       </div>
       <div slot="button-container">
         <cr-button id="cancelButton" class="cancel-button"

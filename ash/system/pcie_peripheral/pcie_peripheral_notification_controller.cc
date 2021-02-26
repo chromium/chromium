@@ -151,19 +151,19 @@ void PciePeripheralNotificationController::NotifyLimitedPerformance() {
   message_center::RichNotificationData optional;
   optional.buttons.push_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
-          IDS_PCIE_PERIPHERAL_NOTIFICATION_SETTINGS_BUTTON_TEXT)));
+          IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_SETTINGS_BUTTON_TEXT)));
   optional.buttons.push_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
-          IDS_PCIE_PERIPHERAL_NOTIFICATION_LEARN_MORE_BUTTON_TEXT)));
+          IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_LEARN_MORE_BUTTON_TEXT)));
 
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kPciePeripheralLimitedPerformanceNotificationId,
           l10n_util::GetStringUTF16(
-              IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_TITLE),
+              IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_BODY),
+              IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_BODY),
           /*display_source=*/base::string16(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -183,30 +183,28 @@ void PciePeripheralNotificationController::NotifyGuestModeNotification(
   if (!ShouldDisplayNotification())
     return;
 
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          is_thunderbolt_only
-              ? kPciePeripheralGuestModeNotSupportedNotificationId
-              : kPciePeripheralLimitedPerformanceGuestModeNotificationId,
-          /*title=*/base::string16(),
-          is_thunderbolt_only
-              ? l10n_util::GetStringUTF16(
-                    IDS_PCIE_PERIPHERAL_NOTIFICATION_GUEST_MODE_NOT_SUPPORTED)
-              : l10n_util::GetStringUTF16(
-                    IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_GUEST_MODE),
-          /*display_source=*/base::string16(), GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierPciePeripheral),
-          message_center::RichNotificationData(),
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&OnGuestNotificationClicked,
-                                  is_thunderbolt_only)),
-          kSettingsIcon,
-          is_thunderbolt_only
-              ? message_center::SystemNotificationWarningLevel::CRITICAL_WARNING
-              : message_center::SystemNotificationWarningLevel::WARNING);
+  std::unique_ptr<message_center::Notification> notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      is_thunderbolt_only
+          ? kPciePeripheralGuestModeNotSupportedNotificationId
+          : kPciePeripheralLimitedPerformanceGuestModeNotificationId,
+      /*title=*/base::string16(),
+      is_thunderbolt_only
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_GUEST_MODE_NOT_SUPPORTED)
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_GUEST_MODE),
+      /*display_source=*/base::string16(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierPciePeripheral),
+      message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&OnGuestNotificationClicked,
+                              is_thunderbolt_only)),
+      kSettingsIcon,
+      is_thunderbolt_only
+          ? message_center::SystemNotificationWarningLevel::CRITICAL_WARNING
+          : message_center::SystemNotificationWarningLevel::WARNING);
 
   message_center_->AddNotification(std::move(notification));
 }
