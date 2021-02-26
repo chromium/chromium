@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 904 tests; 866 PASS, 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 949 tests; 911 PASS, 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("delete") before
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("delete") before
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("delete") after
@@ -904,5 +904,50 @@ PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" que
 PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandState("delete") after
 PASS [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandValue("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz": execCommand("delete", false, "") return value
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz" checks for modifications to non-editable content
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz" compare innerHTML
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz" queryCommandState("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz" queryCommandValue("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz" queryCommandState("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false>bar</span>[]baz" queryCommandValue("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz": execCommand("delete", false, "") return value
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz" checks for modifications to non-editable content
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz" compare innerHTML
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz" queryCommandState("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz" queryCommandValue("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz" queryCommandState("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false><span>b</span><span>a</span><span>r</span></span>[]baz" queryCommandValue("delete") after
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz": execCommand("delete", false, "") return value
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz" checks for modifications to non-editable content
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz" compare innerHTML
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz" queryCommandState("delete") before
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz" queryCommandValue("delete") before
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz" queryCommandState("delete") after
+PASS [["delete",""]] "foo<div contenteditable=false>bar</div>[]baz" queryCommandValue("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz": execCommand("delete", false, "") return value
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz" checks for modifications to non-editable content
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz" compare innerHTML
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz" queryCommandState("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz" queryCommandValue("delete") before
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz" queryCommandState("delete") after
+PASS [["delete",""]] "foo<span contenteditable=false><b>bar</b></span>[]baz" queryCommandValue("delete") after
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux": execCommand("delete", false, "") return value
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux" checks for modifications to non-editable content
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux" compare innerHTML
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux" queryCommandState("delete") before
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux" queryCommandValue("delete") before
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux" queryCommandState("delete") after
+PASS [["delete",""]] "foo<span>bar<span contenteditable=false>baz</span></span>[]qux" queryCommandValue("delete") after
 Harness: the test ran to completion.
 
