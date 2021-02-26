@@ -315,7 +315,39 @@ resolve the conflict.
 
 ## Notes for WPT infra maintainers
 
-### Manual import
+### Importer
+
+#### Rubber-Stamper bot
+
+To allow the importer to land CLs without human intervention, it utilizes the
+[Rubber-Stamper
+bot](https://chromium.googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/appengine/rubber-stamper/README.md)
+to approve import CLs.
+
+Adding the Rubber-Stamper as a reviewer is one of the last steps the importer
+takes, once tests have been rebaselined and the CQ passes. If the Rubber-Stamper
+cannot approve a CL, it will leave a comment on the CL explaining why - this
+will also cause the importer to go red.
+
+![Rubber-Stamber bot rejecting a CL](images/wpt_import_rubber_stamper_reject.png)
+
+There are two possibilities when the Rubber-Stamper rejects an import: either it
+is a valid rejection, because the import changes code files (`.py`, `.bat`,
+`.sh`), or it is invalid and we're missing an allowlist rule for a file the
+importer is allowed to modify.
+
+For valid rejections, it is the job of the rotation sheriff to land the CL
+manually. You need to un-abandon the import, `CR+1` it yourself, and `CQ+2` it.
+If you don't have permission to do that (e.g. are not a committer), contact
+ecosystem-infra@chromium.org.
+
+For invalid rejections, message ecosystem-infra@chromium.org or add an exception
+rule yourself. [This is an example
+CL](https://chrome-internal-review.googlesource.com/c/infradata/config/+/3608170)
+that adds an exception rule. (Note that you need internal access to access this
+repository).
+
+#### Manual import
 
 To pull the latest versions of the tests that are currently being imported, you
 can also directly invoke the
