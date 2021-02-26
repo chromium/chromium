@@ -249,7 +249,8 @@ class FeedStream : public FeedStreamApi,
 
   // Returns true if a FeedQuery request made right now should be made without
   // user credentials.
-  bool ShouldForceSignedOutFeedQueryRequest() const;
+  bool ShouldForceSignedOutFeedQueryRequest(
+      const StreamType& stream_type) const;
 
   // Unloads one stream model. Surfaces are not updated, and will remain frozen
   // until a model load is requested.
@@ -379,7 +380,7 @@ class FeedStream : public FeedStreamApi,
 
   // Mutable state.
   RequestThrottler request_throttler_;
-  base::TimeTicks signed_out_refreshes_until_;
+  base::TimeTicks signed_out_for_you_refreshes_until_;
   std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks_;
   Metadata metadata_;
 

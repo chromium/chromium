@@ -1380,7 +1380,6 @@ TEST_F(FeedStreamTest, LoadStreamAfterEulaIsAccepted) {
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 }
 
-// TODO(crbug.com/1152592): Not sure what the right approach is for web feeds.
 TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   stream_->OnAllHistoryDeleted();
 
@@ -1455,6 +1454,17 @@ TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   // The model should now be in the signed-in state.
   EXPECT_TRUE(stream_->GetModel(kInterestStream)->signed_in());
   EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
+}
+
+TEST_F(FeedStreamTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
+  stream_->OnAllHistoryDeleted();
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ(1, network_.send_query_call_count);
+  EXPECT_FALSE(network_.forced_signed_out_request);
 }
 
 TEST_F(FeedStreamTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {

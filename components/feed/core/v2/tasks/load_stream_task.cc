@@ -132,7 +132,7 @@ void LoadStreamTask::LoadFromStoreComplete(
 
 void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   bool force_signed_out_request =
-      stream_->ShouldForceSignedOutFeedQueryRequest();
+      stream_->ShouldForceSignedOutFeedQueryRequest(stream_type_);
   upload_actions_result_ =
       std::make_unique<UploadActionsTask::Result>(std::move(result));
   latencies_->StepComplete(LoadLatencyTimes::kUploadActions);
