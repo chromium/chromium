@@ -143,7 +143,6 @@ constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
 constexpr char kLoginJSPath[] = "login.js";
 constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
-constexpr char kRecommendAppListViewHTMLPath[] = "recommend_app_list_view.html";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJSPath[] = "test_api.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
@@ -228,8 +227,6 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
 
   source->AddResourcePath(kRecommendAppListViewJSPath,
                           IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_JS);
-  source->AddResourcePath(kRecommendAppListViewHTMLPath,
-                          IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kArcAppDownloadingVideoPath,
                           IDR_OOBE_ARC_APPS_DOWNLOADING_VIDEO);

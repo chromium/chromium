@@ -71,6 +71,9 @@ cr.define('cr.ui.login.debug', function() {
   const RECOMMENDED_APPS_CONTENT = `
 // <include src="../../arc_support/recommend_app_list_view.html">
   `;
+  const RECOMMENDED_APPS_CONTENT_NEW = `
+// <include src="../../arc_support/recommend_app_list_view_new.html">
+  `;
   /**
    * Indicates if screen is present in usual user flow, represents some error
    * state or is shown in some other cases. See KNOWN_SCREENS for more details.
@@ -849,8 +852,12 @@ cr.define('cr.ui.login.debug', function() {
         {
           id: '2-apps',
           trigger: (screen) => {
+            let newLayout = loadTimeData.valueExists('newLayoutEnabled') &&
+                loadTimeData.getBoolean('newLayoutEnabled');
             screen.reset();
-            screen.setWebview(RECOMMENDED_APPS_CONTENT);
+            screen.setWebview(
+                newLayout ? RECOMMENDED_APPS_CONTENT_NEW :
+                            RECOMMENDED_APPS_CONTENT);
             screen.loadAppList([
               {
                 name: 'Test app 1',
@@ -866,9 +873,13 @@ cr.define('cr.ui.login.debug', function() {
         {
           id: '21-apps',
           trigger: (screen) => {
+            let newLayout = loadTimeData.valueExists('newLayoutEnabled') &&
+                loadTimeData.getBoolean('newLayoutEnabled');
             // There can be up to 21 apps: see recommend_apps_fetcher_impl
             screen.reset();
-            screen.setWebview(RECOMMENDED_APPS_CONTENT);
+            screen.setWebview(
+                newLayout ? RECOMMENDED_APPS_CONTENT_NEW :
+                            RECOMMENDED_APPS_CONTENT);
             let apps = [];
             for (i = 1; i <= 21; i++) {
               apps.push({
