@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -191,27 +192,6 @@ class IndexedDBDispatcherHostTest : public testing::Test {
             task_environment_.GetMainThreadTaskRunner(),
             nullptr)) {}
 
-  void TearDown() override {
-    // Cycle the IndexedDBTaskQueue to remove all IDB tasks.
-    {
-      base::RunLoop loop;
-      context_impl_->IDBTaskRunner()->PostTask(FROM_HERE, loop.QuitClosure());
-      loop.Run();
-    }
-    base::RunLoop loop;
-    context_impl_->IDBTaskRunner()->PostTask(FROM_HERE,
-                                             base::BindLambdaForTesting([&]() {
-                                               idb_mojo_factory_.reset();
-                                               loop.Quit();
-                                             }));
-    loop.Run();
-    context_impl_ = nullptr;
-    quota_manager_ = nullptr;
-    task_environment_.RunUntilIdle();
-    // File are leaked if this doesn't return true.
-    ASSERT_TRUE(temp_dir_.Delete());
-  }
-
   void SetUp() override {
     base::RunLoop loop;
     context_impl_->IDBTaskRunner()->PostTask(
@@ -222,6 +202,34 @@ class IndexedDBDispatcherHostTest : public testing::Test {
           loop.Quit();
         }));
     loop.Run();
+  }
+
+  void TearDown() override {
+    // Cycle the IndexedDBTaskQueue to remove all IDB tasks.
+    {
+      base::RunLoop loop;
+      context_impl_->IDBTaskRunner()->PostTask(
+          FROM_HERE, base::BindLambdaForTesting([&]() {
+            idb_mojo_factory_.reset();
+            loop.Quit();
+          }));
+      loop.Run();
+    }
+
+    // IndexedDBContextImpl must be released on the IDB sequence.
+    {
+      scoped_refptr<base::SequencedTaskRunner> idb_task_runner =
+          context_impl_->IDBTaskRunner();
+      context_impl_->ReleaseOnIDBSequence(std::move(context_impl_));
+      base::RunLoop loop;
+      idb_task_runner->PostTask(FROM_HERE, loop.QuitClosure());
+      loop.Run();
+    }
+
+    quota_manager_ = nullptr;
+    task_environment_.RunUntilIdle();
+    // File are leaked if this doesn't return true.
+    ASSERT_TRUE(temp_dir_.Delete());
   }
 
  protected:
