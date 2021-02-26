@@ -135,6 +135,15 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
   (this->*handler)(message);
 }
 
+void PdfViewPluginBase::SendLoadingProgress(double percentage) {
+  DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "loadProgress");
+  message.SetDoubleKey("progress", percentage);
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
                                 std::vector<PaintReadyRect>& ready,
                                 std::vector<gfx::Rect>& pending) {

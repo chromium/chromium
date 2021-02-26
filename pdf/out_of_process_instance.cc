@@ -108,9 +108,6 @@ constexpr char kJSPageX[] = "x";
 constexpr char kJSPageY[] = "y";
 constexpr char kJSPageWidth[] = "width";
 constexpr char kJSPageHeight[] = "height";
-// Document load progress arguments (Plugin -> Page)
-constexpr char kJSLoadProgressType[] = "loadProgress";
-constexpr char kJSProgressPercentage[] = "progress";
 // Document print preview loaded (Plugin -> Page)
 constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
 // Attachments (Plugin -> Page)
@@ -2037,14 +2034,6 @@ void OutOfProcessInstance::SendMetadata() {
 
   metadata_message.Set(pp::Var(kJSMetadataData), metadata_data);
   PostMessage(metadata_message);
-}
-
-void OutOfProcessInstance::SendLoadingProgress(double percentage) {
-  DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
-  pp::VarDictionary progress_message;
-  progress_message.Set(pp::Var(kType), pp::Var(kJSLoadProgressType));
-  progress_message.Set(pp::Var(kJSProgressPercentage), pp::Var(percentage));
-  PostMessage(progress_message);
 }
 
 void OutOfProcessInstance::SendThumbnail(const std::string& message_id,

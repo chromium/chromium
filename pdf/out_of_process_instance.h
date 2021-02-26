@@ -257,10 +257,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Send document metadata.
   void SendMetadata();
 
-  // Send the loading progress, where |percentage| represents the progress, or
-  // -1 for loading error.
-  void SendLoadingProgress(double percentage);
-
   // Sends the thumbnail image data.
   void SendThumbnail(const std::string& message_id, Thumbnail thumbnail);
 

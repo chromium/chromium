@@ -121,6 +121,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // non-blocking.
   virtual void SendMessage(base::Value message) = 0;
 
+  // Sends the loading progress, where `percentage` represents the progress, or
+  // -1 for loading error.
+  void SendLoadingProgress(double percentage);
+
   // Initialize image buffer(s) according to the new context size.
   virtual void InitImageData(const gfx::Size& size) = 0;
 
