@@ -91,10 +91,6 @@ constexpr char kType[] = "type";
 constexpr char kJSMessageId[] = "messageId";
 // Beep message arguments. (Plugin -> Page).
 constexpr char kJSBeepType[] = "beep";
-// UpdateScroll message arguments. (Page -> Plugin).
-constexpr char kJSUpdateScrollType[] = "updateScroll";
-constexpr char kJSUpdateScrollX[] = "x";
-constexpr char kJSUpdateScrollY[] = "y";
 // Document print preview loaded (Plugin -> Page)
 constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
 // Attachments (Plugin -> Page)
@@ -725,9 +721,7 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
 
   std::string type = dict.Get(kType).AsString();
 
-  if (type == kJSUpdateScrollType) {
-    HandleUpdateScrollMessage(dict);
-  } else if (type == kJSGetPasswordCompleteType) {
+  if (type == kJSGetPasswordCompleteType) {
     HandleGetPasswordCompleteMessage(dict);
   } else if (type == kJSPrintType) {
     Print();
@@ -1555,24 +1549,6 @@ void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
       SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
       break;
   }
-}
-
-void OutOfProcessInstance::HandleUpdateScrollMessage(
-    const pp::VarDictionary& dict) {
-  if (!dict.Get(pp::Var(kJSUpdateScrollX)).is_number() ||
-      !dict.Get(pp::Var(kJSUpdateScrollY)).is_number()) {
-    NOTREACHED();
-    return;
-  }
-
-  if (stop_scrolling()) {
-    return;
-  }
-
-  int x = dict.Get(pp::Var(kJSUpdateScrollX)).AsInt();
-  int y = dict.Get(pp::Var(kJSUpdateScrollY)).AsInt();
-  set_scroll_position(gfx::Point(x, y));
-  UpdateScroll();
 }
 
 void OutOfProcessInstance::PreviewDocumentLoadComplete() {

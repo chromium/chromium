@@ -243,6 +243,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);
   void HandleStopScrollingMessage(const base::Value& /*message*/);
+  void HandleUpdateScrollMessage(const base::Value& message);
   void HandleViewportMessage(const base::Value& message);
 
   // Paints the given invalid area of the plugin to the given graphics device.
