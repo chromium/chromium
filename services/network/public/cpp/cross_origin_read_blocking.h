@@ -35,6 +35,9 @@ namespace network {
 
 class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
  public:
+  // Not instantiable - only static methods.
+  CrossOriginReadBlocking() = delete;
+
   // This enum describes how CORB should decide whether to block a given
   // no-cors, cross-origin response.
   //
@@ -151,6 +154,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     void LogAllowedResponse();
     void LogBlockedResponse();
 
+    // Returns true if the response has a nosniff header.
+    static bool HasNoSniff(const network::mojom::URLResponseHead& response);
+
    private:
     FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
                              SeemsSensitiveFromCORSHeuristic);
@@ -183,9 +189,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
         const network::mojom::URLResponseHead& response,
         const base::Optional<url::Origin>& request_initiator_origin_lock,
         MimeType canonical_mime_type);
-
-    // Returns true if the response has a nosniff header.
-    static bool HasNoSniff(const network::mojom::URLResponseHead& response);
 
     // Checks if the response seems sensitive for CORB protection logging.
     // Returns true if the Access-Control-Allow-Origin header has a value other
@@ -307,15 +310,16 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     kYes,
   };
 
- private:
-  CrossOriginReadBlocking();  // Not instantiable.
+  // Returns whether `mime_type` is a Javascript MIME type based on
+  // https://mimesniff.spec.whatwg.org/#javascript-mime-type
+  static bool IsJavascriptMimeType(base::StringPiece mime_type);
 
   // Returns the representative mime type enum value of the mime type of
   // response. For example, this returns the same value for all text/xml mime
   // type families such as application/xml, application/rss+xml.
   static MimeType GetCanonicalMimeType(base::StringPiece mime_type);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, GetCanonicalMimeType);
 
+ private:
   // Returns whether this scheme is a target of the cross-origin read blocking
   // (CORB) policy.  This returns true only for http://* and https://* urls.
   static bool IsBlockableScheme(const GURL& frame_origin);
