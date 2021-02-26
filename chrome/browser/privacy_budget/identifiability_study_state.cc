@@ -179,10 +179,39 @@ void IdentifiabilityStudyState::CheckInvariants() const {
 void IdentifiabilityStudyState::CheckInvariants() const {}
 #endif  // DCHECK_IS_ON()
 
+void IdentifiabilityStudyState::ResetPerReportState() {
+  surface_encounters_.Reset();
+}
+
+void IdentifiabilityStudyState::ResetEphemeralState() {
+  ResetPerReportState();
+  recent_surfaces_.Clear();
+}
+
+void IdentifiabilityStudyState::ResetClientState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ResetEphemeralState();
+  active_surfaces_.clear();
+  retired_surfaces_.clear();
+  pref_service_->ClearPref(prefs::kPrivacyBudgetActiveSurfaces);
+  pref_service_->ClearPref(prefs::kPrivacyBudgetRetiredSurfaces);
+
+  if (LIKELY(!IsStudyActive())) {
+    prng_seed_ = 0;
+    pref_service_->ClearPref(prefs::kPrivacyBudgetSeed);
+    pref_service_->ClearPref(prefs::kPrivacyBudgetGeneration);
+    return;
+  }
+
+  CheckAndResetPrngSeed(0u);
+  pref_service_->SetInteger(prefs::kPrivacyBudgetGeneration, generation_);
+
+  // State should be ready-to-go after resetting, even if the study is disabled.
+  CheckInvariants();
+}
+
 void IdentifiabilityStudyState::InitFromPrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(active_surfaces_.empty());
-  DCHECK(retired_surfaces_.empty());
 
   // None of the parameters should be relied upon if the study is not enabled.
   if (LIKELY(!IsStudyActive()))
@@ -205,17 +234,6 @@ void IdentifiabilityStudyState::InitFromPrefs() {
           pref_service_->GetString(prefs::kPrivacyBudgetRetiredSurfaces));
   CheckAndResetPrngSeed(pref_service_->GetUint64(prefs::kPrivacyBudgetSeed));
   ReconcileLoadedPrefs();
-}
-
-void IdentifiabilityStudyState::ResetClientState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  active_surfaces_.clear();
-  retired_surfaces_.clear();
-
-  pref_service_->ClearPref(prefs::kPrivacyBudgetActiveSurfaces);
-  pref_service_->ClearPref(prefs::kPrivacyBudgetRetiredSurfaces);
-  CheckAndResetPrngSeed(0u);
-  pref_service_->SetInteger(prefs::kPrivacyBudgetGeneration, generation_);
 }
 
 void IdentifiabilityStudyState::WriteToPrefs() {
@@ -331,9 +349,6 @@ bool IdentifiabilityStudyState::ShouldReportEncounteredSurface(
           blink::IdentifiableSurface::Type::kMeasuredSurface)) {
     return false;
   }
-  return tracked_surfaces_.IsNewEncounter(source_id, surface.ToUkmMetricHash());
-}
-
-void IdentifiabilityStudyState::ResetRecordedSurfaces() {
-  tracked_surfaces_.Reset();
+  return surface_encounters_.IsNewEncounter(source_id,
+                                            surface.ToUkmMetricHash());
 }

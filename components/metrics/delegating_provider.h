@@ -32,6 +32,7 @@ class DelegatingProvider final : public MetricsProvider {
   void OnDidCreateMetricsLog() override;
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
+  void OnClientStateCleared() override;
   void OnAppEnterBackground() override;
   bool HasIndependentMetrics() override;
   void ProvideSystemProfileMetrics(

@@ -31,6 +31,8 @@ void MetricsProvider::OnRecordingEnabled() {
 void MetricsProvider::OnRecordingDisabled() {
 }
 
+void MetricsProvider::OnClientStateCleared() {}
+
 void MetricsProvider::OnAppEnterBackground() {
 }
 

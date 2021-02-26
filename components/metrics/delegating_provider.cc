@@ -51,6 +51,11 @@ void DelegatingProvider::OnRecordingDisabled() {
     provider->OnRecordingDisabled();
 }
 
+void DelegatingProvider::OnClientStateCleared() {
+  for (auto& provider : metrics_providers_)
+    provider->OnClientStateCleared();
+}
+
 void DelegatingProvider::OnAppEnterBackground() {
   for (auto& provider : metrics_providers_)
     provider->OnAppEnterBackground();

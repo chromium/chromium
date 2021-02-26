@@ -51,6 +51,7 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
+#include "chrome/browser/privacy_budget/privacy_budget_metrics_provider.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -829,6 +830,10 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
       std::make_unique<metrics::ScreenInfoMetricsProvider>());
 
   ukm_service_->RegisterMetricsProvider(ukm::CreateFieldTrialsProviderForUkm());
+
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<PrivacyBudgetMetricsProvider>(
+          identifiability_study_state_.get()));
 }
 
 void ChromeMetricsServiceClient::CollectFinalHistograms() {

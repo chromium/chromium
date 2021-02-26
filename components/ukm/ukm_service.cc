@@ -341,6 +341,8 @@ void UkmService::ResetClientState(ResetReason reason) {
   // Note: the session_id has already been cleared by GenerateAndStoreClientId.
   session_id_ = LoadAndIncrementSessionId(pref_service_);
   report_count_ = 0;
+
+  metrics_providers_.OnClientStateCleared();
 }
 
 void UkmService::RegisterMetricsProvider(
