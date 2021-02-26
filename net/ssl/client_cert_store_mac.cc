@@ -116,12 +116,12 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
   if (!cert_chain)
     return false;
 
-  std::vector<SecCertificateRef> intermediates;
+  std::vector<base::ScopedCFTypeRef<SecCertificateRef>> intermediates;
   for (CFIndex i = 1, chain_count = CFArrayGetCount(cert_chain);
        i < chain_count; ++i) {
     SecCertificateRef sec_cert = reinterpret_cast<SecCertificateRef>(
         const_cast<void*>(CFArrayGetValueAtIndex(cert_chain, i)));
-    intermediates.push_back(sec_cert);
+    intermediates.emplace_back(sec_cert, base::scoped_policy::RETAIN);
   }
 
   // Allow UTF-8 inside PrintableStrings in client certificates. See
@@ -129,8 +129,8 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
   X509Certificate::UnsafeCreateOptions options;
   options.printable_string_is_utf8 = true;
   scoped_refptr<X509Certificate> new_cert(
-      x509_util::CreateX509CertificateFromSecCertificate(
-          os_cert.get(), intermediates, options));
+      x509_util::CreateX509CertificateFromSecCertificate(os_cert, intermediates,
+                                                         options));
   CFRelease(cert_chain);  // Also frees |intermediates|.
 
   if (!new_cert || !new_cert->IsIssuedByEncoded(valid_issuers))
@@ -280,7 +280,7 @@ void AddIdentity(ScopedCFTypeRef<SecIdentityRef> sec_identity,
   X509Certificate::UnsafeCreateOptions options;
   options.printable_string_is_utf8 = true;
   scoped_refptr<X509Certificate> cert(
-      x509_util::CreateX509CertificateFromSecCertificate(cert_handle.get(), {},
+      x509_util::CreateX509CertificateFromSecCertificate(cert_handle, {},
                                                          options));
   if (!cert)
     return;
