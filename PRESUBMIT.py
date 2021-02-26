@@ -2310,6 +2310,11 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
   target file or directory, to avoid layering violations from being
   introduced. This check verifies that this happens.
   """
+  # We rely on Gerrit's code-owners to check approvals.
+  # input_api.gerrit is always set for Chromium, but other projects
+  # might not use Gerrit.
+  if not input_api.gerrit:
+    return []
   if input_api.change.issue:
     # Skip OWNERS check when Bot-Commit label is approved. This label is
     # intended for commits made by trusted bots that don't require review nor
