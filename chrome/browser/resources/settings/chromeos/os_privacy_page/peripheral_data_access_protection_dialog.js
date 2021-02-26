@@ -7,8 +7,6 @@
  * when disabling peripheral data access setup.
  */
 
-const DISABLE_INDETERMINATE_TIMEOUT_MS = 3000;
-
 Polymer({
   is: 'settings-peripheral-data-access-protection-dialog',
 
@@ -21,12 +19,6 @@ Polymer({
       type: Object,
       notify: true,
     },
-
-    /** @private */
-    showDisablingDialog_: {
-      type: Boolean,
-      value: false,
-    },
   },
 
   /**
@@ -34,14 +26,10 @@ Polymer({
    * @private
    */
   onDisableClicked_() {
-    this.showDisablingDialog_ = true;
-
-    // Send the new state immediately but display a timed spinner dialog
-    // to indicate to users that enabling this state may take a few seconds.
+    // Send the new state immediately, this will also toggle the underlying
+    // setting-toggle-button associated with this pref.
     this.setPrefValue('cros.device.peripheral_data_access_enabled', true);
-    setTimeout(() => {
-      this.$$('#warningDialog').close();
-    }, DISABLE_INDETERMINATE_TIMEOUT_MS);
+    this.$$('#warningDialog').close();
   },
 
   /** @private */

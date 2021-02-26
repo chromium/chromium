@@ -331,11 +331,6 @@ suite('PeripheralDataAccessTest', function() {
     const disableButton = dialog.querySelector('#disableConfirmation');
     disableButton.click();
     Polymer.dom.flush();
-    assertTrue(dialog.open);
-
-    // Ensure we are at the right dialog.
-    const loadBar = dialog.querySelector('#progressLoad');
-    assertTrue(!!loadBar);
 
     // The toggle should now be flipped to unset.
     assertFalse(toggle.checked);
