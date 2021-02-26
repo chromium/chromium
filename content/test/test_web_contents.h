@@ -174,7 +174,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void SaveFrameWithHeaders(const GURL& url,
                             const Referrer& referrer,
                             const std::string& headers,
-                            const base::string16& suggested_filename) override;
+                            const base::string16& suggested_filename,
+                            RenderFrameHost* rfh) override;
   void ReattachToOuterWebContentsFrame() override {}
   void SetPageFrozen(bool frozen) override;
 

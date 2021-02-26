@@ -18,6 +18,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_source.h"
+#include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -251,6 +252,14 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     require_safety_checks_ = require_safety_checks;
   }
 
+  // Sets whether the download request will use the given isolation_info. If the
+  // isolation info is not set, the download will be treated as a
+  // top-frame navigation with respect to network-isolation-key and
+  // site-for-cookies.
+  void set_isolation_info(const net::IsolationInfo& isolation_info) {
+    isolation_info_ = isolation_info;
+  }
+
   OnStartedCallback& callback() { return callback_; }
   bool content_initiated() const { return content_initiated_; }
   const std::string& last_modified() const { return last_modified_; }
@@ -296,6 +305,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool is_transient() const { return transient_; }
   std::string guid() const { return guid_; }
   bool require_safety_checks() const { return require_safety_checks_; }
+  const base::Optional<net::IsolationInfo>& isolation_info() const {
+    return isolation_info_;
+  }
 
   // STATE CHANGING: All save_info_ sub-objects will be in an indeterminate
   // state following this call.
@@ -341,6 +353,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   DownloadSource download_source_;
   UploadProgressCallback upload_callback_;
   bool require_safety_checks_;
+  base::Optional<net::IsolationInfo> isolation_info_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadUrlParameters);
 };

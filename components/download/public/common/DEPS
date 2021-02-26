@@ -8,6 +8,7 @@ include_rules = [
   "+net/base/net_errors.h",
   "+net/base/network_change_notifier.h",
   "+net/base/network_isolation_key.h",
+  "+net/base/isolation_info.h",
   "+net/cert/cert_status_flags.h",
   "+net/http/http_response_headers.h",
   "+net/http/http_response_info.h",

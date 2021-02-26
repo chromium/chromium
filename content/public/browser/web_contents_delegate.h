@@ -575,7 +575,9 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Called in response to a request to save a frame. If this returns true, the
   // default behavior is suppressed.
-  virtual bool SaveFrame(const GURL& url, const Referrer& referrer);
+  virtual bool SaveFrame(const GURL& url,
+                         const Referrer& referrer,
+                         content::RenderFrameHost* rfh);
 
   // Can be overridden by a delegate to return the security style of the
   // given |web_contents|, populating |security_style_explanations| to

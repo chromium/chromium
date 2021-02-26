@@ -832,19 +832,24 @@ class WebContents : public PageNavigator,
                         const base::FilePath& dir_path,
                         SavePageType save_type) = 0;
 
-  // Saves the given frame's URL to the local filesystem.
+  // Saves the given frame's URL to the local filesystem. If `rfh` is provided,
+  // the saving is performed in its context. For example, the associated
+  // navigation isolation info will be used for making the network request.
   virtual void SaveFrame(const GURL& url,
-                         const Referrer& referrer) = 0;
+                         const Referrer& referrer,
+                         RenderFrameHost* rfh) = 0;
 
   // Saves the given frame's URL to the local filesystem. The headers, if
   // provided, is used to make a request to the URL rather than using cache.
   // Format of |headers| is a new line separated list of key value pairs:
-  // "<key1>: <value1>\r\n<key2>: <value2>".
-  virtual void SaveFrameWithHeaders(
-      const GURL& url,
-      const Referrer& referrer,
-      const std::string& headers,
-      const base::string16& suggested_filename) = 0;
+  // "<key1>: <value1>\r\n<key2>: <value2>". If `rfh` is provided, the saving is
+  // performed in its context. For example, the associated navigation isolation
+  // info will be used for making the network request.
+  virtual void SaveFrameWithHeaders(const GURL& url,
+                                    const Referrer& referrer,
+                                    const std::string& headers,
+                                    const base::string16& suggested_filename,
+                                    RenderFrameHost* rfh) = 0;
 
   // Generate an MHTML representation of the current page conforming to the
   // settings provided by |params| and returning final status information via
