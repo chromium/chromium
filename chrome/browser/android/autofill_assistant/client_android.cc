@@ -29,6 +29,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/public/ui_state.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
@@ -61,6 +62,15 @@ JNI_AutofillAssistantClient_FromWebContents(
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   ClientAndroid::CreateForWebContents(web_contents);
   return ClientAndroid::FromWebContents(web_contents)->GetJavaObject();
+}
+static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents,
+    jboolean shown) {
+  RuntimeManagerImpl* runtime_manager = RuntimeManagerImpl::GetForWebContents(
+      content::WebContents::FromJavaWebContents(jweb_contents));
+  if (runtime_manager)
+    runtime_manager->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
 }
 
 ClientAndroid::ClientAndroid(content::WebContents* web_contents)

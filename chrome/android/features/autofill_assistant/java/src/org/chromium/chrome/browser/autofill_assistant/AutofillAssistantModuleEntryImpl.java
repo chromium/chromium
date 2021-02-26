@@ -141,6 +141,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 OnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(experimentIds,
                         parameters, context, bottomSheetController, browserControls,
                         compositorViewHolder);
+
+        // TODO(b/179648654): Consider to implement |onOnboardingUiChange| inside the coordinator.
+        AutofillAssistantClient.onOnboardingUiChange(webContents, /* shown= */ true);
         onboardingCoordinator.show(result -> {
             switch (result) {
                 case AssistantOnboardingResult.DISMISSED:
@@ -160,6 +163,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                     AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_ACCEPTED);
                     break;
             }
+            AutofillAssistantClient.onOnboardingUiChange(webContents, /* shown= */ false);
             if (result != AssistantOnboardingResult.ACCEPTED) {
                 return;
             }
