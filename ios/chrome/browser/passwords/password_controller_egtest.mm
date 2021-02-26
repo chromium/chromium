@@ -89,6 +89,11 @@ id<GREYMatcher> PasswordInfobarButton(int button_id) {
 
 // Tests that save password prompt is shown on new login.
 - (void)testSavePromptAppearsOnFormSubmission {
+  // TODO(crbug.com/1182717): Re-enable test on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad.");
+  }
+
   [self loadLoginPage];
 
   // Simulate user interacting with fields.
