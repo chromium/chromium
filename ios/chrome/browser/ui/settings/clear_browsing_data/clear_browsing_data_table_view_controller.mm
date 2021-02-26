@@ -312,8 +312,10 @@
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)url {
-  [self.delegate openURL:url];
+- (void)TableViewLinkHeaderFooterView:(TableViewLinkHeaderFooterView*)cell
+                    didRequestOpenURL:(const GURL&)URL {
+  GURL copiedURL(URL);
+  [self.delegate openURL:copiedURL];
 }
 
 #pragma mark - ClearBrowsingDataConsumer
