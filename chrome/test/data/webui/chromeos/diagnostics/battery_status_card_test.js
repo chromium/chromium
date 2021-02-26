@@ -12,7 +12,7 @@ import {mojoString16ToString} from 'chrome://diagnostics/mojo_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isChildVisible} from '../../test_util.m.js';
+import {flushTasks, isChildVisible, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -76,6 +76,31 @@ export function batteryStatusCardTestSuite() {
         batteryStatusElement.$$('routine-section'));
     assertTrue(!!routineSection);
     return routineSection;
+  }
+
+  /**
+   * Returns the status badge.
+   * @return {!TextBadgeElement}
+   */
+  function getStatusBadge() {
+    const routineSectionElement = getRoutineSection();
+
+    return /** @type {!TextBadgeElement} */ (
+        routineSectionElement.$$('#testStatusBadge'));
+  }
+
+  /**
+   * Returns the status text.
+   * @return {!HTMLElement}
+   */
+  function getStatusTextElement() {
+    const routineSectionElement = getRoutineSection();
+
+    const statusText =
+        /** @type {!HTMLElement} */ (
+            routineSectionElement.$$('#testStatusText'));
+    assertTrue(!!statusText);
+    return statusText;
   }
 
   /**
@@ -185,6 +210,8 @@ export function batteryStatusCardTestSuite() {
               routineSectionElement.additionalMessage,
               loadTimeData.getString('batteryChargeTestFullMessage'));
           assertTrue(isRunTestsButtonDisabled());
+          assertFalse(isVisible(getStatusBadge()));
+          assertFalse(isVisible(getStatusTextElement()));
         });
   });
 
