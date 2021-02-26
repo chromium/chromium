@@ -140,6 +140,8 @@ class OutputStreamConnection : public MixerConnection,
   bool paused_ = false;
   bool sent_eos_ = false;
 
+  bool dropping_audio_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(OutputStreamConnection);
 };
 

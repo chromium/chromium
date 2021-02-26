@@ -93,8 +93,14 @@ void OutputStreamConnection::SendAudioBuffer(
     socket_->SendProto(kEndOfStream, message);
     return;
   }
-  socket_->SendAudioBuffer(std::move(audio_buffer), filled_frames * frame_size_,
-                           pts);
+  if (socket_->SendAudioBuffer(std::move(audio_buffer),
+                               filled_frames * frame_size_, pts)) {
+    LOG_IF(INFO, dropping_audio_) << "Stopped dropping audio";
+    dropping_audio_ = false;
+  } else {
+    LOG_IF(WARNING, !dropping_audio_) << "Dropping audio";
+    dropping_audio_ = true;
+  }
 }
 
 void OutputStreamConnection::SetVolumeMultiplier(float multiplier) {
