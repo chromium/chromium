@@ -56,8 +56,6 @@ AutocompleteClassifierFactory::AutocompleteClassifierFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 #endif
   DependsOn(TemplateURLServiceFactory::GetInstance());
-  // TODO(pkasting): Uncomment these once they exist.
-  //   DependsOn(PrefServiceFactory::GetInstance());
   DependsOn(ShortcutsBackendFactory::GetInstance());
   DependsOn(InMemoryURLIndexFactory::GetInstance());
   DependsOn(RemoteSuggestionsServiceFactory::GetInstance());
