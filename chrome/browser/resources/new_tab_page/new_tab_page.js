@@ -14,7 +14,7 @@ import './app.js';
 
 export {BackgroundManager} from './background_manager.js';
 export {BrowserProxy} from './browser_proxy.js';
-export {BackgroundSelectionType} from './customize_dialog_types.js';
+export {BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
 export {ImgElement} from './img.js';
 export {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
 export {chromeCartDescriptor} from './modules/cart/module.js';

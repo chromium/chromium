@@ -52,6 +52,7 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     const infoButtonClick = capture(moduleHeader, 'info-button-click');
     const dismissButtonClick = capture(moduleHeader, 'dismiss-button-click');
     const disableButtonClick = capture(moduleHeader, 'disable-button-click');
+    const customizeModule = capture(moduleHeader, 'customize-module');
     moduleHeader.showInfoButton = true;
     moduleHeader.showDismissButton = true;
     render(moduleHeader);
@@ -60,11 +61,13 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     $$(moduleHeader, '#infoButton').click();
     $$(moduleHeader, '#dismissButton').click();
     $$(moduleHeader, '#disableButton').click();
+    $$(moduleHeader, '#customizeButton').click();
 
     // Assert.
     assertTrue(infoButtonClick.received);
     assertTrue(dismissButtonClick.received);
     assertTrue(disableButtonClick.received);
+    assertTrue(customizeModule.received);
   });
 
   test('action menu opens and closes', () => {

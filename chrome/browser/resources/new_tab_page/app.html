@@ -287,6 +287,7 @@
         <ntp-module-wrapper descriptor="[[item]]"
             on-dismiss-module="onDismissModule_"
             on-disable-module="onDisableModule_"
+            on-customize-module="onCustomizeModule_"
             hidden="[[moduleDisabled_(item.id,
                                       dismissedModules_.*,
                                       disabledModules_)]]">
@@ -333,14 +334,14 @@
     </ntp-voice-search-overlay>
   </template>
 </dom-if>
-<dom-if if="[[showCustomizeDialog_]]" restamp>
-  <template>
-    <ntp-customize-dialog on-close="onCustomizeDialogClose_"
-        theme="[[theme_]]"
-        background-selection="{{backgroundSelection_}}">
-    </ntp-customize-dialog>
-  </template>
-</dom-if>
+<template is="dom-if" if="[[showCustomizeDialog_]]" restamp>
+  <ntp-customize-dialog
+      on-close="onCustomizeDialogClose_"
+      theme="[[theme_]]"
+      background-selection="{{backgroundSelection_}}"
+      selected-page="[[selectedCustomizeDialogPage_]]">
+  </ntp-customize-dialog>
+</template>
 <dom-if if="[[lazyRender_]]" restamp>
   <template>
     <cr-toast id="removeModuleToast" duration="10000">

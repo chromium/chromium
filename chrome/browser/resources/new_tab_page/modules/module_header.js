@@ -81,6 +81,13 @@ export class ModuleHeaderElement extends PolymerElement {
     this.$.actionMenu.close();
     this.dispatchEvent(new Event('disable-button-click', {bubbles: true}));
   }
+
+  /** @private */
+  onCustomizeButtonClick_() {
+    this.$.actionMenu.close();
+    this.dispatchEvent(
+        new Event('customize-module', {bubbles: true, composed: true}));
+  }
 }
 
 customElements.define(ModuleHeaderElement.is, ModuleHeaderElement);
