@@ -192,15 +192,19 @@ bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
   base::AutoLock scoped_lock(lock_);
   PA_DCHECK(!(address & kSuperPageOffsetMask));
   PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
-  const size_t bit = (address - address_begin_) / kSuperPageSize;
+  const size_t begin_bit = (address - address_begin_) / kSuperPageSize;
   const size_t need_bits = requested_size / kSuperPageSize;
+  const size_t end_bit = begin_bit + need_bits;
+  // Check that requested address is not too high.
+  if (end_bit > total_bits_)
+    return false;
   // Check if any bit of the requested region is set already.
-  for (size_t i = bit; i < bit + need_bits; ++i) {
+  for (size_t i = begin_bit; i < end_bit; ++i) {
     if (alloc_bitset_.test(i))
       return false;
   }
   // Otherwise, set the bits.
-  for (size_t i = bit; i < bit + need_bits; ++i) {
+  for (size_t i = begin_bit; i < end_bit; ++i) {
     alloc_bitset_.set(i);
   }
   return true;
