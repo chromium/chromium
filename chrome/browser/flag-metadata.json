@@ -2326,6 +2326,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-show-date-in-tray",
+    "owners": [ "leandre" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-sign-in-profile-creation",
     "owners": [ "jkrcal", "my-chrome-everywhere@google.com" ],
     "expiry_milestone": 91
