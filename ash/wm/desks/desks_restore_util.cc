@@ -104,7 +104,7 @@ void RestorePrimaryUserDesks() {
   }
 }
 
-void UpdatePrimaryUserDesksPrefs() {
+void UpdatePrimaryUserDeskNamesPrefs() {
   if (g_pause_desks_prefs_updates)
     return;
 
@@ -132,7 +132,6 @@ void UpdatePrimaryUserDesksPrefs() {
 
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index) {
   DCHECK(features::IsBentoEnabled());
-  DCHECK(Shell::Get()->session_controller()->IsUserPrimary());
   DCHECK(IsValidDeskIndex(active_desk_index));
   if (g_pause_desks_prefs_updates)
     return;

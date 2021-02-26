@@ -5,6 +5,8 @@
 #ifndef ASH_WM_DESKS_DESKS_RESTORE_UTIL_H_
 #define ASH_WM_DESKS_DESKS_RESTORE_UTIL_H_
 
+#include "ash/ash_export.h"
+
 class PrefRegistrySimple;
 
 namespace ash {
@@ -18,11 +20,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // their names from the primary user's prefs.
 void RestorePrimaryUserDesks();
 
-// Called to update the desks restore prefs for the primary user, whenever a
-// change to the desks count or their names is triggered.
-void UpdatePrimaryUserDesksPrefs();
+// Called to update the desk names restore prefs for the primary user whenever
+// desks count or a desk name changes.
+ASH_EXPORT void UpdatePrimaryUserDeskNamesPrefs();
 
-// Called to update the active desk restore prefs for the primary user, whenever
+// Called to update the active desk restore prefs for the primary user whenever
 // the primary user switches an active desk.
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index);
 
