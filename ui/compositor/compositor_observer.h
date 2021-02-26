@@ -5,9 +5,11 @@
 #ifndef UI_COMPOSITOR_COMPOSITOR_OBSERVER_H_
 #define UI_COMPOSITOR_COMPOSITOR_OBSERVER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace gfx {
@@ -63,6 +65,9 @@ class COMPOSITOR_EXPORT CompositorObserver {
 
   virtual void OnFirstAnimationStarted(Compositor* compositor) {}
   virtual void OnLastAnimationEnded(Compositor* compositor) {}
+
+  virtual void OnFrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) {}
 };
 
 }  // namespace ui

@@ -664,4 +664,17 @@ void FrameSinkManagerImpl::EndThrottling() {
   }
   frame_sinks_throttled_ = false;
 }
+
+void FrameSinkManagerImpl::Throttle(const std::vector<FrameSinkId>& ids,
+                                    base::TimeDelta interval) {
+  for (auto& support_map_item : support_map_) {
+    support_map_item.second->ThrottleBeginFrame(base::TimeDelta());
+  }
+
+  // Set the |interval| for frame sinks whose ids are listed in |ids|.
+  for (const auto& id : ids) {
+    UpdateThrottlingRecursively(id, interval);
+  }
+}
+
 }  // namespace viz

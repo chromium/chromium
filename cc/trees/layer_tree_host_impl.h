@@ -63,6 +63,7 @@
 #include "cc/trees/presentation_time_callback_buffer.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/task_runner_provider.h"
+#include "cc/trees/throttle_decider.h"
 #include "cc/trees/ukm_manager.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -189,6 +190,9 @@ class LayerTreeHostImplClient {
   // only true in tests, but some behavior needs to be synchronized in non-test
   // code as a result.
   virtual bool IsInSynchronousComposite() const = 0;
+
+  virtual void FrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) = 0;
 
  protected:
   virtual ~LayerTreeHostImplClient() = default;
@@ -1230,6 +1234,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // multiple times per frame, and incurs a non-trivial cost.
   // mutable because |contains_srgb_cache_| is accessed in a const method.
   mutable base::MRUCache<gfx::ColorSpace, bool> contains_srgb_cache_;
+
+  // When enabled, calculates which frame sinks can be throttled based on
+  // some pre-defined criteria.
+  ThrottleDecider throttle_decider_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

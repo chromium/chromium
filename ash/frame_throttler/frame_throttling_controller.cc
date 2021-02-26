@@ -16,6 +16,7 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 
 namespace ash {
 
@@ -40,6 +41,28 @@ void CollectBrowserFrameSinkIds(const std::vector<aura::Window*>& windows,
       CollectFrameSinkIds(window, frame_sink_ids);
     }
   }
+}
+
+// Recursively walks through all descendents of |window| and collects those
+// belonging to a browser and with their frame sink ids being a member of |ids|.
+// |inside_browser| indicates if the |window| already belongs to a browser.
+// |browser_ids| is the output containing the result frame sinks ids.
+void CollectBrowserFrameSinkIdsInWindow(
+    const aura::Window* window,
+    bool inside_browser,
+    const base::flat_set<viz::FrameSinkId>& ids,
+    base::flat_set<viz::FrameSinkId>* browser_ids) {
+  if (inside_browser || ash::AppType::BROWSER ==
+                            static_cast<ash::AppType>(
+                                window->GetProperty(aura::client::kAppType))) {
+    const auto& id = window->GetFrameSinkId();
+    if (id.is_valid() && ids.contains(id))
+      browser_ids->insert(id);
+    inside_browser = true;
+  }
+
+  for (auto* child : window->children())
+    CollectBrowserFrameSinkIdsInWindow(child, inside_browser, ids, browser_ids);
 }
 
 }  // namespace
@@ -155,6 +178,40 @@ void FrameThrottlingController::EndThrottling() {
     observer.OnThrottlingEnded();
   }
   windows_throttled_ = false;
+}
+
+void FrameThrottlingController::OnCompositingFrameSinksToThrottleUpdated(
+    const aura::WindowTreeHost* window_tree_host,
+    const base::flat_set<viz::FrameSinkId>& ids) {
+  base::flat_set<viz::FrameSinkId>& browser_ids =
+      host_to_ids_map_[window_tree_host];
+  browser_ids.clear();
+  CollectBrowserFrameSinkIdsInWindow(window_tree_host->window(), false, ids,
+                                     &browser_ids);
+  UpdateThrottling();
+}
+
+void FrameThrottlingController::OnWindowDestroying(aura::Window* window) {
+  DCHECK(window->IsRootWindow());
+  host_to_ids_map_.erase(window->GetHost());
+  UpdateThrottling();
+  window->RemoveObserver(this);
+}
+
+void FrameThrottlingController::OnWindowTreeHostCreated(
+    aura::WindowTreeHost* host) {
+  host->AddObserver(this);
+  host->window()->AddObserver(this);
+}
+
+void FrameThrottlingController::UpdateThrottling() {
+  std::vector<viz::FrameSinkId> ids_to_throttle;
+  for (const auto& pair : host_to_ids_map_) {
+    ids_to_throttle.insert(ids_to_throttle.end(), pair.second.begin(),
+                           pair.second.end());
+  }
+  context_factory_->GetHostFrameSinkManager()->Throttle(
+      ids_to_throttle, base::TimeDelta::FromHz(throttled_fps_));
 }
 
 void FrameThrottlingController::AddObserver(FrameThrottlingObserver* observer) {

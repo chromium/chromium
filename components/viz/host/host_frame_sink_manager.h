@@ -183,6 +183,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // Ends throttling of all previously throttled frame sinks.
   void EndThrottling();
 
+  void Throttle(const std::vector<FrameSinkId>& ids, base::TimeDelta interval);
+
   // Add/Remove an observer to receive notifications of when the host receives
   // new hit test data.
   void AddHitTestRegionObserver(HitTestRegionObserver* observer);

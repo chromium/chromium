@@ -412,6 +412,8 @@ cc_component("cc") {
     "trees/target_property.h",
     "trees/task_runner_provider.cc",
     "trees/task_runner_provider.h",
+    "trees/throttle_decider.cc",
+    "trees/throttle_decider.h",
     "trees/transform_node.cc",
     "trees/transform_node.h",
     "trees/tree_synchronizer.cc",
@@ -792,6 +794,7 @@ cc_test("cc_unittests") {
     "trees/property_tree_builder_unittest.cc",
     "trees/property_tree_unittest.cc",
     "trees/swap_promise_manager_unittest.cc",
+    "trees/throttle_decider_unittest.cc",
     "trees/tree_synchronizer_unittest.cc",
     "trees/ukm_manager_unittest.cc",
 

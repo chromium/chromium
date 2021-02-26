@@ -567,15 +567,21 @@ void SingleThreadProxy::NotifyThroughputTrackerResults(
           weak_factory_.GetWeakPtr(), std::move(results)));
 }
 
+bool SingleThreadProxy::IsInSynchronousComposite() const {
+  return inside_synchronous_composite_;
+}
+
+void SingleThreadProxy::FrameSinksToThrottleUpdated(
+    const base::flat_set<viz::FrameSinkId>& ids) {
+  DebugScopedSetMainThread main(task_runner_provider_);
+  single_thread_client_->FrameSinksToThrottleUpdated(ids);
+}
+
 void SingleThreadProxy::RequestBeginMainFrameNotExpected(bool new_state) {
   if (scheduler_on_impl_thread_) {
     scheduler_on_impl_thread_->SetMainThreadWantsBeginMainFrameNotExpected(
         new_state);
   }
-}
-
-bool SingleThreadProxy::IsInSynchronousComposite() const {
-  return inside_synchronous_composite_;
 }
 
 void SingleThreadProxy::CompositeImmediatelyForTest(

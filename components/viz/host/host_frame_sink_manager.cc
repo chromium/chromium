@@ -306,6 +306,11 @@ void HostFrameSinkManager::EndThrottling() {
   frame_sink_manager_->EndThrottling();
 }
 
+void HostFrameSinkManager::Throttle(const std::vector<FrameSinkId>& ids,
+                                    base::TimeDelta interval) {
+  frame_sink_manager_->Throttle(ids, interval);
+}
+
 void HostFrameSinkManager::AddHitTestRegionObserver(
     HitTestRegionObserver* observer) {
   observers_.AddObserver(observer);

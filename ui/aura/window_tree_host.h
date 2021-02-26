@@ -334,9 +334,11 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void MoveCursorToInternal(const gfx::Point& root_location,
                             const gfx::Point& host_location);
 
-  // Overrided from CompositorObserver:
-  void OnCompositingEnded(ui::Compositor* compositor) override;
-  void OnCompositingChildResizing(ui::Compositor* compositor) override;
+  // Overridden from CompositorObserver:
+  void OnCompositingEnded(ui::Compositor* compositor) final;
+  void OnCompositingChildResizing(ui::Compositor* compositor) final;
+  void OnFrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) final;
 
   // We don't use a std::unique_ptr for |window_| since we need this ptr to be
   // valid during its deletion. (Window's dtor notifies observers that may

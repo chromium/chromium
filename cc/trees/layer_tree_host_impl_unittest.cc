@@ -279,6 +279,8 @@ class LayerTreeHostImplTest : public testing::Test,
     first_scroll_observed++;
   }
   bool IsInSynchronousComposite() const override { return false; }
+  void FrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) override {}
   void set_reduce_memory_result(bool reduce_memory_result) {
     reduce_memory_result_ = reduce_memory_result;
   }

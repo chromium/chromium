@@ -559,4 +559,10 @@ void WindowTreeHost::OnCompositingChildResizing(ui::Compositor* compositor) {
   holding_pointer_moves_ = true;
 }
 
+void WindowTreeHost::OnFrameSinksToThrottleUpdated(
+    const base::flat_set<viz::FrameSinkId>& ids) {
+  for (auto& observer : observers_)
+    observer.OnCompositingFrameSinksToThrottleUpdated(this, ids);
+}
+
 }  // namespace aura
