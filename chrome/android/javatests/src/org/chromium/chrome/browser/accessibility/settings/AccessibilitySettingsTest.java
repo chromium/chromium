@@ -171,6 +171,8 @@ public class AccessibilitySettingsTest {
                 InstrumentationRegistry.getInstrumentation().addMonitor(
                         new IntentFilter(Settings.ACTION_CAPTIONING_SETTINGS), null, false);
 
+        // First scroll to bottom of the page, then click.
+        onView(ViewMatchers.isRoot()).perform(swipeUp());
         onView(withText(org.chromium.chrome.R.string.accessibility_captions_title))
                 .perform(click());
         monitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
