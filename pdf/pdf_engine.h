@@ -136,8 +136,8 @@ class PDFEngine {
     // Scroll the horizontal/vertical scrollbars to a given position.
     // Values are in screen coordinates, where 0 is the top/left of the document
     // and a positive value is the distance in pixels from that line.
-    virtual void ScrollToX(int x_in_screen_coords) {}
-    virtual void ScrollToY(int y_in_screen_coords) {}
+    virtual void ScrollToX(int x_screen_coords) {}
+    virtual void ScrollToY(int y_screen_coords) {}
 
     // Scroll by a given delta relative to the current position.
     virtual void ScrollBy(const gfx::Vector2d& scroll_delta) {}

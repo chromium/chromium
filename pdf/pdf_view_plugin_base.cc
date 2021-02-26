@@ -122,6 +122,24 @@ void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
   paint_manager_.InvalidateRect(offset_rect);
 }
 
+void PdfViewPluginBase::ScrollToX(int x_screen_coords) {
+  const float x_scroll_pos = x_screen_coords / device_scale_;
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "setScrollPosition");
+  message.SetDoubleKey("x", x_scroll_pos);
+  SendMessage(std::move(message));
+}
+
+void PdfViewPluginBase::ScrollToY(int y_screen_coords) {
+  const float y_scroll_pos = y_screen_coords / device_scale_;
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "setScrollPosition");
+  message.SetDoubleKey("y", y_scroll_pos);
+  SendMessage(std::move(message));
+}
+
 SkColor PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
 }

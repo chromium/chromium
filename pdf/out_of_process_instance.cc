@@ -155,12 +155,10 @@ constexpr char kJSPrintPreviewPageCount[] = "pageCount";
 constexpr char kJSLoadPreviewPageType[] = "loadPreviewPage";
 constexpr char kJSPreviewPageUrl[] = "url";
 constexpr char kJSPreviewPageIndex[] = "index";
-// Set scroll position (Plugin -> Page)
-constexpr char kJSSetScrollPositionType[] = "setScrollPosition";
-constexpr char kJSPositionX[] = "x";
-constexpr char kJSPositionY[] = "y";
 // Scroll by (Plugin -> Page)
 constexpr char kJSScrollByType[] = "scrollBy";
+constexpr char kJSPositionX[] = "x";
+constexpr char kJSPositionY[] = "y";
 // Navigate to the given URL (Plugin -> Page)
 constexpr char kJSNavigateType[] = "navigate";
 constexpr char kJSNavigateUrl[] = "url";
@@ -1068,21 +1066,6 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data().drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
-}
-
-void OutOfProcessInstance::ScrollToX(int x_in_screen_coords) {
-  pp::VarDictionary position;
-  position.Set(kType, kJSSetScrollPositionType);
-  position.Set(kJSPositionX, pp::Var(x_in_screen_coords / device_scale()));
-  PostMessage(position);
-}
-
-void OutOfProcessInstance::ScrollToY(int y_in_screen_coords) {
-  pp::VarDictionary position;
-  position.Set(kType, kJSSetScrollPositionType);
-  float new_y_viewport_coords = y_in_screen_coords / device_scale();
-  position.Set(kJSPositionY, pp::Var(new_y_viewport_coords));
-  PostMessage(position);
 }
 
 void OutOfProcessInstance::ScrollBy(const gfx::Vector2d& scroll_delta) {
