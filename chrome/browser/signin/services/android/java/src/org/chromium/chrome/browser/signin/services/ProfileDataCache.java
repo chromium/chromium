@@ -36,7 +36,6 @@ import org.chromium.components.signin.ProfileDataSource.ProfileData;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
      * a user avatar.
      */
     public static class BadgeConfig {
-        private @Nullable Drawable mBadge;
+        private final Drawable mBadge;
         private final int mBadgeSize;
         private final Point mPosition;
         private final int mBorderSize;
@@ -86,11 +85,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
             mBorderSize = borderSize;
         }
 
-        void setBadge(@Nullable Drawable badge) {
-            mBadge = badge;
-        }
-
-        @Nullable
         Drawable getBadge() {
             return mBadge;
         }
@@ -185,30 +179,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     }
 
     /**
-     * Creates a BadgeConfig object from the badgeResId and updates the profile image.
-     * @param badgeResId Resource id of the badge to be attached. If it is 0 then no badge is
-     *         attached
-     */
-    public void updateBadgeConfig(@DrawableRes int badgeResId) {
-        ThreadUtils.assertOnUiThread();
-        assert mBadgeConfig != null;
-        mBadgeConfig.setBadge(
-                badgeResId == 0 ? null : AppCompatResources.getDrawable(mContext, badgeResId));
-        if (mObservers.isEmpty()) {
-            return;
-        }
-
-        if (mProfileDataSource != null) {
-            updateCacheFromProfileDataSource();
-        } else {
-            // Clear mCachedProfileData and download the profiles again.
-            List<String> accounts = new ArrayList<>(mCachedProfileData.keySet());
-            mCachedProfileData.clear();
-            update(accounts);
-        }
-    }
-
-    /**
      * @return The {@link DisplayableProfileData} containing the profile data corresponding to the
      *         given account or a {@link DisplayableProfileData} with a placeholder image and null
      *         full and given name.
@@ -297,9 +267,9 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     }
 
     private static BadgeConfig createBadgeConfig(Context context, @DrawableRes int badgeResId) {
+        assert badgeResId != 0 : "badgeResId shouldn't be 0!";
         Resources resources = context.getResources();
-        Drawable badge =
-                badgeResId == 0 ? null : AppCompatResources.getDrawable(context, badgeResId);
+        Drawable badge = AppCompatResources.getDrawable(context, badgeResId);
         int badgePositionX = resources.getDimensionPixelOffset(R.dimen.badge_position_x);
         int badgePositionY = resources.getDimensionPixelOffset(R.dimen.badge_position_y);
         int badgeBorderSize = resources.getDimensionPixelSize(R.dimen.badge_border_size);
@@ -317,10 +287,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
         Drawable croppedAvatar = bitmap != null
                 ? AvatarGenerator.makeRoundAvatar(mContext.getResources(), bitmap, mImageSize)
                 : mPlaceholderImage;
-        if (mBadgeConfig == null || mBadgeConfig.getBadge() == null) {
-            return croppedAvatar;
-        }
-        return overlayBadgeOnUserPicture(croppedAvatar);
+        return mBadgeConfig == null ? croppedAvatar : overlayBadgeOnUserPicture(croppedAvatar);
     }
 
     private void updateCachedProfileDataAndNotifyObservers(DisplayableProfileData profileData) {
