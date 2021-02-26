@@ -34,6 +34,14 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"NetworkDiagnosticsCaptivePortal", IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL},
     {"NetworkDiagnosticsVideoConferencing",
      IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING},
+    {"NetworkDiagnosticsConnectionGroup",
+     IDS_NETWORK_DIAGNOSTICS_CONNECTION_GROUP},
+    {"NetworkDiagnosticsWifiGroup", IDS_NETWORK_DIAGNOSTICS_WIFI_GROUP},
+    {"NetworkDiagnosticsGatewayGroup", IDS_NETWORK_DIAGNOSTICS_GATEWAY_GROUP},
+    {"NetworkDiagnosticsFirewallGroup", IDS_NETWORK_DIAGNOSTICS_FIREWALL_GROUP},
+    {"NetworkDiagnosticsDnsGroup", IDS_NETWORK_DIAGNOSTICS_DNS_GROUP},
+    {"NetworkDiagnosticsGoogleServicesGroup",
+     IDS_NETWORK_DIAGNOSTICS_GOOGLE_SERVICES_GROUP},
     {"NetworkDiagnosticsPassed", IDS_NETWORK_DIAGNOSTICS_PASSED},
     {"NetworkDiagnosticsFailed", IDS_NETWORK_DIAGNOSTICS_FAILED},
     {"NetworkDiagnosticsNotRun", IDS_NETWORK_DIAGNOSTICS_NOT_RUN},
@@ -132,16 +140,6 @@ struct StringMap {
   const char* value;
 };
 
-// TODO(crbug/1142857): Localize these strings after UX approval.
-constexpr StringMap kPlaceholderStrings[] = {
-    {"NetworkDiagnosticsConnectionGroup", "Connection"},
-    {"NetworkDiagnosticsWifiGroup", "WiFi"},
-    {"NetworkDiagnosticsGatewayGroup", "Gateway"},
-    {"NetworkDiagnosticsFirewallGroup", "Firewall"},
-    {"NetworkDiagnosticsDnsGroup", "DNS"},
-    {"NetworkDiagnosticsGoogleServicesGroup", "Google Services"},
-};
-
 }  // namespace
 
 void AddResources(content::WebUIDataSource* html_source) {
@@ -149,9 +147,6 @@ void AddResources(content::WebUIDataSource* html_source) {
 
   for (const auto& resource : kResources)
     html_source->AddResourcePath(resource.name, resource.id);
-
-  for (const auto& str : kPlaceholderStrings)
-    html_source->AddString(str.name, str.value);
 }
 
 }  // namespace network_diagnostics

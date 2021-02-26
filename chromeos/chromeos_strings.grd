@@ -1213,6 +1213,24 @@ Try tapping the mic to ask me anything.
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK" desc="Label for connectivity diagnostics application send feedback button">
         Send Feedback
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CONNECTION_GROUP" desc="Label for the group of network diagnostic routines about the device's internet connection">
+        Connection
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_WIFI_GROUP" desc="Label for the group of network diagnostic routines about the device's Wi-Fi connection">
+        Wi-Fi
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GATEWAY_GROUP" desc="Label for the group of network diagnostic routines about the device's network gateway">
+        Gateway
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_FIREWALL_GROUP" desc="Label for the group of network diagnostic routines about the device's network firewall">
+        Firewall
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_GROUP" desc="Label for the group of network diagnostic routines about the device's network DNS (domain name servers)">
+        DNS
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GOOGLE_SERVICES_GROUP" desc="Label for the group of network diagnostic routines about connecting to Google services">
+        Google Services
+      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY" desc="Label for Network diagnostics `LAN connectivity` test. This test determines if the device is connected to a Local Area Network (LAN)">
         Lan Connectivity
       </message>
