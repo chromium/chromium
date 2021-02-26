@@ -436,6 +436,7 @@
     "prefix": "plz-dedicated-worker",
     "bases": ["external/wpt/content-security-policy/inside-worker",
               "external/wpt/content-security-policy/worker-src",
+              "external/wpt/content-security-policy/gen",
               "external/wpt/fetch/",
               "external/wpt/html/browsers/offline/appcache/workers/",
               "external/wpt/html/cross-origin-embedder-policy",
