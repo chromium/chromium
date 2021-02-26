@@ -86,6 +86,11 @@ public class JourneyLogger {
         JourneyLoggerJni.get().setEventOccurred(mJourneyLoggerAndroid, JourneyLogger.this, event);
     }
 
+    /** Records that a payment UI has been shown. */
+    public void setShown() {
+        JourneyLoggerJni.get().setShown(mJourneyLoggerAndroid, JourneyLogger.this);
+    }
+
     /** Records that the instrument details has been received. */
     public void setReceivedInstrumentDetails() {
         JourneyLoggerJni.get().setReceivedInstrumentDetails(
@@ -239,6 +244,7 @@ public class JourneyLogger {
         void setHasEnrolledInstrumentValue(
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
         void setEventOccurred(long nativeJourneyLoggerAndroid, JourneyLogger caller, int event);
+        void setShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setReceivedInstrumentDetails(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setPayClicked(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setSelectedMethod(

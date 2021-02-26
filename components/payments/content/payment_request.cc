@@ -721,8 +721,8 @@ bool PaymentRequest::SatisfiesSkipUIConstraints() {
     DCHECK(state()->IsInitialized() && spec()->IsInitialized());
     journey_logger_.SetEventOccurred(JourneyLogger::EVENT_SKIPPED_SHOW);
   } else if (state()->IsInitialized() && spec()->IsInitialized()) {
-    // Set EVENT_SHOWN only after state() and spec() initialization.
-    journey_logger_.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+    // Set "shown" only after state() and spec() initialization.
+    journey_logger_.SetShown();
   }
   return skipped_payment_request_ui_;
 }

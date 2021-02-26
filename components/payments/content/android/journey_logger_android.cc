@@ -65,6 +65,12 @@ void JourneyLoggerAndroid::SetEventOccurred(
   journey_logger_.SetEventOccurred(static_cast<JourneyLogger::Event>(jevent));
 }
 
+void JourneyLoggerAndroid::SetShown(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetShown();
+}
+
 void JourneyLoggerAndroid::SetReceivedInstrumentDetails(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {

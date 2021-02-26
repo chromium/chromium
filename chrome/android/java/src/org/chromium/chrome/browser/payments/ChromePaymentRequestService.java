@@ -415,7 +415,7 @@ public class ChromePaymentRequestService
                             ()
                                     -> onUiAborted(AbortReason.ABORTED_BY_USER,
                                             ErrorStrings.USER_CANCELLED))) {
-                    mJourneyLogger.setEventOccurred(Event.SHOWN);
+                    mJourneyLogger.setShown();
                     return null;
                 } else {
                     return ErrorStrings.MINIMAL_UI_SUPPRESSED;

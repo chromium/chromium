@@ -212,6 +212,9 @@ class JourneyLogger {
   // Records that an event occurred.
   void SetEventOccurred(Event event);
 
+  // Records that a payment UI has been shown.
+  void SetShown();
+
   // Records that the instrument details have been received.
   void SetReceivedInstrumentDetails();
 
