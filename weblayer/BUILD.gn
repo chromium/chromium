@@ -414,7 +414,7 @@ source_set("weblayer_lib_base") {
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/no_state_prefetch/renderer",
-    "//components/omnibox/browser:location_bar",
+    "//components/omnibox/browser:browser",
     "//components/page_info",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/renderer",

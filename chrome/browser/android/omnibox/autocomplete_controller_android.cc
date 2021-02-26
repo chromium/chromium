@@ -441,14 +441,6 @@ void AutocompleteControllerAndroid::ReleaseJavaObject(JNIEnv* env) {
   weak_java_autocomplete_controller_android_.reset();
 }
 
-void AutocompleteControllerAndroid::GroupSuggestionsBySearchVsURL(
-    JNIEnv* /* env */,
-    int first_index,
-    int last_index) {
-  autocomplete_controller_->result().GroupSuggestionsBySearchVsURL(first_index,
-                                                                   last_index);
-}
-
 void AutocompleteControllerAndroid::Shutdown() {
   autocomplete_controller_.reset();
 

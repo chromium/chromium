@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.core.util.ObjectsCompat;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,8 +51,9 @@ public class AutocompleteResult {
         }
     };
 
-    private final List<AutocompleteMatch> mSuggestions;
-    private final SparseArray<GroupDetails> mGroupsDetails;
+    private final @NonNull SparseArray<GroupDetails> mGroupsDetails;
+    private @NonNull List<AutocompleteMatch> mSuggestions;
+    private long mNativeAutocompleteResult;
 
     public AutocompleteResult(
             List<AutocompleteMatch> suggestions, SparseArray<GroupDetails> groupsDetails) {
@@ -59,9 +61,16 @@ public class AutocompleteResult {
         mGroupsDetails = groupsDetails != null ? groupsDetails : new SparseArray<>();
     }
 
+    public AutocompleteResult(long nativeResult, List<AutocompleteMatch> suggestions,
+            SparseArray<GroupDetails> groupsDetails) {
+        this(suggestions, groupsDetails);
+        mNativeAutocompleteResult = nativeResult;
+    }
+
     @CalledByNative
-    private static AutocompleteResult build(AutocompleteMatch[] suggestions, int[] groupIds,
-            String[] groupNames, boolean[] groupCollapsedStates) {
+    private static AutocompleteResult build(long nativeAutocompleteResult,
+            @NonNull AutocompleteMatch[] suggestions, @NonNull int[] groupIds,
+            @NonNull String[] groupNames, @NonNull boolean[] groupCollapsedStates) {
         assert groupIds.length == groupNames.length;
         assert groupIds.length == groupCollapsedStates.length;
 
@@ -71,7 +80,14 @@ public class AutocompleteResult {
                     new GroupDetails(groupNames[index], groupCollapsedStates[index]));
         }
 
-        return new AutocompleteResult(Arrays.asList(suggestions), groupsDetails);
+        AutocompleteResult result = new AutocompleteResult(
+                nativeAutocompleteResult, Arrays.asList(suggestions), groupsDetails);
+        return result;
+    }
+
+    @CalledByNative
+    private void updateMatches(@NonNull AutocompleteMatch[] suggestions) {
+        mSuggestions = Arrays.asList(suggestions);
     }
 
     /**
@@ -120,5 +136,24 @@ public class AutocompleteResult {
             baseHash = Integer.rotateLeft(baseHash, 10);
         }
         return baseHash ^ mSuggestions.hashCode();
+    }
+
+    /**
+     * Group native suggestions in specified range by Search vs URL.
+     *
+     * @param firstIndex Index of the first suggestion for grouping.
+     * @param lastIndex Index of the last suggestion for grouping.
+     */
+    public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {
+        if (mNativeAutocompleteResult != 0) {
+            AutocompleteResultJni.get().groupSuggestionsBySearchVsURL(
+                    mNativeAutocompleteResult, firstIndex, lastIndex);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void groupSuggestionsBySearchVsURL(
+                long nativeAutocompleteResult, int firstIndex, int lastIndex);
     }
 }

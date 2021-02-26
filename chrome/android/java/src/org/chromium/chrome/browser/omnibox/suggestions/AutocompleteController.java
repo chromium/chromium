@@ -404,20 +404,6 @@ public class AutocompleteController {
                 mNativeAutocompleteControllerAndroid, AutocompleteController.this, url);
     }
 
-    /**
-     * Group native suggestions in specified range by Search vs URL.
-     *
-     * TODO(crbug.com/1138587): move this to AutocompleteResult when the class is ready to interface
-     * with native code.
-     *
-     * @param firstIndex Index of the first suggestion for grouping.
-     * @param lastIndex Index of the last suggestion for grouping.
-     */
-    public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {
-        AutocompleteControllerJni.get().groupSuggestionsBySearchVsURL(
-                mNativeAutocompleteControllerAndroid, firstIndex, lastIndex);
-    }
-
     @NativeMethods
     interface Natives {
         long init(AutocompleteController caller, Profile profile);
@@ -447,8 +433,6 @@ public class AutocompleteController {
                 String newQueryText, String[] newQueryParams);
         Tab findMatchingTabWithUrl(
                 long nativeAutocompleteControllerAndroid, AutocompleteController caller, GURL url);
-        void groupSuggestionsBySearchVsURL(
-                long nativeAutocompleteControllerAndroid, int firstIndex, int lastIndex);
         void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,
                 float[] confidenceScores);
         /**

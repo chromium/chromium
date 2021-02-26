@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/autocomplete_result.h"
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "base/android/jni_android.h"
@@ -46,19 +48,41 @@ ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
   ScopedJavaLocalRef<jobjectArray> j_group_names =
       ToJavaArrayOfStrings(env, group_names);
 
+  java_result_ = Java_AutocompleteResult_build(
+      env, reinterpret_cast<intptr_t>(this), BuildJavaMatches(env), j_group_ids,
+      j_group_names, j_group_collapsed_states);
+
+  return ScopedJavaLocalRef<jobject>(java_result_);
+}
+
+ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
+    JNIEnv* env) const {
   jclass clazz = AutocompleteMatch::GetClazz(env);
   ScopedJavaLocalRef<jobjectArray> j_matches(
       env, env->NewObjectArray(matches_.size(), clazz, nullptr));
   base::android::CheckException(env);
 
-  for (index = 0; index < matches_.size(); ++index) {
+  for (size_t index = 0; index < matches_.size(); ++index) {
     env->SetObjectArrayElement(
         j_matches.obj(), index,
         matches_[index].GetOrCreateJavaObject(env).obj());
   }
 
-  java_result_ = Java_AutocompleteResult_build(
-      env, j_matches, j_group_ids, j_group_names, j_group_collapsed_states);
+  return j_matches;
+}
 
-  return ScopedJavaLocalRef<jobject>(java_result_);
+void AutocompleteResult::GroupSuggestionsBySearchVsURL(JNIEnv* env,
+                                                       int first_index,
+                                                       int last_index) {
+  const int num_elements = matches_.size();
+  DCHECK_GE(first_index, 0);
+  DCHECK_LT(first_index, num_elements);
+  DCHECK_GT(last_index, 0);
+  DCHECK_LE(last_index, num_elements);
+  DCHECK_LT(first_index, last_index);
+  auto range_start = const_cast<ACMatches&>(matches_).begin();
+  GroupSuggestionsBySearchVsURL(range_start + first_index,
+                                range_start + last_index);
+  Java_AutocompleteResult_updateMatches(env, java_result_,
+                                        BuildJavaMatches(env));
 }

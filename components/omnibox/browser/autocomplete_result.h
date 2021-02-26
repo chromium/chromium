@@ -18,6 +18,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -55,6 +56,19 @@ class AutocompleteResult {
   // NOTE: Android specific methods are defined in autocomplete_match_android.cc
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
       JNIEnv* env) const;
+
+  // Construct an array of AutocompleteMatch objects arranged in the exact same
+  // order as |matches_|.
+  base::android::ScopedJavaLocalRef<jobjectArray> BuildJavaMatches(
+      JNIEnv* env) const;
+
+  // Group suggestions in specified range by search vs url.
+  // The range used is [first_index, last_index), which contains all the
+  // elements between first_index and last_index, including the element pointed
+  // by first_index, but not the element pointed by last_index.
+  void GroupSuggestionsBySearchVsURL(JNIEnv* env,
+                                     int firstIndex,
+                                     int lastIndex);
 #endif
 
   // Moves matches from |old_matches| to provide a consistent result set.
@@ -213,12 +227,6 @@ class AutocompleteResult {
   static void LogAsynchronousUpdateMetrics(
       const std::vector<MatchDedupComparator>& old_result,
       const AutocompleteResult& new_result);
-
-  // Group suggestions in specified range by search vs url.
-  // The range used is [first_index, last_index), which contains all the
-  // elements between first_index and last_index, including the element pointed
-  // by first_index, but not the element pointed by last_index.
-  void GroupSuggestionsBySearchVsURL(int first_index, int last_index) const;
 
   // This value should be comfortably larger than any max-autocomplete-matches
   // under consideration.
