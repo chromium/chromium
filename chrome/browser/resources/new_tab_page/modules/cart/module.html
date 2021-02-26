@@ -192,10 +192,17 @@
   }
 </style>
 <ntp-module-header
-    chip-text="[[headerChipText]]" 
+    chip-text="[[headerChipText]]"
     description-text="[[headerDescriptionText]]"
-    show-menu-button on-menu-button-click="onModuleMenuButtonClick_">
-  $i18n{modulesCartTitle}
+    dismiss-text="[[i18nRecursive('',
+                                  'modulesDismissButtonText',
+                                  'modulesCartLowerThese')]]"
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesCartLower')]]"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    on-disable-button-click="onDisableButtonClick_">
+  $i18n{modulesCartSentence}
 </ntp-module-header>
 <div id="moduleContent">
   <template is="dom-if" if="[[showLeftScrollButton_]]">
@@ -254,16 +261,6 @@
     <button id="removeCartButton" class="dropdown-item"
         on-click="onCartRemove_">
       [[cartMenuRemoveItem_]]
-    </button>
-  </cr-action-menu>
-  <cr-action-menu id="moduleActionMenu">
-    <button id="hideModuleButton" class="dropdown-item"
-        on-click="onModuleHide_">
-      $i18n{modulesCartModuleMenuHide}
-    </button>
-    <button id="removeModuleButton" class="dropdown-item"
-        on-click="onModuleRemove_">
-      $i18n{modulesCartModuleMenuRemove}
     </button>
   </cr-action-menu>
   <template is="dom-if" if="[[showRightScrollButton_]]">

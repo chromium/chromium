@@ -142,17 +142,6 @@ TEST_F(CartHandlerTest, TestHideStatusChange) {
   ASSERT_FALSE(service_->IsHidden());
 }
 
-// Verifies the remove status is flipped by removing and restoring.
-TEST_F(CartHandlerTest, TestRemoveStatusChange) {
-  ASSERT_FALSE(service_->IsRemoved());
-
-  handler_->RemoveCartModule();
-  ASSERT_TRUE(service_->IsRemoved());
-
-  handler_->RestoreRemovedCartModule();
-  ASSERT_FALSE(service_->IsRemoved());
-}
-
 // Verifies GetMerchantCarts loads fake data with feature parameter.
 TEST_F(CartHandlerTest, TestEnableFakeData) {
   base::RunLoop run_loop;

@@ -9,19 +9,23 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {$$} from '../../utils.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
+
 import {ChromeCartProxy} from './chrome_cart_proxy.js';
 
 /**
- * @fileoverview Implements the UI of chrome cart module. This module
- * shows pending carts for users on merchant sites so that users can
- * resume shopping journey.
+ * Implements the UI of chrome cart module. This module shows pending carts for
+ * users on merchant sites so that users can resume shopping journey.
+ * @polymer
+ * @extends {PolymerElement}
  */
-
-class ChromeCartModuleElement extends PolymerElement {
+class ChromeCartModuleElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-chrome-cart-module';
   }
@@ -211,17 +215,8 @@ class ChromeCartModuleElement extends PolymerElement {
     this.cartItems = carts;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onModuleMenuButtonClick_(e) {
-    e.preventDefault();
-    this.$.moduleActionMenu.showAt(e.target);
-  }
-
   /** @private */
-  onModuleHide_() {
+  onDismissButtonClick_() {
     ChromeCartProxy.getInstance().handler.hideCartModule();
     this.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
@@ -240,16 +235,15 @@ class ChromeCartModuleElement extends PolymerElement {
   }
 
   /** @private */
-  onModuleRemove_() {
-    ChromeCartProxy.getInstance().handler.removeCartModule();
-    this.dispatchEvent(new CustomEvent('dismiss-module', {
+  onDisableButtonClick_() {
+    this.dispatchEvent(new CustomEvent('disable-module', {
       bubbles: true,
       composed: true,
       detail: {
-        message:
-            loadTimeData.getString('modulesCartModuleMenuRemoveToastMessage'),
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesCartLowerYour')),
         restoreCallback: () => {
-          ChromeCartProxy.getInstance().handler.restoreRemovedCartModule();
           chrome.metricsPrivate.recordUserAction(
               'NewTabPage.Carts.UndoRemoveModule');
         },
@@ -362,5 +356,5 @@ async function createCartElement() {
 /** @type {!ModuleDescriptor} */
 export const chromeCartDescriptor = new ModuleDescriptor(
     /*id=*/ 'chrome_cart',
-    /*name=*/ loadTimeData.getString('modulesCartTitle'),
+    /*name=*/ loadTimeData.getString('modulesCartSentence'),
     /*heightPx=*/ 216, createCartElement);

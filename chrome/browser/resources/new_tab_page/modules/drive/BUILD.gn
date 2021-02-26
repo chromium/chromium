@@ -10,6 +10,7 @@ js_library("module") {
     ":drive_module_proxy",
     "..:module_descriptor",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior",
   ]
 }
 

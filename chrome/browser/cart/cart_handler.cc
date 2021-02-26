@@ -40,14 +40,6 @@ void CartHandler::RestoreHiddenCartModule() {
   cart_service_->RestoreHidden();
 }
 
-void CartHandler::RemoveCartModule() {
-  cart_service_->Remove();
-}
-
-void CartHandler::RestoreRemovedCartModule() {
-  cart_service_->RestoreRemoved();
-}
-
 void CartHandler::HideCart(const GURL& cart_url, HideCartCallback callback) {
   cart_service_->HideCart(cart_url, std::move(callback));
 }

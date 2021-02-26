@@ -4,18 +4,22 @@
 
 import '../module_header.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ModuleDescriptor} from '../module_descriptor.js';
+
 import {DriveProxy} from './drive_module_proxy.js';
 
 /**
- * @fileoverview The Drive module, which serves as an inside look in to
- * recent activity within a user's Google Drive.
+ * The Drive module, which serves as an inside look in to recent activity within
+ * a user's Google Drive.
+ * @polymer
+ * @extends {PolymerElement}
  */
-
-class DriveModuleElement extends PolymerElement {
+class DriveModuleElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-drive-module';
   }
@@ -29,6 +33,19 @@ class DriveModuleElement extends PolymerElement {
       /** @type {Array<!drive.mojom.File>} */
       files: Array,
     };
+  }
+
+  /** @private */
+  onDisableButtonClick_() {
+    this.dispatchEvent(new CustomEvent('disable-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesDriveSentence')),
+      },
+    }));
   }
 
   /**
@@ -96,5 +113,5 @@ async function createDriveElement() {
 /** @type {!ModuleDescriptor} */
 export const driveDescriptor = new ModuleDescriptor(
     /*id=*/ 'drive',
-    /*name=*/ loadTimeData.getString('modulesDriveTitle'),
+    /*name=*/ loadTimeData.getString('modulesDriveSentence'),
     /*heightPx=*/ 260, createDriveElement);

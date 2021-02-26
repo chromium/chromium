@@ -10,7 +10,10 @@ js_type_check("closure_compile") {
                     "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page/\"",
                     "browser_resolver_prefix_replacements=\"chrome://kaleidoscope/=../../chrome/browser/media/kaleidoscope/internal/resources\"",
                   ]
-  deps = [ ":img_test" ]
+  deps = [
+    ":img_test",
+    "modules:module_header_test",
+  ]
 }
 
 js_library("img_test") {

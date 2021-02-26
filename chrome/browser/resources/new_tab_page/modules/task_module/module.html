@@ -199,8 +199,11 @@
   }
 </style>
 <ntp-module-header
+    dismiss-text="[[i18n('modulesDismissButtonText', dismissName_)]]"
+    disable-text="[[i18n('modulesDisableButtonText', disableName_)]]"
     show-info-button on-info-button-click="onInfoButtonClick_"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_">
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    on-disable-button-click="onDisableButtonClick_">
   [[task.title]]
 </ntp-module-header>
 <div id="moduleContent">

@@ -37,12 +37,6 @@ class CartService : public history::HistoryServiceObserver,
   void RestoreHidden();
   // Returns whether cart module has been temporarily hidden.
   bool IsHidden();
-  // Gets called when cart module is permanently removed.
-  void Remove();
-  // Gets called when restoring the permanently removed cart module.
-  void RestoreRemoved();
-  // Returns whether cart module has been permanently removed.
-  bool IsRemoved();
   // Get the proto database owned by the service.
   CartDB* GetDB();
   // Load the cart for a domain.

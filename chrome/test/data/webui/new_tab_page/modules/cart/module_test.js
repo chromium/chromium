@@ -180,6 +180,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     ];
     testProxy.handler.setResultFor(
         'getMerchantCarts', Promise.resolve({carts}));
+    loadTimeData.overrideValues({
+      disableModuleToastMessage: 'hello $1',
+      modulesCartLowerYour: 'world',
+    });
 
     // Arrange.
     await chromeCartDescriptor.initialize();
@@ -188,13 +192,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     moduleElement.$.cartItemRepeat.render();
 
     // Act.
-    let waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
-    const moduleActionMenu = $$(moduleElement, '#moduleActionMenu');
-    assertFalse(moduleActionMenu.open);
+    const waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
     $$(moduleElement, 'ntp-module-header')
-        .dispatchEvent(new CustomEvent('menu-button-click', {bubbles: true}));
-    assertTrue(moduleActionMenu.open);
-    moduleActionMenu.querySelector('#hideModuleButton').click();
+        .dispatchEvent(new Event('dismiss-button-click', {bubbles: true}));
     const hideEvent = await waitForDismissEvent;
     const hideToastMessage = hideEvent.detail.message;
     const hideRestoreCallback = hideEvent.detail.restoreCallback;
@@ -215,24 +215,21 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         1, fakeMetricsPrivate.count('NewTabPage.Carts.UndoHideModule'));
 
     // Act.
-    waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
-    moduleActionMenu.querySelector('#removeModuleButton').click();
-    const removeEvent = await waitForDismissEvent;
-    const removeToastMessage = removeEvent.detail.message;
-    const removeRestoreCallback = removeEvent.detail.restoreCallback;
+    const waitForDisableEvent = eventToPromise('disable-module', moduleElement);
+    $$(moduleElement, 'ntp-module-header')
+        .dispatchEvent(new Event('disable-button-click', {bubbles: true}));
+    const disableEvent = await waitForDisableEvent;
+    const disableToastMessage = disableEvent.detail.message;
+    const disableRestoreCallback = disableEvent.detail.restoreCallback;
 
     // Assert.
-    assertEquals(
-        loadTimeData.getString('modulesCartModuleMenuRemoveToastMessage'),
-        removeToastMessage);
-    assertEquals(1, testProxy.handler.getCallCount('removeCartModule'));
+    assertEquals('hello world', disableToastMessage);
     assertEquals(1, fakeMetricsPrivate.count('NewTabPage.Carts.RemoveModule'));
 
     // Act.
-    removeRestoreCallback();
+    disableRestoreCallback();
 
     // Assert.
-    assertEquals(1, testProxy.handler.getCallCount('restoreRemovedCartModule'));
     assertEquals(
         1, fakeMetricsPrivate.count('NewTabPage.Carts.UndoRemoveModule'));
   });

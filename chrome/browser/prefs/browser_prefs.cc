@@ -554,6 +554,11 @@ const char kStabilityBreakpadRegistrationFail[] =
 // Deprecated 02/2021
 const char kGamesInstallDirPref[] = "games.data_files_paths";
 
+#if !defined(OS_ANDROID)
+// Deprecated 02/2021
+const char kCartModuleRemoved[] = "cart_module_removed";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -665,6 +670,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterStringPref(kDataReductionProxyConfig, std::string());
 
   registry->RegisterFilePathPref(kGamesInstallDirPref, base::FilePath());
+
+#if !defined(OS_ANDROID)
+  registry->RegisterBooleanPref(kCartModuleRemoved, false);
+#endif
 }
 
 }  // namespace
@@ -1344,6 +1353,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 02/2021
   profile_prefs->ClearPref(kGamesInstallDirPref);
+
+#if !defined(OS_ANDROID)
+  // Added 02/2021
+  profile_prefs->ClearPref(kCartModuleRemoved);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

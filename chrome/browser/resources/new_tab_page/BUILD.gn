@@ -49,6 +49,7 @@ js_library("new_tab_page") {
     ":promo_browser_command_proxy",
     ":utils",
     "modules:module_descriptor",
+    "modules:module_header",
     "modules:module_registry",
     "realbox:realbox_browser_proxy",
   ]

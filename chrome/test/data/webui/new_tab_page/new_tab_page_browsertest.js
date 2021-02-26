@@ -208,6 +208,18 @@ TEST_F('NewTabPageModulesModuleRegistryTest', 'All', function() {
   mocha.run();
 });
 
+// eslint-disable-next-line no-var
+var NewTabPageModulesModuleHeaderTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/module_header_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesModuleHeaderTest', 'All', function() {
+  mocha.run();
+});
+
 // The dummy module is not available in official builds.
 GEN('#if !defined(OFFICIAL_BUILD)');
 

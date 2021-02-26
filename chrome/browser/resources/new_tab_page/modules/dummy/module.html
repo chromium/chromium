@@ -24,7 +24,13 @@
     border-radius: 8px;
   }
 </style>
-<ntp-module-header>[[title]]</ntp-module-header>
+<ntp-module-header
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesDummyLower')]]"
+    on-disable-button-click="onDisableButtonClick_">
+  [[title]]
+</ntp-module-header>
 <div id="moduleContent">
   <cr-grid id="tiles" columns="3">
     <template id="tileList" is="dom-repeat" items="[[tiles]]">
