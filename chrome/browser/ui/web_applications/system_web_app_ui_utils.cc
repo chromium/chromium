@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/printing/print_management/print_management_uma.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -78,19 +76,6 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 }  // namespace
 
 namespace web_app {
-namespace {
-
-void LogPrintManagementEntryPoints(apps::mojom::AppLaunchSource source) {
-  if (source == apps::mojom::AppLaunchSource::kSourceAppLauncher) {
-    base::UmaHistogramEnumeration("Printing.CUPS.PrintManagementAppEntryPoint",
-                                  PrintManagementAppEntryPoint::kLauncher);
-  } else if (source == apps::mojom::AppLaunchSource::kSourceIntentUrl) {
-    base::UmaHistogramEnumeration("Printing.CUPS.PrintManagementAppEntryPoint",
-                                  PrintManagementAppEntryPoint::kBrowser);
-  }
-}
-
-}  // namespace
 
 base::Optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
                                                           AppId app_id) {
@@ -231,15 +216,6 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
 
   DCHECK(url.GetOrigin() ==
          provider->registrar().GetAppLaunchUrl(params.app_id).GetOrigin());
-
-  // TODO(crbug.com/1164802): Move metrics recorded here to AppService. To SWA
-  // teams and reviewers: don't put more metrics here. Consider using
-  // RecordAppLaunch in AppService.
-  //
-  // Log enumerated entry point for Print Management App. Only log here if the
-  // app was launched from the browser (omnibox) or from the system launcher.
-  if (app_type == SystemAppType::PRINT_MANAGEMENT)
-    LogPrintManagementEntryPoints(params.source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Log enumerated entry point for the Scan app.

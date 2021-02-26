@@ -450,13 +450,7 @@ void ShowAppManagementPage(Profile* profile,
                                                                sub_page);
 }
 
-void ShowPrintManagementApp(Profile* profile,
-                            PrintManagementAppEntryPoint entry_point) {
-  DCHECK(entry_point == PrintManagementAppEntryPoint::kSettings ||
-         entry_point == PrintManagementAppEntryPoint::kNotification);
-
-  base::UmaHistogramEnumeration("Printing.CUPS.PrintManagementAppEntryPoint",
-                                entry_point);
+void ShowPrintManagementApp(Profile* profile) {
   LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PRINT_MANAGEMENT);
 }
 

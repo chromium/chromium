@@ -12,7 +12,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_notification_manager.h"
-#include "chrome/browser/chromeos/printing/print_management/print_management_uma.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -119,8 +118,7 @@ void CupsPrintJobNotification::Click(
   // open the Print Manageament App. There is a check in Browser::Browser
   // that only OffTheRecord profiles can open browser windows in guest mode.
   chrome::ShowPrintManagementApp(
-      profile_->IsGuestSession() ? profile_->GetPrimaryOTRProfile() : profile_,
-      PrintManagementAppEntryPoint::kNotification);
+      profile_->IsGuestSession() ? profile_->GetPrimaryOTRProfile() : profile_);
 }
 
 void CupsPrintJobNotification::CleanUpNotification() {

@@ -12,7 +12,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/print_management/print_management_uma.h"
 #include "chrome/browser/chromeos/printing/printing_stubs.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -256,24 +255,6 @@ TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
   args.Append("handleFunctionName");
   web_ui_.HandleReceivedMessage("selectPPDFile",
                                 &base::Value::AsListValue(args));
-}
-
-TEST_F(CupsPrintersHandlerTest, VerifyPrintManagementAppEntryPointHistogram) {
-  base::Value args(base::Value::Type::LIST);
-  web_ui_.HandleReceivedMessage("openPrintManagementApp",
-                                &base::Value::AsListValue(args));
-  histogram_tester_.ExpectBucketCount(
-      "Printing.CUPS.PrintManagementAppEntryPoint",
-      PrintManagementAppEntryPoint::kSettings, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Printing.CUPS.PrintManagementAppEntryPoint",
-      PrintManagementAppEntryPoint::kNotification, 0);
-  histogram_tester_.ExpectBucketCount(
-      "Printing.CUPS.PrintManagementAppEntryPoint",
-      PrintManagementAppEntryPoint::kLauncher, 0);
-  histogram_tester_.ExpectBucketCount(
-      "Printing.CUPS.PrintManagementAppEntryPoint",
-      PrintManagementAppEntryPoint::kBrowser, 0);
 }
 
 TEST_F(CupsPrintersHandlerTest, VerifyScanAppEntryPointHistogram) {

@@ -305,6 +305,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.PrintManagementAppEntryPoint"
     enum="PrintManagementAppEntryPoint" expires_after="2021-08-22">
+  <obsolete>
+    Data no longer needed 2021-02.
+  </obsolete>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

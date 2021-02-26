@@ -28,7 +28,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/ppd_provider_factory.h"
-#include "chrome/browser/chromeos/printing/print_management/print_management_uma.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chrome/browser/chromeos/printing/printer_event_tracker.h"
 #include "chrome/browser/chromeos/printing/printer_event_tracker_factory.h"
@@ -1313,8 +1312,7 @@ void CupsPrintersHandler::OnQueryPrintServerCompleted(
 void CupsPrintersHandler::HandleOpenPrintManagementApp(
     const base::ListValue* args) {
   DCHECK(args->empty());
-  chrome::ShowPrintManagementApp(profile_,
-                                 PrintManagementAppEntryPoint::kSettings);
+  chrome::ShowPrintManagementApp(profile_);
 }
 
 void CupsPrintersHandler::HandleOpenScanningApp(const base::ListValue* args) {

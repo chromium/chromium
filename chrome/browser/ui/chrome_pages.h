@@ -21,7 +21,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/printing/print_management/print_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chromeos/components/scanning/scanning_uma.h"
 #endif
@@ -161,8 +160,7 @@ void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            AppManagementEntryPoint entry_point);
 
-void ShowPrintManagementApp(Profile* profile,
-                            PrintManagementAppEntryPoint entry_point);
+void ShowPrintManagementApp(Profile* profile);
 
 void ShowConnectivityDiagnosticsApp(Profile* profile);
 
