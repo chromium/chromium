@@ -273,7 +273,12 @@ void NotificationPlatformBridgeMacUNNotification::SetReadyCallback(
 }
 
 void NotificationPlatformBridgeMacUNNotification::DisplayServiceShutDown(
-    Profile* profile) {}
+    Profile* profile) {
+  // Close all alerts and banners for |profile| on shutdown. We have to clean up
+  // here instead of the destructor as mojo messages won't be delivered from
+  // there as it's too late in the shutdown process.
+  CloseAllNotificationsForProfile(profile);
+}
 
 void NotificationPlatformBridgeMacUNNotification::RequestPermission() {
   UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert |
@@ -463,6 +468,50 @@ void NotificationPlatformBridgeMacUNNotification::DidGetAllDisplayedAlerts(
                                       DoSynchronizeNotifications,
                                   weak_ptr, std::move(all_ids)));
   }];
+}
+
+void NotificationPlatformBridgeMacUNNotification::
+    CloseAllNotificationsForProfile(Profile* profile) {
+  NSString* profile_id = base::SysUTF8ToNSString(GetProfileId(profile));
+  bool incognito = profile->IsOffTheRecord();
+
+  [alert_dispatcher_ closeNotificationsWithProfileId:profile_id
+                                           incognito:incognito];
+
+  // Filter and close banner notifications for the profile.
+  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
+                            NSArray<UNNotification*>* _Nonnull notifications) {
+    base::scoped_nsobject<NSMutableArray> identifiers_to_close(
+        [[NSMutableArray alloc] init]);
+
+    for (UNNotification* notification in notifications) {
+      NSString* toast_profile_id = [[[[notification request] content] userInfo]
+          objectForKey:notification_constants::kNotificationProfileId];
+      bool toast_incognito = [[[[[notification request] content] userInfo]
+          objectForKey:notification_constants::kNotificationIncognito]
+          boolValue];
+
+      if ([profile_id isEqualToString:toast_profile_id] &&
+          incognito == toast_incognito) {
+        [identifiers_to_close addObject:[[notification request] identifier]];
+      }
+    }
+
+    [notification_center_
+        removeDeliveredNotificationsWithIdentifiers:identifiers_to_close];
+  }];
+
+  // Clean up stored notifications and their categories.
+  NSString* profile_prefix = base::SysUTF8ToNSString(
+      DeriveMacNotificationId(incognito, GetProfileId(profile),
+                              /*notification_id=*/std::string()));
+
+  for (NSString* identifier in [delivered_notifications_ allKeys]) {
+    if (![identifier hasPrefix:profile_prefix])
+      continue;
+    [delivered_notifications_ removeObjectForKey:identifier];
+    OnNotificationClosed(base::SysNSStringToUTF8(identifier));
+  }
 }
 
 // /////////////////////////////////////////////////////////////////////////////

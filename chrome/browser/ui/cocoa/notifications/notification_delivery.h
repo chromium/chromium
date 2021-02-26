@@ -29,6 +29,10 @@
                       profileId:(NSString*)profileId
                       incognito:(BOOL)incognito;
 
+// Closes all the alerts with the given |profileId| and |incognito|.
+- (void)closeNotificationsWithProfileId:(NSString*)profileId
+                              incognito:(BOOL)incognito;
+
 // Closes all the alerts being displayed.
 - (void)closeAllNotifications;
 

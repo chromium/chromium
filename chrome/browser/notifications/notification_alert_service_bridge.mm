@@ -212,6 +212,13 @@ void DispatchGetAllNotificationsReply(
   _service->CloseNotification(std::move(notificationIdentifier));
 }
 
+- (void)closeNotificationsWithProfileId:(NSString*)profileId
+                              incognito:(BOOL)incognito {
+  auto profileIdentifier = mac_notifications::mojom::ProfileIdentifier::New(
+      base::SysNSStringToUTF8(profileId), incognito);
+  _service->CloseNotificationsForProfile(std::move(profileIdentifier));
+}
+
 - (void)closeAllNotifications {
   _service->CloseAllNotifications();
 }

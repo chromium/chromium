@@ -410,6 +410,40 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestQuitRemovesNotifications) {
   }
 }
 
+TEST_F(UNNotificationPlatformBridgeMacTest,
+       TestProfileShutdownRemovesNotifications) {
+  if (@available(macOS 10.14, *)) {
+    Notification notification = CreateAlert();
+
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetPath(profile_->GetPath());
+    profile_builder.SetProfileName(profile_->GetProfileUserName());
+    Profile* incognito_profile = profile_builder.BuildIncognito(profile_);
+
+    // Show two notifications with the same id from different profiles.
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
+                     notification, /*metadata=*/nullptr);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT,
+                     incognito_profile, notification,
+                     /*metadata=*/nullptr);
+    ASSERT_EQ(2u, [[alert_dispatcher_ alerts] count]);
+
+    // Start shutdown of the incognito profile.
+    bridge_->DisplayServiceShutDown(incognito_profile);
+    // This runs async code that we can't observe, make sure all tasks run.
+    base::RunLoop().RunUntilIdle();
+
+    NSArray* displayed_alerts = [alert_dispatcher_ alerts];
+    ASSERT_EQ(1u, [displayed_alerts count]);
+    NSDictionary* remaining = [displayed_alerts objectAtIndex:0];
+
+    // Expect that the remaining notification is for the regular profile.
+    EXPECT_FALSE(
+        [[remaining objectForKey:notification_constants::kNotificationIncognito]
+            boolValue]);
+  }
+}
+
 TEST_F(UNNotificationPlatformBridgeMacTest, TestNotificationNoButtons) {
   if (@available(macOS 10.14, *)) {
     Notification notification = CreateNotification();

@@ -42,6 +42,10 @@ using GetAllDisplayedNotificationsCallback =
                       profileId:(NSString*)profileId
                       incognito:(BOOL)incognito;
 
+// Close all notifications for a given |profileId| and |incognito|.
+- (void)closeNotificationsWithProfileId:(NSString*)profileId
+                              incognito:(BOOL)incognito;
+
 // Close all notifications.
 - (void)closeAllNotifications;
 

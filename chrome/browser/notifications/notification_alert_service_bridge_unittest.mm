@@ -39,6 +39,10 @@ class MockNotificationService
               CloseNotification,
               (mac_notifications::mojom::NotificationIdentifierPtr),
               (override));
+  MOCK_METHOD(void,
+              CloseNotificationsForProfile,
+              (mac_notifications::mojom::ProfileIdentifierPtr),
+              (override));
   MOCK_METHOD(void, CloseAllNotifications, (), (override));
 };
 
@@ -213,6 +217,19 @@ TEST_F(NotificationAlertServiceBridgeTest, CloseNotification) {
   [bridge_ closeNotificationWithId:@"notificationId"
                          profileId:@"profileId"
                          incognito:YES];
+  run_loop.Run();
+}
+
+TEST_F(NotificationAlertServiceBridgeTest, CloseProfileNotifications) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_service_, CloseNotificationsForProfile)
+      .WillOnce([&](mac_notifications::mojom::ProfileIdentifierPtr profile) {
+        ASSERT_TRUE(profile);
+        ASSERT_EQ("profileId", profile->id);
+        EXPECT_TRUE(profile->incognito);
+        run_loop.Quit();
+      });
+  [bridge_ closeNotificationsWithProfileId:@"profileId" incognito:YES];
   run_loop.Run();
 }
 

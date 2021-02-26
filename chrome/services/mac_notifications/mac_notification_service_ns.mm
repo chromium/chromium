@@ -256,6 +256,25 @@ void MacNotificationServiceNS::CloseNotification(
   }
 }
 
+void MacNotificationServiceNS::CloseNotificationsForProfile(
+    mojom::ProfileIdentifierPtr profile) {
+  NSString* profile_id = base::SysUTF8ToNSString(profile->id);
+  bool incognito = profile->incognito;
+
+  for (NSUserNotification* toast in
+       [notification_center_ deliveredNotifications]) {
+    NSString* toast_profile_id = [toast.userInfo
+        objectForKey:notification_constants::kNotificationProfileId];
+    BOOL toast_incognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    if ([profile_id isEqualToString:toast_profile_id] &&
+        incognito == toast_incognito) {
+      [notification_center_ removeDeliveredNotification:toast];
+    }
+  }
+}
+
 void MacNotificationServiceNS::CloseAllNotifications() {
   [notification_center_ removeAllDeliveredNotifications];
 }

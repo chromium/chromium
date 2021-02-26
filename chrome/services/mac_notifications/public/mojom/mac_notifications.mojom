@@ -122,6 +122,9 @@ interface MacNotificationService {
   // Closes the notification identified by |identifier|.
   CloseNotification(NotificationIdentifier identifier);
 
+  // Closes all notifications shown for |profile|.
+  CloseNotificationsForProfile(ProfileIdentifier profile);
+
   // Closes all notifications shown by the helper app in the system notification
   // center for all profiles.
   CloseAllNotifications();

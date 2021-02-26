@@ -88,6 +88,9 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
   void DidGetAllDisplayedAlerts(
       base::flat_set<MacNotificationIdentifier> alert_ids);
 
+  // Closes all notifications for the given |profile|.
+  void CloseAllNotificationsForProfile(Profile* profile);
+
   // Cocoa class that receives callbacks from the UNUserNotificationCenter.
   base::scoped_nsobject<UNNotificationCenterDelegate> delegate_;
 

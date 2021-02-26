@@ -94,6 +94,15 @@ crashpad::SimpleStringDictionary* GetCrashpadAnnotations() {
                                        incognito:incognito];
 }
 
+- (void)closeNotificationsWithProfileId:(NSString*)profileId
+                              incognito:(BOOL)incognito {
+  DCHECK(_didSetExceptionPort);
+  DCHECK(_notificationDelivery);
+
+  [_notificationDelivery closeNotificationsWithProfileId:profileId
+                                               incognito:incognito];
+}
+
 - (void)closeAllNotifications {
   DCHECK(_didSetExceptionPort);
   DCHECK(_notificationDelivery);

@@ -101,6 +101,12 @@ void RecordXPCEvent(XPCConnectionEvent event) {
                                      incognito:incognito];
 }
 
+- (void)closeNotificationsWithProfileId:(NSString*)profileId
+                              incognito:(BOOL)incognito {
+  [[self serviceProxy] closeNotificationsWithProfileId:profileId
+                                             incognito:incognito];
+}
+
 - (void)closeAllNotifications {
   [[self serviceProxy] closeAllNotifications];
 }

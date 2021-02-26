@@ -275,6 +275,30 @@ TEST_F(MacNotificationServiceUNTest, CloseNotification) {
   }
 }
 
+TEST_F(MacNotificationServiceUNTest, CloseProfileNotifications) {
+  if (@available(macOS 10.14, *)) {
+    auto notifications = SetupNotifications();
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    NSArray* identifiers = @[
+      @"i|profileId|notificationId2",
+      @"i|profileId|notificationId",
+    ];
+    [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
+      quit_closure.Run();
+    }] removeDeliveredNotificationsWithIdentifiers:identifiers];
+
+    auto profile_identifier =
+        mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
+    service_remote_->CloseNotificationsForProfile(
+        std::move(profile_identifier));
+
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
+}
+
 TEST_F(MacNotificationServiceUNTest, CloseAllNotifications) {
   if (@available(macOS 10.14, *)) {
     base::RunLoop run_loop;

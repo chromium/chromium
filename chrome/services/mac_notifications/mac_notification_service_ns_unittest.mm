@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
@@ -256,6 +257,28 @@ TEST_F(MacNotificationServiceNSTest, CloseNotification) {
   auto notification_identifier = mojom::NotificationIdentifier::New(
       "notificationId", std::move(profile_identifier));
   service_remote_->CloseNotification(std::move(notification_identifier));
+
+  run_loop.Run();
+  [mock_notification_center_ verify];
+}
+
+TEST_F(MacNotificationServiceNSTest, CloseProfileNotifications) {
+  auto notifications = SetupNotifications();
+
+  // Expect to close the expected notifications.
+  base::RunLoop run_loop;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(/*num_closures=*/2, run_loop.QuitClosure());
+  [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
+    barrier.Run();
+  }] removeDeliveredNotification:notifications[2]];
+  [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
+    barrier.Run();
+  }] removeDeliveredNotification:notifications[3]];
+
+  auto profile_identifier =
+      mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
+  service_remote_->CloseNotificationsForProfile(std::move(profile_identifier));
 
   run_loop.Run();
   [mock_notification_center_ verify];

@@ -48,6 +48,9 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   void DisplayServiceShutDown(Profile* profile) override;
 
  private:
+  // Closes all notifications for the given |profile|.
+  void CloseAllNotificationsForProfile(Profile* profile);
+
   // Cocoa class that receives callbacks from the NSUserNotificationCenter.
   base::scoped_nsobject<NotificationCenterDelegate> delegate_;
 

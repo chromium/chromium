@@ -52,6 +52,25 @@
   }
 }
 
+- (void)closeNotificationsWithProfileId:(NSString*)profileId
+                              incognito:(BOOL)incognito {
+  DCHECK(profileId);
+  [_alerts
+      filterUsingPredicate:
+          [NSPredicate predicateWithBlock:^BOOL(
+                           NSDictionary* toast,
+                           NSDictionary<NSString*, id>* _Nullable bindings) {
+            NSString* toastProfileId = [toast
+                objectForKey:notification_constants::kNotificationProfileId];
+            BOOL toastIncognito = [[toast
+                objectForKey:notification_constants::kNotificationIncognito]
+                boolValue];
+
+            return ![profileId isEqualToString:toastProfileId] ||
+                   incognito != toastIncognito;
+          }]];
+}
+
 - (void)closeAllNotifications {
   [_alerts removeAllObjects];
 }

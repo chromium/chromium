@@ -262,7 +262,35 @@ void NotificationPlatformBridgeMac::SetReadyCallback(
   std::move(callback).Run(true);
 }
 
-void NotificationPlatformBridgeMac::DisplayServiceShutDown(Profile* profile) {}
+void NotificationPlatformBridgeMac::DisplayServiceShutDown(Profile* profile) {
+  // Close all alerts and banners for |profile| on shutdown. We have to clean up
+  // here instead of the destructor as mojo messages won't be delivered from
+  // there as it's too late in the shutdown process.
+  CloseAllNotificationsForProfile(profile);
+}
+
+void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
+    Profile* profile) {
+  NSString* profile_id = base::SysUTF8ToNSString(GetProfileId(profile));
+  bool incognito = profile->IsOffTheRecord();
+
+  [alert_dispatcher_ closeNotificationsWithProfileId:profile_id
+                                           incognito:incognito];
+
+  // Close banner notifications for the profile.
+  for (NSUserNotification* toast in
+       [notification_center_ deliveredNotifications]) {
+    NSString* toast_profile_id = [toast.userInfo
+        objectForKey:notification_constants::kNotificationProfileId];
+    BOOL toast_incognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    if ([profile_id isEqualToString:toast_profile_id] &&
+        incognito == toast_incognito) {
+      [notification_center_ removeDeliveredNotification:toast];
+    }
+  }
+}
 
 // /////////////////////////////////////////////////////////////////////////////
 @implementation NotificationCenterDelegate

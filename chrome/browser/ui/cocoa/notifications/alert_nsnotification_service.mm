@@ -72,6 +72,30 @@
   }
 }
 
+- (void)closeNotificationsWithProfileId:(NSString*)profileId
+                              incognito:(BOOL)incognito {
+  NSUserNotificationCenter* notificationCenter =
+      [NSUserNotificationCenter defaultUserNotificationCenter];
+  NSArray* deliveredNotifications = [notificationCenter deliveredNotifications];
+  BOOL removedNotifications = NO;
+
+  for (NSUserNotification* toast in deliveredNotifications) {
+    NSString* toastProfileId = [toast.userInfo
+        objectForKey:notification_constants::kNotificationProfileId];
+    BOOL toastIncognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    if ([profileId isEqualToString:toastProfileId] &&
+        incognito == toastIncognito) {
+      [notificationCenter removeDeliveredNotification:toast];
+      removedNotifications = YES;
+    }
+  }
+
+  if (removedNotifications)
+    [_transactionHandler closeTransactionIfNeeded];
+}
+
 - (void)closeAllNotifications {
   [[NSUserNotificationCenter defaultUserNotificationCenter]
       removeAllDeliveredNotifications];

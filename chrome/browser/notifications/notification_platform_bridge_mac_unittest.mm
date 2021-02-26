@@ -317,6 +317,39 @@ TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesNotifications) {
   EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
 }
 
+TEST_F(NotificationPlatformBridgeMacTest,
+       TestProfileShutdownRemovesNotifications) {
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      notification_center(), alert_dispatcher());
+
+  std::unique_ptr<Notification> notification = CreateBanner(
+      "Title", "Context", "https://gmail.com", "Button 1", "Button 2");
+
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetPath(profile()->GetPath());
+  profile_builder.SetProfileName(profile()->GetProfileUserName());
+  Profile* incognito_profile = profile_builder.BuildIncognito(profile());
+
+  // Show two notifications with the same id from different profiles.
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  *notification, /*metadata=*/nullptr);
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, incognito_profile,
+                  *notification, /*metadata=*/nullptr);
+  EXPECT_EQ(2u, [[notification_center() deliveredNotifications] count]);
+
+  // Start shutdown of the incognito profile.
+  bridge->DisplayServiceShutDown(incognito_profile);
+
+  // Expect all notifications for that profile to be closed.
+  NSArray* notifications = [notification_center() deliveredNotifications];
+  ASSERT_EQ(1u, [notifications count]);
+  NSUserNotification* remaining_notification = [notifications objectAtIndex:0];
+  EXPECT_EQ(false,
+            [[[remaining_notification userInfo]
+                objectForKey:notification_constants::kNotificationIncognito]
+                boolValue]);
+}
+
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
   if (!MacOSSupportsXPCAlerts())
     return;

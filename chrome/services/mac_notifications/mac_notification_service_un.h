@@ -37,6 +37,8 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
       mojom::ProfileIdentifierPtr profile,
       GetDisplayedNotificationsCallback callback) override;
   void CloseNotification(mojom::NotificationIdentifierPtr identifier) override;
+  void CloseNotificationsForProfile(
+      mojom::ProfileIdentifierPtr profile) override;
   void CloseAllNotifications() override;
 
  private:
