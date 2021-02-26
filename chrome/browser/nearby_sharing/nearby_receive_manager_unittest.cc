@@ -64,21 +64,12 @@ class NearbyReceiveManagerTest : public testing::Test {
  protected:
   void FlushMojoMessages() { observer_.receiver_.FlushForTesting(); }
 
-  void ExpectRegister(StatusCodes code = StatusCodes::kOk,
-                      bool start_advertising_successful = true) {
+  void ExpectRegister(StatusCodes code = StatusCodes::kOk) {
     EXPECT_CALL(sharing_service_,
                 RegisterReceiveSurface(testing::_, testing::_))
         .WillOnce([=](TransferUpdateCallback* transfer_callback,
                       ReceiveSurfaceState state) {
           EXPECT_EQ(ReceiveSurfaceState::kForeground, state);
-
-          // The receive manager expects to be notified whether the service
-          // successfully started advertising.
-          base::SequencedTaskRunnerHandle::Get()->PostTask(
-              FROM_HERE,
-              base::BindOnce(&NearbyReceiveManager::OnStartAdvertisingResult,
-                             base::Unretained(&receive_manager_),
-                             start_advertising_successful));
           return code;
         });
   }
@@ -141,14 +132,6 @@ TEST_F(NearbyReceiveManagerTest, Enter_Exit_Success) {
 TEST_F(NearbyReceiveManagerTest, Enter_Failed) {
   RegisterReceiveSurfaceResult result = RegisterReceiveSurfaceResult::kSuccess;
   ExpectRegister(StatusCodes::kError);
-  receive_manager_waiter_.RegisterForegroundReceiveSurface(&result);
-  EXPECT_EQ(RegisterReceiveSurfaceResult::kFailure, result);
-  ExpectUnregister();
-}
-
-TEST_F(NearbyReceiveManagerTest, StartAdvertising_Failed) {
-  RegisterReceiveSurfaceResult result = RegisterReceiveSurfaceResult::kSuccess;
-  ExpectRegister(StatusCodes::kOk, /*start_advertising_successful=*/false);
   receive_manager_waiter_.RegisterForegroundReceiveSurface(&result);
   EXPECT_EQ(RegisterReceiveSurfaceResult::kFailure, result);
   ExpectUnregister();

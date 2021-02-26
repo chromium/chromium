@@ -49,7 +49,6 @@ class NearbyReceiveManager : public nearby_share::mojom::ReceiveManager,
   void OnHighVisibilityChanged(bool in_high_visibility) override;
   void OnShutdown() override {}
   void OnNearbyProcessStopped() override;
-  void OnStartAdvertisingResult(bool success) override;
 
  private:
   void NotifyOnTransferUpdate(const ShareTarget& share_target,
@@ -59,8 +58,6 @@ class NearbyReceiveManager : public nearby_share::mojom::ReceiveManager,
 
   base::flat_map<base::UnguessableToken, ShareTarget> share_targets_map_;
   mojo::RemoteSet<nearby_share::mojom::ReceiveObserver> observers_set_;
-  RegisterForegroundReceiveSurfaceCallback
-      register_foreground_receive_surface_callback_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_RECEIVE_MANAGER_H_
