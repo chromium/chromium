@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <map>
 #include <memory>
@@ -102,7 +103,7 @@ void EmbeddedComponentLoader::ComponentLoaded(
     }
   }
   if (manifest_fd == -1) {
-    loader_policy_->ComponentLoadFailed();
+    CloseFdsAndFail(fd_map);
     return;
   }
 
@@ -134,17 +135,26 @@ void EmbeddedComponentLoader::NotifyNewVersion(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!manifest) {
-    loader_policy_->ComponentLoadFailed();
+    CloseFdsAndFail(fd_map);
     return;
   }
   std::string version_ascii;
   manifest->GetStringASCII("version", &version_ascii);
   base::Version version(version_ascii);
   if (!version.IsValid()) {
-    loader_policy_->ComponentLoadFailed();
+    CloseFdsAndFail(fd_map);
     return;
   }
   loader_policy_->ComponentLoaded(version, fd_map, std::move(manifest));
+}
+
+void EmbeddedComponentLoader::CloseFdsAndFail(
+    const base::flat_map<std::string, int>& fd_map) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& iter : fd_map) {
+    close(iter.second);
+  }
+  loader_policy_->ComponentLoadFailed();
 }
 
 }  // namespace component_updater

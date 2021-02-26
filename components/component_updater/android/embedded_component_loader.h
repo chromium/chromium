@@ -85,11 +85,12 @@ class EmbeddedComponentLoader {
   void ComponentLoadFailed(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetComponentId(JNIEnv* env);
 
-  void NotifyNewVersion(const base::flat_map<std::string, int>& fd_map,
-                        std::unique_ptr<base::DictionaryValue> manifest);
-
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  void NotifyNewVersion(const base::flat_map<std::string, int>& fd_map,
+                        std::unique_ptr<base::DictionaryValue> manifest);
+  void CloseFdsAndFail(const base::flat_map<std::string, int>& fd_map);
 
   std::unique_ptr<ComponentLoaderPolicy> loader_policy_;
   base::WeakPtrFactory<EmbeddedComponentLoader> weak_ptr_factory_{this};
