@@ -242,6 +242,45 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
+                       ImpressionOnNoOpenerNavigation_ReportSent) {
+  ExpectedReportWaiter expected_report(
+      GURL(
+          "https://a.test/.well-known/"
+          "register-conversion?impression-data=1&conversion-data=7&credit=100"),
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/conversions/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/conversions/page_with_conversion_redirect.html");
+
+  // target="_blank" navs are rel="noopener" by default.
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createImpressionTagWithTarget("link" /* id */,
+                        $1 /* url */,
+                        "1" /* impression data */,
+                        $2 /* conversion_destination */,
+                        "_blank");)",
+                       conversion_url, url::Origin::Create(conversion_url))));
+
+  TestNavigationObserver observer(nullptr);
+  observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  observer.Wait();
+
+  EXPECT_TRUE(ExecJs(Shell::windows()[1]->web_contents(),
+                     JsReplace("registerConversionForOrigin(7, $1)",
+                               url::Origin::Create(impression_url))));
+
+  EXPECT_EQ(expected_report.expected_url, expected_report.WaitForRequestUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
                        ImpressionConversionSameDomain_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(

@@ -1081,6 +1081,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   RenderFrameHost* initial_rfh = current_frame_host();
   url::Origin initial_origin = initial_rfh->GetLastCommittedOrigin();
   blink::LocalFrameToken initiator_frame_token = initial_rfh->GetFrameToken();
+  int initiator_process_id = initial_rfh->GetProcess()->GetID();
 
   // Simulate clicking on a cross-site link which has rel="noopener".
   {
@@ -1111,6 +1112,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
     EXPECT_EQ(initiator_frame_token,
               observer.last_initiator_frame_token().value());
+    EXPECT_EQ(initiator_process_id, observer.last_initiator_process_id());
   }
 }
 
