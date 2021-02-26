@@ -214,8 +214,8 @@ class SimpleBackButton : public ToolbarButton {
       : ToolbarButton(std::move(callback)) {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
-    SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_BACK_BUTTON_LABEL));
+    SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL));
     // Unlike toolbar buttons, this one should be focusable to make it
     // consistent with other screens of the flow where the back button is part
     // of the page.

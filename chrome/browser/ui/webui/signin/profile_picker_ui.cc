@@ -109,7 +109,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"removeWarningAutofill", IDS_PROFILE_PICKER_REMOVE_WARNING_AUTOFILL},
       {"removeWarningCalculating",
        IDS_PROFILE_PICKER_REMOVE_WARNING_CALCULATING},
-      {"backButtonLabel", IDS_PROFILE_PICKER_BACK_BUTTON_LABEL},
+      {"backButtonAriaLabel", IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL},
       {"profileTypeChoiceTitle",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE},
       {"profileTypeChoiceSubtitle",

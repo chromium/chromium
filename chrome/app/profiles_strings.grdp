@@ -597,8 +597,11 @@
     <message name="IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON" desc="Text for the profile picker main view button that launches guest session.">
       Guest mode
     </message>
-    <message name="IDS_PROFILE_PICKER_BACK_BUTTON_LABEL" desc="Label for a button that navigates user to the previous page">
-      Back
+    <message name="IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL" desc="Label for a button that navigates user to the previous page from a profile picker subpage">
+      Back from <ph name="PAGE_TITLE">$1<ex>Set up your new Chrome profile</ex></ph> page
+    </message>
+    <message name="IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL" desc="Label for a button that navigates user to the previous page from the 'Sign in' page">
+      Back from sign in
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT" desc="Text on the profile card signaling that the user must sign-in in order to open a profile">
       Sign in

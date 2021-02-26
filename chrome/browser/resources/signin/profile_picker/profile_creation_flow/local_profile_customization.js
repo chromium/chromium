@@ -200,6 +200,15 @@ Polymer({
   },
 
   /**
+   * @return {!string}
+   * @private
+   */
+  getBackButtonAriaLabel_() {
+    return this.i18n(
+        'backButtonAriaLabel', this.i18n('localProfileCreationTitle'));
+  },
+
+  /**
    * @return {boolean}
    * @private
    */
