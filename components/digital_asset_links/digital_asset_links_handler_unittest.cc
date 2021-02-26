@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h"
+#include "components/digital_asset_links/digital_asset_links_handler.h"
 
 #include "base/bind.h"
 #include "base/command_line.h"

@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h"
+#include "components/digital_asset_links/digital_asset_links_handler.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

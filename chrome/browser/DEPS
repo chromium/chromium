@@ -107,6 +107,7 @@ include_rules = [
   "+components/data_use_measurement/core",
   "+components/dbus",
   "+components/device_event_log",
+  "+components/digital_asset_links",
   "+components/domain_reliability",
   "+components/dom_distiller/content/browser",
   "+components/dom_distiller/content/common",

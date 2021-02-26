@@ -23,7 +23,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h"
+#include "components/digital_asset_links/digital_asset_links_handler.h"  // nogncheck
 #endif
 
 class Browser;

@@ -19,6 +19,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//components/digital_asset_links:java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
     "//content/public/android:content_java",
@@ -27,8 +28,6 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
   ]
-  srcjar_deps =
-      [ "//chrome/browser/installable/digital_asset_links:enums_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 

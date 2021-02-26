@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_INSTALLABLE_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
-#define CHROME_BROWSER_INSTALLABLE_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
+#ifndef COMPONENTS_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
+#define COMPONENTS_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
 
 #include <map>
 #include <string>
@@ -25,7 +25,7 @@ namespace digital_asset_links {
 
 extern const char kDigitalAssetLinksCheckResponseKeyLinked[];
 
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browserservices.verification
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.digital_asset_links
 enum class RelationshipCheckResult {
   kSuccess = 0,
   kFailure,
@@ -118,4 +118,4 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
 
 }  // namespace digital_asset_links
 
-#endif  // CHROME_BROWSER_INSTALLABLE_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
+#endif  // COMPONENTS_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_

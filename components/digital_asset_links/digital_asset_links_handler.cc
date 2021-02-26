@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h"
+#include "components/digital_asset_links/digital_asset_links_handler.h"
 
 #include <vector>
 
@@ -12,13 +12,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/load_flags.h"
-#include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/origin.h"
