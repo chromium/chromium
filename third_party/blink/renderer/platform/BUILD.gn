@@ -233,7 +233,7 @@ config("blink_platform_pch") {
 
       # Force include the header.
       cflags = [ "/FI$precompiled_header" ]
-    } else if (is_mac) {
+    } else if (is_mac || is_linux) {
       precompiled_source =
           "//third_party/blink/renderer/platform/precompile_platform.h"
     }

@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #else
-#error implement
+#include "third_party/blink/renderer/build/linux/prefix.h"
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PRECOMPILE_CORE_H_

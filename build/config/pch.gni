@@ -8,7 +8,8 @@ declare_args() {
   # Precompiled header file support is by default available,
   # but for distributed build system uses (like goma) or when
   # doing official builds.
-  enable_precompiled_headers = !is_official_build && !use_goma
+  # On Linux it slows down the build, so don't enable it by default.
+  enable_precompiled_headers = !is_official_build && !use_goma && !is_linux
   # TODO (crbug.com/1176750): Disable PCH on windows temporarily to unbreak the
   # buildbots.
   if (is_win) {

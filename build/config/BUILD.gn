@@ -388,7 +388,7 @@ config("precompiled_headers") {
 
       # Force include the header.
       cflags = [ "/FI$precompiled_header" ]
-    } else if (is_mac) {
+    } else if (is_mac || is_linux) {
       precompiled_source = "//build/precompile.h"
     }
   }
