@@ -61,6 +61,9 @@ class WebstorePrivateBeginInstallWithManifest3Function
   WebstorePrivateBeginInstallWithManifest3Function();
 
   base::string16 GetBlockedByPolicyErrorMessageForTesting() const;
+  bool GetFrictionDialogShownForTesting() const {
+    return friction_dialog_shown_;
+  }
 
  private:
   using Params = api::webstore_private::BeginInstallWithManifest3::Params;
@@ -95,6 +98,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
   void OnBlockedByParentDialogDone();
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
+  void OnFrictionPromptDone(bool result);
   void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
   void OnRequestPromptDone(ExtensionInstallPrompt::Result result);
   void OnBlockByPolicyPromptDone();
@@ -107,6 +111,10 @@ class WebstorePrivateBeginInstallWithManifest3Function
       const std::string& error);
   std::unique_ptr<base::ListValue> CreateResults(
       api::webstore_private::Result result) const;
+
+  bool ShouldShowFrictionDialog(Profile* profile);
+  void ShowInstallFrictionDialog(content::WebContents* contents);
+  void ShowInstallDialog(content::WebContents* contents);
 
   // Shows block dialog when |extension| is blocked by policy on the Window that
   // |contents| belongs to. |done_callback| will be invoked once the dialog is
@@ -141,6 +149,8 @@ class WebstorePrivateBeginInstallWithManifest3Function
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
+
+  bool friction_dialog_shown_ = false;
 };
 
 class WebstorePrivateCompleteInstallFunction

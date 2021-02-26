@@ -253,6 +253,9 @@ extern const char kNearbyShareLearnMoreURL[];
 // Help center URL for who the account administrator is.
 extern const char kWhoIsMyAdministratorHelpURL[];
 
+// The URL for the "Learn more" link about CWS Enhanced Safe Browsing.
+extern const char kCwsEnhancedSafeBrowsingLearnMoreURL[];
+
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // "Learn more" URL for the enhanced playback notification dialog.
 extern const char kEnhancedPlaybackNotificationLearnMoreURL[];

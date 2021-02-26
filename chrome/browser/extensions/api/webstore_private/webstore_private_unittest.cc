@@ -24,7 +24,9 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 namespace {
@@ -349,7 +351,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
                               manifest);
   }
 
-  void VerifyExtensionRequestFunctionResult(ExtensionFunction* function) {
+  void VerifyUserCancelledFunctionResult(ExtensionFunction* function) {
     const base::Value* result = nullptr;
     ASSERT_TRUE(function->GetResultList() &&
                 function->GetResultList()->Get(0, &result));
@@ -372,6 +374,8 @@ class WebstorePrivateBeginInstallWithManifest3Test
   scoped_refptr<const Extension> CreateExtension(const ExtensionId& id) {
     return ExtensionBuilder("extension").SetID(id).Build();
   }
+
+  ExtensionService* extension_service() { return service_; }
 
  private:
   ExtensionService* service_ = nullptr;
@@ -396,7 +400,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
                                 GenerateArgs(kExtensionId, kExtensionManifest),
                                 profile());
   }
-  VerifyExtensionRequestFunctionResult(function.get());
+  VerifyUserCancelledFunctionResult(function.get());
   VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
 
   // Show pending request dialog which can only be canceled.
@@ -410,7 +414,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
                                 GenerateArgs(kExtensionId, kExtensionManifest),
                                 profile());
   }
-  VerifyExtensionRequestFunctionResult(function.get());
+  VerifyUserCancelledFunctionResult(function.get());
   VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
 }
 
@@ -429,7 +433,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   api_test_utils::RunFunction(function.get(),
                               GenerateArgs(kExtensionId, kExtensionManifest),
                               profile());
-  VerifyExtensionRequestFunctionResult(function.get());
+  VerifyUserCancelledFunctionResult(function.get());
   VerifyPendingList({}, profile());
 }
 
@@ -564,5 +568,111 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   ASSERT_TRUE(response->is_string());
   EXPECT_EQ(std::string(), response->GetString());
 }
+
+struct FrictionDialogTestCase {
+  std::string test_name;
+  bool esb_user;
+  std::string esb_allowlist;
+  bool expected_friction_shown;
+  ScopedTestDialogAutoConfirm::AutoConfirm dialog_action =
+      ScopedTestDialogAutoConfirm::ACCEPT;
+};
+
+std::ostream& operator<<(std::ostream& out,
+                         const FrictionDialogTestCase& test_case) {
+  out << test_case.test_name;
+  return out;
+}
+
+const FrictionDialogTestCase kFrictionDialogTestCases[] = {
+    {/*test_name=*/"EsbUserAndNotAllowlisted",
+     /*esb_user=*/true,
+     /*esb_allowlist=*/"false",
+     /*expected_friction_shown=*/true},
+
+    {/*test_name=*/"EsbUserAndAllowlisted",
+     /*esb_user=*/true,
+     /*esb_allowlist=*/"true",
+     /*expected_friction_shown=*/false},
+
+    {/*test_name=*/"EsbUserAndUndefined",
+     /*esb_user=*/true,
+     /*esb_allowlist=*/"undefined",
+     /*expected_friction_shown=*/false},
+    {/*test_name=*/"NonEsbUserAndNotAllowlisted",
+     /*esb_user=*/false,
+     /*esb_allowlist=*/"false",
+     /*expected_friction_shown=*/false},
+
+    {/*test_name=*/"CancelFrictionDialog",
+     /*esb_user=*/true,
+     /*esb_allowlist=*/"false",
+     /*expected_friction_shown=*/true,
+     /*dialog_action=*/ScopedTestDialogAutoConfirm::CANCEL}};
+
+class WebstorePrivateBeginInstallWithManifest3FrictionDialogTest
+    : public WebstorePrivateBeginInstallWithManifest3Test,
+      public testing::WithParamInterface<FrictionDialogTestCase> {
+ public:
+  WebstorePrivateBeginInstallWithManifest3FrictionDialogTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kEnforceSafeBrowsingExtensionAllowlist);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
+       FrictionDialogTests) {
+  FrictionDialogTestCase test_case = GetParam();
+
+  if (test_case.esb_user) {
+    // Enable Enhanced Protection
+    safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
+                                        safe_browsing::ENHANCED_PROTECTION);
+  }
+  extension_service()->Init();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  auto function =
+      base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
+  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  ScopedTestDialogAutoConfirm auto_confirm(test_case.dialog_action);
+
+  std::string args =
+      test_case.esb_allowlist == "undefined"
+          ? base::StringPrintf(R"([{"id":"%s", "manifest":"%s"}])",
+                               kExtensionId, kExtensionManifest)
+          : base::StringPrintf(
+                R"([{"id":"%s", "manifest":"%s", "esbAllowlist":%s}])",
+                kExtensionId, kExtensionManifest,
+                test_case.esb_allowlist.c_str());
+
+  if (test_case.dialog_action == ScopedTestDialogAutoConfirm::ACCEPT) {
+    std::unique_ptr<base::Value> response =
+        RunFunctionAndReturnValue(function.get(), args);
+
+    // The API returns empty string when extension is installed successfully.
+    ASSERT_TRUE(response);
+    ASSERT_TRUE(response->is_string());
+    EXPECT_EQ(std::string(), response->GetString());
+  } else {
+    api_test_utils::RunFunction(function.get(), args, profile());
+    VerifyUserCancelledFunctionResult(function.get());
+  }
+
+  EXPECT_EQ(test_case.expected_friction_shown,
+            function->GetFrictionDialogShownForTesting());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
+    testing::ValuesIn(kFrictionDialogTestCases),
+    [](const testing::TestParamInfo<FrictionDialogTestCase>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace extensions

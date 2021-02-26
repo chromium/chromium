@@ -24,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_tracker.h"
@@ -312,6 +313,16 @@ ExtensionInstallStatus AddExtensionToPendingList(const ExtensionId& id,
   return new_status;
 }
 
+// Returns the extension's icon if it exists, otherwise the default icon of the
+// extension type.
+gfx::ImageSkia GetIconImage(const SkBitmap& icon, bool is_app) {
+  if (!icon.empty())
+    return gfx::ImageSkia::CreateFrom1xBitmap(icon);
+
+  return is_app ? extensions::util::GetDefaultAppIcon()
+                : extensions::util::GetDefaultExtensionIcon();
+}
+
 }  // namespace
 
 // static
@@ -464,8 +475,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
     return;
   }
 
-  install_prompt_.reset(new ExtensionInstallPrompt(web_contents));
   if (install_status == kCanRequest || install_status == kRequestPending) {
+    install_prompt_ = std::make_unique<ExtensionInstallPrompt>(web_contents);
     install_prompt_->ShowDialog(
         base::BindRepeating(&WebstorePrivateBeginInstallWithManifest3Function::
                                 OnRequestPromptDone,
@@ -476,29 +487,10 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
                 ? ExtensionInstallPrompt::EXTENSION_REQUEST_PROMPT
                 : ExtensionInstallPrompt::EXTENSION_PENDING_REQUEST_PROMPT),
         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+  } else if (ShouldShowFrictionDialog(profile)) {
+    ShowInstallFrictionDialog(web_contents);
   } else {
-    auto prompt = std::make_unique<ExtensionInstallPrompt::Prompt>(
-        ExtensionInstallPrompt::INSTALL_PROMPT);
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-    if (!dummy_extension_->is_theme()) {
-      // We don't prompt for parent permission for themes, so no need
-      // to configure the install prompt to indicate that this is a child
-      // asking a parent for installation permission.
-      prompt->set_requires_parent_permission(profile->IsChild());
-      if (profile->IsChild()) {
-        prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
-      }
-    }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-    install_prompt_->ShowDialog(
-        base::BindRepeating(&WebstorePrivateBeginInstallWithManifest3Function::
-                                OnInstallPromptDone,
-                            this),
-        dummy_extension_.get(), &icon_, std::move(prompt),
-        ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+    ShowInstallDialog(web_contents);
   }
   // Control flow finishes up in OnInstallPromptDone, OnRequestPromptDone or
   // OnBlockByPolicyPromptDone.
@@ -605,6 +597,20 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 }
 
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+void WebstorePrivateBeginInstallWithManifest3Function::OnFrictionPromptDone(
+    bool result) {
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!result || !web_contents) {
+    Respond(BuildResponse(api::webstore_private::RESULT_USER_CANCELLED,
+                          kWebstoreUserCancelledError));
+    // Matches the AddRef in Run().
+    Release();
+    return;
+  }
+
+  ShowInstallDialog(web_contents);
+}
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
     ExtensionInstallPrompt::Result result) {
@@ -736,6 +742,61 @@ WebstorePrivateBeginInstallWithManifest3Function::CreateResults(
   return BeginInstallWithManifest3::Results::Create(result);
 }
 
+bool WebstorePrivateBeginInstallWithManifest3Function::ShouldShowFrictionDialog(
+    Profile* profile) {
+  // Consider an extension to be allowlisted if either we have no indication in
+  // the `esb_allowlist` param or if the param is explicitly set.
+  bool consider_allowlisted =
+      !details().esb_allowlist || *details().esb_allowlist;
+
+  // Never show friction if the extension is considered allowlisted.
+  if (consider_allowlisted)
+    return false;
+
+  // Only show friction if the allowlist enforcement is enabled.
+  auto* extension_system = ExtensionSystem::Get(profile);
+  return extension_system->extension_service()
+      ->allowlist()
+      ->is_allowlist_enforced();
+}
+
+void WebstorePrivateBeginInstallWithManifest3Function::
+    ShowInstallFrictionDialog(content::WebContents* contents) {
+  friction_dialog_shown_ = true;
+  chrome::ShowExtensionInstallFrictionDialog(
+      contents,
+      base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                         OnFrictionPromptDone,
+                     this));
+}
+
+void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
+    content::WebContents* contents) {
+  auto prompt = std::make_unique<ExtensionInstallPrompt::Prompt>(
+      ExtensionInstallPrompt::INSTALL_PROMPT);
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  Profile* profile = chrome_details_.GetProfile();
+  if (!dummy_extension_->is_theme()) {
+    // We don't prompt for parent permission for themes, so no need
+    // to configure the install prompt to indicate that this is a child
+    // asking a parent for installation permission.
+    prompt->set_requires_parent_permission(profile->IsChild());
+    if (profile->IsChild()) {
+      prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+  install_prompt_ = std::make_unique<ExtensionInstallPrompt>(contents);
+  install_prompt_->ShowDialog(
+      base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                         OnInstallPromptDone,
+                     this),
+      dummy_extension_.get(), &icon_, std::move(prompt),
+      ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+}
+
 void WebstorePrivateBeginInstallWithManifest3Function::
     ShowBlockedByPolicyDialog(const Extension* extension,
                               const SkBitmap& icon,
@@ -755,11 +816,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::
                                    base::UTF8ToUTF16(message_from_admin));
   }
 
-  gfx::ImageSkia image =
-      (icon.empty()
-           ? (extension->is_app() ? extensions::util::GetDefaultAppIcon()
-                                  : extensions::util::GetDefaultExtensionIcon())
-           : gfx::ImageSkia::CreateFrom1xBitmap(icon));
+  gfx::ImageSkia image = GetIconImage(icon, extension->is_app());
 
   if (extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue() !=
       extensions::ScopedTestDialogAutoConfirm::NONE) {

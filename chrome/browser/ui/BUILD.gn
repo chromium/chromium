@@ -3656,6 +3656,8 @@ static_library("ui") {
       "views/extensions/extension_install_blocked_dialog_view.h",
       "views/extensions/extension_install_dialog_view.cc",
       "views/extensions/extension_install_dialog_view.h",
+      "views/extensions/extension_install_friction_dialog_view.cc",
+      "views/extensions/extension_install_friction_dialog_view.h",
       "views/extensions/extension_installed_bubble_view.cc",
       "views/extensions/extension_keybinding_registry_views.cc",
       "views/extensions/extension_keybinding_registry_views.h",

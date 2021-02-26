@@ -298,6 +298,7 @@ enum class DialogIdentifier {
   SIGNIN_REAUTH = 105,
   CURRENT_BROWSING_CONTEXT_CONFIRMATION_BOX = 106,
   PROFILE_PICKER_FORCE_SIGNIN = 107,
+  EXTENSION_INSTALL_FRICTION = 108,
   // Add values above this line with a corresponding label in
   // tools/metrics/histograms/enums.xml
   MAX_VALUE
@@ -365,6 +366,16 @@ void ShowExtensionInstallBlockedByParentDialog(
 void ShowExtensionSettingsOverriddenDialog(
     std::unique_ptr<SettingsOverriddenDialogController> controller,
     Browser* browser);
+
+// Modal dialog shown to Enhanced Safe Browsing users before the extension
+// install dialog if the extension is not included in the Safe Browsing CRX
+// allowlist.
+//
+// `callback` will be invoked with `true` if the user accepts or `false` if the
+// user cancels the dialog.
+void ShowExtensionInstallFrictionDialog(
+    content::WebContents* contents,
+    base::OnceCallback<void(bool)> callback);
 #endif
 
 // Returns a OnceClosure that client code can call to close the device chooser.

@@ -38,6 +38,9 @@ class ExtensionAllowlist {
   // extension is not allowlisted and the allowlist is enforced.
   bool ShouldDisplayWarning(const std::string& extension_id) const;
 
+  // Whether the ESB allowlist is enforced or not.
+  bool is_allowlist_enforced() { return is_allowlist_enforced_; }
+
  private:
   // Set if the allowlist should be enforced or not.
   void SetAllowlistEnforcedField();

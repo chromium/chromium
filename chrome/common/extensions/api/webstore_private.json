@@ -178,6 +178,11 @@
                 "type": "string",
                 "optional": true,
                 "description": "The authuser index to be included with CRX download requests in multi-login sessions."
+              },
+              "esbAllowlist": {
+                "type": "boolean",
+                "optional": true,
+                "description": "A flag to specify if the extension is included in the ESB allowlist."
               }
             },
             "additionalProperties": { "type": "any" }

@@ -287,6 +287,9 @@ const char kUpgradeHelpCenterBaseURL[] =
 const char kWhoIsMyAdministratorHelpURL[] =
     "https://support.google.com/chrome?p=your_administrator";
 
+const char kCwsEnhancedSafeBrowsingLearnMoreURL[] =
+    "https://support.google.com/chrome?p=cws_enhanced_safe_browsing";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 const char kEnhancedPlaybackNotificationLearnMoreURL[] =
 #endif
