@@ -30,6 +30,11 @@ _VALID_PERF_POOLS = {
     'fuchsia-perf-fyi': {'chrome.tests'},
     'lacros-eve-perf': {'chrome.tests'}
 }
+_VALID_WEBVIEW_BROWSERS = {
+    'android-webview',
+    'android-webview-google',
+    'android-webview-trichrome-google',
+}
 
 
 def _ValidateSwarmingDimension(builder_name, swarming_dimensions):
@@ -96,11 +101,9 @@ def _ValidateShardingData(builder_name, test_config):
 def _ValidateBrowserType(builder_name, test_config):
   browser_options = _ParseBrowserFlags(test_config['args'])
   if 'WebView' in builder_name or 'webview' in builder_name:
-    if browser_options.browser not in (
-        'android-webview', 'android-webview-google'):
-      raise ValueError(
-          "%s must use 'android-webview' or 'android-webview-google' "
-          "browser" % builder_name)
+    if browser_options.browser not in _VALID_WEBVIEW_BROWSERS:
+      raise ValueError('%s must use one of the following browsers: %s' %
+                       (builder_name, ', '.join(_VALID_WEBVIEW_BROWSERS)))
   elif 'Android' in builder_name or 'android' in builder_name:
     android_browsers = ('android-chromium', 'android-chrome',
                         'android-chrome-bundle', 'android-chrome-64-bundle',

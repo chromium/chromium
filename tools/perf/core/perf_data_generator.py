@@ -546,7 +546,7 @@ BUILDERS = {
         'tests': [{
             'isolate': 'performance_webview_test_suite',
         }],
-        'platform': 'android-webview-google',
+        'platform': 'android-webview-trichrome-google',
         'dimension': {
             'pool': 'chrome.tests.perf-webview',
             'os': 'Android',
