@@ -143,7 +143,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormTextFieldFocusChange(bool in_focus) override;
   bool IsPrintPreview() override;
-  void IsSelectingChanged(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void EnteredEditMode() override;
   void DocumentFocusChanged(bool document_has_focus) override;

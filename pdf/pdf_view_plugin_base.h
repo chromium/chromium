@@ -51,6 +51,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // PDFEngine::Client:
   void Invalidate(const gfx::Rect& rect) override;
   SkColor GetBackgroundColor() override;
+  void SetIsSelecting(bool is_selecting) override;
 
   // PaintManager::Client
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,

@@ -189,9 +189,6 @@ constexpr char kJSEmailCc[] = "cc";
 constexpr char kJSEmailBcc[] = "bcc";
 constexpr char kJSEmailSubject[] = "subject";
 constexpr char kJSEmailBody[] = "body";
-// Selecting text in document (Plugin -> Page)
-constexpr char kJSSetIsSelectingType[] = "setIsSelecting";
-constexpr char kJSIsSelecting[] = "isSelecting";
 
 // Editing forms in document (Plugin -> Page)
 constexpr char kJSSetIsEditingType[] = "setIsEditing";
@@ -1830,13 +1827,6 @@ void OutOfProcessInstance::AppendBlankPrintPreviewPages() {
 
 bool OutOfProcessInstance::IsPrintPreview() {
   return is_print_preview_;
-}
-
-void OutOfProcessInstance::IsSelectingChanged(bool is_selecting) {
-  pp::VarDictionary message;
-  message.Set(kType, kJSSetIsSelectingType);
-  message.Set(kJSIsSelecting, pp::Var(is_selecting));
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::EnteredEditMode() {

@@ -250,7 +250,7 @@ class PDFEngine {
     virtual SkColor GetBackgroundColor() = 0;
 
     // Sets selection status.
-    virtual void IsSelectingChanged(bool is_selecting) {}
+    virtual void SetIsSelecting(bool is_selecting) {}
 
     virtual void SelectionChanged(const gfx::Rect& left,
                                   const gfx::Rect& right) {}

@@ -100,6 +100,13 @@ SkColor PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
 }
 
+void PdfViewPluginBase::SetIsSelecting(bool is_selecting) {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "setIsSelecting");
+  message.SetBoolKey("isSelecting", is_selecting);
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::HandleMessage(const base::Value& message) {
   using MessageHandler = void (PdfViewPluginBase::*)(const base::Value&);
   static constexpr auto kMessageHandlers =

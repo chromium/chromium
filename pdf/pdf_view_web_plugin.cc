@@ -297,8 +297,6 @@ bool PdfViewWebPlugin::IsPrintPreview() {
   return false;
 }
 
-void PdfViewWebPlugin::IsSelectingChanged(bool is_selecting) {}
-
 void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
                                         const gfx::Rect& right) {}
 
