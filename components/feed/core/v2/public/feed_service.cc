@@ -17,7 +17,7 @@
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/prefs.h"
-#include "components/feed/core/v2/refresh_task_scheduler.h"
+#include "components/feed/core/v2/public/refresh_task_scheduler.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"

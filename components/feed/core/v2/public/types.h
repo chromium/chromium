@@ -18,6 +18,11 @@
 
 namespace feed {
 
+enum class RefreshTaskId {
+  kRefreshForYouFeed,
+  kRefreshWebFeed,
+};
+
 // Information about the Chrome build.
 struct ChromeInfo {
   version_info::Channel channel{};

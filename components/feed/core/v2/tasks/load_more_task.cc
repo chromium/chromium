@@ -105,7 +105,8 @@ void LoadMoreTask::QueryRequestComplete(
   model->Update(std::move(translated_response.model_update_request));
 
   if (translated_response.request_schedule)
-    stream_->SetRequestSchedule(*translated_response.request_schedule);
+    stream_->SetRequestSchedule(stream_type_,
+                                *translated_response.request_schedule);
 
   Done(LoadStreamStatus::kLoadedFromNetwork);
 }

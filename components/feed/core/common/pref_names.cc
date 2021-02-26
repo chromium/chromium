@@ -34,6 +34,7 @@ const char kThrottlerLastRequestTime[] =
     "feedv2.request_throttler.last_request_time";
 const char kDebugStreamData[] = "feedv2.debug_stream_data";
 const char kRequestSchedule[] = "feedv2.request_schedule";
+const char kWebFeedsRequestSchedule[] = "webfeed.request_schedule";
 const char kMetricsData[] = "feedv2.metrics_data";
 const char kClientInstanceId[] = "feedv2.client_instance_id";
 // This pref applies to all discover APIs despite the string.
@@ -84,6 +85,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time());
   registry->RegisterStringPref(feed::prefs::kDebugStreamData, std::string());
   registry->RegisterDictionaryPref(feed::prefs::kRequestSchedule);
+  registry->RegisterDictionaryPref(feed::prefs::kWebFeedsRequestSchedule);
   registry->RegisterDictionaryPref(feed::prefs::kMetricsData);
   registry->RegisterStringPref(feed::prefs::kClientInstanceId, "");
   registry->RegisterStringPref(feed::prefs::kDiscoverAPIEndpointOverride, "");

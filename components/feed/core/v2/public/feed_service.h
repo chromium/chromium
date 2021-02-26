@@ -106,7 +106,7 @@ class FeedService : public KeyedService {
 
   void ClearCachedData();
 
-  RefreshTaskScheduler* GetRefreshTaskScheduler() {
+  RefreshTaskScheduler* GetRefreshTaskScheduler() const {
     return refresh_task_scheduler_.get();
   }
 

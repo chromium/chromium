@@ -43,7 +43,7 @@
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/public/persistent_key_value_store.h"
-#include "components/feed/core/v2/refresh_task_scheduler.h"
+#include "components/feed/core/v2/public/refresh_task_scheduler.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/load_stream_from_store_task.h"
@@ -500,20 +500,26 @@ class TestWireResponseTranslator : public FeedStream::WireResponseTranslator {
 class FakeRefreshTaskScheduler : public RefreshTaskScheduler {
  public:
   // RefreshTaskScheduler implementation.
-  void EnsureScheduled(base::TimeDelta run_time) override {
-    scheduled_run_time = run_time;
+  void EnsureScheduled(RefreshTaskId id, base::TimeDelta run_time) override {
+    scheduled_run_times[id] = run_time;
   }
-  void Cancel() override { canceled = true; }
-  void RefreshTaskComplete() override { refresh_task_complete = true; }
+  void Cancel(RefreshTaskId id) override { canceled_tasks.insert(id); }
+  void RefreshTaskComplete(RefreshTaskId id) override {
+    completed_tasks.insert(id);
+  }
 
   void Clear() {
-    scheduled_run_time.reset();
-    canceled = false;
-    refresh_task_complete = false;
+    scheduled_run_times.clear();
+    canceled_tasks.clear();
+    completed_tasks.clear();
   }
-  base::Optional<base::TimeDelta> scheduled_run_time;
-  bool canceled = false;
-  bool refresh_task_complete = false;
+
+  std::map<RefreshTaskId, base::TimeDelta> scheduled_run_times;
+  std::set<RefreshTaskId> canceled_tasks;
+  std::set<RefreshTaskId> completed_tasks;
+
+ private:
+  std::stringstream activity_log_;
 };
 
 class TestMetricsReporter : public MetricsReporter {
@@ -734,9 +740,9 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
     run_loop.Run();
   }
 
-  void UnloadModel() {
+  void UnloadModel(const StreamType& stream_type) {
     WaitForIdleTaskQueue();
-    stream_->UnloadModel(kInterestStream);
+    stream_->UnloadModel(stream_type);
   }
 
   // Dumps the state of |FeedStore| to a string for debugging.
@@ -818,6 +824,11 @@ class FeedStreamTestForAllStreamTypes
         : TestSurfaceBase(FeedStreamTestForAllStreamTypes::GetStreamType(),
                           stream) {}
   };
+  RefreshTaskId GetRefreshTaskId() const {
+    RefreshTaskId id;
+    CHECK(GetStreamType().GetRefreshTaskId(id));
+    return id;
+  }
 };
 
 class FeedStreamConditionalActionsUploadTest : public FeedStreamTest {
@@ -833,24 +844,23 @@ TEST_F(FeedStreamTest, IsArticlesListVisibleByDefault) {
 
 TEST_F(FeedStreamTest, DoNotRefreshIfArticlesListIsHidden) {
   profile_prefs_.SetBoolean(prefs::kArticlesListVisible, false);
-  stream_->InitializeScheduling();
-  EXPECT_TRUE(refresh_scheduler_.canceled);
-
-  stream_->ExecuteRefreshTask();
-  EXPECT_TRUE(refresh_scheduler_.refresh_task_complete);
-  EXPECT_EQ(LoadStreamStatus::kLoadNotAllowedArticlesListHidden,
-            metrics_reporter_->background_refresh_status);
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+  EXPECT_FALSE(refresh_scheduler_.scheduled_run_times.count(
+      RefreshTaskId::kRefreshForYouFeed));
+  EXPECT_EQ(std::set<RefreshTaskId>({RefreshTaskId::kRefreshForYouFeed}),
+            refresh_scheduler_.completed_tasks);
 }
 
-TEST_F(FeedStreamTest, BackgroundRefreshSuccess) {
+TEST_F(FeedStreamTest, BackgroundRefreshForYouSuccess) {
   // Trigger a background refresh.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  stream_->ExecuteRefreshTask();
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   WaitForIdleTaskQueue();
 
   // Verify the refresh happened and that we can load a stream without the
   // network.
-  ASSERT_TRUE(refresh_scheduler_.refresh_task_complete);
+  ASSERT_TRUE(refresh_scheduler_.completed_tasks.count(
+      RefreshTaskId::kRefreshForYouFeed));
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->background_refresh_status);
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
@@ -862,10 +872,28 @@ TEST_F(FeedStreamTest, BackgroundRefreshSuccess) {
   EXPECT_EQ(1, prefetch_service_.NewSuggestionsAvailableCallCount());
 }
 
+TEST_F(FeedStreamTest, BackgroundRefreshWebFeedSuccess) {
+  // Trigger a background refresh.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshWebFeed);
+  WaitForIdleTaskQueue();
+
+  // Verify the refresh happened and that we can load a stream without the
+  // network.
+  ASSERT_TRUE(
+      refresh_scheduler_.completed_tasks.count(RefreshTaskId::kRefreshWebFeed));
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  // Verify that prefetch service is NOT informed.
+  EXPECT_EQ(0, prefetch_service_.NewSuggestionsAvailableCallCount());
+}
+
 TEST_F(FeedStreamTest, BackgroundRefreshPrefetchesImages) {
   // Trigger a background refresh.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  stream_->ExecuteRefreshTask();
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   EXPECT_EQ(0, prefetch_image_call_count_);
   WaitForIdleTaskQueue();
 
@@ -880,7 +908,7 @@ TEST_F(FeedStreamTest, BackgroundRefreshPrefetchesImages) {
 TEST_F(FeedStreamTest, BackgroundRefreshNotAttemptedWhenModelIsLoading) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
-  stream_->ExecuteRefreshTask();
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(metrics_reporter_->background_refresh_status,
@@ -892,7 +920,7 @@ TEST_F(FeedStreamTest, BackgroundRefreshNotAttemptedAfterModelIsLoaded) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  stream_->ExecuteRefreshTask();
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(metrics_reporter_->background_refresh_status,
@@ -1097,7 +1125,7 @@ TEST_F(FeedStreamTest, ForceRefreshForDebugging) {
             surface.DescribeUpdates());
 }
 
-TEST_F(FeedStreamTest, RefreshScheduleFlow) {
+TEST_P(FeedStreamTestForAllStreamTypes, RefreshScheduleFlow) {
   // Inject a typical network response, with a server-defined request schedule.
   {
     RequestSchedule schedule;
@@ -1109,37 +1137,39 @@ TEST_F(FeedStreamTest, RefreshScheduleFlow) {
     response_data.request_schedule = schedule;
 
     response_translator_.InjectResponse(std::move(response_data));
+
+    // Load the stream, and then destroy the surface to allow background
+    // refresh.
+    TestSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    UnloadModel(surface.GetStreamType());
   }
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
 
   // Verify the first refresh was scheduled.
   EXPECT_EQ(base::TimeDelta::FromSeconds(12),
-            refresh_scheduler_.scheduled_run_time);
+            refresh_scheduler_.scheduled_run_times[GetRefreshTaskId()]);
 
   // Simulate executing the background task.
   refresh_scheduler_.Clear();
   task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(12));
-  stream_->ExecuteRefreshTask();
+  stream_->ExecuteRefreshTask(GetRefreshTaskId());
   WaitForIdleTaskQueue();
 
   // Verify |RefreshTaskComplete()| was called and next refresh was scheduled.
-  EXPECT_TRUE(refresh_scheduler_.refresh_task_complete);
-  ASSERT_TRUE(refresh_scheduler_.scheduled_run_time);
+  EXPECT_TRUE(refresh_scheduler_.completed_tasks.count(GetRefreshTaskId()));
   EXPECT_EQ(base::TimeDelta::FromSeconds(48 - 12),
-            *refresh_scheduler_.scheduled_run_time);
+            refresh_scheduler_.scheduled_run_times[GetRefreshTaskId()]);
 
   // Simulate executing the background task again.
   refresh_scheduler_.Clear();
   task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(48 - 12));
-  stream_->ExecuteRefreshTask();
+  stream_->ExecuteRefreshTask(GetRefreshTaskId());
   WaitForIdleTaskQueue();
 
   // Verify |RefreshTaskComplete()| was called and next refresh was scheduled.
-  EXPECT_TRUE(refresh_scheduler_.refresh_task_complete);
-  ASSERT_TRUE(refresh_scheduler_.scheduled_run_time);
+  EXPECT_TRUE(refresh_scheduler_.completed_tasks.count(GetRefreshTaskId()));
   EXPECT_EQ(GetFeedConfig().default_background_refresh_interval,
-            *refresh_scheduler_.scheduled_run_time);
+            refresh_scheduler_.scheduled_run_times[GetRefreshTaskId()]);
 }
 
 TEST_F(FeedStreamTest, ForceRefreshIfMissedScheduledRefresh) {
@@ -1350,6 +1380,7 @@ TEST_F(FeedStreamTest, LoadStreamAfterEulaIsAccepted) {
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 }
 
+// TODO(crbug.com/1152592): Not sure what the right approach is for web feeds.
 TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   stream_->OnAllHistoryDeleted();
 
@@ -1532,7 +1563,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, ModelChangesAreSavedToStorage) {
   // operations correctly.
   surface.Detach();
   surface.Clear();
-  UnloadModel();
+  UnloadModel(GetStreamType());
   surface.Attach(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_TRUE(surface.initial_state);
@@ -1569,7 +1600,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(1, prefetch_service_.NewSuggestionsAvailableCallCount());
 
   // Load page 2.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
@@ -1580,7 +1610,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   WaitForIdleTaskQueue();
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
   EXPECT_EQ("2 slices +spinner -> 4 slices", surface.DescribeUpdates());
-  EXPECT_EQ(2, prefetch_service_.NewSuggestionsAvailableCallCount());
 
   // Load page 3.
   response_translator_.InjectResponse(MakeTypicalNextPageState(3));
@@ -1589,7 +1618,11 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   WaitForIdleTaskQueue();
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
   EXPECT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
-  EXPECT_EQ(3, prefetch_service_.NewSuggestionsAvailableCallCount());
+  if (GetStreamType().IsInterest()) {
+    EXPECT_EQ(3, prefetch_service_.NewSuggestionsAvailableCallCount());
+  } else {
+    EXPECT_EQ(0, prefetch_service_.NewSuggestionsAvailableCallCount());
+  }
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadMorePersistsData) {
@@ -1628,7 +1661,7 @@ TEST_F(FeedStreamTest, LoadMorePersistAndLoadMore) {
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
 
   surface.Detach();
-  UnloadModel();
+  UnloadModel(kInterestStream);
 
   // Load page 3.
   surface.Attach(stream_.get());
@@ -1787,7 +1820,8 @@ TEST_F(FeedStreamTest, ReadNetworkResponse) {
   // A request schedule with two entries was in the response. The first entry
   // should have already been scheduled/consumed, leaving only the second
   // entry still in the the refresh_offsets vector.
-  RequestSchedule schedule = prefs::GetRequestSchedule(profile_prefs_);
+  RequestSchedule schedule = prefs::GetRequestSchedule(
+      RefreshTaskId::kRefreshForYouFeed, profile_prefs_);
   EXPECT_EQ(std::vector<base::TimeDelta>({
                 base::TimeDelta::FromSeconds(86308) +
                     base::TimeDelta::FromNanoseconds(822963644),
@@ -2126,11 +2160,11 @@ TEST_F(FeedStreamTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
     response_translator_.InjectResponse(std::move(model_state));
 
     refresh_scheduler_.Clear();
-    stream_->ExecuteRefreshTask();
+    stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
     WaitForIdleTaskQueue();
   }
 
-  UnloadModel();
+  UnloadModel(kInterestStream);
 
   // Trigger another stream refresh that updates the histogram.
   {
@@ -2139,7 +2173,7 @@ TEST_F(FeedStreamTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
     response_translator_.InjectResponse(std::move(model_state));
 
     refresh_scheduler_.Clear();
-    stream_->ExecuteRefreshTask();
+    stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
     WaitForIdleTaskQueue();
   }
 
@@ -2777,9 +2811,8 @@ TEST_F(FeedStreamTest, LoadStreamSendsNoticeCardAcknowledgement) {
   stream_->ReportOpenAction(surface.GetStreamType(), slice_id);
 
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  refresh_scheduler_.Clear();
   stream_->UnloadModel(surface.GetStreamType());
-  stream_->ExecuteRefreshTask();
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   WaitForIdleTaskQueue();
 
   EXPECT_TRUE(network_.query_request_sent->feed_request()

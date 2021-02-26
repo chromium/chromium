@@ -33,9 +33,11 @@ void SetLastRequestTime(base::Time request_time, PrefService& pref_service);
 DebugStreamData GetDebugStreamData(PrefService& pref_service);
 void SetDebugStreamData(const DebugStreamData& data, PrefService& pref_service);
 
-void SetRequestSchedule(const RequestSchedule& schedule,
+void SetRequestSchedule(RefreshTaskId task_id,
+                        const RequestSchedule& schedule,
                         PrefService& pref_service);
-RequestSchedule GetRequestSchedule(PrefService& pref_service);
+RequestSchedule GetRequestSchedule(RefreshTaskId task_id,
+                                   PrefService& pref_service);
 
 PersistentMetricsData GetPersistentMetricsData(PrefService& pref_service);
 void SetPersistentMetricsData(const PersistentMetricsData& data,

@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 
-#include "components/feed/core/v2/refresh_task_scheduler.h"
+#include "components/feed/core/v2/public/refresh_task_scheduler.h"
 
 namespace background_task {
 class BackgroundTaskScheduler;
@@ -24,16 +24,21 @@ class RefreshTaskSchedulerImpl : public RefreshTaskScheduler {
   RefreshTaskSchedulerImpl(const RefreshTaskSchedulerImpl&) = delete;
   RefreshTaskSchedulerImpl& operator=(const RefreshTaskSchedulerImpl&) = delete;
 
-  void Run(FeedService* service, base::OnceClosure task_complete);
+  void Run(RefreshTaskId task_id,
+           FeedService* service,
+           base::OnceClosure task_complete);
 
   // RefreshTaskScheduler.
-  void EnsureScheduled(base::TimeDelta period) override;
-  void Cancel() override;
-  void RefreshTaskComplete() override;
+  void EnsureScheduled(RefreshTaskId task_id, base::TimeDelta period) override;
+  void Cancel(RefreshTaskId task_id) override;
+  void RefreshTaskComplete(RefreshTaskId task_id) override;
 
  private:
+  base::OnceClosure& TaskCallback(RefreshTaskId task_id);
+
   background_task::BackgroundTaskScheduler* scheduler_;
-  base::OnceClosure task_complete_callback_;
+  base::OnceClosure for_you_task_complete_callback_;
+  base::OnceClosure web_feeds_task_complete_callback_;
 };
 
 }  // namespace feed

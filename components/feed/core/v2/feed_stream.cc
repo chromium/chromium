@@ -28,7 +28,8 @@
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_stream_api.h"
-#include "components/feed/core/v2/refresh_task_scheduler.h"
+#include "components/feed/core/v2/public/refresh_task_scheduler.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/surface_updater.h"
@@ -214,13 +215,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   UpdateCanUploadActionsWithNoticeCard();
 }
 
-void FeedStream::InitializeScheduling() {
-  if (!IsArticlesListVisible()) {
-    refresh_task_scheduler_->Cancel();
-    return;
-  }
-}
-
 FeedStream::~FeedStream() = default;
 
 FeedStream::Stream* FeedStream::FindStream(const StreamType& stream_type) {
@@ -257,7 +251,8 @@ void FeedStream::TriggerStreamLoad(const StreamType& stream_type) {
   // If we should not load the stream, abort and send a zero-state update.
   LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad(stream_type);
   if (do_not_attempt_reason != LoadStreamStatus::kNoStatus) {
-    InitialStreamLoadComplete(LoadStreamTask::Result(do_not_attempt_reason));
+    InitialStreamLoadComplete(
+        LoadStreamTask::Result(stream_type, do_not_attempt_reason));
     return;
   }
 
@@ -286,9 +281,8 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   if (result.loaded_new_content_from_network) {
     if (result.stream_type.IsInterest())
       UpdateExperiments(result.experiments);
-    if (prefetch_service_)
-      prefetch_service_->NewSuggestionsAvailable();
   }
+  MaybeReportNewSuggestionsAvailable(result);
 }
 
 void FeedStream::OnEnterBackground() {
@@ -440,8 +434,7 @@ void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
     std::move(callback).Run(success);
   }
 
-  if (result.loaded_new_content_from_network)
-    prefetch_service_->NewSuggestionsAvailable();
+  MaybeReportNewSuggestionsAvailable(result);
 }
 
 void FeedStream::ExecuteOperations(
@@ -566,16 +559,23 @@ std::string FeedStream::DumpStateForDebugging() {
        << ", privacy_notice_fulfilled="
        << stream.model->privacy_notice_fulfilled();
   }
-  RequestSchedule schedule = prefs::GetRequestSchedule(*profile_prefs_);
-  if (schedule.refresh_offsets.empty()) {
-    ss << "No request schedule\n";
-  } else {
-    ss << "Request schedule reference " << schedule.anchor_time << '\n';
-    for (base::TimeDelta entry : schedule.refresh_offsets) {
-      ss << " fetch at " << entry << '\n';
-    }
-  }
 
+  auto print_refresh_schedule = [&](RefreshTaskId task_id) {
+    RequestSchedule schedule =
+        prefs::GetRequestSchedule(task_id, *profile_prefs_);
+    if (schedule.refresh_offsets.empty()) {
+      ss << "No request schedule\n";
+    } else {
+      ss << "Request schedule reference " << schedule.anchor_time << '\n';
+      for (base::TimeDelta entry : schedule.refresh_offsets) {
+        ss << " fetch at " << entry << '\n';
+      }
+    }
+  };
+  ss << "For You: ";
+  print_refresh_schedule(RefreshTaskId::kRefreshForYouFeed);
+  ss << "WebFeeds: ";
+  print_refresh_schedule(RefreshTaskId::kRefreshWebFeed);
   return ss.str();
 }
 
@@ -653,8 +653,12 @@ LoadStreamStatus FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
   return LoadStreamStatus::kNoStatus;
 }
 
-bool FeedStream::MissedLastRefresh() {
-  RequestSchedule schedule = prefs::GetRequestSchedule(*profile_prefs_);
+bool FeedStream::MissedLastRefresh(const StreamType& stream_type) {
+  RefreshTaskId task_id;
+  if (!stream_type.GetRefreshTaskId(task_id))
+    return false;
+  RequestSchedule schedule =
+      feed::prefs::GetRequestSchedule(task_id, *profile_prefs_);
   if (schedule.refresh_offsets.empty())
     return false;
   base::Time scheduled_time =
@@ -779,19 +783,28 @@ void FeedStream::OnSignedOut() {
   ClearAll();
 }
 
-void FeedStream::ExecuteRefreshTask() {
-  // Schedule the next refresh attempt. If a new refresh schedule is returned
-  // through this refresh, it will be overwritten.
-  SetRequestSchedule(feed::prefs::GetRequestSchedule(*profile_prefs_));
+void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
+  StreamType stream_type = StreamType::ForTaskId(task_id);
+  LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad(stream_type);
 
-  LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad(kInterestStream);
+  // If `do_not_attempt_reason` indicates the stream shouldn't be loaded, it's
+  // unlikely that criteria will change, so we skip rescheduling.
+  if (do_not_attempt_reason == LoadStreamStatus::kNoStatus ||
+      do_not_attempt_reason == LoadStreamStatus::kModelAlreadyLoaded) {
+    // Schedule the next refresh attempt. If a new refresh schedule is returned
+    // through this refresh, it will be overwritten.
+    SetRequestSchedule(
+        task_id, feed::prefs::GetRequestSchedule(task_id, *profile_prefs_));
+  }
+
   if (do_not_attempt_reason != LoadStreamStatus::kNoStatus) {
-    BackgroundRefreshComplete(LoadStreamTask::Result(do_not_attempt_reason));
+    BackgroundRefreshComplete(
+        LoadStreamTask::Result(stream_type, do_not_attempt_reason));
     return;
   }
 
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      LoadStreamTask::LoadType::kBackgroundRefresh, kInterestStream, this,
+      LoadStreamTask::LoadType::kBackgroundRefresh, stream_type, this,
       base::BindOnce(&FeedStream::BackgroundRefreshComplete,
                      base::Unretained(this))));
 }
@@ -801,15 +814,34 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
   if (result.loaded_new_content_from_network) {
     if (result.stream_type.IsInterest())
       UpdateExperiments(result.experiments);
-    if (prefetch_service_)
-      prefetch_service_->NewSuggestionsAvailable();
   }
+  MaybeReportNewSuggestionsAvailable(result);
 
   // Add prefetch images to task queue without waiting to finish
   // since we treat them as best-effort.
-  task_queue_.AddTask(std::make_unique<PrefetchImagesTask>(this));
+  if (result.stream_type.IsInterest())
+    task_queue_.AddTask(std::make_unique<PrefetchImagesTask>(this));
 
-  refresh_task_scheduler_->RefreshTaskComplete();
+  RefreshTaskId task_id;
+  if (result.stream_type.GetRefreshTaskId(task_id)) {
+    refresh_task_scheduler_->RefreshTaskComplete(task_id);
+  }
+}
+
+void FeedStream::MaybeReportNewSuggestionsAvailable(
+    const LoadStreamTask::Result& result) {
+  if (result.loaded_new_content_from_network && prefetch_service_ &&
+      result.stream_type.IsInterest()) {
+    prefetch_service_->NewSuggestionsAvailable();
+  }
+}
+
+void FeedStream::MaybeReportNewSuggestionsAvailable(
+    const LoadMoreTask::Result& result) {
+  if (result.loaded_new_content_from_network && prefetch_service_ &&
+      result.stream_type.IsInterest()) {
+    prefetch_service_->NewSuggestionsAvailable();
+  }
 }
 
 void FeedStream::ClearAll() {
@@ -819,9 +851,9 @@ void FeedStream::ClearAll() {
 }
 
 void FeedStream::FinishClearAll() {
-  prefs::ClearClientInstanceId(*profile_prefs_);
   // Clear any experiments stored.
-  prefs::SetExperiments({}, *profile_prefs_);
+  feed::prefs::SetExperiments({}, *profile_prefs_);
+  feed::prefs::ClearClientInstanceId(*profile_prefs_);
   metadata_.Populate(feedstore::Metadata());
   delegate_->ClearAll();
 
@@ -873,15 +905,26 @@ void FeedStream::LoadModel(const StreamType& stream_type,
   ScheduleModelUnloadIfNoSurfacesAttached(stream_type);
 }
 
-void FeedStream::SetRequestSchedule(RequestSchedule schedule) {
+void FeedStream::SetRequestSchedule(const StreamType& stream_type,
+                                    RequestSchedule schedule) {
+  RefreshTaskId task_id;
+  if (!stream_type.GetRefreshTaskId(task_id)) {
+    DLOG(ERROR) << "Ignoring request schedule for this stream: " << stream_type;
+    return;
+  }
+  SetRequestSchedule(task_id, std::move(schedule));
+}
+
+void FeedStream::SetRequestSchedule(RefreshTaskId task_id,
+                                    RequestSchedule schedule) {
   const base::Time now = base::Time::Now();
   base::Time run_time = NextScheduledRequestTime(now, &schedule);
   if (!run_time.is_null()) {
-    refresh_task_scheduler_->EnsureScheduled(run_time - now);
+    refresh_task_scheduler_->EnsureScheduled(task_id, run_time - now);
   } else {
-    refresh_task_scheduler_->Cancel();
+    refresh_task_scheduler_->Cancel(task_id);
   }
-  feed::prefs::SetRequestSchedule(schedule, *profile_prefs_);
+  feed::prefs::SetRequestSchedule(task_id, schedule, *profile_prefs_);
 }
 
 void FeedStream::UnloadModel(const StreamType& stream_type) {
@@ -946,17 +989,17 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
 bool FeedStream::CanUploadActions() const {
   // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   return can_upload_actions_with_notice_card_ ||
-         !prefs::GetLastFetchHadNoticeCard(*profile_prefs_);
+         !feed::prefs::GetLastFetchHadNoticeCard(*profile_prefs_);
 }
 void FeedStream::SetLastStreamLoadHadNoticeCard(bool value) {
   // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  prefs::SetLastFetchHadNoticeCard(*profile_prefs_, value);
+  feed::prefs::SetLastFetchHadNoticeCard(*profile_prefs_, value);
 }
 bool FeedStream::HasReachedConditionsToUploadActionsWithNoticeCard() {
   // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   if (base::FeatureList::IsEnabled(
           feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
-    return prefs::GetHasReachedClickAndViewActionsUploadConditions(
+    return feed::prefs::GetHasReachedClickAndViewActionsUploadConditions(
         *profile_prefs_);
   }
   // Consider the conditions as already reached to enable uploads when the
@@ -968,8 +1011,8 @@ void FeedStream::DeclareHasReachedConditionsToUploadActionsWithNoticeCard() {
   // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   if (base::FeatureList::IsEnabled(
           feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
-    prefs::SetHasReachedClickAndViewActionsUploadConditions(*profile_prefs_,
-                                                            true);
+    feed::prefs::SetHasReachedClickAndViewActionsUploadConditions(
+        *profile_prefs_, true);
   }
 }
 void FeedStream::UpdateShownSlicesUploadCondition(int viewed_slice_index) {

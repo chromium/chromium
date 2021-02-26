@@ -124,9 +124,6 @@ class FeedStream : public FeedStreamApi,
   FeedStream(const FeedStream&) = delete;
   FeedStream& operator=(const FeedStream&) = delete;
 
-  // Initializes scheduling. This should be called at startup.
-  void InitializeScheduling();
-
   // FeedStreamApi.
 
   bool IsActivityLoggingEnabled() const override;
@@ -135,7 +132,7 @@ class FeedStream : public FeedStreamApi,
   void DetachSurface(SurfaceInterface*) override;
   bool IsArticlesListVisible() override;
   std::string GetClientInstanceId() const override;
-  void ExecuteRefreshTask() override;
+  void ExecuteRefreshTask(RefreshTaskId task_id) override;
   ImageFetchId FetchImage(
       const GURL& url,
       base::OnceCallback<void(NetworkResponse)> callback) override;
@@ -207,7 +204,10 @@ class FeedStream : public FeedStreamApi,
   void LoadModel(const StreamType& stream_type,
                  std::unique_ptr<StreamModel> model);
 
-  void SetRequestSchedule(RequestSchedule schedule);
+  void SetRequestSchedule(const StreamType& stream_type,
+                          RequestSchedule schedule);
+
+  void SetRequestSchedule(RefreshTaskId task_id, RequestSchedule schedule);
 
   // Store/upload an action and update the consistency token. |callback| is
   // called with |true| if the consistency token was written to the store.
@@ -236,7 +236,7 @@ class FeedStream : public FeedStreamApi,
                                      bool model_loading = false);
 
   // Whether the last scheduled refresh was missed.
-  bool MissedLastRefresh();
+  bool MissedLastRefresh(const StreamType& stream_type);
 
   // Determines if a FeedQuery request can be made. If successful,
   // returns |LoadStreamStatus::kNoStatus| and acquires throttler quota.
@@ -334,6 +334,8 @@ class FeedStream : public FeedStreamApi,
   void LoadMoreComplete(LoadMoreTask::Result result);
   void BackgroundRefreshComplete(LoadStreamTask::Result result);
   void UploadActionsComplete(UploadActionsTask::Result result);
+  void MaybeReportNewSuggestionsAvailable(const LoadStreamTask::Result& result);
+  void MaybeReportNewSuggestionsAvailable(const LoadMoreTask::Result& result);
 
   void ClearAll();
 

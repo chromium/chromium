@@ -17,6 +17,28 @@ std::string StreamType::ToString() const {
   }
 }
 
+// static
+StreamType StreamType::ForTaskId(RefreshTaskId task_id) {
+  switch (task_id) {
+    case RefreshTaskId::kRefreshForYouFeed:
+      return kInterestStream;
+    case RefreshTaskId::kRefreshWebFeed:
+      return kWebFeedStream;
+  }
+}
+
+bool StreamType::GetRefreshTaskId(RefreshTaskId& out_id) const {
+  switch (type_) {
+    case Type::kUnspecified:
+      return false;
+    case Type::kInterest:
+      out_id = RefreshTaskId::kRefreshForYouFeed;
+      return true;
+    case Type::kWebFeed:
+      out_id = RefreshTaskId::kRefreshWebFeed;
+      return true;
+  }
+}
 FeedStreamApi::FeedStreamApi() = default;
 FeedStreamApi::~FeedStreamApi() = default;
 

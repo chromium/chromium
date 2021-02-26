@@ -38,7 +38,7 @@ class LoadStreamTask : public offline_pages::Task {
 
   struct Result {
     Result();
-    explicit Result(LoadStreamStatus status);
+    Result(const StreamType& stream_type, LoadStreamStatus status);
     ~Result();
     Result(Result&&);
     Result& operator=(Result&&);

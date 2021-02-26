@@ -40,7 +40,8 @@ feedwire::FeedQuery::RequestReason GetRequestReason(LoadType load_type) {
 }  // namespace
 
 Result::Result() = default;
-Result::Result(LoadStreamStatus status) : final_status(status) {}
+Result::Result(const StreamType& a_stream_type, LoadStreamStatus status)
+    : stream_type(a_stream_type), final_status(status) {}
 Result::~Result() = default;
 Result::Result(Result&&) = default;
 Result& Result::operator=(Result&&) = default;
@@ -81,7 +82,7 @@ void LoadStreamTask::Run() {
           : LoadStreamFromStoreTask::LoadType::kPendingActionsOnly;
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
       load_from_store_type, stream_type_, stream_->GetStore(),
-      stream_->MissedLastRefresh(),
+      stream_->MissedLastRefresh(stream_type_),
       base::BindOnce(&LoadStreamTask::LoadFromStoreComplete, GetWeakPtr()));
   load_from_store_task_->Execute(base::DoNothing());
 }
@@ -196,7 +197,7 @@ void LoadStreamTask::QueryRequestComplete(
   }
 
   if (response_data.request_schedule)
-    stream_->SetRequestSchedule(*response_data.request_schedule);
+    stream_->SetRequestSchedule(stream_type_, *response_data.request_schedule);
 
   Done(LoadStreamStatus::kLoadedFromNetwork);
 }

@@ -38,6 +38,8 @@ RequestSchedule::RequestSchedule() = default;
 RequestSchedule::~RequestSchedule() = default;
 RequestSchedule::RequestSchedule(const RequestSchedule&) = default;
 RequestSchedule& RequestSchedule::operator=(const RequestSchedule&) = default;
+RequestSchedule::RequestSchedule(RequestSchedule&&) = default;
+RequestSchedule& RequestSchedule::operator=(RequestSchedule&&) = default;
 
 base::Value RequestScheduleToValue(const RequestSchedule& schedule) {
   base::Value result(base::Value::Type::DICTIONARY);

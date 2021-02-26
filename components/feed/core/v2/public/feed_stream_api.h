@@ -13,6 +13,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/common_enums.h"
+#include "components/feed/core/v2/public/refresh_task_scheduler.h"
 #include "components/feed/core/v2/public/types.h"
 #include "url/gurl.h"
 
@@ -47,12 +48,19 @@ class StreamType {
   constexpr explicit StreamType(Type t) : type_(t) {}
   bool operator<(const StreamType& rhs) const { return type_ < rhs.type_; }
   bool operator==(const StreamType& rhs) const { return type_ == rhs.type_; }
-
+  // TODO(crbug.com/1152592): When we're closer to code-complete, audit all uses
+  // of IsInterest() and IsWebFeed().
   bool IsInterest() const { return type_ == Type::kInterest; }
   bool IsWebFeed() const { return type_ == Type::kWebFeed; }
 
   // Returns a human-readable value, for debugging/DCHECK prints.
   std::string ToString() const;
+
+  // Mapping functions between RefreshTaskId and StreamType.
+  // Returns false if there should be no background refreshes associated with
+  // this stream.
+  bool GetRefreshTaskId(RefreshTaskId& out_id) const;
+  static StreamType ForTaskId(RefreshTaskId task_id);
 
  private:
   Type type_ = Type::kUnspecified;
@@ -63,6 +71,8 @@ inline std::ostream& operator<<(std::ostream& os,
   return os << stream_type.ToString();
 }
 
+// TODO(crbug.com/1152592): When we're closer to code-complete, audit all uses
+// of kInterestStream and kWebFeedStream.
 constexpr StreamType kInterestStream(StreamType::Type::kInterest);
 constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
 
@@ -124,7 +134,7 @@ class FeedStreamApi {
   virtual std::string GetSessionId() const = 0;
 
   // Invoked by RefreshTaskScheduler's scheduled task.
-  virtual void ExecuteRefreshTask() = 0;
+  virtual void ExecuteRefreshTask(RefreshTaskId task_id) = 0;
 
   // Request to load additional content at the end of the stream.
   // Calls |callback| when complete. If no content could be added, the parameter

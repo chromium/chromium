@@ -24,6 +24,8 @@ struct RequestSchedule {
   ~RequestSchedule();
   RequestSchedule(const RequestSchedule&);
   RequestSchedule& operator=(const RequestSchedule&);
+  RequestSchedule(RequestSchedule&&);
+  RequestSchedule& operator=(RequestSchedule&&);
 
   base::Time anchor_time;
   std::vector<base::TimeDelta> refresh_offsets;

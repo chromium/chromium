@@ -9,13 +9,25 @@
 #include "base/token.h"
 #include "base/values.h"
 #include "components/feed/core/common/pref_names.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace feed {
 namespace prefs {
+namespace {
 
+const char* RequestSchedulePrefName(RefreshTaskId task_id) {
+  switch (task_id) {
+    case feed::RefreshTaskId::kRefreshForYouFeed:
+      return kRequestSchedule;
+    case feed::RefreshTaskId::kRefreshWebFeed:
+      return kWebFeedsRequestSchedule;
+  }
+}
+
+}  // namespace
 std::vector<int> GetThrottlerRequestCounts(PrefService& pref_service) {
   std::vector<int> result;
   const auto& value_list =
@@ -55,13 +67,17 @@ void SetDebugStreamData(const DebugStreamData& data,
   pref_service.SetString(kDebugStreamData, SerializeDebugStreamData(data));
 }
 
-void SetRequestSchedule(const RequestSchedule& schedule,
+void SetRequestSchedule(RefreshTaskId task_id,
+                        const RequestSchedule& schedule,
                         PrefService& pref_service) {
-  pref_service.Set(kRequestSchedule, RequestScheduleToValue(schedule));
+  pref_service.Set(RequestSchedulePrefName(task_id),
+                   RequestScheduleToValue(schedule));
 }
 
-RequestSchedule GetRequestSchedule(PrefService& pref_service) {
-  return RequestScheduleFromValue(*pref_service.Get(kRequestSchedule));
+RequestSchedule GetRequestSchedule(RefreshTaskId task_id,
+                                   PrefService& pref_service) {
+  return RequestScheduleFromValue(
+      *pref_service.Get(RequestSchedulePrefName(task_id)));
 }
 
 void SetPersistentMetricsData(const PersistentMetricsData& data,
