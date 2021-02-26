@@ -159,6 +159,14 @@ class ServiceWorkerMetrics {
     base::TimeTicks local_end;
   };
 
+  // Used for UMA. Append-only.
+  enum class OfflineCapableReason {
+    kTimeout = 0,
+    kSuccess = 1,
+    kRedirect = 2,
+    kMaxValue = kRedirect,
+  };
+
   // Converts an event type to a string. Used for tracing.
   static const char* EventTypeToString(EventType event_type);
 
@@ -241,6 +249,12 @@ class ServiceWorkerMetrics {
   static void RecordLookupRegistrationTime(
       blink::ServiceWorkerStatusCode status,
       base::TimeDelta duration);
+
+  // Records the reason a service worker was deemed to be offline capable. The
+  // reason may be that the service worker responded with 2xx..., 3xx..., or the
+  // check timed out.
+  static void RecordOfflineCapableReason(blink::ServiceWorkerStatusCode status,
+                                         int status_code);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(ServiceWorkerMetrics);

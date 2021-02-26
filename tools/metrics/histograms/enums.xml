@@ -55574,6 +55574,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Unknown"/>
 </enum>
 
+<enum name="OfflineCapableReason">
+  <int value="0" label="kTimeout"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kRedirect"/>
+</enum>
+
 <enum name="OfflineIndicatorCTREvent">
   <int value="0" label="Displayed"/>
   <int value="1" label="Clicked"/>

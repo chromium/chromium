@@ -569,4 +569,25 @@ void ServiceWorkerMetrics::RecordLookupRegistrationTime(
   }
 }
 
+void ServiceWorkerMetrics::RecordOfflineCapableReason(
+    blink::ServiceWorkerStatusCode status,
+    int status_code) {
+  if (status == blink::ServiceWorkerStatusCode::kErrorTimeout) {
+    base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
+                                  OfflineCapableReason::kTimeout);
+    return;
+  } else if (status == blink::ServiceWorkerStatusCode::kOk) {
+    if (200 <= status_code && status_code <= 299) {
+      base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
+                                    OfflineCapableReason::kSuccess);
+      return;
+    } else if (300 <= status_code && status_code <= 399) {
+      base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
+                                    OfflineCapableReason::kRedirect);
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 }  // namespace content
