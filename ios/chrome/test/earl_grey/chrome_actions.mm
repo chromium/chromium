@@ -55,11 +55,4 @@ id<GREYAction> ScrollToTop() {
   return [ChromeActionsAppInterface scrollToTop];
 }
 
-id<GREYAction> TapAtPointPercentage(CGFloat xOriginStartPercentage,
-                                    CGFloat yOriginStartPercentage) {
-  return [ChromeActionsAppInterface
-      tapAtPointAtxOriginStartPercentage:xOriginStartPercentage
-                  yOriginStartPercentage:yOriginStartPercentage];
-}
-
 }  // namespace chrome_test_util

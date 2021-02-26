@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <UIKit/UIKit.h>
-
 @class ElementSelector;
 @protocol GREYAction;
 
@@ -44,12 +42,6 @@
 // downward swipe, for this reason we need to swipe up programatically to
 // avoid dismissing the VC.
 + (id<GREYAction>)scrollToTop;
-
-// Action to tap an element at the given xOriginStartPercentage as a percentage
-// of the total width and yOriginStartPercentage as a percentage of the total
-// height. Percentages are between 0 and 1, where 1 is 100%.
-+ (id<GREYAction>)tapAtPointAtxOriginStartPercentage:(CGFloat)x
-                              yOriginStartPercentage:(CGFloat)y;
 
 @end
 
