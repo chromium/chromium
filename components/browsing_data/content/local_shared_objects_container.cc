@@ -52,7 +52,9 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
       file_systems_(new CannedFileSystemHelper(
           content::BrowserContext::GetDefaultStoragePartition(browser_context)
               ->GetFileSystemContext(),
-          additional_file_system_types)),
+          additional_file_system_types,
+          content::BrowserContext::GetDefaultStoragePartition(browser_context)
+              ->GetNativeIOContext())),
       indexed_dbs_(new CannedIndexedDBHelper(
           content::BrowserContext::GetDefaultStoragePartition(
               browser_context))),
