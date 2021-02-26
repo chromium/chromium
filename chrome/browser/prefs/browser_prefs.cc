@@ -428,20 +428,6 @@ const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Deprecated 1/2020
-#if defined(OS_MAC)
-const char kKeyCreated[] = "os_crypt.key_created";
-#endif  // defined(OS_MAC)
-
-const char kGCMChannelStatus[] = "gcm.channel_status";
-const char kGCMChannelPollIntervalSeconds[] = "gcm.poll_interval";
-const char kGCMChannelLastCheckTime[] = "gcm.check_time";
-
-// Deprecated 2/2020
-const char kInvalidatorClientId[] = "invalidator.client_id";
-const char kInvalidatorInvalidationState[] = "invalidator.invalidation_state";
-const char kInvalidatorSavedInvalidations[] = "invalidator.saved_invalidations";
-
 // Deprecated 3/2020
 const char kDataReductionNetworkProperties[] =
     "data_reduction.network_properties";
@@ -562,12 +548,6 @@ const char kCartModuleRemoved[] = "cart_module_removed";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kGCMChannelStatus, true);
-  registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, 0);
-  registry->RegisterInt64Pref(kGCMChannelLastCheckTime, 0);
-  registry->RegisterListPref(kInvalidatorSavedInvalidations);
-  registry->RegisterStringPref(kInvalidatorInvalidationState, std::string());
-  registry->RegisterStringPref(kInvalidatorClientId, std::string());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kRegisteredSupervisedUserAllowlists);
@@ -605,14 +585,6 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  registry->RegisterBooleanPref(kGCMChannelStatus, true);
-  registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, 0);
-  registry->RegisterInt64Pref(kGCMChannelLastCheckTime, 0);
-
-  registry->RegisterListPref(kInvalidatorSavedInvalidations);
-  registry->RegisterStringPref(kInvalidatorInvalidationState, std::string());
-  registry->RegisterStringPref(kInvalidatorClientId, std::string());
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
@@ -843,7 +815,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   QuitWithAppsController::RegisterPrefs(registry);
   system_media_permissions::RegisterSystemMediaPermissionStatesPrefs(registry);
   AppShimRegistry::Get()->RegisterLocalPrefs(registry);
-  registry->RegisterBooleanPref(kKeyCreated, false);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1193,19 +1164,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 1/2020
-#if defined(OS_MAC)
-  local_state->ClearPref(kKeyCreated);
-#endif  // defined(OS_MAC)
-  local_state->ClearPref(kGCMChannelStatus);
-  local_state->ClearPref(kGCMChannelPollIntervalSeconds);
-  local_state->ClearPref(kGCMChannelLastCheckTime);
-
-  // Added 2/2020.
-  local_state->ClearPref(kInvalidatorSavedInvalidations);
-  local_state->ClearPref(kInvalidatorInvalidationState);
-  local_state->ClearPref(kInvalidatorClientId);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 4/2020.
   local_state->ClearPref(kSupervisedUsersNextId);
@@ -1256,16 +1214,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 7/2019. Keep at least until 7/2021 as a missing migration would
   // disable sync.
   syncer::MigrateSyncSuppressedPref(profile_prefs);
-
-  // Added 1/2020.
-  profile_prefs->ClearPref(kGCMChannelStatus);
-  profile_prefs->ClearPref(kGCMChannelPollIntervalSeconds);
-  profile_prefs->ClearPref(kGCMChannelLastCheckTime);
-
-  // Added 2/2020.
-  profile_prefs->ClearPref(kInvalidatorSavedInvalidations);
-  profile_prefs->ClearPref(kInvalidatorInvalidationState);
-  profile_prefs->ClearPref(kInvalidatorClientId);
 
   // Added 3/2020.
   profile_prefs->ClearPref(kDataReductionNetworkProperties);
