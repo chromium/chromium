@@ -3752,10 +3752,6 @@
         "name": "system_health.common_mobile/browse:social:instagram:2019"
     },
     {
-        "duration": "4.0",
-        "name": "system_health.common_mobile/browse:social:pinterest_infinite_scroll:2019"
-    },
-    {
         "duration": "63.0",
         "name": "system_health.common_mobile/browse:social:tumblr_infinite_scroll:2018"
     },
@@ -4038,10 +4034,6 @@
     {
         "duration": "79.0",
         "name": "system_health.memory_mobile/browse:social:instagram:2019"
-    },
-    {
-        "duration": "3.0",
-        "name": "system_health.memory_mobile/browse:social:pinterest_infinite_scroll:2019"
     },
     {
         "duration": "63.0",
@@ -4344,10 +4336,6 @@
         "name": "v8.browsing_mobile-future/browse:social:instagram:2019"
     },
     {
-        "duration": "20.0",
-        "name": "v8.browsing_mobile-future/browse:social:pinterest_infinite_scroll:2019"
-    },
-    {
         "duration": "85.0",
         "name": "v8.browsing_mobile-future/browse:social:tumblr_infinite_scroll:2018"
     },
@@ -4454,10 +4442,6 @@
     {
         "duration": "114.0",
         "name": "v8.browsing_mobile/browse:social:instagram:2019"
-    },
-    {
-        "duration": "38.0",
-        "name": "v8.browsing_mobile/browse:social:pinterest_infinite_scroll:2019"
     },
     {
         "duration": "89.0",

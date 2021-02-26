@@ -2,13 +2,5 @@
     {
         "duration": "4.0",
         "name": "startup.mobile/maps_pwa:with_http_cache"
-    },
-    {
-        "duration": "5.0",
-        "name": "system_health.common_mobile/browse:social:pinterest_infinite_scroll:2019"
-    },
-    {
-        "duration": "4.0",
-        "name": "system_health.memory_mobile/browse:social:pinterest_infinite_scroll:2019"
     }
 ]
