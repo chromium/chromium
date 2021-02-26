@@ -2,9 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
+
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_finder import absolute_chromium_dir
 from blinkpy.w3c.common import CHROMIUM_WPT_DIR
+
+_log = logging.getLogger(__name__)
 
 DEFAULT_COMMIT_HISTORY_WINDOW = 10000
 SKIPPED_REVISIONS = [
@@ -86,6 +90,8 @@ def _exportable_commits_since(chromium_commit_hash,
     for commit in chromium_commits:
         state, error = get_commit_export_state(commit, local_wpt, wpt_github,
                                                verify_merged_pr)
+        _log.info('Commit %s has export state: "%s"', commit.short_sha, state)
+
         if require_clean:
             success = state == CommitExportState.EXPORTABLE_CLEAN
         else:
@@ -139,7 +145,17 @@ def get_commit_export_state(chromium_commit,
 def _is_commit_exported(chromium_commit, local_wpt, wpt_github,
                         verify_merged_pr):
     pull_request = wpt_github.pr_for_chromium_commit(chromium_commit)
-    if not pull_request or pull_request.state != 'closed':
+    if not pull_request:
+        _log.info(
+            'Checking if commit is exported: no existing PR found. '
+            'Commit: %s', chromium_commit.short_sha)
+        return False
+
+    if pull_request.state != 'closed':
+        _log.info(
+            'Checking if commit is exported: pull request is not closed. '
+            'Commit: %s, PR number: %s, PR state: %s',
+            chromium_commit.short_sha, pull_request.number, pull_request.state)
         return False
 
     # A closed PR can either be merged or abandoned:
@@ -158,9 +174,15 @@ def _is_commit_exported(chromium_commit, local_wpt, wpt_github,
 
     # PR is merged, and we need to verify that local WPT contains the commit.
     change_id = chromium_commit.change_id()
-    found_in_upstream = (local_wpt.seek_change_id(change_id)
-                         if change_id else local_wpt.seek_commit_position(
-                             chromium_commit.position))
+    found_in_upstream = bool(
+        local_wpt.seek_change_id(change_id) if change_id else local_wpt.
+        seek_commit_position(chromium_commit.position))
+    if not found_in_upstream:
+        needle = change_id if change_id else chromium_commit.position
+        _log.info(
+            'Checking if commit is exported: failed to find change in local '
+            'WPT checkout. Searched for: %s', needle)
+
     return found_in_upstream
 
 
