@@ -138,7 +138,7 @@ using web::SecurityStyle;
   std::string GURLHost = base::SysNSStringToUTF8(host);
   web::SSLStatus& SSLStatus = item->GetSSL();
   if (item->GetURL().SchemeIsCryptographic() && !!SSLStatus.certificate &&
-      SSLStatus.certificate->EqualsIncludingChain(cert.get()) &&
+      cert && SSLStatus.certificate->EqualsIncludingChain(cert.get()) &&
       item->GetURL().host() == GURLHost) {
     web::SSLStatus previousSSLStatus = item->GetSSL();
     SSLStatus.cert_status = certStatus;
