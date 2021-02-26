@@ -69,6 +69,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mNormalTabModelObserver = new TabModelObserver() {
             @Override
             public void didSelectTab(Tab tab, int type, int lastId) {
+                if (mTabModelSelector.isIncognitoSelected()) return;
+
                 assert overviewVisible();
 
                 mSelectedTabDidNotChangedAfterShown = false;
