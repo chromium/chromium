@@ -73,6 +73,7 @@ source_set("app_inventory") {
   public_deps = [ "../gaiacp:common" ]
   deps = [
     ":extension_lib",
+    "../gaiacp:mdm_utils",
     "../gaiacp:util",
     "//base",
     "//url",
