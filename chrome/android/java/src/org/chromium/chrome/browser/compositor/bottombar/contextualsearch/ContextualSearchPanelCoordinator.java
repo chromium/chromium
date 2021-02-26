@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.Supplier;
@@ -149,7 +150,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, int cardTagEnum) {}
+            int quickActionCategory, int cardTagEnum, @Nullable String[] relatedSearches) {}
 
     @Override
     public void setCaption(String caption) {}
@@ -194,6 +195,9 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     @Override
     public void setIsPanelHelpActive(boolean isActive) {}
+
+    @Override
+    public void clearRelatedSearches() {}
 
     @Override
     public void requestPanelShow(int reason) {

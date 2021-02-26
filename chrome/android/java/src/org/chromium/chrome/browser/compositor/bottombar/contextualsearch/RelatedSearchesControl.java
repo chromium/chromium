@@ -1,36 +1,34 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.ContextualSearchHelpSectionHost;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.RelatedSearchesSectionHost;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
- * Controls a section of the Panel that provides end user help messages.
- * This class is implemented along the lines of {@code ContextualSearchPromoControl} and shares
- * some of it's resources.
+ * Controls a section of the Panel that provides Related Searches chits.
+ * This class is implemented along the lines of {@code ContextualSearchPanelHelp}.
+ * TODO(donnd): consider further extracting the common pattern used for this class
+ * and the Help and Promo classes.
  */
-public class ContextualSearchPanelHelp {
+public class RelatedSearchesControl {
     private static final int INVALID_VIEW_ID = 0;
 
     private final boolean mIsEnabled;
@@ -40,21 +38,18 @@ public class ContextualSearchPanelHelp {
     /** The pixel density. */
     private final float mDpToPx;
 
-    /** The background color of the view's container to use for native rendering. */
-    private final int mContainerBackgroundColor;
-
     /**
      * The inflated View, or {@code null} if the associated Feature is not enabled,
      * or {@link #destroy} has been called.
      */
     @Nullable
-    private HelpControlView mHelpControlView;
+    private RelatedSearchesControlView mControlView;
+
+    /** The query suggestions for this feature, or {@code null} if we don't have any. */
+    private @Nullable String[] mRelatedSearchesSuggestions;
 
     /** Whether the view is visible. */
     private boolean mIsVisible;
-
-    /** The opacity of the view. */
-    private float mOpacity;
 
     /** The height of the view in pixels. */
     private float mHeightPx;
@@ -68,34 +63,27 @@ public class ContextualSearchPanelHelp {
     /** The Y position of the view. */
     private float mViewY;
 
-    /** Whether the View was in a state that could be interacted. */
-    private boolean mWasInteractive;
-
-    /** The reference to the help section host. */
-    private ContextualSearchHelpSectionHost mHelpSectionHost;
+    /** The reference to the host for this part of the panel (callbacks to the Panel). */
+    private RelatedSearchesSectionHost mPanelSectionHost;
 
     /**
      * @param panel             The panel.
-     * @param helpSectionHost   A reference the host of this section for notifications.
+     * @param panelSectionHost  A reference to the host of this panel section for notifications.
      * @param context           The Android Context used to inflate the View.
      * @param container         The container View used to inflate the View.
      * @param resourceLoader    The resource loader that will handle the snapshot capturing.
      */
-    ContextualSearchPanelHelp(OverlayPanel panel, ContextualSearchHelpSectionHost helpSectionHost,
+    RelatedSearchesControl(OverlayPanel panel, RelatedSearchesSectionHost panelSectionHost,
             Context context, ViewGroup container, DynamicResourceLoader resourceLoader) {
-        mIsEnabled = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_PANEL_HELP);
+        mIsEnabled = ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES);
         mDpToPx = context.getResources().getDisplayMetrics().density;
-        // We match the Opt-in promo background color so the views are seamless when together.
-        mContainerBackgroundColor = ApiCompatibilityUtils.getColor(
-                context.getResources(), R.color.contextual_search_promo_background_color);
-
         mOverlayPanel = panel;
         mContext = context;
 
-        mHelpControlView =
-                mIsEnabled ? new HelpControlView(panel, context, container, resourceLoader) : null;
-        mHelpSectionHost = helpSectionHost;
+        mControlView = mIsEnabled
+                ? new RelatedSearchesControlView(panel, context, container, resourceLoader)
+                : null;
+        mPanelSectionHost = panelSectionHost;
     }
 
     // ============================================================================================
@@ -116,24 +104,9 @@ public class ContextualSearchPanelHelp {
         return mIsVisible ? mHeightPx : 0f;
     }
 
-    /** Returns the ID of the help view, or {@code INVALID_VIEW_ID} if there's no view. */
+    /** Returns the ID of the view, or {@code INVALID_VIEW_ID} if there's no view. */
     public int getViewId() {
-        return mHelpControlView != null ? mHelpControlView.getViewId() : INVALID_VIEW_ID;
-    }
-
-    /**
-     * @return The View opacity.
-     */
-    public float getOpacity() {
-        return mOpacity;
-    }
-
-    /**
-     * @return The background color of the View's container, which includes areas outside the
-     *         content.
-     */
-    public int getContainerBackgroundColor() {
-        return mContainerBackgroundColor;
+        return mControlView != null ? mControlView.getViewId() : INVALID_VIEW_ID;
     }
 
     // ============================================================================================
@@ -144,15 +117,16 @@ public class ContextualSearchPanelHelp {
      * Shows the View. This includes inflating the View and setting its initial state.
      */
     void show() {
-        if (mIsVisible) return;
+        if (mIsVisible || mRelatedSearchesSuggestions == null
+                || mRelatedSearchesSuggestions.length == 0) {
+            return;
+        }
 
         // Invalidates the View in order to generate a snapshot, but do not show the View yet.
         // The View should only be displayed when in the expanded state.
-        if (mHelpControlView != null) mHelpControlView.invalidate();
+        if (mControlView != null) mControlView.invalidate();
 
         mIsVisible = true;
-        mWasInteractive = false;
-
         mHeightPx = mContentHeightPx;
     }
 
@@ -165,21 +139,28 @@ public class ContextualSearchPanelHelp {
         hideView();
 
         mIsVisible = false;
-
         mHeightPx = 0.f;
-        mOpacity = 0.f;
     }
 
     /**
-     * @return Whether the View reached a state in which it could be interactive.
+     * Sets the Related Searches suggestions to show in this view.
+     * @param relatedSearches An array of suggested queries or {@code null} when none.
      */
-    boolean wasInteractive() {
-        // TODO(donnd): call this and record metrics for whether the user interacted.
-        return mWasInteractive;
+    void setRelatedSearchesSuggestions(@Nullable String[] relatedSearches) {
+        mRelatedSearchesSuggestions = relatedSearches;
+        show();
+        calculateHeight();
+        // TODO(donnd): add metrics to track usage here or in the caller.
+    }
+
+    @VisibleForTesting
+    @Nullable
+    String[] getRelatedSearchesSuggestions() {
+        return mRelatedSearchesSuggestions;
     }
 
     // ============================================================================================
-    // Panel Animation
+    // Panel Motion Handling
     // ============================================================================================
 
     /**
@@ -219,13 +200,13 @@ public class ContextualSearchPanelHelp {
      * Destroys as much of this instance as possible.
      */
     void destroy() {
-        if (mHelpControlView != null) mHelpControlView.destroy();
-        mHelpControlView = null;
+        if (mControlView != null) mControlView.destroy();
+        mControlView = null;
     }
 
-    /** Invalidates the help view. */
+    /** Invalidates the view. */
     void invalidate(boolean didViewSizeChange) {
-        if (mHelpControlView != null) mHelpControlView.invalidate(didViewSizeChange);
+        if (mControlView != null) mControlView.invalidate(didViewSizeChange);
     }
 
     /**
@@ -249,39 +230,6 @@ public class ContextualSearchPanelHelp {
         }
     }
 
-    // ============================================================================================
-    // View Acceptance Animation
-    // ============================================================================================
-
-    /**
-     * Collapses the View in an animated fashion.
-     */
-    void collapse() {
-        if (!mIsShowingView) return;
-
-        hideView();
-
-        // Notify the host that the content is moving so adjustments can be made (e.g. the Opt-in
-        // promo will be in motion when it's shown).
-        mHelpSectionHost.onPanelSectionSizeChange(true);
-
-        CompositorAnimator collapse =
-                CompositorAnimator.ofFloat(mOverlayPanel.getAnimationHandler(), 1.f, 0.f,
-                        OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
-
-        collapse.addUpdateListener(animator -> updateAppearance(animator.getAnimatedValue()));
-
-        collapse.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                hide();
-                mHelpSectionHost.onPanelSectionSizeChange(false);
-            }
-        });
-
-        collapse.start();
-    }
-
     /**
      * Updates the appearance of the View.
      * @param percentage The completion percentage. 0.f means the view is fully collapsed and
@@ -291,10 +239,8 @@ public class ContextualSearchPanelHelp {
         if (mIsVisible) {
             mHeightPx = Math.round(
                     MathUtils.clamp(percentage * mContentHeightPx, 0.f, mContentHeightPx));
-            mOpacity = 1.f;
         } else {
             mHeightPx = 0.f;
-            mOpacity = 0.f;
         }
     }
 
@@ -309,10 +255,10 @@ public class ContextualSearchPanelHelp {
      * be able to click in the View button.
      */
     private void showView() {
-        if (mHelpControlView == null) return;
+        if (mControlView == null) return;
 
-        float y = mHelpSectionHost.getYPositionPx();
-        View view = mHelpControlView.getHelpView();
+        float y = mPanelSectionHost.getYPositionPx();
+        View view = mControlView.getControlView();
         if (view == null || !mIsVisible || (mIsShowingView && mViewY == y) || mHeightPx == 0.f) {
             return;
         }
@@ -331,18 +277,15 @@ public class ContextualSearchPanelHelp {
 
         mIsShowingView = true;
         mViewY = y;
-
-        // The View can only be interactive when it is being displayed.
-        mWasInteractive = true;
     }
 
     /**
      * Hides the Android View. See {@link #showView()}.
      */
     private void hideView() {
-        if (mHelpControlView == null) return;
+        if (mControlView == null) return;
 
-        View view = mHelpControlView.getHelpView();
+        View view = mControlView.getControlView();
         if (view == null || !mIsVisible || !mIsShowingView) {
             return;
         }
@@ -358,12 +301,16 @@ public class ContextualSearchPanelHelp {
      * whenever the the size of the View changes.
      */
     private void calculateHeight() {
-        if (mHelpControlView == null) return;
+        if (mControlView == null || mRelatedSearchesSuggestions == null
+                || mRelatedSearchesSuggestions.length == 0) {
+            return;
+        }
 
-        mHelpControlView.layoutView();
+        mControlView.setRelatedSearches(mRelatedSearchesSuggestions);
+        mControlView.layoutView();
 
         final float previousContentHeight = mContentHeightPx;
-        mContentHeightPx = mHelpControlView.getMeasuredHeight();
+        mContentHeightPx = mControlView.getMeasuredHeight();
 
         if (mIsVisible) {
             // Calculates the ratio between the current height and the previous content height,
@@ -373,42 +320,63 @@ public class ContextualSearchPanelHelp {
         }
     }
 
-    /** Called when the OK button has been clicked. */
-    private void onOkButtonClicked() {
-        mHelpSectionHost.onPanelHelpOkClicked();
-        collapse();
+    /**
+     * Notifies that the user has clicked on a suggestions in this section of the panel.
+     * @param suggestionIndex The 0-based index into the list of suggestions provided by the panel
+     *        and presented in the UI. E.g. if the user clicked the second chit this
+     *        value would be 1.
+     */
+    private void onSuggestionClicked(int suggestionIndex) {
+        mPanelSectionHost.onSuggestionClicked(suggestionIndex);
     }
 
     // ============================================================================================
-    // HelpControlView - the View that this class delegates to.
+    // ControlView - the Android View that this class controls.
     // ============================================================================================
 
     /**
-     * The {@code HelpControlView} is an {@link OverlayPanelInflater} controlled view that renders
-     * the actual help View and can be created and destroyed under the control of the enclosing
-     * Panel Help class. The enclosing class delegates several public mehthods to this class, e.g.
-     * {@link #invalidate}.
+     * The {@code RelatedSearchesControlView} is an {@link OverlayPanelInflater} controlled view
+     * that renders the actual View and can be created and destroyed under the control of the
+     * enclosing Panel section class. The enclosing class delegates several public mehthods to this
+     * class, e.g. {@link #invalidate}.
      */
-    private class HelpControlView extends OverlayPanelInflater {
+    private class RelatedSearchesControlView extends OverlayPanelInflater {
         /**
-         * Constructs a help view that can be shown in the panel.
+         * Constructs a view that can be shown in the panel.
          * @param panel             The panel.
          * @param context           The Android Context used to inflate the View.
          * @param container         The container View used to inflate the View.
          * @param resourceLoader    The resource loader that will handle the snapshot capturing.
          */
-        HelpControlView(OverlayPanel panel, Context context, ViewGroup container,
+        RelatedSearchesControlView(OverlayPanel panel, Context context, ViewGroup container,
                 DynamicResourceLoader resourceLoader) {
-            super(panel, R.layout.contextual_search_panel_help_view,
-                    R.id.contextual_search_panel_help, context, container, resourceLoader);
+            super(panel, R.layout.contextual_search_related_searches_view,
+                    R.id.contextual_search_related_searches_layout, context, container,
+                    resourceLoader);
         }
 
-        View getHelpView() {
+        /** Returns the view for this control. */
+        View getControlView() {
             return super.getView();
         }
 
+        /** Triggers a view layout. */
         void layoutView() {
             super.layout();
+        }
+
+        /** Sets the Related Searches to display in the view to the given suggestions to show. */
+        void setRelatedSearches(String[] suggestionsToShow) {
+            if (suggestionsToShow.length > 0) {
+                View relatedSearchesView = getControlView();
+                TextView textView = (TextView) relatedSearchesView.findViewById(
+                        R.id.related_searches_text_view);
+                String searches = String.valueOf(suggestionsToShow.length) + ": "
+                        + TextUtils.join(", ", suggestionsToShow);
+                textView.setText(searches);
+            } else {
+                hide();
+            }
         }
 
         @Override
@@ -430,12 +398,9 @@ public class ContextualSearchPanelHelp {
         protected void onFinishInflate() {
             super.onFinishInflate();
 
-            View view = getView();
+            View view = getControlView();
 
-            // "OK" button.
-            Button button = (Button) view.findViewById(R.id.contextual_search_ok_button);
-            button.setOnClickListener(v -> onOkButtonClicked());
-
+            // TODO(donnd): wire up the click handlers.
             calculateHeight();
         }
 

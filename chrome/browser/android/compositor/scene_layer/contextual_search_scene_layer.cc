@@ -100,6 +100,10 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jfloat panel_help_height,
     jfloat panel_help_opacity,
     jint panel_help_container_background_color,
+    // Related Searches
+    jint related_searches_resource_id,
+    jboolean related_searches_visible,
+    jfloat related_searches_height,
     // Banner etc
     jboolean search_bar_banner_visible,
     jfloat search_bar_banner_height,
@@ -179,6 +183,9 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       // Panel Help
       panel_help_resource_id, panel_help_visible, panel_help_height,
       panel_help_opacity, panel_help_container_background_color,
+      // Related Searches
+      related_searches_resource_id, related_searches_visible,
+      related_searches_height,
       // Banner etc
       search_bar_banner_visible, search_bar_banner_height,
       search_bar_banner_padding, search_bar_banner_ripple_width,

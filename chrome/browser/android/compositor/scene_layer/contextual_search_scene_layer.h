@@ -75,6 +75,10 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jfloat panel_help_height,
       jfloat panel_help_opacity,
       jint panel_help_container_background_color,
+      // Related Searches
+      jint related_searches_resource_id,
+      jboolean related_searches_visible,
+      jfloat related_searches_height,
       // Banner etc
       jboolean search_bar_banner_visible,
       jfloat search_bar_banner_height,

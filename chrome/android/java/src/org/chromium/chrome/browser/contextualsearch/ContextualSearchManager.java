@@ -452,6 +452,7 @@ public class ContextualSearchManager
         mIsShowingPromo = false;
         mSearchPanel.setIsPromoActive(false, false);
         mSearchPanel.setIsPanelHelpActive(false);
+        mSearchPanel.clearRelatedSearches();
         notifyHideContextualSearch();
     }
 
@@ -725,10 +726,10 @@ public class ContextualSearchManager
                 || !TextUtils.isEmpty(resolvedSearchTerm.thumbnailUrl());
 
         assert mSearchPanel != null;
-        // TODO(donnd): Pass Related Searches into the Panel for display.
+
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
-                resolvedSearchTerm.cardTagEnum());
+                resolvedSearchTerm.cardTagEnum(), resolvedSearchTerm.relatedSearches());
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             // Call #onSetCaption() to set the caption. For entities, the caption should not be
             // regarded as an answer. In the future, when quick actions are added, doesAnswer will

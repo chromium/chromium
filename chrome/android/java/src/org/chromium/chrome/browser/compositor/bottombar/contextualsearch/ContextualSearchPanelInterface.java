@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.graphics.Rect;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
@@ -28,7 +30,7 @@ public interface ContextualSearchPanelInterface {
     void setSearchTerm(String searchTerm);
     void setDidSearchInvolvePromo();
     void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, @CardTag int cardTagEnum);
+            int quickActionCategory, @CardTag int cardTagEnum, @Nullable String[] relatedSearches);
     void setCaption(String caption);
     void onContextualSearchPrefChanged(boolean isEnabled);
     void setManagementDelegate(ContextualSearchManagementDelegate delegate);
@@ -41,6 +43,7 @@ public interface ContextualSearchPanelInterface {
     ContextualSearchPanelMetrics getPanelMetrics();
     Rect getPanelRect();
     void setIsPanelHelpActive(boolean isActive);
+    void clearRelatedSearches();
 
     /** {@link OverlayPanel} methods */
     void requestPanelShow(@StateChangeReason int reason);

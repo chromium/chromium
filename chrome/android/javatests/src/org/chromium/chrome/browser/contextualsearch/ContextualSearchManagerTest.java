@@ -3182,7 +3182,7 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
-                                QuickActionCategory.PHONE, CardTag.CT_CONTACT));
+                                QuickActionCategory.PHONE, CardTag.CT_CONTACT, null));
 
         ContextualSearchBarControl barControl = mPanel.getSearchBarControl();
         ContextualSearchQuickActionControl quickActionControl = barControl.getQuickActionControl();
@@ -3246,7 +3246,7 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
-                                QuickActionCategory.PHONE, CardTag.CT_CONTACT));
+                                QuickActionCategory.PHONE, CardTag.CT_CONTACT, null));
 
         sActivityTestRule.getActivity().onUserInteraction();
         retryPanelBarInteractions(() -> {
@@ -3283,7 +3283,7 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, testUrl,
-                                QuickActionCategory.WEBSITE, CardTag.CT_URL));
+                                QuickActionCategory.WEBSITE, CardTag.CT_URL, null));
         retryPanelBarInteractions(() -> {
             // Tap on the portion of the bar that should trigger the quick action.
             clickPanelBar();
@@ -3300,7 +3300,7 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
-                                QuickActionCategory.NONE, cardTag));
+                                QuickActionCategory.NONE, cardTag, null));
 
         tapPeekingBarToExpandAndAssert();
     }

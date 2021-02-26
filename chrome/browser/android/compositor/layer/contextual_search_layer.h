@@ -63,6 +63,10 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      float panel_help_height,
                      float panel_help_opacity,
                      int panel_help_container_background_color,
+                     // Related Searches
+                     int related_searches_resource_id,
+                     bool related_searches_visible,
+                     float related_searches_height,
                      // Banner etc
                      bool search_bar_banner_visible,
                      float search_bar_banner_height,
@@ -150,6 +154,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
   scoped_refptr<cc::SolidColorLayer> panel_help_container_;
   scoped_refptr<cc::UIResourceLayer> search_promo_;
   scoped_refptr<cc::SolidColorLayer> search_promo_container_;
+  scoped_refptr<cc::UIResourceLayer> related_searches_;
   scoped_refptr<cc::SolidColorLayer> bar_banner_container_;
   scoped_refptr<cc::NinePatchLayer> bar_banner_ripple_;
   scoped_refptr<cc::UIResourceLayer> bar_banner_text_;
