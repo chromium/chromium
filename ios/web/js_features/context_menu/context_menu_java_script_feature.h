@@ -45,7 +45,7 @@ class ContextMenuJavaScriptFeature : public JavaScriptFeature,
 
   // JavaScriptFeature:
   base::Optional<std::string> GetScriptMessageHandlerName() const override;
-  void ScriptMessageReceived(BrowserState* browser_state,
+  void ScriptMessageReceived(WebState* web_state,
                              WKScriptMessage* message) override;
 
  private:

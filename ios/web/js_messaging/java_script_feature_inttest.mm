@@ -138,7 +138,7 @@ TEST_F(JavaScriptFeatureTest, MessageHandlerInPageContentWorld) {
 
   LoadHtml(kPageHTML);
 
-  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_web_state());
   ASSERT_FALSE(feature.last_received_message());
 
   std::vector<base::Value> parameters;
@@ -148,10 +148,10 @@ TEST_F(JavaScriptFeatureTest, MessageHandlerInPageContentWorld) {
 
   FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_browser_state();
+    return feature_ptr->last_received_web_state();
   }));
 
-  EXPECT_EQ(GetBrowserState(), feature.last_received_browser_state());
+  EXPECT_EQ(web_state(), feature.last_received_web_state());
 
   ASSERT_TRUE(feature.last_received_message());
   EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
@@ -171,7 +171,7 @@ TEST_F(JavaScriptFeatureTest, MessageHandlerInIsolatedWorld) {
 
   LoadHtml(kPageHTML);
 
-  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_web_state());
   ASSERT_FALSE(feature.last_received_message());
 
   std::vector<base::Value> parameters;
@@ -181,10 +181,10 @@ TEST_F(JavaScriptFeatureTest, MessageHandlerInIsolatedWorld) {
 
   FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_browser_state();
+    return feature_ptr->last_received_web_state();
   }));
 
-  EXPECT_EQ(GetBrowserState(), feature.last_received_browser_state());
+  EXPECT_EQ(web_state(), feature.last_received_web_state());
 
   ASSERT_TRUE(feature.last_received_message());
   EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
@@ -205,7 +205,7 @@ TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorPageContentWorld) {
 
   LoadHtml(kPageHTML);
 
-  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_web_state());
   ASSERT_FALSE(feature.last_received_message());
 
   __block bool count_received = false;
@@ -264,7 +264,7 @@ TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorIsolatedWorld) {
 
   LoadHtml(kPageHTML);
 
-  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_web_state());
   ASSERT_FALSE(feature.last_received_message());
 
   __block bool count_received = false;

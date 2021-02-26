@@ -50,7 +50,7 @@ class WindowErrorJavaScriptFeature : public JavaScriptFeature {
  private:
   // JavaScriptFeature:
   base::Optional<std::string> GetScriptMessageHandlerName() const override;
-  void ScriptMessageReceived(BrowserState* browser_state,
+  void ScriptMessageReceived(WebState* web_state,
                              WKScriptMessage* message) override;
 
   base::RepeatingCallback<void(ErrorDetails)> callback_;

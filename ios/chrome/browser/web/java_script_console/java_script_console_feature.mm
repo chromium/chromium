@@ -12,7 +12,6 @@
 #include "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -55,17 +54,10 @@ JavaScriptConsoleFeature::GetScriptMessageHandlerName() const {
 }
 
 void JavaScriptConsoleFeature::ScriptMessageReceived(
-    web::BrowserState* browser_state,
+    web::WebState* web_state,
     WKScriptMessage* script_message) {
   // Completely skip processing the message if no delegate exists.
   if (!delegate_) {
-    return;
-  }
-
-  web::WebState* web_state =
-      web::WebViewWebStateMap::FromBrowserState(browser_state)
-          ->GetWebStateForWebView(script_message.webView);
-  if (!web_state) {
     return;
   }
 

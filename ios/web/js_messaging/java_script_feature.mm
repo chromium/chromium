@@ -147,7 +147,7 @@ JavaScriptFeature::GetScriptMessageHandler() const {
                              weak_factory_.GetWeakPtr());
 }
 
-void JavaScriptFeature::ScriptMessageReceived(BrowserState* browser_state,
+void JavaScriptFeature::ScriptMessageReceived(WebState* web_state,
                                               WKScriptMessage* message) {}
 
 bool JavaScriptFeature::CallJavaScriptFunction(

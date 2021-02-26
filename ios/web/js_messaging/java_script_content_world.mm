@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -48,14 +49,16 @@ WKUserContentController* GetUserContentController(BrowserState* browser_state) {
 
 JavaScriptContentWorld::JavaScriptContentWorld(BrowserState* browser_state)
     : browser_state_(browser_state),
-      user_content_controller_(GetUserContentController(browser_state)) {}
+      user_content_controller_(GetUserContentController(browser_state)),
+      weak_factory_(this) {}
 
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 JavaScriptContentWorld::JavaScriptContentWorld(BrowserState* browser_state,
                                                WKContentWorld* content_world)
     : browser_state_(browser_state),
       user_content_controller_(GetUserContentController(browser_state)),
-      content_world_(content_world) {}
+      content_world_(content_world),
+      weak_factory_(this) {}
 
 WKContentWorld* JavaScriptContentWorld::GetWKContentWorld()
     API_AVAILABLE(ios(14.0)) {
@@ -153,7 +156,9 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
       if (content_world_) {
         script_message_handler = std::make_unique<ScopedWKScriptMessageHandler>(
             user_content_controller_, handler_name, content_world_,
-            base::BindRepeating(handler.value(), browser_state_));
+            base::BindRepeating(&JavaScriptContentWorld::ScriptMessageReceived,
+                                weak_factory_.GetWeakPtr(), handler.value(),
+                                browser_state_));
       }
     }
 #endif  // defined(__IPHONE14_0)
@@ -161,10 +166,28 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
     if (!script_message_handler.get()) {
       script_message_handler = std::make_unique<ScopedWKScriptMessageHandler>(
           user_content_controller_, handler_name,
-          base::BindRepeating(handler.value(), browser_state_));
+          base::BindRepeating(&JavaScriptContentWorld::ScriptMessageReceived,
+                              weak_factory_.GetWeakPtr(), handler.value(),
+                              browser_state_));
     }
     script_message_handlers_[feature] = std::move(script_message_handler);
   }
+}
+
+void JavaScriptContentWorld::ScriptMessageReceived(
+    JavaScriptFeature::ScriptMessageHandler handler,
+    BrowserState* browser_state,
+    WKScriptMessage* script_message) {
+  web::WebViewWebStateMap* map =
+      web::WebViewWebStateMap::FromBrowserState(browser_state);
+  web::WebState* web_state = map->GetWebStateForWebView(script_message.webView);
+
+  // Drop messages if they are no longer associated with a WebState.
+  if (!web_state) {
+    return;
+  }
+
+  handler.Run(web_state, script_message);
 }
 
 }  // namespace web

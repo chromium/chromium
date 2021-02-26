@@ -11,7 +11,9 @@
 
 #import <WebKit/WebKit.h>
 
+#include "base/memory/weak_ptr.h"
 #import "ios/web/js_messaging/scoped_wk_script_message_handler.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {
 
@@ -54,6 +56,11 @@ class JavaScriptContentWorld {
   bool HasFeature(const JavaScriptFeature* feature);
 
  private:
+  // Processes the response of a script message and forwards it to |handler|.
+  void ScriptMessageReceived(JavaScriptFeature::ScriptMessageHandler handler,
+                             BrowserState* browser_state,
+                             WKScriptMessage* script_message);
+
   // The features which have already been configured for |content_world_|.
   std::set<const JavaScriptFeature*> features_;
 
@@ -75,6 +82,8 @@ class JavaScriptContentWorld {
   // represented by [WKContentWorld pageWorld] on iOS 14 and later.)
   WKContentWorld* content_world_ API_AVAILABLE(ios(14.0)) = nullptr;
 #endif  // defined(__IPHONE14_0)
+
+  base::WeakPtrFactory<JavaScriptContentWorld> weak_factory_;
 };
 
 }  // namespace web

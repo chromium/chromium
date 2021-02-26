@@ -26,7 +26,7 @@ class PasswordProtectionJavaScriptFeature : public web::JavaScriptFeature {
 
   // JavaScriptFeature:
   base::Optional<std::string> GetScriptMessageHandlerName() const override;
-  void ScriptMessageReceived(web::BrowserState* browser_state,
+  void ScriptMessageReceived(web::WebState* web_state,
                              WKScriptMessage* message) override;
 
   // Adds observer for key presses and paste actions, only for the WebState

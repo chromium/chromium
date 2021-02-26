@@ -83,9 +83,9 @@ base::Optional<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerName()
   return std::string(kFakeJavaScriptFeatureScriptHandlerName);
 }
 
-void FakeJavaScriptFeature::ScriptMessageReceived(BrowserState* browser_state,
+void FakeJavaScriptFeature::ScriptMessageReceived(WebState* web_state,
                                                   WKScriptMessage* message) {
-  last_received_browser_state_ = browser_state;
+  last_received_web_state_ = web_state;
   last_received_message_ = message;
 }
 

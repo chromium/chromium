@@ -51,7 +51,7 @@ WindowErrorJavaScriptFeature::GetScriptMessageHandlerName() const {
 }
 
 void WindowErrorJavaScriptFeature::ScriptMessageReceived(
-    BrowserState* browser_state,
+    WebState* web_state,
     WKScriptMessage* script_message) {
   ErrorDetails details;
 

@@ -10,7 +10,6 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/safe_browsing/input_event_observer.h"
-#include "ios/web/public/js_messaging/web_view_web_state_map.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -60,7 +59,7 @@ PasswordProtectionJavaScriptFeature::GetScriptMessageHandlerName() const {
 }
 
 void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
-    web::BrowserState* browser_state,
+    web::WebState* web_state,
     WKScriptMessage* message) {
   // Verify that the message is well-formed before using it.
   if (![message.body isKindOfClass:[NSDictionary class]])
@@ -80,9 +79,6 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
   std::string event_type_str = base::SysNSStringToUTF8(eventType);
   std::string text_str = base::SysNSStringToUTF8(text);
 
-  web::WebViewWebStateMap* map =
-      web::WebViewWebStateMap::FromBrowserState(browser_state);
-  web::WebState* web_state = map->GetWebStateForWebView(message.webView);
   InputEventObserver* observer = lookup_by_web_state_[web_state];
   if (!observer)
     return;

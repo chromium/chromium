@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/js_messaging/web_view_web_state_map_impl.h"
+#import "ios/web/js_messaging/web_view_web_state_map.h"
 
 #import <WebKit/WebKit.h>
 #include <memory>
@@ -16,12 +16,12 @@
 
 namespace web {
 
-typedef WebTest WebViewWebStateMapImplTest;
+typedef WebTest WebViewWebStateMapTest;
 
 // Tests that web views are correctly mapped to web states.
-TEST_F(WebViewWebStateMapImplTest, CreateMappings) {
-  WebViewWebStateMapImpl* web_view_web_state_map =
-      WebViewWebStateMapImpl::FromBrowserState(GetBrowserState());
+TEST_F(WebViewWebStateMapTest, CreateMappings) {
+  WebViewWebStateMap* web_view_web_state_map =
+      WebViewWebStateMap::FromBrowserState(GetBrowserState());
   ASSERT_TRUE(web_view_web_state_map);
 
   WKWebView* web_view = [[WKWebView alloc] init];
@@ -43,9 +43,9 @@ TEST_F(WebViewWebStateMapImplTest, CreateMappings) {
 
 // Tests that a mapping is correctly updated as web view change for a given web
 // state.
-TEST_F(WebViewWebStateMapImplTest, UpdateMapping) {
-  WebViewWebStateMapImpl* web_view_web_state_map =
-      WebViewWebStateMapImpl::FromBrowserState(GetBrowserState());
+TEST_F(WebViewWebStateMapTest, UpdateMapping) {
+  WebViewWebStateMap* web_view_web_state_map =
+      WebViewWebStateMap::FromBrowserState(GetBrowserState());
   ASSERT_TRUE(web_view_web_state_map);
 
   FakeWebState web_state;
@@ -70,9 +70,9 @@ TEST_F(WebViewWebStateMapImplTest, UpdateMapping) {
 }
 
 // Tests that mappings are removed when the web state is destroyed.
-TEST_F(WebViewWebStateMapImplTest, WebStateDestroyed) {
-  WebViewWebStateMapImpl* web_view_web_state_map =
-      WebViewWebStateMapImpl::FromBrowserState(GetBrowserState());
+TEST_F(WebViewWebStateMapTest, WebStateDestroyed) {
+  WebViewWebStateMap* web_view_web_state_map =
+      WebViewWebStateMap::FromBrowserState(GetBrowserState());
   ASSERT_TRUE(web_view_web_state_map);
 
   WKWebView* web_view = [[WKWebView alloc] init];

@@ -22,7 +22,7 @@ class Value;
 
 namespace web {
 
-class BrowserState;
+class WebState;
 class WebFrame;
 
 // Describes a feature implemented in Javascript and native<->JS communication
@@ -143,7 +143,7 @@ class JavaScriptFeature {
   virtual base::Optional<std::string> GetScriptMessageHandlerName() const;
 
   using ScriptMessageHandler =
-      base::RepeatingCallback<void(BrowserState* browser_state,
+      base::RepeatingCallback<void(WebState* web_state,
                                    WKScriptMessage* message)>;
   // Returns the script message handler callback if
   // |GetScriptMessageHandlerName()| returns a handler name.
@@ -166,8 +166,8 @@ class JavaScriptFeature {
       base::TimeDelta timeout);
 
   // Callback for script messages registered through |GetScriptMessageHandler|.
-  // Called when a web view associated with |browser_state| sent |message|.
-  virtual void ScriptMessageReceived(BrowserState* browser_state,
+  // Called when a WebState sent |message|.
+  virtual void ScriptMessageReceived(WebState* web_state,
                                      WKScriptMessage* message);
 
  private:

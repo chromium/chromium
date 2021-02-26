@@ -84,7 +84,7 @@ ContextMenuJavaScriptFeature::GetScriptMessageHandlerName() const {
 }
 
 void ContextMenuJavaScriptFeature::ScriptMessageReceived(
-    BrowserState* browser_state,
+    WebState* web_state,
     WKScriptMessage* message) {
   DCHECK(message);
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/js_messaging/web_view_web_state_map_impl.h"
+#import "ios/web/js_messaging/web_view_web_state_map.h"
 
 #include "base/memory/ptr_util.h"
 #import "ios/web/public/browser_state.h"
@@ -18,10 +18,9 @@ const char kWebViewWebStateMapKeyName[] = "web_view_web_state_map";
 
 namespace web {
 
-WebViewWebStateMapImpl::WebViewWebStateMapImpl(BrowserState* browser_state)
-    : WebViewWebStateMap() {}
+WebViewWebStateMap::WebViewWebStateMap(BrowserState* browser_state) {}
 
-WebViewWebStateMapImpl::~WebViewWebStateMapImpl() {
+WebViewWebStateMap::~WebViewWebStateMap() {
   for (const WebViewWebStateAssociation& association : mappings_) {
     association.web_state->RemoveObserver(this);
   }
@@ -29,27 +28,20 @@ WebViewWebStateMapImpl::~WebViewWebStateMapImpl() {
 
 WebViewWebStateMap* WebViewWebStateMap::FromBrowserState(
     BrowserState* browser_state) {
-  return WebViewWebStateMapImpl::FromBrowserState(browser_state);
-}
-
-WebViewWebStateMapImpl* WebViewWebStateMapImpl::FromBrowserState(
-    BrowserState* browser_state) {
   DCHECK(browser_state);
 
-  WebViewWebStateMapImpl* web_view_web_state_map =
-      static_cast<WebViewWebStateMapImpl*>(
-          browser_state->GetUserData(kWebViewWebStateMapKeyName));
+  WebViewWebStateMap* web_view_web_state_map = static_cast<WebViewWebStateMap*>(
+      browser_state->GetUserData(kWebViewWebStateMapKeyName));
   if (!web_view_web_state_map) {
-    web_view_web_state_map = new WebViewWebStateMapImpl(browser_state);
+    web_view_web_state_map = new WebViewWebStateMap(browser_state);
     browser_state->SetUserData(kWebViewWebStateMapKeyName,
                                base::WrapUnique(web_view_web_state_map));
   }
   return web_view_web_state_map;
 }
 
-void WebViewWebStateMapImpl::SetAssociatedWebViewForWebState(
-    WKWebView* web_view,
-    WebState* web_state) {
+void WebViewWebStateMap::SetAssociatedWebViewForWebState(WKWebView* web_view,
+                                                         WebState* web_state) {
   DCHECK(web_state);
 
   auto it = mappings_.begin();
@@ -72,7 +64,7 @@ void WebViewWebStateMapImpl::SetAssociatedWebViewForWebState(
   mappings_.push_back(WebViewWebStateAssociation(web_view, web_state));
 }
 
-WebState* WebViewWebStateMapImpl::GetWebStateForWebView(WKWebView* web_view) {
+WebState* WebViewWebStateMap::GetWebStateForWebView(WKWebView* web_view) {
   for (const WebViewWebStateAssociation& association : mappings_) {
     if (association.web_view == web_view) {
       return association.web_state;
@@ -81,7 +73,7 @@ WebState* WebViewWebStateMapImpl::GetWebStateForWebView(WKWebView* web_view) {
   return nullptr;
 }
 
-void WebViewWebStateMapImpl::WebStateDestroyed(WebState* web_state) {
+void WebViewWebStateMap::WebStateDestroyed(WebState* web_state) {
   auto it = mappings_.begin();
   while (it != mappings_.end()) {
     if (it->web_state == web_state) {
@@ -93,11 +85,11 @@ void WebViewWebStateMapImpl::WebStateDestroyed(WebState* web_state) {
   }
 }
 
-WebViewWebStateMapImpl::WebViewWebStateAssociation::WebViewWebStateAssociation(
+WebViewWebStateMap::WebViewWebStateAssociation::WebViewWebStateAssociation(
     WKWebView* web_view,
     WebState* web_state)
     : web_view(web_view), web_state(web_state) {}
-WebViewWebStateMapImpl::WebViewWebStateAssociation::
-    ~WebViewWebStateAssociation() = default;
+WebViewWebStateMap::WebViewWebStateAssociation::~WebViewWebStateAssociation() =
+    default;
 
 }  // namespace web

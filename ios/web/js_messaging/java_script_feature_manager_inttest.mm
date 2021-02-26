@@ -36,7 +36,7 @@ TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToPageContentWorld) {
 
   ASSERT_TRUE(LoadHtml("<html></html>"));
 
-  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_web_state());
   ASSERT_FALSE(feature.last_received_message());
 
   std::vector<base::Value> parameters;
@@ -46,10 +46,10 @@ TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToPageContentWorld) {
 
   FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_browser_state();
+    return feature_ptr->last_received_web_state();
   }));
 
-  EXPECT_EQ(GetBrowserState(), feature.last_received_browser_state());
+  EXPECT_EQ(web_state(), feature.last_received_web_state());
 
   ASSERT_TRUE(feature.last_received_message());
   EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
@@ -68,7 +68,7 @@ TEST_F(JavaScriptFeatureManagerIntTest,
 
   ASSERT_TRUE(LoadHtml("<html><iframe></iframe></html>"));
 
-  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_web_state());
   ASSERT_FALSE(feature.last_received_message());
 
   __block std::set<WebFrame*> web_frames;
@@ -94,10 +94,10 @@ TEST_F(JavaScriptFeatureManagerIntTest,
 
   FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_browser_state();
+    return feature_ptr->last_received_web_state();
   }));
 
-  EXPECT_EQ(GetBrowserState(), feature.last_received_browser_state());
+  EXPECT_EQ(web_state(), feature.last_received_web_state());
 
   ASSERT_TRUE(feature.last_received_message());
   EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
@@ -115,7 +115,7 @@ TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToIsolatedWorld) {
 
   ASSERT_TRUE(LoadHtml("<html></html>"));
 
-  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_web_state());
   ASSERT_FALSE(feature.last_received_message());
 
   std::vector<base::Value> parameters;
@@ -125,10 +125,10 @@ TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToIsolatedWorld) {
 
   FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_browser_state();
+    return feature_ptr->last_received_web_state();
   }));
 
-  EXPECT_EQ(GetBrowserState(), feature.last_received_browser_state());
+  EXPECT_EQ(web_state(), feature.last_received_web_state());
 
   ASSERT_TRUE(feature.last_received_message());
   EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
@@ -147,7 +147,7 @@ TEST_F(JavaScriptFeatureManagerIntTest,
 
   ASSERT_TRUE(LoadHtml("<html><iframe></iframe></html>"));
 
-  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_web_state());
   ASSERT_FALSE(feature.last_received_message());
 
   __block std::set<WebFrame*> web_frames;
@@ -173,10 +173,10 @@ TEST_F(JavaScriptFeatureManagerIntTest,
 
   FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_browser_state();
+    return feature_ptr->last_received_web_state();
   }));
 
-  EXPECT_EQ(GetBrowserState(), feature.last_received_browser_state());
+  EXPECT_EQ(web_state(), feature.last_received_web_state());
 
   ASSERT_TRUE(feature.last_received_message());
   EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,

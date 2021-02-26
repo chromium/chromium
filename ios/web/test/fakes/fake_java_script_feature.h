@@ -16,8 +16,8 @@
 
 namespace web {
 
-class BrowserState;
 class WebFrame;
+class WebState;
 
 // The text added to the page by |kJavaScriptFeatureTestScript| on document
 // load.
@@ -47,9 +47,7 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   void GetErrorCount(WebFrame* web_frame,
                      base::OnceCallback<void(const base::Value*)> callback);
 
-  BrowserState* last_received_browser_state() const {
-    return last_received_browser_state_;
-  }
+  WebState* last_received_web_state() const { return last_received_web_state_; }
 
   WKScriptMessage* last_received_message() const {
     return last_received_message_;
@@ -58,10 +56,10 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
  private:
   // JavaScriptFeature:
   base::Optional<std::string> GetScriptMessageHandlerName() const override;
-  void ScriptMessageReceived(BrowserState* browser_state,
+  void ScriptMessageReceived(WebState* web_state,
                              WKScriptMessage* message) override;
 
-  BrowserState* last_received_browser_state_ = nullptr;
+  WebState* last_received_web_state_ = nullptr;
   WKScriptMessage* last_received_message_ = nil;
 };
 
