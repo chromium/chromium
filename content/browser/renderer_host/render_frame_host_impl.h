@@ -1939,11 +1939,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return accessibility_fatal_error_count_;
   }
 
-  // Returns true if the current document is considered to be a secure context.
-  //
-  // See the field documentation for more details.
-  bool is_web_secure_context() const { return is_web_secure_context_; }
-
   // Builds and return a ClientSecurityState based on the internal
   // RenderFrameHostImpl state. This is never null.
   network::mojom::ClientSecurityStatePtr BuildClientSecurityState() const;
@@ -2774,21 +2769,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // TODO(https://crbug.com/888079): Remove the above.
   url::Origin last_committed_origin_;
-
-  // Whether the last committed document is a secure context.
-  //
-  // See: https://html.spec.whatwg.org/#secure-contexts.
-  //
-  // See also:
-  //  - |network::IsUrlPotentiallyTrustworthy()|
-  //  - |network::IsOriginPotentiallyTrustworthy()|
-  //
-  // WARNING: This does not behave exactly as specified in HTML. Instead it more
-  // closely follows the Blink implementation, which predates it, for
-  // consistency.
-  //
-  // TODO(https://crbug.com/1168024): Fix this to behave as specified in HTML.
-  bool is_web_secure_context_ = false;
 
   // The policy to apply to private network requests issued by the last
   // committed document. Set to a default value until a document commits for the

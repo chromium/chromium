@@ -782,14 +782,6 @@ class CONTENT_EXPORT NavigationRequest
   //          NavigationThrottle.
   bool NeedsUrlLoader();
 
-  // Returns whether the navigation will yield a secure context.
-  //
-  // This navigation's state should be at least |READY_TO_COMMIT|.
-  //
-  // See also |RenderFrameHostImpl::is_web_secure_context()|, which this value
-  // feeds into upon this navigation committing.
-  bool IsWebSecureContext();
-
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy() const {
     return cross_origin_embedder_policy_;
   }

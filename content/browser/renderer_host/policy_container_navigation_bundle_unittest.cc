@@ -32,6 +32,7 @@ PolicyContainerPolicies MakeTestPolicies() {
   PolicyContainerPolicies policies;
   policies.referrer_policy = network::mojom::ReferrerPolicy::kAlways;
   policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
+  policies.is_web_secure_context = true;
   return policies;
 }
 
@@ -81,6 +82,23 @@ TEST_F(PolicyContainerNavigationBundleTest, SetIPAddressSpace) {
   PolicyContainerPolicies expected_policies;
   expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
 
+  EXPECT_EQ(bundle.DeliveredPolicies(), expected_policies);
+}
+
+// Verifies that SetIsOriginPotentiallyTrustworthy sets the secure context bit
+// in the bundle's delivered policies.
+TEST_F(PolicyContainerNavigationBundleTest, SetIsOriginPotentiallyTrustworthy) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+  bundle.SetIsOriginPotentiallyTrustworthy(true);
+
+  PolicyContainerPolicies expected_policies;
+  expected_policies.is_web_secure_context = true;
+
+  EXPECT_EQ(bundle.DeliveredPolicies(), expected_policies);
+
+  bundle.SetIsOriginPotentiallyTrustworthy(false);
+
+  expected_policies.is_web_secure_context = false;
   EXPECT_EQ(bundle.DeliveredPolicies(), expected_policies);
 }
 
@@ -225,6 +243,94 @@ TEST_F(PolicyContainerNavigationBundleTest,
   bundle.FinalizePolicies(AboutSrcdocUrl());
 
   EXPECT_EQ(bundle.FinalPolicies(), parent_policies);
+}
+
+// Verifies that when a document has a potentially-trustworthy origin and no
+// parent, then it is a secure context.
+TEST_F(PolicyContainerNavigationBundleTest,
+       IsWebSecureContextTrustworthyOriginNoParent) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+
+  bundle.SetIsOriginPotentiallyTrustworthy(true);
+
+  bundle.FinalizePolicies(GURL());
+
+  EXPECT_TRUE(bundle.DeliveredPolicies().is_web_secure_context);
+  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+}
+
+// Verifies that when a document has a non-potentially-trustworthy origin and no
+// parent, then it is not a secure context.
+TEST_F(PolicyContainerNavigationBundleTest,
+       IsWebSecureContextNonTrustworthyOriginNoParent) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+
+  bundle.SetIsOriginPotentiallyTrustworthy(false);
+
+  bundle.FinalizePolicies(GURL());
+
+  EXPECT_FALSE(bundle.DeliveredPolicies().is_web_secure_context);
+  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+}
+
+// Verifies that when a document has a potentially-trustworthy origin and a
+// parent that is not a secure context, then it is not a secure context.
+TEST_F(PolicyContainerNavigationBundleTest,
+       IsWebSecureContextTrustworthyOriginNonSecureParent) {
+  PolicyContainerPolicies parent_policies = MakeTestPolicies();
+  parent_policies.is_web_secure_context = false;
+
+  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  parent->SetPolicyContainerHost(NewHost(parent_policies));
+
+  PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
+
+  bundle.SetIsOriginPotentiallyTrustworthy(true);
+
+  bundle.FinalizePolicies(GURL("https://foo.test"));
+
+  EXPECT_FALSE(bundle.DeliveredPolicies().is_web_secure_context);
+  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+}
+
+// Verifies that when a document has a non-potentially-trustworthy origin and a
+// parent that is a secure context, then it is not a secure context.
+TEST_F(PolicyContainerNavigationBundleTest,
+       IsWebSecureContextNonTrustworthyOriginSecureParent) {
+  PolicyContainerPolicies parent_policies = MakeTestPolicies();
+  parent_policies.is_web_secure_context = true;
+
+  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  parent->SetPolicyContainerHost(NewHost(parent_policies));
+
+  PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
+
+  bundle.SetIsOriginPotentiallyTrustworthy(false);
+
+  bundle.FinalizePolicies(GURL("http://foo.test"));
+
+  EXPECT_FALSE(bundle.DeliveredPolicies().is_web_secure_context);
+  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+}
+
+// Verifies that when a document has a potentially-trustworthy origin and a
+// parent that is a secure context, then it is a secure context.
+TEST_F(PolicyContainerNavigationBundleTest,
+       IsWebSecureContextTrustworthyOriginSecureParent) {
+  PolicyContainerPolicies parent_policies = MakeTestPolicies();
+  parent_policies.is_web_secure_context = true;
+
+  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  parent->SetPolicyContainerHost(NewHost(parent_policies));
+
+  PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
+
+  bundle.SetIsOriginPotentiallyTrustworthy(true);
+
+  bundle.FinalizePolicies(GURL("https://foo.test"));
+
+  EXPECT_TRUE(bundle.DeliveredPolicies().is_web_secure_context);
+  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
 }
 
 }  // namespace

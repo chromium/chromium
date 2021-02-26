@@ -81,7 +81,22 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // This instance must not be finalized.
   void SetIPAddressSpace(network::mojom::IPAddressSpace address_space);
 
-  // Returns the delivered policies as informed by |SetIPAddressSpace()|.
+  // Sets whether the origin of the document being navigated to is
+  // potentially-trustworthy, as defined in:
+  // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy.
+  //
+  // This instance must not be frozen.
+  void SetIsOriginPotentiallyTrustworthy(bool value);
+
+  // Returns the delivered policies, as set so far by:
+  //
+  //  - |SetIPAddressSpace()| for |ip_address_space|
+  //  - |SetIsOriginPotentiallyTrustworthy()| and |FinalizePolicies()| for
+  //    |is_web_secure_context|
+  //
+  // TODO(titouan): Consider exposing individual accessors instead, since the
+  // semantics of the policy fields do not correspond to those documented on
+  // the struct itself - we just happen to store data with a similar shape.
   const PolicyContainerPolicies& DeliveredPolicies() const;
 
   // Sets final policies to defaults suitable for error pages, and builds a
@@ -96,6 +111,8 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   //
   // |url| should designate the URL of the document after all redirects have
   // been followed.
+  //
+  // Also sets |DeliveredPolicies().is_web_secure_context| to its final value.
   //
   // This method must only be called once, and is mutually exclusive with
   // |FinalizePoliciesForError()|.
@@ -123,6 +140,11 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // been called yet.
   bool IsFinalized() const;
 
+  // Sets |delivered_policies_.is_web_secure_context| to its final value.
+  //
+  // Helper for |FreezeFinalPolicies()|.
+  void FinalizeIsWebSecureContext();
+
   // Returns the policies to use instead of |delivered_policies_|, if any.
   //
   // For example, if |url| is `about:srcdoc`, returns |&*parent_policies_|.
@@ -144,6 +166,9 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   const std::unique_ptr<const PolicyContainerPolicies> history_policies_;
 
   // The policies extracted from the response as it is loaded.
+  //
+  // See the comment on |SetIsOriginPotentiallyTrustworthy()| regarding this
+  // member's |is_web_secure_context| field.
   PolicyContainerPolicies delivered_policies_;
 
   // Nullptr until |FinalizePolicies()| or |FinalizePoliciesForError()| is

@@ -106,6 +106,13 @@ void PolicyContainerNavigationBundle::SetIPAddressSpace(
   delivered_policies_.ip_address_space = address_space;
 }
 
+void PolicyContainerNavigationBundle::SetIsOriginPotentiallyTrustworthy(
+    bool value) {
+  DCHECK(!IsFinalized());
+
+  delivered_policies_.is_web_secure_context = value;
+}
+
 const PolicyContainerPolicies&
 PolicyContainerNavigationBundle::DeliveredPolicies() const {
   return delivered_policies_;
@@ -130,6 +137,8 @@ void PolicyContainerNavigationBundle::FinalizePoliciesForError() {
 void PolicyContainerNavigationBundle::FinalizePolicies(const GURL& url) {
   DCHECK(!IsFinalized());
 
+  FinalizeIsWebSecureContext();
+
   const PolicyContainerPolicies* override_policies =
       ComputeFinalPoliciesOverride(url);
   if (override_policies) {
@@ -142,6 +151,19 @@ void PolicyContainerNavigationBundle::FinalizePolicies(const GURL& url) {
 
 bool PolicyContainerNavigationBundle::IsFinalized() const {
   return host_ != nullptr;
+}
+
+void PolicyContainerNavigationBundle::FinalizeIsWebSecureContext() {
+  DCHECK(!IsFinalized());
+
+  if (!parent_policies_) {
+    // No parent. Only the trustworthiness of the origin matters.
+    return;
+  }
+
+  // The child can only be a secure context if the parent is too.
+  delivered_policies_.is_web_secure_context &=
+      parent_policies_->is_web_secure_context;
 }
 
 const PolicyContainerPolicies*

@@ -4708,20 +4708,6 @@ bool NavigationRequest::NeedsUrlLoader() {
          !is_mhtml_subframe_loaded_from_achive;
 }
 
-bool NavigationRequest::IsWebSecureContext() {
-  // Parent document, if it exists, must also be a secure context.
-  RenderFrameHostImpl* parent = frame_tree_node_->parent();
-  if (parent && !parent->is_web_secure_context()) {
-    return false;
-  }
-
-  // For both regular and origin-sandboxed documents, the origin to use is the
-  // origin of the URL to-be-committed. The spec makes a distinction between the
-  // two only because it works backwards from a committed document.
-  url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
-  return network::IsOriginPotentiallyTrustworthy(origin);
-}
-
 void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   // It is useless to update this state for same-document navigations as well
   // as pages served from the back-forward cache.
@@ -4774,6 +4760,13 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   policy_container_navigation_bundle_->SetIPAddressSpace(
       CalculateIPAddressSpace(common_params_->url, response_head_.get()));
+
+  // Use the unchecked / non-sandboxed origin to calculate potential
+  // trustworthiness. Indeed, the potential trustworthiness check should apply
+  // to the origin of the creation URL, prior to opaquification.
+  policy_container_navigation_bundle_->SetIsOriginPotentiallyTrustworthy(
+      network::IsOriginPotentiallyTrustworthy(
+          GetOriginForURLLoaderFactoryUnchecked(this)));
 
   if (is_error) {
     policy_container_navigation_bundle_->FinalizePoliciesForError();
@@ -5550,13 +5543,17 @@ NavigationRequest::TakePeakGpuMemoryTracker() {
 network::mojom::ClientSecurityStatePtr
 NavigationRequest::BuildClientSecurityState() {
   auto client_security_state = network::mojom::ClientSecurityState::New();
-  client_security_state->is_web_secure_context = IsWebSecureContext();
+
+  const PolicyContainerPolicies& policies =
+      policy_container_navigation_bundle_->FinalPolicies();
+  client_security_state->is_web_secure_context = policies.is_web_secure_context;
+  client_security_state->ip_address_space = policies.ip_address_space;
+
   client_security_state->cross_origin_embedder_policy =
       cross_origin_embedder_policy_;
-  client_security_state->ip_address_space =
-      policy_container_navigation_bundle_->FinalPolicies().ip_address_space;
   client_security_state->private_network_request_policy =
       private_network_request_policy_;
+
   return client_security_state;
 }
 

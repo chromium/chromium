@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
-  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             security_state->ip_address_space);
 }
@@ -774,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
-  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
             security_state->ip_address_space);
 }
@@ -1604,8 +1604,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1620,8 +1618,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -1640,8 +1636,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1659,8 +1653,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_FALSE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1676,8 +1668,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, window);
 
-  EXPECT_TRUE(window->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1692,8 +1682,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, window);
-
-  EXPECT_FALSE(window->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -1711,8 +1699,6 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1728,8 +1714,6 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -1748,8 +1732,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1767,8 +1749,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_FALSE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1784,8 +1764,6 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, window);
-
-  EXPECT_TRUE(window->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -1803,8 +1781,6 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, window);
 
-  EXPECT_FALSE(window->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1820,8 +1796,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1836,8 +1810,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -1856,8 +1828,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1875,8 +1845,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_FALSE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -1892,14 +1860,11 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  // TODO(https://crbug.com/1168024): Expect true instead.
-  EXPECT_FALSE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
@@ -1909,8 +1874,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -1929,14 +1892,11 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  // TODO(https://crbug.com/1168024): Expect true instead.
-  EXPECT_FALSE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_TRUE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1948,8 +1908,6 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -1966,8 +1924,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   RenderFrameHostImpl* child_frame =
       AddChildFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_TRUE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -1986,8 +1942,6 @@ IN_PROC_BROWSER_TEST_F(
       AddChildFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_FALSE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -2004,8 +1958,6 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, window);
 
-  EXPECT_FALSE(window->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -2020,8 +1972,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, window);
-
-  EXPECT_TRUE(window->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -2038,8 +1988,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -2054,8 +2002,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -2074,8 +2020,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -2093,8 +2037,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_FALSE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -2109,8 +2051,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
   ASSERT_NE(nullptr, window);
-
-  EXPECT_TRUE(window->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -2127,8 +2067,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
   ASSERT_NE(nullptr, window);
 
-  EXPECT_FALSE(window->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -2143,8 +2081,6 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_TRUE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -2161,8 +2097,6 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -2181,8 +2115,6 @@ IN_PROC_BROWSER_TEST_F(
       AddSandboxedChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  EXPECT_TRUE(child_frame->is_web_secure_context());
-
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
@@ -2199,8 +2131,6 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
-
-  EXPECT_FALSE(child_frame->is_web_secure_context());
 
   const network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();

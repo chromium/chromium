@@ -32,6 +32,15 @@ struct PolicyContainerPolicies {
   // it is inherited following the general rules of the PolicyContainerHost.
   network::mojom::IPAddressSpace ip_address_space =
       network::mojom::IPAddressSpace::kUnknown;
+
+  // Whether the document is a secure context.
+  //
+  // See: https://html.spec.whatwg.org/#secure-contexts.
+  //
+  // See also:
+  //  - |network::IsUrlPotentiallyTrustworthy()|
+  //  - |network::IsOriginPotentiallyTrustworthy()|
+  bool is_web_secure_context = false;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.

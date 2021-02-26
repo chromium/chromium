@@ -2926,15 +2926,6 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   DCHECK(GetLastCommittedOrigin().opaque());
   DCHECK(isolation_info_.IsEmpty());
 
-  // If the document has a non-secure parent, then it is non-secure. Otherwise
-  // it depends if the creator has a potentially-trustworthy origin.
-  if (parent_ && !parent_->is_web_secure_context()) {
-    is_web_secure_context_ = false;
-  } else {
-    is_web_secure_context_ =
-        network::IsOriginPotentiallyTrustworthy(new_frame_creator);
-  }
-
   // Calculate and set |new_frame_origin|.
   bool new_frame_should_be_sandboxed =
       network::mojom::WebSandboxFlags::kOrigin ==
@@ -8534,13 +8525,16 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
 network::mojom::ClientSecurityStatePtr
 RenderFrameHostImpl::BuildClientSecurityState() const {
   auto client_security_state = network::mojom::ClientSecurityState::New();
-  client_security_state->is_web_secure_context = is_web_secure_context();
-  client_security_state->cross_origin_embedder_policy =
-      cross_origin_embedder_policy_;
-  client_security_state->ip_address_space =
-      policy_container_host_->ip_address_space();
+
+  const PolicyContainerPolicies& policies = policy_container_host_->policies();
+  client_security_state->is_web_secure_context = policies.is_web_secure_context;
+  client_security_state->ip_address_space = policies.ip_address_space;
+
   client_security_state->private_network_request_policy =
       private_network_request_policy_;
+  client_security_state->cross_origin_embedder_policy =
+      cross_origin_embedder_policy_;
+
   return client_security_state;
 }
 
@@ -9075,9 +9069,6 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   if (!navigation_request->IsWaitingToCommit()) {
     return;
   }
-
-  // IsWebSecureContext() must only be called on ready-to-commit navigations.
-  is_web_secure_context_ = navigation_request->IsWebSecureContext();
 
   private_network_request_policy_ =
       navigation_request->private_network_request_policy();
