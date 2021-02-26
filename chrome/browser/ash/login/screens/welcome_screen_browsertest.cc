@@ -83,7 +83,7 @@ const char kSetAvailableVoices[] = R"(
       };)";
 
 const char kChromeVoxHintLaptopSpokenString[] =
-    "Do you want to activate ChromeVox, the built-in screenreader for Chrome "
+    "Do you want to activate ChromeVox, the built-in screen reader for Chrome "
     "OS? If so, press the space bar.";
 
 void ToggleAccessibilityFeature(const std::string& feature_name,
@@ -619,8 +619,8 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, Tablet) {
   test::SpeechMonitor monitor;
   welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(
-      "Do you want to activate ChromeVox, the built-in screenreader for Chrome "
-      "OS? If so, press and hold both volume keys for five seconds.");
+      "Do you want to activate ChromeVox, the built-in screen reader for "
+      "Chrome OS? If so, press and hold both volume keys for five seconds.");
   monitor.Replay();
   WaitForSpokenSuccessMetric();
 }
