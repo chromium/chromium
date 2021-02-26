@@ -264,6 +264,12 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   }
 #endif  // ARCH_CPU_ARM64
 
+  if (__builtin_available(macOS 11.0, *)) {
+    if (options.enable_cpu_security_mitigations) {
+      DPSXCHECK(posix_spawnattr_set_csm_np(attr.get(), POSIX_SPAWN_NP_CSM_ALL));
+    }
+  }
+
   if (!options.current_directory.empty()) {
     const char* chdir_str = options.current_directory.value().c_str();
     if (__builtin_available(macOS 10.15, *)) {

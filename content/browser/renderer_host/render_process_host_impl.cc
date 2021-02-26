@@ -441,6 +441,10 @@ class RendererSandboxedProcessLauncherDelegate
   }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
+#if defined(OS_MAC)
+  bool EnableCpuSecurityMitigations() override { return true; }
+#endif  // defined(OS_MAC)
+
   sandbox::policy::SandboxType GetSandboxType() override {
     return sandbox::policy::SandboxType::kRenderer;
   }

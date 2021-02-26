@@ -224,6 +224,10 @@ struct BASE_EXPORT LaunchOptions {
   // that any TCC requests are not associated with the parent.
   bool disclaim_responsibility = false;
 
+  // Apply a process scheduler policy to enable mitigations against CPU side-
+  // channel attacks.
+  bool enable_cpu_security_mitigations = false;
+
 #if defined(ARCH_CPU_ARM64)
   // If true, the child process will be launched as x86_64 code under Rosetta
   // translation. The executable being launched must contain x86_64 code, either

@@ -125,6 +125,7 @@ class PpapiPluginSandboxedProcessLauncherDelegate
 
 #if defined(OS_MAC)
   bool DisclaimResponsibility() override { return true; }
+  bool EnableCpuSecurityMitigations() override { return true; }
 #endif
 
  private:
