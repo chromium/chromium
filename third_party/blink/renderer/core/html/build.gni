@@ -688,7 +688,6 @@ blink_core_tests_html = [
   "html_table_row_element_test.cc",
   "html_view_source_document_test.cc",
   "image_document_test.cc",
-  "imports/html_import_sheets_test.cc",
   "lazy_load_frame_observer_test.cc",
   "lazy_load_image_observer_test.cc",
   "link_element_loading_test.cc",

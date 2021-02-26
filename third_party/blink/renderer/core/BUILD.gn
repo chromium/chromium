@@ -1209,7 +1209,6 @@ source_set("unit_tests") {
     "exported/web_document_test.cc",
     "exported/web_drag_data_test.cc",
     "exported/web_element_test.cc",
-    "exported/web_frame_serializer_import_test.cc",
     "exported/web_frame_serializer_sanitization_test.cc",
     "exported/web_frame_serializer_test.cc",
     "exported/web_frame_serializer_test_helper.cc",

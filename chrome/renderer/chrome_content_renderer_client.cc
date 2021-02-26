@@ -1622,38 +1622,7 @@ void ChromeContentRendererClient::DidSetUserAgent(
 #endif
 }
 
+// TODO(crbug.com/937746) Remove this function entirely.
 bool ChromeContentRendererClient::RequiresHtmlImports(const GURL& url) {
-  if (url.SchemeIs(content::kChromeUIScheme)) {
-    base::StringPiece host_piece = url.host_piece();
-    // TODO(crbug.com/1014322): Remove when migrated to Polymer3.
-    return host_piece == content::kChromeUIResourcesHost ||
-           // TODO(crbug.com/1006778): Remove when chrome://tracing is fully
-           // removed.
-           host_piece == content::kChromeUITracingHost ||
-           // TODO(crbug.com/1110954): Remove when migrated away from HTML
-           // imports.
-           host_piece == chrome::kChromeUIBluetoothInternalsHost ||
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-           // TODO(crbug.com/1111430): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIAccountManagerErrorHost ||
-           host_piece == chrome::kChromeUIAccountManagerWelcomeHost ||
-           host_piece == chrome::kChromeUIAccountMigrationWelcomeHost ||
-           // TODO(crbug.com/1111430): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIAddSupervisionHost ||
-           // TODO(crbug.com/1090884): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIInternetConfigDialogHost ||
-           // TODO(crbug.com/1090883): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIInternetDetailDialogHost ||
-           // TODO(crbug.com/1022196): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIMultiDeviceSetupHost ||
-           // TODO(crbug.com/1111852): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUINetworkHost ||
-           // TODO(crbug.com/1045266): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIOSSettingsHost ||
-           // TODO(crbug.com/1022192): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIPasswordChangeHost ||
-#endif
-           false;
-  }
   return false;
 }
