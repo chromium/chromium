@@ -24,8 +24,6 @@
         <include name="IDR_BRAILLE_IME_MAIN_JS" file="chromeos/accessibility/braille_ime/main.js" type="BINDATA" />
       </if>
 
-      <!-- Bookmarks -->
-      <include name="IDR_COMPONENT_BOOKMARKS_BOOKMARKS_HTML" file="bookmarks/bookmarks.html" type="BINDATA" />
       <!-- Hangout Services extension, included in Google Chrome builds only. -->
       <if expr="_google_chrome or enable_hangout_services_extension">
         <include name="IDR_HANGOUT_SERVICES_BACKGROUND_HTML" file="hangout_services/background.html" type="BINDATA" />
