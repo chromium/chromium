@@ -16,8 +16,7 @@
     <style include="settings-shared"></style>
     <settings-multidevice-feature-item id="wifiSyncItem"
         feature="[[MultiDeviceFeature.WIFI_SYNC]]"
-        page-content-data="[[pageContentData]]"
-        deep-link-focus-id$="[[Setting.kWifiSyncOnOff]]">
+        page-content-data="[[pageContentData]]">
       <template is="dom-if" if="[[!isWifiSyncV1Enabled_]]" restamp>
         <settings-multidevice-wifi-sync-disabled-link
             class="secondary"
