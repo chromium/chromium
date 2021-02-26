@@ -86,6 +86,11 @@ public class JourneyLogger {
         JourneyLoggerJni.get().setEventOccurred(mJourneyLoggerAndroid, JourneyLogger.this, event);
     }
 
+    /** Records that a payment app was invoked. */
+    public void setPayClicked() {
+        JourneyLoggerJni.get().setPayClicked(mJourneyLoggerAndroid, JourneyLogger.this);
+    }
+
     /**
      * Records the method that has been selected and invoked.
      *
@@ -228,6 +233,7 @@ public class JourneyLogger {
         void setHasEnrolledInstrumentValue(
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
         void setEventOccurred(long nativeJourneyLoggerAndroid, JourneyLogger caller, int event);
+        void setPayClicked(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setSelectedMethod(
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, int paymentMethodCategory);
         void setAvailableMethod(

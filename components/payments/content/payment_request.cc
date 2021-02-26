@@ -861,7 +861,7 @@ void PaymentRequest::TerminateConnection() {
 }
 
 void PaymentRequest::Pay() {
-  journey_logger_.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  journey_logger_.SetPayClicked();
   journey_logger_.RecordCheckoutStep(
       JourneyLogger::CheckoutFunnelStep::kPaymentHandlerInvoked);
   DCHECK(state_->selected_app());

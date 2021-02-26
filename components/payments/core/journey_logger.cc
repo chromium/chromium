@@ -144,6 +144,10 @@ void JourneyLogger::SetEventOccurred(Event event) {
   events_ |= event;
 }
 
+void JourneyLogger::SetPayClicked() {
+  SetEventOccurred(EVENT_PAY_CLICKED);
+}
+
 void JourneyLogger::SetSelectedMethod(PaymentMethodCategory category) {
   switch (category) {
     case PaymentMethodCategory::kBasicCard:

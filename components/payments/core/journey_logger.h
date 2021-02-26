@@ -212,6 +212,9 @@ class JourneyLogger {
   // Records that an event occurred.
   void SetEventOccurred(Event event);
 
+  // Records that a payment app was invoked.
+  void SetPayClicked();
+
   // Records the category of the selected app.
   void SetSelectedMethod(PaymentMethodCategory category);
 

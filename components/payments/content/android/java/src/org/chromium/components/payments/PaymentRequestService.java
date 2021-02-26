@@ -694,7 +694,7 @@ public class PaymentRequestService
                 Collections.unmodifiableMap(modifiers), paymentOptions, redactedShippingOptions,
                 /*callback=*/this);
         mInvokedPaymentApp = paymentApp;
-        mJourneyLogger.setEventOccurred(Event.PAY_CLICKED);
+        mJourneyLogger.setPayClicked();
         boolean isAutofillCard = paymentApp.isAutofillInstrument();
         // Record what type of app was selected when "Pay" was clicked.
         boolean isGooglePaymentApp = false;
