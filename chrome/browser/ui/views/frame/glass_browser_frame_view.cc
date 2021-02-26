@@ -444,15 +444,15 @@ int GlassBrowserFrameView::FrameTopBorderThickness(bool restored) const {
 }
 
 int GlassBrowserFrameView::FrameTopBorderThicknessPx(bool restored) const {
-  // Distinct from FrameBorderThickness() because Windows gives maximized
-  // windows an offscreen region around the edges. The left/right/bottom edges
-  // don't worry about this because we cancel them out in
-  // BrowserDesktopWindowTreeHostWin::GetClientAreaInsets() so the offscreen
-  // area is non-client as far as Windows is concerned. However we can't do this
-  // with the top inset because otherwise Windows will give us a standard
-  // titlebar. Thus we must compensate here to avoid having UI elements drift
-  // off the top of the screen.
-  if (frame()->IsFullscreen() && !restored)
+  // Distinct from FrameBorderThickness() because we can't inset the top
+  // border, otherwise Windows will give us a standard titlebar.
+  // For maximized windows this is not true, and the top border must be
+  // inset in order to avoid overlapping the monitor above.
+  // See comments in BrowserDesktopWindowTreeHostWin::GetClientAreaInsets().
+  const bool needs_no_border =
+      (ShouldCustomDrawSystemTitlebar() && frame()->IsMaximized()) ||
+      frame()->IsFullscreen();
+  if (needs_no_border && !restored)
     return 0;
 
   // Note that this method assumes an equal resize handle thickness on all
