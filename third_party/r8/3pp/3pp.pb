@@ -4,8 +4,8 @@ create {
       repo: "https://r8.googlesource.com/r8"
       tag_pattern: "%s-dev"
 
-      # Fixed to 3.0.21-dev
-      version_restriction: { op: EQ val: "3.0.21" }
+      # Fixed to git tag given below:
+      version_restriction: { op: EQ val: "3.0.25" }
     }
     patch_dir: "patches"
   }
