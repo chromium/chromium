@@ -315,7 +315,7 @@ class Executive(object):
                 # Escape any non-ascii characters for easy copy/paste
                 arg = arg.encode('unicode_escape')
             # FIXME: Do we need to fix quotes here?
-            escaped_args.append(arg)
+            escaped_args.append(arg.decode(self._child_process_encoding()))
         return ' '.join(escaped_args)
 
     def run_command(

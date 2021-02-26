@@ -7,6 +7,8 @@ import json
 import os
 import sys
 
+import six
+
 import common
 
 BLINK_TOOLS_DIR = os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools')
@@ -142,15 +144,14 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             test_failures.FILENAME_SUFFIX_DIFF, results_dir,
             path_so_far, diff_content)
         root_node["artifacts"]["text_diff"] = [diff_subpath]
-        # We pass the text as bytes here because the html_diff library
-        # requires that but the file contents is read-in as unicode.
-        html_diff_content = html_diff(expected_text.encode('utf-8'),
-                                      actual_text.encode('utf-8'))
-        # Ensure the diff itself is properly decoded, to avoid
-        # UnicodeDecodeErrors when writing to file. This can happen if
-        # the diff contains unicode characters but the file is written
-        # as ascii because of the default system-level encoding.
-        html_diff_content = unicode(html_diff_content, 'utf-8')
+        # The html_diff library requires str arguments but the file contents is
+        # read-in as unicode. In python3 the contents comes in as a str, but in
+        # python2 it remains type unicode, so we have to encode it to get the
+        # str version.
+        if six.PY2:
+            expected_text = expected_text.encode('utf8')
+            actual_text = actual_text.encode('utf8')
+        html_diff_content = html_diff(expected_text, actual_text)
         html_diff_subpath = self._write_text_artifact(
             test_failures.FILENAME_SUFFIX_HTML_DIFF, results_dir,
             path_so_far, html_diff_content, extension=".html")
@@ -235,8 +236,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             two strings:
             - first is the path to the artifact file that the expected output
               was written to, relative to the directory that the original output
-              is located. Returns None if there is no expected output for this
-              test.
+              is located. Returns empty string if there is no expected output
+              for this test.
             - second is the text that is written to the file, or empty string if
               there is no expected output for this test.
         """
@@ -247,12 +248,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # manifest) or .any.js tests (which appear in the output even though
             # they do not actually run - they have corresponding tests like
             # .any.worker.html which are covered here).
-            return None, ""
+            return "", ""
 
         test_file_path = os.path.join(EXTERNAL_WPT_TESTS_DIR, test_file_subpath)
         expected_ini_path = test_file_path + ".ini"
         if not self.fs.exists(expected_ini_path):
-            return None, ""
+            return "", ""
 
         # This test has checked-in expected output. It needs to be copied to the
         # results viewer directory and renamed from <test>.ini to
@@ -281,8 +282,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # failures).
             return not root_node.get("is_regression")
 
-        # Not a leaf, recurse into the subtree
-        for key, node in root_node.items():
+        # Not a leaf, recurse into the subtree. Note that we make a copy of the
+        # items since we delete from root_node.items() during the loop.
+        for key, node in list(root_node.items()):
             if self._trim_to_regressions(node):
                 del root_node[key]
 
