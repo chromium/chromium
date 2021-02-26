@@ -81,7 +81,9 @@ public class OWebContentsAccessibility extends WebContentsAccessibilityImpl {
             final boolean ignoreScrollOffset) {
         // Store the tag name in HtmlInfo.
         ViewStructure.HtmlInfo.Builder htmlBuilder = viewNode.newHtmlInfoBuilder(node.htmlTag);
-        viewNode.setHtmlInfo(htmlBuilder.build());
+        if (htmlBuilder != null) {
+            viewNode.setHtmlInfo(htmlBuilder.build());
+        }
 
         super.createVirtualStructure(viewNode, node, ignoreScrollOffset);
     }
