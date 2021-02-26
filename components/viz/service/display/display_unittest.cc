@@ -10,7 +10,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
@@ -31,6 +34,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
+#include "components/viz/common/switches.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 #include "components/viz/service/display/delegated_ink_trail_data.h"
@@ -4523,6 +4527,8 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
 class SkiaDelegatedInkRendererTest : public DisplayTest {
  public:
   void SetUpRenderers() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kDrawPredictedInkPoint, switches::kDraw1Point12Ms);
     // First set up the display to use the Skia renderer.
     RendererSettings settings;
     settings.use_skia_renderer = true;
@@ -4643,15 +4649,10 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
         "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithoutPrediction");
     HistogramCheck(
         histograms, expected_bucket_with_prediction,
-        "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithPrediction");
-
-    // Either both histograms should be populated, or neither. But never just
-    // one of them.
-    if (expected_bucket_without_prediction == base::TimeDelta::Min() ||
-        expected_bucket_with_prediction == base::TimeDelta::Min()) {
-      EXPECT_EQ(expected_bucket_without_prediction,
-                expected_bucket_with_prediction);
-    }
+        base::StrCat({"Renderer.DelegatedInkTrail."
+                      "LatencyImprovementWithPrediction.Experiment",
+                      base::NumberToString(PredictionConfig::k1Point12Ms)})
+            .c_str());
   }
 
   void DrawDelegatedInkTrail() {
@@ -4738,12 +4739,13 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
 
   // The histogram should count one in the bucket that is the difference between
   // the latest point stored and the metadata. No prediction should occur with
-  // 3 provided points, so the *WithPrediction histogram should count 1 in the
-  // same bucket as the *WithoutPrediction histogram.
+  // 3 provided points, so the *WithoutPrediction histogram should count
+  // the difference between the last point and the metadata, while the
+  // *WithPrediction* histogram should count 1 in the 0 bucket.
   base::TimeDelta bucket_without_prediction =
       last_ink_point(kPointerId).timestamp() - metadata.timestamp();
   FinalizePathAndCheckHistograms(bucket_without_prediction,
-                                 bucket_without_prediction);
+                                 base::TimeDelta::FromMilliseconds(0));
 
   EXPECT_EQ(kInitialDelegatedPoints - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerId));
@@ -4776,11 +4778,13 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
 
   // Now send metadata with a timestamp before all of the points that are
   // currently stored to confirm that no points are filtered out and the number
-  // stored remains the same while both histograms records 0 improvement.
+  // stored remains the same. The *WithoutPrediction histogram should record 0
+  // improvement, but the *WithPrediction* one should not record anything at all
+  // due to not finding a matching pointer ID to predict with.
   const int kExpectedPoints = StoredPointsForPointerId(kPointerId);
   SendMetadata(metadata);
   FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0),
-                                 base::TimeDelta::FromMilliseconds(0));
+                                 base::TimeDelta::Min());
   EXPECT_EQ(kExpectedPoints, StoredPointsForPointerId(kPointerId));
 }
 
@@ -4841,8 +4845,10 @@ TEST_F(SkiaDelegatedInkRendererTest,
       bucket_without_prediction,
       bucket_without_prediction +
           base::TimeDelta::FromMilliseconds(
-              kNumberOfMillisecondsIntoFutureToPredictPerPoint *
-              kNumberOfPointsToPredict));
+              kPredictionConfigs[PredictionConfig::k1Point12Ms]
+                  .milliseconds_into_future_per_point *
+              kPredictionConfigs[PredictionConfig::k1Point12Ms]
+                  .points_to_predict));
 
   // Confirm the size, first, and last points of the first pointer ID are what
   // we expect.
@@ -4861,13 +4867,13 @@ TEST_F(SkiaDelegatedInkRendererTest,
 
   // Send a metadata whose point and timestamp doesn't match any stored
   // DelegatedInkPoint and confirm that it doesn't cause any changes to the
-  // stored values. Histograms should have 1 in both 0 buckets since no points
-  // will be drawn.
+  // stored values. *WithoutPrediction histogram should record 0 improvement,
+  // *WithPrediction* shouldn't record anything due to no valid pointer id.
   SendMetadata(DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK, base::TimeTicks::Min(),
       gfx::RectF(), base::TimeTicks::Min(), /*hovering*/ false));
   FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0),
-                                 base::TimeDelta::FromMilliseconds(0));
+                                 base::TimeDelta::Min());
   EXPECT_EQ(kNumPointsForPointerId0 - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerIds[0]));
   for (uint64_t i = 1; i < kPointerIds.size(); ++i) {
@@ -4883,7 +4889,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
       base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(1000),
       gfx::RectF(), base::TimeTicks::Now(), /*hovering*/ false));
   FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0),
-                                 base::TimeDelta::FromMilliseconds(0));
+                                 base::TimeDelta::Min());
   for (int i : kPointerIds)
     EXPECT_EQ(0, StoredPointsForPointerId(i));
 }
@@ -4928,8 +4934,10 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
       bucket_without_prediction,
       bucket_without_prediction +
           base::TimeDelta::FromMilliseconds(
-              kNumberOfMillisecondsIntoFutureToPredictPerPoint *
-              kNumberOfPointsToPredict));
+              kPredictionConfigs[PredictionConfig::k1Point12Ms]
+                  .milliseconds_into_future_per_point *
+              kPredictionConfigs[PredictionConfig::k1Point12Ms]
+                  .points_to_predict));
 
   // Now provide metadata that matches the final ink point provided, so that
   // everything earlier is filtered out. Then the *WithoutPrediction histogram
@@ -4941,8 +4949,9 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
   FinalizePathAndCheckHistograms(
       bucket_without_prediction,
       base::TimeDelta::FromMilliseconds(
-          kNumberOfMillisecondsIntoFutureToPredictPerPoint *
-          kNumberOfPointsToPredict));
+          kPredictionConfigs[PredictionConfig::k1Point12Ms]
+              .milliseconds_into_future_per_point *
+          kPredictionConfigs[PredictionConfig::k1Point12Ms].points_to_predict));
 
   // DrawDelegatedInkTrail should clear the metadata, so finalizing the path
   // shouldn't record anything in the histograms.

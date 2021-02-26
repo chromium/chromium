@@ -4,10 +4,13 @@
 
 #include "components/viz/common/features.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -214,4 +217,25 @@ bool ShouldUseSetPresentDuration() {
   return base::FeatureList::IsEnabled(kUseSetPresentDuration);
 }
 #endif  // OS_WIN
+
+base::Optional<int> ShouldDrawPredictedInkPoints() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kDrawPredictedInkPoint))
+    return base::nullopt;
+
+  std::string predicted_points =
+      command_line->GetSwitchValueASCII(switches::kDrawPredictedInkPoint);
+  if (predicted_points == switches::kDraw1Point12Ms)
+    return viz::PredictionConfig::k1Point12Ms;
+  else if (predicted_points == switches::kDraw2Points6Ms)
+    return viz::PredictionConfig::k2Points6Ms;
+  else if (predicted_points == switches::kDraw1Point6Ms)
+    return viz::PredictionConfig::k1Point6Ms;
+  else if (predicted_points == switches::kDraw2Points3Ms)
+    return viz::PredictionConfig::k2Points3Ms;
+
+  NOTREACHED();
+  return base::nullopt;
+}
+
 }  // namespace features

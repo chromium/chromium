@@ -1180,6 +1180,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "draw-predicted-ink-point",
+    "owners": [ "mabian@microsoft.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "drive-fs-bidirectional-native-messaging",
     "owners": [ "austinct@chromium.org", "dats@chromium.org" ],
     "expiry_milestone": 90

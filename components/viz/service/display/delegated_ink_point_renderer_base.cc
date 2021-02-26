@@ -113,42 +113,12 @@ void DelegatedInkPointRendererBase::PredictPoints(
     std::vector<DelegatedInkPoint>* ink_points_to_draw) {
   DCHECK(metadata_);
 
-  if (!pointer_id_.has_value())
+  if (!pointer_id_.has_value() ||
+      static_cast<int>(ink_points_to_draw->size()) == 0)
     return;
 
-  DelegatedInkTrailData& trail_data = pointer_ids_[pointer_id_.value()];
-  int points_predicted = 0;
-
-  // |ink_points_to_draw| needs to have at least one point in it already as a
-  // reference to know what timestamp to start predicting points at. This single
-  // point may just match |metadata_|.
-  if (trail_data.HasPrediction() && ink_points_to_draw->size() > 0) {
-    for (int i = 0; i < kNumberOfPointsToPredict; ++i) {
-      base::TimeTicks timestamp =
-          ink_points_to_draw->back().timestamp() +
-          base::TimeDelta::FromMilliseconds(
-              kNumberOfMillisecondsIntoFutureToPredictPerPoint);
-      base::Optional<DelegatedInkPoint> predicted_point =
-          trail_data.GetPredictedPoint(timestamp, metadata_->frame_time());
-      if (predicted_point.has_value()) {
-        ink_points_to_draw->push_back(predicted_point.value());
-        points_predicted++;
-      } else {
-        // HasPrediction() can return true while GeneratePrediction() fails to
-        // produce a prediction if the predicted point would go in to the
-        // opposite direction of most recently stored points. If this happens,
-        // don't continue trying to generate more predicted points.
-        break;
-      }
-    }
-  }
-
-  TRACE_EVENT_INSTANT1("viz", "DelegatedInkPointRendererBase::PredictPoints",
-                       TRACE_EVENT_SCOPE_THREAD, "predicted points",
-                       points_predicted);
-
-  if (points_predicted > 0)
-    trail_data.EvaluatePrediction();
+  pointer_ids_[pointer_id_.value()].PredictPoints(ink_points_to_draw,
+                                                  metadata_.get());
 }
 
 void DelegatedInkPointRendererBase::ResetPrediction() {

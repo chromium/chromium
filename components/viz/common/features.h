@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/common/viz_common_export.h"
 
@@ -52,6 +53,7 @@ VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 #if defined(OS_WIN)
 VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
 #endif  // OS_WIN
+VIZ_COMMON_EXPORT base::Optional<int> ShouldDrawPredictedInkPoints();
 
 }  // namespace features
 

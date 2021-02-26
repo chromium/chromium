@@ -76,9 +76,6 @@ std::vector<SkPoint> DelegatedInkPointRendererSkia::GetPointsToDraw() {
       GetImprovement(&ink_points_to_draw, metadata_.get()));
 
   PredictPoints(&ink_points_to_draw);
-  UMA_HISTOGRAM_TIMES(
-      "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithPrediction",
-      GetImprovement(&ink_points_to_draw, metadata_.get()));
 
   std::vector<SkPoint> sk_points;
   for (DelegatedInkPoint ink_point : ink_points_to_draw)

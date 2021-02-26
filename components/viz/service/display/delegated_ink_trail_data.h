@@ -7,13 +7,17 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/service/viz_service_export.h"
-#include "ui/base/prediction/input_predictor.h"
 #include "ui/base/prediction/prediction_metrics_handler.h"
 #include "ui/gfx/geometry/point_f.h"
+
+namespace ui {
+class InputPredictor;
+}  // namespace ui
 
 namespace viz {
 class DelegatedInkMetadata;
@@ -30,9 +34,8 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
   ~DelegatedInkTrailData();
 
   void AddPoint(const DelegatedInkPoint& point);
-  base::Optional<DelegatedInkPoint> GetPredictedPoint(
-      base::TimeTicks timestamp,
-      base::TimeTicks frame_time);
+  void PredictPoints(std::vector<DelegatedInkPoint>* ink_points_to_draw,
+                     DelegatedInkMetadata* metadata);
   void Reset();
   bool ContainsMatchingPoint(DelegatedInkMetadata* metadata) const;
   void ErasePointsOlderThanMetadata(DelegatedInkMetadata* metadata);
@@ -41,20 +44,31 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
   const std::map<base::TimeTicks, gfx::PointF>& GetPoints() const {
     return points_;
   }
-  bool HasPrediction() const { return predictor_->HasPrediction(); }
-  void EvaluatePrediction() { metrics_handler_.EvaluatePrediction(); }
 
  private:
+  // Helper struct for holding the predictor and matching metrics handler. This
+  // only needs to exist during ongoing prediction experimentation. Once the
+  // experimentation is complete, only a single predictor and single metrics
+  // handler will be needed.
+  struct PredictionHandler {
+   public:
+    PredictionHandler();
+    ~PredictionHandler();
+    // Kalman predictors that are used for predicting points.
+    std::unique_ptr<ui::InputPredictor> predictor;
+
+    // Handlers for calculating useful metrics for evaluating predicted points
+    // and populating the histograms with those metrics.
+    std::unique_ptr<ui::PredictionMetricsHandler> metrics_handler;
+  };
+
+  // Array of the predictors and matching metrics handlers for doing prediction
+  // experimentation.
+  PredictionHandler prediction_handlers_[kNumberOfPredictionConfigs];
+
   // The points that arrived from the browser process and will be used to draw
   // the delegated ink trail.
   std::map<base::TimeTicks, gfx::PointF> points_;
-
-  // Kalman predictor that is used for generating predicted points.
-  std::unique_ptr<ui::InputPredictor> predictor_;
-
-  // Handler for calculating useful metrics for evaluating predicted points
-  // and populating the histograms with those metrics.
-  ui::PredictionMetricsHandler metrics_handler_;
 
   // The pointer id associated with these points.
   int32_t pointer_id_;

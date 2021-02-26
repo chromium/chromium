@@ -1558,6 +1558,14 @@ extern const char kSharedHighlightingUseBlocklistDescription[];
 extern const char kPreemtiveLinkToTextGenerationName[];
 extern const char kPreemtiveLinkToTextGenerationDescription[];
 
+extern const char kDraw1PredictedPoint12Ms[];
+extern const char kDraw2PredictedPoints6Ms[];
+extern const char kDraw1PredictedPoint6Ms[];
+extern const char kDraw2PredictedPoints3Ms[];
+extern const char kDrawPredictedPointsDefault[];
+extern const char kDrawPredictedPointsDescription[];
+extern const char kDrawPredictedPointsName[];
+
 // Android --------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

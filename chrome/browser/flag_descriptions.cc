@@ -2682,6 +2682,16 @@ const char kPreemtiveLinkToTextGenerationName[] =
 const char kPreemtiveLinkToTextGenerationDescription[] =
     "Enables link to text to be generated in advance.";
 
+const char kDraw1PredictedPoint12Ms[] = "1 point 12ms ahead.";
+const char kDraw2PredictedPoints6Ms[] = "2 points, each 6ms ahead.";
+const char kDraw1PredictedPoint6Ms[] = "1 point 6ms ahead.";
+const char kDraw2PredictedPoints3Ms[] = "2 points, each 3ms ahead.";
+const char kDrawPredictedPointsDefault[] = "Disabled";
+const char kDrawPredictedPointsDescription[] =
+    "Draw predicted points when using the delegated ink trails API. Requires "
+    "experimental web platform features to be enabled.";
+const char kDrawPredictedPointsName[] = "Draw predicted delegated ink points";
+
 // Android ---------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

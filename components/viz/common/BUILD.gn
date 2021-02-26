@@ -148,6 +148,7 @@ viz_component("common") {
     "delegated_ink_metadata.h",
     "delegated_ink_point.cc",
     "delegated_ink_point.h",
+    "delegated_ink_prediction_configuration.h",
     "display/de_jelly.cc",
     "display/de_jelly.h",
     "display/overlay_strategy.cc",

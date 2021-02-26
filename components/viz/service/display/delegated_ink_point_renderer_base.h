@@ -19,14 +19,6 @@
 namespace viz {
 class DelegatedInkMetadata;
 
-// The number of points to predict into the future, when prediction is
-// available.
-constexpr int kNumberOfPointsToPredict = 1;
-
-// The time that each predicted point should be ahead of the previous point,
-// in milliseconds.
-constexpr int kNumberOfMillisecondsIntoFutureToPredictPerPoint = 12;
-
 // This is the base class used for rendering delegated ink trails on the end of
 // strokes to reduce user perceived latency. On initialization, it binds the
 // mojo interface required for receiving delegated ink points that are made and
