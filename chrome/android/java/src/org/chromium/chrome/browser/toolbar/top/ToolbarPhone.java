@@ -2812,7 +2812,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // For RTL, the value is positive because we are pushing the icon further to the
         // right-hand side.
         int offset = statusCoordinator.getStatusIconWidth() - getAdditionalOffsetForNTP();
-        return getLayoutDirection() == LAYOUT_DIRECTION_RTL ? offset : -offset;
+        return mLocationBar.isLayoutRtl() ? offset : -offset;
     }
 
     /**
@@ -2835,7 +2835,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             return 0;
         }
 
-        boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
+        boolean isRtl = mLocationBar.isLayoutRtl();
         // The calculation here is: the difference in padding between the focused vs unfocused
         // states and also accounts for the translation that the status icon will do. In the end,
         // this translation will be the distance that the url bar needs to travel to arrive at the
