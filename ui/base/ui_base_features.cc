@@ -24,6 +24,12 @@ namespace features {
 // If enabled, calculate native window occlusion - Windows-only.
 const base::Feature kCalculateNativeWinOcclusion{
     "CalculateNativeWinOcclusion", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, listen for screen power state change and factor into the native
+// window occlusion detection - Windows-only.
+const base::Feature kScreenPowerListenerForNativeWinOcclusion{
+    "ScreenPowerListenerForNativeWinOcclusion",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // OW_WIN
 
 // Whether or not filenames are supported on the clipboard.

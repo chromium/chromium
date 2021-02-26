@@ -22,6 +22,7 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_version.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace aura {
@@ -281,6 +282,12 @@ void NativeWindowOcclusionTrackerWin::OnSessionChange(
 }
 
 void NativeWindowOcclusionTrackerWin::OnDisplayStateChanged(bool display_on) {
+  static bool screen_power_listener_enabled = base::FeatureList::IsEnabled(
+      features::kScreenPowerListenerForNativeWinOcclusion);
+
+  if (!screen_power_listener_enabled)
+    return;
+
   if (display_on == display_on_)
     return;
 
