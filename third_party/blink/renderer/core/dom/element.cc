@@ -5619,10 +5619,10 @@ void Element::WillModifyAttribute(const QualifiedName& name,
 DISABLE_CFI_PERF
 void Element::DidAddAttribute(const QualifiedName& name,
                               const AtomicString& value) {
-  if (name == html_names::kIdAttr)
-    UpdateId(g_null_atom, value);
   AttributeChanged(AttributeModificationParams(
       name, g_null_atom, value, AttributeModificationReason::kDirectly));
+  if (name == html_names::kIdAttr)
+    UpdateId(g_null_atom, value);
   probe::DidModifyDOMAttr(this, name, value);
   DispatchSubtreeModifiedEvent();
 }
