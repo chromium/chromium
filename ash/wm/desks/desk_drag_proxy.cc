@@ -57,6 +57,8 @@ DeskDragProxy::DeskDragProxy(DesksBarView* desks_bar_view,
   drag_widget_->Show();
 }
 
+DeskDragProxy::~DeskDragProxy() = default;
+
 void DeskDragProxy::OnImplicitAnimationsCompleted() {
   DCHECK(desks_bar_view_);
 
@@ -94,6 +96,11 @@ void DeskDragProxy::DragTo(const gfx::PointF& location_in_screen) {
 
 void DeskDragProxy::SnapBackToDragView() {
   ui::Layer* layer = drag_widget_->GetLayer();
+
+  // Do not snap back again if the proxy is already doing it.
+  if (layer->GetAnimator()->is_animating() &&
+      layer->GetTargetTransform().IsIdentity())
+    return;
 
   // Cache proxy's bounds and drag view's bounds.
   gfx::RectF scaled_proxy_bounds(drag_widget_->GetWindowBoundsInScreen());
