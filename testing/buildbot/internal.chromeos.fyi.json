@@ -1235,7 +1235,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R89-13729.18.0",
+        "cros_img": "octopus-release/R89-13729.36.0",
         "name": "mainline_lacros_tast_tests_OCTOPUS_TOT-1",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
