@@ -194,7 +194,8 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
 void TabGroupHeader::OnMouseEntered(const ui::MouseEvent& event) {
   // Hide the hover card, since there currently isn't anything to display
   // for a group.
-  tab_strip_->UpdateHoverCard(nullptr);
+  tab_strip_->UpdateHoverCard(nullptr,
+                              TabController::HoverCardUpdateType::kHover);
 }
 
 void TabGroupHeader::OnThemeChanged() {
@@ -203,7 +204,8 @@ void TabGroupHeader::OnThemeChanged() {
 }
 
 void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
-  tab_strip_->UpdateHoverCard(nullptr);
+  tab_strip_->UpdateHoverCard(nullptr,
+                              TabController::HoverCardUpdateType::kEvent);
   switch (event->type()) {
     case ui::ET_GESTURE_TAP: {
       bool successful_toggle =
@@ -232,7 +234,8 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
 
 void TabGroupHeader::OnFocus() {
   View::OnFocus();
-  tab_strip_->UpdateHoverCard(nullptr);
+  tab_strip_->UpdateHoverCard(nullptr,
+                              TabController::HoverCardUpdateType::kFocus);
 }
 
 void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {

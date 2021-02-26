@@ -43,7 +43,7 @@
 
 class StackedTabStripLayout;
 class Tab;
-class TabHoverCardBubbleView;
+class TabHoverCardController;
 class TabStripController;
 class TabStripObserver;
 class TabStripLayoutHelper;
@@ -307,7 +307,7 @@ class TabStrip : public views::View,
   const Tab* GetAdjacentTab(const Tab* tab, int offset) override;
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override;
-  void UpdateHoverCard(Tab* tab) override;
+  void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override;
   bool ShowDomainInHoverCards() const override;
   bool HoverCardIsShowingForTab(Tab* tab) override;
   int GetBackgroundOffset() const override;
@@ -632,7 +632,6 @@ class TabStrip : public views::View,
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
   // views::ViewObserver:
-  void OnViewIsDeleting(views::View* observed_view) override;
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
@@ -657,13 +656,6 @@ class TabStrip : public views::View,
   views::ViewModelT<Tab> tabs_;
 
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>> group_views_;
-
-  // The view tracker is used to keep track of if the hover card has been
-  // destroyed by its widget.
-  TabHoverCardBubbleView* hover_card_ = nullptr;
-  base::ScopedObservation<views::View, views::ViewObserver>
-      hover_card_observation_{this};
-  std::unique_ptr<ui::EventHandler> hover_card_event_sniffer_;
 
   std::unique_ptr<TabStripController> controller_;
 
@@ -752,6 +744,8 @@ class TabStrip : public views::View,
   float radial_highlight_opacity_ = 1.0f;
 
   SkColor separator_color_ = gfx::kPlaceholderColor;
+
+  std::unique_ptr<TabHoverCardController> hover_card_controller_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

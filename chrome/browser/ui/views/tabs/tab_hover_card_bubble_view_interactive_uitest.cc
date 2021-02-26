@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -23,7 +24,7 @@ using views::Widget;
 class TabHoverCardBubbleViewInteractiveUiTest : public InProcessBrowserTest {
  public:
   TabHoverCardBubbleViewInteractiveUiTest() {
-    TabHoverCardBubbleView::disable_animations_for_testing_ = true;
+    TabHoverCardController::disable_animations_for_testing_ = true;
     scoped_feature_list_.InitAndEnableFeature(features::kTabHoverCards);
   }
   TabHoverCardBubbleViewInteractiveUiTest(
@@ -33,7 +34,7 @@ class TabHoverCardBubbleViewInteractiveUiTest : public InProcessBrowserTest {
   ~TabHoverCardBubbleViewInteractiveUiTest() override = default;
 
   static TabHoverCardBubbleView* GetHoverCard(const TabStrip* tabstrip) {
-    return tabstrip->hover_card_;
+    return tabstrip->hover_card_controller_->hover_card_;
   }
 
  private:
@@ -47,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInteractiveUiTest,
   TabStrip* tab_strip =
       BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
   Tab* tab = tab_strip->tab_at(0);
-  tab_strip->UpdateHoverCard(tab);
+  tab_strip->UpdateHoverCard(tab, TabController::HoverCardUpdateType::kHover);
   TabHoverCardBubbleView* hover_card = GetHoverCard(tab_strip);
   Widget* widget = hover_card->GetWidget();
   EXPECT_NE(nullptr, widget);

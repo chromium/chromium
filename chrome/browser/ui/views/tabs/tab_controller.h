@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
 
+#include "base/optional.h"
+#include "base/strings/string16.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -35,6 +37,16 @@ class View;
 // Controller for tabs.
 class TabController {
  public:
+  enum HoverCardUpdateType {
+    kHover,
+    kFocus,
+    kTabDataChanged,
+    kAnimating,
+    kTabRemoved,
+    kSelectionChanged,
+    kEvent
+  };
+
   virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;
 
   // Returns true if multiple selection is supported.
@@ -122,8 +134,9 @@ class TabController {
 
   // Updates hover-card content, anchoring and visibility based on what tab is
   // hovered and whether the card should be shown. Providing a nullptr for |tab|
-  // will cause the tab hover card to be hidden.
-  virtual void UpdateHoverCard(Tab* tab) = 0;
+  // will cause the tab hover card to be hidden. |update_type| is used to decide
+  // how the show, hide, or update will be processed.
+  virtual void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) = 0;
 
   // Returns whether domain/origin should be shown in tab hover cards.
   virtual bool ShowDomainInHoverCards() const = 0;
