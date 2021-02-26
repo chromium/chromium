@@ -12,6 +12,7 @@ include_rules = [
   "+components/content_capture",
   "+components/embedder_support/android/java",
   "+components/heap_profiling",
+  "+components/keyed_service/content",
   "+components/google/core",
   "+components/gwp_asan",
   "+components/js_injection",

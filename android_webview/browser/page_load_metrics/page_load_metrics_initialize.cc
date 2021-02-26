@@ -4,9 +4,11 @@
 
 #include "android_webview/browser/page_load_metrics/page_load_metrics_initialize.h"
 
+#include "android_webview/browser/page_load_metrics/aw_page_load_metrics_memory_tracker_factory.h"
 #include "base/macros.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 
 namespace content {
 class BrowserContext;
@@ -72,7 +74,11 @@ bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
 page_load_metrics::PageLoadMetricsMemoryTracker*
 PageLoadMetricsEmbedder::GetMemoryTrackerForBrowserContext(
     content::BrowserContext* browser_context) {
-  return nullptr;
+  if (!base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring))
+    return nullptr;
+
+  return AwPageLoadMetricsMemoryTrackerFactory::GetForBrowserContext(
+      browser_context);
 }
 
 }  // namespace
