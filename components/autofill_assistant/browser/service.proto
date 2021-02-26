@@ -731,7 +731,7 @@ message ActionProto {
     WaitForElementToBecomeStableProto wait_for_element_to_become_stable = 68;
     CheckElementIsOnTopProto check_element_is_on_top = 69;
     ReleaseElementsProto release_elements = 70;
-    DispatchJsEventProto dispatch_js_event = 71;
+    DispatchJsEventProto dispatch_js_event = 72;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -739,7 +739,7 @@ message ActionProto {
   // action sent to the client after this one. Default is false.
   optional bool clean_contextual_ui = 33;
 
-  reserved 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51;
+  reserved 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51, 71;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
