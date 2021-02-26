@@ -46,8 +46,10 @@
       }
     </style>
     <oobe-adaptive-dialog role="dialog" id="dialog">
-      <iron-icon icon="oobe-24:perm-scan-wifi" slot="icon">
-      </iron-icon>
+      <hd-iron-icon slot="icon"
+          icon1x="oobe-network-32:dialog-icon-wifi"
+          icon2x="oobe-network-64:dialog-icon-wifi">
+      </hd-iron-icon>
       <h1 slot="title" aria-live="assertive">
         [[getDialogTitle_(locale, errorState_, uiState_)]]
       </h1>
