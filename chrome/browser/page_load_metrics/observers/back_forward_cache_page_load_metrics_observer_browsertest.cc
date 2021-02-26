@@ -405,3 +405,50 @@ return score;
   histogram_tester().ExpectBucketCount(
       "PageLoad.LayoutInstability.CumulativeShiftScore", 0, 4);
 }
+
+IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
+                       RequestAnimationFramesAfterBackForwardCacheRestore) {
+  Start();
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHost* rfh_a = top_frame_host();
+
+  // Navigate to B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back to A.
+  {
+    auto waiter = CreatePageLoadMetricsTestWaiter();
+    waiter->AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
+            kRequestAnimationFrameAfterBackForwardCacheRestore);
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+
+    waiter->Wait();
+    histogram_tester().ExpectTotalCount(
+        internal::
+            kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore,
+        1);
+    histogram_tester().ExpectTotalCount(
+        internal::
+            kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore,
+        1);
+    histogram_tester().ExpectTotalCount(
+        internal::
+            kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore,
+        1);
+    ExpectMetricCountForUrl(
+        url_a, "FirstRequestAnimationFrameAfterBackForwardCacheRestore", 1);
+    ExpectMetricCountForUrl(
+        url_a, "SecondRequestAnimationFrameAfterBackForwardCacheRestore", 1);
+    ExpectMetricCountForUrl(
+        url_a, "ThirdRequestAnimationFrameAfterBackForwardCacheRestore", 1);
+  }
+}

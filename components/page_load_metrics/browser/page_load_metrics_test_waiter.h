@@ -35,6 +35,7 @@ class PageLoadMetricsTestWaiter
     kFirstPaintAfterBackForwardCacheRestore = 1 << 9,
     kFirstInputDelayAfterBackForwardCacheRestore = 1 << 10,
     kLayoutShift = 1 << 11,
+    kRequestAnimationFrameAfterBackForwardCacheRestore = 1 << 12,
   };
   using FrameTreeNodeId =
       page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;

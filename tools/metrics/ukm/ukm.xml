@@ -6867,6 +6867,12 @@ be describing additional metrics about the same event.
       back-forward cache.
     </summary>
   </metric>
+  <metric name="FirstRequestAnimationFrameAfterBackForwardCacheRestore">
+    <summary>
+      Measures the time duration between the page restore from back-forward
+      cache and the first requestAnimationFrame time in milliseconds.
+    </summary>
+  </metric>
   <metric name="LastCommittedCrossDocumentNavigationSourceIdForTheSameDocument">
     <summary>
       For history navigations and reloads, the source id of the previous
@@ -6911,6 +6917,18 @@ be describing additional metrics about the same event.
       Bitmask of features used by the same origin subframes of the previous page
       load. See blink::SchedulingPolicy::Feature for the meaning for the
       individual features.
+    </summary>
+  </metric>
+  <metric name="SecondRequestAnimationFrameAfterBackForwardCacheRestore">
+    <summary>
+      Measures the time duration between the page restore from back-forward
+      cache and the second requestAnimationFrame time in milliseconds.
+    </summary>
+  </metric>
+  <metric name="ThirdRequestAnimationFrameAfterBackForwardCacheRestore">
+    <summary>
+      Measures the time duration between the page restore from back-forward
+      cache and the third requestAnimationFrame time in milliseconds.
     </summary>
   </metric>
   <metric name="TimeSinceNavigatedAwayFromDocument">

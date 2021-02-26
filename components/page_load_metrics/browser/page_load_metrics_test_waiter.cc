@@ -288,6 +288,12 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
       matched_bits.Set(
           TimingField::kFirstInputDelayAfterBackForwardCacheRestore);
     }
+    if (!timing.back_forward_cache_timings.back()
+             ->request_animation_frames_after_back_forward_cache_restore
+             .empty()) {
+      matched_bits.Set(
+          TimingField::kRequestAnimationFrameAfterBackForwardCacheRestore);
+    }
   }
 
   if (render_data) {

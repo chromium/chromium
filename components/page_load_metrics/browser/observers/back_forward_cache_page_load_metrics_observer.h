@@ -10,6 +10,12 @@
 namespace internal {
 
 extern const char kHistogramFirstPaintAfterBackForwardCacheRestore[];
+extern const char
+    kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore[];
+extern const char
+    kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore[];
+extern const char
+    kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore[];
 extern const char kHistogramFirstInputDelayAfterBackForwardCacheRestore[];
 extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
 extern const char
@@ -36,7 +42,8 @@ class BackForwardCachePageLoadMetricsObserver
       const page_load_metrics::mojom::BackForwardCacheTiming& timing,
       size_t index) override;
   void OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
-      const page_load_metrics::mojom::BackForwardCacheTiming& timing) override;
+      const page_load_metrics::mojom::BackForwardCacheTiming& timing,
+      size_t index) override;
   void OnFirstInputAfterBackForwardCacheRestoreInPage(
       const page_load_metrics::mojom::BackForwardCacheTiming& timing,
       size_t index) override;
