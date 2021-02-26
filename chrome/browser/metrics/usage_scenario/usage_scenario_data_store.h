@@ -31,7 +31,8 @@ class TabUsageScenarioTrackerBrowserTest;
 //
 // The interval's length needs to be enforced by the owner of this class, it
 // should call ResetIntervalData regularly to get the usage data and reset it.
-class UsageScenarioDataStore {
+class UsageScenarioDataStore
+    : public base::SupportsWeakPtr<UsageScenarioDataStore> {
  public:
   UsageScenarioDataStore();
   UsageScenarioDataStore(const UsageScenarioDataStore& rhs) = delete;
@@ -146,10 +147,6 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
 
   const IntervalData& GetIntervalDataForTesting() { return interval_data_; }
 
-  base::WeakPtr<UsageScenarioDataStore> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
   uint16_t current_tab_count_for_testing() { return current_tab_count_; }
   uint16_t current_visible_window_count_for_testing() {
     return current_visible_window_count_;
@@ -227,8 +224,6 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   OriginInfoMap origin_info_map_;
 
   IntervalData interval_data_;
-
-  base::WeakPtrFactory<UsageScenarioDataStore> weak_factory_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

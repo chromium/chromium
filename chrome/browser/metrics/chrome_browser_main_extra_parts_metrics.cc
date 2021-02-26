@@ -32,7 +32,10 @@
 #include "chrome/browser/metrics/authenticator_utility.h"
 #include "chrome/browser/metrics/bluetooth_available_utility.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "chrome/browser/metrics/power/power_metrics_reporter.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -694,6 +697,16 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
             g_browser_process->local_state()));
   }
 #endif  // !defined(OS_ANDROID)
+#if defined(OS_MAC) || defined(OS_WIN)
+  // BatteryLevelProvider is supported on mac and windows only, thus we report
+  // power metrics only on those platforms.
+  if (performance_monitor::ProcessMonitor::Get()) {
+    // PowerMetricsReporter needs ProcessMonitor to be created.
+    usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
+    power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
+        usage_scenario_tracker_->data_store(), BatteryLevelProvider::Create());
+  }
+#endif  // defined(OS_MAC) || defined (OS_WIN)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
