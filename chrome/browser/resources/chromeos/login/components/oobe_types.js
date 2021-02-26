@@ -59,12 +59,6 @@ OobeTypes.DemoCountryDsc;
 OobeTypes.A11yStatuses;
 
 /**
- * OOBE screen object (which is created in ui/login/screen.js )
- * @typedef {!Object}
- */
-OobeTypes.Screen;
-
-/**
  * Timezone ID.
  * @typedef {!String}
  */

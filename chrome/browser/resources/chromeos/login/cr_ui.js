@@ -119,13 +119,6 @@ cr.define('cr.ui', function() {
   };
 
   /**
-   * Disables signin UI.
-   */
-  Oobe.disableSigninUI = function() {
-    DisplayManager.disableSigninUI();
-  };
-
-  /**
    * Shows signin UI.
    * @param {string} opt_email An optional email for signin UI.
    */

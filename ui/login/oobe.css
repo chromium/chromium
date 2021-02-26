@@ -172,25 +172,6 @@ span.bold {
   padding: 0 12px;
 }
 
-#background {
-  background-size: 100% 100%;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  transition: 700ms opacity;
-  width: 100%;
-}
-
-.background-initial {
-  opacity: 0;
-}
-
-.dimmed-background {
-  background-color: black;
-  opacity: 0.5;
-}
-
 .throbber {
   -webkit-margin-end: 0.5em;
   margin-top: 1px;

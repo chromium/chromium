@@ -8,7 +8,6 @@
  */
 
 // <include src="test_util.js">
-// <include src="../../../../../ui/login/screen.js">
 // <include src="../../../../../ui/login/bubble.js">
 // <include src="../../../../../ui/login/display_manager.js">
 // <include src="demo_mode_test_helper.js">
@@ -32,10 +31,6 @@ HTMLImports.whenReady(() => {
        */
       initialize() {
         cr.ui.login.DisplayManager.initialize();
-
-        cr.ui.Bubble.decorate($('bubble-persistent'));
-        $('bubble-persistent').persistent = true;
-        $('bubble-persistent').hideOnKeyPress = false;
 
         cr.ui.Bubble.decorate($('bubble'));
 

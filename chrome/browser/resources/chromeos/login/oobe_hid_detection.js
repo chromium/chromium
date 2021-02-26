@@ -131,12 +131,6 @@ Polymer({
       type: String,
       computed: 'getPinDialogTitle_(locale, keyboardDeviceName)',
     },
-
-    /**
-     * Reference to OOBE screen object.
-     * @type {!OobeTypes.Screen}
-     */
-    screen: Object,
   },
 
   /** @override */

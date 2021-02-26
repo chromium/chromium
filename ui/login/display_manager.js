@@ -37,7 +37,7 @@
 /** @const */ var SCREEN_FINGERPRINT_SETUP = 'fingerprint-setup';
 /** @const */ var SCREEN_RECOMMEND_APPS = 'recommend-apps';
 /** @const */ var SCREEN_APP_DOWNLOADING = 'app-downloading';
-/** @const */ var SCREEN_DISCOVER = 'discover';
+/** @const */ var SCREEN_PIN_SETUP = 'pin-setup';
 /** @const */ var SCREEN_MARKETING_OPT_IN = 'marketing-opt-in';
 
 /* Accelerator identifiers.
@@ -83,7 +83,7 @@ cr.define('cr.ui.login', function() {
     SCREEN_UPDATE_REQUIRED,
     SCREEN_SYNC_CONSENT,
     SCREEN_APP_DOWNLOADING,
-    SCREEN_DISCOVER,
+    SCREEN_PIN_SETUP,
     SCREEN_MARKETING_OPT_IN,
   ];
 
@@ -388,34 +388,6 @@ cr.define('cr.ui.login', function() {
     },
 
     /**
-     * Appends buttons to the button strip.
-     * @param {Array<HTMLElement>} buttons Array with the buttons to append.
-     * @param {string} screenId Id of the screen that buttons belong to.
-     */
-    appendButtons_: function(buttons, screenId) {
-      if (buttons) {
-        var buttonStrip = $(screenId + '-controls');
-        if (buttonStrip) {
-          for (var i = 0; i < buttons.length; ++i)
-            buttonStrip.appendChild(buttons[i]);
-        }
-      }
-    },
-
-    /**
-     * Disables or enables control buttons on the specified screen.
-     * @param {HTMLElement} screen Screen which controls should be affected.
-     * @param {boolean} disabled Whether to disable controls.
-     */
-    disableButtons_: function(screen, disabled) {
-      var buttons = document.querySelectorAll(
-          '#' + screen.id + '-controls button:not(.preserve-disabled-state)');
-      for (var i = 0; i < buttons.length; ++i) {
-        buttons[i].disabled = disabled;
-      }
-    },
-
-    /**
      * Switches to the next OOBE step.
      * @param {number} nextStepIndex Index of the next step.
      */
@@ -424,12 +396,6 @@ cr.define('cr.ui.login', function() {
       var nextStepId = this.screens_[nextStepIndex];
       var oldStep = $(currentStepId);
       var newStep = $(nextStepId);
-      var currentStepAttributes = this.screensAttributes_[this.currentStep_] ||
-                                  {};
-      var newStepAttributes = this.screensAttributes_[nextStepIndex] || {};
-
-      // Disable controls before starting animation.
-      this.disableButtons_(oldStep, true);
 
       invokePolymerMethod(oldStep, 'onBeforeHide');
 
@@ -467,17 +433,13 @@ cr.define('cr.ui.login', function() {
       oldStep.classList.add('faded');
       newStep.classList.remove('faded');
 
-      this.disableButtons_(newStep, false);
-
       // Adjust inner container height based on new step's height.
       this.updateScreenSize(newStep);
 
       // Default control to be focused (if specified).
       var defaultControl = newStep.defaultControl;
 
-      var outerContainer = $('outer-container');
       var innerContainer = $('inner-container');
-      var isOOBE = this.isOobeUI();
       if (this.currentStep_ != nextStepIndex &&
           !oldStep.classList.contains('hidden')) {
         oldStep.classList.add('hidden');
@@ -510,26 +472,9 @@ cr.define('cr.ui.login', function() {
       // post-set hook.
       invokePolymerMethod(newStep, 'onAfterShow', screenData);
 
-      var stepLogo = $('step-logo');
-      if (stepLogo) {
-        stepLogo.hidden = newStep.classList.contains('no-logo');
-      }
-
       $('oobe').dispatchEvent(
           new CustomEvent('screenchanged', {detail: this.currentScreen.id}));
       chrome.send('updateCurrentScreen', [this.currentScreen.id]);
-    },
-
-    /**
-     * Make sure that screen is initialized and decorated.
-     * @param {Object} screen Screen params dict, e.g. {id: screenId, data: {}}.
-     */
-    preloadScreen: function(screen) {
-      var screenEl = $(screen.id);
-      if (screenEl.deferredInitialization !== undefined) {
-        screenEl.deferredInitialization();
-        delete screenEl.deferredInitialization;
-      }
     },
 
     /**
@@ -554,9 +499,6 @@ cr.define('cr.ui.login', function() {
       }
 
       var screenId = screen.id;
-
-      // Make sure the screen is decorated.
-      this.preloadScreen(screen);
 
       var data = screen.data;
       var index = this.getScreenIndex_(screenId);
@@ -589,17 +531,6 @@ cr.define('cr.ui.login', function() {
 
       this.screens_.push(screenId);
       this.screensAttributes_.push(attributes);
-
-      // No headers on Chrome OS
-      var headerSections = $('header-sections');
-      if (headerSections) {
-        var header = document.createElement('span');
-        header.id = 'header-' + screenId;
-        header.textContent = el.header ? el.header : '';
-        header.className = 'header-section';
-        headerSections.appendChild(header);
-      }
-      this.appendButtons_(el.buttons, screenId);
 
       if (el.updateOobeConfiguration && this.oobe_configuration_)
         el.updateOobeConfiguration(this.oobe_configuration_);
@@ -650,11 +581,6 @@ cr.define('cr.ui.login', function() {
       for (let i = 0; i < this.screens_.length; ++i) {
         let screenId = this.screens_[i];
         var screen = $(screenId);
-        var buttonStrip = $(screenId + '-controls');
-        if (buttonStrip)
-          buttonStrip.innerHTML = '';
-        // TODO(nkostylev): Update screen headers for new OOBE design.
-        this.appendButtons_(screen.buttons, screenId);
         if (screen.updateLocalizedContent)
           screen.updateLocalizedContent();
       }
@@ -825,17 +751,6 @@ cr.define('cr.ui.login', function() {
     };
   };
 
-  // Only called from user-manager code, can be removed once desktop is
-  // migrated to profile-manager UI.
-  /**
-   * Disables signin UI.
-   */
-  DisplayManager.disableSigninUI = function() {
-    if ($('pod-row')) {
-      $('pod-row').disabled = true;
-    }
-  };
-
   /**
    * Shows signin UI.
    * @param {string} opt_email An optional email for signin UI.
@@ -918,10 +833,6 @@ cr.define('cr.ui.login', function() {
   DisplayManager.clearErrors = function() {
     $('bubble').hide();
     this.errorMessageWasShownForTesting_ = false;
-
-    var bubbles = document.querySelectorAll('.bubble-shown');
-    for (var i = 0; i < bubbles.length; ++i)
-      bubbles[i].classList.remove('bubble-shown');
   };
 
   /**

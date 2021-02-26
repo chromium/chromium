@@ -38,29 +38,6 @@ html[new-layout] .step {
   width: 100%;
 }
 
-.step-controls {
-  bottom: 21px;
-  box-sizing: border-box;
-  display: flex;
-  height: 28px;
-  justify-content: flex-end;
-  min-height: 0;
-  padding-inline-end: 34px;  /* Double the padding of .step */
-  position: absolute;
-  width: 100%;
-}
-
-.animation .step-controls button {
-  /* Don't grey out disabled buttons during animation. */
-  color: buttontext !important;
-}
-
-.step.loading .step-contents,
-.step.loading .step-controls,
-.step.loading .step-extra-controls {
-  visibility: hidden;
-}
-
 .step:not(.loading) #user-images-loading {
   visibility: hidden;
 }
@@ -77,40 +54,17 @@ html[new-layout] .step {
 }
 
 #security-info a,
-#eula a,
-.step-extra-controls a {
+#eula a {
   color: rgb(49, 106, 197); /* same as 'Learn more' link */
   font-size: 12px;
   text-decoration: none;
 }
 
-.step-extra-controls {
-  bottom: 26px;
-  left: 49px;
-  position: absolute;
-}
-
-/* EULA screen extra controls have 2 elements
-   so they require different alignment. */
-#eula-extra-controls {
-  bottom: 17px;
-}
-
 #security-info a:focus,
-#eula a:focus,
-.step-extra-controls a:focus {
+#eula a:focus {
   /* Note: May use 1px solid here. */
   outline-color: rgb(77, 144, 254);
   transition: outline-color 200ms;
-}
-
-.step-extra-controls > *:not(:first-child) {
-  margin-top: 7px;
-}
-
-html[dir=rtl] .step-extra-controls {
-  left: auto;
-  right: 49px;
 }
 
 #oobe.autolaunch #autolaunch-confirm-button,
@@ -147,7 +101,6 @@ html[dir=rtl] .step-extra-controls {
 
 html[highlight=strong] #security-info a:focus,
 html[highlight=strong] #eula a:focus,
-html[highlight=strong] .step-extra-controls a:focus,
 html[highlight=strong] .menu-control:focus,
 html[highlight=strong] input[type='button']:focus,
 html[highlight=strong] button:focus {

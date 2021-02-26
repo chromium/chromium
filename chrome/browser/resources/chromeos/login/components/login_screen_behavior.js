@@ -67,10 +67,6 @@ var LoginScreenBehavior = {
     return this;
   },
 
-  // If defined, invoked when logn.preloadScreen() is called.
-  // @type{function()}
-  deferredInitialization: undefined,
-
   /**
    * Returns minimal size that screen prefers to have. Default implementation
    * returns current screen size.
