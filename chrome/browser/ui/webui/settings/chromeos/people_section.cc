@@ -455,8 +455,6 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
       {"lockScreenSetupPinButton",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PIN_BUTTON},
       {"lockScreenTitleLock", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOCK},
-      {"lockScreenTitleLoginLock",
-       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK},
       {"passwordPromptEnterPasswordLock",
        IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_ENTER_PASSWORD_LOCK},
       {"pinAutoSubmitPrompt",
@@ -482,6 +480,16 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "lockScreenHideSensitiveNotificationsSupported",
       ash::features::IsLockScreenHideSensitiveNotificationsSupported());
+
+  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+    html_source->AddLocalizedString(
+        "lockScreenTitleLoginLock",
+        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK_V2);
+  } else {
+    html_source->AddLocalizedString(
+        "lockScreenTitleLoginLock",
+        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK);
+  }
 }
 
 void AddFingerprintListStrings(content::WebUIDataSource* html_source) {
