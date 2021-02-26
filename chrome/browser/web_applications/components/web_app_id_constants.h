@@ -78,6 +78,10 @@ constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
 //     "https://books.google.com/ebooks/app"))
 constexpr char kPlayBooksAppId[] = "jglfhlbohpgcbefmhdmpancnijacbbji";
 
+// Generated as:web_app::GenerateAppIdFromURL(GURL(
+//      "chrome://print-management/"))
+constexpr char kPrintManagementAppId[] = "fglkccnmnaankjodgccmiodmlkpaiodc";
+
 // Generated as: web_app::GenerateAppIdFromURL(GURL("chrome://scanning/"))
 constexpr char kScanningAppId[] = "cdkahakpgkdaoffdmfgnhgomkelkocfo";
 

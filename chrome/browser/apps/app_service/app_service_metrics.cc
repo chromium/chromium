@@ -62,10 +62,11 @@ enum class DefaultAppName {
   kStadia = 40,
   kScanningApp = 41,
   kDiagnosticsApp = 42,
+  kPrintManagementApp = 43,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kDiagnosticsApp,
+  kMaxValue = kPrintManagementApp,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -269,6 +270,8 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kScanningApp, launch_source);
   else if (app_id == web_app::kDiagnosticsAppId)
     RecordDefaultAppLaunch(DefaultAppName::kDiagnosticsApp, launch_source);
+  else if (app_id == web_app::kPrintManagementAppId)
+    RecordDefaultAppLaunch(DefaultAppName::kPrintManagementApp, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Above are default apps; below are built-in apps.
