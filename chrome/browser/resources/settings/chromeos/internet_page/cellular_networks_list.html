@@ -21,9 +21,21 @@
   <template>
     <style include="cr-shared-style os-settings-icons settings-shared iron-flex">
 
-      .cellular-network-list-header {
+      :host > div {
+        /* network-list is padded to the right to allow space for a ripple */
+        padding-inline-end: calc(var(--cr-section-padding) -
+            var(--cr-icon-ripple-padding));
+        padding-inline-start: var(--cr-section-padding);
+      }
+
+      .separator {
         border-top: var(--cr-separator-line);
-        padding: 16px 0 8px 0;
+        padding: 0;
+      }
+
+      .cellular-network-list-header {
+        padding-bottom: 8px;
+        padding-top: 16px;
       }
 
       .esim-list-header {
@@ -65,6 +77,7 @@
       }
     </style>
     <template is="dom-if" if="[[!!euicc_]]" restamp>
+      <div class="separator"></div>
       <div class="cellular-network-list-header esim-list-header flex">
         <div class="esim-list-title">$i18n{cellularNetworkEsimLabel}</div>
         <div class="flex-column">
@@ -104,6 +117,7 @@
         </div>
       </template>
     </template>
+    <div class="separator"></div>
     <div class="cellular-network-list-header">
       $i18n{cellularNetworkPsimLabel}
     </div>
@@ -130,6 +144,7 @@
         </settings-localized-link>
       </div>
     </template>
+    <div class="separator"></div>
     <div class="cellular-network-list-header">
       $i18n{cellularNetworkTetherLabel}
     </div>

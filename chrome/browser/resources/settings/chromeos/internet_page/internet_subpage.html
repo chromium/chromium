@@ -90,6 +90,11 @@
         margin: 0;
         padding-inline-start: 15px;
       }
+
+      #cellularNetworkList {
+        padding-inline-end: 0;
+        padding-inline-start: 0;
+      }
     </style>
 
     <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
@@ -112,7 +117,7 @@
         <cr-icon-button class="icon-add-wifi add-button" id="addWifiButton"
             hidden$="[[!showAddWifiButton_(deviceState, globalPolicy)]]"
             aria-label="$i18n{internetAddWiFi}" on-click="onAddWifiButtonTap_"
-            tabindex$="[[tabindex]]" 
+            tabindex$="[[tabindex]]"
             deep-link-focus-id$="[[Setting.kWifiAddNetwork]]">
         </cr-icon-button>
         <cr-toggle id="deviceEnabledButton"
