@@ -35163,6 +35163,8 @@ Called by update_feature_policy_enum.py.-->
 <!-- Hash values can be produced using tool: bluetooth_metrics_hash -->
 
   <int value="7464675" label="pulse_oximeter"/>
+  <int value="13977722"
+      label="Vernier Sensors; d91714ef-28b9-4f91-ba16-f0d9a604f112"/>
   <int value="14295641"
       label="PocketLab; f000aa1e-0452-4000-b000-000000000000"/>
   <int value="26695985" label="fe20"/>
@@ -35262,6 +35264,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="449334956"
       label="PocketLab; f000aa3d-0452-4000-b000-000000000000"/>
   <int value="452749537" label="fe6f"/>
+  <int value="482634289"
+      label="SAM Labs Blocks; 3b989460-975f-11e4-a9fb-0002a5d5c51b"/>
   <int value="486403409" label="fe7e"/>
   <int value="493187195"
       label="Insight cards; 13630000-aeb9-10cf-ef69-81e145a91113"/>
