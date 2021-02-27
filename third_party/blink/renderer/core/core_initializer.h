@@ -125,6 +125,7 @@ class CORE_EXPORT CoreInitializer {
 
   virtual void DidChangeManifest(LocalFrame&) = 0;
   virtual void NotifyOrientationChanged(LocalFrame&) = 0;
+  virtual void NotifyScreensChanged(LocalFrame&) = 0;
 
  protected:
   // CoreInitializer is only instantiated by subclass ModulesInitializer.

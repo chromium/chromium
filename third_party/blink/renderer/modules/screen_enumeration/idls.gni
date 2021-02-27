@@ -2,4 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-modules_dependency_idl_files = [ "screen_enumeration.idl" ]
+modules_idl_files = [
+  "screen_advanced.idl",
+  "screens.idl",
+]
+
+modules_dependency_idl_files = [
+  "screen_enumeration.idl",
+  "window_screens.idl",
+]

@@ -76,6 +76,8 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
 #include "third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screens.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage_controller.h"
@@ -309,6 +311,13 @@ void ModulesInitializer::DidChangeManifest(LocalFrame& frame) {
 void ModulesInitializer::NotifyOrientationChanged(LocalFrame& frame) {
   ScreenOrientationController::From(*frame.DomWindow())
       ->NotifyOrientationChanged();
+}
+
+void ModulesInitializer::NotifyScreensChanged(LocalFrame& frame) {
+  if (auto* supplement =
+          Supplement<LocalDOMWindow>::From<WindowScreens>(*frame.DomWindow())) {
+    supplement->screens()->ScreenInfosChanged();
+  }
 }
 
 void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {

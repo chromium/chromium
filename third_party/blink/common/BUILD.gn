@@ -178,7 +178,11 @@ source_set("common") {
     "web_preferences/web_preferences.cc",
     "web_preferences/web_preferences_mojom_traits.cc",
     "widget/device_emulation_params_mojom_traits.cc",
+    "widget/screen_info.cc",
     "widget/screen_info_mojom_traits.cc",
+    "widget/screen_infos.cc",
+    "widget/screen_infos_mojom_traits.cc",
+    "widget/visual_properties.cc",
     "widget/visual_properties_mojom_traits.cc",
   ]
 
@@ -291,6 +295,7 @@ source_set("common_unittests_sources") {
     "unique_name/unique_name_helper_unittest.cc",
     "user_agent/user_agent_metadata_unittest.cc",
     "web_package/web_package_request_matcher_unittest.cc",
+    "widget/screen_infos_mojom_traits_unittest.cc",
   ]
 
   deps = [
@@ -303,6 +308,7 @@ source_set("common_unittests_sources") {
     "//net:test_support",
     "//services/device:test_support",
     "//services/network:test_support",
+    "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//testing/gmock",
     "//testing/gtest",

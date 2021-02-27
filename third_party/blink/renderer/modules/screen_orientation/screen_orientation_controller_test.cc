@@ -286,11 +286,11 @@ TEST_F(ScreenOrientationControllerTest,
       ScreenOrientation::Create(To<LocalFrame>(grandchild)->DomWindow());
 
   // Update the screen info and ensure it propagated to the grandchild.
-  blink::ScreenInfo screen_info;
-  screen_info.orientation_angle = 90;
+  blink::ScreenInfos screen_infos((blink::ScreenInfo()));
+  screen_infos.mutable_current().orientation_angle = 90;
   auto* web_frame_widget_base =
       static_cast<WebFrameWidgetImpl*>(frame->GetWidgetForLocalRoot());
-  web_frame_widget_base->UpdateScreenInfo(screen_info);
+  web_frame_widget_base->UpdateScreenInfo(screen_infos);
   EXPECT_EQ(grandchild_orientation->angle(), 90);
 
   url_test_helpers::UnregisterAllURLsAndClearMemoryCache();

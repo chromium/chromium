@@ -55,7 +55,7 @@ class WebNonCompositedWidgetClient;
 
 class WebFrameWidget : public WebWidget {
  public:
-  // Similiar to `InitializeCompositing()` but for non-compositing widgets.
+  // Similar to `InitializeCompositing()` but for non-compositing widgets.
   // Exactly one of either `InitializeCompositing()` or this method must
   // be called before using the widget.
   virtual void InitializeNonCompositing(

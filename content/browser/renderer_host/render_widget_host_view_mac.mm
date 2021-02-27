@@ -427,6 +427,15 @@ void RenderWidgetHostViewMac::GetScreenInfo(blink::ScreenInfo* screen_info) {
   browser_compositor_->GetRendererScreenInfo(screen_info);
 }
 
+void RenderWidgetHostViewMac::OnSynchronizedDisplayPropertiesChanged(
+    bool rotation) {
+  // Update cached screen information when the current display changes.
+  const auto& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow([NSApp keyWindow]);
+  if (display != display_)
+    OnDisplayChanged(display);
+}
+
 void RenderWidgetHostViewMac::Show() {
   is_visible_ = true;
   ns_view_->SetVisible(is_visible_);

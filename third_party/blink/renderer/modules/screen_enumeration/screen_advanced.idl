@@ -1,0 +1,39 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Interface exposing additional per-screen information.
+// https://github.com/webscreens/window-placement
+[
+  Exposed=Screens,
+  SecureContext,
+  RuntimeEnabled=WindowPlacement
+] interface ScreenAdvanced : Screen {
+  // Distance from a multi-screen origin (e.g. primary screen top left) to the
+  // left edge of the screen area.
+  [HighEntropy=Direct, Measure] readonly attribute long left;
+
+  // Distance from a multi-screen origin (e.g. primary screen top left) to the
+  // top edge of the screen area.
+  [HighEntropy=Direct, Measure] readonly attribute long top;
+
+  // Whether this screen is designated as the 'primary' screen by the OS
+  // (otherwise it is a 'secondary' screen).
+  [HighEntropy=Direct, Measure] readonly attribute boolean isPrimary;
+
+  // Whether this screen is an 'internal' panel built into the device, like a
+  // laptop display (otherwise it is 'external', like a wired monitor).
+  [HighEntropy=Direct, Measure] readonly attribute boolean isInternal;
+
+  // Specifies the ratio between physical and logical pixels.
+  [HighEntropy=Direct, Measure] readonly attribute float devicePixelRatio;
+
+  // A temporary generated per-origin unique ID; reset when cookies are deleted.
+  [HighEntropy=Direct, Measure] readonly attribute DOMString id;
+
+  // The set of pointer types supported by the screen.
+  [HighEntropy, Measure] readonly attribute FrozenArray<DOMString> pointerTypes;
+
+  // A user-friendly label for the screen, determined by the user agent and OS.
+  [HighEntropy=Direct, Measure] readonly attribute DOMString label;
+};

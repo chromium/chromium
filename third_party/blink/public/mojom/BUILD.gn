@@ -193,6 +193,7 @@ mojom("mojom_platform") {
     "webtransport/quic_transport_connector.mojom",
     "widget/device_emulation_params.mojom",
     "widget/screen_info.mojom",
+    "widget/screen_infos.mojom",
     "widget/screen_orientation.mojom",
     "widget/visual_properties.mojom",
     "window_features/window_features.mojom",
@@ -374,6 +375,17 @@ mojom("mojom_platform") {
       ]
       traits_headers = [
         "//third_party/blink/public/common/widget/screen_info_mojom_traits.h",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.ScreenInfos"
+          cpp = "::blink::ScreenInfos"
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/widget/screen_infos_mojom_traits.h",
       ]
     },
     {

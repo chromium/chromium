@@ -149,11 +149,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual void SendInitialPropertiesIfNeeded() {}
 
-  // Notification that a resize or move session ended on the native widget.
+  // Called when screen information or native widget bounds change.
   void UpdateScreenInfo(gfx::NativeView view);
 
-  // Tells if the display property (work area/scale factor) has
-  // changed since the last time.
+  // Updates cached screen information and returns whether it has changed.
   bool HasDisplayPropertyChanged(gfx::NativeView view);
 
   // Called by the TextInputManager to notify the view about being removed from
@@ -619,6 +618,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Cached information about the renderer's display environment.
   display::Display current_display_;
   bool current_display_is_extended_ = false;
+  bool current_display_is_primary_ = false;
 
   base::ObserverList<RenderWidgetHostViewBaseObserver>::Unchecked observers_;
 

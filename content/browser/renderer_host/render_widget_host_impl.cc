@@ -869,8 +869,9 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
   blink::VisualProperties visual_properties;
 
-  GetScreenInfo(&visual_properties.screen_info);
   // Note: Later in this method, ScreenInfo rects might be overridden!
+  visual_properties.screen_infos = GetScreenInfos();
+  auto& current_screen_info = visual_properties.screen_infos.mutable_current();
 
   visual_properties.is_fullscreen_granted = delegate_->IsFullscreen();
 
@@ -901,10 +902,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // The top and bottom control sizes are physical pixels but the IPC wants
   // DIPs *when not using page zoom for DSF* because blink layout is working
   // in DIPs then.
-  if (!IsUseZoomForDSFEnabled()) {
-    browser_controls_dsf_multiplier =
-        visual_properties.screen_info.device_scale_factor;
-  }
+  if (!IsUseZoomForDSFEnabled())
+    browser_controls_dsf_multiplier = current_screen_info.device_scale_factor;
   visual_properties.browser_controls_params.top_controls_height =
       top_controls_height / browser_controls_dsf_multiplier;
   visual_properties.browser_controls_params.top_controls_min_height =
@@ -926,9 +925,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // and this is not always true for some browser UI features.
   // https://crbug.com/1060795
   if (visual_properties.is_fullscreen_granted) {
-    visual_properties.screen_info.rect.set_size(visual_properties.new_size);
-    visual_properties.screen_info.available_rect.set_size(
-        visual_properties.new_size);
+    current_screen_info.rect.set_size(visual_properties.new_size);
+    current_screen_info.available_rect.set_size(visual_properties.new_size);
   }
 
   // This widget is for a frame that is the main frame of the outermost frame
@@ -972,7 +970,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
       visual_properties.compositor_viewport_pixel_rect =
           gfx::ScaleToEnclosingRect(
               visual_properties.compositor_viewport_pixel_rect,
-              visual_properties.screen_info.device_scale_factor);
+              current_screen_info.device_scale_factor);
     }
   }
 
@@ -1037,12 +1035,12 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   }
 
   if (screen_orientation_type_for_testing_) {
-    visual_properties.screen_info.orientation_type =
+    current_screen_info.orientation_type =
         *screen_orientation_type_for_testing_;
   }
 
   if (screen_orientation_angle_for_testing_) {
-    visual_properties.screen_info.orientation_angle =
+    current_screen_info.orientation_angle =
         *screen_orientation_angle_for_testing_;
   }
 
@@ -1124,15 +1122,16 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
       !old_visual_properties_ || old_visual_properties_->new_size.width() !=
                                      visual_properties->new_size.width();
 
-  // This is copied from RenderWidget::UpdateSurfaceAndScreenInfo and used to
-  // detect if there is a screen orientation change.
+  // WidgetBase::UpdateSurfaceAndScreenInfo uses similar logic to detect
+  // orientation changes on the display currently showing the widget.
   // TODO(lanwei): clean the duplicate code.
   if (visual_properties && old_visual_properties_) {
+    const auto& old_screen_info =
+        old_visual_properties_->screen_infos.current();
+    const auto& screen_info = visual_properties->screen_infos.current();
     bool orientation_changed =
-        old_visual_properties_->screen_info.orientation_angle !=
-            visual_properties->screen_info.orientation_angle ||
-        old_visual_properties_->screen_info.orientation_type !=
-            visual_properties->screen_info.orientation_type;
+        old_screen_info.orientation_angle != screen_info.orientation_angle ||
+        old_screen_info.orientation_type != screen_info.orientation_type;
     if (orientation_changed)
       delegate_->DidChangeScreenOrientation();
   }
@@ -1981,6 +1980,43 @@ void RenderWidgetHostImpl::NotifyScreenInfoChanged() {
     touch_emulator->SetDeviceScaleFactor(GetScaleFactorForView(view_.get()));
 }
 
+blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
+  TRACE_EVENT0("renderer_host", "RenderWidgetHostImpl::GetScreenInfos");
+
+  // Use GetScreenInfo here to retain legacy behavior for the current screen.
+  blink::ScreenInfo current_screen_info;
+  GetScreenInfo(&current_screen_info);
+
+  display::Screen* screen = display::Screen::GetScreen();
+  // Just return the legacy singular ScreenInfo, if its id is invalid or if the
+  // display::Screen is not initialized; each of which occurs in various tests.
+  if (current_screen_info.display_id == blink::ScreenInfo::kInvalidDisplayId ||
+      !screen || screen->GetAllDisplays().empty()) {
+    return blink::ScreenInfos(current_screen_info);
+  }
+
+  blink::ScreenInfos result;
+  bool current_display_added = false;
+  for (const auto& display : screen->GetAllDisplays()) {
+    if (display.id() == current_screen_info.display_id) {
+      DCHECK(!current_display_added);
+      result.screen_infos.push_back(current_screen_info);
+      result.current_display_id = current_screen_info.display_id;
+      current_display_added = true;
+      continue;
+    }
+    blink::ScreenInfo screen_info;
+    DisplayUtil::DisplayToScreenInfo(&screen_info, display);
+    if (display::Display::HasForceRasterColorProfile()) {
+      screen_info.display_color_spaces = gfx::DisplayColorSpaces(
+          display::Display::GetForcedRasterColorProfile());
+    }
+    result.screen_infos.push_back(screen_info);
+  }
+  DCHECK(current_display_added);
+  return result;
+}
+
 void RenderWidgetHostImpl::GetSnapshotFromBrowser(
     GetSnapshotFromBrowserCallback callback,
     bool from_surface) {
@@ -2493,8 +2529,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
       old_visual_properties->zoom_level != new_visual_properties.zoom_level;
 
   return zoom_changed || size_changed || parent_local_surface_id_changed ||
-         old_visual_properties->screen_info !=
-             new_visual_properties.screen_info ||
+         old_visual_properties->screen_infos !=
+             new_visual_properties.screen_infos ||
          old_visual_properties->compositor_viewport_pixel_rect !=
              new_visual_properties.compositor_viewport_pixel_rect ||
          old_visual_properties->is_fullscreen_granted !=
@@ -2979,10 +3015,10 @@ RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParamsForNewWindow() {
       std::move(frame_widget_remote));
   // TODO(danakj): For some reason, there is no RenderWidgetHostView here, but
   // it seems like there should be one? In the meantime we send some nonsense
-  // with a semi-valid but incorrect ScreenInfo (it needs a RenderWidgetHostView
+  // with semi-valid but incorrect screen info (it needs a RenderWidgetHostView
   // to be correct). An updated VisualProperties will get to the RenderWidget
   // eventually.
-  GetScreenInfo(&params->visual_properties.screen_info);
+  params->visual_properties.screen_infos = GetScreenInfos();
   return params;
 }
 

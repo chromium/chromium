@@ -310,6 +310,8 @@ void MockRenderThread::OnCreateWindow(
   widget_params->frame_widget_host = blink_frame_widget_host.Unbind();
   widget_params->widget = std::move(blink_widget_receiver);
   widget_params->widget_host = blink_widget_host.Unbind();
+  widget_params->visual_properties.screen_infos =
+      blink::ScreenInfos(blink::ScreenInfo());
   reply->widget_params = std::move(widget_params);
 }
 

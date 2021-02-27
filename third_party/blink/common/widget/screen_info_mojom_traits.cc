@@ -25,6 +25,9 @@ bool StructTraits<blink::mojom::ScreenInfoDataView, blink::ScreenInfo>::Read(
   out->orientation_type = data.orientation_type();
   out->orientation_angle = data.orientation_angle();
   out->is_extended = data.is_extended();
+  out->is_primary = data.is_primary();
+  out->is_internal = data.is_internal();
+  out->display_id = data.display_id();
   return true;
 }
 

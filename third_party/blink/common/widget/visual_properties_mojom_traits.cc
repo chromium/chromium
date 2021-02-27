@@ -6,7 +6,7 @@
 
 #include "cc/mojom/browser_controls_params.mojom.h"
 #include "services/viz/public/mojom/compositing/local_surface_id.mojom.h"
-#include "third_party/blink/public/mojom/widget/screen_info.mojom.h"
+#include "third_party/blink/public/mojom/widget/screen_infos.mojom.h"
 
 namespace mojo {
 
@@ -14,7 +14,7 @@ bool StructTraits<
     blink::mojom::VisualPropertiesDataView,
     blink::VisualProperties>::Read(blink::mojom::VisualPropertiesDataView data,
                                    blink::VisualProperties* out) {
-  if (!data.ReadScreenInfo(&out->screen_info) ||
+  if (!data.ReadScreenInfos(&out->screen_infos) ||
       !data.ReadMinSizeForAutoResize(&out->min_size_for_auto_resize) ||
       !data.ReadMaxSizeForAutoResize(&out->max_size_for_auto_resize) ||
       !data.ReadNewSize(&out->new_size) ||

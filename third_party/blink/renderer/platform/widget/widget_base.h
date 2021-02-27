@@ -41,6 +41,7 @@ class Cursor;
 
 namespace blink {
 class ImeEventGuard;
+struct ScreenInfos;
 class LayerTreeView;
 class WidgetBaseClient;
 class WidgetInputHandlerManager;
@@ -86,11 +87,16 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       bool for_child_local_root_frame,
-      const ScreenInfo& screen_info,
+      const ScreenInfos& screen_infos,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler);
+
+  // Similar to `InitializeCompositing()` but for non-compositing widgets.
+  // Exactly one of either `InitializeCompositing()` or this method must
+  // be called before using the widget.
+  void InitializeNonCompositing();
 
   // Shutdown the compositor.
   void Shutdown();
@@ -155,7 +161,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   cc::AnimationHost* AnimationHost() const;
   cc::LayerTreeHost* LayerTreeHost() const;
-  bool IsComposited() const;
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       const;
 
@@ -308,24 +313,28 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void UpdateSurfaceAndScreenInfo(
       const viz::LocalSurfaceId& new_local_surface_id,
       const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfo& new_screen_info);
+      const ScreenInfos& new_screen_infos);
   // Similar to UpdateSurfaceAndScreenInfo but the screen info remains the same.
   void UpdateSurfaceAndCompositorRect(
       const viz::LocalSurfaceId& new_local_surface_id,
       const gfx::Rect& compositor_viewport_pixel_rect);
   // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
   // and compositor viewport rect remains the same.
-  void UpdateScreenInfo(const ScreenInfo& new_screen_info);
+  void UpdateScreenInfo(const ScreenInfos& new_screen_infos);
   // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
   // remains the same.
   void UpdateCompositorViewportAndScreenInfo(
       const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfo& new_screen_info);
+      const ScreenInfos& new_screen_infos);
   // Similar to UpdateSurfaceAndScreenInfo but the surface allocation and screen
   // info remains the same.
   void UpdateCompositorViewportRect(
       const gfx::Rect& compositor_viewport_pixel_rect);
   const ScreenInfo& GetScreenInfo();
+
+  // Accessors for information about available screens and the current screen.
+  void set_screen_infos(const ScreenInfos& s) { screen_infos_ = s; }
+  const ScreenInfos& screen_infos() { return screen_infos_; }
 
   const viz::LocalSurfaceId& local_surface_id_from_parent() const {
     return local_surface_id_from_parent_;
@@ -361,6 +370,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   const bool is_for_child_local_root_;
   // When true, the device scale factor is a part of blink coordinates.
   const bool use_zoom_for_dsf_;
+  // Set true by initialize functions, used to check that only one is called.
+  bool initialized_ = false;
 
   // The client which handles behaviour specific to the type of widget.
   WidgetBaseClient* const client_;
@@ -432,10 +443,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Object to record tab switch time into this RenderWidget
   ContentToVisibleTimeReporter tab_switch_time_recorder_;
 
-  // Properties of the screen hosting the WidgetBase. Rects in this structure
-  // do not include any scaling by device scale factor, so are logical pixels
-  // not physical device pixels.
-  ScreenInfo screen_info_;
+  // Info about available screens and which is currently showing the WidgetBase.
+  // Rects in these structures do not include any scaling by device scale
+  // factor, so are in DIPs, not blink coordinate space.
+  ScreenInfos screen_infos_;
+
   viz::LocalSurfaceId local_surface_id_from_parent_;
 
   // It is possible that one ImeEventGuard is nested inside another

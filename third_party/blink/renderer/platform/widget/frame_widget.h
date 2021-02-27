@@ -36,6 +36,7 @@ class Cursor;
 
 namespace blink {
 struct ScreenInfo;
+struct ScreenInfos;
 
 // In interface exposed within Blink from local root frames that provides
 // local-root specific things related to compositing and input. This
@@ -194,8 +195,11 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> edit_commands) = 0;
 
-  // Returns information about the screen where this widget is being displayed.
+  // Returns information about the screen currently showing the widget.
   virtual const ScreenInfo& GetScreenInfo() = 0;
+
+  // Returns information about available screens and the current screen.
+  virtual const ScreenInfos& GetScreenInfos() = 0;
 
   // Called to get the position of the widget's window in screen
   // coordinates. Note, the window includes any decorations such as borders,

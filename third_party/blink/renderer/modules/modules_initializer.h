@@ -50,6 +50,7 @@ class MODULES_EXPORT ModulesInitializer : public CoreInitializer {
 
   void DidChangeManifest(LocalFrame&) override;
   void NotifyOrientationChanged(LocalFrame&) override;
+  void NotifyScreensChanged(LocalFrame&) override;
 };
 
 }  // namespace blink

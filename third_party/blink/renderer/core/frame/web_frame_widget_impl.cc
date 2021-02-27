@@ -56,6 +56,7 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
+#include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -1361,10 +1362,11 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   SetDisplayMode(visual_properties.display_mode);
 
   if (ForMainFrame()) {
-    SetAutoResizeMode(visual_properties.auto_resize_enabled,
-                      visual_properties.min_size_for_auto_resize,
-                      visual_properties.max_size_for_auto_resize,
-                      visual_properties.screen_info.device_scale_factor);
+    SetAutoResizeMode(
+        visual_properties.auto_resize_enabled,
+        visual_properties.min_size_for_auto_resize,
+        visual_properties.max_size_for_auto_resize,
+        visual_properties.screen_infos.current().device_scale_factor);
   }
 
   bool capture_sequence_number_changed =
@@ -1468,15 +1470,24 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
     if (AutoResizeMode()) {
       new_compositor_viewport_pixel_rect = gfx::Rect(gfx::ScaleToCeiledSize(
           widget_base_->BlinkSpaceToFlooredDIPs(size_.value_or(gfx::Size())),
-          visual_properties.screen_info.device_scale_factor));
+          visual_properties.screen_infos.current().device_scale_factor));
     }
   }
 
   SetWindowSegments(visual_properties.root_widget_window_segments);
 
+  const bool screen_infos_changed =
+      widget_base_->screen_infos() != visual_properties.screen_infos;
+
   widget_base_->UpdateSurfaceAndScreenInfo(
       visual_properties.local_surface_id.value_or(viz::LocalSurfaceId()),
-      new_compositor_viewport_pixel_rect, visual_properties.screen_info);
+      new_compositor_viewport_pixel_rect, visual_properties.screen_infos);
+
+  if (screen_infos_changed) {
+    LocalFrame* frame = LocalRootImpl()->GetFrame();
+    CoreInitializer::GetInstance().NotifyScreensChanged(*frame);
+    // TODO(crbug.com/1182855): Propagate info and events to remote frames.
+  }
 
   // Store this even when auto-resizing, it is the size of the full viewport
   // used for clipping, and this value is propagated down the Widget
@@ -1625,9 +1636,10 @@ void WebFrameWidgetImpl::SetDeviceColorSpaceForTesting(
   // new viz::LocalSurfaceId to avoid surface invariants violations in tests.
   widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
 
-  blink::ScreenInfo info = widget_base_->GetScreenInfo();
-  info.display_color_spaces = gfx::DisplayColorSpaces(color_space);
-  widget_base_->UpdateScreenInfo(info);
+  blink::ScreenInfos screen_infos = widget_base_->screen_infos();
+  for (blink::ScreenInfo& screen_info : screen_infos.screen_infos)
+    screen_info.display_color_spaces = gfx::DisplayColorSpaces(color_space);
+  widget_base_->UpdateScreenInfo(screen_infos);
 }
 
 // TODO(665924): Remove direct dispatches of mouse events from
@@ -1737,7 +1749,7 @@ void WebFrameWidgetImpl::EnableDeviceEmulation(
     gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(Size());
 
     device_emulator_ = MakeGarbageCollected<ScreenMetricsEmulator>(
-        this, widget_base_->GetScreenInfo(), size_in_dips,
+        this, widget_base_->screen_infos(), size_in_dips,
         widget_base_->VisibleViewportSizeInDIPs(),
         widget_base_->WidgetScreenRect(), widget_base_->WindowScreenRect());
   }
@@ -1880,14 +1892,14 @@ void WebFrameWidgetImpl::ResetMeaningfulLayoutStateForMainFrame() {
 void WebFrameWidgetImpl::InitializeCompositing(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
-    const ScreenInfo& screen_info,
+    const ScreenInfos& screen_infos,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     const cc::LayerTreeSettings* settings) {
   DCHECK(View()->does_composite());
   DCHECK(!non_composited_client_);  // Assure only one initialize is called.
   widget_base_->InitializeCompositing(
       agent_group_scheduler, task_graph_runner, is_for_child_local_root_,
-      screen_info, std::move(ukm_recorder_factory), settings,
+      screen_infos, std::move(ukm_recorder_factory), settings,
       input_handler_weak_ptr_factory_.GetWeakPtr());
 
   LocalFrameView* frame_view;
@@ -1909,8 +1921,7 @@ void WebFrameWidgetImpl::InitializeNonCompositing(
   DCHECK(!non_composited_client_);
   DCHECK(client);
   DCHECK(!View()->does_composite());
-  // Assure only one initialize is called.
-  DCHECK(!widget_base_->IsComposited());
+  widget_base_->InitializeNonCompositing();
   non_composited_client_ = client;
 }
 
@@ -2543,13 +2554,13 @@ float WebFrameWidgetImpl::PageScaleInMainFrame() {
 void WebFrameWidgetImpl::UpdateSurfaceAndScreenInfo(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfo& new_screen_info) {
+    const ScreenInfos& new_screen_infos) {
   widget_base_->UpdateSurfaceAndScreenInfo(
-      new_local_surface_id, compositor_viewport_pixel_rect, new_screen_info);
+      new_local_surface_id, compositor_viewport_pixel_rect, new_screen_infos);
 }
 
-void WebFrameWidgetImpl::UpdateScreenInfo(const ScreenInfo& new_screen_info) {
-  widget_base_->UpdateScreenInfo(new_screen_info);
+void WebFrameWidgetImpl::UpdateScreenInfo(const ScreenInfos& new_screen_infos) {
+  widget_base_->UpdateScreenInfo(new_screen_infos);
 }
 
 void WebFrameWidgetImpl::UpdateSurfaceAndCompositorRect(
@@ -2566,6 +2577,22 @@ void WebFrameWidgetImpl::UpdateCompositorViewportRect(
 
 const ScreenInfo& WebFrameWidgetImpl::GetScreenInfo() {
   return widget_base_->GetScreenInfo();
+}
+
+const ScreenInfos& WebFrameWidgetImpl::GetScreenInfos() {
+  return widget_base_->screen_infos();
+}
+
+const ScreenInfo& WebFrameWidgetImpl::GetOriginalScreenInfo() {
+  if (device_emulator_)
+    return device_emulator_->GetOriginalScreenInfo();
+  return widget_base_->GetScreenInfo();
+}
+
+const ScreenInfos& WebFrameWidgetImpl::GetOriginalScreenInfos() {
+  if (device_emulator_)
+    return device_emulator_->original_screen_infos();
+  return widget_base_->screen_infos();
 }
 
 gfx::Rect WebFrameWidgetImpl::WindowRect() {
@@ -3632,13 +3659,13 @@ void WebFrameWidgetImpl::SetScreenMetricsEmulationParameters(
 }
 
 void WebFrameWidgetImpl::SetScreenInfoAndSize(
-    const ScreenInfo& screen_info,
+    const ScreenInfos& screen_infos,
     const gfx::Size& widget_size_in_dips,
     const gfx::Size& visible_viewport_size_in_dips) {
   // Emulation happens on regular main frames which don't use auto-resize mode.
   DCHECK(!AutoResizeMode());
 
-  UpdateScreenInfo(screen_info);
+  UpdateScreenInfo(screen_infos);
   widget_base_->SetVisibleViewportSizeInDIPs(visible_viewport_size_in_dips);
   Resize(widget_base_->DIPsToCeiledBlinkSpace(widget_size_in_dips));
 }
@@ -3787,12 +3814,6 @@ gfx::Rect WebFrameWidgetImpl::ViewportVisibleRect() {
   }
 }
 
-const ScreenInfo& WebFrameWidgetImpl::GetOriginalScreenInfo() {
-  if (device_emulator_)
-    return device_emulator_->original_screen_info();
-  return widget_base_->GetScreenInfo();
-}
-
 base::Optional<blink::mojom::ScreenOrientation>
 WebFrameWidgetImpl::ScreenOrientationOverride() {
   return View()->ScreenOrientationOverride();
@@ -3939,11 +3960,11 @@ void WebFrameWidgetImpl::SetDeviceScaleFactorForTesting(float factor) {
   // new viz::LocalSurfaceId to avoid surface invariants violations in tests.
   widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
 
-  ScreenInfo info = widget_base_->GetScreenInfo();
-  info.device_scale_factor = factor;
+  ScreenInfos screen_infos = widget_base_->screen_infos();
+  screen_infos.mutable_current().device_scale_factor = factor;
   gfx::Size size_with_dsf = gfx::ScaleToCeiledSize(size_in_dips, factor);
   widget_base_->UpdateCompositorViewportAndScreenInfo(gfx::Rect(size_with_dsf),
-                                                      info);
+                                                      screen_infos);
   if (!AutoResizeMode()) {
     // This picks up the new device scale factor as
     // `UpdateCompositorViewportAndScreenInfo()` has applied a new value.
@@ -4065,7 +4086,7 @@ void WebFrameWidgetImpl::SetWindowRectSynchronously(
       widget_base_->GetScreenInfo().device_scale_factor));
   widget_base_->UpdateSurfaceAndScreenInfo(
       widget_base_->local_surface_id_from_parent(),
-      compositor_viewport_pixel_rect, widget_base_->GetScreenInfo());
+      compositor_viewport_pixel_rect, widget_base_->screen_infos());
 
   Resize(new_window_rect.size());
   widget_base_->SetScreenRects(new_window_rect, new_window_rect);

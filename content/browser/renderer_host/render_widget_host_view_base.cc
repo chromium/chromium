@@ -469,16 +469,23 @@ void RenderWidgetHostViewBase::UpdateScreenInfo(gfx::NativeView view) {
 bool RenderWidgetHostViewBase::HasDisplayPropertyChanged(gfx::NativeView view) {
   auto* screen = display::Screen::GetScreen();
   auto display = screen->GetDisplayNearestView(view);
-  if (current_display_.work_area() == display.work_area() &&
+  bool display_is_extended = screen->GetNumDisplays() > 1;
+  bool display_is_primary = screen->GetPrimaryDisplay().id() == display.id();
+  if (current_display_.id() == display.id() &&
+      current_display_.bounds() == display.bounds() &&
+      current_display_.work_area() == display.work_area() &&
       current_display_.device_scale_factor() == display.device_scale_factor() &&
       current_display_.rotation() == display.rotation() &&
       current_display_.color_spaces() == display.color_spaces() &&
-      current_display_is_extended_ == screen->GetNumDisplays() > 1) {
+      current_display_.IsInternal() == display.IsInternal() &&
+      current_display_is_extended_ == display_is_extended &&
+      current_display_is_primary_ == display_is_primary) {
     return false;
   }
 
   current_display_ = display;
-  current_display_is_extended_ = screen->GetNumDisplays() > 1;
+  current_display_is_extended_ = display_is_extended;
+  current_display_is_primary_ = display_is_primary;
   return true;
 }
 

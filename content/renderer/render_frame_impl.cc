@@ -1595,7 +1595,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   web_frame_widget->InitializeCompositing(
       agent_scheduling_group.agent_group_scheduler(),
       compositor_deps->GetTaskGraphRunner(),
-      params->widget_params->visual_properties.screen_info,
+      params->widget_params->visual_properties.screen_infos,
       compositor_deps->CreateUkmRecorderFactory(),
       /*settings=*/nullptr);
 
@@ -1766,7 +1766,7 @@ void RenderFrameImpl::CreateFrame(
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),
         compositor_deps->GetTaskGraphRunner(),
-        widget_params->visual_properties.screen_info,
+        widget_params->visual_properties.screen_infos,
         compositor_deps->CreateUkmRecorderFactory(),
         /*settings=*/nullptr);
 
@@ -1810,7 +1810,7 @@ void RenderFrameImpl::CreateFrame(
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),
         compositor_deps->GetTaskGraphRunner(),
-        widget_params->visual_properties.screen_info,
+        widget_params->visual_properties.screen_infos,
         compositor_deps->CreateUkmRecorderFactory(),
         /*settings=*/nullptr);
 

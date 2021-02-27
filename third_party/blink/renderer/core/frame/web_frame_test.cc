@@ -1341,8 +1341,9 @@ bool CheckTextAutosizingMultiplier(Document* document, float multiplier) {
 void UpdateScreenInfoAndResizeView(
     frame_test_helpers::WebViewHelper* web_view_helper,
     const ScreenInfo& screen_info) {
+  ScreenInfos screen_infos(screen_info);
   web_view_helper->GetWebView()->MainFrameViewWidget()->UpdateScreenInfo(
-      screen_info);
+      screen_infos);
   web_view_helper->Resize(screen_info.rect.size());
 }
 
@@ -13625,10 +13626,10 @@ TEST_F(WebFrameTest, MediaQueriesInLocalFrameInsideRemote) {
   frame_test_helpers::TestWebFrameWidget* local_frame_widget =
       static_cast<frame_test_helpers::TestWebFrameWidget*>(
           local_frame->FrameWidgetImpl());
-  ScreenInfo screen_info = local_frame_widget->GetOriginalScreenInfo();
-  screen_info.is_monochrome = false;
-  screen_info.depth_per_component = 8;
-  local_frame_widget->UpdateScreenInfo(screen_info);
+  ScreenInfos screen_infos(local_frame_widget->GetOriginalScreenInfo());
+  screen_infos.mutable_current().is_monochrome = false;
+  screen_infos.mutable_current().depth_per_component = 8;
+  local_frame_widget->UpdateScreenInfo(screen_infos);
 
   ASSERT_TRUE(local_frame->GetFrame());
   MediaValues* media_values =

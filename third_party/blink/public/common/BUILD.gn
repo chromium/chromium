@@ -203,6 +203,7 @@ source_set("headers") {
     "web_preferences/web_preferences.h",
     "widget/device_emulation_params.h",
     "widget/screen_info.h",
+    "widget/screen_infos.h",
     "widget/visual_properties.h",
   ]
 

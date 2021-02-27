@@ -320,6 +320,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Notification that the screen info has changed.
   void NotifyScreenInfoChanged();
 
+  // Get info regarding all screens, including which screen is currently showing
+  // this RenderWidgetHost.
+  blink::ScreenInfos GetScreenInfos();
+
   // Forces redraw in the renderer and when the update reaches the browser.
   // grabs snapshot from the compositor.
   // If |from_surface| is false, it will obtain the snapshot directly from the

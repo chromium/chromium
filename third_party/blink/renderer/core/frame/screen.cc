@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 
 namespace blink {
 
@@ -232,13 +233,13 @@ float Screen::scaleFactor() const {
   return GetScreenInfo(*DomWindow()->GetFrame()).device_scale_factor;
 }
 
-const String Screen::id() const {
+const String& Screen::id() const {
   if (display_)
     return id_;
   // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
   // that inherits from Screen: https://github.com/webscreens/window-placement
   NOTIMPLEMENTED_LOG_ONCE();
-  return String();
+  return g_empty_string;
 }
 
 bool Screen::touchSupport() const {
@@ -255,7 +256,9 @@ bool Screen::touchSupport() const {
 int64_t Screen::DisplayId() const {
   if (display_)
     return display_->id;
-  return kInvalidDisplayId;
+  if (!DomWindow())
+    return kInvalidDisplayId;
+  return GetScreenInfo(*DomWindow()->GetFrame()).display_id;
 }
 
 }  // namespace blink

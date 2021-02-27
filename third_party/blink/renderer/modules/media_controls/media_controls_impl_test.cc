@@ -67,9 +67,9 @@ namespace {
 
 class FakeChromeClient : public EmptyChromeClient {
  public:
-  FakeChromeClient()
-      : screen_info_({.orientation_type =
-                          mojom::blink::ScreenOrientation::kLandscapePrimary}) {
+  FakeChromeClient() {
+    screen_info_.orientation_type =
+        mojom::blink::ScreenOrientation::kLandscapePrimary;
   }
 
   // ChromeClient overrides.
@@ -78,7 +78,7 @@ class FakeChromeClient : public EmptyChromeClient {
   }
 
  private:
-  const ScreenInfo screen_info_;
+  ScreenInfo screen_info_;
 };
 
 class MockWebMediaPlayerForImpl : public EmptyWebMediaPlayer {

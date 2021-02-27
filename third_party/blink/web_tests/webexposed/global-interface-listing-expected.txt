@@ -8027,6 +8027,13 @@ interface ScreenOrientation : EventTarget
     method lock
     method unlock
     setter onchange
+interface Screens
+    attribute @@toStringTag
+    getter currentScreen
+    getter onchange
+    getter screens
+    method constructor
+    setter onchange
 interface ScriptProcessorNode : AudioNode
     attribute @@toStringTag
     getter bufferSize
@@ -11292,6 +11299,7 @@ namespace CSS
     method getComputedStyle
     method getDigitalGoodsService
     method getScreens
+    method getScreensDeprecated
     method getSelection
     method getWindowSegments
     method isMultiScreen

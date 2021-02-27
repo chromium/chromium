@@ -106,6 +106,7 @@ struct DateTimeChooserParameters;
 struct FrameLoadRequest;
 struct ViewportDescription;
 struct ScreenInfo;
+struct ScreenInfos;
 struct WebWindowFeatures;
 
 namespace mojom {
@@ -290,9 +291,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual bool TabsToLinks() = 0;
 
   virtual const ScreenInfo& GetScreenInfo(LocalFrame& frame) const = 0;
+  virtual const ScreenInfos& GetScreenInfos(LocalFrame& frame) const = 0;
 
   virtual void SetCursor(const ui::Cursor&, LocalFrame* local_root) = 0;
-
   virtual void SetCursorOverridden(bool) = 0;
 
   virtual void AutoscrollStart(const gfx::PointF& position, LocalFrame*) {}

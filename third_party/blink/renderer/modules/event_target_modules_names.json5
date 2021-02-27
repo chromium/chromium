@@ -55,6 +55,7 @@
     "PresentationRequest",
     "RemotePlayback",
     "ScreenOrientation",
+    "Screens",
     "Sensor",
     "Serial",
     "SerialPort",

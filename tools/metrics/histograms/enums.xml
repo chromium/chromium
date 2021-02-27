@@ -31679,6 +31679,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3837" label="FeaturePolicyJSAPIFeaturesDocument"/>
   <int value="3838" label="FeaturePolicyJSAPIGetAllowlistIFrame"/>
   <int value="3839" label="FeaturePolicyJSAPIGetAllowlistDocument"/>
+  <int value="3840" label="V8Screens_Onchange_AttributeGetter"/>
+  <int value="3841" label="V8Screens_Onchange_AttributeSetter"/>
+  <int value="3842" label="V8ScreenAdvanced_Left_AttributeGetter"/>
+  <int value="3843" label="V8ScreenAdvanced_Top_AttributeGetter"/>
+  <int value="3844" label="V8ScreenAdvanced_IsPrimary_AttributeGetter"/>
+  <int value="3845" label="V8ScreenAdvanced_IsInternal_AttributeGetter"/>
+  <int value="3846" label="V8ScreenAdvanced_DevicePixelRatio_AttributeGetter"/>
+  <int value="3847" label="V8ScreenAdvanced_Id_AttributeGetter"/>
+  <int value="3848" label="V8ScreenAdvanced_PointerTypes_AttributeGetter"/>
+  <int value="3849" label="V8ScreenAdvanced_Label_AttributeGetter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

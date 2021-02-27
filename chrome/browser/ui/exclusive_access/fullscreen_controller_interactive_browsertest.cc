@@ -687,8 +687,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   FullscreenNotificationObserver enter_fullscreen_observer(browser());
   const std::string request_fullscreen_script = R"(
       (async () => {
-          const screens = await self.getScreens();
-          let options = { screen: screens[1] };
+          const screensInterface = await self.getScreens();
+          const options = { screen: screensInterface.screens[1] };
           await document.body.requestFullscreen(options);
           return !!document.fullscreenElement;
       })();
@@ -776,8 +776,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   FullscreenNotificationObserver enter_fullscreen_observer(browser());
   const std::string request_fullscreen_script = R"(
       (async () => {
-          const screens = await self.getScreens();
-          let options = { screen: screens[1] };
+          const screensInterface = await self.getScreens();
+          const options = { screen: screensInterface.screens[1] };
           await document.body.requestFullscreen(options);
           return !!document.fullscreenElement;
       })();
@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   // Add a screenschange handler to requestFullscreen after awaiting getScreens.
   const std::string request_fullscreen_script = R"(
       window.onscreenschange = async () => {
-        const screens = await self.getScreens();
+        const screens = await self.getScreensDeprecated();
         await document.body.requestFullscreen();
       };
   )";
@@ -864,6 +864,10 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 
   fullscreen_observer.Wait();
   EXPECT_TRUE(browser()->window()->IsFullscreen());
+
+  // Close all tabs to avoid assertions failing when their cached screen info
+  // differs from the restored original Screen instance.
+  browser()->tab_strip_model()->CloseAllTabs();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   display::Screen::SetScreenInstance(original_screen);

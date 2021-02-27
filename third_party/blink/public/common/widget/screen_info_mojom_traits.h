@@ -54,6 +54,12 @@ struct BLINK_COMMON_EXPORT
 
   static bool is_extended(const blink::ScreenInfo& r) { return r.is_extended; }
 
+  static bool is_primary(const blink::ScreenInfo& r) { return r.is_primary; }
+
+  static bool is_internal(const blink::ScreenInfo& r) { return r.is_internal; }
+
+  static int64_t display_id(const blink::ScreenInfo& r) { return r.display_id; }
+
   static bool Read(blink::mojom::ScreenInfoDataView r, blink::ScreenInfo* out);
 };
 

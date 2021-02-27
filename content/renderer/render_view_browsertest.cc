@@ -551,7 +551,8 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
 
   blink::VisualProperties MakeVisualPropertiesWithDeviceScaleFactor(float dsf) {
     blink::VisualProperties visual_properties;
-    visual_properties.screen_info.device_scale_factor = dsf;
+    visual_properties.screen_infos = blink::ScreenInfos(blink::ScreenInfo());
+    visual_properties.screen_infos.mutable_current().device_scale_factor = dsf;
     visual_properties.new_size = gfx::Size(100, 100);
     visual_properties.compositor_viewport_pixel_rect = gfx::Rect(200, 200);
     visual_properties.visible_viewport_size = visual_properties.new_size;
@@ -718,7 +719,7 @@ class RenderViewImplEmulatingPopupTest : public RenderViewImplTest {
   blink::VisualProperties InitialVisualProperties() override {
     blink::VisualProperties visual_properties =
         RenderViewImplTest::InitialVisualProperties();
-    visual_properties.screen_info.rect = gfx::Rect(800, 600);
+    visual_properties.screen_infos.mutable_current().rect = gfx::Rect(800, 600);
     return visual_properties;
   }
 };

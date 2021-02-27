@@ -51,6 +51,10 @@ void DisplayUtil::DisplayToScreenInfo(blink::ScreenInfo* screen_info,
   auto* screen = display::Screen::GetScreen();
   // Some tests are run with no Screen initialized.
   screen_info->is_extended = screen && screen->GetNumDisplays() > 1;
+  screen_info->is_primary =
+      screen && (screen->GetPrimaryDisplay().id() == display.id());
+  screen_info->is_internal = display.IsInternal();
+  screen_info->display_id = display.id();
 }
 
 // static

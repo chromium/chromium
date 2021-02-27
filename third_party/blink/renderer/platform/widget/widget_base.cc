@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -174,11 +175,12 @@ void WidgetBase::InitializeCompositing(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
     bool for_child_local_root_frame,
-    const ScreenInfo& screen_info,
+    const ScreenInfos& screen_infos,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     const cc::LayerTreeSettings* settings,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler) {
+  DCHECK(!initialized_);
   scheduler::WebThreadScheduler* main_thread_scheduler =
       &agent_group_scheduler.GetMainThreadScheduler();
   main_thread_compositor_task_runner_ =
@@ -191,12 +193,13 @@ void WidgetBase::InitializeCompositing(
 
   base::Optional<cc::LayerTreeSettings> default_settings;
   if (!settings) {
+    const ScreenInfo& screen_info = screen_infos.current();
     default_settings = GenerateLayerTreeSettings(
         compositing_thread_scheduler, for_child_local_root_frame,
         screen_info.rect.size(), screen_info.device_scale_factor);
     settings = &default_settings.value();
   }
-  screen_info_ = screen_info;
+  screen_infos_ = screen_infos;
   layer_tree_view_->Initialize(
       *settings, main_thread_compositor_task_runner_,
       compositing_thread_scheduler
@@ -232,7 +235,7 @@ void WidgetBase::InitializeCompositing(
   if (command_line.HasSwitch(switches::kAllowPreCommitInput))
     widget_input_handler_manager_->AllowPreCommitInput();
 
-  UpdateScreenInfo(screen_info);
+  UpdateScreenInfo(screen_infos);
 
   // If the widget is hidden, delay starting the compositor until the user
   // shows it. Otherwise start the compositor immediately. If the widget is
@@ -241,6 +244,15 @@ void WidgetBase::InitializeCompositing(
   // metrics.
   if (!is_hidden_)
     SetCompositorVisible(true);
+
+  initialized_ = true;
+}
+
+void WidgetBase::InitializeNonCompositing() {
+  DCHECK(!initialized_);
+  // WidgetBase users implicitly expect one default ScreenInfo to exist.
+  screen_infos_ = ScreenInfos(ScreenInfo());
+  initialized_ = true;
 }
 
 void WidgetBase::Shutdown() {
@@ -280,10 +292,6 @@ void WidgetBase::Shutdown() {
 
 cc::LayerTreeHost* WidgetBase::LayerTreeHost() const {
   return layer_tree_view_->layer_tree_host();
-}
-
-bool WidgetBase::IsComposited() const {
-  return !!layer_tree_view_;
 }
 
 cc::AnimationHost* WidgetBase::AnimationHost() const {
@@ -371,14 +379,15 @@ void WidgetBase::UpdateVisualProperties(
   //   See also:
   //   https://docs.google.com/document/d/1G_fR1D_0c1yke8CqDMddoKrDGr3gy5t_ImEH4hKNIII/edit#
 
-  blink::VisualProperties visual_properties = visual_properties_from_browser;
+  VisualProperties visual_properties = visual_properties_from_browser;
+  auto& screen_info = visual_properties.screen_infos.mutable_current();
+
   // Web tests can override the device scale factor in the renderer.
   if (auto scale_factor = client_->GetTestingDeviceScaleFactorOverride()) {
-    visual_properties.screen_info.device_scale_factor = scale_factor;
+    screen_info.device_scale_factor = scale_factor;
     visual_properties.compositor_viewport_pixel_rect =
-        gfx::Rect(gfx::ScaleToCeiledSize(
-            visual_properties.new_size,
-            visual_properties.screen_info.device_scale_factor));
+        gfx::Rect(gfx::ScaleToCeiledSize(visual_properties.new_size,
+                                         screen_info.device_scale_factor));
   }
 
   // Inform the rendering thread of the color space indicating the presence of
@@ -388,15 +397,14 @@ void WidgetBase::UpdateVisualProperties(
   // used. See https://crbug.com/803451 and
   // https://chromium-review.googlesource.com/c/chromium/src/+/852912/15#message-68bbd3e25c3b421a79cd028b2533629527d21fee
   Platform::Current()->SetRenderingColorSpace(
-      visual_properties.screen_info.display_color_spaces
-          .GetScreenInfoColorSpace());
+      screen_info.display_color_spaces.GetScreenInfoColorSpace());
 
   LayerTreeHost()->SetBrowserControlsParams(
       visual_properties.browser_controls_params);
 
-  LayerTreeHost()->SetVisualDeviceViewportSize(gfx::ScaleToCeiledSize(
-      visual_properties.visible_viewport_size,
-      visual_properties.screen_info.device_scale_factor));
+  LayerTreeHost()->SetVisualDeviceViewportSize(
+      gfx::ScaleToCeiledSize(visual_properties.visible_viewport_size,
+                             screen_info.device_scale_factor));
 
   client_->UpdateVisualProperties(visual_properties);
 }
@@ -951,7 +959,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     // https://crbug.com/912309
     // Compositing might not be initialized but input can still be dispatched
     // to non-composited widgets so LayerTreeHost may be null.
-    if (IsComposited())
+    if (layer_tree_view_)
       LayerTreeHost()->RequestForceSendMetadata();
 #endif
   }
@@ -1345,8 +1353,9 @@ void WidgetBase::RequestAnimationAfterDelayTimerFired(TimerBase*) {
 void WidgetBase::UpdateSurfaceAndScreenInfo(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfo& new_screen_info_param) {
-  ScreenInfo new_screen_info = new_screen_info_param;
+    const ScreenInfos& screen_infos) {
+  ScreenInfos new_screen_infos = screen_infos;
+  ScreenInfo& new_screen_info = new_screen_infos.mutable_current();
 
   // If there is a screen orientation override apply it.
   if (auto orientation_override = client_->ScreenOrientationOverride()) {
@@ -1355,15 +1364,17 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
         OrientationTypeToAngle(new_screen_info.orientation_type);
   }
 
-  // Same logic is used in RenderWidgetHostImpl::SynchronizeVisualProperties to
-  // detect if there is a screen orientation change.
+  // RenderWidgetHostImpl::SynchronizeVisualProperties uses similar logic to
+  // detect orientation changes on the display currently showing the widget.
+  const ScreenInfo& previous_screen_info = screen_infos_.current();
   bool orientation_changed =
-      screen_info_.orientation_angle != new_screen_info.orientation_angle ||
-      screen_info_.orientation_type != new_screen_info.orientation_type;
+      previous_screen_info.orientation_angle !=
+          new_screen_info.orientation_angle ||
+      previous_screen_info.orientation_type != new_screen_info.orientation_type;
   ScreenInfo previous_original_screen_info = client_->GetOriginalScreenInfo();
 
   local_surface_id_from_parent_ = new_local_surface_id;
-  screen_info_ = new_screen_info;
+  screen_infos_ = new_screen_infos;
 
   // Note carefully that the DSF specified in |new_screen_info| is not the
   // DSF used by the compositor during device emulation!
@@ -1375,7 +1386,8 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
   // viewport size, which is set above.
   LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(
       client_->ViewportVisibleRect());
-  LayerTreeHost()->SetDisplayColorSpaces(screen_info_.display_color_spaces);
+  LayerTreeHost()->SetDisplayColorSpaces(
+      screen_infos_.current().display_color_spaces);
 
   if (orientation_changed)
     client_->OrientationChanged();
@@ -1383,33 +1395,33 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
   client_->DidUpdateSurfaceAndScreen(previous_original_screen_info);
 }
 
-void WidgetBase::UpdateScreenInfo(const ScreenInfo& new_screen_info) {
+void WidgetBase::UpdateScreenInfo(const ScreenInfos& new_screen_infos) {
   UpdateSurfaceAndScreenInfo(local_surface_id_from_parent_,
-                             CompositorViewportRect(), new_screen_info);
+                             CompositorViewportRect(), new_screen_infos);
 }
 
 void WidgetBase::UpdateCompositorViewportAndScreenInfo(
     const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfo& new_screen_info) {
+    const ScreenInfos& new_screen_infos) {
   UpdateSurfaceAndScreenInfo(local_surface_id_from_parent_,
-                             compositor_viewport_pixel_rect, new_screen_info);
+                             compositor_viewport_pixel_rect, new_screen_infos);
 }
 
 void WidgetBase::UpdateCompositorViewportRect(
     const gfx::Rect& compositor_viewport_pixel_rect) {
   UpdateSurfaceAndScreenInfo(local_surface_id_from_parent_,
-                             compositor_viewport_pixel_rect, screen_info_);
+                             compositor_viewport_pixel_rect, screen_infos_);
 }
 
 void WidgetBase::UpdateSurfaceAndCompositorRect(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect) {
   UpdateSurfaceAndScreenInfo(new_local_surface_id,
-                             compositor_viewport_pixel_rect, screen_info_);
+                             compositor_viewport_pixel_rect, screen_infos_);
 }
 
 const ScreenInfo& WidgetBase::GetScreenInfo() {
-  return screen_info_;
+  return screen_infos_.current();
 }
 
 void WidgetBase::SetScreenRects(const gfx::Rect& widget_screen_rect,
@@ -1476,7 +1488,7 @@ bool WidgetBase::ComputePreferCompositingToLCDText() {
   // antialiasing won't have a noticeable effect on text quality.
   // Note: We should keep kHighDPIDeviceScaleFactorThreshold in
   // cc/metrics/lcd_text_metrics_reporter.cc the same as the value below.
-  if (screen_info_.device_scale_factor >= 1.5f)
+  if (screen_infos_.current().device_scale_factor >= 1.5f)
     return true;
   if (command_line.HasSwitch(switches::kEnablePreferCompositingToLCDText))
     return true;

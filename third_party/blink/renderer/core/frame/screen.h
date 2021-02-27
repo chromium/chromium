@@ -44,22 +44,22 @@ namespace blink {
 
 class LocalDOMWindow;
 
-class CORE_EXPORT Screen final : public EventTargetWithInlineData,
-                                 public ExecutionContextClient,
-                                 public Supplementable<Screen> {
+class CORE_EXPORT Screen : public EventTargetWithInlineData,
+                           public ExecutionContextClient,
+                           public Supplementable<Screen> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit Screen(LocalDOMWindow*);
 
-  int height() const;
-  int width() const;
-  unsigned colorDepth() const;
-  unsigned pixelDepth() const;
-  int availLeft() const;
-  int availTop() const;
-  int availHeight() const;
-  int availWidth() const;
+  virtual int height() const;
+  virtual int width() const;
+  virtual unsigned colorDepth() const;
+  virtual unsigned pixelDepth() const;
+  virtual int availLeft() const;
+  virtual int availTop() const;
+  virtual int availHeight() const;
+  virtual int availWidth() const;
 
   void Trace(Visitor*) const override;
 
@@ -69,27 +69,26 @@ class CORE_EXPORT Screen final : public EventTargetWithInlineData,
 
   // Proposed: https://github.com/webscreens/window-placement
   // Whether this Screen is part of a multi-screen extended visual workspace.
-  bool isExtended() const;
+  virtual bool isExtended() const;
   // An event fired when Screen attributes change.
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
-
   // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
   // that inherits from Screen: https://github.com/webscreens/window-placement
   Screen(display::mojom::blink::DisplayPtr display,
          bool internal,
          bool primary,
          const String& id);
-  int left() const;
-  int top() const;
-  bool internal() const;
-  bool primary() const;
-  float scaleFactor() const;
-  const String id() const;
-  bool touchSupport() const;
+  virtual int left() const;
+  virtual int top() const;
+  virtual bool internal() const;
+  virtual bool primary() const;
+  virtual float scaleFactor() const;
+  virtual const String& id() const;
+  virtual bool touchSupport() const;
 
   // Not web-exposed; for internal usage only.
   static constexpr int64_t kInvalidDisplayId = -1;
-  int64_t DisplayId() const;
+  virtual int64_t DisplayId() const;
 
  private:
   // A static snapshot of the display's information, provided upon construction.

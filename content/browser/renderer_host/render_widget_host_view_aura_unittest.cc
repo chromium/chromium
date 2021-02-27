@@ -2662,7 +2662,7 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithScale) {
     EXPECT_EQ(gfx::Size(50, 50), visual_properties.min_size_for_auto_resize);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
     // Default DSF is 1.
-    EXPECT_EQ(1, visual_properties.screen_info.device_scale_factor);
+    EXPECT_EQ(1, visual_properties.screen_infos.current().device_scale_factor);
     // Passed the original LocalSurfaceId.
     EXPECT_TRUE(visual_properties.local_surface_id.has_value());
     EXPECT_EQ(host_local_surface_id,
@@ -2698,7 +2698,7 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithScale) {
     EXPECT_EQ(gfx::Size(50, 50), visual_properties.min_size_for_auto_resize);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
     // Updated DSF for the renderer.
-    EXPECT_EQ(2, visual_properties.screen_info.device_scale_factor);
+    EXPECT_EQ(2, visual_properties.screen_infos.current().device_scale_factor);
     // The LocalSurfaceId has changed to the one from the renderer.
     EXPECT_TRUE(visual_properties.local_surface_id.has_value());
     EXPECT_NE(host_local_surface_id,
@@ -2765,7 +2765,7 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithBrowserInitiatedResize) {
     EXPECT_EQ(gfx::Size(50, 50), visual_properties.min_size_for_auto_resize);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
     EXPECT_EQ(gfx::Size(120, 120), visual_properties.new_size);
-    EXPECT_EQ(1, visual_properties.screen_info.device_scale_factor);
+    EXPECT_EQ(1, visual_properties.screen_infos.current().device_scale_factor);
     // A newly generated LocalSurfaceId is sent.
     EXPECT_TRUE(visual_properties.local_surface_id.has_value());
     EXPECT_NE(host_local_surface_id,

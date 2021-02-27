@@ -456,6 +456,10 @@ const ScreenInfo& ChromeClientImpl::GetScreenInfo(LocalFrame& frame) const {
   return frame.GetWidgetForLocalRoot()->GetScreenInfo();
 }
 
+const ScreenInfos& ChromeClientImpl::GetScreenInfos(LocalFrame& frame) const {
+  return frame.GetWidgetForLocalRoot()->GetScreenInfos();
+}
+
 void ChromeClientImpl::OverrideVisibleRectForMainFrame(
     LocalFrame& frame,
     IntRect* visible_rect) const {

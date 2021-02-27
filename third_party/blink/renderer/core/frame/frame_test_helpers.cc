@@ -537,10 +537,11 @@ TestWebFrameWidget* WebViewHelper::CreateFrameWidgetAndInitializeCompositing(
   // The WebWidget requires the compositor to be set before it is used.
   cc::LayerTreeSettings layer_tree_settings =
       GetSynchronousSingleThreadLayerTreeSettings();
+  ScreenInfos initial_screen_infos(frame_widget->GetInitialScreenInfo());
   frame_widget->InitializeCompositing(
       frame_widget->GetAgentGroupScheduler(), frame_widget->task_graph_runner(),
-      frame_widget->GetInitialScreenInfo(),
-      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+      initial_screen_infos, std::make_unique<cc::TestUkmRecorderFactory>(),
+      &layer_tree_settings);
   frame_widget->SetCompositorVisible(true);
   return frame_widget;
 }

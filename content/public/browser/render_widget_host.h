@@ -22,13 +22,13 @@
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/surface/transport_dib.h"
 
 namespace blink {
+struct ScreenInfo;
 class WebMouseEvent;
 class WebMouseWheelEvent;
 }
@@ -128,8 +128,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   // Returns nullptr if the IDs do not correspond to a live RenderWidgetHost.
   static RenderWidgetHost* FromID(int32_t process_id, int32_t routing_id);
 
-  // Returns an iterator to iterate over the global list of active render widget
-  // hosts.
+  // Returns an iterator over the global list of active RenderWidgetHosts.
   static std::unique_ptr<RenderWidgetHostIterator> GetRenderWidgetHosts();
 
   virtual ~RenderWidgetHost() {}
@@ -281,13 +280,13 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void AddObserver(RenderWidgetHostObserver* observer) = 0;
   virtual void RemoveObserver(RenderWidgetHostObserver* observer) = 0;
 
-  // Get the screen info corresponding to this render widget.
+  // Get info regarding the screen showing this RenderWidgetHost.
   virtual void GetScreenInfo(blink::ScreenInfo* screen_info) = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
   virtual float GetDeviceScaleFactor() = 0;
 
-  // Get the allowed touch action corresponding to this render widget.
+  // Get the allowed touch action corresponding to this RenderWidgetHost.
   virtual base::Optional<cc::TouchAction> GetAllowedTouchAction() = 0;
 
   // Drag-and-drop drop target messages that get sent to Blink.

@@ -12,17 +12,21 @@ namespace blink {
 
 ScreenMetricsEmulator::ScreenMetricsEmulator(
     WebFrameWidgetImpl* frame_widget,
-    const ScreenInfo& screen_info,
+    const ScreenInfos& screen_infos,
     const gfx::Size& widget_size,
     const gfx::Size& visible_viewport_size,
     const gfx::Rect& view_screen_rect,
     const gfx::Rect& window_screen_rect)
     : frame_widget_(frame_widget),
-      original_screen_info_(screen_info),
+      original_screen_infos_(screen_infos),
       original_widget_size_(widget_size),
       original_visible_viewport_size_(visible_viewport_size),
       original_view_screen_rect_(view_screen_rect),
       original_window_screen_rect_(window_screen_rect) {}
+
+const ScreenInfo& ScreenMetricsEmulator::GetOriginalScreenInfo() const {
+  return original_screen_infos_.current();
+}
 
 void ScreenMetricsEmulator::Trace(Visitor* vistor) const {
   vistor->Trace(frame_widget_);
@@ -33,7 +37,7 @@ void ScreenMetricsEmulator::DisableAndApply() {
   frame_widget_->SetScreenRects(original_view_screen_rect_,
                                 original_window_screen_rect_);
   frame_widget_->SetWindowSegments(original_root_window_segments_);
-  frame_widget_->SetScreenInfoAndSize(original_screen_info_,
+  frame_widget_->SetScreenInfoAndSize(original_screen_infos_,
                                       original_widget_size_,
                                       original_visible_viewport_size_);
 }
@@ -95,7 +99,8 @@ void ScreenMetricsEmulator::Apply() {
     window_pos = widget_pos;
   }
 
-  gfx::Rect screen_rect = original_screen_info().rect;
+  const ScreenInfo& original_screen_info = original_screen_infos_.current();
+  gfx::Rect screen_rect = original_screen_info.rect;
 
   if (!emulation_params_.screen_size.IsEmpty()) {
     // The emulated screen size overrides the real one, and moves the screen's
@@ -107,14 +112,14 @@ void ScreenMetricsEmulator::Apply() {
     screen_rect = gfx::Rect(widget_pos, widget_size);
   }
 
-  float device_scale_factor = original_screen_info().device_scale_factor;
+  float device_scale_factor = original_screen_info.device_scale_factor;
 
   if (emulation_params_.device_scale_factor)
     device_scale_factor = emulation_params_.device_scale_factor;
 
   mojom::blink::ScreenOrientation orientation_type =
-      original_screen_info().orientation_type;
-  uint16_t orientation_angle = original_screen_info().orientation_angle;
+      original_screen_info.orientation_type;
+  uint16_t orientation_angle = original_screen_info.orientation_angle;
   if (emulation_params_.screen_orientation_type !=
       mojom::blink::ScreenOrientation::kUndefined) {
     orientation_type = emulation_params_.screen_orientation_type;
@@ -126,7 +131,7 @@ void ScreenMetricsEmulator::Apply() {
   //   even when emulating different scale factor;
   DeviceEmulationParams modified_emulation_params = emulation_params_;
   modified_emulation_params.device_scale_factor =
-      original_screen_info().device_scale_factor;
+      original_screen_info.device_scale_factor;
   frame_widget_->SetScreenMetricsEmulationParameters(
       true, std::move(modified_emulation_params));
 
@@ -145,13 +150,15 @@ void ScreenMetricsEmulator::Apply() {
     frame_widget_->SetWindowSegments(emulated_segments);
   }
 
-  ScreenInfo screen_info = original_screen_info();
-  screen_info.device_scale_factor = device_scale_factor;
-  screen_info.rect = screen_rect;
-  screen_info.available_rect = screen_rect;
-  screen_info.orientation_type = orientation_type;
-  screen_info.orientation_angle = orientation_angle;
-  frame_widget_->SetScreenInfoAndSize(screen_info, /*widget_size=*/widget_size,
+  ScreenInfos emulated_screen_infos = original_screen_infos_;
+  ScreenInfo& emulated_screen_info = emulated_screen_infos.mutable_current();
+  emulated_screen_info.device_scale_factor = device_scale_factor;
+  emulated_screen_info.rect = screen_rect;
+  emulated_screen_info.available_rect = screen_rect;
+  emulated_screen_info.orientation_type = orientation_type;
+  emulated_screen_info.orientation_angle = orientation_angle;
+  frame_widget_->SetScreenInfoAndSize(emulated_screen_infos,
+                                      /*widget_size=*/widget_size,
                                       /*visible_viewport_size=*/widget_size);
 }
 
@@ -161,7 +168,7 @@ void ScreenMetricsEmulator::UpdateVisualProperties(
   // enabled.
   DCHECK(!frame_widget_->AutoResizeMode());
 
-  original_screen_info_ = visual_properties.screen_info;
+  original_screen_infos_ = visual_properties.screen_infos;
   original_widget_size_ = visual_properties.new_size;
   original_visible_viewport_size_ = visual_properties.visible_viewport_size;
   original_root_window_segments_ =
