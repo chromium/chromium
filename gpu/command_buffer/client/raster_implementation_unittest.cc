@@ -16,7 +16,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
@@ -176,7 +175,7 @@ class RasterImplementationTest : public testing::Test {
     std::unique_ptr<RasterCmdHelper> helper_;
     std::unique_ptr<MockTransferBuffer> transfer_buffer_;
     std::unique_ptr<RasterImplementation> gl_;
-    CheckedPtr<CommandBufferEntry> commands_;
+    CommandBufferEntry* commands_;
     int token_;
     Capabilities capabilities_;
   };
@@ -304,11 +303,11 @@ class RasterImplementationTest : public testing::Test {
 
   TestContext test_context_;
 
-  CheckedPtr<MockClientGpuControl> gpu_control_;
-  CheckedPtr<RasterCmdHelper> helper_;
-  CheckedPtr<MockTransferBuffer> transfer_buffer_;
-  CheckedPtr<RasterImplementation> gl_;
-  CheckedPtr<CommandBufferEntry> commands_;
+  MockClientGpuControl* gpu_control_;
+  RasterCmdHelper* helper_;
+  MockTransferBuffer* transfer_buffer_;
+  RasterImplementation* gl_;
+  CommandBufferEntry* commands_;
 };
 
 void RasterImplementationTest::SetUp() {

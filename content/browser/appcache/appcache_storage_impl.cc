@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -175,8 +174,8 @@ class AppCacheStorageImpl::DatabaseTask
   friend class base::RefCountedThreadSafe<DatabaseTask>;
   virtual ~DatabaseTask() = default;
 
-  CheckedPtr<AppCacheStorageImpl> storage_;
-  const CheckedPtr<AppCacheDatabase> database_;
+  AppCacheStorageImpl* storage_;
+  AppCacheDatabase* const database_;
   std::vector<scoped_refptr<DelegateReference>> delegates_;
 
  private:
@@ -885,7 +884,7 @@ class NetworkNamespaceHelper {
   // Key is cache id
   using SafeListMap = std::map<int64_t, std::vector<AppCacheNamespace>>;
   SafeListMap namespaces_map_;
-  const CheckedPtr<AppCacheDatabase> database_;
+  AppCacheDatabase* const database_;
 };
 
 }  // namespace

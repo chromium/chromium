@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -70,10 +69,10 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
   }
 
   base::Optional<SkColor> theme_color_ = SK_ColorBLUE;
-  CheckedPtr<Browser> app_browser_ = nullptr;
-  CheckedPtr<BrowserView> browser_view_ = nullptr;
-  CheckedPtr<GlassBrowserFrameView> glass_frame_view_ = nullptr;
-  CheckedPtr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
+  Browser* app_browser_ = nullptr;
+  BrowserView* browser_view_ = nullptr;
+  GlassBrowserFrameView* glass_frame_view_ = nullptr;
+  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ThemeColor) {

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
@@ -265,7 +264,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   std::vector<base::FilePath> profile_link_paths_;
   bool multiple_profiles_open_;
   ui::SimpleMenuModel protocol_handler_submenu_model_;
-  CheckedPtr<ProtocolHandlerRegistry> protocol_handler_registry_;
+  ProtocolHandlerRegistry* protocol_handler_registry_;
 
   // An observer that handles spelling suggestions, "Add to dictionary", and
   // "Use enhanced spell check" items.
@@ -302,7 +301,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   // In the case of a MimeHandlerView this will point to the WebContents that
   // embeds the MimeHandlerViewGuest. Otherwise this will be the same as
   // |source_web_contents_|.
-  const CheckedPtr<content::WebContents> embedder_web_contents_;
+  content::WebContents* const embedder_web_contents_;
 
   // Send tab to self submenu.
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>

@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -126,7 +125,7 @@ class ANIMATION_EXPORT Animation : public AnimationContainerElement {
   bool is_animating_;
 
   // Our delegate; may be null.
-  CheckedPtr<AnimationDelegate> delegate_;
+  AnimationDelegate* delegate_;
 
   // Container we're in. If non-null we're animating.
   scoped_refptr<AnimationContainer> container_;

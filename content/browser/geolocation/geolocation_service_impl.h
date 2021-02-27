@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_GEOLOCATION_GEOLOCATION_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_GEOLOCATION_GEOLOCATION_SERVICE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -72,9 +71,9 @@ class CONTENT_EXPORT GeolocationServiceImpl
       CreateGeolocationCallback callback,
       blink::mojom::PermissionStatus permission_status);
 
-  CheckedPtr<device::mojom::GeolocationContext> geolocation_context_;
-  CheckedPtr<PermissionControllerImpl> permission_controller_;
-  CheckedPtr<RenderFrameHost> render_frame_host_;
+  device::mojom::GeolocationContext* geolocation_context_;
+  PermissionControllerImpl* permission_controller_;
+  RenderFrameHost* render_frame_host_;
 
   // Along with each GeolocationService, we store a
   // GeolocationServiceImplContext which primarily exists to manage a

@@ -7,7 +7,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -63,7 +62,7 @@ class DeviceTrustSignalReporterForTest : public DeviceTrustSignalReporter {
   }
 
  private:
-  CheckedPtr<reporting::MockReportQueue> mock_queue_{nullptr};
+  reporting::MockReportQueue* mock_queue_{nullptr};
   base::OnceCallback<void(void)> create_queue_cb_;
 };
 

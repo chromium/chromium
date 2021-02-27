@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "cc/base/region.h"
 #include "cc/base/synced_property.h"
@@ -443,7 +442,7 @@ class CC_EXPORT LayerImpl {
   virtual const char* LayerTypeAsString() const;
 
   const int layer_id_;
-  const CheckedPtr<LayerTreeImpl> layer_tree_impl_;
+  LayerTreeImpl* const layer_tree_impl_;
   const bool will_always_push_properties_ : 1;
 
   // Properties synchronized from the associated Layer.

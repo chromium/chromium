@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -75,7 +74,7 @@ class PolicyWatcherTest : public testing::Test {
     policy_loader_ =
         new policy::FakeAsyncPolicyLoader(base::ThreadTaskRunnerHandle::Get());
     policy_watcher_ = PolicyWatcher::CreateFromPolicyLoaderForTesting(
-        base::WrapUnique(policy_loader_.get()));
+        base::WrapUnique(policy_loader_));
 
     policy_watcher_default_values_ = PolicyWatcher::GetDefaultPolicies();
 
@@ -258,7 +257,7 @@ class PolicyWatcherTest : public testing::Test {
   // |policy_loader_| is owned by |policy_watcher_|. PolicyWatcherTest retains
   // a raw pointer to |policy_loader_| in order to control the simulated / faked
   // policy contents.
-  CheckedPtr<policy::FakeAsyncPolicyLoader> policy_loader_;
+  policy::FakeAsyncPolicyLoader* policy_loader_;
   std::unique_ptr<PolicyWatcher> policy_watcher_;
 
   base::DictionaryValue empty_;

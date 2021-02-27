@@ -71,7 +71,7 @@ ThemeInstalledInfoBarDelegate::ThemeInstalledInfoBarDelegate(
       theme_id_(theme_id),
       prev_theme_reinstaller_(std::move(prev_theme_reinstaller)) {
   registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                 content::Source<ThemeService>(theme_service_.get()));
+                 content::Source<ThemeService>(theme_service_));
 }
 
 ThemeInstalledInfoBarDelegate::~ThemeInstalledInfoBarDelegate() {

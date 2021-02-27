@@ -4,7 +4,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
@@ -103,7 +102,7 @@ class DoNotTrackTest : public ContentBrowserTest {
   }
 
  private:
-  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
   MockContentBrowserClient client_;
 };
 

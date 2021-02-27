@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/animation/animation_container_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -56,11 +55,11 @@ class VIEWS_EXPORT AnimationDelegateViews
   void UpdateAnimationRunner();
   void ClearAnimationRunner();
 
-  CheckedPtr<View> view_;
-  CheckedPtr<gfx::AnimationContainer> container_ = nullptr;
+  View* view_;
+  gfx::AnimationContainer* container_ = nullptr;
 
   // The animation runner that |container_| uses.
-  CheckedPtr<CompositorAnimationRunner> compositor_animation_runner_ = nullptr;
+  CompositorAnimationRunner* compositor_animation_runner_ = nullptr;
 
   base::ScopedObservation<View, ViewObserver> scoped_observation_{this};
 };

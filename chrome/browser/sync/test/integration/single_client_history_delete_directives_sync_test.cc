@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
@@ -60,7 +59,7 @@ class HistoryDeleteDirectivesEqualityChecker
   }
 
  private:
-  const CheckedPtr<fake_server::FakeServer> fake_server_;
+  fake_server::FakeServer* const fake_server_;
   const size_t num_expected_directives_;
 
   DISALLOW_COPY_AND_ASSIGN(HistoryDeleteDirectivesEqualityChecker);

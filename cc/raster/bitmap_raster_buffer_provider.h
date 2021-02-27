@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "cc/raster/raster_buffer_provider.h"
 
@@ -57,7 +56,7 @@ class CC_EXPORT BitmapRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
 
-  const CheckedPtr<LayerTreeFrameSink> frame_sink_;
+  LayerTreeFrameSink* const frame_sink_;
 };
 
 }  // namespace cc

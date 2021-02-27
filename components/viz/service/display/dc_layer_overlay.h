@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -166,7 +165,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   int processed_yuv_overlay_count_ = 0;
 
   // Reference to the global viz singleton.
-  const CheckedPtr<const DebugRendererSettings> debug_settings_;
+  const DebugRendererSettings* const debug_settings_;
 
   gfx::Rect previous_frame_underlay_rect_;
   gfx::RectF previous_display_rect_;

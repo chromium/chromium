@@ -13,7 +13,6 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/optional.h"
@@ -742,7 +741,7 @@ class CC_EXPORT GpuImageDecodeCache
 
   const SkColorType color_type_;
   const bool use_transfer_cache_ = false;
-  CheckedPtr<viz::RasterContextProvider> context_;
+  viz::RasterContextProvider* context_;
   int max_texture_size_ = 0;
   const PaintImage::GeneratorClientId generator_client_id_;
   bool allow_accelerated_jpeg_decodes_ = false;

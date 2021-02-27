@@ -18,7 +18,6 @@
 #include "base/callback.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
@@ -587,8 +586,8 @@ class NET_EXPORT HttpServerProperties
   // Invokes |callback| on completion, if non-null.
   void WriteProperties(base::OnceClosure callback) const;
 
-  CheckedPtr<const base::TickClock> tick_clock_;  // Unowned
-  CheckedPtr<base::Clock> clock_;                 // Unowned
+  const base::TickClock* tick_clock_;  // Unowned
+  base::Clock* clock_;                 // Unowned
 
   // Cached value of kPartitionHttpServerPropertiesByNetworkIsolationKey
   // feature. Cached to improve performance.

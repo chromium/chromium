@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/draw_mode.h"
 #include "cc/layers/layer_collections.h"
@@ -220,7 +219,7 @@ class CC_EXPORT RenderSurfaceImpl {
                      viz::SharedQuadState* shared_quad_state,
                      const gfx::Rect& unoccluded_content_rect);
 
-  CheckedPtr<LayerTreeImpl> layer_tree_impl_;
+  LayerTreeImpl* layer_tree_impl_;
   uint64_t stable_id_;
   int effect_tree_index_;
 
@@ -271,7 +270,7 @@ class CC_EXPORT RenderSurfaceImpl {
 
   // The nearest ancestor target surface that will contain the contents of this
   // surface, and that ignores outside occlusion. This can point to itself.
-  CheckedPtr<const RenderSurfaceImpl> nearest_occlusion_immune_ancestor_;
+  const RenderSurfaceImpl* nearest_occlusion_immune_ancestor_;
 
   std::unique_ptr<DamageTracker> damage_tracker_;
 };

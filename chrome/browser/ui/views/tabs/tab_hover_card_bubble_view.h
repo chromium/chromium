@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -62,12 +61,12 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
-  CheckedPtr<views::Label> title_label_ = nullptr;
-  CheckedPtr<FadeLabel> title_fade_label_ = nullptr;
+  views::Label* title_label_ = nullptr;
+  FadeLabel* title_fade_label_ = nullptr;
   base::Optional<TabAlertState> alert_state_;
-  CheckedPtr<views::Label> domain_label_ = nullptr;
-  CheckedPtr<FadeLabel> domain_fade_label_ = nullptr;
-  CheckedPtr<views::ImageView> preview_image_ = nullptr;
+  views::Label* domain_label_ = nullptr;
+  FadeLabel* domain_fade_label_ = nullptr;
+  views::ImageView* preview_image_ = nullptr;
 
   const bool using_rounded_corners_;
 };

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -30,7 +29,7 @@ class SetOnDestroy {
   }
 
  private:
-  const CheckedPtr<bool> was_destroyed_ptr_;
+  bool* const was_destroyed_ptr_;
 
   DISALLOW_COPY_AND_ASSIGN(SetOnDestroy);
 };

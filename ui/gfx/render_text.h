@@ -18,7 +18,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -79,8 +78,8 @@ class GFX_EXPORT SkiaTextRenderer {
  private:
   friend class test::RenderTextTestApi;
 
-  CheckedPtr<Canvas> canvas_;
-  CheckedPtr<cc::PaintCanvas> canvas_skia_;
+  Canvas* canvas_;
+  cc::PaintCanvas* canvas_skia_;
   cc::PaintFlags flags_;
   SkFont font_;
 
@@ -127,11 +126,11 @@ class StyleIterator {
  private:
   // Pointers to the breaklists to iterate through. These pointers can't be
   // nullptr and the breaklists must outlive this object.
-  CheckedPtr<const BreakList<SkColor>> colors_;
-  CheckedPtr<const BreakList<BaselineStyle>> baselines_;
-  CheckedPtr<const BreakList<int>> font_size_overrides_;
-  CheckedPtr<const BreakList<Font::Weight>> weights_;
-  CheckedPtr<const StyleArray> styles_;
+  const BreakList<SkColor>* colors_;
+  const BreakList<BaselineStyle>* baselines_;
+  const BreakList<int>* font_size_overrides_;
+  const BreakList<Font::Weight>* weights_;
+  const StyleArray* styles_;
 
   BreakList<SkColor>::const_iterator color_;
   BreakList<BaselineStyle>::const_iterator baseline_;

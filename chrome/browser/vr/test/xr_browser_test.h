@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/environment.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -150,8 +149,7 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   void AssertNoJavaScriptErrors(content::WebContents* web_contents);
 
   Browser* browser() {
-    return browser_ == nullptr ? InProcessBrowserTest::browser()
-                               : browser_.get();
+    return browser_ == nullptr ? InProcessBrowserTest::browser() : browser_;
   }
 
   void SetBrowser(Browser* browser) { browser_ = browser; }
@@ -231,7 +229,7 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   // HTML files, initializing and starting the server if necessary.
   net::EmbeddedTestServer* GetEmbeddedServer();
 
-  CheckedPtr<Browser> browser_ = nullptr;
+  Browser* browser_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool test_skipped_at_startup_ = false;

@@ -467,7 +467,7 @@ void WebRtcLoggingController::StoreLogInDirectory(
   log_uploader_->background_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoStore,
-                     base::Unretained(log_uploader_.get()), *log_paths, log_id,
+                     base::Unretained(log_uploader_), *log_paths, log_id,
                      std::move(log_buffer), std::move(meta_data),
                      std::move(done_callback)));
 }
@@ -520,10 +520,10 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
                           << ", uorc=" << upload_log_on_render_close_;
 
   log_uploader_->background_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoUpload,
-                                base::Unretained(log_uploader_.get()),
-                                std::move(log_buffer), std::move(meta_data),
-                                std::move(upload_done_data)));
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoUpload,
+                     base::Unretained(log_uploader_), std::move(log_buffer),
+                     std::move(meta_data), std::move(upload_done_data)));
 }
 
 void WebRtcLoggingController::CreateRtpDumpHandlerAndStart(

@@ -11,7 +11,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -259,7 +258,7 @@ class WebAppIconManagerTest : public WebAppTest {
   std::unique_ptr<WebAppIconManager> icon_manager_;
 
   // Owned by icon_manager_:
-  CheckedPtr<TestFileUtils> file_utils_ = nullptr;
+  TestFileUtils* file_utils_ = nullptr;
 };
 
 TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {

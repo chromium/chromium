@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/viz_service_export.h"
@@ -49,7 +48,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
   // This expires the saved frame, if any.
   void ExpireSavedFrame();
 
-  const CheckedPtr<Surface> surface_;
+  Surface* const surface_;
 
   base::CancelableOnceClosure expiry_closure_;
 

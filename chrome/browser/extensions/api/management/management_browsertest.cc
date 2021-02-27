@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -76,7 +75,7 @@ class ExtensionHostDestructionObserver
                   ->GetBackgroundHostForExtension(extension_id_)),
         extension_host_observer_(this) {
     DCHECK(host_);
-    extension_host_observer_.Add(host_.get());
+    extension_host_observer_.Add(host_);
   }
 
   void WaitForDestructionThenWaitForFirstLoad() {
@@ -90,15 +89,15 @@ class ExtensionHostDestructionObserver
   // ExtensionHostObserver:
   void OnExtensionHostDestroyed(extensions::ExtensionHost* host) override {
     if (host == host_) {
-      extension_host_observer_.Remove(host_.get());
+      extension_host_observer_.Remove(host_);
       run_loop_.Quit();
     }
   }
 
  private:
-  const CheckedPtr<Profile> profile_ = nullptr;
+  Profile* const profile_ = nullptr;
   const extensions::ExtensionId extension_id_;
-  const CheckedPtr<extensions::ExtensionHost> host_ = nullptr;
+  extensions::ExtensionHost* const host_ = nullptr;
   base::RunLoop run_loop_;
   ScopedObserver<extensions::ExtensionHost, extensions::ExtensionHostObserver>
       extension_host_observer_;

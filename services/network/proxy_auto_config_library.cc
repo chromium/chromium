@@ -4,7 +4,6 @@
 
 #include "services/network/proxy_auto_config_library.h"
 
-#include "base/memory/checked_ptr.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_interfaces.h"
@@ -140,7 +139,7 @@ class MyIpAddressImpl {
 
     net::ClientSocketFactory* socket_factory =
         override_socket_factory_
-            ? override_socket_factory_.get()
+            ? override_socket_factory_
             : net::ClientSocketFactory::GetDefaultFactory();
 
     auto socket = socket_factory->CreateDatagramClientSocket(
@@ -257,7 +256,7 @@ class MyIpAddressImpl {
   // to short-circuit early.
   bool done_ = false;
 
-  CheckedPtr<net::ClientSocketFactory> override_socket_factory_ = nullptr;
+  net::ClientSocketFactory* override_socket_factory_ = nullptr;
   std::unique_ptr<net::AddressList> override_dns_result_;
 
   DISALLOW_COPY_AND_ASSIGN(MyIpAddressImpl);

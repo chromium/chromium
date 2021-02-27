@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BASE_MODEL_EXECUTOR_HELPERS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BASE_MODEL_EXECUTOR_HELPERS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace optimization_guide {
@@ -62,7 +61,7 @@ class GenericModelExecutionTask
 
  private:
   // Guaranteed to outlive this.
-  CheckedPtr<InferenceDelegate<OutputType, InputTypes...>> delegate_;
+  InferenceDelegate<OutputType, InputTypes...>* delegate_;
 };
 
 }  // namespace optimization_guide

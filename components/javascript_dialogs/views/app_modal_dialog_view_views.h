@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -48,7 +47,7 @@ class AppModalDialogViewViews : public AppModalDialogView,
   std::unique_ptr<AppModalDialogController> controller_;
 
   // The message box view whose commands we handle.
-  CheckedPtr<views::MessageBoxView> message_box_view_;
+  views::MessageBoxView* message_box_view_;
 
   DISALLOW_COPY_AND_ASSIGN(AppModalDialogViewViews);
 };

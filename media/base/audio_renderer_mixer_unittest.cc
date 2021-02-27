@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -350,7 +349,7 @@ class AudioRendererMixerTest
   base::test::TaskEnvironment task_env_;
   scoped_refptr<MockAudioRendererSink> sink_;
   std::unique_ptr<AudioRendererMixer> mixer_;
-  CheckedPtr<AudioRendererSink::RenderCallback> mixer_callback_;
+  AudioRendererSink::RenderCallback* mixer_callback_;
   std::vector<AudioParameters> input_parameters_;
   AudioParameters output_parameters_;
   std::unique_ptr<AudioBus> audio_bus_;

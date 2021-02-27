@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
@@ -108,7 +107,7 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
     last_pinned_action_ids_ = model_->pinned_action_ids();
   }
 
-  const CheckedPtr<ToolbarActionsModel> model_;
+  ToolbarActionsModel* const model_;
 
   size_t inserted_count_;
   size_t removed_count_;
@@ -210,7 +209,7 @@ class ToolbarActionsModelUnitTest
       const extensions::ExtensionList& extensions);
 
   // The toolbar model associated with the testing profile.
-  CheckedPtr<ToolbarActionsModel> toolbar_model_;
+  ToolbarActionsModel* toolbar_model_;
 
   // The test observer to track events. Must come after toolbar_model_ so that
   // it is destroyed and removes itself as an observer first.

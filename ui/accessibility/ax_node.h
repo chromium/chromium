@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
@@ -99,8 +98,8 @@ class AX_EXPORT AXNode final {
     NodeType* operator->() const;
 
    protected:
-    CheckedPtr<const NodeType> parent_;
-    CheckedPtr<NodeType> child_;
+    const NodeType* parent_;
+    NodeType* child_;
   };
 
   // The constructor requires a parent, id, and index in parent, but
@@ -559,11 +558,11 @@ class AX_EXPORT AXNode final {
   // processes.
   std::string GetValueForTextField() const;
 
-  const CheckedPtr<OwnerTree> tree_;  // Owns this.
+  OwnerTree* const tree_;  // Owns this.
   size_t index_in_parent_;
   size_t unignored_index_in_parent_;
   size_t unignored_child_count_ = 0;
-  const CheckedPtr<AXNode> parent_;
+  AXNode* const parent_;
   std::vector<AXNode*> children_;
   AXNodeData data_;
 

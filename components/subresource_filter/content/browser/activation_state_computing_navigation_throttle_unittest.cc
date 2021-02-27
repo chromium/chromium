@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -238,12 +237,12 @@ class ActivationStateComputingNavigationThrottleTest
   scoped_refptr<base::TestSimpleTaskRunner> simple_task_runner_;
 
   // Owned by the current navigation.
-  CheckedPtr<ActivationStateComputingNavigationThrottle> test_throttle_;
+  ActivationStateComputingNavigationThrottle* test_throttle_;
   base::Optional<mojom::ActivationState> last_activation_state_;
   base::Optional<mojom::ActivationState> parent_activation_state_;
 
   // Needed for potential cross process navigations which swap hosts.
-  CheckedPtr<content::RenderFrameHost> last_committed_frame_host_ = nullptr;
+  content::RenderFrameHost* last_committed_frame_host_ = nullptr;
 
   bool dryrun_speculation_;
 

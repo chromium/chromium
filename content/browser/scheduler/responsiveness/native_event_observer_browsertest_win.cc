@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/win/message_window.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -38,8 +37,8 @@ class ResponsivenessNativeEventObserverBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  CheckedPtr<const void> will_run_id_ = nullptr;
-  CheckedPtr<const void> did_run_id_ = nullptr;
+  const void* will_run_id_ = nullptr;
+  const void* did_run_id_ = nullptr;
   base::OnceClosure quit_closure_;
 };
 

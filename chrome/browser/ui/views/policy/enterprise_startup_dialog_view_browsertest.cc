@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/policy/enterprise_startup_dialog_view.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -53,7 +52,7 @@ class EnterpriseStartupDialogViewBrowserTest : public DialogBrowserTest {
 #endif
 
  private:
-  CheckedPtr<EnterpriseStartupDialogView> dialog;
+  EnterpriseStartupDialogView* dialog;
 
   DISALLOW_COPY_AND_ASSIGN(EnterpriseStartupDialogViewBrowserTest);
 };

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PLUGINS_RELOAD_PLUGIN_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_PLUGINS_RELOAD_PLUGIN_INFOBAR_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -34,7 +33,7 @@ class ReloadPluginInfoBarDelegate : public ConfirmInfoBarDelegate {
   base::string16 GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
 
-  CheckedPtr<content::NavigationController> controller_;
+  content::NavigationController* controller_;
   base::string16 message_;
 };
 

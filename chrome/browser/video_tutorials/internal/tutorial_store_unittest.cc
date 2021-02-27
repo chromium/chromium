@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/video_tutorials/test/test_utils.h"
@@ -118,7 +117,7 @@ class TutorialStoreTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   EntriesMap loaded_keys_and_entries_;
   ProtoMap db_entries_;
-  CheckedPtr<FakeDB<TutorialGroupProto, TutorialGroup>> db_{nullptr};
+  FakeDB<TutorialGroupProto, TutorialGroup>* db_{nullptr};
   std::unique_ptr<Store<TutorialGroup>> store_;
 };
 

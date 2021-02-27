@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "extensions/browser/pref_names.h"
@@ -145,7 +144,7 @@ class ExtensionManagementPrefUpdater
   }
 
  private:
-  CheckedPtr<TestingPrefService> service_;
+  TestingPrefService* service_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionManagementPrefUpdater);
 };
@@ -160,7 +159,7 @@ class ExtensionManagementPolicyUpdater
   ~ExtensionManagementPolicyUpdater() override;
 
  private:
-  CheckedPtr<policy::MockConfigurationPolicyProvider> provider_;
+  policy::MockConfigurationPolicyProvider* provider_;
   std::unique_ptr<policy::PolicyBundle> policies_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionManagementPolicyUpdater);

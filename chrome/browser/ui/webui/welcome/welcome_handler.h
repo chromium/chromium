@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_WELCOME_WELCOME_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -50,7 +49,7 @@ class WelcomeHandler : public content::WebUIMessageHandler {
 
   Browser* GetBrowser();
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   WelcomeResult result_;
 
   // Indicates whether this WelcomeHandler instance is spawned due to users

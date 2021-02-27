@@ -11,7 +11,6 @@
 #include <wrl.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -75,8 +74,8 @@ class DirectManipulationEventHandler
   OnInteraction(_In_ IDirectManipulationViewport2* viewport,
                 _In_ DIRECTMANIPULATION_INTERACTION_TYPE interaction) override;
 
-  CheckedPtr<DirectManipulationHelper> helper_ = nullptr;
-  CheckedPtr<ui::WindowEventTarget> event_target_ = nullptr;
+  DirectManipulationHelper* helper_ = nullptr;
+  ui::WindowEventTarget* event_target_ = nullptr;
   float device_scale_factor_ = 1.0f;
   float last_scale_ = 1.0f;
   int last_x_offset_ = 0;

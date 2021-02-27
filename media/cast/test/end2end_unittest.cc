@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
@@ -847,8 +846,8 @@ class End2EndTest : public ::testing::Test {
   scoped_refptr<CastEnvironment> cast_environment_sender_;
   scoped_refptr<CastEnvironment> cast_environment_receiver_;
 
-  CheckedPtr<LoopBackTransport> receiver_to_sender_;  // Owned by CastTransport.
-  CheckedPtr<LoopBackTransport> sender_to_receiver_;  // Owned by CastTransport.
+  LoopBackTransport* receiver_to_sender_;  // Owned by CastTransport.
+  LoopBackTransport* sender_to_receiver_;  // Owned by CastTransport.
 
   std::unique_ptr<CastTransportImpl> transport_sender_;
   std::unique_ptr<CastTransportImpl> transport_receiver_;
@@ -895,9 +894,8 @@ class TransportClient : public CastTransport::Client {
   }
 
  private:
-  const CheckedPtr<LogEventDispatcher>
-      log_event_dispatcher_;                // Not owned by this class.
-  const CheckedPtr<End2EndTest> e2e_test_;  // Not owned by this class.
+  LogEventDispatcher* const log_event_dispatcher_;  // Not owned by this class.
+  End2EndTest* const e2e_test_;                     // Not owned by this class.
 
   DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
@@ -917,13 +915,13 @@ void End2EndTest::Create() {
       &testing_clock_sender_, base::TimeDelta::FromMilliseconds(1),
       std::make_unique<TransportClient>(cast_environment_sender_->logger(),
                                         nullptr),
-      base::WrapUnique(sender_to_receiver_.get()), task_runner_sender_));
+      base::WrapUnique(sender_to_receiver_), task_runner_sender_));
 
   transport_receiver_.reset(new CastTransportImpl(
       &testing_clock_sender_, base::TimeDelta::FromMilliseconds(1),
       std::make_unique<TransportClient>(cast_environment_receiver_->logger(),
                                         this),
-      base::WrapUnique(receiver_to_sender_.get()), task_runner_sender_));
+      base::WrapUnique(receiver_to_sender_), task_runner_sender_));
 
   cast_receiver_ =
       CastReceiver::Create(cast_environment_receiver_, audio_receiver_config_,

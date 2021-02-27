@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/stack.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
@@ -73,7 +72,7 @@ class AppCacheResponseTest : public testing::Test {
 
     scoped_refptr<AppCacheResponseInfo> loaded_info_;
     int64_t loaded_info_id_;
-    CheckedPtr<AppCacheResponseTest> test_;
+    AppCacheResponseTest* test_;
     base::OnceClosure response_info_loaded_callback_;
   };
 

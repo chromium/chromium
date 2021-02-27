@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "base/memory/checked_ptr.h"
 
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -35,7 +34,7 @@ class PictureInPictureWindowManager::ContentsObserver final
 
  private:
   // Owns |this|.
-  CheckedPtr<PictureInPictureWindowManager> owner_ = nullptr;
+  PictureInPictureWindowManager* owner_ = nullptr;
 };
 
 PictureInPictureWindowManager* PictureInPictureWindowManager::GetInstance() {

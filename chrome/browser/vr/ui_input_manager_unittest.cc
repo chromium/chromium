@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "cc/test/geometry_test_utils.h"
@@ -176,7 +175,7 @@ class UiInputManagerContentTest : public UiTest {
   }
 
   gfx::Transform head_pose_;
-  CheckedPtr<UiInputManager> input_manager_;
+  UiInputManager* input_manager_;
 };
 
 TEST_F(UiInputManagerTest, FocusedElement) {

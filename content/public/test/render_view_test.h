@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
@@ -221,7 +220,7 @@ class RenderViewTest : public testing::Test {
   std::unique_ptr<RenderProcess> process_;
   // We use a naked pointer because we don't want to expose RenderViewImpl in
   // the embedder's namespace.
-  CheckedPtr<RenderView> view_ = nullptr;
+  RenderView* view_ = nullptr;
   RendererBlinkPlatformImplTestOverride blink_platform_impl_;
   std::unique_ptr<ContentClient> content_client_;
   std::unique_ptr<ContentBrowserClient> content_browser_client_;

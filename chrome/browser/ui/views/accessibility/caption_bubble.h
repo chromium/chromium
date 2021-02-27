@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -148,19 +147,19 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnInactivityTimeout();
 
   // Unowned. Owned by views hierarchy.
-  CheckedPtr<CaptionBubbleLabel> label_;
-  CheckedPtr<views::Label> title_;
-  CheckedPtr<views::Label> error_text_;
-  CheckedPtr<views::ImageView> error_icon_;
-  CheckedPtr<views::View> error_message_;
-  CheckedPtr<views::ImageButton> close_button_;
-  CheckedPtr<views::ImageButton> expand_button_;
-  CheckedPtr<views::ImageButton> collapse_button_;
-  CheckedPtr<CaptionBubbleFrameView> frame_;
-  CheckedPtr<views::View> content_container_;
+  CaptionBubbleLabel* label_;
+  views::Label* title_;
+  views::Label* error_text_;
+  views::ImageView* error_icon_;
+  views::View* error_message_;
+  views::ImageButton* close_button_;
+  views::ImageButton* expand_button_;
+  views::ImageButton* collapse_button_;
+  CaptionBubbleFrameView* frame_;
+  views::View* content_container_;
 
   base::Optional<ui::CaptionStyle> caption_style_;
-  CheckedPtr<CaptionBubbleModel> model_ = nullptr;
+  CaptionBubbleModel* model_ = nullptr;
 
   base::ScopedClosureRunner destroyed_callback_;
 
@@ -176,7 +175,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   bool can_layout_ = true;
 
   // A reference to the BrowserView holding this bubble. Unowned.
-  CheckedPtr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 
   // Whether the caption bubble is expanded to show more lines of text.
   bool is_expanded_ = false;
@@ -184,7 +183,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // A timer which causes the bubble to hide if there is no activity after a
   // specified interval.
   std::unique_ptr<base::RetainingOneShotTimer> inactivity_timer_;
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

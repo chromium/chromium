@@ -7,7 +7,6 @@
 #include <memory>
 #include <set>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
@@ -62,7 +61,7 @@ class SyncSessionsRouterTabHelperTest : public ChromeRenderViewHostTestHarness {
   FakeLocalSessionEventHandler* handler() { return &handler_; }
 
  private:
-  CheckedPtr<SyncSessionsWebContentsRouter> router_;
+  SyncSessionsWebContentsRouter* router_;
   FakeLocalSessionEventHandler handler_;
 };
 

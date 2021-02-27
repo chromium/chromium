@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace base {
 namespace win {
@@ -46,7 +45,7 @@ class ScopedOSInfoOverride {
 
   // The OSInfo taken by this instance at construction and restored at
   // destruction.
-  CheckedPtr<base::win::OSInfo> original_info_;
+  base::win::OSInfo* original_info_;
 
   // The OSInfo owned by this scoped object and which overrides
   // base::win::OSInfo::GetIntance() for the lifespan of the object.

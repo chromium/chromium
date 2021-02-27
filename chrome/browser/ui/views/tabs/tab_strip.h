@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -375,7 +374,7 @@ class TabStrip : public views::View,
                                     ui::MenuSourceType source_type) override;
 
    private:
-    const CheckedPtr<TabStrip> parent_;
+    TabStrip* const parent_;
   };
 
   // Used during a drop session of a url. Tracks the position of the drop as
@@ -410,9 +409,9 @@ class TabStrip : public views::View,
     bool point_down_ = false;
 
     // Renders the drop indicator.
-    CheckedPtr<views::Widget> arrow_window_ = nullptr;
+    views::Widget* arrow_window_ = nullptr;
 
-    CheckedPtr<views::ImageView> arrow_view_ = nullptr;
+    views::ImageView* arrow_view_ = nullptr;
 
     base::ScopedObservation<views::Widget, views::WidgetObserver>
         scoped_observation_{this};

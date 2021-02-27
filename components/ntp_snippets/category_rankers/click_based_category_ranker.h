@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
@@ -91,8 +90,8 @@ class ClickBasedCategoryRanker : public CategoryRanker {
   bool DecayClicksIfNeeded();
 
   std::vector<RankedCategory> ordered_categories_;
-  CheckedPtr<PrefService> pref_service_;
-  CheckedPtr<base::Clock> clock_;
+  PrefService* pref_service_;
+  base::Clock* clock_;
 
   DISALLOW_COPY_AND_ASSIGN(ClickBasedCategoryRanker);
 };

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SESSION_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SESSION_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/media_player_id.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -90,7 +89,7 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
   // Will notified The PictureInPictureWindowControllerImpl who owns |this| when
   // it gets destroyed in order for |this| to be destroyed too. Indirectly owns
   // |this|.
-  CheckedPtr<PictureInPictureServiceImpl> service_;
+  PictureInPictureServiceImpl* service_;
 
   mojo::Receiver<blink::mojom::PictureInPictureSession> receiver_;
 

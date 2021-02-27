@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
@@ -62,7 +61,7 @@ class TestFacetManagerNotifier {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FacetManager::NotifyAtRequestedTime,
-                       base::Unretained(facet_manager_.get())),
+                       base::Unretained(facet_manager_)),
         delay);
   }
 
@@ -75,7 +74,7 @@ class TestFacetManagerNotifier {
   NotificationAccuracy accuracy_;
   const base::TimeDelta too_late_delay_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  CheckedPtr<FacetManager> facet_manager_;
+  FacetManager* facet_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(TestFacetManagerNotifier);
 };
@@ -139,7 +138,7 @@ class MockFacetManagerHost : public FacetManagerHost {
     notifier_->Notify(time);
   }
 
-  CheckedPtr<TestFacetManagerNotifier> notifier_;
+  TestFacetManagerNotifier* notifier_;
 
   FacetURI expected_facet_uri_;
   AffiliatedFacetsWithUpdateTime fake_database_content_;

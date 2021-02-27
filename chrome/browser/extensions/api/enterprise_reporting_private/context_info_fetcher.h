@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 
 namespace content {
@@ -64,10 +63,10 @@ class ContextInfoFetcher {
 
   std::vector<std::string> GetOnSecurityEventProviders();
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.
-  CheckedPtr<enterprise_connectors::ConnectorsService> connectors_service_;
+  enterprise_connectors::ConnectorsService* connectors_service_;
 };
 
 }  // namespace enterprise_reporting

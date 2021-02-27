@@ -14,7 +14,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
@@ -81,7 +80,7 @@ class ContentSettingBubbleModel {
              int32_t item_id);
     ListItem(const ListItem& other);
     ListItem& operator=(const ListItem& other);
-    CheckedPtr<const gfx::VectorIcon> image;
+    const gfx::VectorIcon* image;
     base::string16 title;
     base::string16 description;
     bool has_link;
@@ -274,9 +273,9 @@ class ContentSettingBubbleModel {
   }
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
-  CheckedPtr<Owner> owner_;
-  CheckedPtr<Delegate> delegate_;
+  content::WebContents* web_contents_;
+  Owner* owner_;
+  Delegate* delegate_;
   BubbleContent bubble_content_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleModel);
@@ -328,7 +327,7 @@ class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
   void ClearOrSetPreviousHandler();
   void PerformActionForSelectedItem();
 
-  CheckedPtr<ProtocolHandlerRegistry> registry_;
+  ProtocolHandlerRegistry* registry_;
   ProtocolHandler pending_handler_;
   ProtocolHandler previous_handler_;
 

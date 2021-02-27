@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/system_web_app_types.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
@@ -208,12 +207,12 @@ class InstallManager {
   }
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   WebAppUrlLoader url_loader_;
 
-  CheckedPtr<AppRegistrar> registrar_ = nullptr;
-  CheckedPtr<OsIntegrationManager> os_integration_manager_ = nullptr;
-  CheckedPtr<InstallFinalizer> finalizer_ = nullptr;
+  AppRegistrar* registrar_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
+  InstallFinalizer* finalizer_ = nullptr;
 
   bool disable_bookmark_app_sync_install_for_testing_ = false;
   bool disable_web_app_sync_install_for_testing_ = false;

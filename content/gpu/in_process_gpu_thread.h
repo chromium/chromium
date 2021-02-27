@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
 #include "content/common/in_process_child_thread_params.h"
@@ -34,7 +33,7 @@ class InProcessGpuThread : public base::Thread {
   InProcessChildThreadParams params_;
 
   // Deleted in CleanUp() on the gpu thread, so don't use smart pointers.
-  CheckedPtr<GpuProcess> gpu_process_;
+  GpuProcess* gpu_process_;
 
   gpu::GpuPreferences gpu_preferences_;
 

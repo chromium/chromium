@@ -21,7 +21,6 @@
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -526,7 +525,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
  private:
-  CheckedPtr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -552,7 +551,7 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
       browser_view_->MaybeInitializeWebUITabStrip();
   }
 
-  const CheckedPtr<BrowserView> browser_view_;
+  BrowserView* const browser_view_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

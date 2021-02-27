@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -49,7 +48,7 @@ class MEDIA_BLINK_EXPORT ResourceMultiBuffer : public MultiBuffer {
  protected:
   // Do not access from destructor, it is a pointer to the
   // object that contains us.
-  CheckedPtr<UrlData> url_data_;
+  UrlData* url_data_;
 };
 
 class UrlIndex;
@@ -179,7 +178,7 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   const CorsMode cors_mode_;
   bool has_access_control_;
 
-  const CheckedPtr<UrlIndex> url_index_;
+  UrlIndex* const url_index_;
 
   // Length of resource this url points to. (in bytes)
   int64_t length_;
@@ -278,7 +277,7 @@ class MEDIA_BLINK_EXPORT UrlIndex {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-  CheckedPtr<ResourceFetchContext> fetch_context_;
+  ResourceFetchContext* fetch_context_;
   using UrlDataMap = std::map<UrlData::KeyType, scoped_refptr<UrlData>>;
   UrlDataMap indexed_data_;
   scoped_refptr<MultiBuffer::GlobalLRU> lru_;

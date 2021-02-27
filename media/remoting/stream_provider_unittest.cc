@@ -4,7 +4,6 @@
 
 #include "media/remoting/stream_provider.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer_stream.h"
@@ -219,8 +218,8 @@ class StreamProviderTest : public testing::Test {
   AudioDecoderConfig audio_config_;
   VideoDecoderConfig video_config_;
 
-  CheckedPtr<DemuxerStream> audio_stream_;
-  CheckedPtr<DemuxerStream> video_stream_;
+  DemuxerStream* audio_stream_;
+  DemuxerStream* video_stream_;
 
   scoped_refptr<DecoderBuffer> audio_buffer_;
   scoped_refptr<DecoderBuffer> video_buffer_;
@@ -234,9 +233,9 @@ class StreamProviderTest : public testing::Test {
   int receiver_audio_demuxer_stream_handle_ = RpcBroker::kInvalidHandle;
   int receiver_video_demuxer_stream_handle_ = RpcBroker::kInvalidHandle;
 
-  CheckedPtr<RpcBroker> rpc_broker_;
-  CheckedPtr<MockReceiverController> mock_controller_;
-  CheckedPtr<MockRemotee> mock_remotee_;
+  RpcBroker* rpc_broker_;
+  MockReceiverController* mock_controller_;
+  MockRemotee* mock_remotee_;
   std::unique_ptr<StreamProvider> stream_provider_;
 };
 

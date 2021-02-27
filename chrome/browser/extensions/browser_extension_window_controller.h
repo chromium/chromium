@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_BROWSER_EXTENSION_WINDOW_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/window_controller.h"
 
 class Browser;
@@ -34,7 +33,7 @@ class BrowserExtensionWindowController : public WindowController {
       bool allow_dev_tools_windows) const override;
 
  private:
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserExtensionWindowController);
 };

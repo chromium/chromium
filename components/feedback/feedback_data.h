@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_uploader.h"
@@ -99,7 +98,10 @@ class FeedbackData : public FeedbackCommon {
   void OnGetTraceData(int trace_id,
                       scoped_refptr<base::RefCountedString> trace_data);
 
-  const CheckedPtr<feedback::FeedbackUploader> uploader_;  // Not owned.
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  feedback::FeedbackUploader* const uploader_
+      GUARDED_BY_CONTEXT(sequence_checker_);  // Not owned.
 
   std::string attached_filename_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string attached_file_uuid_ GUARDED_BY_CONTEXT(sequence_checker_);

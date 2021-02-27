@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/history/core/browser/domain_mixing_metrics.h"
 #include "components/history/core/browser/history_backend.h"
@@ -42,7 +41,7 @@ class EmitMetricsDBTask : public history::HistoryDBTask {
  private:
   const base::Time begin_time_;
   const base::Time end_time_;
-  const CheckedPtr<PrefService> prefs_;
+  PrefService* const prefs_;
 };
 
 }  // namespace

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_NTP_NEW_TAB_UI_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/url_data_source.h"
@@ -68,7 +67,7 @@ class NewTabUI : public content::WebUIController {
 
    private:
     // Pointer back to the original profile.
-    CheckedPtr<Profile> profile_;
+    Profile* profile_;
 
     DISALLOW_COPY_AND_ASSIGN(NewTabHTMLSource);
   };

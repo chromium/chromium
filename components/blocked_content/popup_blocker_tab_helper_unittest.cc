@@ -4,7 +4,6 @@
 
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
@@ -76,7 +75,7 @@ class PopupBlockerTabHelperTest : public content::RenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<PopupBlockerTabHelper> helper_ = nullptr;
+  PopupBlockerTabHelper* helper_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
 };
