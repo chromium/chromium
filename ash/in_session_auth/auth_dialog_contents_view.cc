@@ -276,7 +276,7 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     SetFontList(base_font_list.Derive(kTitleFontSizeDeltaDp,
                                       gfx::Font::FontStyle::NORMAL,
                                       gfx::Font::Weight::MEDIUM));
-    SetMaximumWidth(kContainerPreferredWidth);
+    SetMaximumWidthSingleLine(kContainerPreferredWidth);
     SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 
     SetPreferredSize(gfx::Size(kContainerPreferredWidth,
@@ -329,8 +329,6 @@ AuthDialogContentsView::AuthDialogContentsView(
     : auth_methods_(auth_methods),
       origin_name_(origin_name),
       auth_metadata_(auth_metadata) {
-  DCHECK(auth_methods_ & kAuthPassword);
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW,
@@ -420,8 +418,8 @@ void AuthDialogContentsView::AddOriginNameView() {
   origin_name_view_->SetText(
       l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT,
                                  base::UTF8ToUTF16(origin_name_)));
-  origin_name_view_->SetMaximumWidth(kContainerPreferredWidth);
   origin_name_view_->SetMultiLine(true);
+  origin_name_view_->SetMaximumWidth(kContainerPreferredWidth);
   origin_name_view_->SetLineHeight(kOriginNameLineHeight);
 
   origin_name_view_->SetPreferredSize(gfx::Size(
