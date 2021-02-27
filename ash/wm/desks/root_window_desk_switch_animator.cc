@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
+#include "ash/utility/layer_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -16,8 +17,6 @@
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
-#include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -84,35 +83,6 @@ void TakeScreenshot(
   screenshot_request->set_result_task_runner(
       base::SequencedTaskRunnerHandle::Get());
   screenshot_layer->RequestCopyOfOutput(std::move(screenshot_request));
-}
-
-// Given a screenshot |copy_result|, creates a texture layer that contains the
-// content of that screenshot. The result layer will be size |layer_size|, which
-// is in dips.
-std::unique_ptr<ui::Layer> CreateLayerFromScreenshotResult(
-    const gfx::Size& layer_size,
-    std::unique_ptr<viz::CopyOutputResult> copy_result) {
-  DCHECK(copy_result);
-  DCHECK(!copy_result->IsEmpty());
-  DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
-
-  // |texture_size| is in pixels and is not used to size the layer otherwise we
-  // may lose some quality. See https://crbug.com/1134451.
-  const gfx::Size texture_size = copy_result->size();
-  viz::TransferableResource transferable_resource =
-      viz::TransferableResource::MakeGL(
-          copy_result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
-          copy_result->GetTextureResult()->sync_token, texture_size,
-          /*is_overlay_candidate=*/false);
-  std::unique_ptr<viz::SingleReleaseCallback> take_texture_ownership_callback =
-      copy_result->TakeTextureOwnership();
-  auto screenshot_layer = std::make_unique<ui::Layer>();
-  screenshot_layer->SetBounds(gfx::Rect(layer_size));
-  screenshot_layer->SetTransferableResource(
-      transferable_resource, std::move(take_texture_ownership_callback),
-      layer_size);
-
-  return screenshot_layer;
 }
 
 std::string GetScreenshotLayerName(int index) {
@@ -490,8 +460,8 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
     return;
   }
 
-  CompleteAnimationPhase1WithLayer(CreateLayerFromScreenshotResult(
-      root_window_size_, std::move(copy_result)));
+  CompleteAnimationPhase1WithLayer(CreateLayerFromCopyOutputResult(
+      std::move(copy_result), root_window_size_));
 }
 
 void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
@@ -513,7 +483,7 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
   }
 
   ui::Layer* ending_desk_screenshot_layer =
-      CreateLayerFromScreenshotResult(root_window_size_, std::move(copy_result))
+      CreateLayerFromCopyOutputResult(std::move(copy_result), root_window_size_)
           .release();
   screenshot_layers_[ending_desk_index_] = ending_desk_screenshot_layer;
   ending_desk_screenshot_layer->SetName(
