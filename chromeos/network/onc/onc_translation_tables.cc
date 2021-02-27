@@ -20,10 +20,6 @@ namespace onc {
 
 namespace {
 
-// Cellular Service EID property.
-// TODO(crbug.com/1093185): Use dbus-constants when property is added in shill.
-const char kCellularEidProperty[] = "Cellular.EID";
-
 const FieldTranslationEntry eap_fields[] = {
     {::onc::eap::kAnonymousIdentity, shill::kEapAnonymousIdentityProperty},
     // This field is converted during translation, see onc_translator_*.
@@ -202,7 +198,7 @@ const FieldTranslationEntry cellular_fields[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::cellular::kActivationState, shill::kActivationStateProperty},
     {::onc::cellular::kAutoConnect, shill::kAutoConnectProperty},
-    {::onc::cellular::kEID, kCellularEidProperty},
+    {::onc::cellular::kEID, shill::kEidProperty},
     {::onc::cellular::kICCID, shill::kIccidProperty},
     {::onc::cellular::kIMSI, shill::kImsiProperty},
     // This field is converted during translation, see onc_translator_*.

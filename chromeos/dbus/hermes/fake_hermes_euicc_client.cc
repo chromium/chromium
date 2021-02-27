@@ -23,10 +23,6 @@ namespace chromeos {
 
 namespace {
 
-// Cellular Service EID property.
-// TODO(crbug.com/1093185): Use dbus-constants when property is added in shill.
-const char kCellularEidProperty[] = "Cellular.EID";
-
 const char* kDefaultMccMnc = "310999";
 const char* kFakeActivationCodePrefix = "1$SMDP.GSMA.COM$00000-00000-00000-000";
 const char* kFakeProfilePathPrefix = "/org/chromium/Hermes/Profile/";
@@ -443,7 +439,7 @@ void FakeHermesEuiccClient::CreateCellularService(
                            properties->name().value(), shill::kTypeCellular,
                            shill::kStateIdle, true);
   service_test->SetServiceProperty(
-      service_path, kCellularEidProperty,
+      service_path, shill::kEidProperty,
       base::Value(euicc_properties->eid().value()));
   service_test->SetServiceProperty(service_path, shill::kIccidProperty,
                                    base::Value(properties->iccid().value()));

@@ -29,10 +29,6 @@
 
 namespace {
 
-// Cellular Service EID property.
-// TODO(crbug.com/1093185): Use dbus-constants when property is added in shill.
-const char kCellularEidProperty[] = "Cellular.EID";
-
 const char kDefaultCellularNetworkPath[] = "/cellular";
 
 // TODO(tbarzic): Add payment portal method values to shill/dbus-constants.
@@ -147,7 +143,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetBooleanValue(key, value, &cellular_out_of_credits_);
   } else if (key == shill::kIccidProperty) {
     return GetStringValue(key, value, &iccid_);
-  } else if (key == kCellularEidProperty) {
+  } else if (key == shill::kEidProperty) {
     return GetStringValue(key, value, &eid_);
   } else if (key == shill::kProxyConfigProperty) {
     std::string proxy_config_str;
