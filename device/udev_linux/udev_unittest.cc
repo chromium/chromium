@@ -30,7 +30,8 @@ TEST(UdevTest, GetPropertyWithNone) {
   testing::FakeUdevLoader fake_udev;
   udev_device* device =
       fake_udev.AddFakeDevice(/*name=*/"Foo", /*syspath=*/"/device/foo",
-                              /*subsystem=*/"", /*sysattrs=*/{},
+                              /*subsystem=*/"", /*devnode=*/base::nullopt,
+                              /*devtype=*/base::nullopt, /*sysattrs=*/{},
                               /*properties=*/{});
 
   const std::string attr_value = UdevDeviceGetPropertyValue(device, "prop");
@@ -43,7 +44,8 @@ TEST(UdevTest, GetSysPropSimple) {
   props.emplace("prop", "prop value");
   udev_device* device = fake_udev.AddFakeDevice(
       /*name=*/"Foo", /*syspath=*/"/device/foo",
-      /*subsystem=*/"", /*sysattrs=*/{}, std::move(props));
+      /*subsystem=*/"", /*devnode=*/base::nullopt, /*devtype=*/base::nullopt,
+      /*sysattrs=*/{}, std::move(props));
 
   std::string attr_value = UdevDeviceGetPropertyValue(device, "prop");
   EXPECT_EQ("prop value", attr_value);
@@ -56,7 +58,8 @@ TEST(UdevTest, GetSysAttrNoAttrs) {
   testing::FakeUdevLoader fake_udev;
   udev_device* device = fake_udev.AddFakeDevice(
       /*name=*/"Foo", /*syspath=*/"/device/foo",
-      /*subsystem=*/"", /*sysattrs=*/{}, /*properties=*/{});
+      /*subsystem=*/"", /*devnode=*/base::nullopt, /*devtype=*/base::nullopt,
+      /*sysattrs=*/{}, /*properties=*/{});
 
   const std::string attr_value = UdevDeviceGetSysattrValue(device, "attr");
   EXPECT_TRUE(attr_value.empty());
@@ -68,7 +71,8 @@ TEST(UdevTest, GetSysAttrSimple) {
   attrs.emplace("attr", "attr value");
   udev_device* device = fake_udev.AddFakeDevice(
       /*name=*/"Foo", /*syspath=*/"/device/foo",
-      /*subsystem=*/"", std::move(attrs), /*properties=*/{});
+      /*subsystem=*/"", /*devnode=*/base::nullopt, /*devtype=*/base::nullopt,
+      std::move(attrs), /*properties=*/{});
 
   std::string attr_value = UdevDeviceGetSysattrValue(device, "attr");
   EXPECT_EQ("attr value", attr_value);
@@ -80,15 +84,22 @@ TEST(UdevTest, GetSysAttrSimple) {
 TEST(UdevTest, GetParent) {
   testing::FakeUdevLoader fake_udev;
   std::map<std::string, std::string> attrs;
-  udev_device* parent = fake_udev.AddFakeDevice(
+  udev_device* grandparent = fake_udev.AddFakeDevice(
       /*name=*/"Foo", /*syspath=*/"/device/foo",
-      /*subsystem=*/"", /*sysattrs=*/{}, /*properties=*/{});
-  udev_device* device = fake_udev.AddFakeDevice(
+      /*subsystem=*/"", /*devnode=*/base::nullopt, /*devtype=*/base::nullopt,
+      /*sysattrs=*/{}, /*properties=*/{});
+  udev_device* parent = fake_udev.AddFakeDevice(
       /*name=*/"Foo", /*syspath=*/"/device/foo/bar",
-      /*subsystem=*/"", /*sysattrs=*/{}, /*properties=*/{});
+      /*subsystem=*/"", /*devnode=*/base::nullopt, /*devtype=*/base::nullopt,
+      /*sysattrs=*/{}, /*properties=*/{});
+  udev_device* device = fake_udev.AddFakeDevice(
+      /*name=*/"Foo", /*syspath=*/"/device/foo/bar/baz",
+      /*subsystem=*/"", /*devnode=*/base::nullopt, /*devtype=*/base::nullopt,
+      /*sysattrs=*/{}, /*properties=*/{});
 
   EXPECT_EQ(parent, udev_device_get_parent(device));
-  EXPECT_EQ(nullptr, udev_device_get_parent(parent));
+  EXPECT_EQ(grandparent, udev_device_get_parent(parent));
+  EXPECT_EQ(nullptr, udev_device_get_parent(grandparent));
 }
 
 TEST(UdevTest, GetSysAttrRecursiveOneLevel) {
@@ -96,12 +107,13 @@ TEST(UdevTest, GetSysAttrRecursiveOneLevel) {
   std::map<std::string, std::string> attrs;
   attrs.emplace("attr", "attr value");
   fake_udev.AddFakeDevice(/*name=*/"Foo", /*syspath=*/"/device/foo",
-                          /*subsystem=*/"", std::move(attrs),
+                          /*subsystem=*/"", /*devnode=*/base::nullopt,
+                          /*devtype=*/base::nullopt, std::move(attrs),
                           /*properties=*/{});
-  udev_device* device =
-      fake_udev.AddFakeDevice(/*name=*/"Foo", /*syspath=*/"/device/foo/bar",
-                              /*subsystem=*/"",
-                              /*sysattrs=*/{}, /*properties=*/{});
+  udev_device* device = fake_udev.AddFakeDevice(
+      /*name=*/"Foo", /*syspath=*/"/device/foo/bar",
+      /*subsystem=*/"", /*devnode=*/base::nullopt, /*devtype=*/base::nullopt,
+      /*sysattrs=*/{}, /*properties=*/{});
 
   // Don't find the attr on the current device.
   std::string attr_value = UdevDeviceGetSysattrValue(device, "attr");

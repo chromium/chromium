@@ -172,6 +172,20 @@ const char* GetPhysicalDeviceId(udev_device* hidraw_device) {
   return hid_sysfs_path;
 }
 
+// Convert from a Linux |bus_id| (defined in linux/input.h) to a
+// mojom::HidBusType.
+mojom::HidBusType BusTypeFromLinuxBusId(uint16_t bus_id) {
+  switch (bus_id) {
+    case BUS_USB:
+      return mojom::HidBusType::kHIDBusTypeUSB;
+    case BUS_BLUETOOTH:
+      return mojom::HidBusType::kHIDBusTypeBluetooth;
+    default:
+      break;
+  }
+  return mojom::HidBusType::kHIDBusTypeUnknown;
+}
+
 }  // namespace
 
 struct HidServiceLinux::ConnectParams {
@@ -251,6 +265,12 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
       return;
 
     uint32_t int_property = 0;
+    if (!HexStringToUInt(base::StringPiece(parts[0]), &int_property) ||
+        int_property > std::numeric_limits<uint16_t>::max()) {
+      return;
+    }
+    auto bus_type = BusTypeFromLinuxBusId(int_property);
+
     if (!HexStringToUInt(base::StringPiece(parts[1]), &int_property) ||
         int_property > std::numeric_limits<uint16_t>::max()) {
       return;
@@ -291,9 +311,7 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
 
     auto device_info = base::MakeRefCounted<HidDeviceInfo>(
         platform_device_id, physical_device_id, vendor_id, product_id,
-        product_name, serial_number,
-        // TODO(reillyg): Detect Bluetooth. crbug.com/443335
-        mojom::HidBusType::kHIDBusTypeUSB,
+        product_name, serial_number, bus_type,
         std::vector<uint8_t>(report_descriptor_str.begin(),
                              report_descriptor_str.end()),
         device_node);

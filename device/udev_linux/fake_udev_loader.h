@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "device/udev_linux/udev_loader.h"
 
 namespace testing {
@@ -18,11 +19,15 @@ namespace testing {
 class FakeUdevLoader : public device::UdevLoader {
  public:
   FakeUdevLoader();
+  FakeUdevLoader(const FakeUdevLoader& other) = delete;
+  FakeUdevLoader& operator=(const FakeUdevLoader& other) = delete;
   ~FakeUdevLoader() override;
 
   udev_device* AddFakeDevice(std::string name,
                              std::string syspath,
                              std::string subsystem,
+                             base::Optional<std::string> devnode,
+                             base::Optional<std::string> devtype,
                              std::map<std::string, std::string> sysattrs,
                              std::map<std::string, std::string> properties);
 
@@ -30,66 +35,64 @@ class FakeUdevLoader : public device::UdevLoader {
 
  private:
   bool Init() override;
-  const char* udev_device_get_action(udev_device* udev_device) override;
-  const char* udev_device_get_devnode(udev_device* udev_device) override;
-  const char* udev_device_get_devtype(udev_device* udev_device) override;
-  udev_device* udev_device_get_parent(udev_device* udev_device) override;
+  const char* udev_device_get_action(udev_device* device) override;
+  const char* udev_device_get_devnode(udev_device* device) override;
+  const char* udev_device_get_devtype(udev_device* device) override;
+  udev_device* udev_device_get_parent(udev_device* device) override;
   udev_device* udev_device_get_parent_with_subsystem_devtype(
-      udev_device* udev_device,
+      udev_device* device,
       const char* subsystem,
       const char* devtype) override;
-  const char* udev_device_get_property_value(udev_device* udev_device,
+  const char* udev_device_get_property_value(udev_device* device,
                                              const char* key) override;
-  const char* udev_device_get_subsystem(udev_device* udev_device) override;
-  const char* udev_device_get_sysattr_value(udev_device* udev_device,
+  const char* udev_device_get_subsystem(udev_device* device) override;
+  const char* udev_device_get_sysattr_value(udev_device* device,
                                             const char* sysattr) override;
-  const char* udev_device_get_sysname(udev_device* udev_device) override;
-  const char* udev_device_get_syspath(udev_device* udev_device) override;
-  udev_device* udev_device_new_from_devnum(udev* udev,
+  const char* udev_device_get_sysname(udev_device* device) override;
+  const char* udev_device_get_syspath(udev_device* device) override;
+  udev_device* udev_device_new_from_devnum(udev* udev_context,
                                            char type,
                                            dev_t devnum) override;
   udev_device* udev_device_new_from_subsystem_sysname(
-      udev* udev,
+      udev* udev_context,
       const char* subsystem,
       const char* sysname) override;
-  udev_device* udev_device_new_from_syspath(udev* udev,
+  udev_device* udev_device_new_from_syspath(udev* udev_context,
                                             const char* syspath) override;
-  void udev_device_unref(udev_device* udev_device) override;
-  int udev_enumerate_add_match_subsystem(udev_enumerate* udev_enumerate,
+  void udev_device_unref(udev_device* device) override;
+  int udev_enumerate_add_match_subsystem(udev_enumerate* enumeration_context,
                                          const char* subsystem) override;
   udev_list_entry* udev_enumerate_get_list_entry(
-      udev_enumerate* udev_enumerate) override;
-  udev_enumerate* udev_enumerate_new(udev* udev) override;
-  int udev_enumerate_scan_devices(udev_enumerate* udev_enumerate) override;
-  void udev_enumerate_unref(udev_enumerate* udev_enumerate) override;
+      udev_enumerate* enumeration_context) override;
+  udev_enumerate* udev_enumerate_new(udev* udev_context) override;
+  int udev_enumerate_scan_devices(udev_enumerate* enumeration_context) override;
+  void udev_enumerate_unref(udev_enumerate* enumeration_context) override;
   udev_list_entry* udev_list_entry_get_next(
       udev_list_entry* list_entry) override;
   const char* udev_list_entry_get_name(udev_list_entry* list_entry) override;
-  int udev_monitor_enable_receiving(udev_monitor* udev_monitor) override;
+  int udev_monitor_enable_receiving(udev_monitor* monitor) override;
   int udev_monitor_filter_add_match_subsystem_devtype(
-      udev_monitor* udev_monitor,
+      udev_monitor* monitor,
       const char* subsystem,
       const char* devtype) override;
-  int udev_monitor_get_fd(udev_monitor* udev_monitor) override;
-  udev_monitor* udev_monitor_new_from_netlink(udev* udev,
+  int udev_monitor_get_fd(udev_monitor* monitor) override;
+  udev_monitor* udev_monitor_new_from_netlink(udev* udev_context,
                                               const char* name) override;
-  udev_device* udev_monitor_receive_device(udev_monitor* udev_monitor) override;
-  void udev_monitor_unref(udev_monitor* udev_monitor) override;
+  udev_device* udev_monitor_receive_device(udev_monitor* monitor) override;
+  void udev_monitor_unref(udev_monitor* monitor) override;
   udev* udev_new() override;
-  void udev_set_log_fn(struct udev* udev,
-                       void (*log_fn)(struct udev* udev,
+  void udev_set_log_fn(struct udev* udev_context,
+                       void (*log_fn)(struct udev* udev_context,
                                       int priority,
                                       const char* file,
                                       int line,
                                       const char* fn,
                                       const char* format,
                                       va_list args)) override;
-  void udev_set_log_priority(struct udev* udev, int priority) override;
-  void udev_unref(udev* udev) override;
+  void udev_set_log_priority(struct udev* udev_context, int priority) override;
+  void udev_unref(udev* udev_context) override;
 
   std::vector<std::unique_ptr<udev_device>> devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUdevLoader);
 };
 
 }  // namespace testing

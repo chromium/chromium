@@ -252,7 +252,9 @@ class EventRewriterTest : public ChromeAshTestBase {
 
     fake_udev_.Reset();
     fake_udev_.AddFakeDevice(keyboard.name, keyboard.sys_path.value(),
-                             /*subsystem=*/"input", std::move(sysfs_attributes),
+                             /*subsystem=*/"input", /*devnode=*/base::nullopt,
+                             /*devtype=*/base::nullopt,
+                             std::move(sysfs_attributes),
                              std::move(sysfs_properties));
 
     // Reset the state of the device manager.

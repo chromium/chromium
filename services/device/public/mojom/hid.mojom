@@ -11,6 +11,7 @@ module device.mojom;
 enum HidBusType {
   kHIDBusTypeUSB = 0,
   kHIDBusTypeBluetooth = 1,
+  [MinVersion=1] kHIDBusTypeUnknown = 2,
 };
 
 // Usage pages.

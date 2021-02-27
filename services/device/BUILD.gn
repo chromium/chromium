@@ -272,7 +272,10 @@ source_set("tests") {
         "public/cpp/hid/hid_report_descriptor_unittest.cc",
       ]
       if (is_linux || is_chromeos) {
-        sources += [ "hid/input_service_linux_unittest.cc" ]
+        sources += [
+          "hid/hid_service_linux_unittest.cc",
+          "hid/input_service_linux_unittest.cc",
+        ]
       }
       if (!is_fuchsia) {
         # Fuchsia does not currently implement HidService.
