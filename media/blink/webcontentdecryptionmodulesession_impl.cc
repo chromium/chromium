@@ -153,12 +153,12 @@ bool SanitizeSessionId(const blink::WebString& session_id,
   if (sanitized_session_id->length() > limits::kMaxSessionIdLength)
     return false;
 
-  // Check that |sanitized_session_id| only contains non-space printable
-  // characters for easier logging. Note that checking alphanumeric is too
-  // strict because there are key systems using Base64 session IDs. See
+  // Check that |sanitized_session_id| only contains printable characters for
+  // easier logging. Note that checking alphanumeric is too strict because there
+  // are key systems using Base64 session IDs (which may include spaces). See
   // https://crbug.com/902828.
   for (const char c : *sanitized_session_id) {
-    if (!base::IsAsciiPrintable(c) || c == ' ')
+    if (!base::IsAsciiPrintable(c))
       return false;
   }
 
