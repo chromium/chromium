@@ -369,6 +369,17 @@ Polymer({
   },
 
   /**
+   * @param {KeyboardEvent} e
+   * @private
+   */
+  onKeyDown_(e) {
+    if (e.key === 'Enter') {
+      this.fire('forward-navigation-requested');
+    }
+    e.stopPropagation();
+  },
+
+  /**
    * @param {UiElement} uiElement
    * @param {PageState} state
    * @param {number} cameraCount

@@ -46,6 +46,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ['ActivationCodePage', 'cellular_setup/activation_code_page_test.m.js'],
  ['BasePage', 'cellular_setup/base_page_test.m.js'],
  ['ButtonBar', 'cellular_setup/button_bar_test.m.js'],
+ ['ConfirmationCodePage', 'cellular_setup/confirmation_code_page_test.m.js'],
  ['CellularEidPopup', 'cellular_setup/cellular_eid_popup_test.m.js'],
  ['CellularSetup', 'cellular_setup/cellular_setup_test.m.js'],
  ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.m.js'],

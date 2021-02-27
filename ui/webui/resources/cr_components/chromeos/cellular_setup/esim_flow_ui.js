@@ -124,6 +124,7 @@ cr.define('cellular_setup', function() {
 
     listeners: {
       'activation-code-updated': 'onActivationCodeUpdated_',
+      'forward-navigation-requested': 'onForwardNavigationRequested_',
     },
 
     observers: ['onSelectedProfileChanged_(selectedProfile_)'],
@@ -446,6 +447,14 @@ cr.define('cellular_setup', function() {
         return true;
       }
       return false;
+    },
+
+    /** @private */
+    onForwardNavigationRequested_() {
+      if (this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_READY ||
+          this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_READY) {
+        this.navigateForward();
+      }
     },
 
     /** @private */

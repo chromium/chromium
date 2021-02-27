@@ -258,4 +258,17 @@ suite('CrComponentsActivationCodePageTest', function() {
 
         assertFalse(!!qrCodeDetectorContainer);
       });
+
+  test('Event is fired when enter is pressed on input', async function() {
+    await flushAsync();
+    let eventFired = false;
+    activationCodePage.addEventListener('forward-navigation-requested', () => {
+      eventFired = true;
+    });
+    const input = activationCodePage.$$('#activationCode');
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+
+    await flushAsync();
+    assertTrue(eventFired);
+  });
 });

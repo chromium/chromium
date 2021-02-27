@@ -71,7 +71,8 @@
                   aria-describedby="description"
                   error-message="[[i18n('confirmationCodeError')]]"
                   invalid="[[showError]]"
-                  disabled="[[showBusy]]">
+                  disabled="[[showBusy]]"
+                  on-keydown="onKeyDown_">
               </cr-input>
               <paper-spinner-lite active
                   hidden$="[[!showBusy]]">

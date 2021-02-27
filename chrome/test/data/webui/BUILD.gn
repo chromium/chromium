@@ -227,6 +227,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/activation_code_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/base_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/button_bar_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/confirmation_code_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/cellular_eid_popup_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/cellular_setup_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/esim_flow_ui_test.m.js",

@@ -212,7 +212,8 @@
           <cr-input id="activationCode"
             label="[[i18n('activationCode')]]"
             value="{{activationCode}}"
-            disabled="[[showBusy]]">
+            disabled="[[showBusy]]"
+            on-keydown="onKeyDown_">
           </cr-input>
           <paper-spinner-lite active
               hidden$="[[!showBusy]]">
