@@ -388,6 +388,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return self.navigationHandler.webProcessCrashed;
 }
 
+- (BOOL)isUserInteracting {
+  return _userInteractionState.IsUserInteracting(self.webView);
+}
+
 - (void)setAllowsBackForwardNavigationGestures:
     (BOOL)allowsBackForwardNavigationGestures {
   // Store it to an instance variable as well as
@@ -1212,7 +1216,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
   self.webStateImpl->OnScriptCommandReceived(
       command, *crwCommand, net::GURLWithNSURL(self.webView.URL),
-      _userInteractionState.IsUserInteracting(self.webView), senderFrame);
+      self.isUserInteracting, senderFrame);
   return YES;
 }
 

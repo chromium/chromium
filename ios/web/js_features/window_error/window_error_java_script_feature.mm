@@ -4,9 +4,9 @@
 
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 
-#import <WebKit/WebKit.h>
-
+#import "base/strings/sys_string_conversions.h"
 #include "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,9 +18,9 @@ const char kScriptName[] = "error_js";
 
 const char kWindowErrorResultHandlerName[] = "WindowErrorResultHandler";
 
-static NSString* kScriptMessageResponseFilenameKey = @"filename";
-static NSString* kScriptMessageResponseLineNumberKey = @"line_number";
-static NSString* kScriptMessageResponseMessageKey = @"message";
+static const char kScriptMessageResponseFilenameKey[] = "filename";
+static const char kScriptMessageResponseLineNumberKey[] = "line_number";
+static const char kScriptMessageResponseMessageKey[] = "message";
 }  // namespace
 
 namespace web {
@@ -52,31 +52,35 @@ WindowErrorJavaScriptFeature::GetScriptMessageHandlerName() const {
 
 void WindowErrorJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
-    WKScriptMessage* script_message) {
+    const ScriptMessage& script_message) {
   ErrorDetails details;
 
-  id filename = script_message.body[kScriptMessageResponseFilenameKey];
-  if (filename && [filename isKindOfClass:[NSString class]]) {
-    details.filename = filename;
+  if (!script_message.body()->is_dict()) {
+    return;
   }
 
-  id line_number = script_message.body[kScriptMessageResponseLineNumberKey];
-  if (line_number && [line_number isKindOfClass:[NSNumber class]]) {
-    details.line_number = [line_number intValue];
+  std::string* filename =
+      script_message.body()->FindStringKey(kScriptMessageResponseFilenameKey);
+  if (filename) {
+    details.filename = base::SysUTF8ToNSString(*filename);
   }
 
-  id message = script_message.body[kScriptMessageResponseMessageKey];
-  if (message && [message isKindOfClass:[NSString class]]) {
-    details.message = message;
+  auto line_number =
+      script_message.body()->FindDoubleKey(kScriptMessageResponseLineNumberKey);
+  if (line_number) {
+    details.line_number = static_cast<int>(line_number.value());
   }
 
-  WKFrameInfo* frame_info = script_message.frameInfo;
-  if (frame_info) {
-    details.is_main_frame = frame_info.isMainFrame;
+  std::string* log_message =
+      script_message.body()->FindStringKey(kScriptMessageResponseMessageKey);
+  if (log_message) {
+    details.message = base::SysUTF8ToNSString(*log_message);
+  }
 
-    if (frame_info.request.URL) {
-      details.url = net::GURLWithNSURL(frame_info.request.URL);
-    }
+  details.is_main_frame = script_message.is_main_frame();
+
+  if (script_message.request_url()) {
+    details.url = script_message.request_url().value();
   }
 
   callback_.Run(details);

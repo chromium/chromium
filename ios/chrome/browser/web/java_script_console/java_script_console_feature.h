@@ -13,7 +13,6 @@ class WebState;
 }  // namespace web
 
 class JavaScriptConsoleFeatureDelegate;
-@class WKScriptMessage;
 
 // A feature which listens for JavaScript console messages and sends details
 // about them to a JavaScriptConsoleFeatureDelegate instance.
@@ -36,7 +35,7 @@ class JavaScriptConsoleFeature : public KeyedService,
   // JavaScriptFeature:
   base::Optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
-                             WKScriptMessage* message) override;
+                             const web::ScriptMessage& message) override;
 
   // The delegate which receives details about the console messages.
   JavaScriptConsoleFeatureDelegate* delegate_ = nullptr;

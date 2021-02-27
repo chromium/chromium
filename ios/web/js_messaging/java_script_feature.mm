@@ -148,7 +148,7 @@ JavaScriptFeature::GetScriptMessageHandler() const {
 }
 
 void JavaScriptFeature::ScriptMessageReceived(WebState* web_state,
-                                              WKScriptMessage* message) {}
+                                              const ScriptMessage& message) {}
 
 bool JavaScriptFeature::CallJavaScriptFunction(
     WebFrame* web_frame,

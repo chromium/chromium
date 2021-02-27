@@ -67,6 +67,11 @@ class WebStateImpl;
 @property(nonatomic, readonly, assign, getter=isWebProcessCrashed)
     BOOL webProcessCrashed;
 
+// Whether or not the user is currently interacting with the web content
+// presented by this controller.
+@property(nonatomic, readonly, assign, getter=isUserInteracting)
+    BOOL userInteracting;
+
 // Whether the WebController is visible. Returns YES after wasShown call and
 // NO after wasHidden() call.
 @property(nonatomic, assign, getter=isVisible) BOOL visible;

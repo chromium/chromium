@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -51,11 +52,11 @@ TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToPageContentWorld) {
 
   EXPECT_EQ(web_state(), feature.last_received_web_state());
 
-  ASSERT_TRUE(feature.last_received_message());
-  EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
-            base::SysNSStringToUTF8(feature.last_received_message().name));
-  EXPECT_EQ(kFakeJavaScriptFeaturePostMessageReplyValue,
-            base::SysNSStringToUTF8(feature.last_received_message().body));
+  ASSERT_TRUE(feature.last_received_message()->body());
+  const std::string* reply =
+      feature.last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
 
 TEST_F(JavaScriptFeatureManagerIntTest,
@@ -99,11 +100,11 @@ TEST_F(JavaScriptFeatureManagerIntTest,
 
   EXPECT_EQ(web_state(), feature.last_received_web_state());
 
-  ASSERT_TRUE(feature.last_received_message());
-  EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
-            base::SysNSStringToUTF8(feature.last_received_message().name));
-  EXPECT_EQ(kFakeJavaScriptFeaturePostMessageReplyValue,
-            base::SysNSStringToUTF8(feature.last_received_message().body));
+  ASSERT_TRUE(feature.last_received_message()->body());
+  const std::string* reply =
+      feature.last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
 
 TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToIsolatedWorld) {
@@ -130,11 +131,11 @@ TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToIsolatedWorld) {
 
   EXPECT_EQ(web_state(), feature.last_received_web_state());
 
-  ASSERT_TRUE(feature.last_received_message());
-  EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
-            base::SysNSStringToUTF8(feature.last_received_message().name));
-  EXPECT_EQ(kFakeJavaScriptFeaturePostMessageReplyValue,
-            base::SysNSStringToUTF8(feature.last_received_message().body));
+  ASSERT_TRUE(feature.last_received_message()->body());
+  const std::string* reply =
+      feature.last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
 
 TEST_F(JavaScriptFeatureManagerIntTest,
@@ -178,11 +179,11 @@ TEST_F(JavaScriptFeatureManagerIntTest,
 
   EXPECT_EQ(web_state(), feature.last_received_web_state());
 
-  ASSERT_TRUE(feature.last_received_message());
-  EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
-            base::SysNSStringToUTF8(feature.last_received_message().name));
-  EXPECT_EQ(kFakeJavaScriptFeaturePostMessageReplyValue,
-            base::SysNSStringToUTF8(feature.last_received_message().body));
+  ASSERT_TRUE(feature.last_received_message()->body());
+  const std::string* reply =
+      feature.last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
 
 }  // namespace web

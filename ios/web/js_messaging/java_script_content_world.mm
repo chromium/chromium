@@ -6,11 +6,17 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/optional.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
+#include "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
+#import "ios/web/web_state/web_state_impl.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -187,7 +193,24 @@ void JavaScriptContentWorld::ScriptMessageReceived(
     return;
   }
 
-  handler.Run(web_state, script_message);
+  web::WebStateImpl* web_state_impl =
+      static_cast<web::WebStateImpl*>(web_state);
+  CRWWebController* web_controller = web_state_impl->GetWebController();
+  if (!web_controller) {
+    return;
+  }
+
+  NSURL* ns_url = script_message.frameInfo.request.URL;
+  base::Optional<GURL> url;
+  if (ns_url) {
+    url = net::GURLWithNSURL(ns_url);
+  }
+
+  ScriptMessage message(web::ValueResultFromWKResult(script_message.body),
+                        web_controller.isUserInteracting,
+                        script_message.frameInfo.mainFrame, url);
+
+  handler.Run(web_state, message);
 }
 
 }  // namespace web

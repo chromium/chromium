@@ -59,6 +59,8 @@ source_set("java_script_feature") {
     "//base",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
   ]
 
@@ -67,6 +69,7 @@ source_set("java_script_feature") {
     "java_script_feature.mm",
     "java_script_feature_manager.h",
     "java_script_feature_manager.mm",
+    "script_message.mm",
   ]
 }
 

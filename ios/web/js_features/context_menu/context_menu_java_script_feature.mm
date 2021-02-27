@@ -4,14 +4,13 @@
 
 #import "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 
-#import <WebKit/WebKit.h>
-
 #import "base/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #import "ios/web/js_features/context_menu/context_menu_params_utils.h"
 #import "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -85,24 +84,21 @@ ContextMenuJavaScriptFeature::GetScriptMessageHandlerName() const {
 
 void ContextMenuJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
-    WKScriptMessage* message) {
-  DCHECK(message);
+    const ScriptMessage& message) {
+  DCHECK(message.body());
 
-  if (![message.body isKindOfClass:[NSDictionary class]]) {
+  if (!message.body()->is_dict()) {
     // Ignore malformed responses.
     return;
   }
 
-  NSString* ns_request_id = message.body[@"requestId"];
-  if (![ns_request_id isKindOfClass:[NSString class]] ||
-      ![ns_request_id length]) {
+  std::string* request_id = message.body()->FindStringKey("requestId");
+  if (!request_id || request_id->empty()) {
     // Ignore malformed responses.
     return;
   }
 
-  std::string request_id = base::SysNSStringToUTF8(ns_request_id);
-
-  auto callback_it = callbacks_.find(request_id);
+  auto callback_it = callbacks_.find(*request_id);
   if (callback_it == callbacks_.end()) {
     return;
   }
@@ -110,10 +106,10 @@ void ContextMenuJavaScriptFeature::ScriptMessageReceived(
   ElementDetailsCallback callback = std::move(callback_it->second);
 
   web::ContextMenuParams params =
-      web::ContextMenuParamsFromElementDictionary(message.body);
-  params.is_main_frame = message.frameInfo.mainFrame;
+      web::ContextMenuParamsFromElementDictionary(message.body());
+  params.is_main_frame = message.is_main_frame();
 
-  std::move(callback).Run(request_id, params);
+  std::move(callback).Run(*request_id, params);
 }
 
 }  // namespace web

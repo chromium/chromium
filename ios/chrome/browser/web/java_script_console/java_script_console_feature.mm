@@ -4,13 +4,12 @@
 
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 
-#import <WebKit/WebKit.h>
-
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
 #include "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -23,10 +22,10 @@ const char kScriptName[] = "console_js";
 
 const char kConsoleScriptHandlerName[] = "ConsoleMessageHandler";
 
-static NSString* kConsoleMessageKey = @"message";
-static NSString* kConsoleMessageLogLevelKey = @"log_level";
-static NSString* kConsoleMessageUrlKey = @"url";
-static NSString* kSenderFrameIdKey = @"sender_frame";
+const char kConsoleMessageKey[] = "message";
+const char kConsoleMessageLogLevelKey[] = "log_level";
+const char kConsoleMessageUrlKey[] = "url";
+const char kSenderFrameIdKey[] = "sender_frame";
 }  // namespace
 
 JavaScriptConsoleFeature::JavaScriptConsoleFeature()
@@ -55,33 +54,32 @@ JavaScriptConsoleFeature::GetScriptMessageHandlerName() const {
 
 void JavaScriptConsoleFeature::ScriptMessageReceived(
     web::WebState* web_state,
-    WKScriptMessage* script_message) {
+    const web::ScriptMessage& script_message) {
   // Completely skip processing the message if no delegate exists.
   if (!delegate_) {
     return;
   }
 
-  NSString* frame_id =
-      base::mac::ObjCCast<NSString>(script_message.body[kSenderFrameIdKey]);
+  std::string* frame_id =
+      script_message.body()->FindStringKey(kSenderFrameIdKey);
   if (!frame_id) {
     return;
   }
 
   web::WebFrame* sender_frame =
-      web_state->GetWebFramesManager()->GetFrameWithId(
-          base::SysNSStringToUTF8(frame_id));
+      web_state->GetWebFramesManager()->GetFrameWithId(*frame_id);
   if (!sender_frame) {
     return;
   }
 
-  NSString* log_message =
-      base::mac::ObjCCast<NSString>(script_message.body[kConsoleMessageKey]);
+  std::string* log_message =
+      script_message.body()->FindStringKey(kConsoleMessageKey);
   if (!log_message) {
     return;
   }
 
-  NSString* log_level = base::mac::ObjCCast<NSString>(
-      script_message.body[kConsoleMessageLogLevelKey]);
+  std::string* log_level =
+      script_message.body()->FindStringKey(kConsoleMessageLogLevelKey);
   if (!log_level) {
     return;
   }
@@ -89,13 +87,13 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
   // At this point the message format has been validated and can be displayed.
 
   JavaScriptConsoleMessage frame_message;
-  frame_message.level = log_level;
-  frame_message.message = log_message;
+  frame_message.level = base::SysUTF8ToNSString(*log_level);
+  frame_message.message = base::SysUTF8ToNSString(*log_message);
 
-  NSString* url_string =
-      base::mac::ObjCCast<NSString>(script_message.body[kConsoleMessageUrlKey]);
-  if (url_string.length) {
-    frame_message.url = GURL(base::SysNSStringToUTF8(url_string));
+  std::string* url_string =
+      script_message.body()->FindStringKey(kConsoleMessageUrlKey);
+  if (url_string && !url_string->empty()) {
+    frame_message.url = GURL(*url_string);
   }
 
   delegate_->DidReceiveConsoleMessage(web_state, sender_frame, frame_message);

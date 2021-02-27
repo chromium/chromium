@@ -14,7 +14,6 @@
 #include "base/optional.h"
 
 @class NSString;
-@class WKScriptMessage;
 
 namespace base {
 class Value;
@@ -22,6 +21,7 @@ class Value;
 
 namespace web {
 
+class ScriptMessage;
 class WebState;
 class WebFrame;
 
@@ -144,7 +144,7 @@ class JavaScriptFeature {
 
   using ScriptMessageHandler =
       base::RepeatingCallback<void(WebState* web_state,
-                                   WKScriptMessage* message)>;
+                                   const ScriptMessage& message)>;
   // Returns the script message handler callback if
   // |GetScriptMessageHandlerName()| returns a handler name.
   base::Optional<ScriptMessageHandler> GetScriptMessageHandler() const;
@@ -168,7 +168,7 @@ class JavaScriptFeature {
   // Callback for script messages registered through |GetScriptMessageHandler|.
   // Called when a WebState sent |message|.
   virtual void ScriptMessageReceived(WebState* web_state,
-                                     WKScriptMessage* message);
+                                     const ScriptMessage& message);
 
  private:
   ContentWorld supported_world_;

@@ -46,7 +46,7 @@ class ContextMenuJavaScriptFeature : public JavaScriptFeature,
   // JavaScriptFeature:
   base::Optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(WebState* web_state,
-                             WKScriptMessage* message) override;
+                             const ScriptMessage& message) override;
 
  private:
   // Outstanding |callbacks| keyed by requestIDs.

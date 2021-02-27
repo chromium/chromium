@@ -5,6 +5,7 @@
 import("//ios/build/config.gni")
 
 source_set("ui") {
+  public_deps = [ ":web_controller_header" ]
   deps = [
     ":crw_context_menu_controller",
     ":crw_web_view_navigation_proxy",
@@ -28,7 +29,6 @@ source_set("ui") {
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/net:net",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/download",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
@@ -53,9 +53,7 @@ source_set("ui") {
     "cookie_blocking_error_logger.h",
     "cookie_blocking_error_logger.mm",
     "crw_swipe_recognizer_provider.h",
-    "crw_touch_tracking_recognizer.h",
     "crw_touch_tracking_recognizer.mm",
-    "crw_web_controller.h",
     "crw_web_controller.mm",
     "crw_web_controller_container_view.h",
     "crw_web_controller_container_view.mm",
@@ -70,6 +68,20 @@ source_set("ui") {
     "crw_wk_ui_handler.h",
     "crw_wk_ui_handler.mm",
     "crw_wk_ui_handler_delegate.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("web_controller_header") {
+  deps = [
+    ":crw_web_view_navigation_proxy",
+    "//ios/web/public/deprecated",
+  ]
+
+  sources = [
+    "crw_touch_tracking_recognizer.h",
+    "crw_web_controller.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

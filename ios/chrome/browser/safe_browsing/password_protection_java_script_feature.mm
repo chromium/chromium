@@ -4,12 +4,11 @@
 
 #import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
 
-#import <WebKit/WebKit.h>
-
 #include "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/safe_browsing/input_event_observer.h"
+#import "ios/web/public/js_messaging/script_message.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -60,38 +59,36 @@ PasswordProtectionJavaScriptFeature::GetScriptMessageHandlerName() const {
 
 void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
-    WKScriptMessage* message) {
+    const web::ScriptMessage& message) {
   // Verify that the message is well-formed before using it.
-  if (![message.body isKindOfClass:[NSDictionary class]])
-    return;
-
-  NSString* eventType = message.body[@"eventType"];
-  if (!eventType || ![eventType isKindOfClass:[NSString class]] ||
-      ![eventType length]) {
+  if (!message.body()->is_dict()) {
     return;
   }
 
-  NSString* text = message.body[@"text"];
-  if (!text || ![text isKindOfClass:[NSString class]] || ![text length]) {
+  std::string* event_type = message.body()->FindStringKey("eventType");
+  if (!event_type || event_type->empty()) {
     return;
   }
 
-  std::string event_type_str = base::SysNSStringToUTF8(eventType);
-  std::string text_str = base::SysNSStringToUTF8(text);
+  std::string* text = message.body()->FindStringKey("text");
+  if (!text || text->empty()) {
+    return;
+  }
 
   InputEventObserver* observer = lookup_by_web_state_[web_state];
   if (!observer)
     return;
 
-  if (event_type_str == kKeyPressedEventType) {
+  if (*event_type == kKeyPressedEventType) {
     // A keypress event should consist of a single character. A longer string
     // means the message isn't well-formed, so might be coming from a
     // compromised WebProcess.
-    if (text_str.size() > 1)
+    if ((*text).size() > 1) {
       return;
-    observer->OnKeyPressed(text_str);
-  } else if (event_type_str == kPasteEventType) {
-    observer->OnPaste(text_str);
+    }
+    observer->OnKeyPressed(*text);
+  } else if (*event_type == kPasteEventType) {
+    observer->OnPaste(*text);
   }
 }
 

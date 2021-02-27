@@ -5,23 +5,25 @@
 #ifndef IOS_WEB_JS_FEATURES_CONTEXT_MENU_CONTEXT_MENU_PARAMS_UTILS_H_
 #define IOS_WEB_JS_FEATURES_CONTEXT_MENU_CONTEXT_MENU_PARAMS_UTILS_H_
 
-#import <UIKit/UIKit.h>
-
 #import "ios/web/public/ui/context_menu_params.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace web {
 
 // Returns true if the |params| contain enough information to present a context
 // menu. (A valid url for either link_url or src_url must exist in the params.)
-BOOL CanShowContextMenuForParams(const ContextMenuParams& params);
+bool CanShowContextMenuForParams(const ContextMenuParams& params);
 
-// creates a ContextMenuParams from a NSDictionary representing an HTML element.
-// The fields "href", "src", "title", "referrerPolicy" and "innerText" will
-// be used (if present) to generate the ContextMenuParams.
-// All these fields must be NSString*.
+// Creates a ContextMenuParams from a base::Value dictionary representing an
+// HTML element. The fields "href", "src", "title", "referrerPolicy" and
+// "innerText" will be used (if present) to generate the ContextMenuParams.
+// If set, all these fields must have String values.
 // This constructor does not set fields relative to the touch event (view and
 // location).
-ContextMenuParams ContextMenuParamsFromElementDictionary(NSDictionary* element);
+ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element);
 
 }  // namespace web
 
