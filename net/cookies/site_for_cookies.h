@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
@@ -49,8 +50,8 @@ class NET_EXPORT SiteForCookies {
   // Tries to construct an instance from (potentially untrusted) values of
   // site() and schemefully_same() that got received over an RPC.
   //
-  // Returns whether successful or not. Doesn't touch |*out| if false is
-  // returned.  This returning |true| does not mean that whoever sent the values
+  // Returns whether successful or not. Doesn't touch `*out` if false is
+  // returned.  This returning `true` does not mean that whoever sent the values
   // did not lie, merely that they are well-formed.
   static bool FromWire(const SchemefulSite& site,
                        bool schemefully_same,
@@ -59,44 +60,75 @@ class NET_EXPORT SiteForCookies {
   // If the origin is opaque, returns SiteForCookies that matches nothing.
   //
   // If it's not, returns one that matches URLs which are considered to be
-  // same-party as URLs from |origin|.
+  // same-party as URLs from `origin`.
   static SiteForCookies FromOrigin(const url::Origin& origin);
 
   // Equivalent to FromOrigin(url::Origin::Create(url)).
   static SiteForCookies FromUrl(const GURL& url);
 
   // Returns a string with the values of the member variables.
-  // |schemefully_same| being false does not change the output.
+  // `schemefully_same` being false does not change the output.
   std::string ToDebugString() const;
 
-  // Returns true if |url| should be considered first-party to the context
-  // |this| represents.
+  // Returns true if `url` should be considered first-party to the context
+  // `this` represents.
   bool IsFirstParty(const GURL& url) const;
 
   // Don't use this function unless you know what you're doing, if you're unsure
   // you probably want IsFirstParty().
   //
-  // If |compute_schemefully| is true this function will return true if |url|
-  // should be considered first-party to the context |this| represents when the
+  // If `compute_schemefully` is true this function will return true if `url`
+  // should be considered first-party to the context `this` represents when the
   // compatibility of the schemes are taken into account.
   //
-  // If |compute_schemefully| is false this function will return true if |url|
-  // should be considered first-party to the context |this| represents when the
+  // If `compute_schemefully` is false this function will return true if `url`
+  // should be considered first-party to the context `this` represents when the
   // compatibility of the scheme are not taken into account. Note that schemes
-  // are still compared for exact equality if neither |this| nor |url| have a
+  // are still compared for exact equality if neither `this` nor `url` have a
   // registered domain.
   bool IsFirstPartyWithSchemefulMode(const GURL& url,
                                      bool compute_schemefully) const;
 
-  // Returns true if |other.IsFirstParty()| is true for exactly the same URLs
-  // as |this->IsFirstParty| (potentially none).
+  // Returns true if `other.IsFirstParty()` is true for exactly the same URLs
+  // as `this->IsFirstParty` (potentially none).
   bool IsEquivalent(const SiteForCookies& other) const;
 
-  // Sets the schemefully_same_ flag to false if other|'s scheme is
-  // cross-scheme to |this|. Schemes are considered cross-scheme if they're not
-  // compatible. Two schemes are compatible if they are either equal, or are
-  // both in {http, ws}, or are both in {https, wss}.
-  void MarkIfCrossScheme(const url::Origin& other);
+  // Compares a "candidate" SFC, `this`, with an origin (represented as a
+  // SchemefulSite) from the frame tree and revises `this` to be null as
+  // required.
+  //
+  // This method is used when a sub-frame needs to have its SiteForCookies
+  // computed, which is dependent on all of its ancestors' origins (`other`). If
+  // its or any of its ancestors' frame's origins are not first-party with the
+  // top-level origin then this frame's SFC should be null. Otherwise, if it and
+  // all its ancestors are first-party with the top-level frame, the frame's
+  // SFC is the same as the top-level.
+  //
+  // This computation gets a bit tricky when considering "Schemeful Same-Site"
+  // as we don't know ahead of time if `this` is going to be used for a
+  // schemeful or schemeless computation later down the line, so we need to
+  // be careful to not completely nullify the entire SFC just because an `other`
+  // isn't schemefully first-party. If the computation is schemelessly
+  // first-party but *not schemefully* first-party then only the
+  // `schemefully_same_` flag will be cleared (which informs other functions to
+  // treat `this` as null for schemeful purposes). If the computation is not
+  // schemelessly first-party then `this` will have an opaque `site_` which
+  // completely nullifies it.
+  //
+  // This function should be called on all ancestors up to the top-level frame
+  // unless it returns false in which case `this` has been completely nullified
+  // and the caller may stop early.
+  //
+  // (This function's return value is the same as IsEquivalent() when "Schemeful
+  // Same-Site" is disabled.)
+  bool CompareWithFrameTreeSiteAndRevise(const SchemefulSite& other);
+
+  // Overload which converts an Origin into a SchemefulSite and then calls
+  //`CompareWithFrameTreeSiteAndRevise(SchemefulSite)`
+  //
+  // If possible, prefer `CompareWithFrameTreeSiteAndRevise(SchemefulSite)`
+  // for performance reasons.
+  bool CompareWithFrameTreeOriginAndRevise(const url::Origin& other);
 
   // Returns a URL that's first party to this SiteForCookies (an empty URL if
   // none) --- that is, it has the property that
@@ -132,9 +164,18 @@ class NET_EXPORT SiteForCookies {
   bool IsNull() const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SiteForCookiesTest, SameScheme);
+  FRIEND_TEST_ALL_PREFIXES(SiteForCookiesTest, SameSchemeOpaque);
+
   bool IsSchemefullyFirstParty(const GURL& url) const;
 
   bool IsSchemelesslyFirstParty(const GURL& url) const;
+
+  // Sets the schemefully_same_ flag to false if other`'s scheme is
+  // cross-scheme to `this`. Schemes are considered cross-scheme if they're not
+  // compatible. Two schemes are compatible if they are either equal, or are
+  // both in {http, ws}, or are both in {https, wss}.
+  void MarkIfCrossScheme(const SchemefulSite& other);
 
   // Represents the scheme and registrable domain of the site. The scheme should
   // not be a WebSocket scheme; instead, ws is normalized to http, and
@@ -146,7 +187,7 @@ class NET_EXPORT SiteForCookies {
   // the registrable_domain into account when determining same-siteness.
   // See the class-level comment for more details on schemeless vs schemeful.
   //
-  // True means to treat |this| as-is while false means that |this| should be
+  // True means to treat `this` as-is while false means that `this` should be
   // treated as if it matches nothing i.e. IsNull() returns true.
   //
   // This value is important in the case where the SiteForCookies is being used

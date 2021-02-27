@@ -87,32 +87,44 @@ bool SiteForCookies::IsEquivalent(const SiteForCookies& other) const {
   return site_.SchemelesslyEqual(other.site_);
 }
 
-void SiteForCookies::MarkIfCrossScheme(const url::Origin& other) {
-  // If |this| is IsNull() then |this| doesn't match anything which means that
-  // the scheme check is pointless. Also exit early if schemefully_same_ is
-  // already false.
-  if (IsNull() || !schemefully_same_)
-    return;
+bool SiteForCookies::CompareWithFrameTreeSiteAndRevise(
+    const SchemefulSite& other) {
+  // Two opaque SFC are considered equivalent.
+  if (site_.opaque() && other.opaque())
+    return true;
 
-  // Mark if |other| is opaque. Opaque origins shouldn't match.
+  // But if only one is opaque we should return false.
+  if (site_.opaque())
+    return false;
+
+  // Nullify `this` if the `other` is opaque
   if (other.opaque()) {
-    schemefully_same_ = false;
-    return;
+    site_ = SchemefulSite();
+    return false;
   }
 
-  // Conversion to http/https should have occurred during construction.
-  DCHECK_NE(url::kWsScheme, scheme());
-  DCHECK_NE(url::kWssScheme, scheme());
+  bool nullify = site_.has_registrable_domain_or_host()
+                     ? !site_.SchemelesslyEqual(other)
+                     : site_ != other;
 
-  // If the schemes are equal, modulo ws-http and wss-https, don't mark.
-  if (scheme() == other.scheme() ||
-      (scheme() == url::kHttpsScheme && other.scheme() == url::kWssScheme) ||
-      (scheme() == url::kHttpScheme && other.scheme() == url::kWsScheme)) {
-    return;
+  if (nullify) {
+    // We should only nullify this SFC if the registrable domains (or the entire
+    // site for cases without an RD) don't match. We *should not* nullify if
+    // only the schemes mismatch (unless there is no RD) because cookies may be
+    // processed with LEGACY semantics which only use the RDs. Eventually, when
+    // schemeful same-site can no longer be disabled, we can revisit this.
+    site_ = SchemefulSite();
+    return false;
   }
 
-  // Mark that the two are cross-scheme to each other.
-  schemefully_same_ = false;
+  MarkIfCrossScheme(other);
+
+  return true;
+}
+
+bool SiteForCookies::CompareWithFrameTreeOriginAndRevise(
+    const url::Origin& other) {
+  return CompareWithFrameTreeSiteAndRevise(SchemefulSite(other));
 }
 
 GURL SiteForCookies::RepresentativeUrl() const {
@@ -157,6 +169,36 @@ bool SiteForCookies::IsSchemelesslyFirstParty(const GURL& url) const {
     return site_ == other_site;
 
   return site_.SchemelesslyEqual(other_site);
+}
+
+void SiteForCookies::MarkIfCrossScheme(const SchemefulSite& other) {
+  // If `this` is IsNull() then `this` doesn't match anything which means that
+  // the scheme check is pointless. Also exit early if schemefully_same_ is
+  // already false.
+  if (IsNull() || !schemefully_same_)
+    return;
+
+  // Mark if `other` is opaque. Opaque origins shouldn't match.
+  if (other.opaque()) {
+    schemefully_same_ = false;
+    return;
+  }
+
+  // Conversion to http/https should have occurred during construction.
+  DCHECK_NE(url::kWsScheme, scheme());
+  DCHECK_NE(url::kWssScheme, scheme());
+
+  // If the schemes are equal, modulo ws-http and wss-https, don't mark.
+  if (scheme() == other.site_as_origin_.scheme() ||
+      (scheme() == url::kHttpsScheme &&
+       other.site_as_origin_.scheme() == url::kWssScheme) ||
+      (scheme() == url::kHttpScheme &&
+       other.site_as_origin_.scheme() == url::kWsScheme)) {
+    return;
+  }
+
+  // Mark that the two are cross-scheme to each other.
+  schemefully_same_ = false;
 }
 
 }  // namespace net
