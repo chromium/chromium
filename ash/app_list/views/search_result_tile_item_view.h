@@ -30,8 +30,7 @@ class APP_LIST_EXPORT SearchResultTileItemView
     : public SearchResultBaseView,
       public views::ContextMenuController {
  public:
-  SearchResultTileItemView(AppListViewDelegate* view_delegate,
-                           bool show_in_apps_page);
+  explicit SearchResultTileItemView(AppListViewDelegate* view_delegate);
   ~SearchResultTileItemView() override;
 
   void OnResultChanged() override;
@@ -92,8 +91,6 @@ class APP_LIST_EXPORT SearchResultTileItemView
 
   // Whether the tile view is a suggested app.
   bool IsSuggestedAppTile() const;
-  // Whether the tile view is a suggested app and shown in apps page ui.
-  bool IsSuggestedAppTileShownInAppPage() const;
 
   // Records an app being launched.
   void LogAppLaunchForSuggestedApp() const;
@@ -123,7 +120,6 @@ class APP_LIST_EXPORT SearchResultTileItemView
   // app.
   int group_index_in_container_view_;
   const bool is_app_reinstall_recommendation_enabled_;
-  const bool show_in_apps_page_;  // True if shown in app list's apps page.
 
   // Whether the result view moved into selected state only because a context
   // menu was shown.

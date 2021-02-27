@@ -95,8 +95,7 @@ SearchResultTileItemListView::SearchResultTileItemListView(
     layout_->SetFlexForView(separator, 0);
 
     SearchResultTileItemView* tile_item =
-        AddChildView(std::make_unique<SearchResultTileItemView>(
-            view_delegate, false /* show_in_apps_page */));
+        AddChildView(std::make_unique<SearchResultTileItemView>(view_delegate));
     tile_item->set_index_in_container(i);
     tile_item->SetParentBackgroundColor(
         AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
