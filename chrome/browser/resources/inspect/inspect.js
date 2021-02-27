@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {$} from 'chrome://resources/js/util.m.js';
+
 const MIN_VERSION_TAB_CLOSE = 25;
 const MIN_VERSION_TARGET_ID = 26;
 const MIN_VERSION_NEW_TAB = 29;
@@ -1135,6 +1137,19 @@ function populatePortStatus(devicesStatusMap) {
   Array.prototype.forEach.call(
       document.querySelectorAll('.device'), clearPorts);
 }
+
+// Expose functions on |window| since they are called from C++ by name.
+Object.assign(window, {
+  updateDiscoverUsbDevicesEnabled,
+  updatePortForwardingEnabled,
+  updatePortForwardingConfig,
+  updateTCPDiscoveryEnabled,
+  updateTCPDiscoveryConfig,
+  populateTargets,
+  populateAdditionalTargets,
+  populatePortStatus,
+  showIncognitoWarning,
+});
 
 document.addEventListener('DOMContentLoaded', onload);
 window.addEventListener('hashchange', onHashChange);
