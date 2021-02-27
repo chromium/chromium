@@ -94,6 +94,10 @@ void LogGenerateErrorIFrame();
 // a blocklisted page.
 void LogGenerateErrorBlockList();
 
+// Records when link generation was not triggered because selection happened on
+// a blocklisted page.
+void LogGenerateErrorTimeout();
+
 // Records the latency for successfully generating a link.
 void LogGenerateSuccessLatency(base::TimeDelta latency);
 

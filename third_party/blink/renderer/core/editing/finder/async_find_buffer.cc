@@ -37,6 +37,8 @@ void AsyncFindBuffer::Run(Range* search_range,
                           String search_text,
                           FindOptions options,
                           Callback completeCallback) {
+  // search_range->OwnerDocument().UpdateStyleAndLayout(
+  //     DocumentUpdateReason::kFindInPage);
   EphemeralRangeInFlatTree range = FindBuffer::FindMatchInRange(
       EphemeralRangeInFlatTree(search_range), search_text, options,
       kFindBufferTaskTimeoutMs);

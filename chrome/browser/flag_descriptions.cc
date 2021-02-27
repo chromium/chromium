@@ -2681,9 +2681,9 @@ const char kSharedHighlightingUseBlocklistDescription[] =
     "restrictions make it unlikely that a URL can be generated and actually "
     "work when shared.";
 
-const char kPreemtiveLinkToTextGenerationName[] =
+const char kPreemptiveLinkToTextGenerationName[] =
     "Preemptive generation of link to text";
-const char kPreemtiveLinkToTextGenerationDescription[] =
+const char kPreemptiveLinkToTextGenerationDescription[] =
     "Enables link to text to be generated in advance.";
 
 const char kDraw1PredictedPoint12Ms[] = "1 point 12ms ahead.";

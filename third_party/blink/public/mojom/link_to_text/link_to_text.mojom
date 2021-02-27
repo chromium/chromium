@@ -8,7 +8,10 @@ module blink.mojom;
 // TextFragmentSelectorProducer is used for requesting renderer to generate
 // text fragment selector for the latest text selection. Implemented in renderer.
 interface TextFragmentSelectorProducer {
-  // Generates text fragment selector according to
+  // Cancel text fragment generation if any active.
+  Cancel();
+
+  // Request text fragment selector according to
   // https://github.com/WICG/scroll-to-text-fragment#proposed-solution.
-  GenerateSelector() => (string selector);
+  RequestSelector() => (string selector);
 };

@@ -31,6 +31,10 @@ public class LinkToTextBridge {
         LinkToTextBridgeJni.get().logGenerateErrorBlockList();
     }
 
+    public static void logGenerateErrorTimeout() {
+        LinkToTextBridgeJni.get().logGenerateErrorTimeout();
+    }
+
     // TODO(gayane): Update the name whenever |shared_highlighting::ShouldOfferLinkToText| updated
     // to moredescriptive name.
     public static boolean shouldOfferLinkToText(GURL url) {
@@ -44,6 +48,7 @@ public class LinkToTextBridge {
         void logGenerateErrorTabCrash();
         void logGenerateErrorIFrame();
         void logGenerateErrorBlockList();
+        void logGenerateErrorTimeout();
         boolean shouldOfferLinkToText(GURL url);
     }
 }

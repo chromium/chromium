@@ -30,6 +30,10 @@ static void JNI_LinkToTextBridge_LogGenerateErrorBlockList(JNIEnv* env) {
   shared_highlighting::LogGenerateErrorBlockList();
 }
 
+static void JNI_LinkToTextBridge_LogGenerateErrorTimeout(JNIEnv* env) {
+  shared_highlighting::LogGenerateErrorTimeout();
+}
+
 // TODO(gayane): Update the name whenever
 // |shared_highlighting::ShouldOfferLinkToText| updated to more descriptive
 // name.

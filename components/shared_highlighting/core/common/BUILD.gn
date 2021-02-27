@@ -6,6 +6,8 @@ static_library("common") {
   sources = [
     "disabled_sites.cc",
     "disabled_sites.h",
+    "features.cc",
+    "features.h",
     "shared_highlighting_features.cc",
     "shared_highlighting_features.h",
     "shared_highlighting_metrics.cc",
