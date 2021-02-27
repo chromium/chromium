@@ -532,14 +532,14 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
           container_builder_->AddOutOfFlowFragmentainerDescendant(candidate);
           continue;
         }
+        if (layout_box != only_layout)
+          candidate.node.InsertIntoLegacyPositionedObjects();
         scoped_refptr<const NGLayoutResult> result =
             LayoutOOFNode(SetUpNodeForLayout(candidate), only_layout);
         container_builder_->AddChild(result->PhysicalFragment(),
                                      result->OutOfFlowPositionedOffset(),
                                      candidate.inline_container);
         placed_objects->insert(candidate.node.GetLayoutBox());
-        if (layout_box != only_layout)
-          candidate.node.UseLegacyOutOfFlowPositioning();
       } else {
         container_builder_->AddOutOfFlowDescendant(candidate);
       }

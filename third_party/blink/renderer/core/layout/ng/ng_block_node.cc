@@ -1076,6 +1076,15 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
     box_->SetMargin(ComputePhysicalMargins(constraint_space, Style()));
   }
 
+  // We copy back the %-size so that |LayoutBoxModelObject::ComputedCSSPadding|
+  // is able to return the correct value. This isn't ideal, but eventually
+  // we'll answer these queries from the fragment.
+  const auto* containing_block = box_->ContainingBlock();
+  if (UNLIKELY(containing_block && containing_block->IsLayoutNGGrid())) {
+    box_->SetOverrideContainingBlockContentLogicalWidth(
+        constraint_space.PercentageResolutionInlineSizeForParentWritingMode());
+  }
+
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_);
   LayoutMultiColumnFlowThread* flow_thread = GetFlowThread(block_flow);
 
@@ -1770,7 +1779,7 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
       percentage_resolution_inline_size);
 }
 
-void NGBlockNode::UseLegacyOutOfFlowPositioning() const {
+void NGBlockNode::InsertIntoLegacyPositionedObjects() const {
   DCHECK(box_->IsOutOfFlowPositioned());
   box_->ContainingBlock()->InsertPositionedObject(box_);
 }

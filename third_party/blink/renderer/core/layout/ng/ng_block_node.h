@@ -163,9 +163,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       NGBaselineAlgorithmType baseline_algorithm_type =
           NGBaselineAlgorithmType::kInlineBlock);
 
-  // Called if this is an out-of-flow block which needs to be
-  // positioned with legacy layout.
-  void UseLegacyOutOfFlowPositioning() const;
+  void InsertIntoLegacyPositionedObjects() const;
 
   // Write back resolved margins to legacy.
   void StoreMargins(const NGConstraintSpace&, const NGBoxStrut& margins);
