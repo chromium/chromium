@@ -1668,9 +1668,13 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
 bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     CanvasResourceProvider* resource_provider,
     SourceDrawingBuffer source_buffer) {
-  DCHECK(drawing_buffer_);
   DCHECK(resource_provider);
   DCHECK(!resource_provider->IsSingleBuffered());
+
+  // Early-out if the context has been lost.
+  if (!drawing_buffer_)
+    return false;
+
   if (resource_provider->IsAccelerated()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
