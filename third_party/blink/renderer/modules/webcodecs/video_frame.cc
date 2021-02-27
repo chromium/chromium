@@ -313,7 +313,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     }
 
     frame = std::move(result.frame);
-    frame->set_color_space(gfx_color_space);
+    frame->set_color_space(gfx::ColorSpace::CreateREC709());
     if (init && init->hasDuration()) {
       frame->metadata().frame_duration =
           base::TimeDelta::FromMicroseconds(init->duration());
