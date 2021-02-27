@@ -8,10 +8,10 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.webapps.WebApkExtras;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
 
 import javax.inject.Inject;

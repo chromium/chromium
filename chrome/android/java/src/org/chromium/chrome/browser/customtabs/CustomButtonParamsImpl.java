@@ -28,6 +28,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.util.ColorUtils;
@@ -41,7 +42,7 @@ import java.util.Set;
 /**
  * Container for all parameters related to creating a customizable button.
  */
-public class CustomButtonParams {
+public class CustomButtonParamsImpl implements CustomButtonParams {
     private static final String TAG = "CustomTabs";
 
     private final PendingIntent mPendingIntent;
@@ -54,7 +55,7 @@ public class CustomButtonParams {
     @VisibleForTesting
     static final String SHOW_ON_TOOLBAR = "android.support.customtabs.customaction.SHOW_ON_TOOLBAR";
 
-    private CustomButtonParams(int id, Bitmap icon, String description,
+    private CustomButtonParamsImpl(int id, Bitmap icon, String description,
             @Nullable PendingIntent pendingIntent, boolean tinted, boolean onToolbar) {
         mId = id;
         mIcon = icon;
@@ -67,7 +68,8 @@ public class CustomButtonParams {
     /**
      * Replaces the current icon and description with new ones.
      */
-    void update(@NonNull Bitmap icon, @NonNull String description) {
+    @Override
+    public void update(@NonNull Bitmap icon, @NonNull String description) {
         mIcon = icon;
         mDescription = description;
     }
@@ -75,6 +77,7 @@ public class CustomButtonParams {
     /**
      * @return Whether this button should be shown on the toolbar.
      */
+    @Override
     public boolean showOnToolbar() {
         return mIsOnToolbar;
     }
@@ -83,6 +86,7 @@ public class CustomButtonParams {
      * @return The id associated with this button. The custom button on the toolbar always uses
      *         {@link CustomTabsIntent#TOOLBAR_ACTION_BUTTON_ID} as id.
      */
+    @Override
     public int getId() {
         return mId;
     }
@@ -90,6 +94,7 @@ public class CustomButtonParams {
     /**
      * @return The drawable for the customized button.
      */
+    @Override
     public Drawable getIcon(Context context) {
         if (mShouldTint) {
             return new TintedDrawable(context, mIcon);
@@ -101,6 +106,7 @@ public class CustomButtonParams {
     /**
      * @return The content description for the customized button.
      */
+    @Override
     public String getDescription() {
         return mDescription;
     }
@@ -108,6 +114,7 @@ public class CustomButtonParams {
     /**
      * @return The {@link PendingIntent} that will be sent when user clicks the customized button.
      */
+    @Override
     public PendingIntent getPendingIntent() {
         return mPendingIntent;
     }
@@ -119,7 +126,9 @@ public class CustomButtonParams {
      * @param listener {@link OnClickListener} that should be used with the button.
      * @return Parsed list of {@link CustomButtonParams}, which is empty if the input is invalid.
      */
-    ImageButton buildBottomBarButton(Context context, ViewGroup parent, OnClickListener listener) {
+    @Override
+    public ImageButton buildBottomBarButton(
+            Context context, ViewGroup parent, OnClickListener listener) {
         assert !mIsOnToolbar;
 
         ImageButton button = (ImageButton) LayoutInflater.from(context).inflate(
@@ -236,7 +245,8 @@ public class CustomButtonParams {
             return null;
         }
 
-        return new CustomButtonParams(id, bitmap, description, pendingIntent, tinted, onToolbar);
+        return new CustomButtonParamsImpl(
+                id, bitmap, description, pendingIntent, tinted, onToolbar);
     }
 
     /**
@@ -256,7 +266,7 @@ public class CustomButtonParams {
         drawable.setTint(ThemeUtils.getThemedToolbarIconTint(context, useLightTint));
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
-        return new CustomButtonParams(
+        return new CustomButtonParamsImpl(
                 id, bitmap, description, pendingIntent, /*tinted=*/true, /*onToolbar=*/true);
     }
 
@@ -298,6 +308,7 @@ public class CustomButtonParams {
     /**
      * @return Whether the given icon's size is suitable to put on toolbar.
      */
+    @Override
     public boolean doesIconFitToolbar(Context context) {
         return doesIconFitToolbar(context, mIcon);
     }

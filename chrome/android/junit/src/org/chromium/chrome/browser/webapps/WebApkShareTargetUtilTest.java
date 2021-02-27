@@ -17,6 +17,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 
 import java.util.ArrayList;
 import java.util.List;

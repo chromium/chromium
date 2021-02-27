@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.webapps.WebApkActivityTestRule;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;

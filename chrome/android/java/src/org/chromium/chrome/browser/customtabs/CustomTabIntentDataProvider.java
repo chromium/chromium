@@ -38,7 +38,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -441,7 +442,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     private void retrieveCustomButtons(Intent intent, Context context) {
         assert mCustomButtonParams == null;
-        mCustomButtonParams = CustomButtonParams.fromIntent(context, intent);
+        mCustomButtonParams = CustomButtonParamsImpl.fromIntent(context, intent);
         for (CustomButtonParams params : mCustomButtonParams) {
             if (!params.showOnToolbar()) {
                 mBottombarButtons.add(params);
@@ -480,7 +481,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                                 ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT))) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(
-                        CustomButtonParams.createShareButton(context, getToolbarColor()));
+                        CustomButtonParamsImpl.createShareButton(context, getToolbarColor()));
                 logShareOptionLocation(ShareOptionLocation.TOOLBAR);
             } else if (mMenuEntries.isEmpty()) {
                 mShowShareItemInMenu = true;

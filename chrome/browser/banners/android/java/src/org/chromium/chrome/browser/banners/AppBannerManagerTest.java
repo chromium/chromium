@@ -62,6 +62,7 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -480,7 +481,7 @@ public class AppBannerManagerTest {
         // Test that bitmap sizes match expectations.
         int idealSize = mTabbedActivityTestRule.getActivity().getResources().getDimensionPixelSize(
                 R.dimen.webapp_splash_image_size_ideal);
-        Bitmap splashImage = ShortcutHelper.decodeBitmapFromString(dataStorageFactory.mSplashImage);
+        Bitmap splashImage = BitmapHelper.decodeBitmapFromString(dataStorageFactory.mSplashImage);
         Assert.assertEquals(idealSize, splashImage.getWidth());
         Assert.assertEquals(idealSize, splashImage.getHeight());
     }
@@ -521,7 +522,7 @@ public class AppBannerManagerTest {
         // Test that bitmap sizes match expectations.
         int idealSize = mTabbedActivityTestRule.getActivity().getResources().getDimensionPixelSize(
                 R.dimen.webapp_splash_image_size_ideal);
-        Bitmap splashImage = ShortcutHelper.decodeBitmapFromString(dataStorageFactory.mSplashImage);
+        Bitmap splashImage = BitmapHelper.decodeBitmapFromString(dataStorageFactory.mSplashImage);
         Assert.assertEquals(idealSize, splashImage.getWidth());
         Assert.assertEquals(idealSize, splashImage.getHeight());
     }

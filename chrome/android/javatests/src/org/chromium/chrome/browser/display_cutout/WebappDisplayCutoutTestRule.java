@@ -17,7 +17,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.webapps.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 
 import java.lang.annotation.ElementType;

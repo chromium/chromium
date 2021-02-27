@@ -19,9 +19,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.webapps.WebApkExtras;
-import org.chromium.chrome.browser.webapps.WebappExtras;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.ui.base.DeviceFormFactor;
 

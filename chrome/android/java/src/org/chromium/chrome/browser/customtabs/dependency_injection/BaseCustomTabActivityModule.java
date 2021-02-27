@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.dependency_injection;
 
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ClientAppDataRegister;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
 import org.chromium.chrome.browser.browserservices.ui.controller.EmptyVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;

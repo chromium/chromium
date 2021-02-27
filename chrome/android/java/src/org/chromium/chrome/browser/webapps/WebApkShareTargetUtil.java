@@ -16,6 +16,7 @@ import org.json.JSONException;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.net.MimeTypeFilter;
 
 import java.util.ArrayList;

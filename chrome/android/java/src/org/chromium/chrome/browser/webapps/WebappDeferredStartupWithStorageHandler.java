@@ -9,7 +9,8 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 
 import java.util.ArrayList;

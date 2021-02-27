@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps;
+package org.chromium.chrome.browser.browserservices.intents;
 
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.ShortcutHelper;
 
 /** Represents bitmap icon. Lazily converts icon format. */
 public class WebappIcon {
@@ -46,7 +45,7 @@ public class WebappIcon {
 
     public String encoded() {
         if (mEncoded == null) {
-            mEncoded = ShortcutHelper.encodeBitmapAsString(bitmap());
+            mEncoded = BitmapHelper.encodeBitmapAsString(bitmap());
         }
         return mEncoded;
     }
@@ -65,7 +64,7 @@ public class WebappIcon {
 
     private Bitmap generateBitmap() {
         if (mEncoded != null && mIsTrusted) {
-            return ShortcutHelper.decodeBitmapFromString(mEncoded);
+            return BitmapHelper.decodeBitmapFromString(mEncoded);
         }
         if (mWebApkPackageName != null && mResourceId != 0) {
             try {

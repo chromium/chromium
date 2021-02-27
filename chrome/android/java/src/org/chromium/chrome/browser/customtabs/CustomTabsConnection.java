@@ -670,8 +670,9 @@ public class CustomTabsConnection {
         if (actionButtonBundle != null) {
             int id = IntentUtils.safeGetInt(actionButtonBundle, CustomTabsIntent.KEY_ID,
                     CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);
-            Bitmap bitmap = CustomButtonParams.parseBitmapFromBundle(actionButtonBundle);
-            String description = CustomButtonParams.parseDescriptionFromBundle(actionButtonBundle);
+            Bitmap bitmap = CustomButtonParamsImpl.parseBitmapFromBundle(actionButtonBundle);
+            String description =
+                    CustomButtonParamsImpl.parseDescriptionFromBundle(actionButtonBundle);
             if (bitmap != null && description != null) {
                 ids.add(id);
                 descriptions.add(description);
@@ -687,11 +688,11 @@ public class CustomTabsConnection {
                         CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);
                 if (ids.contains(id)) continue;
 
-                Bitmap bitmap = CustomButtonParams.parseBitmapFromBundle(toolbarItemBundle);
+                Bitmap bitmap = CustomButtonParamsImpl.parseBitmapFromBundle(toolbarItemBundle);
                 if (bitmap == null) continue;
 
                 String description =
-                        CustomButtonParams.parseDescriptionFromBundle(toolbarItemBundle);
+                        CustomButtonParamsImpl.parseDescriptionFromBundle(toolbarItemBundle);
                 if (description == null) continue;
 
                 ids.add(id);

@@ -250,7 +250,7 @@ public class CustomTabsTestUtils {
         bundle.putParcelable(CustomTabsIntent.KEY_ICON, icon);
         bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, description);
         bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT, pi);
-        bundle.putBoolean(CustomButtonParams.SHOW_ON_TOOLBAR, true);
+        bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, true);
         return bundle;
     }
 

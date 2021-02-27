@@ -242,7 +242,7 @@ public class CustomTabIntentDataProviderTest {
         bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT,
                 PendingIntent.getBroadcast(context, 0, new Intent(),
                         IntentUtils.getPendingIntentMutabilityFlag(true)));
-        bundle.putBoolean(CustomButtonParams.SHOW_ON_TOOLBAR, true);
+        bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, true);
         return bundle;
     }
 

@@ -9,7 +9,7 @@ import static org.chromium.chrome.browser.ui.system.StatusBarColorController.UND
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController.ToolbarColorType;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;

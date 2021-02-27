@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps;
+package org.chromium.chrome.browser.browserservices.intents;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.chromium.chrome.browser.webapps.WebApkDistributor;
 
 import java.util.ArrayList;
 import java.util.HashMap;

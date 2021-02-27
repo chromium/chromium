@@ -17,6 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifierStatics;

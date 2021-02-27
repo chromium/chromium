@@ -7,9 +7,7 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Base64;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,8 +16,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.webapps.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappAuthenticator;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
@@ -29,7 +28,6 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.common.ScreenOrientationConstants;
 
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -135,7 +133,7 @@ public class ShortcutHelper {
                 // Encoding {@link icon} as a string and computing the mac are expensive.
 
                 // Encode the icon as a base64 string (Launcher drops Bitmaps in the Intent).
-                String encodedIcon = encodeBitmapAsString(icon);
+                String encodedIcon = BitmapHelper.encodeBitmapAsString(icon);
 
                 // TODO(http://crbug.com/1000046): Use action which does not require mac on O+
                 Intent shortcutIntent = createWebappShortcutIntent(id, url, scopeUrl, name,
@@ -210,7 +208,7 @@ public class ShortcutHelper {
             new AsyncTask<String>() {
                 @Override
                 protected String doInBackground() {
-                    return encodeBitmapAsString(splashImage);
+                    return BitmapHelper.encodeBitmapAsString(splashImage);
                 }
 
                 @Override
@@ -316,31 +314,6 @@ public class ShortcutHelper {
         Set<String> originSet = WebappRegistry.getInstance().getOriginsWithInstalledApp();
         String[] output = new String[originSet.size()];
         return originSet.toArray(output);
-    }
-
-    /**
-     * Compresses a bitmap into a PNG and converts into a Base64 encoded string.
-     * The encoded string can be decoded using {@link decodeBitmapFromString(String)}.
-     * @param bitmap The Bitmap to compress and encode.
-     * @return the String encoding the Bitmap.
-     */
-    public static String encodeBitmapAsString(Bitmap bitmap) {
-        if (bitmap == null) return "";
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-        return Base64.encodeToString(output.toByteArray(), Base64.DEFAULT);
-    }
-
-    /**
-     * Decodes a Base64 string into a Bitmap. Used to decode Bitmaps encoded by
-     * {@link encodeBitmapAsString(Bitmap)}.
-     * @param encodedString the Base64 String to decode.
-     * @return the Bitmap which was encoded by the String.
-     */
-    public static Bitmap decodeBitmapFromString(String encodedString) {
-        if (TextUtils.isEmpty(encodedString)) return null;
-        byte[] decoded = Base64.decode(encodedString, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
     }
 
     /**
