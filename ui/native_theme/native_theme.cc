@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -28,8 +29,8 @@ namespace ui {
 
 namespace {
 // clang-format off
-bool NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id,
-                                 ColorId* color_id) {
+base::Optional<ColorId>
+NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id) {
   using NTCID = NativeTheme::ColorId;
   static constexpr const auto map =
       base::MakeFixedFlatMap<NativeTheme::ColorId, ColorId>({
@@ -150,13 +151,11 @@ bool NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id,
           kColorTreeNodeForegroundSelectedUnfocused},
         {NTCID::kColorId_WindowBackground, kColorWindowBackground},
       });
-  DCHECK(color_id);
   auto* color_it = map.find(native_theme_color_id);
   if (color_it != map.cend()) {
-    *color_id = color_it->second;
-    return true;
+    return color_it->second;
   }
-  return false;
+  return base::nullopt;
 }
 // clang-format on
 
@@ -197,10 +196,11 @@ SkColor NativeTheme::GetSystemColor(ColorId color_id,
     // TODO(http://crbug.com/1057754): Handle high contrast modes.
     auto* color_provider = ColorProviderManager::Get().GetColorProviderFor(
         color_mode, ColorProviderManager::ContrastMode::kNormal);
-    ui::ColorId provider_color_id;
-    if (NativeThemeColorIdToColorId(color_id, &provider_color_id)) {
+    base::Optional<ui::ColorId> provider_color_id =
+        NativeThemeColorIdToColorId(color_id);
+    if (provider_color_id) {
       ReportHistogramBooleanUsesColorProvider(true);
-      return color_provider->GetColor(provider_color_id);
+      return color_provider->GetColor(provider_color_id.value());
     }
   }
   ReportHistogramBooleanUsesColorProvider(false);

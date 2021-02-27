@@ -28,6 +28,8 @@ component("color") {
     "color_provider.cc",
     "color_provider_manager.cc",
     "color_provider_manager.h",
+    "color_provider_utils.cc",
+    "color_provider_utils.h",
     "color_recipe.cc",
     "color_recipe.h",
     "color_set.cc",

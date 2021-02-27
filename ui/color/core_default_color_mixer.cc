@@ -4,6 +4,7 @@
 
 #include "ui/color/color_mixers.h"
 
+#include "base/logging.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -59,6 +60,8 @@ ColorMixer& AddMixerForLightMode(ColorProvider* provider) {
 }  // namespace
 
 void AddCoreDefaultColorMixer(ColorProvider* provider, bool dark_window) {
+  DVLOG(2) << "Adding CoreDefaultColorMixer to ColorProvider for "
+           << (dark_window ? "Dark" : "Light") << " window.";
   ColorMixer& mixer = dark_window ? AddMixerForDarkMode(provider)
                                   : AddMixerForLightMode(provider);
   mixer[kColorDisabledForeground] = BlendForMinContrast(

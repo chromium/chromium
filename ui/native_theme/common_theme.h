@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ui/native_theme/native_theme.h"
-
+#include "ui/native_theme/native_theme_export.h"
 
 namespace ui {
 

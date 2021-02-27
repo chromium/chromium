@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "ui/color/color_mixer.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ui {
@@ -26,14 +28,21 @@ ColorMixer& ColorProvider::AddMixer() {
 SkColor ColorProvider::GetColor(ColorId id) const {
   DCHECK_COLOR_ID_VALID(id);
 
-  if (mixers_.empty())
+  if (mixers_.empty()) {
+    DVLOG(2) << "ColorProvider::GetColor: No mixers defined!";
     return gfx::kPlaceholderColor;
+  }
 
   // Only compute the result color when it's not already in the cache.
   auto i = cache_.find(id);
-  if (i == cache_.end())
+  if (i == cache_.end()) {
+    DVLOG(2) << "ColorProvider::GetColor: Computing color for ColorId: "
+             << ColorIdName(id);
     i = cache_.insert({id, mixers_.front().GetResultColor(id)}).first;
+  }
 
+  DVLOG(2) << "ColorProvider::GetColor: ColorId: " << ColorIdName(id)
+           << " Value: " << SkColorName(i->second);
   return i->second;
 }
 

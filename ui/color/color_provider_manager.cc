@@ -7,9 +7,11 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_utils.h"
 
 namespace ui {
 
@@ -65,8 +67,12 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(
   auto iter = color_providers_.find(key);
   if (iter == color_providers_.end()) {
     auto provider = std::make_unique<ColorProvider>();
-    if (!initializer_.is_null())
+    if (!initializer_.is_null()) {
+      DVLOG(2) << "ColorProviderManager: Initializing Color Provider"
+               << " - ColorMode: " << ColorModeName(color_mode)
+               << " - ContrastMode: " << ContrastModeName(contrast_mode);
       initializer_.Run(provider.get(), color_mode, contrast_mode);
+    }
 
     iter = color_providers_.emplace(key, std::move(provider)).first;
   }
