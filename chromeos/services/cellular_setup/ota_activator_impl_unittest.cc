@@ -183,16 +183,31 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
   void ConnectCellularNetwork() {
     const std::vector<FakeNetworkConnectionHandler::ConnectionParams>&
         connect_calls = fake_network_connection_handler_->connect_calls();
-    ASSERT_LE(1u, connect_calls.size());
+    ASSERT_FALSE(connect_calls.empty());
 
     // A connection should have been requested by |ota_activator_|.
-    EXPECT_EQ(kTestCellularServicePath, connect_calls[0].service_path());
+    EXPECT_EQ(kTestCellularServicePath, connect_calls.back().service_path());
 
     // Simulate the connection succeeding.
     test_helper_.service_test()->SetServiceProperty(
         kTestCellularServicePath, shill::kStateProperty,
         base::Value(shill::kStateOnline));
     base::RunLoop().RunUntilIdle();
+  }
+
+  void FailCellularNetworkConnect() {
+    std::vector<FakeNetworkConnectionHandler::ConnectionParams>& connect_calls =
+        fake_network_connection_handler_->connect_calls();
+    ASSERT_FALSE(connect_calls.empty());
+
+    // A connection should have been requested by |ota_activator_|.
+    EXPECT_EQ(kTestCellularServicePath, connect_calls.back().service_path());
+    connect_calls.back().InvokeErrorCallback("fake_error", nullptr);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  size_t ConnectCallCount() {
+    return fake_network_connection_handler_->connect_calls().size();
   }
 
   void InvokePendingActivationCallback(bool success) {
@@ -224,6 +239,10 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
     fake_activation_delegate_->DisconnectReceivers();
   }
 
+  void FastForwardByConnectRetryDelay() {
+    task_environment_.FastForwardBy(OtaActivatorImpl::kConnectRetryDelay);
+  }
+
   bool is_finished() { return is_finished_; }
 
  private:
@@ -242,7 +261,8 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
     return base::Value(sim_slot_infos);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper test_helper_;
 
   std::unique_ptr<FakeActivationDelegate> fake_activation_delegate_;
@@ -281,6 +301,28 @@ TEST_F(CellularSetupOtaActivatorImplTest, Success) {
       mojom::ActivationResult::kSuccessfullyStartedActivation);
 }
 
+TEST_F(CellularSetupOtaActivatorImplTest, SuccessWithPaymentError) {
+  AddCellularDevice(true /* has_valid_sim */);
+  AddCellularNetwork(true /* has_valid_payment_info */, true /* is_connected */,
+                     false /* is_already_activated */);
+
+  BuildOtaActivator();
+
+  FlushForTesting();
+  VerifyCellularMetadataReceivedByDelegate();
+
+  UpdateCarrierPortalState(
+      mojom::CarrierPortalStatus::kPortalLoadedWithoutPaidUser);
+  UpdateCarrierPortalState(
+      mojom::CarrierPortalStatus::kPortalLoadedButErrorOccurredDuringPayment);
+
+  InvokePendingActivationCallback(true /* success */);
+
+  FlushForTesting();
+  VerifyActivationFinished(
+      mojom::ActivationResult::kSuccessfullyStartedActivation);
+}
+
 TEST_F(CellularSetupOtaActivatorImplTest, HasNoPhysicalSlots) {
   AddCellularDevice(false /* has_valid_sim */, false /* has_physical_slots */);
 
@@ -289,6 +331,38 @@ TEST_F(CellularSetupOtaActivatorImplTest, HasNoPhysicalSlots) {
   FlushForTesting();
 
   VerifyActivationFinished(mojom::ActivationResult::kFailedToActivate);
+}
+
+TEST_F(CellularSetupOtaActivatorImplTest, ConnectRetry) {
+  AddCellularDevice(true /* has_valid_sim */);
+  AddCellularNetwork(true /* has_valid_payment_info */,
+                     false /* is_connected */,
+                     false /* is_already_activated */);
+
+  BuildOtaActivator();
+
+  EXPECT_EQ(1u, ConnectCallCount());
+  FailCellularNetworkConnect();
+  // Ensure the a new connect call is not issued immediately.
+  EXPECT_EQ(1u, ConnectCallCount());
+
+  FastForwardByConnectRetryDelay();
+  EXPECT_EQ(2u, ConnectCallCount());
+
+  ConnectCellularNetwork();
+  FlushForTesting();
+  VerifyCellularMetadataReceivedByDelegate();
+
+  UpdateCarrierPortalState(
+      mojom::CarrierPortalStatus::kPortalLoadedWithoutPaidUser);
+  UpdateCarrierPortalState(
+      mojom::CarrierPortalStatus::kPortalLoadedAndUserCompletedPayment);
+
+  InvokePendingActivationCallback(true /* success */);
+
+  FlushForTesting();
+  VerifyActivationFinished(
+      mojom::ActivationResult::kSuccessfullyStartedActivation);
 }
 
 TEST_F(CellularSetupOtaActivatorImplTest,

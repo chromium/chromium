@@ -39,12 +39,6 @@ void OnModemResetError(const std::string& error_name,
                  << error_message << ".";
 }
 
-void OnNetworkConnectionError(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  NET_LOG(ERROR) << "ConnectToNetwork() failed. Error name: " << error_name;
-}
-
 }  // namespace
 
 // static
@@ -74,6 +68,13 @@ void OtaActivatorImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
 }
 
 OtaActivatorImpl::Factory::~Factory() = default;
+
+// static
+const base::TimeDelta OtaActivatorImpl::kConnectRetryDelay =
+    base::TimeDelta::FromSeconds(3);
+
+// static
+const size_t OtaActivatorImpl::kMaxConnectRetryAttempt = 3;
 
 OtaActivatorImpl::OtaActivatorImpl(
     mojo::PendingRemote<mojom::ActivationDelegate> activation_delegate,
@@ -269,9 +270,13 @@ void OtaActivatorImpl::AttemptConnectionToCellularNetwork() {
   // The network is disconnected; trigger a connection and wait for
   // NetworkPropertiesUpdated() to be called when the network connects.
   if (!cellular_network->IsConnectingOrConnected()) {
+    if (connect_retry_timer_.IsRunning()) {
+      return;
+    }
     network_connection_handler_->ConnectToNetwork(
         cellular_network->path(), base::DoNothing(),
-        base::BindOnce(&OnNetworkConnectionError),
+        base::BindOnce(&OtaActivatorImpl::OnNetworkConnectionError,
+                       weak_ptr_factory_.GetWeakPtr()),
         false /* check_error_state */, ConnectCallbackMode::ON_STARTED);
     return;
   }
@@ -280,6 +285,8 @@ void OtaActivatorImpl::AttemptConnectionToCellularNetwork() {
   // NetworkPropertiesUpdated() to be called if/when the network connects.
   if (cellular_network->IsConnectingState())
     return;
+
+  connect_retry_timer_.Stop();
 
   // If the network is already activated, there is no need to complete the rest
   // of the flow.
@@ -339,8 +346,15 @@ void OtaActivatorImpl::AttemptToSendMetadataToDelegate() {
   }
 
   // The user must successfully pay via the carrier portal before continuing.
+  // The carrier portal may also load but fail to notify the UI of payment
+  // success. The UI will send kPortalLoadedButErrorOccurredDuringPayment
+  // in this case. Optimistically complete activation in case the user did
+  // complete payment.
   if (last_carrier_portal_status_ !=
-      mojom::CarrierPortalStatus::kPortalLoadedAndUserCompletedPayment) {
+          mojom::CarrierPortalStatus::kPortalLoadedAndUserCompletedPayment &&
+      last_carrier_portal_status_ !=
+          mojom::CarrierPortalStatus::
+              kPortalLoadedButErrorOccurredDuringPayment) {
     return;
   }
 
@@ -369,6 +383,27 @@ void OtaActivatorImpl::OnCompleteActivationError(
     std::unique_ptr<base::DictionaryValue> error_data) {
   NET_LOG(ERROR) << "CompleteActivation() failed. Error name: " << error_name;
   FinishActivationAttempt(mojom::ActivationResult::kFailedToActivate);
+}
+
+void OtaActivatorImpl::OnNetworkConnectionError(
+    const std::string& error_name,
+    std::unique_ptr<base::DictionaryValue> error_data) {
+  if (connect_retry_attempts_ >= kMaxConnectRetryAttempt) {
+    NET_LOG(ERROR) << "Reached max connection retry attempts.";
+    FinishActivationAttempt(mojom::ActivationResult::kFailedToActivate);
+    return;
+  }
+
+  base::TimeDelta retry_delay =
+      kConnectRetryDelay * (1 << connect_retry_attempts_);
+  connect_retry_attempts_++;
+  NET_LOG(DEBUG) << "Network connect for activation failed. Error="
+                 << error_name << ". Retrying in " << retry_delay;
+
+  connect_retry_timer_.Start(
+      FROM_HERE, retry_delay,
+      base::BindOnce(&OtaActivatorImpl::AttemptNextActivationStep,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OtaActivatorImpl::FlushForTesting() {
