@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
@@ -100,15 +99,12 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
     }
 
     // Delivers a 10ms chunk of audio to all WebRTC sinks managed by this
-    // Adapter and returns the maximum number of channels the sinks are
-    // interested in (number of channels encoded). A return value of -1 means
-    // that the preferred number of channels is unknown. This is called on the
-    // audio thread.
-    int DeliverPCMToWebRtcSinks(const int16_t* audio_data,
-                                int sample_rate,
-                                size_t number_of_channels,
-                                size_t number_of_frames,
-                                base::TimeTicks estimated_capture_time);
+    // Adapter. This is called on the audio thread.
+    void DeliverPCMToWebRtcSinks(const int16_t* audio_data,
+                                 int sample_rate,
+                                 size_t number_of_channels,
+                                 size_t number_of_frames,
+                                 base::TimeTicks estimated_capture_time);
 
     std::string label() const { return label_; }
 
@@ -177,9 +173,6 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
               base::TimeTicks estimated_capture_time) override;
   void OnSetFormat(const media::AudioParameters& params) override;
 
-  // WebMediaStreamAudioSink implementation.
-  int NumPreferredChannels() override { return num_preferred_channels_; }
-
   // Called by AudioPushFifo zero or more times during the call to OnData().
   // Delivers audio data with the required 10ms buffer size to |adapter_|.
   void DeliverRebufferedAudio(const media::AudioBus& audio_bus,
@@ -201,10 +194,6 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
   std::unique_ptr<int16_t[]> interleaved_data_;
 
   base::TimeTicks last_estimated_capture_time_;
-
-  // The maximum number of preferred audio channels by any sink or -1 if
-  // unknown.
-  std::atomic<int> num_preferred_channels_;
 
   // In debug builds, check that WebRtcAudioSink's public methods are all being
   // called on the main render thread.

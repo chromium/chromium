@@ -174,10 +174,6 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // Gets the TaskRunner for the main thread, for subclasses that need it.
   base::SingleThreadTaskRunner* GetTaskRunner() const;
 
-  // Maximum number of channels preferred by any connected track or -1 if
-  // unknown.
-  int NumPreferredChannels() const;
-
  private:
   // MediaStreamSource override.
   void DoStopSource() final;
