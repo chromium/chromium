@@ -208,7 +208,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'bd0108b4c88e0d6f2350cb79b5f363fbd02f3eb7',
+  'v8_revision': '45e415150419491d6d12428ba6ee98876a405ba4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling swarming_client
   # and whatever else without interference from each other.
@@ -275,7 +275,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '9105610c5f6217f1440065a204c7fd8387a8a6f8',
+  'catapult_revision': 'f85be7ecf2c2a19dd200ef23fd33434417d883d2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -694,7 +694,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'PUa2HO-tEq9AscqEOGcg1JrQntaj-jL3w9SV5YsBvckC',
+          'version': 'UsYBqu8X5C5sg1yAIBXyX5v5rwOmYld47Ztx1b3AIYgC',
       },
     ],
     'condition': 'checkout_android',
@@ -1299,7 +1299,7 @@ deps = {
   },
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '1899435238fe3bf63a052f61ae16ec1a1d79d1d1',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '99fc76f4d62d3afd3dd40addc61b1795d2b3e4f2',
 
   'src/third_party/perl': {
       'url': Var('chromium_git') + '/chromium/deps/perl.git' + '@' + '6f3e5028eb65d0b4c5fdd792106ac4c84eee1eb3',

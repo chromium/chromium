@@ -42,6 +42,39 @@ namespace {
 
 constexpr char kUrlString[] = "https://www.example.com";
 
+// The helper class to wait for the observed view's bounds update.
+class ViewBoundsWaiter : public views::ViewObserver {
+ public:
+  explicit ViewBoundsWaiter(views::View* observed_view)
+      : observed_view_(observed_view) {
+    observed_view_->AddObserver(this);
+  }
+
+  ViewBoundsWaiter(const ViewBoundsWaiter&) = delete;
+  ViewBoundsWaiter& operator=(const ViewBoundsWaiter&) = delete;
+  ~ViewBoundsWaiter() override { observed_view_->RemoveObserver(this); }
+
+  void WaitForMeaningfulBounds() {
+    // No-op if `observed_view_` already has meaningful bounds.
+    if (!observed_view_->bounds().IsEmpty())
+      return;
+
+    run_loop_.Run();
+  }
+
+ private:
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    EXPECT_FALSE(observed_view->bounds().IsEmpty());
+    run_loop_.Quit();
+  }
+
+  views::View* const observed_view_;
+  base::RunLoop run_loop_;
+};
+
+// Helpers ---------------------------------------------------------------------
+
 std::unique_ptr<views::Widget> CreateTestWidget() {
   auto widget = std::make_unique<views::Widget>();
 
@@ -144,6 +177,24 @@ class ClipboardHistoryWithMultiProfileBrowserTest
   }
 
  protected:
+  // Click at the delete button of the menu entry specified by `index`.
+  void ClickAtDeleteButton(int index) {
+    auto* item_view = GetContextMenu()->GetMenuItemViewAtForTest(index);
+    views::View* delete_button =
+        item_view->GetViewByID(ash::ClipboardHistoryUtil::kDeleteButtonViewID);
+
+    if (delete_button->GetVisible()) {
+      // Assume that `delete_button` already has meaningful bounds.
+      ASSERT_FALSE(delete_button->GetBoundsInScreen().IsEmpty());
+    } else {
+      ShowDeleteButtonByMouseHover(index);
+    }
+
+    GetEventGenerator()->MoveMouseTo(
+        delete_button->GetBoundsInScreen().CenterPoint());
+    GetEventGenerator()->ClickLeftButton();
+  }
+
   void Press(ui::KeyboardCode key, int modifiers = ui::EF_NONE) {
     event_generator_->PressKey(key, modifiers);
   }
@@ -206,6 +257,27 @@ class ClipboardHistoryWithMultiProfileBrowserTest
     return const_cast<ash::ClipboardHistoryItemView*>(
         const_cast<const ClipboardHistoryWithMultiProfileBrowserTest*>(this)
             ->GetHistoryItemViewForIndex(index));
+  }
+
+  // Show the delete button by hovering the mouse on the menu entry specified
+  // by the index.
+  void ShowDeleteButtonByMouseHover(int index) {
+    auto* item_view = GetContextMenu()->GetMenuItemViewAtForTest(index);
+    views::View* delete_button =
+        item_view->GetViewByID(ash::ClipboardHistoryUtil::kDeleteButtonViewID);
+    ASSERT_FALSE(delete_button->GetVisible());
+
+    // Hover the mouse on `item_view` to show the delete button.
+    GetEventGenerator()->MoveMouseTo(
+        item_view->GetBoundsInScreen().CenterPoint(), /*count=*/5);
+
+    // Wait until `delete_button` has meaningful bounds. Note that the bounds
+    // are set by the layout manager asynchronously.
+    ViewBoundsWaiter waiter(delete_button);
+    waiter.WaitForMeaningfulBounds();
+
+    EXPECT_TRUE(delete_button->GetVisible());
+    EXPECT_TRUE(item_view->IsSelected());
   }
 
   // chromeos::LoginManagerTest:
@@ -522,6 +594,33 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // Verify that the second menu item is selected now.
   EXPECT_TRUE(second_item_view->IsSelected());
+}
+
+// Verifies item deletion through the mouse click at the delete button.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
+                       DeleteItemByClickAtDeleteButton) {
+  LoginUser(account_id1_);
+
+  // Write some things to the clipboard.
+  SetClipboardText("A");
+  SetClipboardText("B");
+
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  ASSERT_EQ(2, GetContextMenu()->GetMenuItemsCount());
+
+  // Delete the second menu item.
+  ClickAtDeleteButton(/*index=*/1);
+  EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
+  EXPECT_TRUE(VerifyClipboardTextData({"B"}));
+
+  // Delete the last menu item. Verify that the menu is closed.
+  ClickAtDeleteButton(/*index=*/0);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // No menu shows because of the empty clipboard history.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
 // Verifies that the selected item should be deleted by the backspace key.

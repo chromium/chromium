@@ -22,10 +22,12 @@ class BASE_EXPORT PooledTaskRunnerDelegate {
   PooledTaskRunnerDelegate();
   virtual ~PooledTaskRunnerDelegate();
 
-  // Returns true if a PooledTaskRunnerDelegate instance exists in the
-  // process. This is needed in case of unit tests wherein a TaskRunner
-  // outlives the ThreadPoolInstance that created it.
-  static bool Exists();
+  // Returns true if the current PooledTaskRunnerDelegate instance in the
+  // process matches `delegate`. This is needed in case of unit tests wherein
+  // a TaskRunner outlives the ThreadPoolInstance that created it, in which case
+  // the current delegate would be null (and not match) or even have been
+  // re-initialized to a new delegate in a following test.
+  static bool MatchesCurrentDelegate(PooledTaskRunnerDelegate* delegate);
 
   // Returns true if |task_source| currently running *must* return ASAP.
   // Thread-safe but may return an outdated result (if a task unnecessarily

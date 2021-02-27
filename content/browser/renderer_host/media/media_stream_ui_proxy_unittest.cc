@@ -47,7 +47,7 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
                void(const MediaStreamRequest& request,
                     MediaResponseCallback* callback));
   MOCK_METHOD3(CheckMediaAccessPermission,
-               bool(RenderFrameHost* render_frame_host,
+               bool(RenderFrameHostImpl* render_frame_host,
                     const url::Origin& security_origin,
                     blink::mojom::MediaStreamType type));
 

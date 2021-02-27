@@ -31,7 +31,7 @@ const GURL& RenderFrameHostDelegate::GetMainFrameLastCommittedURL() {
 }
 
 bool RenderFrameHostDelegate::DidAddMessageToConsole(
-    RenderFrameHost* source_frame,
+    RenderFrameHostImpl* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message,
     int32_t line_no,
@@ -55,7 +55,7 @@ void RenderFrameHostDelegate::RequestMediaAccessPermission(
 }
 
 bool RenderFrameHostDelegate::CheckMediaAccessPermission(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHostImpl* render_frame_host,
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   LOG(ERROR) << "RenderFrameHostDelegate::CheckMediaAccessPermission: "
@@ -88,12 +88,12 @@ bool RenderFrameHostDelegate::CanEnterFullscreenMode() {
 }
 
 bool RenderFrameHostDelegate::ShouldRouteMessageEvent(
-    RenderFrameHost* target_rfh,
+    RenderFrameHostImpl* target_rfh,
     SiteInstance* source_site_instance) const {
   return false;
 }
 
-RenderFrameHost*
+RenderFrameHostImpl*
 RenderFrameHostDelegate::GetFocusedFrameIncludingInnerWebContents() {
   return nullptr;
 }
@@ -110,7 +110,7 @@ RenderFrameHostDelegate::CreateWebUIForRenderFrameHost(
 }
 
 RenderFrameHostDelegate* RenderFrameHostDelegate::CreateNewWindow(
-    RenderFrameHost* opener,
+    RenderFrameHostImpl* opener,
     const mojom::CreateNewWindowParams& params,
     bool is_new_browsing_instance,
     bool has_user_gesture,

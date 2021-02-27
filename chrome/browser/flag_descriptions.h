@@ -2282,11 +2282,6 @@ extern const char kDeprecateLowUsageCodecsDescription[];
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-extern const char kChromeOSDirectVideoDecoderName[];
-extern const char kChromeOSDirectVideoDecoderDescription[];
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-
 extern const char kCdmFactoryDaemonName[];
 extern const char kCdmFactoryDaemonDescription[];
 
@@ -2870,6 +2865,11 @@ extern const char kWifiSyncAndroidDescription[];
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+extern const char kChromeOSDirectVideoDecoderName[];
+extern const char kChromeOSDirectVideoDecoderDescription[];
+#endif  // defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_WIN)
 extern const char kZeroCopyVideoCaptureName[];

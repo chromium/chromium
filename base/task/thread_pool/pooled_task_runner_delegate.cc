@@ -4,36 +4,52 @@
 
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
 
+#include "base/debug/task_trace.h"
+#include "base/logging.h"
+
 namespace base {
 namespace internal {
 
 namespace {
 
-// Indicates whether a PooledTaskRunnerDelegate instance exists in the
-// process. Used to tell when a task is posted from the main thread after the
+// Stores the current PooledTaskRunnerDelegate in this process(null if none).
+// Used to tell when a task is posted from the main thread after the
 // task environment was brought down in unit tests so that TaskRunners can
 // return false on PostTask, letting callers know they should complete
 // necessary work synchronously. A PooledTaskRunnerDelegate is usually
 // instantiated before worker threads are started and deleted after worker
 // threads have been joined. This makes the variable const while worker threads
 // are up and as such it doesn't need to be atomic.
-bool g_exists = false;
+// Also used to tell if an attempt is made to run a task after its
+// task runner's delegate is no longer the current delegate, i.e., a task runner
+// is created in one unit test and posted to in a subsequent test, due to global
+// state leaking between tests.
+PooledTaskRunnerDelegate* g_current_delegate = nullptr;
 
 }  // namespace
 
 PooledTaskRunnerDelegate::PooledTaskRunnerDelegate() {
-  DCHECK(!g_exists);
-  g_exists = true;
+  DCHECK(!g_current_delegate);
+  g_current_delegate = this;
 }
 
 PooledTaskRunnerDelegate::~PooledTaskRunnerDelegate() {
-  DCHECK(g_exists);
-  g_exists = false;
+  DCHECK(g_current_delegate);
+  g_current_delegate = nullptr;
 }
 
 // static
-bool PooledTaskRunnerDelegate::Exists() {
-  return g_exists;
+bool PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+    PooledTaskRunnerDelegate* delegate) {
+  if (g_current_delegate && g_current_delegate != delegate) {
+    LOG(ERROR)
+        << "Stale pooled_task_runner_delegate_ - task not posted. This is\n"
+           "almost certainly caused by a previous test leaving a stale task\n"
+           "runner in a global object, and a subsequent test triggering the\n "
+           "global object to post a task to the stale task runner.\n"
+        << base::debug::StackTrace();
+  }
+  return g_current_delegate == delegate;
 }
 
 }  // namespace internal

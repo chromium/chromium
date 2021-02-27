@@ -9,6 +9,7 @@ component("liburlpattern") {
   deps = [
     "//base:base",
     "//third_party/abseil-cpp:absl",
+    "//third_party/icu:icu",
   ]
 
   # Note, also update the local modifications in README.chromium.

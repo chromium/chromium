@@ -73,6 +73,10 @@ void ClipboardHistoryMenuModelAdapter::Run(
   DCHECK(item_snapshots_.empty());
   DCHECK(item_views_by_command_id_.empty());
 
+  // `Run()` should be called at most once for an instance.
+  DCHECK(!run_before_);
+  run_before_ = true;
+
   menu_open_time_ = base::TimeTicks::Now();
 
   int command_id = ClipboardHistoryUtil::kFirstItemCommandId;
@@ -404,6 +408,13 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
 }
 
 void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
+  // Terminate alive asynchronous calls on `RemoveItemView()`. It is pointless
+  // to update views when the menu is closed.
+  // Note that data members related to the asynchronous calls, such as
+  // `item_deletion_in_progress_count_` and `scoped_ignore_`, are not reset.
+  // Because when hitting here, this instance is going to be destructed soon.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   ClipboardImageModelFactory::Get()->Deactivate();
   const base::TimeDelta user_journey_time =
       base::TimeTicks::Now() - menu_open_time_;

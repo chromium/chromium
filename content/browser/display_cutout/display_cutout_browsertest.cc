@@ -202,7 +202,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(NavigateToURL(shell(), url));
   }
 
-  void SimulateFullscreenStateChanged(RenderFrameHost* frame,
+  void SimulateFullscreenStateChanged(RenderFrameHostImpl* frame,
                                       bool is_fullscreen) {
     web_contents_impl()->FullscreenStateChanged(
         frame, is_fullscreen, blink::mojom::FullscreenOptions::New());
@@ -212,9 +212,11 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
     web_contents_impl()->ExitFullscreenMode(true);
   }
 
-  RenderFrameHost* MainFrame() { return web_contents_impl()->GetMainFrame(); }
+  RenderFrameHostImpl* MainFrame() {
+    return web_contents_impl()->GetMainFrame();
+  }
 
-  RenderFrameHost* ChildFrame() {
+  RenderFrameHostImpl* ChildFrame() {
     FrameTreeNode* root = web_contents_impl()->GetFrameTree()->root();
     return root->child_at(0)->current_frame_host();
   }

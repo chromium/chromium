@@ -246,9 +246,6 @@ CONTENT_EXPORT extern const char kWebXrRuntimeOrientationSensors[];
 CONTENT_EXPORT extern const char kWebXrRuntimeOpenXr[];
 CONTENT_EXPORT extern const char kWebXrRuntimeWMR[];
 
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(OS_ANDROID)
-CONTENT_EXPORT extern const char kEnableAcceleratedVideoDecode[];
-#endif
 CONTENT_EXPORT extern const char kDisableAcceleratedVideoDecode[];
 
 #if defined(OS_ANDROID)

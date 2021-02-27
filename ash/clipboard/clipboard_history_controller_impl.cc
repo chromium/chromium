@@ -427,7 +427,6 @@ void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
   if (!IsMenuShowing())
     return;
   context_menu_->Cancel();
-  context_menu_.reset();
 }
 
 void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
@@ -648,7 +647,6 @@ void ClipboardHistoryControllerImpl::DeleteItemWithCommandId(int command_id) {
   // If the item to be deleted is the last one, close the whole menu.
   if (context_menu_->GetMenuItemsCount() == 1) {
     context_menu_->Cancel();
-    context_menu_.reset();
     return;
   }
 

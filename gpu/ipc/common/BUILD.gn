@@ -480,6 +480,9 @@ mojom("gpu_preferences_interface") {
   if (use_ozone) {
     enabled_features += [ "use_ozone" ]
   }
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    enabled_features += [ "is_chromeos_device" ]
+  }
 
   cpp_typemaps = [
     {

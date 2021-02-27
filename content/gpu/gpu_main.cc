@@ -140,10 +140,9 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
     }
 
 #if BUILDFLAG(USE_VAAPI)
-// TODO(andrescj) Make this work on LaCrOS, not just ASH.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     media::VaapiWrapper::PreSandboxInitialization();
-#else  // For any non-ash chrome (ie: linux or lacros) that can support vaapi.
+#else  // For Linux with VA-API support.
     if (!gpu_prefs.disable_accelerated_video_decode)
       media::VaapiWrapper::PreSandboxInitialization();
 #endif

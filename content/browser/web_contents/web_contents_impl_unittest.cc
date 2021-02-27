@@ -2599,7 +2599,7 @@ TEST_F(WebContentsImplTest, HandleContextMenuDelegate) {
   MockWebContentsDelegate delegate;
   contents()->SetDelegate(&delegate);
 
-  RenderFrameHost* rfh = main_test_rfh();
+  TestRenderFrameHost* rfh = main_test_rfh();
   EXPECT_CALL(delegate, HandleContextMenu(rfh, ::testing::_))
       .WillOnce(::testing::Return(true));
 
