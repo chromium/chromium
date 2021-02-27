@@ -238,6 +238,7 @@ class TestStoragePartition : public StoragePartition {
       nullptr;
   CheckedPtr<DevToolsBackgroundServicesContext>
       devtools_background_services_context_ = nullptr;
+  ContentIndexContext* content_index_context_ = nullptr;
   NativeIOContext* native_io_context_ = nullptr;
 #if !defined(OS_ANDROID)
   CheckedPtr<HostZoomMap> host_zoom_map_ = nullptr;
