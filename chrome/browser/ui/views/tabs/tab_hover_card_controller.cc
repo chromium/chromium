@@ -354,37 +354,13 @@ void TabHoverCardController::UpdateAndShow(Tab* tab) {
   if (!hover_card_->GetAnchorView())
     hover_card_->SetAnchorView(tab);
 
-  // Prepare for the next text transition. If the hover card isn't animating, it
-  // will immediately be snapped to 100% below.
-  hover_card_->SetTextFade(0.0);
-  hover_card_->UpdateCardContent(tab);
-
-  if (!thumbnail_observer_ && AreHoverCardImagesEnabled()) {
-    thumbnail_observer_ = std::make_unique<TabHoverCardThumbnailObserver>();
-    thumbnail_subscription_ = thumbnail_observer_->AddCallback(
-        base::BindRepeating(&TabHoverCardController::OnPreviewImageAvaialble,
-                            base::Unretained(this)));
-  }
-
-  // If the preview image feature is not enabled, |preview_image_| will be null.
-  if (thumbnail_observer_) {
-    if (!tab->IsActive()) {
-      auto thumbnail = tab->data().thumbnail;
-      if (!thumbnail) {
-        hover_card_->ClearPreviewImage();
-      } else if (thumbnail != thumbnail_observer_->current_image()) {
-        waiting_for_decompress_ = true;
-        thumbnail_observer_->Observe(thumbnail);
-      }
-    } else {
-      thumbnail_observer_->Observe(nullptr);
-    }
-  }
-
   const bool card_was_visible = IsHoverCardVisible();
   if (card_was_visible) {
     // We're showing a hover card for a new tab, so increment the count.
     cards_seen_counter_->CardShownForTab(tab, true);
+    // If the card was visible we need to update the card now, before any slide
+    // or snap occurs.
+    UpdateCardContent(tab);
 
     // If widget is already visible and anchored to the correct tab we should
     // not try to reset the anchor view or reshow.
@@ -408,6 +384,8 @@ void TabHoverCardController::UpdateAndShow(Tab* tab) {
     const bool show_immediate = ShouldShowImmediately(tab);
     if (!animations_enabled || show_immediate) {
       cards_seen_counter_->CardShownForTab(tab, show_immediate);
+      // Card content needs to be updated before a show.
+      UpdateCardContent(tab);
       hover_card_->GetWidget()->SetOpacity(1.0);
       hover_card_->GetWidget()->Show();
     } else {
@@ -419,8 +397,12 @@ void TabHoverCardController::UpdateAndShow(Tab* tab) {
 
 void TabHoverCardController::FadeInToShow() {
   // Make sure the hover card isn't accidentally shown if the anchor is gone.
-  if (!hover_card_->GetAnchorView() || fade_animator_->IsFadingIn())
+  Tab* const target_tab = static_cast<Tab*>(hover_card_->GetAnchorView());
+  if (!target_tab || fade_animator_->IsFadingIn())
     return;
+
+  // Delay update of card content until it's about to fade in.
+  UpdateCardContent(target_tab);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   throughput_tracker_.emplace(
@@ -489,6 +471,44 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
   fade_complete_subscription_ = fade_animator_->AddFadeCompleteCallback(
       base::BindRepeating(&TabHoverCardController::OnFadeAnimationEnded,
                           base::Unretained(this)));
+
+  if (!thumbnail_observer_ && AreHoverCardImagesEnabled()) {
+    thumbnail_observer_ = std::make_unique<TabHoverCardThumbnailObserver>();
+    thumbnail_subscription_ = thumbnail_observer_->AddCallback(
+        base::BindRepeating(&TabHoverCardController::OnPreviewImageAvaialble,
+                            base::Unretained(this)));
+  }
+}
+
+void TabHoverCardController::UpdateCardContent(Tab* tab) {
+  // If the hover card is transitioning between tabs, we need to do a
+  // cross-fade.
+  if (IsHoverCardVisible() && hover_card_->GetAnchorView() != tab)
+    hover_card_->SetTextFade(0.0);
+
+  hover_card_->UpdateCardContent(tab);
+  MaybeStartThumbnailObservation(tab);
+}
+
+void TabHoverCardController::MaybeStartThumbnailObservation(Tab* tab) {
+  // If the preview image feature is not enabled, |thumbnail_observer_| will be
+  // null.
+  if (!thumbnail_observer_)
+    return;
+
+  // Active tabs don't get thumbnails.
+  if (tab->IsActive()) {
+    thumbnail_observer_->Observe(nullptr);
+    return;
+  }
+
+  auto thumbnail = tab->data().thumbnail;
+  if (!thumbnail) {
+    hover_card_->ClearPreviewImage();
+  } else if (thumbnail != thumbnail_observer_->current_image()) {
+    waiting_for_decompress_ = true;
+    thumbnail_observer_->Observe(thumbnail);
+  }
 }
 
 void TabHoverCardController::RecordTimeSinceLastSeenMetric(

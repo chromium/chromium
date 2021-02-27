@@ -58,6 +58,8 @@ class TabHoverCardController : public views::ViewObserver {
   void OnViewIsDeleting(views::View* observed_view) override;
 
   void CreateHoverCard(Tab* tab);
+  void UpdateCardContent(Tab* tab);
+  void MaybeStartThumbnailObservation(Tab* tab);
 
   void RecordTimeSinceLastSeenMetric(base::TimeDelta elapsed_time);
 
