@@ -130,11 +130,8 @@ class ServiceControllerProxy : public ServiceController {
   }
 
   void Stop() override {
-    if (!inner_service_controller_)
-      return;
-    // TODO(crbug/1176249): This stops the service controller for all Cores that
-    // share this inner_service_controller_.
-    inner_service_controller_->Stop();
+    // TODO(https://crbug.com/1182428): we purposefully do nothing here so we
+    // don't shutdown the share OfflineServiceController.
   }
 
  private:
