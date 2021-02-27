@@ -29,11 +29,45 @@
 #endif
 
 #if defined(USE_X11)
+#include "base/threading/watchdog.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/base/ui_base_features.h"
 #endif
 
 namespace remoting {
+
+#if defined(USE_X11)
+
+namespace {
+
+// The maximum amount of time we will wait for the IgnoreXServerGrabs() to
+// return before we crash the host.
+constexpr base::TimeDelta kWaitForIgnoreXServerGrabsTimeout =
+    base::TimeDelta::FromSeconds(30);
+
+// Helper class to monitor the call to
+// webrtc::SharedXDisplay::IgnoreXServerGrabs() (on a temporary thread), which
+// has been observed to occasionally hang forever and zombify the host.
+// This class crashes the host if the IgnoreXServerGrabs() call takes too long,
+// so that the ME2ME daemon process can respawn the host.
+// See: crbug.com/1130090
+class IgnoreXServerGrabsWatchdog : public base::Watchdog {
+ public:
+  IgnoreXServerGrabsWatchdog()
+      : base::Watchdog(kWaitForIgnoreXServerGrabsTimeout,
+                       "IgnoreXServerGrabs Watchdog",
+                       /* enabled= */ true) {}
+  ~IgnoreXServerGrabsWatchdog() override = default;
+
+  void Alarm() override {
+    // Crash the host if IgnoreXServerGrabs() takes too long.
+    CHECK(false) << "IgnoreXServerGrabs() timed out.";
+  }
+};
+
+}  // namespace
+
+#endif  // defined(USE_X11)
 
 BasicDesktopEnvironment::~BasicDesktopEnvironment() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
@@ -131,8 +165,15 @@ BasicDesktopEnvironment::BasicDesktopEnvironment(
       options_(options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 #if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
+  if (!features::IsUsingOzonePlatform()) {
+    // TODO(yuweih): The watchdog is just to test the hypothesis.
+    // The IgnoreXServerGrabs() call should probably be moved to whichever
+    // thread that created desktop_capture_options().x_display().
+    IgnoreXServerGrabsWatchdog watchdog;
+    watchdog.Arm();
     desktop_capture_options().x_display()->IgnoreXServerGrabs();
+    watchdog.Disarm();
+  }
 #elif defined(OS_WIN)
   // The options passed to this instance are determined by a process running in
   // Session 0.  Access to DirectX functions in Session 0 is limited so the
