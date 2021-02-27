@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/font_pref_change_notifier.h"
@@ -79,7 +80,7 @@ class FontFamilyCache : public base::SupportsUserData::Data {
   // Weak reference.
   // Note: The lifetime of this object is tied to the lifetime of the
   // PrefService, so there is no worry about an invalid pointer.
-  const PrefService* prefs_;
+  CheckedPtr<const PrefService> prefs_;
 
   // Reacts to profile font changes. |font_change_registrar_| will be
   // automatically unregistered when the FontPrefChangeNotifier is destroyed as

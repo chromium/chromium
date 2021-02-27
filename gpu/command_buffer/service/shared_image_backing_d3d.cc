@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -29,7 +30,7 @@ class ScopedRestoreTexture2D {
   }
 
  private:
-  gl::GLApi* const api_;
+  const CheckedPtr<gl::GLApi> api_;
   GLuint prev_binding_ = 0;
   DISALLOW_COPY_AND_ASSIGN(ScopedRestoreTexture2D);
 };

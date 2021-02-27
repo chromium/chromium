@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
@@ -59,7 +60,7 @@ class SerialIoHandlerWin : public SerialIoHandler,
 
   // The helper lives on the UI thread and holds a weak reference back to the
   // handler that owns it.
-  UiThreadHelper* helper_ = nullptr;
+  CheckedPtr<UiThreadHelper> helper_ = nullptr;
   base::WeakPtrFactory<SerialIoHandlerWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SerialIoHandlerWin);

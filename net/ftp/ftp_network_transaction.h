@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"
@@ -204,11 +205,11 @@ class NET_EXPORT_PRIVATE FtpNetworkTransaction : public FtpTransaction {
   CompletionOnceCallback user_callback_;
 
   NetLogWithSource net_log_;
-  const FtpRequestInfo* request_;
+  CheckedPtr<const FtpRequestInfo> request_;
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
   FtpResponseInfo response_;
 
-  HostResolver* resolver_;
+  CheckedPtr<HostResolver> resolver_;
   // Cancels the outstanding request on destruction.
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_request_;
 
@@ -249,7 +250,7 @@ class NET_EXPORT_PRIVATE FtpNetworkTransaction : public FtpTransaction {
 
   uint16_t data_connection_port_;
 
-  ClientSocketFactory* const socket_factory_;
+  const CheckedPtr<ClientSocketFactory> socket_factory_;
 
   std::string unescaped_path_;
 

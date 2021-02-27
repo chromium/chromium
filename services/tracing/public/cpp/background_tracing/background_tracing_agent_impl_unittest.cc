@@ -4,6 +4,7 @@
 
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 
 #include "base/metrics/histogram_macros.h"
@@ -75,7 +76,7 @@ class BackgroundTracingAgentImplTest : public testing::Test {
       provider_set_;
   mojo::UniqueReceiverSet<tracing::mojom::BackgroundTracingAgentClient>
       client_set_;
-  BackgroundTracingAgentClientRecorder* recorder_ = nullptr;
+  CheckedPtr<BackgroundTracingAgentClientRecorder> recorder_ = nullptr;
 };
 
 TEST_F(BackgroundTracingAgentImplTest, TestInitialize) {

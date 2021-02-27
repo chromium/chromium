@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
@@ -55,10 +56,10 @@ class ExtensionAllowlist {
   // Called when the 'Enhanced Safe Browsing' setting changes.
   void OnSafeBrowsingEnhancedChanged();
 
-  Profile* profile_ = nullptr;
-  ExtensionPrefs* extension_prefs_ = nullptr;
-  ExtensionService* extension_service_ = nullptr;
-  ExtensionRegistry* registry_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
+  CheckedPtr<ExtensionPrefs> extension_prefs_ = nullptr;
+  CheckedPtr<ExtensionService> extension_service_ = nullptr;
+  CheckedPtr<ExtensionRegistry> registry_ = nullptr;
 
   // Whether the Safe Browsing allowlist is currently enforced or not.
   bool is_allowlist_enforced_ = false;

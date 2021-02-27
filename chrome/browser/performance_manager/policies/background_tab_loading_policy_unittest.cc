@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
@@ -69,8 +70,8 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
   MockPageLoader* loader() { return mock_loader_; }
 
  private:
-  BackgroundTabLoadingPolicy* policy_;
-  MockPageLoader* mock_loader_;
+  CheckedPtr<BackgroundTabLoadingPolicy> policy_;
+  CheckedPtr<MockPageLoader> mock_loader_;
 };
 
 TEST_F(BackgroundTabLoadingPolicyTest, ScheduleLoadForRestoredTabs) {

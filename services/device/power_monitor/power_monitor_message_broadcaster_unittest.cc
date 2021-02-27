@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test_base.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -67,7 +68,7 @@ class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
   base::PowerMonitorTestSource* source() { return power_monitor_source_; }
 
  private:
-  base::PowerMonitorTestSource* power_monitor_source_;
+  CheckedPtr<base::PowerMonitorTestSource> power_monitor_source_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorMessageBroadcasterTest);
 };

@@ -21,6 +21,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -157,8 +158,8 @@ class TabSlotAnimationDelegate : public gfx::AnimationDelegate {
   TabSlotView* slot_view() { return slot_view_; }
 
  private:
-  TabStrip* const tab_strip_;
-  TabSlotView* const slot_view_;
+  const CheckedPtr<TabStrip> tab_strip_;
+  const CheckedPtr<TabSlotView> slot_view_;
   OnAnimationProgressedCallback on_animation_progressed_;
 };
 
@@ -1044,7 +1045,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     }
   }
 
-  TabStrip* const tab_strip_;
+  const CheckedPtr<TabStrip> tab_strip_;
 
   // The controller for a drag initiated from a Tab. Valid for the lifetime of
   // the drag session.
@@ -3362,7 +3363,7 @@ TabStrip::DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
   arrow_view_ =
       arrow_window_->SetContentsView(std::make_unique<views::ImageView>());
   arrow_view_->SetImage(GetDropArrowImage(point_down_));
-  scoped_observation_.Observe(arrow_window_);
+  scoped_observation_.Observe(arrow_window_.get());
 
   arrow_window_->Show();
 }
@@ -3386,7 +3387,7 @@ void TabStrip::DropArrow::SetWindowBounds(const gfx::Rect& bounds) {
 }
 
 void TabStrip::DropArrow::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(scoped_observation_.IsObservingSource(arrow_window_));
+  DCHECK(scoped_observation_.IsObservingSource(arrow_window_.get()));
   scoped_observation_.Reset();
   arrow_window_ = nullptr;
 }

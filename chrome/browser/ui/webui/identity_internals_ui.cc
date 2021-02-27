@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -125,7 +126,7 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
   // The JS callback to resolve when revoking is done.
   const std::string callback_id_;
   // An object that needs to be notified once the access token is revoked.
-  IdentityInternalsUIMessageHandler* consumer_;  // weak.
+  CheckedPtr<IdentityInternalsUIMessageHandler> consumer_;  // weak.
 
   DISALLOW_COPY_AND_ASSIGN(IdentityInternalsTokenRevoker);
 };

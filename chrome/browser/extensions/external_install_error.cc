@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
@@ -95,7 +96,7 @@ class ExternalInstallMenuAlert : public GlobalError {
   GlobalErrorBubbleViewBase* GetBubbleView() override;
 
   // The owning ExternalInstallError.
-  ExternalInstallError* error_;
+  CheckedPtr<ExternalInstallError> error_;
 
   // Provides menu item id for GlobalError.
   ExtensionInstallErrorMenuItemIdProvider id_provider_;
@@ -129,12 +130,12 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
   void BubbleViewCancelButtonPressed(Browser* browser) override;
 
   // The owning ExternalInstallError.
-  ExternalInstallError* error_;
+  CheckedPtr<ExternalInstallError> error_;
   ExtensionInstallErrorMenuItemIdProvider id_provider_;
 
   // The Prompt with all information, which we then use to populate the bubble.
   // Owned by |error|.
-  ExtensionInstallPrompt::Prompt* prompt_;
+  CheckedPtr<ExtensionInstallPrompt::Prompt> prompt_;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalInstallBubbleAlert);
 };

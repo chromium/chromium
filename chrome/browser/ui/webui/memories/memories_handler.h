@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "components/memories/core/memories.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -57,8 +58,8 @@ class MemoriesHandler : public memories::mojom::PageHandler {
                              history::QueryResults results);
 #endif
 
-  Profile* profile_;
-  content::WebContents* web_contents_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   mojo::Remote<memories::mojom::Page> page_;
   mojo::Receiver<memories::mojom::PageHandler> page_handler_;

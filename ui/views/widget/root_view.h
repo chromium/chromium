@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/events/event_processor.h"
 #include "ui/views/focus/focus_manager.h"
@@ -182,7 +183,7 @@ class VIEWS_EXPORT RootView : public View,
   // Tree operations -----------------------------------------------------------
 
   // The host Widget
-  Widget* widget_;
+  CheckedPtr<Widget> widget_;
 
   // Input ---------------------------------------------------------------------
 
@@ -190,14 +191,14 @@ class VIEWS_EXPORT RootView : public View,
   //                   ViewTargeter / RootViewTargeter.
 
   // The view currently handing down - drag - up
-  View* mouse_pressed_handler_ = nullptr;
+  CheckedPtr<View> mouse_pressed_handler_ = nullptr;
 
   // The view currently handling enter / exit
-  View* mouse_move_handler_ = nullptr;
+  CheckedPtr<View> mouse_move_handler_ = nullptr;
 
   // The last view to handle a mouse click, so that we can determine if
   // a double-click lands on the same view as its single-click part.
-  View* last_click_handler_ = nullptr;
+  CheckedPtr<View> last_click_handler_ = nullptr;
 
   // true if mouse_pressed_handler_ has been explicitly set
   bool explicit_mouse_handler_ = false;
@@ -209,7 +210,7 @@ class VIEWS_EXPORT RootView : public View,
   int last_mouse_event_y_ = -1;
 
   // The View currently handling gesture events.
-  View* gesture_handler_ = nullptr;
+  CheckedPtr<View> gesture_handler_ = nullptr;
 
   // Used to indicate if the |gesture_handler_| member was set prior to the
   // processing of the current event (i.e., if |gesture_handler_| was set
@@ -231,14 +232,14 @@ class VIEWS_EXPORT RootView : public View,
   // bool activated_;
 
   // The parent FocusTraversable, used for focus traversal.
-  FocusTraversable* focus_traversable_parent_ = nullptr;
+  CheckedPtr<FocusTraversable> focus_traversable_parent_ = nullptr;
 
   // The View that contains this RootView. This is used when we have RootView
   // wrapped inside native components, and is used for the focus traversal.
-  View* focus_traversable_parent_view_ = nullptr;
+  CheckedPtr<View> focus_traversable_parent_view_ = nullptr;
 
-  View* event_dispatch_target_ = nullptr;
-  View* old_dispatch_target_ = nullptr;
+  CheckedPtr<View> event_dispatch_target_ = nullptr;
+  CheckedPtr<View> old_dispatch_target_ = nullptr;
 
   // Drag and drop -------------------------------------------------------------
 
@@ -249,7 +250,7 @@ class VIEWS_EXPORT RootView : public View,
 
   // Hidden view used to make announcements to the screen reader via an alert or
   // live region update.
-  AnnounceTextView* announce_view_ = nullptr;
+  CheckedPtr<AnnounceTextView> announce_view_ = nullptr;
 };
 
 }  // namespace internal

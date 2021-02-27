@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/mru_cache.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"

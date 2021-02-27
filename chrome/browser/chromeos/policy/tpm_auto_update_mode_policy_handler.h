@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -96,9 +97,9 @@ class TPMAutoUpdateModePolicyHandler {
 
   void ShowTPMUpdateOnNextRebootNotification();
 
-  chromeos::CrosSettings* cros_settings_;
+  CheckedPtr<chromeos::CrosSettings> cros_settings_;
 
-  PrefService* local_state_;
+  CheckedPtr<PrefService> local_state_;
 
   std::unique_ptr<base::OneShotTimer> notification_timer_;
 

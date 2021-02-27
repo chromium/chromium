@@ -140,7 +140,7 @@ void Shadow::Render(UiElementRenderer* renderer,
 void Shadow::LayOutContributingChildren() {
   DCHECK(shadow_caster_ || !children().empty());
   UiElement* shadow_caster =
-      shadow_caster_ ? shadow_caster_ : children().back().get();
+      shadow_caster_ ? shadow_caster_.get() : children().back().get();
   gfx::Point3F p;
   shadow_caster->LocalTransform().TransformPoint(&p);
   DCHECK_GE(kMaximumChildDepth, p.z());

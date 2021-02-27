@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_SLIDER_EXAMPLE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/examples/example_base.h"
 

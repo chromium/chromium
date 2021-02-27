@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
@@ -193,9 +194,9 @@ class Gpu::EstablishRequest
 
   virtual ~EstablishRequest() = default;
 
-  Gpu* const parent_;
+  const CheckedPtr<Gpu> parent_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  base::WaitableEvent* establish_event_ = nullptr;
+  CheckedPtr<base::WaitableEvent> establish_event_ = nullptr;
 
   base::Lock lock_;
   bool received_ = false;

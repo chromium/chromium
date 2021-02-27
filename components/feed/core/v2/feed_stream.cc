@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -99,7 +100,7 @@ class FeedStream::OfflineSuggestionsProvider
   void ReportArticleViewed(GURL article_url) override {}
 
  private:
-  FeedStream* stream_;
+  CheckedPtr<FeedStream> stream_;
 };
 
 RefreshResponseData FeedStream::WireResponseTranslator::TranslateWireResponse(

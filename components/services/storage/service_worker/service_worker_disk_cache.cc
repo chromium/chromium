@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -46,7 +47,8 @@ class ServiceWorkerDiskCache::CreateBackendCallbackShim
 
   ~CreateBackendCallbackShim() = default;
 
-  ServiceWorkerDiskCache* service_worker_disk_cache_;  // Unowned pointer.
+  CheckedPtr<ServiceWorkerDiskCache>
+      service_worker_disk_cache_;  // Unowned pointer.
 };
 
 ServiceWorkerDiskCacheEntry::ServiceWorkerDiskCacheEntry(

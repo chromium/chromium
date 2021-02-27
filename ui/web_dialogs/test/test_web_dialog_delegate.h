@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
@@ -50,7 +51,7 @@ class TestWebDialogDelegate : public WebDialogDelegate {
  protected:
   const GURL url_;
   gfx::Size size_;
-  bool* did_delete_;
+  CheckedPtr<bool> did_delete_;
   bool close_on_escape_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWebDialogDelegate);

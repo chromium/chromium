@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 class BrowserActionsContainer;
@@ -60,7 +61,7 @@ class ExtensionActionTestHelperViews : public ExtensionActionTestHelper {
   std::unique_ptr<TestToolbarActionsBarHelper> test_helper_;
 
   // The associated BrowserActionsContainer. Not owned.
-  BrowserActionsContainer* const browser_actions_container_;
+  const CheckedPtr<BrowserActionsContainer> browser_actions_container_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_TEST_HELPER_VIEWS_H_

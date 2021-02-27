@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
 #include "content/browser/webauth/authenticator_common.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -62,7 +63,7 @@ class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
     return authenticator_common_.get();
   }
 
-  RenderFrameHost* const render_frame_host_;
+  const CheckedPtr<RenderFrameHost> render_frame_host_;
   url::Origin effective_origin_;
   std::unique_ptr<AuthenticatorCommon> authenticator_common_;
 

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/common/extensions/api/developer_private.h"
 
 class Profile;
@@ -63,7 +64,7 @@ class InspectableViewsFinder {
   void GetAppWindowViewsForExtension(const Extension& extension,
                                      ViewList* result);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(InspectableViewsFinder);
 };

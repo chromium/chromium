@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -119,7 +120,7 @@ class PreviewsUIService
   std::unique_ptr<previews::PreviewsDeciderImpl> previews_decider_impl_;
 
   // Used to remove |this| from observing.
-  network::NetworkQualityTracker* network_quality_tracker_;
+  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_;
 
   // The current EffectiveConnectionType estimate.
   net::EffectiveConnectionType current_effective_connection_type_ =

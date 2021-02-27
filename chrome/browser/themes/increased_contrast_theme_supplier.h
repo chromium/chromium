@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_THEMES_INCREASED_CONTRAST_THEME_SUPPLIER_H_
 #define CHROME_BROWSER_THEMES_INCREASED_CONTRAST_THEME_SUPPLIER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "ui/native_theme/native_theme_observer.h"
 
@@ -29,7 +30,7 @@ class IncreasedContrastThemeSupplier : public CustomThemeSupplier,
  private:
   void OnNativeThemeUpdated(ui::NativeTheme* native_theme) override;
 
-  ui::NativeTheme* native_theme_;
+  CheckedPtr<ui::NativeTheme> native_theme_;
   bool is_dark_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(IncreasedContrastThemeSupplier);

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "build/build_config.h"
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"
@@ -42,7 +43,7 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   void PreDefaultMainMessageLoopRun(base::OnceClosure quit_closure) override;
 
  private:
-  MainParams* params_;
+  CheckedPtr<MainParams> params_;
 
   std::unique_ptr<BrowserProcess> browser_process_;
   std::unique_ptr<performance_manager::PerformanceManagerLifetime>

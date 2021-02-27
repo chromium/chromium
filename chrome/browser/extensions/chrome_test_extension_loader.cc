@@ -156,7 +156,7 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
 
   content::BrowserContext* context_to_use =
       IncognitoInfo::IsSplitMode(&extension)
-          ? browser_context_
+          ? browser_context_.get()
           : Profile::FromBrowserContext(browser_context_)->GetOriginalProfile();
   ExtensionBackgroundPageWaiter(context_to_use, extension).Wait();
 

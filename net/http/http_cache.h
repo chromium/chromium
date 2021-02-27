@@ -22,6 +22,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
@@ -372,7 +373,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
     bool TransactionInReaders(Transaction* transaction) const;
 
-    disk_cache::Entry* disk_entry = nullptr;
+    CheckedPtr<disk_cache::Entry> disk_entry = nullptr;
 
     // Indicates if the disk_entry was opened or not (i.e.: created).
     // It is set to true when a transaction is added to an entry so that other,
@@ -385,7 +386,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     // Transaction currently in the headers phase, either validating the
     // response or getting new headers. This can exist simultaneously with
     // writers or readers while validating existing headers.
-    Transaction* headers_transaction = nullptr;
+    CheckedPtr<Transaction> headers_transaction = nullptr;
 
     // Transactions that have completed their headers phase and are waiting
     // to read the response body or write the response body.

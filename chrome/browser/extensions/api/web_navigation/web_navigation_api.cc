@@ -69,7 +69,7 @@ void WebNavigationEventRouter::PendingWebContents::Set(
 }
 
 void WebNavigationEventRouter::PendingWebContents::WebContentsDestroyed() {
-  std::move(on_destroy_).Run(target_web_contents_);
+  std::move(on_destroy_).Run(target_web_contents_.get());
   // |this| is deleted!
 }
 

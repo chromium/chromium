@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -244,7 +245,7 @@ class DeepScanningRequestTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  CheckedPtr<TestingProfile> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   FakeDownloadProtectionService download_protection_service_;

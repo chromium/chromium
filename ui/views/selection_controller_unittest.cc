@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -57,7 +58,7 @@ class TestSelectionControllerDelegate : public SelectionControllerDelegate {
   void UpdateSelectionClipboard() override {}
 
  private:
-  gfx::RenderText* render_text_;
+  CheckedPtr<gfx::RenderText> render_text_;
 
   DISALLOW_COPY_AND_ASSIGN(TestSelectionControllerDelegate);
 };

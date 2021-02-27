@@ -5,9 +5,10 @@
 #ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_STATE_H_
 #define GPU_GLES2_CONFORM_SUPPORT_EGL_STATE_H_
 
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include <EGL/egl.h>
+#include "base/macros.h"
+#include "base/memory/checked_ptr.h"
+#include "base/memory/ref_counted.h"
 
 namespace gles2_conform_support {
 namespace egl {
@@ -51,7 +52,7 @@ class ThreadState {
     void SetCurrent(Surface*, Context*);
 
    private:
-    ThreadState* thread_state_;
+    CheckedPtr<ThreadState> thread_state_;
     DISALLOW_COPY_AND_ASSIGN(AutoCurrentContextRestore);
   };
 

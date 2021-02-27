@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -40,7 +41,7 @@ class DeleteOnKeyEventView : public View {
 
  private:
   // Set to true in OnKeyPressed().
-  bool* set_on_key_;
+  CheckedPtr<bool> set_on_key_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteOnKeyEventView);
 };
@@ -105,7 +106,7 @@ class TestContextMenuController : public ContextMenuController {
 
  private:
   int show_context_menu_calls_ = 0;
-  View* menu_source_view_ = nullptr;
+  CheckedPtr<View> menu_source_view_ = nullptr;
   ui::MenuSourceType menu_source_type_ = ui::MENU_SOURCE_NONE;
 
   DISALLOW_COPY_AND_ASSIGN(TestContextMenuController);
@@ -427,7 +428,7 @@ class DeleteViewOnEvent : public View {
   ui::EventType delete_event_type_;
 
   // Tracks whether the view was destroyed.
-  bool* was_destroyed_;
+  CheckedPtr<bool> was_destroyed_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteViewOnEvent);
 };
@@ -474,7 +475,7 @@ class NestedEventOnEvent : public View {
   // The event type which causes the view to generate a nested event.
   ui::EventType nested_event_type_;
   // root view of this view; owned by widget.
-  View* root_view_;
+  CheckedPtr<View> root_view_;
 
   DISALLOW_COPY_AND_ASSIGN(NestedEventOnEvent);
 };
@@ -710,7 +711,7 @@ class DeleteWidgetOnMouseExit : public View {
   void OnMouseExited(const ui::MouseEvent& event) override { delete widget_; }
 
  private:
-  Widget* widget_;
+  CheckedPtr<Widget> widget_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteWidgetOnMouseExit);
 };

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/guest_view/browser/guest_view_event.h"
@@ -125,7 +126,7 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
  private:
   bool is_fullscreen_;
   bool destroyed_;
-  GuestViewBase* guest_;
+  CheckedPtr<GuestViewBase> guest_;
 
   void Destroy() {
     if (destroyed_)
@@ -161,7 +162,7 @@ class GuestViewBase::OpenerLifetimeObserver : public WebContentsObserver {
   }
 
  private:
-  GuestViewBase* guest_;
+  CheckedPtr<GuestViewBase> guest_;
 
   DISALLOW_COPY_AND_ASSIGN(OpenerLifetimeObserver);
 };

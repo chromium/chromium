@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/ring_buffer.h"
+#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -121,9 +122,9 @@ class CC_EXPORT DroppedFrameCounter {
   double sliding_window_max_percent_dropped_ = 0;
   base::TimeTicks time_fcp_received_;
   base::TimeDelta time_max_delta_;
-  UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;
+  CheckedPtr<UkmSmoothnessDataShared> ukm_smoothness_data_ = nullptr;
   FrameSorter frame_sorter_;
-  TotalFrameCounter* total_counter_ = nullptr;
+  CheckedPtr<TotalFrameCounter> total_counter_ = nullptr;
 
   struct ScrollStartInfo {
     // The timestamp of when the scroll started.

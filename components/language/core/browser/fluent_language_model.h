@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/language/core/browser/language_model.h"
 
 class PrefService;
@@ -28,7 +29,7 @@ class FluentLanguageModel : public LanguageModel {
   std::vector<LanguageDetails> GetLanguages() override;
 
  private:
-  const PrefService* const pref_service_;
+  const CheckedPtr<const PrefService> pref_service_;
   const std::string accept_langs_pref_;
   std::unique_ptr<LanguagePrefs> language_prefs_;
 };

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_REGISTRY_CONTROLLER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_REGISTRY_CONTROLLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 
@@ -46,7 +47,7 @@ class BookmarkAppRegistryController : public web_app::AppRegistryController {
  private:
   const Extension* GetExtension(const web_app::AppId& app_id) const;
 
-  BookmarkAppRegistrar* registrar_;
+  CheckedPtr<BookmarkAppRegistrar> registrar_;
 };
 
 }  // namespace extensions

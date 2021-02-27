@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_helper.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -66,7 +67,7 @@ class PageContentAnnotationsWebContentsHelperTest
 
     page_text_observer_ = new TestPageTextObserver(web_contents());
     web_contents()->SetUserData(TestPageTextObserver::UserDataKey(),
-                                base::WrapUnique(page_text_observer_));
+                                base::WrapUnique(page_text_observer_.get()));
 
     PageContentAnnotationsWebContentsHelper::CreateForWebContents(
         web_contents(), page_content_annotations_service_.get());
@@ -113,7 +114,7 @@ class PageContentAnnotationsWebContentsHelperTest
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
   std::unique_ptr<FakePageContentAnnotationsService>
       page_content_annotations_service_;
-  TestPageTextObserver* page_text_observer_;
+  CheckedPtr<TestPageTextObserver> page_text_observer_;
 };
 
 TEST_F(PageContentAnnotationsWebContentsHelperTest, HooksIntoPageTextObserver) {
