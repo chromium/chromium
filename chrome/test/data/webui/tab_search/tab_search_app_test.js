@@ -94,7 +94,8 @@ suite('TabSearchAppTest', () => {
       title: 'Google',
       url: 'https://www.google.com',
     };
-    await setupTest({windows: [{active: true, tabs: [tabData]}]});
+    await setupTest(
+        {windows: [{active: true, tabs: [tabData]}], recentlyClosedTabs: []});
 
     const tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
@@ -114,7 +115,8 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Keyboard navigation on an empty list', async () => {
-    await setupTest({windows: [{active: true, tabs: []}]});
+    await setupTest(
+        {windows: [{active: true, tabs: []}], recentlyClosedTabs: []});
 
     const searchField = /** @type {!TabSearchSearchField} */
         (tabSearchApp.shadowRoot.querySelector("#searchField"));
@@ -196,7 +198,8 @@ suite('TabSearchAppTest', () => {
   test('refresh on tabs changed', async () => {
     await setupTest(sampleData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    testProxy.getCallbackRouterRemote().tabsChanged({windows: []});
+    testProxy.getCallbackRouterRemote().tabsChanged(
+        {windows: [], recentlyClosedTabs: []});
     await flushTasks();
     verifyTabIds(queryRows(), []);
     assertEquals(-1, tabSearchApp.getSelectedIndex());
@@ -212,12 +215,14 @@ suite('TabSearchAppTest', () => {
     assertEquals(1, tabSearchApp.getSelectedIndex());
 
     testProxy.getCallbackRouterRemote().tabsChanged(
-        {windows: [testData.windows[0]]});
+        {windows: [testData.windows[0]], recentlyClosedTabs: []});
     await flushTasks();
     assertEquals(1, tabSearchApp.getSelectedIndex());
 
-    testProxy.getCallbackRouterRemote().tabsChanged(
-        {windows: [{active: true, tabs: [testData.windows[0].tabs[0]]}]});
+    testProxy.getCallbackRouterRemote().tabsChanged({
+      windows: [{active: true, tabs: [testData.windows[0].tabs[0]]}],
+      recentlyClosedTabs: []
+    });
     await flushTasks();
     assertEquals(0, tabSearchApp.getSelectedIndex());
   });
@@ -433,11 +438,12 @@ suite('TabSearchAppTest', () => {
     ];
 
     // Move active tab to the bottom of the list.
-    await setupTest({windows: [{active: true, tabs}]});
+    await setupTest({windows: [{active: true, tabs}], recentlyClosedTabs: []});
     verifyTabIds(queryRows(), [3, 1, 2]);
 
     await setupTest(
-        {windows: [{active: true, tabs}]}, {'moveActiveTabToBottom': false});
+        {windows: [{active: true, tabs}], recentlyClosedTabs: []},
+        {'moveActiveTabToBottom': false});
     verifyTabIds(queryRows(), [2, 3, 1]);
   });
 

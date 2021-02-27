@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 // Collection of window details associated with a profile.
 struct ProfileData {
   array<Window> windows;
+  array<RecentlyClosedTab> recently_closed_tabs;
 };
 
 // Properties and tabs associated with a window.
@@ -53,6 +54,19 @@ struct Tab {
 
   // Time ticks when the tab is last active.
   mojo_base.mojom.TimeTicks last_active_time_ticks;
+};
+
+// Information about a recently closed tab.
+struct RecentlyClosedTab {
+  // The title of the tab.
+  string title;
+
+  // The URL of the tab.
+  // TODO(crbug.com/1099917): Change this and elsewhere to use url.mojom.Url.
+  string url;
+
+  // Time when the tab is last active.
+  mojo_base.mojom.Time last_active_time_ticks;
 };
 
 // Collection of tab groups.
