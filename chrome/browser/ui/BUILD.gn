@@ -3637,6 +3637,8 @@ static_library("ui") {
       "views/download/download_shelf_context_menu_view.h",
       "views/download/download_shelf_view.cc",
       "views/download/download_shelf_view.h",
+      "views/download/download_shelf_web_view.cc",
+      "views/download/download_shelf_web_view.h",
       "views/download/download_started_animation_views.cc",
       "views/dropdown_bar_host.cc",
       "views/dropdown_bar_host.h",

@@ -106,6 +106,8 @@ extern const base::Feature kWebFooterExperiment;
 
 extern const base::Feature kWebUIBubblePerProfilePersistence;
 
+extern const base::Feature kWebUIDownloadShelf;
+
 extern const base::Feature kWebUITabStrip;
 
 extern const base::Feature kWebUIFeedback;

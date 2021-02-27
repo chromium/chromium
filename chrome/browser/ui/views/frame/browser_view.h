@@ -59,7 +59,6 @@ class AccessibilityFocusHighlight;
 class BookmarkBarView;
 class Browser;
 class ContentsLayoutManager;
-class DownloadShelfView;
 class ExclusiveAccessBubbleViews;
 class FeaturePromoControllerViews;
 class FullscreenControlHost;
@@ -794,7 +793,7 @@ class BrowserView : public BrowserWindow,
   // |  |  contents_web_view_                                        |  |
   // |  --------------------------------------------------------------  |
   // |------------------------------------------------------------------|
-  // | Active downloads (download_shelf_)                               |
+  // | Active downloads (download_shelf_view_)                          |
   // --------------------------------------------------------------------
 
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
@@ -842,7 +841,10 @@ class BrowserView : public BrowserWindow,
   View* find_bar_host_view_ = nullptr;
 
   // The download shelf view (view at the bottom of the page).
-  DownloadShelfView* download_shelf_ = nullptr;
+  View* download_shelf_view_ = nullptr;
+
+  // The download shelf.
+  DownloadShelf* download_shelf_ = nullptr;
 
   // The InfoBarContainerView that contains InfoBars for the current tab.
   InfoBarContainerView* infobar_container_ = nullptr;
