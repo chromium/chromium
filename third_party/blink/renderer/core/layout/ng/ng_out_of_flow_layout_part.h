@@ -10,7 +10,9 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -22,7 +24,6 @@ class ComputedStyle;
 class LayoutBox;
 class LayoutObject;
 class NGBlockBreakToken;
-class NGBlockNode;
 class NGBoxFragmentBuilder;
 class NGLayoutResult;
 class NGPhysicalContainerFragment;
@@ -103,6 +104,38 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
         : mutable_link(mutable_link), parent_break_token(parent_break_token) {}
   };
 
+  // Info needed to perform Layout() on an OOF positioned node.
+  struct NodeToLayout {
+    STACK_ALLOCATED();
+
+   public:
+    NGBlockNode node;
+    const NGConstraintSpace constraint_space;
+    const NGLogicalStaticPosition static_position;
+    PhysicalSize container_physical_content_size;
+    const ContainingBlockInfo container_info;
+    const WritingDirectionMode default_writing_direction;
+    bool is_fragmentainer_descendant;
+    bool inline_container;
+
+    NodeToLayout(NGBlockNode node,
+                 const NGConstraintSpace constraint_space,
+                 const NGLogicalStaticPosition static_position,
+                 PhysicalSize container_physical_content_size,
+                 const ContainingBlockInfo container_info,
+                 const WritingDirectionMode default_writing_direction,
+                 bool is_fragmentainer_descendant,
+                 bool inline_container)
+        : node(node),
+          constraint_space(constraint_space),
+          static_position(static_position),
+          container_physical_content_size(container_physical_content_size),
+          container_info(container_info),
+          default_writing_direction(default_writing_direction),
+          is_fragmentainer_descendant(is_fragmentainer_descendant),
+          inline_container(inline_container) {}
+  };
+
   bool SweepLegacyCandidates(HashSet<const LayoutObject*>* placed_objects);
 
   const ContainingBlockInfo GetContainingBlockInfo(
@@ -116,10 +149,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                         const LayoutBox* only_layout,
                         HashSet<const LayoutObject*>* placed_objects);
 
-  scoped_refptr<const NGLayoutResult> LayoutCandidate(
-      const NGLogicalOutOfFlowPositionedNode&,
-      const LayoutBox* only_layout);
-
   void LayoutOOFsInMulticol(const NGBlockNode& multicol);
 
   // Layout the OOF nodes that are descendants of a fragmentation context root.
@@ -130,18 +159,16 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       LayoutUnit column_inline_progression,
       Vector<MulticolChildInfo>* multicol_children = nullptr);
 
-  scoped_refptr<const NGLayoutResult> LayoutFragmentainerDescendant(
-      const NGLogicalOutOfFlowPositionedNode&);
+  NodeToLayout SetUpNodeForLayout(
+      const NGLogicalOutOfFlowPositionedNode& oof_node);
+
+  scoped_refptr<const NGLayoutResult> LayoutOOFNode(
+      const NodeToLayout& oof_node_to_layout,
+      const LayoutBox* only_layout);
 
   scoped_refptr<const NGLayoutResult> Layout(
-      NGBlockNode,
-      const NGConstraintSpace&,
-      const NGLogicalStaticPosition&,
-      PhysicalSize container_physical_content_size,
-      const ContainingBlockInfo&,
-      const WritingDirectionMode,
-      const LayoutBox* only_layout,
-      bool is_fragmentainer_descendant = false);
+      const NodeToLayout& oof_node_to_layout,
+      const LayoutBox* only_layout);
 
   bool IsContainingBlockForCandidate(const NGLogicalOutOfFlowPositionedNode&);
 
