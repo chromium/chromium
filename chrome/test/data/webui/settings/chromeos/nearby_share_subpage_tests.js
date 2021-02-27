@@ -104,15 +104,30 @@ suite('NearbyShare', function() {
   });
 
   test('feature toggle button controls preference', function() {
+    // Ensure that these controls are enabled/disabled when the Nearby is
+    // enabled/disabled.
+    const highVizToggle = subpage.$$('#highVisibilityToggle');
+    const editDeviceNameButton = subpage.$$('#editDeviceNameButton');
+    const editVisibilityButton = subpage.$$('#editVisibilityButton');
+    const editDataUsageButton = subpage.$$('#editDataUsageButton');
+
     assertEquals(true, featureToggleButton.checked);
     assertEquals(true, subpage.prefs.nearby_sharing.enabled.value);
     assertEquals('On', onOffText.textContent.trim());
+    assertFalse(highVizToggle.disabled);
+    assertFalse(editDeviceNameButton.disabled);
+    assertFalse(editVisibilityButton.disabled);
+    assertFalse(editDataUsageButton.disabled);
 
     featureToggleButton.click();
 
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
     assertEquals('Off', onOffText.textContent.trim());
+    assertTrue(highVizToggle.disabled);
+    assertTrue(editDeviceNameButton.disabled);
+    assertTrue(editVisibilityButton.disabled);
+    assertTrue(editDataUsageButton.disabled);
   });
 
   test('toggle row controls preference', function() {
