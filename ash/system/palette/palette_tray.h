@@ -92,10 +92,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                  PaletteInvocationMethod method) override;
   void RecordPaletteModeCancellation(PaletteModeCancelType type) override;
 
-  StylusBatteryDelegate* stylus_battery_delegate() {
-    return &stylus_battery_delegate_;
-  }
-
  private:
   friend class PaletteTrayTestApi;
 
@@ -159,8 +155,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // Number of actions in pen palette bubble.
   int num_actions_in_bubble_ = 0;
-
-  StylusBatteryDelegate stylus_battery_delegate_;
 
   ScopedSessionObserver scoped_session_observer_;
 

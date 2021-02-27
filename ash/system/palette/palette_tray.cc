@@ -93,41 +93,50 @@ bool ShouldShowOnDisplay(PaletteTray* palette_tray) {
 
 class BatteryView : public views::View {
  public:
-  explicit BatteryView(StylusBatteryDelegate* delegate) : delegate_(delegate) {
+  BatteryView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 4));
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    SetVisible(delegate->ShouldShowBatteryStatus());
+    SetVisible(stylus_battery_delegate_.ShouldShowBatteryStatus());
 
     icon_ = AddChildView(std::make_unique<views::ImageView>());
 
-    if (delegate->IsBatteryStatusStale()) {
-      icon_->SetImage(delegate->GetBatteryStatusUnknownImage());
+    if (stylus_battery_delegate_.IsBatteryStatusStale()) {
+      icon_->SetImage(stylus_battery_delegate_.GetBatteryStatusUnknownImage());
       icon_->SetTooltipText(l10n_util::GetStringUTF16(
           IDS_ASH_STYLUS_BATTERY_STATUS_STALE_TOOLTIP));
-    } else {
-      icon_->SetImage(delegate->GetBatteryImage());
-
-      if (delegate->IsBatteryLevelLow()) {
-        label_ = AddChildView(std::make_unique<views::Label>(
-            l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
-        label_->SetEnabledColor(delegate->GetColorForBatteryLevel());
-        TrayPopupUtils::SetLabelFontList(
-            label_, TrayPopupUtils::FontStyle::kSmallTitle);
-      }
     }
+
+    label_ = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
+    label_->SetEnabledColor(stylus_battery_delegate_.GetColorForBatteryLevel());
+    TrayPopupUtils::SetLabelFontList(label_,
+                                     TrayPopupUtils::FontStyle::kSmallTitle);
+
+    stylus_battery_delegate_.SetBatteryUpdateCallback(base::BindRepeating(
+        &BatteryView::OnBatteryLevelUpdated, base::Unretained(this)));
+
+    OnBatteryLevelUpdated();
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kLabelText;
     node_data->SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_STYLUS_BATTERY_PERCENT_ACCESSIBLE,
-        base::NumberToString16(delegate_->battery_level().value_or(0))));
+        base::NumberToString16(
+            stylus_battery_delegate_.battery_level().value_or(0))));
+  }
+
+  void OnBatteryLevelUpdated() {
+    icon_->SetImage(stylus_battery_delegate_.GetBatteryImage());
+    label_->SetVisible(stylus_battery_delegate_.IsBatteryLevelLow() &&
+                       !stylus_battery_delegate_.IsBatteryStatusStale() &&
+                       !stylus_battery_delegate_.IsBatteryCharging());
   }
 
  private:
-  StylusBatteryDelegate* const delegate_;
+  StylusBatteryDelegate stylus_battery_delegate_;
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;
 };
@@ -154,8 +163,7 @@ class TitleView : public views::View {
     layout_ptr->SetFlexForView(title_label, 1);
 
     if (ash::features::IsStylusBatteryStatusEnabled()) {
-      AddChildView(std::make_unique<BatteryView>(
-          palette_tray->stylus_battery_delegate()));
+      AddChildView(std::make_unique<BatteryView>());
 
       auto* separator = AddChildView(std::make_unique<views::Separator>());
       separator->SetPreferredHeight(GetPreferredSize().height());
