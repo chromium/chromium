@@ -642,7 +642,7 @@ public class TopToolbarCoordinator implements Toolbar {
             return;
         }
         mStartSurfaceToolbarCoordinator.onStartSurfaceStateChanged(newState, requestToShow);
-        updateToolbarContainerVisibility();
+        updateToolbarLayoutVisibility();
     }
 
     /**
@@ -652,16 +652,15 @@ public class TopToolbarCoordinator implements Toolbar {
     public void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
         if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.onStartSurfaceHeaderOffsetChanged(verticalOffset);
-            updateToolbarContainerVisibility();
+            updateToolbarLayoutVisibility();
         }
     }
 
-    private void updateToolbarContainerVisibility() {
+    private void updateToolbarLayoutVisibility() {
         if (mStartSurfaceToolbarCoordinator != null) {
-            boolean shouldHideToolbarContainer =
-                    mStartSurfaceToolbarCoordinator.shouldHideToolbarContainer(getHeight());
-            mControlContainer.setToolbarContainerVisibility(
-                    shouldHideToolbarContainer ? View.INVISIBLE : View.VISIBLE);
+            boolean shouldHideToolbarLayout =
+                    mStartSurfaceToolbarCoordinator.shouldHideToolbarLayout(getHeight());
+            mToolbarLayout.setVisibility(shouldHideToolbarLayout ? View.INVISIBLE : View.VISIBLE);
         }
     }
 

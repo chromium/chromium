@@ -159,10 +159,10 @@ class StartSurfaceToolbarMediator {
         updateTranslationY(verticalOffset);
     }
 
-    boolean shouldHideToolbarContainer(int toolbarHeight) {
+    boolean shouldHideToolbarLayout(int toolbarHeight) {
         // If it's on the non-incognito homepage, start surface toolbar is visible (omnibox has no
         // focus), and scrolling offset is smaller than toolbar's height, we need to hide toolbar
-        // container until start surface toolbar is disappearing.
+        // layout until start surface toolbar is disappearing.
         return mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
                 && !mPropertyModel.get(IS_INCOGNITO) && mPropertyModel.get(IS_VISIBLE)
                 && -mPropertyModel.get(TRANSLATION_Y) != 0
