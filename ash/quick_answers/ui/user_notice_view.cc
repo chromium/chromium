@@ -60,6 +60,11 @@ constexpr gfx::Insets kButtonBarInsets = {8, 0, 0, 0};
 constexpr gfx::Insets kButtonInsets = {6, 16, 6, 16};
 constexpr int kButtonFontSizeDelta = 1;
 
+// Compact buttons layout.
+constexpr int kCompactButtonLayoutThreshold = 200;
+constexpr gfx::Insets kCompactButtonInsets = {6, 12, 6, 12};
+constexpr int kCompactButtonFontSizeDelta = 0;
+
 // Manage-Settings button.
 constexpr SkColor kSettingsButtonTextColor = gfx::kGoogleBlue600;
 
@@ -70,6 +75,15 @@ constexpr SkColor kAcceptButtonTextColor = gfx::kGoogleGrey200;
 constexpr int kDogfoodButtonMarginDip = 4;
 constexpr int kDogfoodButtonSizeDip = 20;
 constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
+
+int GetActualLabelWidth(int anchor_view_width) {
+  return anchor_view_width - kMainViewInsets.width() - kContentInsets.width() -
+         kAssistantIconSizeDip;
+}
+
+bool ShouldUseCompactButtonLayout(int anchor_view_width) {
+  return GetActualLabelWidth(anchor_view_width) < kCompactButtonLayoutThreshold;
+}
 
 // Create and return a simple label with provided specs.
 std::unique_ptr<views::Label> CreateLabel(const base::string16& text,
@@ -91,14 +105,17 @@ class CustomizedLabelButton : public views::MdTextButton {
  public:
   CustomizedLabelButton(PressedCallback callback,
                         const base::string16& text,
-                        const SkColor color)
+                        const SkColor color,
+                        bool is_compact)
       : MdTextButton(std::move(callback), text) {
-    SetCustomPadding(kButtonInsets);
+    SetCustomPadding(is_compact ? kCompactButtonInsets : kButtonInsets);
     SetEnabledTextColors(color);
     label()->SetLineHeight(kLineHeightDip);
-    label()->SetFontList(views::Label::GetDefaultFontList()
-                             .DeriveWithSizeDelta(kButtonFontSizeDelta)
-                             .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+    label()->SetFontList(
+        views::Label::GetDefaultFontList()
+            .DeriveWithSizeDelta(is_compact ? kCompactButtonFontSizeDelta
+                                            : kButtonFontSizeDelta)
+            .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   }
 
   // Disallow copy and assign.
@@ -261,9 +278,7 @@ void UserNoticeView::InitContent() {
   // (and height) it would need to be for the UserNoticeView to be the
   // same width as the anchor, so its preferred size will be calculated
   // correctly.
-  int desc_desired_width = anchor_view_bounds_.width() -
-                           kMainViewInsets.width() - kContentInsets.width() -
-                           kAssistantIconSizeDip;
+  int desc_desired_width = GetActualLabelWidth(anchor_view_bounds_.width());
   desc->SizeToFit(desc_desired_width);
 
   // Button bar.
@@ -286,7 +301,8 @@ void UserNoticeView::InitButtonBar() {
           base::Unretained(ui_controller_)),
       l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_MANAGE_SETTINGS_BUTTON),
-      kSettingsButtonTextColor);
+      kSettingsButtonTextColor,
+      ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
   settings_button->GetViewAccessibility().OverrideDescription(
       l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_SETTINGS_BUTTON_DESC_TEXT));
@@ -304,7 +320,8 @@ void UserNoticeView::InitButtonBar() {
           event_handler_.get(), ui_controller_),
       l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_ACCEPT_BUTTON),
-      kAcceptButtonTextColor);
+      kAcceptButtonTextColor,
+      ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
   accept_button->SetProminent(true);
   accept_button->GetViewAccessibility().OverrideDescription(
       l10n_util::GetStringUTF16(
