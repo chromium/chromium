@@ -55,6 +55,9 @@ bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
     return false;
 
   auto* connection = x11::Connection::Get();
+  // Synchronize the Xlib display to ensure ANGLE's CreateWindow request
+  // completes before we make our QueryTree request below.
+  connection->GetXlibDisplay(x11::XlibDisplayType::kSyncing);
   // Query all child windows and store them. ANGLE creates a child window when
   // eglCreateWindowSurface is called on X11 and expose events from this window
   // need to be received by this class.  Since ANGLE is using a separate
