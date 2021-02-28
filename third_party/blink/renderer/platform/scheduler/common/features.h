@@ -311,7 +311,7 @@ const base::Feature kMbiOverrideTaskRunnerHandle{
 // of per-MainThreadScheduler CompositorTaskRunner.
 const base::Feature kMbiCompositorTaskRunnerPerAgentSchedulingGroup{
     "MbiCompositorTaskRunnerPerAgentSchedulingGroup",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kThrottleVisibleNotFocusedTimers{
     "ThrottleVisibleNotFocusedTimers", base::FEATURE_DISABLED_BY_DEFAULT};
