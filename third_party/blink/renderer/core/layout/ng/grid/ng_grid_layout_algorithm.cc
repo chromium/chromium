@@ -592,10 +592,12 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       break;
   }
 
+  const auto margins =
+      ComputeMarginsFor(space, node.Style(), ConstraintSpace());
+
   DCHECK_NE(contribution, kIndefiniteSize);
-  return contribution + ((track_direction == kForColumns)
-                             ? grid_item.margins.InlineSum()
-                             : grid_item.margins.BlockSum());
+  return contribution + ((track_direction == kForColumns) ? margins.InlineSum()
+                                                          : margins.BlockSum());
 }
 
 void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
@@ -849,12 +851,6 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
       item_style.ResolvedAlignSelf(normal_behaviour, &container_style)
           .GetPosition(),
       /* is_inline_axis */ false, &grid_item.is_block_axis_stretched);
-
-  // TODO(ikilpatrick): This is likely incorrect for margins in the
-  // ComputeMinMaxSizes phase.
-  grid_item.margins =
-      ComputePhysicalMargins(item_style, ChildAvailableSize().inline_size)
-          .ConvertToLogical(ConstraintSpace().GetWritingDirection());
 
   grid_item.item_type = node.IsOutOfFlowPositioned() ? ItemType::kOutOfFlow
                                                      : ItemType::kInGridFlow;
@@ -2116,20 +2112,22 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
 
+    const auto margins =
+        ComputeMarginsFor(space, grid_item.node.Style(), ConstraintSpace());
+
     // Apply the grid-item's alignment (if any).
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            physical_fragment);
     containing_grid_area.offset += LogicalOffset(
         AlignmentOffset(containing_grid_area.size.inline_size,
-                        fragment.InlineSize(), grid_item.margins.inline_start,
-                        grid_item.margins.inline_end,
-                        grid_item.inline_axis_alignment),
+                        fragment.InlineSize(), margins.inline_start,
+                        margins.inline_end, grid_item.inline_axis_alignment),
         AlignmentOffset(containing_grid_area.size.block_size,
-                        fragment.BlockSize(), grid_item.margins.block_start,
-                        grid_item.margins.block_end,
-                        grid_item.block_axis_alignment));
+                        fragment.BlockSize(), margins.block_start,
+                        margins.block_end, grid_item.block_axis_alignment));
 
     container_builder_.AddChild(physical_fragment, containing_grid_area.offset);
+    NGBlockNode(grid_item.node).StoreMargins(ConstraintSpace(), margins);
 
     // Compares GridArea objects in row-major grid order for baseline
     // precedence. Returns 'true' if |a| < |b| and 'false' otherwise.

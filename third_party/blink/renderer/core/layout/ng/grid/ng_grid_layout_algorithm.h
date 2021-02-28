@@ -77,8 +77,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     const NGBlockNode node;
     GridArea resolved_position;
 
-    NGBoxStrut margins;
-
     AxisEdge inline_axis_alignment;
     AxisEdge block_axis_alignment;
 
