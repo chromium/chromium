@@ -84,7 +84,7 @@ public class DownloadNotificationServiceTest {
     private static DownloadSharedPreferenceEntry buildEntryStringWithGuid(ContentId contentId,
             int notificationId, String fileName, boolean metered, boolean autoResume) {
         return new DownloadSharedPreferenceEntry(
-                contentId, notificationId, false, metered, fileName, autoResume, false);
+                contentId, notificationId, null, metered, fileName, autoResume, false);
     }
 
     @Before

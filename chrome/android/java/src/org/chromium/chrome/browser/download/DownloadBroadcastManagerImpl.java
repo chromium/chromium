@@ -137,8 +137,8 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         switch (action) {
             case ACTION_DOWNLOAD_PAUSE:
                 mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName, true,
-                        false, entry.isOffTheRecord, entry.isTransient, null, null, false, true,
-                        false, PendingState.NOT_PENDING);
+                        false, OTRProfileID.isOffTheRecord(entry.otrProfileID), entry.isTransient,
+                        null, null, false, true, false, PendingState.NOT_PENDING);
                 break;
 
             case ACTION_DOWNLOAD_CANCEL:
@@ -154,12 +154,13 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 // Update the SharedPreference entry.
                 mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
                         new DownloadSharedPreferenceEntry(entry.id, entry.notificationId,
-                                entry.isOffTheRecord, canDownloadWhileMetered, entry.fileName, true,
+                                entry.otrProfileID, canDownloadWhileMetered, entry.fileName, true,
                                 entry.isTransient));
 
                 mDownloadNotificationService.notifyDownloadPending(entry.id, entry.fileName,
-                        entry.isOffTheRecord, entry.canDownloadWhileMetered, entry.isTransient,
-                        null, null, false, true, PendingState.PENDING_NETWORK);
+                        OTRProfileID.isOffTheRecord(entry.otrProfileID),
+                        entry.canDownloadWhileMetered, entry.isTransient, null, null, false, true,
+                        PendingState.PENDING_NETWORK);
                 break;
 
             default:
@@ -239,8 +240,9 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
         boolean isOffTheRecord = entry == null
                 ? IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false)
-                : entry.isOffTheRecord;
-        OTRProfileID otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
+                : OTRProfileID.isOffTheRecord(entry.otrProfileID);
+        OTRProfileID otrProfileID = entry == null ? DownloadUtils.getOTRProfileIDFromIntent(intent)
+                                                  : entry.otrProfileID;
         // TODO(crbug.com/1164379): Pass OTRProfileID from intent by adding
         //  |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
         if (isOffTheRecord && otrProfileID == null) {

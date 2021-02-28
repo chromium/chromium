@@ -231,6 +231,8 @@ public class DownloadNotificationService {
         int notificationId = getNotificationId(id);
         Context context = ContextUtils.getApplicationContext();
 
+        // TODO(crbug.com/1164379): Pass OTRProfileID for non primary otr profiles as well.
+        OTRProfileID otrProfileID = isOffTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
         DownloadUpdate downloadUpdate = new DownloadUpdate.Builder()
                                                 .setContentId(id)
                                                 .setFileName(fileName)
@@ -238,6 +240,7 @@ public class DownloadNotificationService {
                                                 .setTimeRemainingInMillis(timeRemainingInMillis)
                                                 .setStartTime(startTime)
                                                 .setIsOffTheRecord(isOffTheRecord)
+                                                .setOTRProfileID(otrProfileID)
                                                 .setIsTransient(isTransient)
                                                 .setIcon(icon)
                                                 .setOriginalUrl(originalUrl)
@@ -248,7 +251,7 @@ public class DownloadNotificationService {
         Notification notification = DownloadNotificationFactory.buildNotification(
                 context, DownloadStatus.IN_PROGRESS, downloadUpdate, notificationId);
         updateNotification(notificationId, notification, id,
-                new DownloadSharedPreferenceEntry(id, notificationId, isOffTheRecord,
+                new DownloadSharedPreferenceEntry(id, notificationId, otrProfileID,
                         canDownloadWhileMetered, fileName, true, isTransient));
         // If the notification is allowed to start foreground service, or if the app is already
         // foreground, ask the foreground service manager to handle the notification.
@@ -338,10 +341,13 @@ public class DownloadNotificationService {
         int notificationId = entry == null ? getNotificationId(id) : entry.notificationId;
         Context context = ContextUtils.getApplicationContext();
 
+        // TODO(crbug.com/1164379): Pass OTRProfileID for non primary otr profiles as well.
+        OTRProfileID otrProfileID = isOffTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
         DownloadUpdate downloadUpdate = new DownloadUpdate.Builder()
                                                 .setContentId(id)
                                                 .setFileName(fileName)
                                                 .setIsOffTheRecord(isOffTheRecord)
+                                                .setOTRProfileID(otrProfileID)
                                                 .setIsTransient(isTransient)
                                                 .setIcon(icon)
                                                 .setOriginalUrl(originalUrl)
@@ -352,7 +358,7 @@ public class DownloadNotificationService {
         Notification notification = DownloadNotificationFactory.buildNotification(
                 context, DownloadStatus.PAUSED, downloadUpdate, notificationId);
         updateNotification(notificationId, notification, id,
-                new DownloadSharedPreferenceEntry(id, notificationId, isOffTheRecord,
+                new DownloadSharedPreferenceEntry(id, notificationId, otrProfileID,
                         canDownloadWhileMetered, fileName, isAutoResumable, isTransient));
 
         mDownloadForegroundServiceManager.updateDownloadStatus(
@@ -392,12 +398,15 @@ public class DownloadNotificationService {
         }
         if (needsDefaultIcon) icon = mDownloadSuccessLargeIcon;
 
+        // TODO(crbug.com/1164379): Pass OTRProfileID for non primary otr profiles as well.
+        OTRProfileID otrProfileID = isOffTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
         DownloadUpdate downloadUpdate = new DownloadUpdate.Builder()
                                                 .setContentId(id)
                                                 .setFileName(fileName)
                                                 .setFilePath(filePath)
                                                 .setSystemDownload(systemDownloadId)
                                                 .setIsOffTheRecord(isOffTheRecord)
+                                                .setOTRProfileID(otrProfileID)
                                                 .setIsSupportedMimeType(isSupportedMimeType)
                                                 .setIsOpenable(isOpenable)
                                                 .setIcon(icon)
@@ -442,11 +451,14 @@ public class DownloadNotificationService {
         int notificationId = getNotificationId(id);
         Context context = ContextUtils.getApplicationContext();
 
+        // TODO(crbug.com/1164379): Pass OTRProfileID for non primary otr profiles as well.
+        OTRProfileID otrProfileID = isOffTheRecord ? OTRProfileID.getPrimaryOTRProfileID() : null;
         DownloadUpdate downloadUpdate = new DownloadUpdate.Builder()
                                                 .setContentId(id)
                                                 .setFileName(fileName)
                                                 .setIcon(icon)
                                                 .setIsOffTheRecord(isOffTheRecord)
+                                                .setOTRProfileID(otrProfileID)
                                                 .setOriginalUrl(originalUrl)
                                                 .setShouldPromoteOrigin(shouldPromoteOrigin)
                                                 .setFailState(failState)
@@ -549,9 +561,9 @@ public class DownloadNotificationService {
             DownloadSharedPreferenceEntry entry = entries.get(i);
             if (!canResumeDownload(ContextUtils.getApplicationContext(), entry)) continue;
             if (mDownloadsInProgress.contains(entry.id)) continue;
-            notifyDownloadPending(entry.id, entry.fileName, entry.isOffTheRecord,
-                    entry.canDownloadWhileMetered, entry.isTransient, null, null, false, false,
-                    PendingState.PENDING_NETWORK);
+            notifyDownloadPending(entry.id, entry.fileName,
+                    OTRProfileID.isOffTheRecord(entry.otrProfileID), entry.canDownloadWhileMetered,
+                    entry.isTransient, null, null, false, false, PendingState.PENDING_NETWORK);
 
             Intent intent = new Intent();
             intent.setAction(ACTION_DOWNLOAD_RESUME);
@@ -606,7 +618,7 @@ public class DownloadNotificationService {
         for (DownloadSharedPreferenceEntry entry : entries) {
             if (entry.notificationId == oldNotificationId) {
                 DownloadSharedPreferenceEntry newEntry = new DownloadSharedPreferenceEntry(entry.id,
-                        newNotificationId, entry.isOffTheRecord, entry.canDownloadWhileMetered,
+                        newNotificationId, entry.otrProfileID, entry.canDownloadWhileMetered,
                         entry.fileName, entry.isAutoResumable, entry.isTransient);
                 downloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
                         newEntry, true /* forceCommit */);
@@ -679,14 +691,15 @@ public class DownloadNotificationService {
                 // Get new notification id that is not associated with the service.
                 DownloadSharedPreferenceEntry updatedEntry =
                         new DownloadSharedPreferenceEntry(entry.id, getNextNotificationId(),
-                                entry.isOffTheRecord, entry.canDownloadWhileMetered, entry.fileName,
+                                entry.otrProfileID, entry.canDownloadWhileMetered, entry.fileName,
                                 entry.isAutoResumable, entry.isTransient);
                 mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(updatedEntry);
 
                 // Right now this only happens in the paused case, so re-build and re-launch the
                 // paused notification, with the updated notification id..
                 notifyDownloadPaused(updatedEntry.id, updatedEntry.fileName, true /* isResumable */,
-                        updatedEntry.isAutoResumable, updatedEntry.isOffTheRecord,
+                        updatedEntry.isAutoResumable,
+                        OTRProfileID.isOffTheRecord(updatedEntry.otrProfileID),
                         updatedEntry.isTransient, null /* icon */, null /* originalUrl */,
                         false /* shouldPromoteOrigin */, true /* hasUserGesture */,
                         true /* forceRebuild */, PendingState.NOT_PENDING);
@@ -699,7 +712,7 @@ public class DownloadNotificationService {
         cancelOffTheRecordDownloads();
         List<DownloadSharedPreferenceEntry> entries = mDownloadSharedPreferenceHelper.getEntries();
         for (DownloadSharedPreferenceEntry entry : entries) {
-            if (entry.isOffTheRecord) continue;
+            if (OTRProfileID.isOffTheRecord(entry.otrProfileID)) continue;
             // Move all regular downloads to pending.  Don't propagate the pause because
             // if native is still working and it triggers an update, then the service will be
             // restarted.
@@ -716,7 +729,7 @@ public class DownloadNotificationService {
         List<DownloadSharedPreferenceEntry> copies =
                 new ArrayList<DownloadSharedPreferenceEntry>(entries);
         for (DownloadSharedPreferenceEntry entry : copies) {
-            if (!entry.isOffTheRecord) continue;
+            if (!OTRProfileID.isOffTheRecord(entry.otrProfileID)) continue;
             ContentId id = entry.id;
             notifyDownloadCanceled(id, false);
             if (cancelActualDownload) {

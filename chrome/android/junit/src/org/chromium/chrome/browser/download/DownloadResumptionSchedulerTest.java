@@ -242,7 +242,7 @@ public class DownloadResumptionSchedulerTest {
             boolean isAutoResumable, boolean meteredOk) {
         return new DownloadSharedPreferenceEntry(
                 new ContentId("test", UUID.randomUUID().toString()), 1 /* notificationId */,
-                false /* offTheRecord */, meteredOk, "fileName", isAutoResumable,
+                null /* otrProfileID */, meteredOk, "fileName", isAutoResumable,
                 false /* isTransient */);
     }
 }
