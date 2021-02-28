@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chromeos/components/eche_app_ui/url_constants.h"
+#include "chromeos/grit/chromeos_eche_app_resources.h"
 #include "chromeos/grit/chromeos_eche_bundle_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -28,6 +29,8 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_JS);
   html_source->AddResourcePath("assets/app_bundle.css",
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
+  html_source->AddResourcePath("browser_proxy.js",
+                               IDR_CHROMEOS_ECHE_APP_BROWSER_PROXY_JS);
 
   // DisableTrustedTypesCSP to support TrustedTypePolicy named 'goog#html'.
   // It is the Closure templating system that renders our UI, as it does many
