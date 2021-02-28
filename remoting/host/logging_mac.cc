@@ -88,8 +88,6 @@ bool LogMessageToAsl(
 }  // namespace
 
 void InitHostLogging() {
-  InitHostLoggingCommon();
-
   // Write logs to the system debug log.
   logging::LoggingSettings settings;
   settings.logging_dest =
