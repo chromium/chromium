@@ -38,7 +38,7 @@ class AppsGridViewTestApi {
 
   bool HasPendingPageFlip() const;
 
-  int TilesPerPage(int page) const;
+  int TilesPerPage() const;
 
   int AppsOnPage(int page) const;
 

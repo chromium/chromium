@@ -1331,11 +1331,11 @@ void AppsGridView::Update() {
     RecordPageMetrics();
 }
 
-int AppsGridView::TilesPerPage(int page) const {
+int AppsGridView::TilesPerPage() const {
   if (folder_delegate_)
     return GetAppListConfig().max_folder_items_per_page();
 
-  return GetAppListConfig().GetMaxNumOfItemsPerPage(page);
+  return GetAppListConfig().GetMaxNumOfItemsPerPage();
 }
 
 void AppsGridView::UpdatePaging() {
@@ -1344,27 +1344,18 @@ void AppsGridView::UpdatePaging() {
     return;
   }
 
-  if (!view_model_.view_size() || !TilesPerPage(0)) {
-    pagination_model_.SetTotalPages(0);
-    return;
-  }
-
-  int total_pages = 0;
-  if (view_model_.view_size() <= TilesPerPage(0)) {
-    total_pages = 1;
-  } else {
-    total_pages =
-        (view_model_.view_size() - TilesPerPage(0) - 1) / TilesPerPage(1) + 2;
-  }
-
+  const int tiles = view_model_.view_size();
+  const int tiles_per_page = TilesPerPage();
+  const int total_pages =
+      tiles / tiles_per_page + (tiles % tiles_per_page ? 1 : 0);
   pagination_model_.SetTotalPages(total_pages);
 }
 
 void AppsGridView::UpdatePulsingBlockViews() {
   const int existing_items = item_list_ ? item_list_->item_count() : 0;
-  int current_page = pagination_model_.selected_page();
+  const int tiles_per_page = TilesPerPage();
   const int available_slots =
-      TilesPerPage(current_page) - existing_items % TilesPerPage(current_page);
+      tiles_per_page - (existing_items % tiles_per_page);
   const int desired = model_->status() == AppListModelStatus::kStatusSyncing
                           ? available_slots
                           : 0;
@@ -2853,8 +2844,7 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
   if (!IsValidIndex(start_index))
     return;
   int start = GetModelIndexFromIndex(start_index);
-  int end =
-      std::min(view_model_.view_size(), start + TilesPerPage(start_index.page));
+  int end = std::min(view_model_.view_size(), start + TilesPerPage());
   for (int i = start; i < end; ++i)
     GetItemViewAt(i)->CancelContextMenu();
 }
@@ -3356,24 +3346,15 @@ GridIndex AppsGridView::GetIndexFromModelIndex(int model_index) const {
   if (!folder_delegate_)
     return view_structure_.GetIndexFromModelIndex(model_index);
 
-  const int tiles_in_page0 = TilesPerPage(0);
-  const int tiles_in_page1 = TilesPerPage(1);
-
-  if (model_index < tiles_in_page0)
-    return GridIndex(0, model_index);
-
-  return GridIndex(1 + (model_index - tiles_in_page0) / tiles_in_page1,
-                   (model_index - tiles_in_page0) % tiles_in_page1);
+  const int tiles_per_page = TilesPerPage();
+  return GridIndex(model_index / tiles_per_page, model_index % tiles_per_page);
 }
 
 int AppsGridView::GetModelIndexFromIndex(const GridIndex& index) const {
   if (!folder_delegate_)
     return view_structure_.GetModelIndexFromIndex(index);
 
-  if (index.page == 0)
-    return index.slot;
-
-  return TilesPerPage(0) + (index.page - 1) * TilesPerPage(1) + index.slot;
+  return index.page * TilesPerPage() + index.slot;
 }
 
 GridIndex AppsGridView::GetLastTargetIndex() const {
@@ -3392,7 +3373,7 @@ GridIndex AppsGridView::GetLastTargetIndexOfPage(int page) const {
   if (page == pagination_model_.total_pages() - 1)
     return GetLastTargetIndex();
 
-  return GridIndex(page, TilesPerPage(page) - 1);
+  return GridIndex(page, TilesPerPage() - 1);
 }
 
 int AppsGridView::GetTargetModelIndexForMove(AppListItemView* moved_view,
@@ -3593,7 +3574,7 @@ size_t AppsGridView::GetTargetItemIndexForMove(AppListItemView* moved_view,
 
 bool AppsGridView::IsValidIndex(const GridIndex& index) const {
   return index.page >= 0 && index.page < pagination_model_.total_pages() &&
-         index.slot >= 0 && index.slot < TilesPerPage(index.page) &&
+         index.slot >= 0 && index.slot < TilesPerPage() &&
          GetModelIndexFromIndex(index) < view_model_.view_size();
 }
 
@@ -3659,7 +3640,7 @@ void AppsGridView::CalculateIdealBounds() {
   // All pulsing blocks come after item views.
   GridIndex pulsing_block_index = copied_view_structure.GetLastTargetIndex();
   for (int i = 0; i < pulsing_blocks_model_.view_size(); ++i) {
-    if (pulsing_block_index.slot == TilesPerPage(pulsing_block_index.page)) {
+    if (pulsing_block_index.slot == TilesPerPage()) {
       ++pulsing_block_index.page;
       pulsing_block_index.slot = 0;
     }
@@ -3702,17 +3683,14 @@ void AppsGridView::RecordPageMetrics() {
   if (!folder_delegate_) {
     const auto& pages = view_structure_.pages();
     for (size_t i = 0; i < pages.size(); ++i) {
-      if (static_cast<int>(pages[i].size()) < TilesPerPage(i))
+      if (static_cast<int>(pages[i].size()) < TilesPerPage())
         ++page_count;
     }
   } else {
     int item_num = view_model_.view_size();
-    for (int i = 0; item_num > 0; ++i) {
-      item_num -= TilesPerPage(i);
-    }
-
-    // Only last page allows gaps if it is not full for folder.
-    if (item_num != 0)
+    // Folders don't allow page breaks, so if the last page isn't full, there
+    // are empty slots.
+    if (item_num % TilesPerPage() > 0)
       page_count = 1;
   }
   UMA_HISTOGRAM_COUNTS_100(kNumberOfPagesNotFullHistogram, page_count);
@@ -3750,10 +3728,10 @@ int AppsGridView::GetItemsNumOfPage(int page) const {
     return view_structure_.items_on_page(page);
 
   if (page < pagination_model_.total_pages() - 1)
-    return TilesPerPage(page);
+    return TilesPerPage();
 
   return item_list_->item_count() -
-         (pagination_model_.total_pages() - 1) * TilesPerPage(0);
+         (pagination_model_.total_pages() - 1) * TilesPerPage();
 }
 
 void AppsGridView::StartFolderDroppingAnimation(

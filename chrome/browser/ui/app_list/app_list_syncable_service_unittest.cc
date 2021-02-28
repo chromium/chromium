@@ -1254,7 +1254,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
 
   // Populate the first page with items and leave 1 empty slot at the end.
   const int max_items_in_first_page =
-      ash::AppListConfig::instance().GetMaxNumOfItemsPerPage(0);
+      ash::AppListConfig::instance().GetMaxNumOfItemsPerPage();
   syncer::StringOrdinal last_app_position =
       syncer::StringOrdinal::CreateInitialOrdinal();
   for (int i = 0; i < max_items_in_first_page - 1; ++i) {
@@ -1302,7 +1302,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePositionNotExist) {
 
   // Populate the first page with items and leave 1 empty slot at the end.
   const int max_items_in_first_page =
-      ash::AppListConfig::instance().GetMaxNumOfItemsPerPage(0);
+      ash::AppListConfig::instance().GetMaxNumOfItemsPerPage();
   syncer::StringOrdinal last_app_position =
       syncer::StringOrdinal::CreateInitialOrdinal();
   for (int i = 0; i < max_items_in_first_page - 1; ++i) {

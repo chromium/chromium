@@ -303,7 +303,7 @@ class AppsGridViewTest : public views::ViewsTestBase,
     return test_api_->GetItemTileRectOnCurrentPageAt(row, col);
   }
 
-  int GetTilesPerPage(int page) const { return test_api_->TilesPerPage(page); }
+  int GetTilesPerPage() const { return test_api_->TilesPerPage(); }
 
   ash::PaginationModel* GetPaginationModel() const {
     return apps_grid_view_->pagination_model();
@@ -462,9 +462,9 @@ TEST_P(AppsGridViewTest, CreatePage) {
   // For new style launcher, each page has the same number of rows.
   const int kExpectedTilesOnFirstPage =
       apps_grid_view_->cols() * (apps_grid_view_->rows_per_page());
-  EXPECT_EQ(kExpectedTilesOnFirstPage, GetTilesPerPage(kPages - 1));
+  EXPECT_EQ(kExpectedTilesOnFirstPage, GetTilesPerPage());
 
-  model_->PopulateApps(kPages * GetTilesPerPage(kPages - 1));
+  model_->PopulateApps(kPages * GetTilesPerPage());
   EXPECT_EQ(kPages, GetPaginationModel()->total_pages());
 
   // Adds one more and gets a new page created.
@@ -602,7 +602,7 @@ TEST_F(AppsGridViewTest, ItemLabelNoShortName) {
 TEST_P(AppsGridViewTest, ScrollSequenceHandledByAppListView) {
   base::HistogramTester histogram_tester;
 
-  model_->PopulateApps(GetTilesPerPage(0) + 1);
+  model_->PopulateApps(GetTilesPerPage() + 1);
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -654,7 +654,7 @@ TEST_F(AppsGridViewTest,
        OnGestureEventScrollSequenceHandleByPaginationController) {
   base::HistogramTester histogram_tester;
 
-  model_->PopulateApps(GetTilesPerPage(0) + 1);
+  model_->PopulateApps(GetTilesPerPage() + 1);
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -1340,7 +1340,7 @@ TEST_P(AppsGridViewTest, MouseDragWithCancelDeleteAddItem) {
 
 // Test that control+arrow swaps app within the same page.
 TEST_F(AppsGridViewTest, ControlArrowSwapsAppsWithinSamePage) {
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
 
   AppListItemView* moving_item = GetItemViewInTopLevelGrid(0);
   apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
@@ -1395,7 +1395,7 @@ TEST_F(AppsGridViewTest, ControlArrowSwapsAppsWithinSamePage) {
 // Tests that histograms are recorded when apps are moved with control+arrow.
 TEST_F(AppsGridViewTest, ControlArrowRecordsHistogramBasic) {
   base::HistogramTester histogram_tester;
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
 
   AppListItemView* moving_item = GetItemViewInTopLevelGrid(0);
   apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
@@ -1428,7 +1428,7 @@ TEST_F(AppsGridViewTest, ControlArrowRecordsHistogramBasic) {
 // Test that histograms do not record when the keyboard move is a no-op.
 TEST_F(AppsGridViewTest, ControlArrowDoesNotRecordHistogramWithNoOpMove) {
   base::HistogramTester histogram_tester;
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
 
   AppListItemView* moving_item = GetItemViewInTopLevelGrid(0);
   apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
@@ -1450,7 +1450,7 @@ TEST_F(AppsGridViewTest, ControlArrowDoesNotRecordHistogramWithNoOpMove) {
 // Tests that histograms only record once for a long move sequence.
 TEST_F(AppsGridViewTest, ControlArrowRecordsHistogramOnceWithOneMoveSequence) {
   base::HistogramTester histogram_tester;
-  model_->PopulateApps(GetTilesPerPage(1) * 2);
+  model_->PopulateApps(GetTilesPerPage() * 2);
 
   AppListItemView* moving_item = GetItemViewInTopLevelGrid(0);
   apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
@@ -1492,7 +1492,7 @@ TEST_F(AppsGridViewTest, ControlArrowDownToGapOnSamePage) {
 // at the destination slot moving to the source slot (ie. a swap).
 TEST_F(AppsGridViewTest, ControlArrowSwapsBetweenFullPages) {
   const int kPages = 3;
-  model_->PopulateApps(kPages * GetTilesPerPage(0));
+  model_->PopulateApps(kPages * GetTilesPerPage());
   // For every item in the first row, ensure an upward move results in the item
   // swapping places with the item directly above it.
   for (int i = 0; i < apps_grid_view_->cols(); ++i) {
@@ -1575,7 +1575,7 @@ TEST_F(AppsGridViewTest, ControlArrowSwapsBetweenFullPages) {
 // Test that a page can be created while moving apps with the control+arrow.
 TEST_F(AppsGridViewTest, ControlArrowDownAndRightCreatesNewPage) {
   base::HistogramTester histogram_tester;
-  const int kTilesPerPageStart = GetTilesPerPage(0);
+  const int kTilesPerPageStart = GetTilesPerPage();
   model_->PopulateApps(kTilesPerPageStart);
 
   // Focus the last item on the page.
@@ -1619,9 +1619,9 @@ TEST_F(AppsGridViewTest, ControlArrowDownAndRightCreatesNewPage) {
 TEST_F(AppsGridViewTest, ControlArrowUpOrLeftRemovesPage) {
   base::HistogramTester histogram_tester;
   // Move an app so it is by itself on page 1.
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
   AppListItemView* moving_item =
-      GetItemViewInTopLevelGrid(GetTilesPerPage(0) - 1);
+      GetItemViewInTopLevelGrid(GetTilesPerPage() - 1);
   apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
   SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
   histogram_tester.ExpectBucketCount("Apps.AppListPageSwitcherSource", 7, 1);
@@ -1654,9 +1654,9 @@ TEST_F(AppsGridViewTest, ControlArrowUpOrLeftRemovesPage) {
 TEST_F(AppsGridViewTest, ControlArrowDownOnLastAppOnLastPage) {
   base::HistogramTester histogram_tester;
   // Move an app so it is by itself on page 1.
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
   AppListItemView* moving_item =
-      GetItemViewInTopLevelGrid(GetTilesPerPage(0) - 1);
+      GetItemViewInTopLevelGrid(GetTilesPerPage() - 1);
   apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
   SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
   SimulateKeyReleased(ui::VKEY_DOWN, ui::EF_NONE);
@@ -1690,9 +1690,9 @@ TEST_F(AppsGridViewTest, ControlArrowDownOnLastAppOnLastPage) {
 // page below results in the page deletion.
 TEST_F(AppsGridViewTest, ControlArrowDownOrRightRemovesPage) {
   // Move an app so it is by itself on page 1, with another app on page 2.
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
   AppListItemView* moving_item =
-      GetItemViewInTopLevelGrid(GetTilesPerPage(0) - 1);
+      GetItemViewInTopLevelGrid(GetTilesPerPage() - 1);
   apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
   SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
   SimulateKeyPress(ui::VKEY_UP);
@@ -1731,7 +1731,7 @@ TEST_F(AppsGridViewTest, ControlArrowDownOrRightRemovesPage) {
 // creates a folder if one does not exist.
 TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
   base::HistogramTester histogram_tester;
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
   // Select the first item in the grid, folder it with the item to the right.
   AppListItemView* first_item = GetItemViewInTopLevelGrid(0);
   const std::string first_item_id = first_item->item()->id();
@@ -1796,7 +1796,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFoldersItemBasic) {
 
 // Tests that foldering an item that is on a different page fails.
 TEST_F(AppsGridViewTest, ControlShiftArrowFailsToFolderAcrossPages) {
-  model_->PopulateApps(2 * GetTilesPerPage(0));
+  model_->PopulateApps(2 * GetTilesPerPage());
 
   // For every item on the last row of the first page, test that foldering to
   // the next page fails.
@@ -1888,9 +1888,8 @@ TEST_P(AppsGridViewTest, DISABLED_MouseDragFlipPage) {
 
   PageFlipWaiter page_flip_waiter(GetPaginationModel());
 
-  const int kPages = 3;
-  model_->PopulateApps(GetTilesPerPage(0) + (kPages - 1) * GetTilesPerPage(1));
-  EXPECT_EQ(kPages, GetPaginationModel()->total_pages());
+  model_->PopulateApps(3 * GetTilesPerPage());
+  EXPECT_EQ(3, GetPaginationModel()->total_pages());
   EXPECT_EQ(0, GetPaginationModel()->selected_page());
 
   gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
@@ -1991,7 +1990,7 @@ class AppsGridViewTabletTest : public AppsGridViewTest {
 TEST_P(AppsGridViewTabletTest, Basic) {
   base::HistogramTester histogram_tester;
 
-  model_->PopulateApps(GetTilesPerPage(0) + 1);
+  model_->PopulateApps(GetTilesPerPage() + 1);
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -2042,7 +2041,7 @@ TEST_P(AppsGridViewTabletTest, Basic) {
 TEST_F(AppsGridViewTabletTest, EnsureBlurAfterScrollingWithoutTransition) {
   // Create a folder with 2 apps. Then add apps until a second page is created.
   model_->CreateAndPopulateFolderWithApps(2);
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -2331,7 +2330,7 @@ TEST_P(AppsGridGapTest, MoveLastItemToNewEmptyPage) {
 }
 
 TEST_P(AppsGridGapTest, MoveItemToPreviousFullPage) {
-  const int kApps = 2 + GetTilesPerPage(0);
+  const int kApps = 2 + GetTilesPerPage();
   model_->PopulateApps(kApps);
 
   // There are two pages and last item is on second page.
@@ -2342,9 +2341,10 @@ TEST_P(AppsGridGapTest, MoveItemToPreviousFullPage) {
       apps_grid_view_->view_model();
   EXPECT_EQ(kApps, view_model->view_size());
   for (int i = 0; i < kApps; ++i) {
-    EXPECT_EQ(view_model->view_at(i), test_api_->GetViewAtVisualIndex(
-                                          i / GetTilesPerPage(0) /* page */,
-                                          i % GetTilesPerPage(0) /* slot */));
+    int page = i / GetTilesPerPage();
+    int slot = i % GetTilesPerPage();
+    EXPECT_EQ(view_model->view_at(i),
+              test_api_->GetViewAtVisualIndex(page, slot));
     EXPECT_EQ("Item " + base::NumberToString(i),
               view_model->view_at(i)->item()->id());
   }
@@ -2370,9 +2370,10 @@ TEST_P(AppsGridGapTest, MoveItemToPreviousFullPage) {
   TestAppListItemViewIndice();
   EXPECT_EQ(kApps, view_model->view_size());
   for (int i = 0; i < kApps; ++i) {
-    EXPECT_EQ(view_model->view_at(i), test_api_->GetViewAtVisualIndex(
-                                          i / GetTilesPerPage(0) /* page */,
-                                          i % GetTilesPerPage(0) /* slot */));
+    int page = i / GetTilesPerPage();
+    int slot = i % GetTilesPerPage();
+    EXPECT_EQ(view_model->view_at(i),
+              test_api_->GetViewAtVisualIndex(page, slot));
     EXPECT_EQ("Item " + base::NumberToString((i + kApps - 1) % kApps),
               view_model->view_at(i)->item()->id());
   }
@@ -2381,7 +2382,7 @@ TEST_P(AppsGridGapTest, MoveItemToPreviousFullPage) {
   model_content = "Item " + base::NumberToString(kApps - 1);
   for (int i = 1; i < kApps; ++i) {
     model_content.append(",Item " + base::NumberToString(i - 1));
-    if (i == GetTilesPerPage(0) - 1)
+    if (i == GetTilesPerPage() - 1)
       model_content.append(",PageBreakItem");
   }
   EXPECT_EQ(model_content, model_->GetModelContent());
@@ -2397,9 +2398,10 @@ TEST_P(AppsGridGapTest, MoveItemToPreviousFullPage) {
   TestAppListItemViewIndice();
   EXPECT_EQ(kApps, view_model->view_size());
   for (int i = 0; i < kApps; ++i) {
-    EXPECT_EQ(view_model->view_at(i), test_api_->GetViewAtVisualIndex(
-                                          i / GetTilesPerPage(0) /* page */,
-                                          i % GetTilesPerPage(0) /* slot */));
+    int page = i / GetTilesPerPage();
+    int slot = i % GetTilesPerPage();
+    EXPECT_EQ(view_model->view_at(i),
+              test_api_->GetViewAtVisualIndex(page, slot));
     EXPECT_EQ("Item " + base::NumberToString((i + kApps - 2) % kApps),
               view_model->view_at(i)->item()->id());
   }
@@ -2409,7 +2411,7 @@ TEST_P(AppsGridGapTest, MoveItemToPreviousFullPage) {
                   base::NumberToString(kApps - 1);
   for (int i = 2; i < kApps; ++i) {
     model_content.append(",Item " + base::NumberToString(i - 2));
-    if (i == GetTilesPerPage(0) - 1)
+    if (i == GetTilesPerPage() - 1)
       model_content.append(",PageBreakItem");
   }
   EXPECT_EQ(model_content, model_->GetModelContent());
@@ -2460,7 +2462,7 @@ TEST_F(AppsGridViewTest, CreateANewPageByDraggingLogsMetrics) {
 
 TEST_F(AppsGridViewTest, CreateANewPageByAddingAppLogsMetrics) {
   base::HistogramTester histogram_tester;
-  model_->PopulateApps(GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage());
 
   // Add an item to simulate installing or syncing, the metric should be
   // recorded.

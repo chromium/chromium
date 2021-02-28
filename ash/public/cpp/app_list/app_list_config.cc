@@ -511,9 +511,7 @@ int AppListConfig::GetPreferredIconDimension(
   }
 }
 
-int AppListConfig::GetMaxNumOfItemsPerPage(int /* page */) const {
-  // In new style launcher, the first row of first page is no longger suggestion
-  // apps.
+int AppListConfig::GetMaxNumOfItemsPerPage() const {
   return preferred_cols_ * preferred_rows_;
 }
 

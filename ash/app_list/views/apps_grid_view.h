@@ -368,8 +368,9 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
     BETWEEN_ITEMS,
   };
 
-  // Returns all apps tiles per page based on |page|.
-  int TilesPerPage(int page) const;
+  // Returns the number of apps tiles per page. Folder grids may have different
+  // numbers of tiles from the main grid.
+  int TilesPerPage() const;
 
   // Updates from model.
   void Update();

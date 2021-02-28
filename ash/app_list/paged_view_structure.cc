@@ -38,8 +38,7 @@ void PagedViewStructure::LoadFromMetadata() {
     }
 
     // Create a new page if the current page is full.
-    const size_t current_page_max_items =
-        apps_grid_view_->TilesPerPage(pages_.size() - 1);
+    const size_t current_page_max_items = apps_grid_view_->TilesPerPage();
     if (pages_.back().size() == current_page_max_items)
       pages_.emplace_back();
 
@@ -183,7 +182,7 @@ GridIndex PagedViewStructure::GetLastTargetIndex() const {
 
   int last_page_index = total_pages() - 1;
   int target_slot = CalculateTargetSlot(pages_.back());
-  if (target_slot == apps_grid_view_->TilesPerPage(last_page_index)) {
+  if (target_slot == apps_grid_view_->TilesPerPage()) {
     // The last page is full, so the last target visual index is the first slot
     // in the next new page.
     target_slot = 0;
@@ -201,7 +200,7 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
     return GridIndex(page_index, 0);
 
   int target_slot = CalculateTargetSlot(pages_[page_index]);
-  if (target_slot == apps_grid_view_->TilesPerPage(page_index)) {
+  if (target_slot == apps_grid_view_->TilesPerPage()) {
     // The specified page is full, so the last target visual index is the last
     // slot in the page_index.
     --target_slot;
@@ -299,7 +298,7 @@ bool PagedViewStructure::IsFullPage(int page_index) const {
   if (page_index >= total_pages())
     return false;
   return static_cast<int>(pages_[page_index].size()) ==
-         apps_grid_view_->TilesPerPage(page_index);
+         apps_grid_view_->TilesPerPage();
 }
 
 int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
@@ -310,6 +309,7 @@ int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
 }
 
 bool PagedViewStructure::ClearOverflow() {
+  const size_t max_item_views = apps_grid_view_->TilesPerPage();
   bool changed = false;
   std::vector<AppListItemView*> overflow_views;
   auto iter = pages_.begin();
@@ -321,8 +321,6 @@ bool PagedViewStructure::ClearOverflow() {
       changed = true;
     }
 
-    const size_t max_item_views =
-        apps_grid_view_->TilesPerPage(static_cast<int>(iter - pages_.begin()));
     auto& page = *iter;
 
     if (!overflow_views.empty()) {

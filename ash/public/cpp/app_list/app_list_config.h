@@ -260,8 +260,8 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // Returns the dimension at which a result's icon should be displayed.
   int GetPreferredIconDimension(SearchResultDisplayType display_type) const;
 
-  // Returns the maximum number of items allowed in specified page in apps grid.
-  int GetMaxNumOfItemsPerPage(int page) const;
+  // Returns the maximum number of items allowed in a page in the apps grid.
+  int GetMaxNumOfItemsPerPage() const;
 
   // The minimal horizontal padding for the apps grid.
   int GetMinGridHorizontalPadding() const;
