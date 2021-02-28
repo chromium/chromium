@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> ਵੱਲੋਂ ਪਹਿਲਾਂ Chrome ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਸੀ</translation>
 <translation id="1097330777386562916">Chrome ਨੂੰ ਬੰਦ ਕਰਨ ਵੇਲੇ ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਵੀ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="110877069173485804">ਇਹ ਤੁਹਾਡਾ Chrome ਹੈ</translation>
+<translation id="1125124144982679672">Chrome ਕੌਣ ਵਰਤ ਰਿਹਾ ਹੈ?</translation>
 <translation id="1142745911746664600">Chrome ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1154147086299354128">&amp;Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="123620459398936149">Chrome OS ਤੁਹਾਡਾ ਡਾਟਾ ਸਿੰਕ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਸਿੰਕ ਪਾਸਫਰੇਜ਼ ਅੱਪਡੇਟ ਕਰੋ।</translation>
@@ -122,7 +123,6 @@
 <translation id="4050175100176540509">ਮਹੱਤਵਪੂਰਣ ਸੁਰੱਖਿਆ ਸੁਧਾਰ ਅਤੇ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨਵੇਂ ਰੂਪ ਵਿੱਚ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="4053720452172726777">Google Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਕੇ ਕੰਟਰੋਲ ਕਰੋ।</translation>
 <translation id="4110895483821904099">ਆਪਣੇ ਨਵੇਂ Chrome ਪ੍ਰੋਫਾਈਲ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
-<translation id="4143243756087420366">Chrome ਨਾਮ ਅਤੇ ਤਸਵੀਰ</translation>
 <translation id="4147555960264124640">ਤੁਸੀਂ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਇਸ ਪ੍ਰਬੰਧਕ ਨੂੰ ਆਪਣੀ Google Chrome ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਕੰਟਰੋਲ ਪ੍ਰਦਾਨ ਕਰ ਰਹੇ ਹੋ। ਤੁਹਾਡਾ Chrome ਡਾਟਾ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀਆਂ ਐਪਾਂ, ਬੁੱਕਮਾਰਕਾਂ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ <ph name="USER_NAME" /> ਨਾਲ ਸਥਾਈ ਤੌਰ 'ਤੇ ਜੋੜੀਆਂ ਜਾਣਗੀਆਂ। ਤੁਸੀਂ ਇਸ ਡਾਟਾ ਨੂੰ Google ਖਾਤੇ ਡੈਸ਼ਬੋਰਡ ਰਾਹੀਂ ਮਿਟਾ ਸਕੋਗੇ, ਪਰੰਤੂ ਤੁਸੀਂ ਇਸ ਡਾਟਾ ਨੂੰ ਦੂਜੇ ਖਾਤੇ ਨਾਲ ਨਹੀਂ ਜੋੜ ਸਕੋਗੇ। <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">ਸਥਾਪਨਾਕਾਰ ਪੁਰਾਲੇਖ ਦੇ ਨਪੀੜਨ ਨੂੰ ਵਾਪਸ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ Google Chrome ਨੂੰ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰੋ।</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome ਨੂੰ ਇੱਕ ਦਿਨ ਦੇ ਅੰਦਰ ਮੁੜ-ਲਾਂਚ ਕਰੋ}one{Chrome ਨੂੰ # ਦਿਨ ਦੇ ਅੰਦਰ ਮੁੜ-ਲਾਂਚ ਕਰੋ}other{Chrome ਨੂੰ # ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਮੁੜ-ਲਾਂਚ ਕਰੋ}}</translation>

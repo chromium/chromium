@@ -138,7 +138,6 @@
 <translation id="549669000822060376">Chromium ନବୀନତମ ସିଷ୍ଟମ୍ ଅପ୍‌ଡେଟ୍ ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ସମୟରେ ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="5496810170689441661">Chromium ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଆପଣଙ୍କ Windows ପାସୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="5623402015214259806">{0,plural, =0{ଏକ Chromium ଅପ୍‌ଡେଟ୍‍ ଉପଲବ୍ଧ ଅଛି}=1{ଏକ Chromium ଅପ୍‌ଡେଟ୍‍ ଉପଲବ୍ଧ ଅଛି}other{# ଦିନ ପାଇଁ ଏକ Chromium ଅପ୍‌ଡେଟ୍‌ ଉପଲବ୍ଧ ଅଛି}}</translation>
-<translation id="5631814766731275228">Chromium ନାମ ଏବଂ ଛବି</translation>
 <translation id="5634636535844844681">Chromium ପାଇଁ Windows 7 କିମ୍ବା ଏହାଠାରୁ ଉଚ୍ଚତର ସଂସ୍କରଣ ଆବଶ୍ୟକତା ହୋ‍ଇଥାଏ।</translation>
 <translation id="5653831366781983928">ଦୟାକରି ବର୍ତ୍ତମାନ Chromium ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5698481217667032250">Chromiumକୁ ଏହି ଭାଷାରେ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
@@ -279,5 +278,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS ସିଷ୍ଟମ୍</translation>
 <translation id="93478295209880648">Chromium ହୁଏତ ସଠିକ୍ ଭାବେ କାର୍ଯ୍ୟ କରି ନପାରେ କାରଣ ଏହା ଆଉ Windows XP କିମ୍ବା Windows Vistaରେ ସମର୍ଥିତ ନୁହେଁ</translation>
+<translation id="965162752251293939">କିଏ Chromium ବ୍ୟବହାର କରୁଛନ୍ତି?</translation>
 <translation id="985602178874221306">Chromium ଲେଖକ</translation>
 </translationbundle>

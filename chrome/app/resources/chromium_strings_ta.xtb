@@ -136,7 +136,6 @@
 <translation id="549669000822060376">சமீபத்திய முறைமை புதுப்பிப்புகளை Chromium நிறுவும் வரை காத்திருக்கவும்.</translation>
 <translation id="5496810170689441661">Chromium கடவுச்சொற்களைத் திருத்த முயல்கிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumமிற்கான புதுப்பிப்பு உள்ளது}=1{Chromiumமிற்கான புதுப்பிப்பு உள்ளது}other{Chromiumமிற்கான புதுப்பிப்பு வந்து # நாட்களாகிறது}}</translation>
-<translation id="5631814766731275228">Chromium பெயர் மற்றும் படம்</translation>
 <translation id="5634636535844844681">Windows 7 அல்லது அதற்குப் பிந்தைய பதிப்புகளில் மட்டுமே Chromium இயங்கும்.</translation>
 <translation id="5653831366781983928">Chromiumமை இப்போது மீண்டும் தொடங்கவும்</translation>
 <translation id="5698481217667032250">Chromiumமை இந்த மொழியில் காட்டு</translation>
@@ -164,6 +163,7 @@
 <translation id="6266342355635466082">Chromiumமால் புதுப்பிப்புகள் உள்ளதா எனப் பார்க்க முடியவில்லை. உங்கள் இணைய இணைப்பைச் சரிபார்க்க முயலவும்.</translation>
 <translation id="6268381023930128611">Chromium இலிருந்து வெளியேறவா?</translation>
 <translation id="6281746429495226318">உங்கள் Chromium சுயவிவரத்தைப் பிரத்தியேகமாக்குக</translation>
+<translation id="6290827346642914212">உங்கள் Chromium சுயவிவரத்திற்குப் பெயரிடுங்கள்</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> ஆபத்தானதாக இருக்கலாம் என்பதால் Chromium அதைத் தடுத்துள்ளது.</translation>
 <translation id="6309712487085796862">Chromium உங்கள் கேமராவைப் பயன்படுத்துகிறது.</translation>
 <translation id="6333502561965082103">Chromium இல் ஏற்கனவே ஒரு நிறுவி செயல்பாட்டில் உள்ளது. பிறகு முயலவும்.</translation>
@@ -279,5 +279,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS சிஸ்டம்</translation>
 <translation id="93478295209880648">Windows XP அல்லது Windows Vista ஆகியவற்றில் Chromium இனி ஆதரிக்கப்படாது என்பதால், அது சரியாகச் செயல்படாது</translation>
+<translation id="965162752251293939">Chromiumமைப் பயன்படுத்துவது யார்?</translation>
 <translation id="985602178874221306">Chromium அங்கீகரிப்பாளர்கள்</translation>
 </translationbundle>

@@ -864,7 +864,6 @@
 <translation id="1930879306590754738">Şifre bu cihazdan ve Google Hesabınızdan silindi</translation>
 <translation id="1931152874660185993">Yüklü bileşen yok.</translation>
 <translation id="1932098463447129402">Şundan Önce Değil:</translation>
-<translation id="1933809209549026293">Bir fare veya klavye bağlayın. Bluetooth cihaz kullanıyorsanız cihazın eşleştirmeye hazır olduğundan emin olun.</translation>
 <translation id="1935303383381416800">Konumunuzu görmesine izin verilen siteler</translation>
 <translation id="1936931585862840749">Yazdırılacak kopya sayısını göstermek için bir sayı (1-<ph name="MAX_COPIES" /> arası) kullanın.</translation>
 <translation id="1937774647013465102">Bu cihaz (<ph name="ARCHITECTURE_DEVICE" />) ile kapsayıcı mimarisinin türü <ph name="ARCHITECTURE_CONTAINER" /> içe aktarılamıyor. Bu kapsayıcıyı farklı bir cihaza geri yüklemeyi deneyebilir veya Files uygulamasını açarak bu kapsayıcı görüntüsündeki dosyalara erişebilirsiniz.</translation>
@@ -2604,7 +2603,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Son Asistan geçmişini Sherlog ile ekleyin. Eklenen geçmiş bilgilerinde kimliğiniz, konumunuz ve hata ayıklama bilgileri bulunabilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Klasör ekleyin</translation>
-<translation id="3894598587402139398">Web sitelerine ve uygulamalara erişmesi için <ph name="NAME" /> tarafından kullanılabilecek başka hesaplar ekleyebilirsiniz.</translation>
 <translation id="3894770151966614831">Google Hesabı'na taşınsın mı?</translation>
 <translation id="3895076768659607631">Arama Motorlarını &amp;Yönet...</translation>
 <translation id="3895090224522145010">Kerberos kullanıcı adı</translation>
@@ -2945,6 +2943,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4301671483919369635">Bu sayfanın dosyaları düzenlemesine izin verilir</translation>
 <translation id="4303079906735388947">Güvenlik anahtarınız için yeni bir PIN oluşturun</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> cihazına kopyala</translation>
+<translation id="4305817255990598646">Anahtar</translation>
 <translation id="4306119971288449206">Uygulamalar "<ph name="CONTENT_TYPE" />" içerik türüyle yayınlanmalıdır</translation>
 <translation id="4306812610847412719">pano</translation>
 <translation id="4307992518367153382">Temel Bilgiler</translation>
@@ -3338,7 +3337,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4756378406049221019">Durdur/Tekrar yükle</translation>
 <translation id="4756388243121344051">&amp;Geçmiş</translation>
 <translation id="4759238208242260848">İndirilenler</translation>
-<translation id="4759387251871503426">Oturum açılmış Google Hesaplarınızı <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" />'dan yönetebilirsiniz. Web sitelerine ve uygulamalara verdiğiniz izinler, tüm hesaplar için geçerli olabilir. Sitelerin veya uygulamaların hesap bilgilerinize erişmesini istemiyorsanız <ph name="DEVICE_TYPE" /> cihazınızda misafir olarak oturum açabilir ya da internette gezinmek için <ph name="LINK_2_BEGIN" />gizli pencere<ph name="LINK_2_END" /> kullanabilirsiniz.</translation>
 <translation id="4761104368405085019">Mikrofonunuzu kullanma</translation>
 <translation id="4762718786438001384">Cihazdaki boş disk alanı kritik düzeyde</translation>
 <translation id="4763408175235639573">Bu sayfayı görüntülediğinizde aşağıdaki çerezler ayarlandı</translation>
@@ -3559,6 +3557,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5027550639139316293">E-posta Sertifikası</translation>
 <translation id="5027562294707732951">Uzantı ekle</translation>
 <translation id="5029568752722684782">Kopyayı temizle</translation>
+<translation id="503155457707535043">Uygulamalar indiriliyor</translation>
 <translation id="5033137252639132982">Hareket sensörlerini kullanmasına izin verilmeyen siteler</translation>
 <translation id="5033266061063942743">Geometrik şekiller</translation>
 <translation id="5036662165765606524">Hiçbir sitenin otomatik olarak birden fazla dosya indirmesine izin verme</translation>
@@ -6117,7 +6116,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7968833647796919681">Performans verisi toplamayı etkinleştir</translation>
 <translation id="7968982339740310781">Ayrıntıları görüntüle</translation>
 <translation id="7969046989155602842">Komut</translation>
-<translation id="7970618607181090249">Dokunmatik ekran algılandı</translation>
 <translation id="7970673414865679092">Ethernet ayrıntıları</translation>
 <translation id="7970882136539140748">Kart şu anda kaydedilemiyor</translation>
 <translation id="7972714317346275248">PKCS #1 RSA Şifrelemeli SHA-384</translation>
@@ -7148,7 +7146,6 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="9128870381267983090">Ağa bağlan</translation>
 <translation id="9130015405878219958">Geçersiz mod girildi</translation>
 <translation id="9131487537093447019">Bluetooth cihazlarına ileti gönderme ve Bluetooth cihazlarından gelen iletileri alma.</translation>
-<translation id="9134119143784876218">İngilizce ses ve videolar için otomatik olarak altyazı oluşturur (şu anda yalnızca Chrome tarayıcıda kullanılabilir). Ses ve altyazılar cihazınızdan hiçbir zaman dışarı çıkmaz.</translation>
 <translation id="9137013805542155359">Orijinali göster</translation>
 <translation id="9137157311132182254">Tercih edilen arama motoru</translation>
 <translation id="9137248913990643158">Lütfen bu uygulamayı kullanmadan önce Chrome'u başlatıp oturum açın.</translation>

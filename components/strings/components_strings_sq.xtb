@@ -584,6 +584,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3229041911291329567">Informacioni i versionit rreth pajisjes dhe shfletuesit tënd</translation>
 <translation id="323107829343500871">Shkruaj kodin CVC për <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Zbulo gjithmonë përmbajtje të rëndësishme në këtë sajt</translation>
+<translation id="3252266817569339921">Frëngjisht</translation>
 <translation id="3266793032086590337">Vlera (konflikt)</translation>
 <translation id="3270847123878663523">&amp;Zhbëj rirenditjen</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1001,6 +1002,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4819347708020428563">Të redaktohen shënimet në pamjen e parazgjedhur?</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4850886885716139402">Pamja</translation>
+<translation id="485316830061041779">Gjermanisht</translation>
 <translation id="4854362297993841467">Kjo mënyrë dorëzimi nuk ofrohet. Provo një mënyrë tjetër.</translation>
 <translation id="4876188919622883022">Pamja e thjeshtuar</translation>
 <translation id="4876305945144899064">Nuk ka emër përdoruesi</translation>
@@ -1156,6 +1158,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="541416427766103491">Stivuesi 4</translation>
 <translation id="5421136146218899937">Pastro të dhënat e shfletimit...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
+<translation id="5428105026674456456">Spanjisht</translation>
 <translation id="542872847390508405">Po shfleton si vizitor</translation>
 <translation id="5430298929874300616">Hiqe faqeshënuesin</translation>
 <translation id="5439770059721715174">Gabim i miratimit të skemës në "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
@@ -1165,6 +1168,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5455374756549232013">Vulë kohore politike e gabuar</translation>
 <translation id="5457113250005438886">E pavlefshme</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tjetër}other{<ph name="CONTACT_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> të tjerë}}</translation>
+<translation id="5469868506864199649">Italisht</translation>
 <translation id="5470861586879999274">&amp;Ribëj redaktimin</translation>
 <translation id="5478437291406423475">B6/C4 (Zarf)</translation>
 <translation id="5481076368049295676">Kjo përmbajtje mund të përpiqet të instalojë softuerë të rrezikshëm në pajisjen tënde që vjedhin ose fshijnë informacionet e tua. <ph name="BEGIN_LINK" />Shfaqe gjithsesi<ph name="END_LINK" /></translation>
@@ -1871,6 +1875,7 @@ Detaje shtesë:
 <translation id="8293206222192510085">Shto një faqeshënues</translation>
 <translation id="8294431847097064396">Burimi</translation>
 <translation id="8298115750975731693">Lidhja Wi-Fi që po përdor (<ph name="WIFI_NAME" />) mund të kërkojë që të vizitosh <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8299269255470343364">Japonisht</translation>
 <translation id="8303854710873047864">Seksioni "<ph name="SECTION" />" është i shfaqur</translation>
 <translation id="830498451218851433">Palosje në gjysmë</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1950,6 +1955,7 @@ Detaje shtesë:
 <translation id="8625384913736129811">Ruaje këtë kartë në këtë pajisje</translation>
 <translation id="8627040765059109009">Regjistrimi i ekranit u riaktivizua</translation>
 <translation id="8663226718884576429">Përmbledhje e porosisë, <ph name="TOTAL_LABEL" />, detaje të tjera</translation>
+<translation id="8666678546361132282">Anglisht</translation>
 <translation id="867224526087042813">Nënshkrimi</translation>
 <translation id="8676424191133491403">Pa vonesë</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, përgjigjja, <ph name="ANSWER" /></translation>

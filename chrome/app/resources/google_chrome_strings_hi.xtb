@@ -8,6 +8,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> पहले Chrome का उपयोग कर रहा था</translation>
 <translation id="1097330777386562916">Chrome छोड़ने पर कुकी और साइट डेटा मिटाएं</translation>
 <translation id="110877069173485804">यह आपका Chrome है</translation>
+<translation id="1125124144982679672">Chrome को कौन इस्तेमाल कर रहा है?</translation>
 <translation id="1142745911746664600">Chrome को अपडेट नहीं किया जा सकता</translation>
 <translation id="1154147086299354128">Chrome में &amp;खोलें</translation>
 <translation id="123620459398936149">Chrome OS आपका डेटा सिंक नहीं कर सका. कृपया अपना सिंक 'पासफ़्रेज़' अपडेट करें.</translation>
@@ -87,6 +88,7 @@
 <translation id="3065168410429928842">Chrome टैब</translation>
 <translation id="3080151273017101988">Google Chrome के बंद होने पर पृष्ठभूमि ऐप्स  चलाना जारी रखें</translation>
 <translation id="3089968997497233615">Google Chrome का एक नया, सुरक्षित वर्शन उपलब्‍ध है.</translation>
+<translation id="3100998948628680988">अपनी Chrome प्रोफ़ाइल को नाम दें</translation>
 <translation id="3114643501466072395">डेटा के गलत इस्तेमाल और सुरक्षा की अन्य समस्याओं से आपके दूसरे पासवर्ड सुरक्षित हैं या नहीं, इसकी जांच करने के लिए, <ph name="BEGIN_LINK" />Chrome में साइन इन करें<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS आपका डेटा सिंक नहीं कर सका.</translation>
 <translation id="3140883423282498090">अगली बार जब आप Google Chrome फिर से लॉन्‍च करेंगे तो आपके बदलाव लागू होंगे.</translation>
@@ -118,7 +120,6 @@
 <translation id="4050175100176540509">महत्‍वपूर्ण सुरक्षा सुधार और नई सुविधाएं नवीनतम वर्शन में उपलब्‍ध हैं.</translation>
 <translation id="4053720452172726777">Google Chrome को पसंद के मुताबिक बनाएं और नियंत्रित करें</translation>
 <translation id="4110895483821904099">Chrome पर अपनी नई प्रोफ़ाइल सेट अप करें</translation>
-<translation id="4143243756087420366">Chrome पर नाम और तस्वीर</translation>
 <translation id="4147555960264124640">आप प्रबंधित खाते से साइन इन कर रहे हैं और उसके एडमिन को अपनी Google Chrome प्रोफ़ाइल पर नियंत्रण दे रहे हैं. आपका Chrome डेटा, जैसे आपके ऐप्लिकेशन, बुकमार्क, इतिहास, पासवर्ड, और दूसरे सेटिंग <ph name="USER_NAME" /> से स्थायी रूप से जुड़ जाएंगे. आप Google खाता डैशबोर्ड से इस डेटा को मिटा सकेंगे, लेकिन आप किसी दूसरे खाते से इस डेटा को जोड़ नहीं सकेंगे. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">इंस्टॉलर, संग्रह को विस्तारित करने में विफल हुआ. कृपया Google Chrome फिर से डाउनलोड करें.</translation>
 <translation id="4191857738314598978">{0,plural, =1{एक दिन के अंदर Chrome को फिर से लॉन्च करें}one{# दिनों के अंदर Chrome को फिर से लॉन्च करें}other{# दिनों के अंदर Chrome को फिर से लॉन्च करें}}</translation>

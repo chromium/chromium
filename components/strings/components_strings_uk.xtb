@@ -567,7 +567,7 @@
       щоб переконатися, що проксі-сервер працює. Якщо ви вважаєте, що не потрібно
       використовувати проксі-сервер, виконайте вказані нижче дії.
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="317878711435188021">Отримувати інформацію про активне використання цього пристрою</translation>
+<translation id="317878711435188021">дізнаватися, чи ви активно використовуєте цей пристрій</translation>
 <translation id="3188393374551744535">Баланс рахунку</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> хоче постійно зберігати дані на вашому пристрої</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на сервері <ph name="SERVER_NAME" /></translation>
@@ -585,6 +585,7 @@
 <translation id="3229041911291329567">Інформація про версії пристрою та веб-переглядача</translation>
 <translation id="323107829343500871">Ввести код CVC картки <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Завжди виявляти важливий вміст на цьому сайті</translation>
+<translation id="3252266817569339921">Французька</translation>
 <translation id="3266793032086590337">Значення (конфліктне)</translation>
 <translation id="3270847123878663523">&amp;Відмінити перевпорядкування</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -747,7 +748,7 @@
 <translation id="3828924085048779000">Порожня парольна фраза заборонена.</translation>
 <translation id="3831915413245941253">Адміністратор домену <ph name="ENROLLMENT_DOMAIN" /> установив розширення для додаткових функцій. Розширення мають доступ до деяких ваших даних.</translation>
 <translation id="3832522519263485449">Пробити кілька отворів ліворуч</translation>
-<translation id="3835233591525155343">Використання пристрою</translation>
+<translation id="3835233591525155343">Дані про активний стан пристрою</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858027520442213535">Оновити дату й час</translation>
 <translation id="3884278016824448484">Конфліктуючий ідентифікатор пристрою</translation>
@@ -1004,6 +1005,7 @@
 <translation id="4819347708020428563">Редагувати примітки в режимі перегляду за умовчанням?</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4850886885716139402">Перегляд</translation>
+<translation id="485316830061041779">Німецька</translation>
 <translation id="4854362297993841467">Цей спосіб доставки недоступний. Виберіть інший спосіб.</translation>
 <translation id="4876188919622883022">Спрощений перегляд</translation>
 <translation id="4876305945144899064">Немає імені користувача</translation>
@@ -1159,6 +1161,7 @@
 <translation id="541416427766103491">Накопичувач 4</translation>
 <translation id="5421136146218899937">Очистити історію…</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
+<translation id="5428105026674456456">Іспанська</translation>
 <translation id="542872847390508405">Ви переглядаєте в гостьовому режимі</translation>
 <translation id="5430298929874300616">Видалити закладку</translation>
 <translation id="5439770059721715174">Помилка перевірки схеми за адресою "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
@@ -1168,6 +1171,7 @@
 <translation id="5455374756549232013">Недійсна мітка часу правила</translation>
 <translation id="5457113250005438886">Недійсні дані</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5469868506864199649">Італійська</translation>
 <translation id="5470861586879999274">&amp;Повторити редагування</translation>
 <translation id="5478437291406423475">B6/C4 (конверт)</translation>
 <translation id="5481076368049295676">Цей вміст може намагатися встановити на ваш пристрій небезпечну програму, яка викрадає або видаляє інформацію. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
@@ -1618,7 +1622,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Командний рядок</translation>
 <translation id="7359588939039777303">Оголошення заблоковано.</translation>
-<translation id="7365849542400970216">Дозволити надавати дані про використання пристрою?</translation>
+<translation id="7365849542400970216">Інформувати про активний стан пристрою?</translation>
 <translation id="7372973238305370288">результат пошуку</translation>
 <translation id="7374733840632556089">Ця проблема виникла через сертифікат, який установили ви або інший користувач на пристрої. Цей сертифікат відстежує й перехоплює мережу. Chrome не вважає його надійним. Хоча існують законні випадки відстеження (наприклад, у мережі навчального закладу або компанії), Chrome хоче переконатися, що ви знаєте про ці дії, навіть якщо не можете їх зупинити. Відстеження може відбуватися в будь-якому веб-переглядачі або додатку з доступом до Інтернету.</translation>
 <translation id="7375818412732305729">Долучено файл</translation>
@@ -1875,6 +1879,7 @@
 <translation id="8293206222192510085">Додати закладку</translation>
 <translation id="8294431847097064396">Джерело</translation>
 <translation id="8298115750975731693">Можливо, щоб під’єднатися до цієї мережі Wi-Fi (<ph name="WIFI_NAME" />), потрібно відвідати сторінку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8299269255470343364">Японська</translation>
 <translation id="8303854710873047864">Відображається розділ "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Зігнути посередині</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1955,6 +1960,7 @@
 <translation id="8625384913736129811">Зберегти цю картку на пристрої</translation>
 <translation id="8627040765059109009">Зйомку екрана відновлено</translation>
 <translation id="8663226718884576429">Підсумок замовлення, <ph name="TOTAL_LABEL" />, докладніше</translation>
+<translation id="8666678546361132282">Англійська</translation>
 <translation id="867224526087042813">Підпис</translation>
 <translation id="8676424191133491403">Без затримки</translation>
 <translation id="8680536109547170164">"<ph name="QUERY" />", відповідь: "<ph name="ANSWER" />"</translation>
@@ -2037,7 +2043,7 @@
 <translation id="8983003182662520383">Способи оплати й адреси, пов’язані з Google Pay</translation>
 <translation id="8987927404178983737">Місяць</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="899688752321268742">Сайт <ph name="URL" /> хоче отримати інформацію про активне використання цього пристрою</translation>
+<translation id="899688752321268742">Сайт <ph name="URL" /> хоче дізнаватися, чи ви активно використовуєте цей пристрій</translation>
 <translation id="8996941253935762404">Сайт містить шкідливі програми</translation>
 <translation id="8997023839087525404">Сервер надав сертифікат без інформації про перевірку. Це обов’язкові дані для деяких сертифікатів. Вони підтверджують надійність сертифіката й захищають від атак зловмисників.</translation>
 <translation id="9001074447101275817">Для проксі <ph name="DOMAIN" /> потрібно ввести ім’я користувача та пароль.</translation>

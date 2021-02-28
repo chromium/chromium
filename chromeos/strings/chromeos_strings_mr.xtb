@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">प्रिंट</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
+<translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
@@ -328,6 +329,7 @@
 <translation id="8477551185774834963">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा किंचित जास्त आहे</translation>
 <translation id="8483248364096924578">IP पत्ता</translation>
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
+<translation id="8503836310948963452">फक्त आणखी काही मिनिटे...</translation>
 <translation id="8576249514688522074">सुरुवात केलेली नाही</translation>
 <translation id="8620617069779373398">रोमिंग स्थिती</translation>
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
@@ -358,6 +360,7 @@
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
+<translation id="9173638680043580060">एका मिनिटापेक्षा कमी वेळ शिल्लक आहे</translation>
 <translation id="9190063653747922532">L2TP/IPSec + पूर्व-शेअर की</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय नाही</translation>

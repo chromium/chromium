@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">لا توجد ذاكرة كافية لتنزيل المحتوى المحدد.</translation>
 <translation id="1376578503827013741">جارٍ الحوسبة...</translation>
 <translation id="1383876407941801731">البحث</translation>
+<translation id="1384704387250346179">‏ترجمة الصورة باستخدام "عدسة Google" <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">نشط قبل <ph name="LAST_UPDATED" /> من الأيام</translation>
 <translation id="1397811292916898096">البحث باستخدام <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">"عدم التعقب"</translation>
@@ -73,6 +74,7 @@
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1450753235335490080">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1477626028522505441">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب مشاكل بالخادم.</translation>
+<translation id="1492417797159476138">سبق لك حفظ اسم المستخدم لهذا الموقع الإلكتروني.</translation>
 <translation id="1506061864768559482">محرك البحث</translation>
 <translation id="1513352483775369820">الإشارات المرجعية وسجلّ الويب</translation>
 <translation id="1513858653616922153">حذف كلمة المرور</translation>
@@ -97,6 +99,7 @@
 <translation id="1692118695553449118">المزامنة ممكنة</translation>
 <translation id="1697284962337958118">إضافة إلى</translation>
 <translation id="1718835860248848330">آخر ساعة</translation>
+<translation id="1724977129262658800">عليك فتح قفل الشاشة لتتمكّن من تعديل كلمة المرور.</translation>
 <translation id="173522743738009831">‏لمحة عن Privacy Sandbox</translation>
 <translation id="1736419249208073774">استكشاف</translation>
 <translation id="1749561566933687563">مزامنة الإشارات المرجعية</translation>
@@ -263,7 +266,6 @@
 <translation id="281504910091592009">‏بإمكانك عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
-<translation id="2833452327385637152">للبحث عن كلمة أو عبارة، يمكنك النقر عليها مع الاستمرار بدلاً من النقر فقط.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{تمّ إجراء عملية التحقُّق قبل يوم واحد.}zero{تمّ إجراء عملية التحقُّق قبل # يوم.}two{تمّ إجراء عملية التحقُّق قبل يومَين.}few{تمّ إجراء عملية التحقُّق قبل # أيام.}many{تمّ إجراء عملية التحقُّق قبل # يومًا.}other{تمّ إجراء عملية التحقُّق قبل # يوم.}}</translation>
 <translation id="2842985007712546952">المجلد الرئيسي</translation>
 <translation id="2856503607207334158">تعذَّر تسجيل الدخول.</translation>
@@ -603,6 +605,7 @@
 <translation id="5191251636205085390">يمكنك التعرّف على تقنيات جديدة تهدف إلى استبدال ملفات تعريف الارتباط التابعة لجهات خارجية وكيفية التحكُّم في تلك التقنيات.</translation>
 <translation id="5193988420012215838">تم النسخ إلى الحافظة</translation>
 <translation id="5199929503336119739">الملف الشخصي للعمل</translation>
+<translation id="5204967432542742771">إدخال كلمة المرور</translation>
 <translation id="5210286577605176222">الانتقال السريع إلى علامة التبويب السابقة</translation>
 <translation id="5210365745912300556">إغلاق علامة التبويب</translation>
 <translation id="5213672942202814946">استخدام ميزة "البحث الصوتي"</translation>
@@ -689,6 +692,7 @@
 <translation id="5765780083710877561">الوصف:</translation>
 <translation id="5767013862801005129">تمت استعادة علامة التبويب <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">بيانات غير مهمة</translation>
+<translation id="5780792035410621042">لنسخ كلمات المرور، عليك أولاً إعداد قفل الشاشة على جهازك.</translation>
 <translation id="5793665092639000975">يتم استخدام <ph name="SPACE_USED" /> من أصل <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">البحث والتصفُّح</translation>
 <translation id="5797070761912323120">‏قد تستخدم Google سجلّك لتخصيص البحث والإعلانات وخدمات Google الأخرى.</translation>
@@ -861,6 +865,7 @@
 <translation id="6850409657436465440">لا يزال التنزيل قيد التقدُّم</translation>
 <translation id="6850830437481525139">تم إغلاق <ph name="TAB_COUNT" /> علامة تبويب</translation>
 <translation id="685850645784703949">‏ميزة "اقتراحات من Google" متوقفة</translation>
+<translation id="686366188661646310">هل تريد حذف كلمة المرور؟</translation>
 <translation id="6864459304226931083">تنزيل الصورة</translation>
 <translation id="6865313869410766144">الملء التلقائي للبيانات</translation>
 <translation id="6882836635272038266">يوفّر لك حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
@@ -1120,7 +1125,6 @@
 <translation id="8571213806525832805">الأسابيع الـ4 الأخيرة</translation>
 <translation id="8572344201470131220">تم نسخ الصورة.</translation>
 <translation id="8583805026567836021">محو بيانات الحساب</translation>
-<translation id="8587585930972369234">النقر مع الاستمرار للبحث</translation>
 <translation id="860043288473659153">اسم حامل البطاقة</translation>
 <translation id="8602358303461588329">‏تسجيل الدخول إلى Chrome، تم إغلاق البطاقة السفلية.</translation>
 <translation id="860282621117673749">إشعارات بانخفاض الأسعار</translation>

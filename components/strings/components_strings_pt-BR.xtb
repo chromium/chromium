@@ -581,6 +581,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3229041911291329567">Informações sobre a versão do seu dispositivo e navegador</translation>
 <translation id="323107829343500871">Digite o CVC do <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Sempre detectar conteúdo importante neste site</translation>
+<translation id="3252266817569339921">Francês</translation>
 <translation id="3266793032086590337">Valor (conflitante)</translation>
 <translation id="3270847123878663523">&amp;Desfazer reordenar</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -995,6 +996,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4819347708020428563">Editar anotações na visualização padrão?</translation>
 <translation id="484462545196658690">Automática</translation>
 <translation id="4850886885716139402">Visualizar</translation>
+<translation id="485316830061041779">Alemão</translation>
 <translation id="4854362297993841467">Esse método de entrega não está disponível. Tente um método diferente.</translation>
 <translation id="4876188919622883022">Visualização simplificada</translation>
 <translation id="4876305945144899064">Sem nome de usuário</translation>
@@ -1150,6 +1152,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5421136146218899937">Limpar dados de navegação...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
+<translation id="5428105026674456456">Espanhol</translation>
 <translation id="542872847390508405">Você está navegando como visitante</translation>
 <translation id="5430298929874300616">Remover favorito</translation>
 <translation id="5439770059721715174">Erro de validação de esquema em "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
@@ -1159,6 +1162,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5455374756549232013">Carimbo de data/hora da política inválido</translation>
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5469868506864199649">Italiano</translation>
 <translation id="5470861586879999274">&amp;Refazer editar</translation>
 <translation id="5478437291406423475">Envelope 125 mm x 324 mm</translation>
 <translation id="5481076368049295676">Este conteúdo pode tentar instalar softwares perigosos no seu dispositivo que roubam ou excluem suas informações. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
@@ -1609,7 +1613,7 @@ Mais detalhes:
 <translation id="7349430561505560861">A4 Extra</translation>
 <translation id="7353601530677266744">Linha de comando</translation>
 <translation id="7359588939039777303">Anúncios bloqueados.</translation>
-<translation id="7365849542400970216">Saber o uso do seu dispositivo?</translation>
+<translation id="7365849542400970216">Saber quando o dispositivo está sendo usado?</translation>
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374733840632556089">Esse problema acontece devido a um certificado que você ou outra pessoa instalou no dispositivo. O certificado é conhecido por ser usado para monitorar e interceptar redes, e o Chrome não o considera confiável. Embora casos legítimos de monitoramento existam, como em redes de escolas ou empresas, o Chrome quer ter certeza de que você está ciente de tudo o que está acontecendo, mesmo que você não possa fazer nada para impedir isso. O monitoramento pode acontecer em qualquer navegador ou aplicativo que acesse a Web.</translation>
 <translation id="7375818412732305729">Um arquivo é anexado</translation>
@@ -1866,6 +1870,7 @@ Mais detalhes:
 <translation id="8293206222192510085">Adicionar favorito</translation>
 <translation id="8294431847097064396">Origem</translation>
 <translation id="8298115750975731693">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8299269255470343364">Japonês</translation>
 <translation id="8303854710873047864">Seção "<ph name="SECTION" />" exibida</translation>
 <translation id="830498451218851433">Dobra simples</translation>
 <translation id="8307358339886459768">Small photo</translation>
@@ -1946,6 +1951,7 @@ Mais detalhes:
 <translation id="8625384913736129811">Salvar este cartão neste dispositivo</translation>
 <translation id="8627040765059109009">Captura de tela retomada</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
+<translation id="8666678546361132282">Inglês</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8676424191133491403">Sem atraso</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>

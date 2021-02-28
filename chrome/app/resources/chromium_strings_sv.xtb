@@ -138,7 +138,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="549669000822060376">Vänta medan de senaste systemuppdateringarna installeras av Chromium.</translation>
 <translation id="5496810170689441661">Skriv ditt lösenord i Windows om du tillåter att lösenorden i Chromium redigeras.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Det finns en uppdatering för Chromium}=1{Det finns en uppdatering för Chromium}other{Det finns en uppdatering för Chromium sedan # dagar}}</translation>
-<translation id="5631814766731275228">Namn och bild i Chromium</translation>
 <translation id="5634636535844844681">För Chromium krävs Windows 7 eller senare.</translation>
 <translation id="5653831366781983928">Starta om Chromium nu</translation>
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
@@ -282,5 +281,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS-system</translation>
 <translation id="93478295209880648">Chromium kanske inte fungerar ordentligt eftersom den inte längre stöds på Windows XP och Windows Vista</translation>
+<translation id="965162752251293939">Vem ska använda Chromium?</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

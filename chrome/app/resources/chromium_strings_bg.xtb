@@ -134,7 +134,6 @@
 <translation id="549669000822060376">Моля, изчакайте, докато Chromium инсталира най-новите системни актуализации.</translation>
 <translation id="5496810170689441661">Chromium опитва да редактира паролите. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Налице е актуализация за Chromium}=1{Налице е актуализация за Chromium}other{Налице е актуализация за Chromium от # дни}}</translation>
-<translation id="5631814766731275228">Име и снимка за Chromium</translation>
 <translation id="5634636535844844681">За Chromium се изисква Windows 7 или по-нова версия.</translation>
 <translation id="5653831366781983928">Моля, рестартирайте Chromium сега</translation>
 <translation id="5698481217667032250">Показване на Chromium на този език</translation>
@@ -273,5 +272,6 @@
 <translation id="9190841055450128916">Chromium (входящ трафик за mDNS)</translation>
 <translation id="9214764063801632699">Система Chromium OS</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно, тъй като вече не се поддържа под Windows XP и Windows Vista</translation>
+<translation id="965162752251293939">Кой използва Chromium?</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
 </translationbundle>

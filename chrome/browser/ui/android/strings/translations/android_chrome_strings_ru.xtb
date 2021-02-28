@@ -74,6 +74,7 @@
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1450753235335490080">Не удается отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неполадок на сервере.</translation>
+<translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
 <translation id="1506061864768559482">Поисковая система</translation>
 <translation id="1513352483775369820">Закладки и история поиска</translation>
 <translation id="1513858653616922153">Удалить пароль</translation>
@@ -265,7 +266,6 @@
 <translation id="281504910091592009">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">Чтобы получить доступ к закладкам на всех устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="2827278682606527653">Меню карточки из ленты открыто наполовину</translation>
-<translation id="2833452327385637152">Чтобы выполнить поиск, нажмите и удерживайте слово или фразу, а не просто коснитесь их.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено 1 день назад.}one{Проверено # день назад.}few{Проверено # дня назад.}many{Проверено # дней назад.}other{Проверено # дня назад.}}</translation>
 <translation id="2842985007712546952">Родительская папка</translation>
 <translation id="2856503607207334158">Ошибка аутентификации</translation>
@@ -605,6 +605,7 @@
 <translation id="5191251636205085390">Узнайте больше о новых технологиях, которые придут на смену сторонним файлам cookie.</translation>
 <translation id="5193988420012215838">Скопировано в буфер обмена.</translation>
 <translation id="5199929503336119739">Рабочий профиль</translation>
+<translation id="5204967432542742771">Введите пароль</translation>
 <translation id="5210286577605176222">Перейти к предыдущей вкладке</translation>
 <translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5213672942202814946">Use voice search</translation>
@@ -864,6 +865,7 @@
 <translation id="6850409657436465440">Выполняется скачивание</translation>
 <translation id="6850830437481525139">Закрыто вкладок: <ph name="TAB_COUNT" />.</translation>
 <translation id="685850645784703949">Рекомендации от Google отключены</translation>
+<translation id="686366188661646310">Удаление пароля</translation>
 <translation id="6864459304226931083">Скачать изображение</translation>
 <translation id="6865313869410766144">Данные для автозаполнения</translation>
 <translation id="6882836635272038266">Стандартная защита от опасных сайтов, расширений и скачанных файлов.</translation>
@@ -1123,7 +1125,6 @@
 <translation id="8571213806525832805">Последние 4 недели</translation>
 <translation id="8572344201470131220">Изображение скопировано.</translation>
 <translation id="8583805026567836021">Удаление данных аккаунта</translation>
-<translation id="8587585930972369234">Нажмите и удерживайте для поиска</translation>
 <translation id="860043288473659153">Имя владельца карты</translation>
 <translation id="8602358303461588329">Окно "Войти в Chrome" закрыто.</translation>
 <translation id="860282621117673749">Оповещения о скидках</translation>

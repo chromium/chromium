@@ -587,6 +587,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3229041911291329567">Weergawe-inligting oor jou toestel en blaaier</translation>
 <translation id="323107829343500871">Voer die CVC vir <ph name="CREDIT_CARD" /> in</translation>
 <translation id="3234666976984236645">Bespeur altyd belangrike inhoud op hierdie werf</translation>
+<translation id="3252266817569339921">Frans</translation>
 <translation id="3266793032086590337">Waarde (konflik)</translation>
 <translation id="3270847123878663523">Ontdoen herrangskikking</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1006,6 +1007,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4819347708020428563">Redigeer aantekeninge in verstekaansig?</translation>
 <translation id="484462545196658690">Outo</translation>
 <translation id="4850886885716139402">Bekyk</translation>
+<translation id="485316830061041779">Duits</translation>
 <translation id="4854362297993841467">Daardie afleweringmetode is nie beskikbaar nie. Probeer 'n ander metode.</translation>
 <translation id="4876188919622883022">Vereenvoudigde aansig</translation>
 <translation id="4876305945144899064">Geen gebruikernaam nie</translation>
@@ -1161,6 +1163,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="541416427766103491">Stapelaar 4</translation>
 <translation id="5421136146218899937">Vee blaaidata uit …</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil vir jou kennisgewings stuur</translation>
+<translation id="5428105026674456456">Spaans</translation>
 <translation id="542872847390508405">Jy blaai tans as 'n gas</translation>
 <translation id="5430298929874300616">Verwyder boekmerk</translation>
 <translation id="5439770059721715174">Skema-stawingsfout by "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
@@ -1170,6 +1173,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5455374756549232013">Swak beleidtydstempel</translation>
 <translation id="5457113250005438886">Ongeldig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5469868506864199649">Italiaans</translation>
 <translation id="5470861586879999274">Herdoen wysiging</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">Hierdie inhoud mag dalk probeer om gevaarlike sagteware wat jou inligting steel of uitvee op jou toestel te installeer. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
@@ -1877,6 +1881,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8293206222192510085">Voeg boekmerk by</translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8298115750975731693">Die Wi-Fi wat jy gebruik (<ph name="WIFI_NAME" />), kan vereis dat jy <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> besoek.</translation>
+<translation id="8299269255470343364">Japannees</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />"-afdeling is gewys</translation>
 <translation id="830498451218851433">Halfgevou</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1956,6 +1961,7 @@ Bykomende besonderhede:
 <translation id="8625384913736129811">Stoor hierdie kaart op hierdie toestel</translation>
 <translation id="8627040765059109009">Skermskoot is hervat</translation>
 <translation id="8663226718884576429">Bestellingopsomming, <ph name="TOTAL_LABEL" />, meer besonderhede</translation>
+<translation id="8666678546361132282">Engels</translation>
 <translation id="867224526087042813">Handtekening</translation>
 <translation id="8676424191133491403">Geen wagperiode nie</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, antwoord, <ph name="ANSWER" /></translation>

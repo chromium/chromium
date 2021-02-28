@@ -587,6 +587,7 @@
 <translation id="3229041911291329567">Түзмөгүңүздүн жана серепчиңиздин версиясы тууралуу маалымат</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> карточкаңыз үчүн CVC кодун киргизиңиз</translation>
 <translation id="3234666976984236645">Бул сайттагы маанилүү мазмун ар дайым аныкталсын</translation>
+<translation id="3252266817569339921">Французча</translation>
 <translation id="3266793032086590337">Маани (карама-каршы)</translation>
 <translation id="3270847123878663523">Иреттештирүүнү &amp;жасабоо</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1005,6 +1006,7 @@
 <translation id="4819347708020428563">Ананнотацияларды демейки көрүнүштө түзөтөсүзбү?</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4850886885716139402">Көрүнүш</translation>
+<translation id="485316830061041779">Немисче</translation>
 <translation id="4854362297993841467">Жеткирүүнүн мындай ыкмасы мүмкүн эмес. Башка ыкмасын байкап көрүңүз.</translation>
 <translation id="4876188919622883022">Жөнөкөйлөштүрүлгөн көрүнүш</translation>
 <translation id="4876305945144899064">Колдонуучунун аты жок</translation>
@@ -1160,6 +1162,7 @@
 <translation id="541416427766103491">4-төшөгүч</translation>
 <translation id="5421136146218899937">Серептөө дайындарын тазалап салуу…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сизге билдирмелерди жөнөткөнү жатат</translation>
+<translation id="5428105026674456456">Испанча</translation>
 <translation id="542872847390508405">Конок катары серептеп жатасыз</translation>
 <translation id="5430298929874300616">Кыстарманы алып салуу</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />": <ph name="ERROR" /> схемалык текшерүү катасы</translation>
@@ -1169,6 +1172,7 @@
 <translation id="5455374756549232013">Начар саясаттын убакыт белгиси</translation>
 <translation id="5457113250005438886">Жараксыз</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> жана дагы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> байланыш}other{<ph name="CONTACT_PREVIEW" /> жана дагы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> байланыш}}</translation>
+<translation id="5469868506864199649">Италиянча</translation>
 <translation id="5470861586879999274">Түзөтүүнү &amp;кайталоо</translation>
 <translation id="5478437291406423475">B6/C4 (Конверт)</translation>
 <translation id="5481076368049295676">Бул мазмун маалыматыңызды уурдай турган же жок кыла турган кооптуу программаны түзмөгүңүзгө орнотууга аракет кылышы мүмкүн. <ph name="BEGIN_LINK" />Баары бир уланта берем<ph name="END_LINK" /></translation>
@@ -1876,6 +1880,7 @@
 <translation id="8293206222192510085">Кыстарма кошуу</translation>
 <translation id="8294431847097064396">Булак</translation>
 <translation id="8298115750975731693">Сиз колдонуп жаткан Wi-Fi (<ph name="WIFI_NAME" />), <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> дарегине өтүшүңүздү талап кылышы мүмкүн.</translation>
+<translation id="8299269255470343364">Жапончо</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" бөлүмү көрсөтүлдү</translation>
 <translation id="830498451218851433">Жарымынан бүктөө</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1955,6 +1960,7 @@
 <translation id="8625384913736129811">Бул карточка ушул түзмөктө сакталсын</translation>
 <translation id="8627040765059109009">Экранды тартуу улантылды</translation>
 <translation id="8663226718884576429">Буйрутма тууралуу маалымат, <ph name="TOTAL_LABEL" />, Толук маалымат</translation>
+<translation id="8666678546361132282">Англисче</translation>
 <translation id="867224526087042813">Колтамга</translation>
 <translation id="8676424191133491403">Дароо</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, жооп, <ph name="ANSWER" /></translation>

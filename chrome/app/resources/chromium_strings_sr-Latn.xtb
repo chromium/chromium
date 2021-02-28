@@ -138,7 +138,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="549669000822060376">Sačekajte da Chromium instalira najnovija ažuriranja sistema.</translation>
 <translation id="5496810170689441661">Chromium pokušava da izmeni lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno već # dan}few{Ažuriranje za Chromium je dostupno već # dana}other{Ažuriranje za Chromium je dostupno već # dana}}</translation>
-<translation id="5631814766731275228">Naziv i slika Chromium profila</translation>
 <translation id="5634636535844844681">Za Chromium je potreban Windows 7 ili novija verzija.</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
 <translation id="5698481217667032250">Prikazuj Chromium na ovom jeziku</translation>
@@ -282,5 +281,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Sistem Chromium OS</translation>
 <translation id="93478295209880648">Chromium možda neće ispravno funkcionisati zato što više nije podržan na Windows XP-u ili Windows Vista-i</translation>
+<translation id="965162752251293939">Ko koristi Chromium?</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

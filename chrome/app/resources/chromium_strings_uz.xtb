@@ -134,7 +134,6 @@
 <translation id="549669000822060376">Chromium tizimning oxirgi yangilanishlarini o‘rnatib olgunicha kutib turing.</translation>
 <translation id="5496810170689441661">Chromium parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium uchun yangilanish mavjud}=1{Chromium uchun yangilanish mavjud}other{Chromium uchun yangilanish mavjud (# kun)}}</translation>
-<translation id="5631814766731275228">Chromium profili nomi va rasmi</translation>
 <translation id="5634636535844844681">Chromium brauzeri ishlashi uchun kompyuterda Windows 7 yoki undan yangiroq versiyadagi operatsion tizim o‘rnatilgan bo‘lishi lozim.</translation>
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
 <translation id="5698481217667032250">Chromium shu tilda ko‘rsatilsin</translation>
@@ -278,5 +277,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS tizimi</translation>
 <translation id="93478295209880648">Chromium brauzeri Windows XP yoki Windows Vista tizimlarida ishlamay qolishi mumkin, chunki uning yangi versiyalarida bu tizimlar ta’minoti to‘xtatiladi</translation>
+<translation id="965162752251293939">Chromiumni kim ochdi?</translation>
 <translation id="985602178874221306">Chromium mualliflari</translation>
 </translationbundle>

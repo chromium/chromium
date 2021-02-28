@@ -864,7 +864,6 @@
 <translation id="1930879306590754738">Password eliminata da questo dispositivo e dal tuo Account Google</translation>
 <translation id="1931152874660185993">Nessun componente installato.</translation>
 <translation id="1932098463447129402">Non prima</translation>
-<translation id="1933809209549026293">Collega un mouse o una tastiera. Se utilizzi un dispositivo Bluetooth, assicurati che sia pronto per essere accoppiato.</translation>
 <translation id="1935303383381416800">Possono accedere alla tua posizione</translation>
 <translation id="1936931585862840749">Specifica un numero per indicare la quantità di copie da stampare (da 1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Impossibile importare il tipo di architettura del contenitore <ph name="ARCHITECTURE_CONTAINER" /> con questo dispositivo che invece è <ph name="ARCHITECTURE_DEVICE" />. Puoi provare a ripristinare questo contenitore in un diverso dispositivo oppure puoi accedere ai file all'interno dell'immagine del contenitore aprendoli nell'app File.</translation>
@@ -2603,7 +2602,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Includi la cronologia recente dell'assistente tramite Sherlog. La cronologia potrebbe includere informazioni sulla tua identità, sulla posizione e di debug. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Aggiungi cartella</translation>
-<translation id="3894598587402139398">Puoi aggiungere altri account per consentire a <ph name="NAME" /> di accedere a siti web e app.</translation>
 <translation id="3894770151966614831">Vuoi spostare nell'Account Google?</translation>
 <translation id="3895076768659607631">&amp;Gestisci motori di ricerca…</translation>
 <translation id="3895090224522145010">Nome utente di Kerberos</translation>
@@ -2944,6 +2942,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4301671483919369635">Questa pagina è autorizzata a modificare i file</translation>
 <translation id="4303079906735388947">Configura un nuovo PIN per il token di sicurezza</translation>
 <translation id="4305402730127028764">Copia su <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Cambia</translation>
 <translation id="4306119971288449206">Le app devono essere installate con il tipo di contenuto "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4306812610847412719">appunti</translation>
 <translation id="4307992518367153382">Impostazioni di base</translation>
@@ -3337,7 +3336,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4756378406049221019">Interrompi/Ricarica</translation>
 <translation id="4756388243121344051">&amp;Cronologia</translation>
 <translation id="4759238208242260848">Download</translation>
-<translation id="4759387251871503426">Puoi gestire gli Account Google a cui è stato eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti web o app di accedere ai dati del tuo account, puoi accedere al dispositivo <ph name="DEVICE_TYPE" /> come ospite oppure navigare su Internet in una <ph name="LINK_2_BEGIN" />finestra di navigazione in incognito<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Utilizzare il microfono</translation>
 <translation id="4762718786438001384">Lo spazio sul disco del dispositivo sta per esaurirsi</translation>
 <translation id="4763408175235639573">Durante la visualizzazione della pagina sono stati impostati i seguenti cookie</translation>
@@ -3558,6 +3556,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5027550639139316293">Certificato email</translation>
 <translation id="5027562294707732951">Aggiungi estensione</translation>
 <translation id="5029568752722684782">Cancella copia</translation>
+<translation id="503155457707535043">Download delle app in corso</translation>
 <translation id="5033137252639132982">Non possono utilizzare i sensori di movimento</translation>
 <translation id="5033266061063942743">Forme geometriche</translation>
 <translation id="5036662165765606524">Non consentire ai siti di scaricare automaticamente più file</translation>
@@ -6116,7 +6115,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7968833647796919681">Attiva raccolta di dati sul rendimento</translation>
 <translation id="7968982339740310781">Mostra dettagli</translation>
 <translation id="7969046989155602842">Comando</translation>
-<translation id="7970618607181090249">Touchscreen rilevato</translation>
 <translation id="7970673414865679092">Dettagli Ethernet</translation>
 <translation id="7970882136539140748">Impossibile salvare la carta al momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con crittografia RSA</translation>
@@ -7146,7 +7144,6 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9128870381267983090">Collegati alla rete</translation>
 <translation id="9130015405878219958">La modalità inserita non è valida.</translation>
 <translation id="9131487537093447019">Inviare e ricevere messaggi a/da dispositivi Bluetooth.</translation>
-<translation id="9134119143784876218">Vengono creati automaticamente i sottotitoli per i contenuti audio e video in inglese (funzionalità attualmente disponibile soltanto nel browser Chrome). Audio e sottotitoli non possono essere trasferiti dal dispositivo.</translation>
 <translation id="9137013805542155359">Mostra originale</translation>
 <translation id="9137157311132182254">Motore di ricerca preferito</translation>
 <translation id="9137248913990643158">Accedi a Chrome prima di usare questa app.</translation>

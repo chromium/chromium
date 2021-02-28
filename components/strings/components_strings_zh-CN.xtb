@@ -561,7 +561,7 @@
 <translation id="3174168572213147020">岛</translation>
 <translation id="3176929007561373547">请检查您的代理服务器设置或与网络管理员联系，以确保代理服务器正常运行。如果您认为自己不需要使用代理服务器，请执行以下操作：
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="317878711435188021">了解您何时积极使用此设备</translation>
+<translation id="317878711435188021">了解您何时在主动使用此设备</translation>
 <translation id="3188393374551744535">帐号余额</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 想在您的设备上永久存储数据</translation>
 <translation id="3195213714973468956">“<ph name="SERVER_NAME" />”上的“<ph name="PRINTER_NAME" />”</translation>
@@ -579,6 +579,7 @@
 <translation id="3229041911291329567">与您的设备和浏览器相关的版本信息</translation>
 <translation id="323107829343500871">输入“<ph name="CREDIT_CARD" />”的银行卡验证码 (CVC)</translation>
 <translation id="3234666976984236645">始终检测此网站上的重要内容</translation>
+<translation id="3252266817569339921">法语</translation>
 <translation id="3266793032086590337">值（冲突）</translation>
 <translation id="3270847123878663523">撤消顺序调整(&amp;U)</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -991,6 +992,7 @@
 <translation id="4819347708020428563">在默认视图中修改注释？</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4850886885716139402">视图</translation>
+<translation id="485316830061041779">德语</translation>
 <translation id="4854362297993841467">该递送方式不可用。请另选一种方式。</translation>
 <translation id="4876188919622883022">简化版视图</translation>
 <translation id="4876305945144899064">无用户名</translation>
@@ -1146,6 +1148,7 @@
 <translation id="541416427766103491">堆叠出纸器 4</translation>
 <translation id="5421136146218899937">清除浏览数据...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
+<translation id="5428105026674456456">西班牙语</translation>
 <translation id="542872847390508405">您正在以访客身份浏览</translation>
 <translation id="5430298929874300616">移除书签</translation>
 <translation id="5439770059721715174">“<ph name="ERROR_PATH" />”中存在模式验证错误：<ph name="ERROR" /></translation>
@@ -1155,6 +1158,7 @@
 <translation id="5455374756549232013">策略时间戳无效</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}other{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}}</translation>
+<translation id="5469868506864199649">意大利语</translation>
 <translation id="5470861586879999274">恢复修改(&amp;R)</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">此内容可能会试图在您的设备上安装危险的软件来窃取或删除您的信息。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
@@ -1604,7 +1608,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">命令行</translation>
 <translation id="7359588939039777303">广告已被拦截。</translation>
-<translation id="7365849542400970216">想了解您的设备使用情况？</translation>
+<translation id="7365849542400970216">允许网站了解您的设备使用情况？</translation>
 <translation id="7372973238305370288">搜索结果</translation>
 <translation id="7374733840632556089">此问题是由您或他人在您设备上安装的某个证书导致的。该证书已知被用于监控和拦截网络，因此不受 Chrome 信任。尽管某些情况下的监控确实是合理的（例如监控学校网络或公司网络），但 Chrome 想确保您知道自己正被监控，即使您无法改变这一事实。监控可能会发生在已联网的任何浏览器或应用中。</translation>
 <translation id="7375818412732305729">附加文件</translation>
@@ -1861,6 +1865,7 @@
 <translation id="8293206222192510085">添加书签</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8298115750975731693">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
+<translation id="8299269255470343364">日语</translation>
 <translation id="8303854710873047864">已显示“<ph name="SECTION" />”部分</translation>
 <translation id="830498451218851433">对折</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1941,6 +1946,7 @@
 <translation id="8625384913736129811">将此卡的信息保存到该设备</translation>
 <translation id="8627040765059109009">屏幕截取功能已恢复</translation>
 <translation id="8663226718884576429">订单摘要，<ph name="TOTAL_LABEL" />，更多详情</translation>
+<translation id="8666678546361132282">英语</translation>
 <translation id="867224526087042813">签名</translation>
 <translation id="8676424191133491403">无延迟</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案，<ph name="ANSWER" /></translation>
@@ -2023,7 +2029,7 @@
 <translation id="8983003182662520383">Google Pay 中存储的付款方式和地址信息</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="899688752321268742"><ph name="URL" /> 想了解您何时积极使用此设备</translation>
+<translation id="899688752321268742"><ph name="URL" /> 想了解您何时在主动使用此设备</translation>
 <translation id="8996941253935762404">您要访问的网站包含有害程序</translation>
 <translation id="8997023839087525404">该服务器提供了一个未通过证书透明度政策公开披露的证书。某些证书必须通过证书透明度政策进行公开披露，以确保它们值得信任且能保护用户免遭攻击。</translation>
 <translation id="9001074447101275817">代理 (<ph name="DOMAIN" />) 要求提供用户名和密码。</translation>

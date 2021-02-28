@@ -590,6 +590,7 @@
 <translation id="3229041911291329567">ព័ត៌មានកំណែ​អំពីឧបករណ៍ និងកម្មវិធីរុករក​តាមអ៊ីនធឺណិតរបស់អ្នក</translation>
 <translation id="323107829343500871">បញ្ចូល CVC សម្រាប់ <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">តែងតែចាប់យកមាតិកាសំខាន់ជានិច្ចនៅលើគេហទំព័រនេះ</translation>
+<translation id="3252266817569339921">ភាសាបារាំង</translation>
 <translation id="3266793032086590337">តម្លៃ (ជាន់គ្នា)</translation>
 <translation id="3270847123878663523">បកក្រោយការតម្រៀបឡើងវិញ</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1010,6 +1011,7 @@
 <translation id="4819347708020428563">កែចំណារនៅក្នុងទិដ្ឋភាពលំនាំដើមឬ?</translation>
 <translation id="484462545196658690">ស្វ័យប្រវត្តិ</translation>
 <translation id="4850886885716139402">មើល</translation>
+<translation id="485316830061041779">ភាសាអាល្លឺម៉ង់</translation>
 <translation id="4854362297993841467">មិនមានមធ្យោបាយ​ដឹកជញ្ជូនផ្ទាល់នេះទេ។ សូមសាកល្បងមធ្យោបាយផ្សេង។</translation>
 <translation id="4876188919622883022">​ទិដ្ឋភាព​សាមញ្ញ</translation>
 <translation id="4876305945144899064">គ្មាន​ឈ្មោះ​អ្នកប្រើប្រាស់​ទេ</translation>
@@ -1165,6 +1167,7 @@
 <translation id="541416427766103491">ទម្រគំនរ​ទី 4</translation>
 <translation id="5421136146218899937">ជម្រះទិន្នន័យរុករក...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ចង់​ផ្ញើ​ការជូន​ដំណឹងទៅអ្នក</translation>
+<translation id="5428105026674456456">ភាសាអេស្ប៉ាញ</translation>
 <translation id="542872847390508405">អ្នកកំពុងរុករកជារបៀបភ្ញៀវ</translation>
 <translation id="5430298929874300616">ដកចំណាំចេញ</translation>
 <translation id="5439770059721715174">កំហុសឆ្គងសុពលភាពសញ្ញាតំណាងនៅ "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
@@ -1174,6 +1177,7 @@
 <translation id="5455374756549232013">តែមពេលវេលាគោលការណ៍មិនល្អ</translation>
 <translation id="5457113250005438886">គ្មានសុពលភាព</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ទៀត}other{<ph name="CONTACT_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ទៀត}}</translation>
+<translation id="5469868506864199649">ភាសាអ៊ីតាលី</translation>
 <translation id="5470861586879999274">ធ្វើការកែប្រែវិញ</translation>
 <translation id="5478437291406423475">B6/C4 (ស្រោម​សំបុត្រ)</translation>
 <translation id="5481076368049295676">ខ្លឹមសារក្នុងទំព័រនេះអាច​នឹងព្យាយាម​ដំឡើងកម្មវិធី​គ្រោះថ្នាក់​ដែល​លួចយក ឬលុប​ព័ត៌មាន​នៅលើ​ឧបករណ៍​របស់អ្នក។ <ph name="BEGIN_LINK" />សូម​បង្ហាញ​ទោះបីជា​យ៉ាង​ណា​ក៏​ដោយ<ph name="END_LINK" /></translation>
@@ -1882,6 +1886,7 @@
 <translation id="8293206222192510085">បន្ថែមចំណាំ</translation>
 <translation id="8294431847097064396">ប្រភព</translation>
 <translation id="8298115750975731693">Wi-Fi ដែលអ្នកកំពុងប្រើ (<ph name="WIFI_NAME" />) អាចតម្រូវឲ្យអ្នកទៅកាន់ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />។</translation>
+<translation id="8299269255470343364">ភាសាជប៉ុន</translation>
 <translation id="8303854710873047864">ផ្នែក "<ph name="SECTION" />" ត្រូវបានបង្ហាញ</translation>
 <translation id="830498451218851433">បត់​ពាក់កណ្ដាល</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1961,6 +1966,7 @@
 <translation id="8625384913736129811">រក្សាទុកបណ្ណនេះទៅក្នុងឧបករណ៍នេះ</translation>
 <translation id="8627040765059109009">បានបន្ត​ការថត​អេក្រង់</translation>
 <translation id="8663226718884576429">ការ​សង្ខេប​អំពី​ការបញ្ជាទិញ, <ph name="TOTAL_LABEL" />, ព័ត៌មាន​លម្អិត​បន្ថែម</translation>
+<translation id="8666678546361132282">ភាសាអង់គ្លេស</translation>
 <translation id="867224526087042813">ហត្ថលេខា</translation>
 <translation id="8676424191133491403">គ្មាន​ការ​ពន្យារពេល</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ចមើ្លយ៖ <ph name="ANSWER" /></translation>

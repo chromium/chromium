@@ -862,7 +862,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1930879306590754738">Parol bu qurilma va hisobingizdan oʻchirib tashlandi</translation>
 <translation id="1931152874660185993">Hech qanday komponent o‘rnatilmagan.</translation>
 <translation id="1932098463447129402">Erta bo‘lmasin</translation>
-<translation id="1933809209549026293">Sichqoncha yoki klaviaturani ulang. Agar Bluetooth-qurilmadan foydalanayotgan bo‘lsangiz, qurilma ulanishga tayyorligini tekshiring.</translation>
 <translation id="1935303383381416800">Joylashuvingizni koʻrishga ruxsat berilgan</translation>
 <translation id="1936931585862840749">Chop etish uchun nusxalar sonini kiriting (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> protsessorli qurilmangizga <ph name="ARCHITECTURE_CONTAINER" /> turidagi zaxiraviy nusxasi tiklanmaydi. Arxivni boshqa turdagi protsessorli qurilmada tiklash yoki Fayllar ilovasi orqali tarkibidagi zaxiralangan fayllarini ochish mumkin.</translation>
@@ -2602,7 +2601,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Sherlog orqali yozilgan Assistent tarixini biriktirish. Bunga shaxsiy axborotlaringiz, joylashuv va nosozliklarni aniqlash jurnali axborotlari ham kiritilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Jild qo‘shish</translation>
-<translation id="3894598587402139398"><ph name="NAME" /> sayt va ilovalarga kirishi uchun qoʻshimcha hisoblar kiritishingiz mumkin.</translation>
 <translation id="3894770151966614831">Parol Google hisobingizga oʻtkazilsinmi?</translation>
 <translation id="3895076768659607631">Qidiruv tizimlarini &amp;boshqarish...</translation>
 <translation id="3895090224522145010">Kerberos uchun foydalanuvchi nomi</translation>
@@ -2943,6 +2941,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4301671483919369635">Bu sahifa fayllarni tahrirlay oladi</translation>
 <translation id="4303079906735388947">Elektron kalitga yangi PIN kod belgilang</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> qurilmasiga nusxalash</translation>
+<translation id="4305817255990598646">Almashtirish</translation>
 <translation id="4306119971288449206">Ilovalar “<ph name="CONTENT_TYPE" />” kontent turi bilan ishga tushiriladi</translation>
 <translation id="4306812610847412719">vaqtinchalik xotira</translation>
 <translation id="4307992518367153382">Asosiy</translation>
@@ -3019,7 +3018,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4400367121200150367">Bu yerda parollarni saqlash hech qachon taklif qilinmaydigan saytlar ko‘rsatiladi</translation>
 <translation id="4400632832271803360">Yuqori qatordagi tugmalar rejimni almashtirish uchun qidiruv tugmasini bosib turing</translation>
 <translation id="4400963414856942668">Varaqni bukmarklash uchun yulduzchani bosing</translation>
-<translation id="4402755511846832236">Bu qurilmadan foydalanish maʼlumotlarini saytlar bilishini taqiqlash</translation>
+<translation id="4402755511846832236">Bu qurilmadan foydalanish axborotlarini saytlar bilishini taqiqlash</translation>
 <translation id="4403775189117163360">Boshqa jildni tanlash</translation>
 <translation id="4404136731284211429">Yana qidirish</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> ota-onangiz tomonidan bloklangan. Bu ilovadan foydalanish uchun ota-onangizdan ruxsat oling.</translation>
@@ -3336,7 +3335,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4756378406049221019">To‘xtatish/Yangilash</translation>
 <translation id="4756388243121344051">&amp;Tarix</translation>
 <translation id="4759238208242260848">Yuklanmalar</translation>
-<translation id="4759387251871503426">Google hisoblarini <ph name="LINK_BEGIN" />Sozlamalar<ph name="LINK_END" /> orqali boshqarishingiz mumkin. Sayt va ilovalarga berilgan ruxsatlar barcha hisoblarga tatbiq etiladi. Sayt va ilovalarni hisob axborotingizga kirishini istamasangiz, <ph name="DEVICE_TYPE" /> qurilmasiga mehmon sifatida kiring yoki internetda <ph name="LINK_2_BEGIN" />inkognito oynasida<ph name="LINK_2_END" /> ishlang.</translation>
 <translation id="4761104368405085019">Mikrofoningizni ishlatish</translation>
 <translation id="4762718786438001384">Qurilma diskida bo‘sh joy deyarli qolmadi</translation>
 <translation id="4763408175235639573">Bu sahifaga tashrif buyurish vaqtida kompyuteringizga quyidagi cookie fayllari saqlandi:</translation>
@@ -3557,6 +3555,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5027550639139316293">Email sertifikati</translation>
 <translation id="5027562294707732951">Kengaytmani o‘rnatish</translation>
 <translation id="5029568752722684782">Nusxani o‘chirib tashlash</translation>
+<translation id="503155457707535043">Ilovalar yuklab olinishi</translation>
 <translation id="5033137252639132982">Harakat sensorlaridan foydalanish taqiqlangan</translation>
 <translation id="5033266061063942743">Geometrik shakllar</translation>
 <translation id="5036662165765606524">Saytlarga bir nechta faylni avtomatik yuklab olishni taqiqlash</translation>
@@ -6114,7 +6113,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7968833647796919681">Unumdorlik haqidagi ma’lumot to‘plashni yoqish</translation>
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>
 <translation id="7969046989155602842">Command</translation>
-<translation id="7970618607181090249">Sensorli ekran aniqlandi</translation>
 <translation id="7970673414865679092">Ethernet axboroti</translation>
 <translation id="7970882136539140748">Kartani hozir saqlash imkonsiz</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA shifri bilan</translation>
@@ -7144,7 +7142,6 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="9128870381267983090">Tarmoqqa ulanish</translation>
 <translation id="9130015405878219958">Noto‘g‘ri rejim ko‘rsatildi.</translation>
 <translation id="9131487537093447019">Bluetooth qurilmalari bilan xabarlar almashish</translation>
-<translation id="9134119143784876218">Ingliz tilidagi audio va video ijrosida taglavhalarni avtomatik yaratadi (hozircha faqat Chrome brauzerida). Audio va taglavhalar qurilmaning oʻzida qayta ishlanadi.</translation>
 <translation id="9137013805542155359">Asl tilda ko‘rsatish</translation>
 <translation id="9137157311132182254">Birlamchi qidiruv tizimi</translation>
 <translation id="9137248913990643158">Bu ilovadan foydalanishdan oldin Chrome brauzerini ishga tushiring va hisobingizga kiring.</translation>

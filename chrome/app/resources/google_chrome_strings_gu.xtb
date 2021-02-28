@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" />, પહેલાં Chrome નો ઉપયોગ કરી રહ્યાં હતાં</translation>
 <translation id="1097330777386562916">જ્યારે તમે Chromeમાંથી બહાર નીકળો ત્યારે કુકી અને સાઇટનો ડેટા સાફ કરો</translation>
 <translation id="110877069173485804">આ તમારું Chrome છે</translation>
+<translation id="1125124144982679672">કોણ Chromeનો ઉપયોગ કરે છે?</translation>
 <translation id="1142745911746664600">Chrome અપડેટ કરી શકતાં નથી</translation>
 <translation id="1154147086299354128">&amp;Chromeમાં ખોલો</translation>
 <translation id="123620459398936149">Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી. કૃપા કરીને તમારા સિંક પાસફ્રેઝને અપડેટ કરો.</translation>
@@ -122,7 +123,6 @@
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="4053720452172726777">Google Chrome ને કસ્ટમાઇઝ કરો અને તેનું નિયંત્રણ કરો</translation>
 <translation id="4110895483821904099">તમારી નવી Chrome પ્રોફાઇલ સેટઅપ કરો</translation>
-<translation id="4143243756087420366">Chromeમાંનું નામ અને ફોટો</translation>
 <translation id="4147555960264124640">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">ઇન્સ્ટૉલર આર્કાઇવને અનકોમ્પ્રેસ કરવામાં નિષ્ફળ. કૃપા કરીને Google Chrome ફરીથી ડાઉનલોડ કરો.</translation>
 <translation id="4191857738314598978">{0,plural, =1{એક દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}one{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}other{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}}</translation>

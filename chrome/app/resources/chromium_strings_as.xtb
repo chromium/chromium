@@ -138,7 +138,6 @@
 <translation id="549669000822060376">Chromiumএ শেহতীয়া ছিষ্টেম আপডে’ট ইনষ্টল কৰালৈ কিছুসময় অপেক্ষা কৰক।</translation>
 <translation id="5496810170689441661">Chromiumএ পাছৱর্ডসমূহ সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে। এই কার্যৰ বাবে অনুমতি দিবলৈ আপোনাৰ Windowsৰ পাছৱৰ্ডটো টাইপ কৰক।</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumৰ এটা আপডে'ট আছে}=1{Chromiumৰ এটা আপডে'ট আছে}one{Chromiumৰ এটা আপডে’ট # দিনৰ বাবে উপলব্ধ}other{Chromiumৰ এটা আপডে’ট # দিনৰ বাবে উপলব্ধ}}</translation>
-<translation id="5631814766731275228">Chromiumৰ নাম আৰু ছবি</translation>
 <translation id="5634636535844844681">Chromiumৰ বাবে Windows 7 বা তাতোকৈ উন্নত সংস্কৰণৰ আৱশ্যক।</translation>
 <translation id="5653831366781983928">অনুগ্ৰহ কৰি এতিয়া Chromium ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5698481217667032250">এই ভাষাত Chromium প্ৰদর্শন কৰক</translation>
@@ -281,5 +280,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS ছিষ্টেম</translation>
 <translation id="93478295209880648">Chromiumএ সঠিকভাৱে কাম নকৰিবও পাৰে কাৰণ এই সংস্কৰণটো Windows XP বা Windows Vistaত আৰু নচলে</translation>
+<translation id="965162752251293939">Chromium কোনে ব্যৱহাৰ কৰি আছে?</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

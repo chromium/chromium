@@ -13,6 +13,7 @@
 <translation id="1272079795634619415">Dừng</translation>
 <translation id="1289742167380433257">Google đã tối ưu hóa các hình ảnh trong trang này để tiết kiệm dữ liệu cho bạn.</translation>
 <translation id="129382876167171263">Những tệp mà trang web lưu lại sẽ xuất hiện ở đây</translation>
+<translation id="1317194122196776028">Xóa trang web này</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" /> – <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">Đã thêm trang web <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
@@ -129,7 +130,7 @@
 <translation id="4670064810192446073">Thực tế ảo</translation>
 <translation id="4708011789095599544">Bạn có chắc chắn muốn xóa cookie và dữ liệu khác của trang web này không?</translation>
 <translation id="4751476147751820511">Cảm biến chuyển động hoặc ánh sáng</translation>
-<translation id="4836046166855586901">Hỏi trong trường hợp một trang web muốn biết khi bạn đang dùng thiết bị này</translation>
+<translation id="4836046166855586901">Hỏi khi một trang web muốn biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4883854917563148705">Bạn không thể đặt lại các tùy chọn cài đặt được quản lý</translation>
 <translation id="4887024562049524730">Hỏi ý bạn trước khi cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
 <translation id="4962975101802056554">Thu hồi tất cả các quyền đối với thiết bị</translation>

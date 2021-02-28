@@ -859,7 +859,6 @@
 <translation id="1930879306590754738">Fjalëkalimi u fshi nga kjo pajisje dhe "Llogaria jote e Google"</translation>
 <translation id="1931152874660185993">Nuk ka asnjë përbërës të instaluar.</translation>
 <translation id="1932098463447129402">Jo më parë</translation>
-<translation id="1933809209549026293">Lidh një mi ose tastierë. Nëse po përdor një pajisje Bluetooth-i, sigurohu që të jetë gati të çiftohet.</translation>
 <translation id="1935303383381416800">Lejohen të shikojnë vendndodhjen tënde</translation>
 <translation id="1936931585862840749">Përdor një numër për të treguar sa kopje do të printohen (1 deri në <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nuk mund të importojë llojin e arkitekturës së kontejnerit <ph name="ARCHITECTURE_CONTAINER" /> me këtë pajisje që është <ph name="ARCHITECTURE_DEVICE" />. Mund të provosh ta restaurosh këtë kontejner në një pajisje tjetër ose mund të kesh qasje te skedarët brenda këtij imazhi kontejneri duke hapur aplikacionin "Skedarët".</translation>
@@ -2595,7 +2594,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Përfshi historikun e fundit të "Asistentit" përmes Sherlog. Kjo mund të përfshijë identitetin, vendndodhjen tënde dhe informacionet e defekteve në kod. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Shto dosje</translation>
-<translation id="3894598587402139398">Mund të shtosh llogari shtesë për <ph name="NAME" /> për të pasur qasje te sajtet e uebit dhe aplikaiconet.</translation>
 <translation id="3894770151966614831">Të zhvendoset te "Llogaria e Google"?</translation>
 <translation id="3895076768659607631">&amp;Menaxho motorët e kërkimit...</translation>
 <translation id="3895090224522145010">Emri i përdoruesit i Kerberos</translation>
@@ -2935,6 +2933,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4301671483919369635">Kjo faqe lejohet të modifikojë skedarët</translation>
 <translation id="4303079906735388947">Konfiguro një kod të ri PIN për çelësin e sigurisë</translation>
 <translation id="4305402730127028764">Kopjo te <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Ndërro</translation>
 <translation id="4306119971288449206">Aplikacionet duhet të shërbehen me llojin "<ph name="CONTENT_TYPE" />" të përmbajtjes</translation>
 <translation id="4306812610847412719">kujtesa e fragmenteve</translation>
 <translation id="4307992518367153382">Bazat</translation>
@@ -3327,7 +3326,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4756378406049221019">Ndalo/Ringarko</translation>
 <translation id="4756388243121344051">&amp;Historiku</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
-<translation id="4759387251871503426">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar nga <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" />. Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për të gjitha llogaritë. Nëse nuk dëshiron që sajtet ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, mund të identifikohesh në <ph name="DEVICE_TYPE" /> si vizitor ose të shfletosh në ueb në një <ph name="LINK_2_BEGIN" />dritare të fshehtë<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Përdor mikrofonin</translation>
 <translation id="4762718786438001384">Hapësira e diskut të pajisjes është jashtëzakonisht e ulët</translation>
 <translation id="4763408175235639573">Kukit e mëposhtme u vendosën kur vizitove këtë faqe</translation>
@@ -3548,6 +3546,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5027550639139316293">Dërgo certifikatën me mail</translation>
 <translation id="5027562294707732951">Shto një shtesë</translation>
 <translation id="5029568752722684782">Pastro kopjen</translation>
+<translation id="503155457707535043">Po shkarkon aplikacionet</translation>
 <translation id="5033137252639132982">Nuk lejohen të përdorin sensorët e lëvizjes</translation>
 <translation id="5033266061063942743">Format gjeometrike</translation>
 <translation id="5036662165765606524">Mos lejo asnjë faqe të shkarkojë shumë skedarë automatikisht</translation>
@@ -6099,7 +6098,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7968833647796919681">Aktivizo grumbullimin e të dhënave të cilësisë së funksionimit</translation>
 <translation id="7968982339740310781">Shiko detajet</translation>
 <translation id="7969046989155602842">Komanda</translation>
-<translation id="7970618607181090249">U zbulua ekran me prekje</translation>
 <translation id="7970673414865679092">Detajet e eternetit</translation>
 <translation id="7970882136539140748">Karta nuk mund të ruhet për momentin</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 me enkriptim RSA</translation>
@@ -7127,7 +7125,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9128870381267983090">Lidhu me rrjetin</translation>
 <translation id="9130015405878219958">U fut modalitet i pavlefshëm.</translation>
 <translation id="9131487537093447019">Dërgo dhe merr mesazhe nga pajisjet me Bluetooth.</translation>
-<translation id="9134119143784876218">Krijo automatikisht titrat për audion dhe videon në anglisht (aktualisht ofrohet vetëm në shfletuesin Chrome). Audioja dhe titrat nuk largohen asnjëherë nga pajisja.</translation>
 <translation id="9137013805542155359">Shfaq origjinalin</translation>
 <translation id="9137157311132182254">Motori i preferuar i kërkimit</translation>
 <translation id="9137248913990643158">Fillo dhe identifikohu në Chrome para se të përdorësh këtë aplikacion.</translation>

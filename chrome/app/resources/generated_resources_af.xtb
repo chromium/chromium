@@ -864,7 +864,6 @@
 <translation id="1930879306590754738">Wagwoord is van hierdie toestel en jou Google-rekening af uitgevee</translation>
 <translation id="1931152874660185993">Geen komponente is geïnstalleer nie.</translation>
 <translation id="1932098463447129402">Nie voor</translation>
-<translation id="1933809209549026293">Koppel asseblief 'n muis of 'n sleutelbord. As jy 'n Bluetooth-toestel gebruik, maak seker dat dit gereed is om saam te bind.</translation>
 <translation id="1935303383381416800">Mag jou ligging sien</translation>
 <translation id="1936931585862840749">Gebruik 'n getal om aan te dui hoeveel kopieë gedruk moet word (1 tot <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kan nie 'n houerargitektuursoort <ph name="ARCHITECTURE_CONTAINER" /> saam met hierdie invoer toestel wat 'n <ph name="ARCHITECTURE_DEVICE" /> is nie. Jy kan probeer om hierdie houer op 'n ander toestel te herlaai, of jy kan toegang tot die lêers binne hierdie houerprent kry deur dit in Lêers-program oop te maak.</translation>
@@ -2604,7 +2603,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Sluit onlangse Assistent-geskiedenis deur Sherlog in. Dit kan jou identiteit, ligging en ontfoutinligting insluit. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Voeg vouer by</translation>
-<translation id="3894598587402139398">Jy kan bykomende rekeninge vir <ph name="NAME" /> byvoeg om toegang tot webwerwe en programme te kry.</translation>
 <translation id="3894770151966614831">Skuif na Google-rekening toe?</translation>
 <translation id="3895076768659607631">&amp;Bestuur soekenjins …</translation>
 <translation id="3895090224522145010">Kerberos-gebruikernaam</translation>
@@ -2945,6 +2943,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4301671483919369635">Hierdie bladsy word toegelaat om lêers te wysig</translation>
 <translation id="4303079906735388947">Stel 'n nuwe PIN vir jou sekuriteitsleutel op</translation>
 <translation id="4305402730127028764">Kopieer na <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Skakel oor</translation>
 <translation id="4306119971288449206">Programme moet met inhoudtipe "<ph name="CONTENT_TYPE" />" bedien word</translation>
 <translation id="4306812610847412719">knipbord</translation>
 <translation id="4307992518367153382">Basies</translation>
@@ -3338,7 +3337,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4756378406049221019">Stop/Herlaai</translation>
 <translation id="4756388243121344051">Geskiedenis</translation>
 <translation id="4759238208242260848">Aflaaie</translation>
-<translation id="4759387251871503426">Jy kan jou aangemelde Google-rekeninge van <ph name="LINK_BEGIN" />Instellings<ph name="LINK_END" /> af bestuur. Toestemmings wat jy aan webwerwe en programme gegee het, kan op alle rekeninge van toepassing wees. As jy nie wil hê dat werwe of programme toegang tot jou rekeninginligting moet hê nie, kan jy as 'n gas by die <ph name="DEVICE_TYPE" /> aanmeld of in 'n <ph name="LINK_2_BEGIN" />Incognito-venster<ph name="LINK_2_END" /> deur die web blaai.</translation>
 <translation id="4761104368405085019">Gebruik jou mikrofoon</translation>
 <translation id="4762718786438001384">Toestel se skyfspasie is gevaarlik laag</translation>
 <translation id="4763408175235639573">Die volgende webkoekies is gestel toe jy hierdie bladsy bekyk het</translation>
@@ -3559,6 +3557,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5027550639139316293">E-possertifikaat</translation>
 <translation id="5027562294707732951">Voeg uitbreiding by</translation>
 <translation id="5029568752722684782">Vee kopie uit</translation>
+<translation id="503155457707535043">Programme laai nou af</translation>
 <translation id="5033137252639132982">Mag nie bewegingsensors gebruik nie</translation>
 <translation id="5033266061063942743">Geometriese vorms</translation>
 <translation id="5036662165765606524">Moenie enige werf toelaat om veelvuldige lêers outomaties af te laai nie</translation>
@@ -6118,7 +6117,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7968833647796919681">Aktiveer prestasiedataversameling</translation>
 <translation id="7968982339740310781">Bekyk details</translation>
 <translation id="7969046989155602842">Command</translation>
-<translation id="7970618607181090249">Raakskerm bespeur</translation>
 <translation id="7970673414865679092">Ethernet-besonderhede</translation>
 <translation id="7970882136539140748">Kan nie kaart nou stoor nie</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 met RSA-enkripsie</translation>
@@ -7148,7 +7146,6 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="9128870381267983090">Koppel aan netwerk</translation>
 <translation id="9130015405878219958">Ongeldige modus ingevoer.</translation>
 <translation id="9131487537093447019">Stuur boodskappe na en ontvang boodskappe van Bluetooth-toestelle af.</translation>
-<translation id="9134119143784876218">Skep outomaties onderskrifte vir Engelse oudio en video (tans net in die Chrome-blaaier beskikbaar). Oudio en onderskrifte verlaat nooit jou toestel nie.</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>
 <translation id="9137157311132182254">Voorkeursoekenjin</translation>
 <translation id="9137248913990643158">Begin asseblief deur by Chrome aan te meld voordat jy hierdie program gebruik.</translation>

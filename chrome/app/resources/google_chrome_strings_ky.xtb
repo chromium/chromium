@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> мурда Chrome'ду пайдаланчу</translation>
 <translation id="1097330777386562916">Chrome'дон чыкканда cookie файлдары жана сайттын дайындары тазалансын</translation>
 <translation id="110877069173485804">Бул сиздин Chrome</translation>
+<translation id="1125124144982679672">Chrome'ду ким колдонуп жатат?</translation>
 <translation id="1142745911746664600">Chrome жаңырбай жатат</translation>
 <translation id="1154147086299354128">&amp;Chrome'до ачуу</translation>
 <translation id="123620459398936149">Chrome OS дайын-даректериңизди шайкештештире албай койду. Шайкештештирүүнүн купуя сөз айкашын жаңыртыңыз.</translation>
@@ -91,6 +92,7 @@
 <translation id="3065168410429928842">Chrome өтмөгү</translation>
 <translation id="3080151273017101988">Google Chrome жабылганда фондук колдонмолор иштей берсин</translation>
 <translation id="3089968997497233615">Google Chrome'дун бир кыйла жаңы, коопсуз версиясы бар.</translation>
+<translation id="3100998948628680988">Chrome профилиңиздин аталышын коюңуз</translation>
 <translation id="3114643501466072395">Башка сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chrome'го кириңиз<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS маалыматыңызды шайкештештире албай койду.</translation>
 <translation id="3140883423282498090">Өзгөртүүлөрүңүз Google Chrome кийинки жолу кайра ишке киргизилгенде күчүнө кирет.</translation>
@@ -122,7 +124,6 @@
 <translation id="4050175100176540509">Эң акыркы версияда коопсуздукту бекемдөө каражаттары менен жаңы мүмкүнчүлүктөр камтылган.</translation>
 <translation id="4053720452172726777">Google Chrome'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
 <translation id="4110895483821904099">Жаңы Chrome профилин жөндөп алыңыз</translation>
-<translation id="4143243756087420366">Chrome'догу профилдин аталышы жана сүрөтү</translation>
 <translation id="4147555960264124640">Башкарылган аккаунт менен кирип, анын администраторуна Google Chrome профилиңизди көзөмөлдөө мүмкүнчүлүгүн берип жатасыз. Колдонмолоруңуз, кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр сыяктуу Chrome дайын-даректериңиз эми биротоло <ph name="USER_NAME" /> менен байланып калат. Бул дайындарды Google Каттоо эсептеринин Жеке кеңсеси аркылуу жок кылсаңыз болот, бирок башка аккаунтка байланыштыра албайсыз. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Орноткуч архивди чыгара албай койду. Google Chrome'ду кайра жүктөп алыңыз.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome 1 күндүн ичинде кайра иштетилет}other{Chrome # күндүн ичинде кайра иштетилет}}</translation>

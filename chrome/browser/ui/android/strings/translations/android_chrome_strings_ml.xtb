@@ -73,6 +73,7 @@
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> പങ്കിടാനാവുന്നില്ല</translation>
 <translation id="1477626028522505441">സെർവർ പ്രശ്‌നങ്ങൾ കാരണം <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
+<translation id="1492417797159476138">ഈ സൈറ്റിനായി നിങ്ങൾ ഇതിനകം തന്നെ ഈ ഉപയോക്തൃനാമം സംരക്ഷിച്ചു</translation>
 <translation id="1506061864768559482">തിരയൽ യന്ത്രം</translation>
 <translation id="1513352483775369820">ബുക്ക്‌മാർക്കുകളും വെബ് ചരിത്രവും</translation>
 <translation id="1513858653616922153">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
@@ -263,7 +264,6 @@
 <translation id="281504910091592009">നിങ്ങളുടെ <ph name="BEGIN_LINK" />Google അക്കൗണ്ടിൽ<ph name="END_LINK" /> സംരക്ഷിച്ച പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="2818669890320396765">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ ലഭിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="2827278682606527653">പകുതി ഉയരത്തിലുള്ള ഫീഡ് കാർഡ് മെനു</translation>
-<translation id="2833452327385637152">ഒരു പദമോ പദസമൂഹമോ തിരയുന്നതിനായി ടാപ്പ് ചെയ്യുന്നതിന് പകരം അതിൽ സ്‌പർശിച്ച് പിടിക്കുക</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ഒരു ദിവസം മുമ്പ് പരിശോധിച്ചു}other{# ദിവസം മുമ്പ് പരിശോധിച്ചു}}</translation>
 <translation id="2842985007712546952">പാരന്റ് ഫോൾഡർ</translation>
 <translation id="2856503607207334158">സൈൻ ഇൻ ചെയ്യാനായില്ല</translation>
@@ -603,6 +603,7 @@
 <translation id="5191251636205085390">മൂന്നാം കക്ഷി കുക്കികൾക്ക് പകരം നിലവിൽ വരാൻ പോകുന്ന പുതിയ സാങ്കേതികവിദ്യകളെക്കുറിച്ച് അറിയുകയും അവയെ നിയന്ത്രിക്കുകയും ചെയ്യുക</translation>
 <translation id="5193988420012215838">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
 <translation id="5199929503336119739">ഔദ്യോഗിക പ്രൊഫൈൽ</translation>
+<translation id="5204967432542742771">പാസ്‌വേഡ് നല്‍കുക</translation>
 <translation id="5210286577605176222">മുമ്പത്തെ ടാബിലേക്ക് പോകുക</translation>
 <translation id="5210365745912300556">ടാബ് അടയ്ക്കൂക</translation>
 <translation id="5213672942202814946">ശബ്ദ തിരയൽ ഉപയോഗിക്കൂ</translation>
@@ -861,6 +862,7 @@
 <translation id="6850409657436465440">നിങ്ങളുടെ ഡൗൺലോഡ് ഇപ്പോഴും പുരോഗതിയിലാണ്</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ടാബുകൾ അടച്ചു</translation>
 <translation id="685850645784703949">Google-ന്റെ Discover - ഓഫാണ്</translation>
+<translation id="686366188661646310">പാസ്‌വേഡ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="6864459304226931083">ചിത്രം ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6865313869410766144">ഓട്ടോഫിൽ ഫോം ഡാറ്റ</translation>
 <translation id="6882836635272038266">അപകടകരമെന്ന് അറിയപ്പെടുന്ന വെബ്സൈറ്റുകൾ, ഡൗൺലോഡുകള്‍, വിപുലീകരണങ്ങൾ എന്നിവയ്ക്ക് എതിരായ സ്‌റ്റാൻഡേർഡ് സുരക്ഷ.</translation>
@@ -1120,7 +1122,6 @@
 <translation id="8571213806525832805">കഴിഞ്ഞ 4 ആഴ്ച</translation>
 <translation id="8572344201470131220">ചിത്രം പകർത്തി</translation>
 <translation id="8583805026567836021">അക്കൗണ്ട് ഡാറ്റ മായ്‌ക്കുന്നു</translation>
-<translation id="8587585930972369234">തിരയാൻ സ്‌പർശിച്ച് പിടിക്കുക</translation>
 <translation id="860043288473659153">കാർഡിന്റെ ഉടമയുടെ പേര്</translation>
 <translation id="8602358303461588329">Chrome-ലേക്ക് സെെൻ ഇൻ ചെയ്യുക, അടച്ചു.</translation>
 <translation id="860282621117673749">വിലയിടിവ് മുന്നറിയിപ്പുകൾ</translation>

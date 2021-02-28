@@ -2590,13 +2590,6 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 
       Observação: a reinicialização do dispositivo limpa o cache. Até os dados temporários do realm de usuários são armazenados em cache. Desative o cache para impedir o rastreamento de dados temporários do realm do usuário.</translation>
 <translation id="4591366717022345234">Oferecer Quick Fix Build a usuários</translation>
-<translation id="4592246263545654202">Especifica se o usuário pode abrir páginas no modo de navegação anônima no <ph name="PRODUCT_NAME" />.
-
-      Se "Ativado" for selecionado ou se a política não for definida, as páginas poderão ser abertas no modo de navegação anônima.
-
-      Se "Desativado" for selecionado, as páginas não poderão ser abertas no modo de navegação anônima.
-
-      Se "Forçado" for selecionado, as páginas poderão ser abertas SOMENTE no modo de navegação anônima. A opção "Forçado" não funciona para Android no Chrome</translation>
 <translation id="4593391169954484940">Hash SHA-256 do arquivo.</translation>
 <translation id="4594467366027975448">Configura o diretório que o <ph name="PRODUCT_NAME" /> usará para armazenar a cópia em roaming dos perfis.
 

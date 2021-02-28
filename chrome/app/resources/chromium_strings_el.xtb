@@ -136,7 +136,6 @@
 <translation id="549669000822060376">Περιμένετε μέχρι να γίνει εγκατάσταση των πιο πρόσφατων ενημερώσεων συστήματος από το Chromium.</translation>
 <translation id="5496810170689441661">Το Chromium προσπαθεί να επεξεργαστεί κωδικούς πρόσβασης. Για να επιτρέψετε αυτήν την ενέργεια, πληκτρολογήστε τον κωδικό πρόσβασης των Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium}=1{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium}other{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium για # ημέρες}}</translation>
-<translation id="5631814766731275228">Όνομα και εικόνα στο Chromium</translation>
 <translation id="5634636535844844681">Το Chromium απαιτεί Windows 7 ή νεότερη έκδοση.</translation>
 <translation id="5653831366781983928">Επανεκκινήστε το Chromium τώρα</translation>
 <translation id="5698481217667032250">Να εμφανίζεται το Chromium σε αυτήν τη γλώσσα</translation>
@@ -280,5 +279,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Σύστημα Chromium OS</translation>
 <translation id="93478295209880648">Το Chromium μπορεί να μην λειτουργεί σωστά, επειδή δεν υποστηρίζεται πια σε Windows XP και Windows Vista</translation>
+<translation id="965162752251293939">Ποιος χρησιμοποιεί το Chromium;</translation>
 <translation id="985602178874221306">Οι συντάκτες του Chromium</translation>
 </translationbundle>

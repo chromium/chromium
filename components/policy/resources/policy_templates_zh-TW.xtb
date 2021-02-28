@@ -879,11 +879,11 @@
 <translation id="2231817271680715693">第一次執行時從預設瀏覽器匯入瀏覽記錄</translation>
 <translation id="2231962946025538735">這項政策已淘汰，請使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控管是否要提供 Flash 外掛程式，並使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 指定是否要使用整合式 PDF 檢視器開啟 PDF 檔案。
 
-      指定使用者能否在 <ph name="PRODUCT_NAME" /> 中啟用或停用的外掛程式清單。
+      指定使用者能在 <ph name="PRODUCT_NAME" /> 中啟用或停用的外掛程式清單。
 
       你可以使用萬用字元「*」和「?」來比對出任意字元序列。「*」可代表任意數量的字元，而「?」只能指定單一選用字元，也就是可代表零或一個字元。逸出字元為「\」，因此如果要比對出「*」、「?」或「\」字元本身，請在這些字元前面加上「\」。
 
-      如果啟用這項設定，<ph name="PRODUCT_NAME" /> 可以使用清單指定的外掛程式。即使外掛程式符合 DisabledPlugins 中的模式，使用者仍可在「about:plugins」中啟用或停用這些外掛程式。如果外掛程式與 DisabledPlugins、DisabledPluginsExceptions 和 EnabledPlugins 中的任何模式都不相符，使用者也可以啟用及停用這些外掛程式。
+      如果啟用這項設定，<ph name="PRODUCT_NAME" /> 可以使用在指定清單中的外掛程式。即使外掛程式符合 DisabledPlugins 中的模式，使用者仍可在「about:plugins」中啟用或停用這些外掛程式。如果外掛程式與 DisabledPlugins、DisabledPluginsExceptions 和 EnabledPlugins 中的任何模式都不相符，使用者也可以啟用及停用這些外掛程式。
 
       這項政策的用途是為嚴格的外掛程式封鎖功能設定例外；如果「DisabledPlugins」清單使用萬用字元設定封鎖清單 (例如以「*」停用所有外掛程式，或以「*Java*」停用所有 Java 外掛程式)，但管理員希望啟用某些特定版本的外掛程式 (例如「IcedTea Java 2.3」)，即可在這項政策中指定要允許的版本。
 
@@ -2562,13 +2562,6 @@
 
       注意：重新啟動裝置會清除快取。即使是暫時使用者，系統也會快取他們的運作範圍資料。關閉快取功能可防止系統追蹤暫時使用者的運作範圍。</translation>
 <translation id="4591366717022345234">提供「快速修復版本」給使用者</translation>
-<translation id="4592246263545654202">指定使用者是否可在 <ph name="PRODUCT_NAME" /> 中以無痕模式開啟網頁。
-
-      如果將這項政策設為「啟用」或不予設定，使用者能夠以無痕模式開啟網頁。
-
-      如果設為「停用」，使用者將無法以無痕模式開啟網頁。
-
-      如果設為「強制」，使用者只能以無痕模式開啟網頁。請注意，「強制」選項不適用於 Chrome Android 版。</translation>
 <translation id="4593391169954484940">檔案的 SHA-256 雜湊值。</translation>
 <translation id="4594467366027975448">這項政策可設定 <ph name="PRODUCT_NAME" /> 用來儲存設定檔漫遊副本的目錄。
 
@@ -4247,7 +4240,7 @@
       如果未設定 (或設為無效網址)，<ph name="PRODUCT_NAME" /> 不會使用這項政策做為不切換瀏覽器的規則來源。
 
       注意：這項政策指向和 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策採用相同格式的 XML 檔案。因此，系統會從 XML 檔案載入規則，但不會與 <ph name="IE_PRODUCT_NAME" /> 共用這些規則。如要進一步瞭解 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策，請前往 https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
-<translation id="6967623535060479585">你可以透過設定這項政策來控制密碼保護警告的觸發條件。當使用者在潛在可疑網站上重複使用受保護的密碼時，便會收到密碼保護警告。
+<translation id="6967623535060479585">你可以透過這項政策設定密碼保護警告的觸發條件。當使用者在可疑網站上重複使用受保護的密碼時，便會收到密碼保護警告。
 
       透過 <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> 和 <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> 可設定要保護的密碼。
 
@@ -4431,7 +4424,7 @@
 
       如果不設定這項政策，使用者可在安裝或初次執行 Chrome 時指定是否啟用匿名回報功能，之後也可透過 Chrome 設定頁面變更這項設定。
 
-      這項政策僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的 Windows 執行個體、已註冊裝置管理服務的 Windows 10 專業版或企業版執行個體，以及透過行動裝置管理 (MDM) 管理或透過 MCX 加入某個網域的 macOS 執行個體。
+      這項政策僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的 Windows 執行個體、或是已註冊裝置管理服務的 Windows 10 專業版或企業版執行個體。如果是 macOS 執行個體，必須透過行動裝置管理 (MDM) 或利用 MCX 加入某個網域才能使用。
 
       針對 Chrome 作業系統，請參閱 DeviceMetricsReportingEnabled。</translation>
 <translation id="7145335384492396213">預設 PIN 碼列印模式</translation>

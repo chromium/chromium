@@ -860,7 +860,6 @@
 <translation id="1930879306590754738">এই ডিভাইচটো আৰু আপোনাৰ Google একাউণ্টৰ পৰা পাছৱৰ্ড মচা হৈছে</translation>
 <translation id="1931152874660185993">কোনো উপাদান ইনষ্টল কৰা নাই।</translation>
 <translation id="1932098463447129402">ইয়াৰ আগত নহয়</translation>
-<translation id="1933809209549026293">অনুগ্ৰহ কৰি কোনো মাউছ বা কীব'র্ড সংযোগ কৰক। যদি আপুনি কোনো ব্লুটুথ ডিভাইচ ব্যৱহাৰ কৰি আছে তেন্তে ডিভাইচটো যোৰা লগাবলৈ সাজু থকাটো নিশ্চিত কৰক।</translation>
 <translation id="1935303383381416800">আপোনাৰ অৱস্থান চোৱাৰ অনুমতি আছে</translation>
 <translation id="1936931585862840749">কিমানটা প্ৰতিলিপি প্ৰিণ্ট কৰিব লাগে সেয়া সূচাবলৈ এটা নম্বৰ ব্যৱহাৰ কৰক (১ৰ পৰা <ph name="MAX_COPIES" />লৈ)।</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ডিভাইচৰ জৰিয়তে কণ্টেইনাৰ নির্মাণৰ <ph name="ARCHITECTURE_CONTAINER" /> প্ৰকাৰ আমদানি কৰিব নোৱাৰি। আপুনি এই কণ্টেইনাৰ অন্য কোনো ডিভাইচত পুনঃস্থাপন কৰি চাব পাৰে বা ইয়াক Files এপ্‌ত খুলি এই কণ্টেনাৰৰ ভিতৰত থকা ফাইলসমূহলৈ এক্সেছ কৰিব পাৰে।</translation>
@@ -2596,7 +2595,6 @@
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Sherlogৰ জৰিয়তে শেহতীয়া Assistant ইতিহাস অন্তৰ্ভুক্ত কৰক। ইয়াত আপোনাৰ পৰিচয়, অৱস্থান আৰু ডিবাগ তথ্য অন্তৰ্ভুক্ত কৰা হ’ব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">ফ’ল্ডাৰ যোগ কৰক</translation>
-<translation id="3894598587402139398">ৱেবছাইট আৰু এপ্‌ এক্সেছ কৰিবলৈ আপুনি <ph name="NAME" />ৰ বাবে অতিৰিক্ত একাউণ্ট যোগ দিব পাৰে।</translation>
 <translation id="3894770151966614831">Google একাউণ্টলৈ স্থানান্তৰ কৰিবনে?</translation>
 <translation id="3895076768659607631">&amp;সন্ধানৰ ইঞ্জিন পৰিচালনা কৰক...</translation>
 <translation id="3895090224522145010">Kerberos ব্যৱহাৰকাৰীৰ নাম</translation>
@@ -2933,6 +2931,7 @@
 <translation id="4301671483919369635">ফাইলসমূহ সম্পাদনা কৰিবলৈ এই পৃষ্ঠাটোক অনুমতি দিয়া হৈছে</translation>
 <translation id="4303079906735388947">আপোনাৰ সুৰক্ষা চাবিৰ বাবে এটা নতুন পিন ছেট কৰক</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />লৈ প্ৰতিলিপি কৰক</translation>
+<translation id="4305817255990598646">সলনি কৰক</translation>
 <translation id="4306119971288449206">এপ্ "<ph name="CONTENT_TYPE" />" প্ৰকাৰৰ সমলৰ সৈতে দিবই লাগিব</translation>
 <translation id="4306812610847412719">ক্লিপব'ৰ্ড</translation>
 <translation id="4307992518367153382">মৌলিক</translation>
@@ -3324,7 +3323,6 @@
 <translation id="4756378406049221019">বন্ধ কৰক/পুনৰ ল'ড কৰক</translation>
 <translation id="4756388243121344051">&amp;ইতিহাস</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
-<translation id="4759387251871503426">আপুনি ছাইন ইন কৰি ৰখা Google একাউণ্টসমূহ <ph name="LINK_BEGIN" />ছেটিঙ<ph name="LINK_END" />ৰ পৰা পৰিচালনা কৰিব পাৰে। আপুনি ৱেবছাইট আৰু এপক দিয়া অনুমতিসমূহ আটাইবোৰ একাউণ্টত প্ৰযোজ্য হ’ব পাৰে। যদি আপুনি আপোনাৰ একাউণ্ট তথ্য ছাইট অথবা এপে এক্সেছ কৰাটো নিবিচাৰে তেন্তে আপুনি <ph name="DEVICE_TYPE" />ত অতিথি হিচাপে ছাইন ইন কৰিব পাৰে অথবা ৱেবটো এখন <ph name="LINK_2_BEGIN" />ইনক’গনিট’ ৱিণ্ড’<ph name="LINK_2_END" />ত ব্ৰাউজ কৰিব পাৰে।</translation>
 <translation id="4761104368405085019">আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰক</translation>
 <translation id="4762718786438001384">ডিভাইচৰ ডিস্কত ঠাই একেবাৰে কম আছে</translation>
 <translation id="4763408175235639573">আপুনি এই পৃষ্ঠাটো চাওঁতে তলৰ কুকিসমূহ ছেট কৰা হৈছিল</translation>
@@ -6089,7 +6087,6 @@
 <translation id="7968833647796919681">কার্যদক্ষতাৰ ডেটা সংগ্ৰহ সক্ষম কৰক</translation>
 <translation id="7968982339740310781">সবিশেষ চাওক</translation>
 <translation id="7969046989155602842">নিৰ্দেশনা</translation>
-<translation id="7970618607181090249">টাচ্চ স্ক্ৰীন চিনাক্ত কৰা হৈছে</translation>
 <translation id="7970673414865679092">ইথাৰনেটৰ সবিশেষ</translation>
 <translation id="7970882136539140748">এই মুহূৰ্তত কার্ডখন ছেভ কৰিব নোৱাৰি</translation>
 <translation id="7972714317346275248">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 SHA-384</translation>
@@ -7117,7 +7114,6 @@
 <translation id="9128870381267983090">নেটৱৰ্কত সংযোগ কৰক</translation>
 <translation id="9130015405878219958">অমান্য ম’ড দিয়া হৈছে।</translation>
 <translation id="9131487537093447019">ব্লুটুথ ডিভাইচলৈ আৰু ডিভাইচৰ পৰা বার্তা আদান-প্ৰদান কৰক।</translation>
-<translation id="9134119143784876218">ইংৰাজী অডিঅ’ আৰু ভিডিঅ’ৰ বাবে স্বয়ংক্ৰিয়ভাৱে কেপশ্বন সৃষ্টি কৰে (বৰ্তমান কেৱল Chrome ব্ৰাউজাৰত উপলব্ধ)। অডিঅ’ আৰু কেপশ্বন আপোনাৰ ডিভাইচটোৰ পৰা কেতিয়াও আঁতৰি নাযায়।</translation>
 <translation id="9137013805542155359">মূল সংস্কৰণ দেখুৱাওক</translation>
 <translation id="9137157311132182254">অগ্ৰাধিকাৰপ্ৰাপ্ত সন্ধান ইঞ্জিন</translation>
 <translation id="9137248913990643158">অনুগ্ৰহ কৰি এই এপ্‌টো ব্যৱহাৰ কৰাৰ পূর্বে Chromeত আকৌ ছাইন ইন কৰক।</translation>

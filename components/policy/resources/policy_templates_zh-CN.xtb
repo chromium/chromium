@@ -2566,13 +2566,6 @@
 
       注意：重启设备会清除缓存。系统会为所有用户（甚至是临时用户）缓存领域数据。关闭缓存可阻止系统跟踪临时用户的领域。</translation>
 <translation id="4591366717022345234">为用户提供 Quick Fix Build</translation>
-<translation id="4592246263545654202">指定用户可否在 <ph name="PRODUCT_NAME" /> 中以无痕模式打开网页。
-
-      如果选择“已启用”或未设置此政策，则允许以无痕模式打开网页。
-
-      如果选择“已停用”，则不能以无痕模式打开网页。
-
-      如果选择“强制”，则只能以无痕模式打开网页。请注意，“强制”不适用于 Chrome 上的 Android 应用</translation>
 <translation id="4593391169954484940">相应文件的 SHA-256 哈希值。</translation>
 <translation id="4594467366027975448">配置供 <ph name="PRODUCT_NAME" /> 用来存储个人资料漫游副本的目录。
 
@@ -3613,15 +3606,15 @@
       您可按以下格式指定 Google 的搜索网址：<ph name="GOOGLE_SUGGEST_SEARCH_URL" />。</translation>
 <translation id="6070374129526507093">已在 M69 中弃用。请改用 OverrideSecurityRestrictionsOnInsecureOrigin。
 
-      此政策可指定针对不安全来源的安全性限制不适用于哪些来源（网址）或主机名模式（例如“*.example.com”）。
+      此政策让您能够以列表形式指定针对不安全来源的安全性限制不适用于哪些来源（网址）或主机名模式（例如“*.example.com”）。
 
-      此政策意在允许相关组织为无法部署传输层安全协议 (TLS) 的旧版应用设置许可名单来源，或允许其设置用于开发内部网络的临时服务器以便他们的开发者无需在临时服务器上部署 TLS 就能测试需要安全上下文的功能。此政策还可防止来源在多功能框中被标记为“不安全”。
+      此政策意在允许相关组织为无法部署传输层安全协议 (TLS) 的旧式应用设置许可的来源，或允许其设置用于内部 Web 开发的预演服务器以便开发者不必在预演服务器上部署 TLS 就能测试需要在安全情境中运行的功能。此政策还可防止所列来源在多功能框中被标记为“不安全”。
 
-      在此政策中设置一系列网址的效果等同于为包含相同网址的英文逗号分隔列表设置“--unsafely-treat-insecure-origin-as-secure”命令行标记。如果此政策已设置，则会替换上述命令行标记。
+      在此政策中设置一个网址列表的效果等同于设置“--unsafely-treat-insecure-origin-as-secure”命令行标记并为其指定一个包含相同网址的英文逗号分隔列表。如果此政策已设置，则会替换上述命令行标记。
 
-      我们在 M69 中弃用了此政策（改用 OverrideSecurityRestrictionsOnInsecureOrigin）。如果这两项政策都存在，则 OverrideSecurityRestrictionsOnInsecureOrigin 会覆盖此政策。
+      我们已在 M69 中弃用此政策并改用 OverrideSecurityRestrictionsOnInsecureOrigin。如果这两项政策同时存在，OverrideSecurityRestrictionsOnInsecureOrigin 会覆盖此政策。
 
-      有关安全上下文的详情，请访问 https://www.w3.org/TR/secure-contexts/
+      有关安全情境的详情，请访问 https://www.w3.org/TR/secure-contexts/
       </translation>
 <translation id="6070667616071269965">设备登录屏幕键盘布局</translation>
 <translation id="6074963268421707432">不允许任何网站显示桌面通知</translation>
@@ -5078,7 +5071,7 @@
 <translation id="8006921530139404577">如果此政策已停用，系统将不会针对未启用幕布模式的远程访问连接显示与连接相关的界面（例如“断开连接”窗口）。已启用幕布模式的远程访问会话和远程支持会话不会受到此政策的影响。
 
           如果设为 true、留空或未设置，此政策将不会产生任何影响。</translation>
-<translation id="8008421342605619236">配置本地消息传递政策。不允许被屏蔽的本地消息传递主机（除非相应主机已列入白名单）。</translation>
+<translation id="8008421342605619236">配置原生消息传递政策。不允许使用已被屏蔽的原生消息传递主机，除非相应主机已列入白名单。</translation>
 <translation id="8011935490612940798">控制 <ph name="PRODUCT_NAME" /> 功能。</translation>
 <translation id="802147957407376460">将屏幕旋转 0 度</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>

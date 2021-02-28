@@ -298,6 +298,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2053111141626950936">Pages in <ph name="LANGUAGE" /> will not be translated.</translation>
 <translation id="2053553514270667976">ZIP code</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
+<translation id="2071692954027939183">Notifications were automatically blocked because you usually don't allow them</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="20817612488360358">System proxy settings are set to be used but an explicit proxy configuration is also specified.</translation>
 <translation id="2082238445998314030">Result <ph name="RESULT_NUMBER" /> of <ph name="TOTAL_RESULTS" /></translation>
@@ -586,6 +587,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3229041911291329567">Version information about your device and browser</translation>
 <translation id="323107829343500871">Enter the CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Always detect important content on this site</translation>
+<translation id="3252266817569339921">French</translation>
 <translation id="3266793032086590337">Value (conflict)</translation>
 <translation id="3270847123878663523">&amp;Undo Reorder</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -789,6 +791,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4058922952496707368">Key "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">Add Valid Address</translation>
+<translation id="4072193657607981494">Loading policies</translation>
 <translation id="4072486802667267160">There was an error processing your order. Please try again.</translation>
 <translation id="4075732493274867456">The client and server don't support a common SSL protocol version or cipher suite.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -927,6 +930,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4510487217173779431">Chou4 (Envelope)</translation>
 <translation id="4515275063822566619">Cards and addresses are from Chrome and your Google Account (<ph name="ACCOUNT_EMAIL" />). You can manage them in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (Envelope)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4524138615196389145">Confirm your cards faster by using WebAuthn from now on</translation>
 <translation id="4524805452350978254">Manage cards</translation>
@@ -1005,6 +1009,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4819347708020428563">Edit annotations in default view?</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">View</translation>
+<translation id="485316830061041779">German</translation>
 <translation id="4854362297993841467">This delivery method isn’t available. Try a different method.</translation>
 <translation id="4876188919622883022">Simplified view</translation>
 <translation id="4876305945144899064">No username</translation>
@@ -1160,6 +1165,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="541416427766103491">Stacker 4</translation>
 <translation id="5421136146218899937">Clear browsing data...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
+<translation id="5428105026674456456">Spanish</translation>
 <translation id="542872847390508405">You’re browsing as a Guest</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
 <translation id="5439770059721715174">Schema validation error at "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
@@ -1169,6 +1175,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5455374756549232013">Bad policy timestamp</translation>
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
+<translation id="5469868506864199649">Italian</translation>
 <translation id="5470861586879999274">&amp;Redo edit</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
@@ -1346,6 +1353,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="614940544461990577">Try:</translation>
 <translation id="6150036310511284407">Triple punch left</translation>
 <translation id="6151417162996330722">The server certificate has a validity period that is too long.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">To see delivery methods and requirements, select an address</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6169916984152623906">Now you can browse privately, and other people who use this device won’t see your activity. However, downloads and bookmarks will be saved.</translation>
@@ -1876,6 +1884,7 @@ Additional details:
 <translation id="8293206222192510085">Add Bookmark</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8298115750975731693">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8299269255470343364">Japanese</translation>
 <translation id="8303854710873047864">'<ph name="SECTION" />' section shown</translation>
 <translation id="830498451218851433">Fold half</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1893,6 +1902,7 @@ Additional details:
 <translation id="8364627913115013041">Not set.</translation>
 <translation id="8368476060205742148">Google Play services</translation>
 <translation id="8371889962595521444">Custom root certificates</translation>
+<translation id="8374636051559112948">Varies</translation>
 <translation id="8380941800586852976">Dangerous</translation>
 <translation id="8381674639488873545">These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME" /> has been blocked by administrator policy</translation>
@@ -1955,6 +1965,7 @@ Additional details:
 <translation id="8625384913736129811">Save This Card to This Device</translation>
 <translation id="8627040765059109009">Screen capture resumed</translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
+<translation id="8666678546361132282">English</translation>
 <translation id="867224526087042813">Signature</translation>
 <translation id="8676424191133491403">No delay</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, answer, <ph name="ANSWER" /></translation>
@@ -2073,6 +2084,7 @@ Additional details:
 <translation id="9114524666733003316">Confirming card...</translation>
 <translation id="9114581008513152754">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Uploaded</translation>
+<translation id="9128016270925453879">Policies is loaded</translation>
 <translation id="9128870381267983090">Connect to network</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9141013498910525015">Manage addresses</translation>

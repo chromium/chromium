@@ -136,7 +136,6 @@
 <translation id="549669000822060376">Odota hetki, Chromium asentaa uusimpia järjestelmäpäivityksiä.</translation>
 <translation id="5496810170689441661">Chromium yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-päivitys on saatavilla}=1{Chromium-päivitys on saatavilla}other{Chromium-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
-<translation id="5631814766731275228">Chromiumin nimi ja kuva</translation>
 <translation id="5634636535844844681">Chromium edellyttää Windows 7:ää tai uudempaa versiota.</translation>
 <translation id="5653831366781983928">Käynnistä Chromium uudelleen nyt</translation>
 <translation id="5698481217667032250">Näytä Chromium tällä kielellä</translation>
@@ -164,6 +163,7 @@
 <translation id="6266342355635466082">Chromium ei voi tarkistaa päivityksiä. Tarkista internetyhteytesi.</translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="6281746429495226318">Muokkaa Chromium-profiiliasi</translation>
+<translation id="6290827346642914212">Nimeä Chromium-profiilisi</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> voi olla vaarallinen, joten Chromium on estänyt sen.</translation>
 <translation id="6309712487085796862">Chromium käyttää kameraasi.</translation>
 <translation id="6333502561965082103">Toinen Chromium-prosessi on jo käynnissä. Yritä myöhemmin uudelleen.</translation>
@@ -279,5 +279,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="9190841055450128916">Chromium (saapuva mDNS)</translation>
 <translation id="9214764063801632699">Chromium-käyttöjärjestelmä</translation>
 <translation id="93478295209880648">Chromium ei välttämättä toimi oikein, koska se ei enää tue Windows XP:tä tai Windows Vistaa.</translation>
+<translation id="965162752251293939">Kuka käyttää Chromiumia?</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -863,7 +863,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1930879306590754738">Iphasiwedi isusiwe kule divayisi naku-akhawunti yakho ye-Google</translation>
 <translation id="1931152874660185993">Azikho izingxenye ezifakiwe.</translation>
 <translation id="1932098463447129402">Hhayi ngaphambili</translation>
-<translation id="1933809209549026293">Sicela uxhume igundane noma ikhibhodi. Uma usebenzisa idivayisi ye-Bluetooth, qinisekisa ukuthi ilungele ukubhanqa.</translation>
 <translation id="1935303383381416800">Ivumelekile ukubona indawo yakho</translation>
 <translation id="1936931585862840749">Sebenzisa inombolo ukuze ubonise ukuthi mangakhi amakhophi ozowaphrinta (1 kuya kwangu-<ph name="MAX_COPIES" />999).</translation>
 <translation id="1937774647013465102">Ayikwazi ukungenisa uhlobo lwesiqukathi sesakhiwo se-<ph name="ARCHITECTURE_CONTAINER" /> nale divayisi esiyi-<ph name="ARCHITECTURE_DEVICE" />. Ungazama ukubuyisela lesi siqukathi kudivayisi ehlukile, noma ungafinyelela kumafayela angaphakathi kwalesi sithombe sesiqukathi ngokuvula uhlelo lokusebenza lwe-Files.</translation>
@@ -2603,7 +2602,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Ifaka umlando wakamuva womsizi nge-Sherlog. Lokhu kungafaka ubunikazi bakho, umlando, nolwazi lokususa iphutha. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Engeza ifolda</translation>
-<translation id="3894598587402139398">Ungangeza ama-akhawunti angeziwe ukuze u-<ph name="NAME" /> akwazi ukufinyelela amawebhusayithi nezinhlelo zokusebenza.</translation>
 <translation id="3894770151966614831">Hambisa ku-Akhawunti ye-Google?</translation>
 <translation id="3895076768659607631">&amp;Phatha Izinjini Zokusesha...</translation>
 <translation id="3895090224522145010">Igama lomsebenzisi le-Kerberos</translation>
@@ -2943,6 +2941,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4301671483919369635">Leli khasi livunyelwe ukuhlela amafayela</translation>
 <translation id="4303079906735388947">Setha i-PIN entsha yokhiye wakho wokuqinisekisa ubunikazi</translation>
 <translation id="4305402730127028764">Kopishela ku-<ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Shintsha</translation>
 <translation id="4306119971288449206">Izinhlelo zokusebenza kumele zinikezwe ngohlobo lokuqukethwe kwe-"<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4306812610847412719">ibhodi yokunamathisela</translation>
 <translation id="4307992518367153382">Izisekelo</translation>
@@ -3336,7 +3335,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4756378406049221019">Misa/Layisha kabusha</translation>
 <translation id="4756388243121344051">Umlando</translation>
 <translation id="4759238208242260848">Ukulanda</translation>
-<translation id="4759387251871503426">Ungaphatha ama-akhawunti we-Google ongene kuwo ngemvume kusuka kokuthi <ph name="LINK_BEGIN" />Amasethingi<ph name="LINK_END" />. Izimvume ozinike amawebhusayithi nezinhlelo zokusebenza zingase zisebenze kuwo wonke ama-akhawunti. Uma ungafuni ukuthi amasayithi nezinhlelo zokusebenza kufinyelele ulwazi lwe-akhawunti yakho, ungangena ngemvume ku-<ph name="DEVICE_TYPE" /> njengesivakashi noma uphequlule iwebhu <ph name="LINK_2_BEGIN" />ewindini le-incognito<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Sebenzisa imakrofoni yakho</translation>
 <translation id="4762718786438001384">Isikhala sediski yedivayisi sincane kakhulu</translation>
 <translation id="4763408175235639573">Amakhukhi alandelayo athunyelwe ngenkathi ubuka leli khasi</translation>
@@ -3557,6 +3555,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="5027550639139316293">Isitifiketi se-imeyili</translation>
 <translation id="5027562294707732951">Engeza isandiso</translation>
 <translation id="5029568752722684782">Sula ikhophi</translation>
+<translation id="503155457707535043">Izinhlelo zokusebenza ziyalandwa</translation>
 <translation id="5033137252639132982">Ayivumelekile ukusebenzisa izinzwa zokunyakaza</translation>
 <translation id="5033266061063942743">Izimo ze-Geometric</translation>
 <translation id="5036662165765606524">Ungavumeli noma yiliphi isayithi ukuthi lilande amafayela amaningi ngokuzenzakalela</translation>
@@ -6118,7 +6117,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7968833647796919681">Nika amandla ukuqoqwa kwedatha</translation>
 <translation id="7968982339740310781">Buka imininingwane</translation>
 <translation id="7969046989155602842">Umyalo</translation>
-<translation id="7970618607181090249">Ukuthinta isikrini kutholiwe</translation>
 <translation id="7970673414865679092">Imininingwane ye-Ethernet</translation>
 <translation id="7970882136539140748">Ayikwazi ukulondoloza ikhadi khona manje</translation>
 <translation id="7972714317346275248">I-PKCS #1 SHA-384 enokubethela kwe-RSA</translation>
@@ -7149,7 +7147,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="9128870381267983090">Xhuma kunethiwekhi</translation>
 <translation id="9130015405878219958">Kufakwe imodi engavumelekile.</translation>
 <translation id="9131487537093447019">Thumela imilayezo kuya bese uthola imilayezo kusuka kumadivayisi we-Bluetooth</translation>
-<translation id="9134119143784876218">Yenza amagama-ncazo womsindo nevidiyo ye-English ngokuzenzakalelayo (okwamanje itholakala kusiphequluli se-Chrome kuphela). Umsindo namagama-ncazo akulokothi kushiye idivayisi yakho.</translation>
 <translation id="9137013805542155359">Bonisa okwangempela</translation>
 <translation id="9137157311132182254">Injini yokusesha ekhethiwe</translation>
 <translation id="9137248913990643158">Sicela uqalise futhi ungene ngemvume ku-Chrome ngaphambi kokusebenzisa lolu hlelo lokusebenza.</translation>

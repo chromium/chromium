@@ -865,7 +865,6 @@
 <translation id="1930879306590754738">A senha foi excluída deste dispositivo e da sua Conta do Google</translation>
 <translation id="1931152874660185993">Nenhum componente instalado.</translation>
 <translation id="1932098463447129402">Não antes</translation>
-<translation id="1933809209549026293">Conecte um mouse ou um teclado. Se você está usando um dispositivo com Bluetooth, certifique-se de que ele esteja pronto para ser pareado.</translation>
 <translation id="1935303383381416800">Permitir o acesso à localização</translation>
 <translation id="1936931585862840749">Use um número para indicar quantas cópias serão impressas (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contêiner <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo, que é <ph name="ARCHITECTURE_DEVICE" />. Tente restaurar esse contêiner em um dispositivo diferente ou acesse os arquivos que estão dentro desta imagem do contêiner abrindo-os no app Arquivos.</translation>
@@ -2606,7 +2605,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Incluir o histórico recente do Assistente via Sherlog. Isso pode conter sua identidade, seu local e suas informações de depuração. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Adicionar pasta</translation>
-<translation id="3894598587402139398">Você pode incluir contas adicionais para que <ph name="NAME" /> tenha acesso a sites e apps.</translation>
 <translation id="3894770151966614831">Mover para a Conta do Google?</translation>
 <translation id="3895076768659607631">&amp;Gerenciar mecanismos de pesquisa…</translation>
 <translation id="3895090224522145010">Nome de usuário do Kerberos</translation>
@@ -2947,6 +2945,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4301671483919369635">Esta página tem permissão para editar arquivos</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Alternar</translation>
 <translation id="4306119971288449206">Os apps precisam ser veiculados com o tipo de conteúdo "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4306812610847412719">área de transferência</translation>
 <translation id="4307992518367153382">Básico</translation>
@@ -3340,7 +3339,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4756378406049221019">Parar/Recarregar</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
 <translation id="4759238208242260848">Downloads</translation>
-<translation id="4759387251871503426">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para gerenciar as Contas do Google conectadas. As permissões concedidas a sites e apps podem ser aplicadas a todas as contas. Se você não quer que sites ou apps tenham acesso às informações da sua conta, faça login no <ph name="DEVICE_TYPE" /> como um visitante ou navegue usando uma <ph name="LINK_2_BEGIN" />janela anônima<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Usar microfone</translation>
 <translation id="4762718786438001384">Dispositivo com espaço em disco criticamente baixo</translation>
 <translation id="4763408175235639573">Os cookies a seguir foram definidos quando você visualizou esta página</translation>
@@ -3561,6 +3559,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5027550639139316293">Certificado de e-mail</translation>
 <translation id="5027562294707732951">Adicionar extensão</translation>
 <translation id="5029568752722684782">Limpar cópia</translation>
+<translation id="503155457707535043">Fazendo o download dos apps</translation>
 <translation id="5033137252639132982">Bloquear o uso de sensores de movimento</translation>
 <translation id="5033266061063942743">Formas geométricas</translation>
 <translation id="5036662165765606524">Não permitir que nenhum site faça download de vários arquivos automaticamente</translation>
@@ -6120,7 +6119,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7968833647796919681">Ativar coleta de dados de desempenho</translation>
 <translation id="7968982339740310781">Visualizar detalhes</translation>
 <translation id="7969046989155602842">Command</translation>
-<translation id="7970618607181090249">Tela touchscreen detectada</translation>
 <translation id="7970673414865679092">Detalhes da Ethernet</translation>
 <translation id="7970882136539140748">Não é possível salvar o cartão no momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 com criptografia RSA</translation>
@@ -7152,7 +7150,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9128870381267983090">Conectar à rede</translation>
 <translation id="9130015405878219958">Modo inválido inserido.</translation>
 <translation id="9131487537093447019">Enviar mensagens para e receber mensagens de dispositivos Bluetooth.</translation>
-<translation id="9134119143784876218">Cria legendas automaticamente para áudios e vídeos em inglês. No momento, disponível apenas no navegador Chrome. O áudio e as legendas nunca deixam o dispositivo.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137157311132182254">Mecanismo de pesquisa preferido</translation>
 <translation id="9137248913990643158">Inicie e faça login no Chrome antes de usar este app.</translation>

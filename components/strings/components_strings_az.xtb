@@ -585,6 +585,7 @@
 <translation id="3229041911291329567">Cihaz və brauzer haqqında versiya məlumatı</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> üçün CVC kodu daxil edin</translation>
 <translation id="3234666976984236645">Bu saytda həmişə önəmli məzmunu aşkarlayın</translation>
+<translation id="3252266817569339921">Fransız</translation>
 <translation id="3266793032086590337">Dəyər (zidd)</translation>
 <translation id="3270847123878663523">Təkrar sıralamanı geri qaytarın</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1001,6 +1002,7 @@
 <translation id="4819347708020428563">Annotasiyalar defolt görünüşdə redaktə edilsin?</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4850886885716139402">Görünüş</translation>
+<translation id="485316830061041779">Alman</translation>
 <translation id="4854362297993841467">Bu çatdırılma üsulu əlçatan deyil. Başqa üsul seçin.</translation>
 <translation id="4876188919622883022">Sadə görüntü</translation>
 <translation id="4876305945144899064">İstifadəçi adı yoxdur</translation>
@@ -1156,6 +1158,7 @@
 <translation id="541416427766103491">Yığıcı 4</translation>
 <translation id="5421136146218899937">Baxış datasını silin...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> Sizə bildiriş göndərmək istəyir</translation>
+<translation id="5428105026674456456">Ispan</translation>
 <translation id="542872847390508405">Qonaq kimi baxırsınız</translation>
 <translation id="5430298929874300616">Əlfəcini silin</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" yolunda sxem doğrulama xətası: <ph name="ERROR" /></translation>
@@ -1165,6 +1168,7 @@
 <translation id="5455374756549232013">Uğursuz qaydalar zaman ştampı</translation>
 <translation id="5457113250005438886">Yanlış</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5469868506864199649">İtalyan</translation>
 <translation id="5470861586879999274">&amp;Düzəlişi yenidən edin</translation>
 <translation id="5478437291406423475">B6/C4 (Zərf)</translation>
 <translation id="5481076368049295676">Bu kontent cihazda məlumatı oğurlayan və ya silən təhlükəli proqram təminatı quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
@@ -1872,6 +1876,7 @@
 <translation id="8293206222192510085">Əlfəcin əlavə edin</translation>
 <translation id="8294431847097064396">Mənbə</translation>
 <translation id="8298115750975731693">İstifadə etdiyiniz Wi-Fi (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
+<translation id="8299269255470343364">Yapon</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" bölməsi göstərilir</translation>
 <translation id="830498451218851433">Yarımçıq qatlayın</translation>
 <translation id="8307358339886459768">Kiçik Ölçülü Foto</translation>
@@ -1951,6 +1956,7 @@
 <translation id="8625384913736129811">Bu Kartı Bu Cihazda yadda saxlayın</translation>
 <translation id="8627040765059109009">Ekranın çəkilməsi davam etdirildi</translation>
 <translation id="8663226718884576429">Sifarişin Yekunu, <ph name="TOTAL_LABEL" />, Daha Çox Məlumat</translation>
+<translation id="8666678546361132282">Ingilis</translation>
 <translation id="867224526087042813">İmza</translation>
 <translation id="8676424191133491403">Gecikmə yoxdur</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, cavab, <ph name="ANSWER" /></translation>

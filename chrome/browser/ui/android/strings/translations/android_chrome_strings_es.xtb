@@ -56,7 +56,7 @@
 <translation id="1331212799747679585">No se ha podido actualizar Chrome. Más opciones</translation>
 <translation id="1332501820983677155">Combinaciones de teclas de funciones de Google Chrome</translation>
 <translation id="133857033449832692">Descargando <ph name="LANG" />…</translation>
-<translation id="1344653310988386453">Incluir enlace a la parte destacada</translation>
+<translation id="1344653310988386453">Incluir enlace al texto destacado</translation>
 <translation id="1347468774581902829">Gestionar actividad</translation>
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
 <translation id="1373696734384179344">No hay memoria suficiente para descargar el contenido seleccionado.</translation>
@@ -74,6 +74,7 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1450753235335490080">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el servidor.</translation>
+<translation id="1492417797159476138">Ya has guardado ese nombre de usuario en este sitio web</translation>
 <translation id="1506061864768559482">Buscador</translation>
 <translation id="1513352483775369820">Historial web y marcadores</translation>
 <translation id="1513858653616922153">Eliminar contraseña</translation>
@@ -265,7 +266,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="281504910091592009">Consulta y gestiona las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Inicia sesión y activa la sincronización para ver tus marcadores en todos tus dispositivos</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
-<translation id="2833452327385637152">Para buscar una palabra o una frase, mantenla pulsada en vez de tocarla</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Comprobado hace 1 día}other{Comprobado hace # días}}</translation>
 <translation id="2842985007712546952">Carpeta principal</translation>
 <translation id="2856503607207334158">No se ha podido iniciar sesión</translation>
@@ -605,6 +605,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5191251636205085390">Más información sobre las nuevas tecnologías que aspiran a reemplazar las cookies de terceros y cómo controlarlas</translation>
 <translation id="5193988420012215838">Se ha copiado al portapapeles</translation>
 <translation id="5199929503336119739">Perfil de trabajo</translation>
+<translation id="5204967432542742771">Escribe tu contraseña</translation>
 <translation id="5210286577605176222">Te dirige a la pestaña anterior</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5213672942202814946">Usar la búsqueda por voz</translation>
@@ -661,7 +662,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5599941490345670218">El Asistente de Google puede completar acciones en tu nombre en sitios web</translation>
 <translation id="5620163320393916465">No hay ninguna contraseña guardada</translation>
 <translation id="5620928963363755975">Encuentra tus archivos y páginas en la sección Descargas con el botón Más opciones</translation>
-<translation id="562168087174703495">No se puede crear el enlace a la parte destacada. Comparte el enlace a la página.</translation>
+<translation id="562168087174703495">No se puede crear el enlace al texto destacado. Comparte el enlace a la página.</translation>
 <translation id="562289928968387744">Gestionar reacciones</translation>
 <translation id="5626134646977739690">Nombre:</translation>
 <translation id="5628604359369369630">No leído: disponible sin conexión</translation>
@@ -776,7 +777,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6312687380483398334">Aplicaciones web (no interrumpir)</translation>
 <translation id="6316139424528454185">Esta versión de Android no es compatible</translation>
 <translation id="6324034347079777476">Sincronización del sistema Android inhabilitada</translation>
-<translation id="6324977638108296054">No se puede crear un enlace a la parte destacada</translation>
+<translation id="6324977638108296054">No se puede crear un enlace al texto destacado</translation>
 <translation id="6333140779060797560">Compartir a través de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Cifrado</translation>
 <translation id="6341580099087024258">Preguntar dónde guardar los archivos</translation>
@@ -808,7 +809,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6477928892249167417">Parece que estos sitios son importantes para ti:</translation>
 <translation id="6482749332252372425">No se ha podido descargar <ph name="FILE_NAME" /> porque no hay suficiente espacio de almacenamiento.</translation>
 <translation id="6489610539826642779">Lista de lectura <ph name="BEGIN_NEW" />Novedad<ph name="END_NEW" /></translation>
-<translation id="6490496612063106490">Enlace a la parte destacada</translation>
+<translation id="6490496612063106490">Enlace al texto destacado</translation>
 <translation id="6496823230996795692">Para utilizar <ph name="APP_NAME" /> por primera vez, conéctate a Internet.</translation>
 <translation id="6508722015517270189">Reinicia Chrome</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -864,6 +865,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6850409657436465440">Tu descarga sigue en curso</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> pestañas cerradas</translation>
 <translation id="685850645784703949">Discover de Google: desactivado</translation>
+<translation id="686366188661646310">¿Eliminar contraseña?</translation>
 <translation id="6864459304226931083">Descargar imagen</translation>
 <translation id="6865313869410766144">Datos para autocompletar formularios</translation>
 <translation id="6882836635272038266">Protección estándar frente a descargas, extensiones y sitios web que se sabe que son peligrosos.</translation>
@@ -1123,7 +1125,6 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8572344201470131220">Imagen copiada</translation>
 <translation id="8583805026567836021">Borrando datos de cuenta</translation>
-<translation id="8587585930972369234">Mantener pulsado para buscar</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
 <translation id="8602358303461588329">Inicia sesión en Chrome, cerrado.</translation>
 <translation id="860282621117673749">Alertas por bajada de precio</translation>

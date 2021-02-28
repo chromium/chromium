@@ -585,6 +585,7 @@
 <translation id="3229041911291329567">আপোনাৰ ডিভাইচ আৰু ব্ৰাউজাৰৰ সংস্কৰণৰ তথ্য</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />ৰ CVC দিয়ক</translation>
 <translation id="3234666976984236645">এই ছাইটটোত সদায়েই গুৰুত্বপূৰ্ণ সমল ধৰা পেলাওক</translation>
+<translation id="3252266817569339921">ফৰাচী</translation>
 <translation id="3266793032086590337">মান (সংঘাত)</translation>
 <translation id="3270847123878663523">পুনঃক্ৰম কৰাটো &amp;আনডু কৰক</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1001,6 +1002,7 @@
 <translation id="4819347708020428563">ডিফ’ল্ট ভিউত এন’টেশ্বন সম্পাদনা কৰিবনে?</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>
 <translation id="4850886885716139402">চাওক</translation>
+<translation id="485316830061041779">জাৰ্মান</translation>
 <translation id="4854362297993841467">ডেলিভাৰীৰ এই পদ্ধতিটো নাই। অন্য কোনো পদ্ধতি ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4876188919622883022">সৰলীকৃত ভিউ</translation>
 <translation id="4876305945144899064">কোনো ব্যৱহাৰকাৰীৰ নাম নাই</translation>
@@ -1156,6 +1158,7 @@
 <translation id="541416427766103491">ষ্টেকাৰ ৪</translation>
 <translation id="5421136146218899937">ব্ৰাউজিং ডেটা মচক...</translation>
 <translation id="5426179911063097041"><ph name="SITE" />এ আপোনালৈ জাননী পঠিয়াব বিচাৰে</translation>
+<translation id="5428105026674456456">স্পেনিশ্ব</translation>
 <translation id="542872847390508405">আপুনি অতিথি হিচাপে ব্ৰাউজ কৰি আছে</translation>
 <translation id="5430298929874300616">বুকমার্ক আঁতৰাওক</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />"ৰ স্কীমা সত্যাপনৰ আসোঁৱাহ : <ph name="ERROR" /></translation>
@@ -1165,6 +1168,7 @@
 <translation id="5455374756549232013">নীতিৰ timestamp বেয়া</translation>
 <translation id="5457113250005438886">অমান্য</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}one{<ph name="CONTACT_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}other{<ph name="CONTACT_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}}</translation>
+<translation id="5469868506864199649">ইটালিয়ান</translation>
 <translation id="5470861586879999274">&amp;সম্পাদনা ৰিডু কৰক</translation>
 <translation id="5478437291406423475">B6/C4 (লেফাফা)</translation>
 <translation id="5481076368049295676">এই সমলখিনিয়ে আপোনাৰ ডিভাইচত আপোনাৰ তথ্য চুৰি কৰিব বা মচিব পৰা কোনো বিপজ্জনক ছফ্টৱেৰ ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
@@ -1867,6 +1871,7 @@
 <translation id="8293206222192510085">বুকমাৰ্ক যোগ কৰক</translation>
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8298115750975731693">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাই (<ph name="WIFI_NAME" />)ৰ বাবে আপুনি <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />লৈ যাবলগীয়া হ'ব পাৰে।</translation>
+<translation id="8299269255470343364">জাপানী</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" শাখাটো দেখুওৱা হৈছে</translation>
 <translation id="830498451218851433">আধা ফ'ল্ড কৰক</translation>
 <translation id="8307358339886459768">সৰু-ফট’</translation>
@@ -1946,6 +1951,7 @@
 <translation id="8625384913736129811">এই ডিভাইচটোত এই কাৰ্ডখন ছেভ কৰক</translation>
 <translation id="8627040765059109009">স্ক্ৰীন কেপচাৰ কৰাৰ সুবিধাটো পুনৰ আৰম্ভ কৰা হৈছে</translation>
 <translation id="8663226718884576429">অৰ্ডাৰৰ সাৰাংশ, <ph name="TOTAL_LABEL" />, অধিক বিৱৰণ</translation>
+<translation id="8666678546361132282">ইংৰাজী</translation>
 <translation id="867224526087042813">চহী</translation>
 <translation id="8676424191133491403">কোনো বিলম্ব নাই</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, উত্তৰ, <ph name="ANSWER" /></translation>

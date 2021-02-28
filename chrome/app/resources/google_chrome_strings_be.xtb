@@ -10,6 +10,7 @@
 <translation id="1088300314857992706">Карыстальнік <ph name="USER_EMAIL_ADDRESS" /> раней выкарыстоўваў Chrome</translation>
 <translation id="1097330777386562916">Выдаліць файлы cookie і даныя сайтаў пры выхадзе з браўзера Chrome</translation>
 <translation id="110877069173485804">Гэта ваш Chrome</translation>
+<translation id="1125124144982679672">Хто выкарыстоўвае Chrome?</translation>
 <translation id="1142745911746664600">Не ўдаецца абнавіць Chrome</translation>
 <translation id="1154147086299354128">&amp;Адкрыць у браўзеры Chrome</translation>
 <translation id="123620459398936149">Сістэме Chrome OS не ўдалося сінхранізаваць даныя. Абнавіце фразу-пароль для сінхранізацыі.</translation>
@@ -90,6 +91,7 @@
 <translation id="3065168410429928842">Укладка Chrome</translation>
 <translation id="3080151273017101988">Працягваць выконваць фонавыя праграмы, калі Google Chrome закрыты</translation>
 <translation id="3089968997497233615">Ёсць новая, больш бяспечная версія Google Chrome.</translation>
+<translation id="3100998948628680988">Дайце назву свайму профілю Chrome</translation>
 <translation id="3114643501466072395">Каб праверыць, ці не пагражае вашым іншым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Сістэме Chrome OS не ўдалося сінхранізаваць даныя.</translation>
 <translation id="3140883423282498090">Змены ўступяць у сілу пасля перазапуску Google Chrome.</translation>
@@ -121,7 +123,6 @@
 <translation id="4050175100176540509">У апошняй версіі з'явіліся важныя паляпшэнні сістэмы бяспекі і новыя функцыі.</translation>
 <translation id="4053720452172726777">Наладжвайце Google Chrome і кіруйце ім</translation>
 <translation id="4110895483821904099">Наладзьце свой профіль Chrome</translation>
-<translation id="4143243756087420366">Імя і фота профілю Chrome</translation>
 <translation id="4147555960264124640">Вы ўваходзіце праз уліковы запіс пад кіраваннем, таму адміністратар зможа кантраляваць ваш профіль Google Chrome. Даныя Chrome (праграмы, закладкі, гісторыя, паролі і іншыя налады) будуць назаўсёды прывязаны да ўліковага запісу <ph name="USER_NAME" />. Вы зможаце выдаліць гэтыя даныя праз панэль кіравання Уліковымі запісамі Google, але іх нельга будзе звязаць з іншым уліковым запісам. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Усталёўшчык не змог распакаваць архіў. Спампуйце Google Chrome зноў.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Перазапусціце Chrome на працягу дня}one{Перазапусціце Chrome на працягу # дня}few{Перазапусціце Chrome на працягу # дзён}many{Перазапусціце Chrome на працягу # дзён}other{Перазапусціце Chrome на працягу # дня}}</translation>

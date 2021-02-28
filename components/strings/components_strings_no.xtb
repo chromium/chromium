@@ -587,6 +587,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3229041911291329567">Versjonsinformasjon om enheten og nettleseren din</translation>
 <translation id="323107829343500871">Skriv inn verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Oppdag alltid viktig innhold på dette nettstedet</translation>
+<translation id="3252266817569339921">Fransk</translation>
 <translation id="3266793032086590337">Verdi (konflikt)</translation>
 <translation id="3270847123878663523">&amp;Angre omorganiseringen</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1006,6 +1007,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4819347708020428563">Vil du redigere annoteringer i standardvisningen?</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Visning</translation>
+<translation id="485316830061041779">Tysk</translation>
 <translation id="4854362297993841467">Denne leveringsmetoden er ikke tilgjengelig. Prøv en annen metode.</translation>
 <translation id="4876188919622883022">Forenklet visning</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
@@ -1161,6 +1163,7 @@ brukere av denne nettleseren.</translation>
 <translation id="541416427766103491">Hylle 4</translation>
 <translation id="5421136146218899937">Slett nettleserdata</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil sende deg varsler</translation>
+<translation id="5428105026674456456">Spansk</translation>
 <translation id="542872847390508405">Du surfer som gjest</translation>
 <translation id="5430298929874300616">Fjern bokmerke</translation>
 <translation id="5439770059721715174">Skjemavalideringsfeil i «<ph name="ERROR_PATH" />»: <ph name="ERROR" /></translation>
@@ -1170,6 +1173,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5455374756549232013">Feil tidsstempel for enhetsinnstillinger</translation>
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}}</translation>
+<translation id="5469868506864199649">Italiensk</translation>
 <translation id="5470861586879999274">&amp;Endre likevel</translation>
 <translation id="5478437291406423475">B6/C4 (konvolutt)</translation>
 <translation id="5481076368049295676">Dette innholdet kan prøve å installere farlig programvare som stjeler eller sletter informasjon, på enheten din. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
@@ -1876,6 +1880,7 @@ brukere av denne nettleseren.</translation>
 <translation id="8293206222192510085">Legg til bokmerke</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8298115750975731693">Det kan hende at Wi-Fi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8299269255470343364">Japansk</translation>
 <translation id="8303854710873047864">Delen «<ph name="SECTION" />» vises</translation>
 <translation id="830498451218851433">Halvfals</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1955,6 +1960,7 @@ Mer informasjon:
 <translation id="8625384913736129811">Lagre dette kortet på denne enheten</translation>
 <translation id="8627040765059109009">Skjermopptaket er gjenopptatt</translation>
 <translation id="8663226718884576429">Bestillingssammendrag, <ph name="TOTAL_LABEL" />, mer informasjon</translation>
+<translation id="8666678546361132282">Engelsk</translation>
 <translation id="867224526087042813">Signatur</translation>
 <translation id="8676424191133491403">Uten forsinkelse</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>

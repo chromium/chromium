@@ -863,7 +863,6 @@
 <translation id="1930879306590754738">Лозинка је избрисана са овог уређаја и вашег Google налога</translation>
 <translation id="1931152874660185993">Није инсталирана ниједна компонента.</translation>
 <translation id="1932098463447129402">Не пре</translation>
-<translation id="1933809209549026293">Повежите миша или тастатуру. Ако користите Bluetooth уређај, проверите да ли је спреман за упаривање.</translation>
 <translation id="1935303383381416800">Дозвољено им је да виде вашу локацију</translation>
 <translation id="1936931585862840749">Наведите број примерака за штампање (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не можете да увезете тип архитектуре контејнера <ph name="ARCHITECTURE_CONTAINER" /> помоћу овог уређаја, који је <ph name="ARCHITECTURE_DEVICE" />. Можете да пробате да вратите овај контејнер на други уређај или да отворите апликацију Датотеке да бисте приступили датотекама у слици овог контејнера.</translation>
@@ -2603,7 +2602,6 @@
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Уврсти недавну историју Помоћника преко Sherlog-а. Она може да обухвата ваш идентитет, локацију и информације о отклањању грешака. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Додајте директоријум</translation>
-<translation id="3894598587402139398"><ph name="NAME" /> може да приступа веб-сајтовима и апликацијама ако додате још налога.</translation>
 <translation id="3894770151966614831">Желите ли да преместите на Google налог?</translation>
 <translation id="3895076768659607631">&amp;Управљај претраживачима...</translation>
 <translation id="3895090224522145010">Kerberos корисничко име</translation>
@@ -2944,6 +2942,7 @@
 <translation id="4301671483919369635">Ова страница може да мења датотеке</translation>
 <translation id="4303079906735388947">Подесите нови PIN за безбедносни кључ</translation>
 <translation id="4305402730127028764">Копирај на: <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Пређи</translation>
 <translation id="4306119971288449206">Апликације морају да се приказују са типом садржаја „<ph name="CONTENT_TYPE" />“</translation>
 <translation id="4306812610847412719">привремена меморија</translation>
 <translation id="4307992518367153382">Основна</translation>
@@ -3337,7 +3336,6 @@
 <translation id="4756378406049221019">Заустави/поново учитај</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4759238208242260848">Преузимања</translation>
-<translation id="4759387251871503426">Можете да управљате Google налозима на које сте пријављени у <ph name="LINK_BEGIN" />Подешавањима<ph name="LINK_END" />. Дозволе које сте дали веб-сајтовима и апликацијама могу да важе за све налоге. Ако не желите да сајтови или апликације приступају информацијама о налогу, можете да се пријавите на <ph name="DEVICE_TYPE" /> као гост или да прегледате веб у <ph name="LINK_2_BEGIN" />прозору без архивирања<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Коришћење микрофона</translation>
 <translation id="4762718786438001384">Простор на диску уређаја је забрињавајуће мали</translation>
 <translation id="4763408175235639573">Следећи колачићи су постављени док сте гледали ову страницу</translation>
@@ -3558,6 +3556,7 @@
 <translation id="5027550639139316293">Сертификат за е-пошту</translation>
 <translation id="5027562294707732951">Додај додатак</translation>
 <translation id="5029568752722684782">Обриши копију</translation>
+<translation id="503155457707535043">Преузимање апликација</translation>
 <translation id="5033137252639132982">Није им дозвољено да користе сензоре покрета</translation>
 <translation id="5033266061063942743">Геометријски облици</translation>
 <translation id="5036662165765606524">Не дозволи ниједном сајту да аутоматски преузима више датотека</translation>
@@ -6117,7 +6116,6 @@
 <translation id="7968833647796919681">Омогући прикупљање података о учинку</translation>
 <translation id="7968982339740310781">Прикажи детаље</translation>
 <translation id="7969046989155602842">Command</translation>
-<translation id="7970618607181090249">Откривен је додирни екран</translation>
 <translation id="7970673414865679092">Детаљи о етернету</translation>
 <translation id="7970882136539140748">Тренутно не можемо да сачувамо картицу</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 са RSA шифровањем</translation>
@@ -7150,7 +7148,6 @@
 <translation id="9128870381267983090">Повезивање са мрежом</translation>
 <translation id="9130015405878219958">Унет је неважећи режим.</translation>
 <translation id="9131487537093447019">Слање порука на Bluetooth уређаје и примање порука са њих.</translation>
-<translation id="9134119143784876218">Аутоматски прави титл за аудио и видео на енглеском (тренутно је доступно само у Chrome прегледачу) Аудио фајл и титл увек остају на уређају.</translation>
 <translation id="9137013805542155359">Прикажи оригинал</translation>
 <translation id="9137157311132182254">Жељени претраживач</translation>
 <translation id="9137248913990643158">Пријавите се у Chrome пре коришћења ове апликације.</translation>

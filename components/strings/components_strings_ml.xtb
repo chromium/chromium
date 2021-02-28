@@ -583,6 +583,7 @@
 <translation id="3229041911291329567">നിങ്ങളുടെ ഉപകരണത്തെയും ബ്രൗസറിനെയും കുറിച്ചുള്ള പതിപ്പ് വിവരങ്ങൾ</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-ന്‍റെ CVC നൽകുക</translation>
 <translation id="3234666976984236645">ഈ സൈറ്റിൽ എപ്പോഴും പ്രധാന ഉള്ളടക്കം കണ്ടെത്തുക</translation>
+<translation id="3252266817569339921">ഫ്രഞ്ച്</translation>
 <translation id="3266793032086590337">മൂല്യം (വൈരുദ്ധ്യം)</translation>
 <translation id="3270847123878663523">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="3274521967729236597">പാ-കായ്</translation>
@@ -1000,6 +1001,7 @@
 <translation id="4819347708020428563">ഡിഫോൾട്ട് കാഴ്‌ചയിൽ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യണോ?</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4850886885716139402">കാണുക</translation>
+<translation id="485316830061041779">ജര്‍മ്മന്‍</translation>
 <translation id="4854362297993841467">ഈ ഡെലിവറി രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
 <translation id="4876188919622883022">ലളിതവൽക്കരിച്ച കാഴ്ച്ച</translation>
 <translation id="4876305945144899064">ഉപയോക്തൃനാമമില്ല</translation>
@@ -1155,6 +1157,7 @@
 <translation id="541416427766103491">സ്റ്റാക്കർ 4</translation>
 <translation id="5421136146218899937">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
+<translation id="5428105026674456456">സ്പാനിഷ്</translation>
 <translation id="542872847390508405">നിങ്ങൾ ഒരു അതിഥിയായി ബ്രൗസുചെയ്യുന്നു</translation>
 <translation id="5430298929874300616">ബുക്ക്‌മാർക്ക് നീക്കംചെയ്യുക</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" എന്നതിൽ സ്‌കീമ മൂല്ല്യനിർണ്ണയ പിശക്: <ph name="ERROR" /></translation>
@@ -1164,6 +1167,7 @@
 <translation id="5455374756549232013">മോശം നയ ടൈംസ്റ്റാമ്പ്</translation>
 <translation id="5457113250005438886">അസാധുവാണ്</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> എണ്ണവും}other{<ph name="CONTACT_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> എണ്ണവും}}</translation>
+<translation id="5469868506864199649">ഇറ്റാലിയന്‍</translation>
 <translation id="5470861586879999274">&amp;എഡിറ്റുചെയ്യുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="5478437291406423475">B6/C4 (എൻവലപ്പ്)</translation>
 <translation id="5481076368049295676">ഈ ഉള്ളടക്കം, നിങ്ങളുടെ ഉപകരണത്തിൽ വിവരങ്ങൾ മോഷ്‌ടിക്കുകയോ ഇല്ലാതാക്കുയോ ചെയ്യുന്ന തരത്തിലുള്ള സോഫ്‌റ്റ്‌വെയർ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ശ്രമിച്ചേക്കാം. <ph name="BEGIN_LINK" />എന്തായാലും കാണിക്കുക<ph name="END_LINK" /></translation>
@@ -1869,6 +1873,7 @@
 <translation id="8293206222192510085">ബുക്ക്‌മാര്‍‌ക്ക് ചേര്‍‌ക്കുക</translation>
 <translation id="8294431847097064396">ഉറവിടം</translation>
 <translation id="8298115750975731693">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi (<ph name="WIFI_NAME" />), <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
+<translation id="8299269255470343364">ജാപ്പനീസ്</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" വിഭാഗം കാണിച്ചിരിക്കുന്നു</translation>
 <translation id="830498451218851433">പകുതിയായി മടക്കുക</translation>
 <translation id="8307358339886459768">ചെറിയ-ഫോട്ടോ</translation>
@@ -1948,6 +1953,7 @@
 <translation id="8625384913736129811">ഈ ഉപകരണത്തിലേക്ക് ഈ കാർഡ് സംരക്ഷിക്കുക</translation>
 <translation id="8627040765059109009">സ്‌ക്രീൻ ക്യാപ്‌ചർ പുനരാരംഭിച്ചു</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
+<translation id="8666678546361132282">ഇംഗ്ലീഷ്</translation>
 <translation id="867224526087042813">ഒപ്പ്</translation>
 <translation id="8676424191133491403">കാലതാമസമില്ല</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ഉത്തരം, <ph name="ANSWER" /></translation>

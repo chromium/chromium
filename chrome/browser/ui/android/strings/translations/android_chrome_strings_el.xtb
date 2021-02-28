@@ -74,6 +74,7 @@
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1450753235335490080">Δεν είναι δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω προβλημάτων στον διακομιστή.</translation>
+<translation id="1492417797159476138">Έχετε αποθηκεύσει ήδη αυτό το όνομα χρήστη για αυτόν τον ιστότοπο.</translation>
 <translation id="1506061864768559482">Μηχανή αναζήτησης</translation>
 <translation id="1513352483775369820">Σελιδοδείκτες και ιστορικό ιστού</translation>
 <translation id="1513858653616922153">Διαγραφή κωδικού πρόσβασης</translation>
@@ -265,7 +266,6 @@
 <translation id="281504910091592009">Προβολή και διαχείριση αποθηκευμένων κωδικών πρόσβασης στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Για να εμφανίζονται οι σελιδοδείκτες σας σε όλες τις συσκευές σας, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό</translation>
 <translation id="2827278682606527653">Μενού της κάρτας ροής στο μισό ύψος</translation>
-<translation id="2833452327385637152">Αγγίξτε παρατεταμένα και μην πατήσετε μια λέξη ή φράση για αναζήτηση</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ελέγχθηκε πριν από μία ημέρα}other{Ελέγχθηκε πριν από # ημέρες}}</translation>
 <translation id="2842985007712546952">Γονικός φάκελος</translation>
 <translation id="2856503607207334158">Η σύνδεση απέτυχε</translation>
@@ -605,6 +605,7 @@
 <translation id="5191251636205085390">Μάθετε περισσότερα και δείτε πώς μπορείτε να ελέγχετε τις νέες τεχνολογίες που προορίζονται για την αντικατάσταση των cookie τρίτου μέρους</translation>
 <translation id="5193988420012215838">Αντιγράφηκε στο πρόχειρό σας</translation>
 <translation id="5199929503336119739">Προφίλ εργασίας</translation>
+<translation id="5204967432542742771">Εισαγωγή κωδικού πρόσβασης</translation>
 <translation id="5210286577605176222">Μετάβαση στην προηγούμενη καρτέλα</translation>
 <translation id="5210365745912300556">Κλείσιμο καρτέλας</translation>
 <translation id="5213672942202814946">Χρήση φωνητικής αναζήτησης</translation>
@@ -864,6 +865,7 @@
 <translation id="6850409657436465440">Η λήψη σας βρίσκεται ακόμα σε εξέλιξη</translation>
 <translation id="6850830437481525139">Έκλεισαν <ph name="TAB_COUNT" /> καρτέλες</translation>
 <translation id="685850645784703949">Discover από την Google - ανενεργό</translation>
+<translation id="686366188661646310">Διαγραφή κωδικού πρόσβασης;</translation>
 <translation id="6864459304226931083">Λήψη εικόνας</translation>
 <translation id="6865313869410766144">Δεδομένα φόρμας αυτόματης συμπλήρωσης</translation>
 <translation id="6882836635272038266">Βασική προστασία από ιστοτόπους, λήψεις και επεκτάσεις που είναι γνωστό ότι είναι επικίνδυνα.</translation>
@@ -1123,7 +1125,6 @@
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
 <translation id="8572344201470131220">Η εικόνα αντιγράφηκε.</translation>
 <translation id="8583805026567836021">Διαγραφή δεδομένων λογαριασμού</translation>
-<translation id="8587585930972369234">Αγγίξτε παρατεταμένα για αναζήτηση</translation>
 <translation id="860043288473659153">Όνομα κατόχου κάρτας</translation>
 <translation id="8602358303461588329">Σύνδεση στο Chrome, έκλεισε.</translation>
 <translation id="860282621117673749">Ειδοποιήσεις πτώσης τιμής</translation>

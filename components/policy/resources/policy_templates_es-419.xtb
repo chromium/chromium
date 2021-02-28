@@ -895,15 +895,15 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Especifica una lista de complementos que el usuario puede habilitar o inhabilitar en <ph name="PRODUCT_NAME" />.
 
-      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", de modo que para que coincida con los caracteres "*", "?" o "\" reales, debes colocar una "\" delante de ellos.
+      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", de modo que para que la búsqueda coincida con los caracteres "*", "?" o "\" propiamente dichos puedes incluir una "\" delante de ellos.
 
-      Si habilitas esta configuración, la lista especificada de complementos se puede utilizar en <ph name="PRODUCT_NAME" />. Los usuarios pueden habilitarlos o inhabilitarlos en "about:plugins", incluso si el complemento también coincide con un patrón en DisabledPlugins. Los usuarios también pueden habilitar e inhabilitar los complementos que no coinciden con ningún patrón en DisabledPlugins, DisabledPluginsExceptions y EnabledPlugins.
+      Si habilitas esta configuración, la lista especificada de complementos se puede utilizar en <ph name="PRODUCT_NAME" />. Los usuarios pueden habilitarlos o inhabilitarlos en "about:plugins", incluso si el complemento también coincide con un patrón incluido en DisabledPlugins. Los usuarios también pueden habilitar e inhabilitar complementos que no coinciden con ningún patrón incluido en DisabledPlugins, DisabledPluginsExceptions y EnabledPlugins.
 
-      Esta política permite bloquear complementos de forma estricta, cuando la lista "DisabledPlugins" contiene entradas de comodines como inhabilitar todos los complementos "*" o inhabilitar todos los complementos de Java "*Java*", pero el administrador desea permitir alguna versión particular como "IcedTea Java 2.3". En esta política, se puede especificar cada una de estas versiones.
+      Esta política permite bloquear complementos de forma estricta cuando la lista DisabledPlugins contiene entradas con comodines, como inhabilitar todos los complementos "*" o inhabilitar todos los complementos de Java "*Java*", pero el administrador desea permitir alguna versión particular, como "IcedTea Java 2.3". En esta política, se puede especificar cada una de estas versiones.
 
-      Ten en cuenta que tanto el nombre del complemento como el nombre del grupo de complementos deben exceptuarse. Cada grupo de complementos se muestra en una sección diferente en "about:plugins" y cada sección puede tener uno o más complementos. Por ejemplo, el complemento "Shockwave Flash" pertenece al grupo "Adobe Flash Player". Si deseas que ese complemento se exceptúe de la lista de entidades bloqueadas, ambos nombres deberán coincidir en la lista de excepciones.
+      Ten en cuenta que tanto el nombre del complemento como el nombre del grupo de complementos deben exceptuarse. Cada grupo de complementos se muestra en una sección diferente en "about:plugins" y cada sección puede tener uno o más complementos. Por ejemplo, el complemento "Shockwave Flash" pertenece al grupo "Adobe Flash Player". Si deseas que ese complemento se exceptúe de la lista de entidades bloqueadas, ambos nombres deberán coincidir con elementos de la lista de excepciones.
 
-      Si no se configura esta política, se inhabilitará cualquier complemento que coincida con los patrones en "DisabledPlugins", y el usuario no podrá habilitarlo.</translation>
+      Si no se configura esta política, se inhabilitará cualquier complemento que coincida con patrones incluidos en DisabledPlugins, y el usuario no podrá habilitarlo.</translation>
 <translation id="2236488539271255289">No permitir que ningún sitio configure los datos locales.</translation>
 <translation id="2241498944622759244">La política dejó de estar disponible porque esta función nunca se lanzó. Si la política se establece como verdadera o no se establece, <ph name="PRODUCT_NAME" /> sugerirá páginas relacionadas con la página actual.
       Se recuperarán estas sugerencias de forma remota desde los servidores de Google.
@@ -2593,13 +2593,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Nota: Si reinicias el dispositivo, se borrará la memoria caché. Se almacenan en caché incluso los datos de dominio de usuarios ocasionales. Desactiva la memoria caché si no quieres que se registre el dominio de un usuario ocasional.</translation>
 <translation id="4591366717022345234">Proporcionarles a los usuarios una versión Quick Fix</translation>
-<translation id="4592246263545654202">Especifica si el usuario puede abrir páginas en modo Incógnito en <ph name="PRODUCT_NAME" />.
-
-      Si se habilita esta política o no se establece, es posible que las páginas se abran en modo Incógnito.
-
-      Si se inhabilita, es posible que las páginas no se abran en modo Incógnito.
-
-      Si se asigna el valor Forzado (Forced), es posible que las páginas se abran SOLO en modo Incógnito. Ten en cuenta que la opción Forzado (Forced) no funciona para Android-on-Chrome.</translation>
 <translation id="4593391169954484940">El hash SHA-256 del archivo.</translation>
 <translation id="4594467366027975448">Configura el directorio que <ph name="PRODUCT_NAME" /> usará para almacenar la copia de roaming de los perfiles.
 
@@ -3660,10 +3653,10 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       El objetivo es que las organizaciones puedan permitir
       orígenes para apps heredadas que no pueden implementar TLS o
-      configuren un servidor de etapas para desarrollos web internos
+      configurar un servidor de etapa de pruebas para desarrollos web internos
       con el objeto de que los desarrolladores prueben las funciones que
       requieren contextos seguros sin tener que implementar TLS en el servidor
-      de etapas. Esta política también evitará que el origen se considere "No seguro" en el cuadro multifunción.
+      de etapa de pruebas. Esta política también evitará que el origen se considere "No seguro" en el cuadro multifunción.
 
       Configurar una lista de URL en esta política tiene el mismo efecto que
       configurar la función experimental de línea de comandos
@@ -4504,7 +4497,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" />, en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, o en instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.
 
-      (Para Chrome OS, consulta DeviceMetricsReportingEnabled).</translation>
+      (Con relación a Chrome OS, consulta DeviceMetricsReportingEnabled).</translation>
 <translation id="7145335384492396213">Modo de impresión con PIN predeterminado</translation>
 <translation id="7146198347561863646">Si habilitas la política o no la estableces, se permitirán los bloqueos de activación para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
 
@@ -5666,7 +5659,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si inhabilitas la política, el puerto USB no suministrará energía.
 
       Si no la estableces, la política estará activada, y los usuarios no podrán desactivarla.</translation>
-<translation id="8789338675663014675">Configura las políticas relacionadas con la extensión. El usuario no está autorizado a instalar las extensiones bloqueadas a menos que se encuentren en la lista de elementos permitidos. También puedes forzar <ph name="PRODUCT_NAME" /> a instalar automáticamente las extensiones. Para hacerlo, especifícalas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones instaladas de manera automática se instalan aunque estén incluidas en la lista de elementos bloqueados.</translation>
+<translation id="8789338675663014675">Configura las políticas relacionadas con las extensiones. El usuario no está autorizado a instalar las extensiones bloqueadas a menos que se encuentren en la lista de elementos permitidos. También puedes forzar <ph name="PRODUCT_NAME" /> a instalar automáticamente las extensiones. Para hacerlo, especifícalas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones incluidas en la lista de elementos permitidos se instalan aunque también aparezcan en la lista de elementos bloqueados.</translation>
 <translation id="879697755145469671">No detecta ventanas cubiertas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8799492680917278474">Si estableces esta política, las conexiones de acceso remoto se desconectarán de forma automática después de que transcurra el tiempo (en minutos) definido en la política. Esta acción no impide que el cliente se reconecte después de que se alcance la duración máxima de la sesión. Si estableces la política en un valor que está fuera del rango establecido, es posible que el host no se inicie. Esta política no influye en los diferentes escenarios de asistencia remota.
@@ -5934,9 +5927,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no la estableces o la inhabilitas, no se crearán ni cargarán las solicitudes de instalación de extensiones.
       Si la habilitas, se crearán las solicitudes de instalación de extensiones y se cargarán a la consola del Administrador de Google.
 
-      Si los usuarios intentan instalar una extensión que <ph name="EXTENSION_INSTALL_ALLOWLIST" /> y <ph name="EXTENSION_SETTINGS" /> no permiten, se crearán las solicitudes de instalación de extensiones.
+      Si los usuarios intentan instalar una extensión que <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" /> no permiten, se crearán las solicitudes de instalación de extensiones.
 
-      Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
+      Esta política solo será válida si la máquina está habilitada en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9123211093995421438">Especifica la cantidad mínima de hitos de reversión de <ph name="PRODUCT_OS_NAME" /> que se permiten a partir de la versión estable en cualquier momento.
 

@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">記憶體不足，無法下載所選內容。</translation>
 <translation id="1376578503827013741">正在運算…</translation>
 <translation id="1383876407941801731">搜尋</translation>
+<translation id="1384704387250346179">使用「Google 智能鏡頭」翻譯圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">曾於 <ph name="LAST_UPDATED" /> 天前在線</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋內容</translation>
 <translation id="1406000523432664303">「不追蹤」</translation>
@@ -73,6 +74,7 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1513352483775369820">書籤和網頁記錄</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
@@ -97,6 +99,7 @@
 <translation id="1692118695553449118">同步處理已開啟</translation>
 <translation id="1697284962337958118">新增至</translation>
 <translation id="1718835860248848330">過去一小時</translation>
+<translation id="1724977129262658800">解鎖後即可編輯密碼</translation>
 <translation id="173522743738009831">關於私隱沙箱</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1749561566933687563">同步您的書籤</translation>
@@ -263,7 +266,6 @@
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2818669890320396765">如要將書籤同步到所有裝置，請登入並開啟同步處理功能</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
-<translation id="2833452327385637152">如要搜尋特定字詞或詞組，請按住 (而非輕按) 該字詞或詞組</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{曾在 1 天前檢查}other{曾在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2856503607207334158">登入失敗</translation>
@@ -603,6 +605,7 @@
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
 <translation id="5193988420012215838">已複製至剪貼簿</translation>
 <translation id="5199929503336119739">工作設定檔</translation>
+<translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5210286577605176222">跳至上一個分頁</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5213672942202814946">使用語音搜尋</translation>
@@ -689,6 +692,7 @@
 <translation id="5765780083710877561">描述：</translation>
 <translation id="5767013862801005129">還原咗「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="5776970333778123608">資料不重要</translation>
+<translation id="5780792035410621042">如要複製密碼，請先在裝置上設定螢幕鎖定</translation>
 <translation id="5793665092639000975">已使用 <ph name="SPACE_USED" /> (共 <ph name="SPACE_AVAILABLE" />)</translation>
 <translation id="5795872532621730126">搜尋和瀏覽</translation>
 <translation id="5797070761912323120">Google 可能會使用您的記錄，為您提供個人化的搜尋服務、廣告和其他 Google 服務</translation>
@@ -861,6 +865,7 @@
 <translation id="6850409657436465440">仍在下載</translation>
 <translation id="6850830437481525139">已關閉 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="685850645784703949">Google 探索 - 關閉</translation>
+<translation id="686366188661646310">要刪除密碼嗎？</translation>
 <translation id="6864459304226931083">下載圖片</translation>
 <translation id="6865313869410766144">自動填入表格數據</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
@@ -1120,7 +1125,6 @@
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8572344201470131220">已複製圖片</translation>
 <translation id="8583805026567836021">正在清除帳戶數據</translation>
-<translation id="8587585930972369234">輕觸並按住即可搜尋</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8602358303461588329">登入 Chrome，閂咗。</translation>
 <translation id="860282621117673749">降價快訊</translation>

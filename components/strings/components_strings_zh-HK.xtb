@@ -581,6 +581,7 @@
 <translation id="3229041911291329567">裝置和瀏覽器的版本資料</translation>
 <translation id="323107829343500871">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼 (CVC)</translation>
 <translation id="3234666976984236645">一律在這個網站上偵測重要內容</translation>
+<translation id="3252266817569339921">法文</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3270847123878663523">復原重新排序(&amp;U)</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -994,6 +995,7 @@
 <translation id="4819347708020428563">要在預設檢視模式中編輯註解嗎？</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4850886885716139402">檢視</translation>
+<translation id="485316830061041779">德文</translation>
 <translation id="4854362297993841467">不支援此送貨方式，請選擇其他方式。</translation>
 <translation id="4876188919622883022">簡化檢視</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
@@ -1149,6 +1151,7 @@
 <translation id="541416427766103491">堆疊器 4</translation>
 <translation id="5421136146218899937">清除瀏覽數據…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
+<translation id="5428105026674456456">西班牙文</translation>
 <translation id="542872847390508405">您目前是以訪客身分瀏覽</translation>
 <translation id="5430298929874300616">移除書籤</translation>
 <translation id="5439770059721715174">「<ph name="ERROR_PATH" />」發生綱要驗證錯誤：<ph name="ERROR" /></translation>
@@ -1158,6 +1161,7 @@
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}}</translation>
+<translation id="5469868506864199649">意大利文</translation>
 <translation id="5470861586879999274">重做編輯(&amp;R)</translation>
 <translation id="5478437291406423475">B6/C4 (信封)</translation>
 <translation id="5481076368049295676">此內容可能會試圖在您的裝置上安裝危險的軟件，藉此竊取或刪除您的資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
@@ -1865,6 +1869,7 @@
 <translation id="8293206222192510085">新增書籤</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8298115750975731693">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
+<translation id="8299269255470343364">日文</translation>
 <translation id="8303854710873047864">顯示咗「<ph name="SECTION" />」部分</translation>
 <translation id="830498451218851433">對摺</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1944,6 +1949,7 @@
 <translation id="8625384913736129811">將這張信用卡儲存至此裝置</translation>
 <translation id="8627040765059109009">已繼續擷取螢幕畫面</translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
+<translation id="8666678546361132282">英文</translation>
 <translation id="867224526087042813">簽名</translation>
 <translation id="8676424191133491403">不延遲</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>

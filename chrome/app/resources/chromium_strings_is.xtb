@@ -138,7 +138,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="549669000822060376">Bíddu á meðan Chromium setur upp nýjustu kerfisuppfærslunar.</translation>
 <translation id="5496810170689441661">Chromium er að reyna að breyta aðgangsorðum. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Uppfærsla er í boði fyrir Chromium}=1{Uppfærsla er í boði fyrir Chromium}one{Uppfærsla hefur verið í boði fyrir Chromium í # dag}other{Uppfærsla hefur verið í boði fyrir Chromium í # daga}}</translation>
-<translation id="5631814766731275228">Nafn og mynd fyrir Chromium</translation>
 <translation id="5634636535844844681">Chromium krefst Windows 7 eða nýrri útgáfu.</translation>
 <translation id="5653831366781983928">Endurræstu Chromium núna</translation>
 <translation id="5698481217667032250">Birta Chromium á þessu tungumáli</translation>
@@ -282,5 +281,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-inn)</translation>
 <translation id="9214764063801632699">Chromium OS kerfi</translation>
 <translation id="93478295209880648">Vera kann að Chromium virki ekki sem skyldi vegna þess að vafrinn er ekki lengur studdur á Windows XP eða Windows Vista</translation>
+<translation id="965162752251293939">Hver er að nota Chromium?</translation>
 <translation id="985602178874221306">Höfundar Chromium</translation>
 </translationbundle>

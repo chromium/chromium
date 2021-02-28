@@ -8,6 +8,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> hisobi avvallari Chrome’da ishlatilgan</translation>
 <translation id="1097330777386562916">Chrome yopilganda barcha cookie fayllari va sayt maʼlumotlari tozalanadi</translation>
 <translation id="110877069173485804">Bu Chrome sizniki</translation>
+<translation id="1125124144982679672">Chromeni kim ochdi?</translation>
 <translation id="1142745911746664600">Chromeni yangilab bo‘lmadi</translation>
 <translation id="1154147086299354128">Chrome brauzerida &amp;ochish</translation>
 <translation id="123620459398936149">Chrome OS ma’lumotlaringizni sinxronlay olmadi. Sync kodli iborasini yangilang.</translation>
@@ -120,7 +121,6 @@
 <translation id="4050175100176540509">So‘nggi versiyada himoya devori yaxshilandi va yangi funksiyalar qo‘shildi.</translation>
 <translation id="4053720452172726777">Google Chrome’ni sozlash va boshqarish</translation>
 <translation id="4110895483821904099">Yangi Chrome profilini sozlang</translation>
-<translation id="4143243756087420366">Chrome profili nomi va rasmi</translation>
 <translation id="4147555960264124640">Siz boshqaruvdagi hisobga kiryapsiz va uning administratoriga Google Chrome profilingizni boshqarishga ruxsat beryapsiz. Ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi barcha Chrome ma’lumotlaringiz <ph name="USER_NAME" /> hisobiga biriktiriladi. Siz bu ma’lumotlarni Google hisoblar shaxsiy kabinetidan o‘chirishingiz mumkin, lekin bu ma’lumotlarni boshqa hisob bilan bog‘lay olmaysiz. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Fayllarni arxivdan chiqarib bo‘lmadi. Google Chrome‘ni qayta yuklab oling.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome brauzerini 1 kun ichida qayta ishga tushiring}other{Chrome brauzerini # kun ichida qayta ishga tushiring}}</translation>

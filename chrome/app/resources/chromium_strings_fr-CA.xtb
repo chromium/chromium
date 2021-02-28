@@ -138,7 +138,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="549669000822060376">Veuillez patienter pendant que Chromium installe les dernières mises à jour système.</translation>
 <translation id="5496810170689441661">Chromium essaie de modifier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est proposée}=1{Une mise à jour de Chromium est proposée}one{Une mise à jour de Chromium est proposée depuis # jour}other{Une mise à jour de Chromium est proposée depuis # jours}}</translation>
-<translation id="5631814766731275228">Nom et image Chromium</translation>
 <translation id="5634636535844844681">Chromium requiert Windows 7 ou une version ultérieure.</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
@@ -166,6 +165,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="6266342355635466082">Chromium ne peut pas vérifier la présence de mises à jour. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="6281746429495226318">Personnaliser votre profil Chromium</translation>
+<translation id="6290827346642914212">Nommer votre profil Chromium</translation>
 <translation id="6295779123002464101">Chromium a bloqué le fichier <ph name="FILE_NAME" />, car il peut être dangereux.</translation>
 <translation id="6309712487085796862">Chromium utilise votre caméra.</translation>
 <translation id="6333502561965082103">Une autre opération est en cours sur Chromium. Veuillez réessayer plus tard.</translation>
@@ -279,5 +279,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Système Chromium OS</translation>
 <translation id="93478295209880648">Il se peut que Chromium ne fonctionne pas correctement, car il n'est plus compatible avec Windows XP ni Windows Vista</translation>
+<translation id="965162752251293939">Qui utilise Chromium?</translation>
 <translation id="985602178874221306">Les auteurs de Chrome</translation>
 </translationbundle>

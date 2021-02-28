@@ -136,7 +136,6 @@
 <translation id="549669000822060376">Vent, mens Chromium installerer de nyeste systemopdateringer.</translation>
 <translation id="5496810170689441661">Chromium forsøger at redigere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Der er en tilgængelig Chromium-opdatering}=1{Der er en tilgængelig Chromium-opdatering}one{En Chromium-opdatering har været tilgængelig i # dag}other{En Chromium-opdatering har været tilgængelig i # dage}}</translation>
-<translation id="5631814766731275228">Chromium-navn og -billede</translation>
 <translation id="5634636535844844681">Chromium kræver Windows 7 eller nyere.</translation>
 <translation id="5653831366781983928">Genstart Chromium nu</translation>
 <translation id="5698481217667032250">Vis Chromium på dette sprog</translation>
@@ -280,5 +279,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS-system</translation>
 <translation id="93478295209880648">Chromium fungerer muligvis ikke korrekt på grund af manglende understøttelse i Windows XP og Windows Vista</translation>
+<translation id="965162752251293939">Hvem bruger Chromium?</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
 </translationbundle>

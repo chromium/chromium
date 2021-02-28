@@ -899,7 +899,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Especifica una lista de complementos que el usuario puede habilitar o inhabilitar en <ph name="PRODUCT_NAME" />.
 
-      Los comodines "*" y "?" se pueden utilizar para buscar coincidencias con secuencias de caracteres arbitrarios. El comodín "*" indica cualquier número de caracteres, mientras que "?" especifica un único carácter opcional (es decir, coincide con un carácter o no coincide con ninguno). El carácter de escape es "\", así que para que buscar coincidencias con los caracteres "*", "?" o "\", debes colocar el carácter "\" delante de ellos.
+      Los comodines "*" y "?" se pueden utilizar para buscar coincidencias con secuencias de caracteres arbitrarios. El comodín "*" indica cualquier número de caracteres, mientras que "?" especifica un único carácter opcional (es decir, coincide con un carácter o no coincide con ninguno). El carácter de escape es "\", así que para buscar coincidencias con los caracteres "*", "?" o "\", debes colocar el carácter "\" delante de ellos.
 
       Si habilitas esta opción, la lista de complementos especificada se podrá utilizar en <ph name="PRODUCT_NAME" />. Los usuarios pueden habilitar o inhabilitar los complementos en about:plugins, aunque el complemento también coincida con un patrón de DisabledPlugins. Además, los usuarios pueden habilitar e inhabilitar los complementos que no coincidan con ningún patrón de DisabledPlugins, DisabledPluginsExceptions o EnabledPlugins.
 
@@ -2606,13 +2606,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Nota: La caché se borra al reiniciar el dispositivo. Los datos de dominio de los usuarios efímeros también se almacenan en caché. Desactiva la caché para evitar el rastreo de los dominios de los usuarios efímeros.</translation>
 <translation id="4591366717022345234">Proporciona a los usuarios una versión Quick Fix</translation>
-<translation id="4592246263545654202">Permite especificar si el usuario podrá abrir páginas en modo de incógnito en <ph name="PRODUCT_NAME" />.
-
-      Si se habilita esta política o no se define, se podrán abrir páginas en modo de incógnito.
-
-      Si se inhabilita, las páginas no se podrán abrir en modo de incógnito.
-
-      Si se asigna el valor "Forced" a esta política, las páginas solo se podrán abrir en modo de incógnito. Ten en cuenta que el valor "Forced" no funciona en dispositivos con Android en Chrome.</translation>
 <translation id="4593391169954484940">El hash SHA-256 del archivo.</translation>
 <translation id="4594467366027975448">Permite configurar el directorio que <ph name="PRODUCT_NAME" /> utilizará para almacenar la copia de itinerancia de los perfiles.
 

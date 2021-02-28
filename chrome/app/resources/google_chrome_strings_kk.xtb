@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> бұрын Chrome браузерін пайдаланған</translation>
 <translation id="1097330777386562916">Chrome браузерінен шыққанда, cookie файлдары мен сайт деректерін тазарту</translation>
 <translation id="110877069173485804">Сізге арналған Chrome</translation>
+<translation id="1125124144982679672">Chrome браузерін кім пайдаланып жатыр?</translation>
 <translation id="1142745911746664600">Chrome браузерін жаңарту мүмкін емес</translation>
 <translation id="1154147086299354128">&amp;Chrome браузерінде ашу</translation>
 <translation id="123620459398936149">Chrome OS деректеріңізді синхрондай алмады. Синхрондаудың құпия фразасын жаңартыңыз.</translation>
@@ -90,6 +91,7 @@
 <translation id="3065168410429928842">Chrome қойындысы</translation>
 <translation id="3080151273017101988">Google Chrome жабылғанда, фондық қолданбаларды пайдалануды жалғастыру</translation>
 <translation id="3089968997497233615">Жаңа, қауіпсізірек Google Chrome нұсқасы қолжетімді.</translation>
+<translation id="3100998948628680988">Chrome профиліне ат қойыңыз</translation>
 <translation id="3114643501466072395">Басқа құпия сөздеріңіздің ұрланудан және басқа да қауіпсіздік мәселелерінен қаншалықты қорғалғанын тексеру үшін <ph name="BEGIN_LINK" />Chrome браузеріне кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS деректеріңізді синхрондай алмады.</translation>
 <translation id="3140883423282498090">Өзгертулеріңіз Google Chrome келесі рет қайта іске қосылғанда күшіне енеді.</translation>
@@ -121,7 +123,6 @@
 <translation id="4050175100176540509">Соңғы нұсқасында қауіпсіздік жақсартылып, жаңа мүмкіндіктер берілген.</translation>
 <translation id="4053720452172726777">Google Chrome реттеу және бақылау</translation>
 <translation id="4110895483821904099">Жаңа Chrome профилінің параметрлерін реттеу</translation>
-<translation id="4143243756087420366">Chrome браузеріндегі атыңыз бен суретіңіз</translation>
 <translation id="4147555960264124640">Бақыланатын есептік жазба арқылы кірдіңіз және оның әкімшісіне Google Chrome профиліңізді бақылау рұқсатын бердіңіз. Қолданбалар, бетбелгілер, журнал, құпия сөздер сияқты Chrome деректеріңіз және басқа параметрлер біржола <ph name="USER_NAME" /> пайдаланушысына байланыстырылады. Бұл деректерді Google есептік жазба бақылау тақтасы арқылы жоя аласыз, бірақ бұл деректерді басқа есептік жазбамен байланыстыра алмайсыз. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Орнату құралы мұрағаттан шығара алмады. Google Chrome қолданбасын қайта жүктеңіз.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome браузерін бір күннің ішінде қайта іске қосыңыз}other{Chrome браузерін # күннің ішінде қайта іске қосыңыз}}</translation>

@@ -864,7 +864,6 @@
 <translation id="1930879306590754738">このデバイスと Google アカウントからパスワードを削除しました</translation>
 <translation id="1931152874660185993">コンポーネントはインストールされていません。</translation>
 <translation id="1932098463447129402">開始時刻</translation>
-<translation id="1933809209549026293">マウスまたはキーボードを接続してください。Bluetooth デバイスを使用している場合は、ペア設定できる状態であることを確認してください。</translation>
 <translation id="1935303383381416800">位置情報の取得を許可するサイト</translation>
 <translation id="1936931585862840749">印刷部数を数値（1～<ph name="MAX_COPIES" />）で指定してください。</translation>
 <translation id="1937774647013465102">このデバイス（<ph name="ARCHITECTURE_DEVICE" />）でコンテナのアーキテクチャ タイプ <ph name="ARCHITECTURE_CONTAINER" /> をインポートできません。このコンテナを別のデバイスに復元できるかお試しださい。または、ファイルアプリを開いて、このコンテナ イメージ内のファイルにアクセスすることも可能です。</translation>
@@ -2604,7 +2603,6 @@
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Sherlog から最近のアシスタント履歴を含める。これには、ID、位置情報、デバッグ情報などが含まれる可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">フォルダの追加</translation>
-<translation id="3894598587402139398"><ph name="NAME" /> さんがウェブサイトやアプリへのアクセスに使用するアカウントを追加できます。</translation>
 <translation id="3894770151966614831">Google アカウントに移動しますか？</translation>
 <translation id="3895076768659607631">検索エンジンを管理(&amp;M)...</translation>
 <translation id="3895090224522145010">Kerberos ユーザー名</translation>
@@ -2945,6 +2943,7 @@
 <translation id="4301671483919369635">このページはファイルの編集が許可されています</translation>
 <translation id="4303079906735388947">セキュリティ キーの新しい PIN を設定します</translation>
 <translation id="4305402730127028764">「<ph name="DEVICE_NAME" />」にコピー</translation>
+<translation id="4305817255990598646">切り替え</translation>
 <translation id="4306119971288449206">アプリはコンテンツタイプ「<ph name="CONTENT_TYPE" />」で配信される必要があります</translation>
 <translation id="4306812610847412719">クリップボード</translation>
 <translation id="4307992518367153382">基本設定</translation>
@@ -3338,7 +3337,6 @@
 <translation id="4756378406049221019">停止 / 再読み込み</translation>
 <translation id="4756388243121344051">履歴(&amp;H)</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
-<translation id="4759387251871503426">ログインする Google アカウントは、<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />で管理できます。ウェブサイトとアプリに許可した権限はすべてのアカウントに適用される可能性があります。サイトやアプリがアカウント情報にアクセスすることを望まない場合は、<ph name="DEVICE_TYPE" /> にゲストとしてログインするか、<ph name="LINK_2_BEGIN" />シークレット ウィンドウ<ph name="LINK_2_END" />でブラウジングできます。</translation>
 <translation id="4761104368405085019">マイクを使用する</translation>
 <translation id="4762718786438001384">デバイスのディスク空き領域が非常に少なくなっています</translation>
 <translation id="4763408175235639573">このページを表示したときに以下の Cookie が設定されました</translation>
@@ -3559,6 +3557,7 @@
 <translation id="5027550639139316293">メール証明書</translation>
 <translation id="5027562294707732951">拡張機能を追加</translation>
 <translation id="5029568752722684782">コピーを消去</translation>
+<translation id="503155457707535043">アプリをダウンロード中</translation>
 <translation id="5033137252639132982">モーション センサーの使用を許可しないサイト</translation>
 <translation id="5033266061063942743">幾何学模様</translation>
 <translation id="5036662165765606524">複数ファイルの自動ダウンロードをどのサイトにも許可しない</translation>
@@ -5296,7 +5295,7 @@
 <translation id="7036706669646341689">Linux 用の推奨される空き容量は <ph name="DISK_SIZE" /> です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>
 <translation id="7037509989619051237">テキスト読み上げの音声をプレビュー</translation>
 <translation id="7038632520572155338">スイッチ アクセス</translation>
-<translation id="7038710352229712897"><ph name="USER_NAME" /> の Google アカウントをさらに追加</translation>
+<translation id="7038710352229712897"><ph name="USER_NAME" /> の別の Google アカウントを追加</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> の USB デバイスへのアクセス</translation>
 <translation id="7039912931802252762">Microsoft スマート カード ログオン</translation>
 <translation id="7039951224110875196">お子様用の Google アカウントを作成する</translation>
@@ -6117,7 +6116,6 @@
 <translation id="7968833647796919681">パフォーマンス データの収集を有効にする</translation>
 <translation id="7968982339740310781">詳細を表示</translation>
 <translation id="7969046989155602842">コマンド</translation>
-<translation id="7970618607181090249">タッチスクリーンが検出されました</translation>
 <translation id="7970673414865679092">イーサネットの詳細</translation>
 <translation id="7970882136539140748">現在、カードを保存できません</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 with RSA 暗号化</translation>
@@ -7148,7 +7146,6 @@
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9130015405878219958">入力されたモードが無効です。</translation>
 <translation id="9131487537093447019">Bluetooth デバイスとのメッセージの送受信。</translation>
-<translation id="9134119143784876218">英語の音声と動画の字幕を自動生成します（現在のところ Chrome ブラウザでのみ利用可能）。音声と字幕はデバイス上でローカルに処理されます。</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
 <translation id="9137157311132182254">優先する検索エンジン</translation>
 <translation id="9137248913990643158">このアプリを使用するには、Chrome を起動してログインしてください。</translation>

@@ -864,7 +864,6 @@
 <translation id="1930879306590754738">Contraseña eliminada de este dispositivo y de tu cuenta de Google</translation>
 <translation id="1931152874660185993">No hay componentes instalados.</translation>
 <translation id="1932098463447129402">Posterior a</translation>
-<translation id="1933809209549026293">Conecta un ratón o un teclado. Si utilizas un dispositivo Bluetooth, asegúrate de que esté listo para la vinculación.</translation>
 <translation id="1935303383381416800">Puede ver tu ubicación</translation>
 <translation id="1936931585862840749">Usa un número para indicar cuántas copias quieres imprimir (entre 1 y <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">No se puede importar el tipo de arquitectura de contenedores <ph name="ARCHITECTURE_CONTAINER" /> con este dispositivo, que es <ph name="ARCHITECTURE_DEVICE" />. Intenta restaurar este contenedor en otro dispositivo o accede a los archivos de esta imagen de contenedor abriéndola en la aplicación Archivos.</translation>
@@ -1056,7 +1055,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2157474325782140681">Si quieres obtener funciones adicionales, usa una base Dell que se haya diseñado para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Desactivar pantalla completa</translation>
 <translation id="2157875535253991059">Esta página se muestra ahora en pantalla completa.</translation>
-<translation id="2158475082070321257">Copiar enlace a la parte destacada</translation>
+<translation id="2158475082070321257">Copiar enlace al texto destacado</translation>
 <translation id="216169395504480358">Añadir Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronización empezará cuando salgas de la configuración</translation>
 <translation id="2162838847352058695">No permitir que los sitios descarguen varios archivos automáticamente</translation>
@@ -2604,7 +2603,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Incluir el historial reciente del Asistente mediante Sherlog. Puede contener datos de identidad y ubicación e información de depuración. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Añadir carpeta</translation>
-<translation id="3894598587402139398">Puedes añadir cuentas adicionales a <ph name="NAME" /> para acceder a sitios web y aplicaciones.</translation>
 <translation id="3894770151966614831">¿Mover a una cuenta de Google?</translation>
 <translation id="3895076768659607631">&amp;Administrar buscadores...</translation>
 <translation id="3895090224522145010">Nombre de usuario de Kerberos</translation>
@@ -2706,7 +2704,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3984135167056005094">No incluir dirección de correo electrónico</translation>
 <translation id="3984159763196946143">No se ha podido iniciar el modo de demostración</translation>
 <translation id="3984431586879874039">¿Quieres permitir que este sitio web vea tu llave de seguridad?</translation>
-<translation id="398477389655464998">Copiar enlace a la parte destacada</translation>
+<translation id="398477389655464998">Copiar enlace al texto destacado</translation>
 <translation id="3986705137476756801">Desactivar Subtítulos automáticos por el momento</translation>
 <translation id="3987544746655539083">Seguir impidiendo que este sitio web acceda a tu ubicación</translation>
 <translation id="3987938432087324095">No he entendido nada.</translation>
@@ -2944,6 +2942,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4301671483919369635">Esta página tiene permiso para editar archivos</translation>
 <translation id="4303079906735388947">Configura un nuevo PIN para tu llave de seguridad</translation>
 <translation id="4305402730127028764">Copiar en <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">Las aplicaciones deben incluir el encabezado content-type "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4306812610847412719">portapapeles</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
@@ -3337,7 +3336,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4756378406049221019">Detener/Volver a cargar</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4759238208242260848">Descargas</translation>
-<translation id="4759387251871503426">Puedes gestionar las cuentas de Google con las que se haya iniciado sesión en <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />. Es posible que los permisos que hayas dado a sitios web y aplicaciones se apliquen a todas las cuentas. Si no quieres que los sitios ni las aplicaciones accedan a los datos de tu cuenta, puedes iniciar sesión en el <ph name="DEVICE_TYPE" /> como invitado o navegar por Internet en una <ph name="LINK_2_BEGIN" />ventana de incógnito<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Utilizar el micrófono</translation>
 <translation id="4762718786438001384">El espacio en disco del dispositivo está prácticamente agotado</translation>
 <translation id="4763408175235639573">Se han permitido las siguientes cookies al visitar esta página</translation>
@@ -3558,6 +3556,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5027550639139316293">Certificado de correo electrónico</translation>
 <translation id="5027562294707732951">Añadir extensión</translation>
 <translation id="5029568752722684782">Borrar copia</translation>
+<translation id="503155457707535043">Se están descargando las aplicaciones</translation>
 <translation id="5033137252639132982">No puede usar sensores de movimiento</translation>
 <translation id="5033266061063942743">Formas geométricas</translation>
 <translation id="5036662165765606524">No permitir que ningún sitio descargue varios archivos automáticamente</translation>
@@ -6116,7 +6115,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7968833647796919681">Habilitar recogida de datos de rendimiento</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
 <translation id="7969046989155602842">Comando</translation>
-<translation id="7970618607181090249">Pantalla táctil detectada</translation>
 <translation id="7970673414865679092">Detalles de la red Ethernet</translation>
 <translation id="7970882136539140748">No se puede guardar tu tarjeta en este momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
@@ -7147,7 +7145,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9128870381267983090">Conéctate a la red</translation>
 <translation id="9130015405878219958">Modo no válido introducido</translation>
 <translation id="9131487537093447019">Enviar y recibir mensajes desde dispositivos Bluetooth.</translation>
-<translation id="9134119143784876218">Crea subtítulos de forma automática para contenido de audio y vídeo en inglés (actualmente solo está disponible en el navegador Chrome). El audio y los subtítulos no saldrán de tu dispositivo en ningún momento.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137157311132182254">Buscador preferido</translation>
 <translation id="9137248913990643158">Abre Chrome e inicia sesión en el navegador para usar esta aplicación.</translation>

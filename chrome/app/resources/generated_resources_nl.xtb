@@ -864,7 +864,6 @@
 <translation id="1930879306590754738">Wachtwoord verwijderd van dit apparaat en uit je Google-account</translation>
 <translation id="1931152874660185993">Geen componenten geïnstalleerd.</translation>
 <translation id="1932098463447129402">Niet vóór</translation>
-<translation id="1933809209549026293">Sluit een muis of een toetsenbord aan. Als je een Bluetooth-apparaat gebruikt, zorg je ervoor dat dit kan worden gekoppeld.</translation>
 <translation id="1935303383381416800">Toestemming om je locatie te bekijken</translation>
 <translation id="1936931585862840749">Gebruik een cijfer om aan te geven hoeveel exemplaren er moeten worden afgedrukt (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kan type containerarchitectuur <ph name="ARCHITECTURE_CONTAINER" /> niet importeren met dit apparaat. Dit apparaat is <ph name="ARCHITECTURE_DEVICE" />. Je kunt proberen deze container te herstellen op een ander apparaat of je kunt toegang krijgen tot bestanden in deze containerimage door ze te openen in de app Bestanden.</translation>
@@ -2604,7 +2603,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Ook de recente Assistent-geschiedenis opnemen via Sherlog. Deze geschiedenis kan je identiteit, locatie en foutopsporingsinformatie omvatten. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Map toevoegen</translation>
-<translation id="3894598587402139398">Je kunt extra accounts voor <ph name="NAME" /> toevoegen om toegang te krijgen tot websites en apps.</translation>
 <translation id="3894770151966614831">Verplaatsen naar Google-account?</translation>
 <translation id="3895076768659607631">Zoek&amp;machines beheren…</translation>
 <translation id="3895090224522145010">Kerberos-gebruikersnaam</translation>
@@ -2945,6 +2943,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4301671483919369635">Deze pagina heeft toestemming om bestanden te bewerken</translation>
 <translation id="4303079906735388947">Stel een nieuwe pincode in voor je beveiligingssleutel</translation>
 <translation id="4305402730127028764">Kopiëren naar <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Overschakelen</translation>
 <translation id="4306119971288449206">Apps moeten worden weergegeven met inhoudstype '<ph name="CONTENT_TYPE" />'</translation>
 <translation id="4306812610847412719">klembord</translation>
 <translation id="4307992518367153382">Basisinstellingen</translation>
@@ -3338,7 +3337,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4756378406049221019">Stoppen/opnieuw laden</translation>
 <translation id="4756388243121344051">Gesc&amp;hiedenis</translation>
 <translation id="4759238208242260848">Downloads</translation>
-<translation id="4759387251871503426">Je kunt ingelogde Google-accounts beheren via <ph name="LINK_BEGIN" />Instellingen<ph name="LINK_END" />. Rechten die je hebt gegeven aan websites en apps kunnen van toepassing zijn op alle accounts. Als je niet wilt dat sites of apps toegang tot je accountgegevens hebben, kun je als gast inloggen op de <ph name="DEVICE_TYPE" /> of in een <ph name="LINK_2_BEGIN" />incognitovenster<ph name="LINK_2_END" /> op internet browsen.</translation>
 <translation id="4761104368405085019">Je microfoon gebruiken</translation>
 <translation id="4762718786438001384">Er is zeer weinig schijfruimte beschikbaar op het apparaat</translation>
 <translation id="4763408175235639573">De volgende cookies zijn opgeslagen toen je deze pagina bekeek</translation>
@@ -3559,6 +3557,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5027550639139316293">Certificaat voor e-mail</translation>
 <translation id="5027562294707732951">Extensie toevoegen</translation>
 <translation id="5029568752722684782">Kopie wissen</translation>
+<translation id="503155457707535043">Apps downloaden</translation>
 <translation id="5033137252639132982">Geen toestemming om bewegingssensoren te gebruiken</translation>
 <translation id="5033266061063942743">Geometrische vormen</translation>
 <translation id="5036662165765606524">Sites niet toestaan automatisch meerdere bestanden te downloaden</translation>
@@ -6116,7 +6115,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7968833647796919681">Het verzamelen van prestatiegegevens inschakelen</translation>
 <translation id="7968982339740310781">Details weergeven</translation>
 <translation id="7969046989155602842">Command</translation>
-<translation id="7970618607181090249">Touchscreen waargenomen</translation>
 <translation id="7970673414865679092">Ethernetgegevens</translation>
 <translation id="7970882136539140748">Kaart kan nu niet worden opgeslagen</translation>
 <translation id="7972714317346275248">PKCS nr. 1 SHA-384 met RSA-encryptie</translation>
@@ -7148,7 +7146,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9128870381267983090">Verbinding maken met netwerk</translation>
 <translation id="9130015405878219958">Ongeldige modus opgegeven.</translation>
 <translation id="9131487537093447019">Berichten verzenden naar en ontvangen van Bluetooth-apparaten.</translation>
-<translation id="9134119143784876218">Maakt automatisch een ondertiteling voor audio en video in het Engels (op dit moment alleen beschikbaar in de Chrome-browser). De audio en ondertiteling worden nooit doorgestuurd vanaf je apparaat.</translation>
 <translation id="9137013805542155359">Origineel weergeven</translation>
 <translation id="9137157311132182254">Voorkeurszoekmachine</translation>
 <translation id="9137248913990643158">Start Chrome en log in voordat je deze app gebruikt.</translation>

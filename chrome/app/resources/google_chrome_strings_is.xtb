@@ -10,6 +10,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> var áður að nota Chrome</translation>
 <translation id="1097330777386562916">Hreinsa fótspor og vefsvæðisgögn þegar þú lokar Chrome</translation>
 <translation id="110877069173485804">Þetta er þitt Chrome</translation>
+<translation id="1125124144982679672">Hver er að nota Chrome?</translation>
 <translation id="1142745911746664600">Ekki er hægt að uppfæra Chrome</translation>
 <translation id="1154147086299354128">&amp;Opna í Chrome</translation>
 <translation id="123620459398936149">Chrome OS gat ekki samstillt gögnin þín. Uppfærðu aðgangsorð samstillingar.</translation>
@@ -122,7 +123,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4050175100176540509">Mikilvægar öryggislagfæringar og nýir eiginleikar eru í boði í nýjustu útgáfunni.</translation>
 <translation id="4053720452172726777">Sérsníða og stjórna Google Chrome</translation>
 <translation id="4110895483821904099">Settu upp nýja Chrome prófílinn þinn</translation>
-<translation id="4143243756087420366">Nafn og mynd fyrir Chrome</translation>
 <translation id="4147555960264124640">Þú ert að skrá þig inn á stýrðan reikning og gefur stjórnanda hans stjórn yfir Google Chrome prófílnum þínum. Gögnin þín í Chrome, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google reikninga en getur ekki tengt þau öðrum reikningi. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Uppsetningarforritinu tókst ekki að afþjappa safnskrána. Sæktu Google Chrome aftur.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Endurræstu Chrome innan eins dags}one{Endurræstu Chrome innan # dags}other{Endurræstu Chrome innan # daga}}</translation>

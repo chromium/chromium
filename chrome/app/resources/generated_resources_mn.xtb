@@ -860,7 +860,6 @@
 <translation id="1930879306590754738">Нууц үгийг энэ төхөөрөмж болон таны Google Бүртгэлээс устгасан</translation>
 <translation id="1931152874660185993">Ямар ч бүрэлдэхүүн хэсэг суугдаагүй байна.</translation>
 <translation id="1932098463447129402">Өмнө нь биш</translation>
-<translation id="1933809209549026293">Комьпютерийн хулгана эсвэл гарыг холбоно уу. Хэрэв та Bluetooth төхөөрөмж ашиглаж байгаа бол энэ нь өөр төхөөрөмжтэй хослоход бэлэн байгаа эсэхийг шалгаарай.</translation>
 <translation id="1935303383381416800">Таны байршлыг харахыг зөвшөөрсөн</translation>
 <translation id="1936931585862840749">Тоо ашиглан хэдэн хувь хэвлэхийг заана уу (1-ээс <ph name="MAX_COPIES" /> хүртэл).</translation>
 <translation id="1937774647013465102">Контейнерын архитектурын төрөл болох<ph name="ARCHITECTURE_CONTAINER" />-г энэ төхөөрөмж буюу <ph name="ARCHITECTURE_DEVICE" />-р импорт хийх боломжгүй байна. Та энэ контейнерыг өөр төхөөрөмжид сэргээхээр оролдох эсвэл Файлс аппыг нээж, энэ контейнерын зураг дахь файлд хандах боломжтой.</translation>
@@ -2599,7 +2598,6 @@
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Туслахын саяхны түүхийг Sherlog-р оруулна уу. Үүнд таны биеийн байцаалт, байршил болон дебаг хийх мэдээллийг агуулж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Хавтас нэмэх</translation>
-<translation id="3894598587402139398">Та <ph name="NAME" />-д вебсайтууд болон аппуудад хандах нэмэлт бүртгэлүүд нэмэх боломжтой.</translation>
 <translation id="3894770151966614831">Google Бүртгэл рүү шилжих үү?</translation>
 <translation id="3895076768659607631">&amp;Хайлтын системийг удирдах...</translation>
 <translation id="3895090224522145010">Kerberos хэрэглэгчийн нэр</translation>
@@ -2939,6 +2937,7 @@
 <translation id="4301671483919369635">Энэ хуудас нь файлыг засах зөвшөөрөлтэй</translation>
 <translation id="4303079906735388947">Аюулгүй байдлын түлхүүртэйгээ ашиглах шинэ ПИН тохируулна уу</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> руу хуулах</translation>
+<translation id="4305817255990598646">Сэлгэх</translation>
 <translation id="4306119971288449206">Аппыг заавал "<ph name="CONTENT_TYPE" />" агуулгын төрөлтэй ажиллуулах шаардлагатай</translation>
 <translation id="4306812610847412719">түр санах ой</translation>
 <translation id="4307992518367153382">Үндэс</translation>
@@ -3332,7 +3331,6 @@
 <translation id="4756378406049221019">Зогсоох/Дахин ачааллах</translation>
 <translation id="4756388243121344051">&amp; Түүх</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
-<translation id="4759387251871503426">Та нэвтэрсэн Google Бүртгэлүүдийг <ph name="LINK_BEGIN" />Тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой. Таны вебсайтууд болон аппуудад өгсөн зөвшөөрөл нь бүх бүртгэлд хэрэгжиж болзошгүй. Хэрэв та сайтууд болон аппуудыг таны бүртгэлийн мэдээлэлд хандахыг хүсэхгүй байвал <ph name="DEVICE_TYPE" />-д зочноор нэвтэрч эсвэл <ph name="LINK_2_BEGIN" />нууцлалтай цонх<ph name="LINK_2_END" />-оор веб үзэх боломжтой.</translation>
 <translation id="4761104368405085019">Микрофоноо ашигла</translation>
 <translation id="4762718786438001384">Төхөөрөмжийн дискний багтаамж маш бага байна</translation>
 <translation id="4763408175235639573">Таныг энэ хуудсыг харахад дараах күүкийг тохируулсан</translation>
@@ -3553,6 +3551,7 @@
 <translation id="5027550639139316293">И-мэйлийн гэрчилгээ</translation>
 <translation id="5027562294707732951">Өргөтгөл нэмэх</translation>
 <translation id="5029568752722684782">Хуулбарыг арилгах</translation>
+<translation id="503155457707535043">Аппуyдыг татаж байна</translation>
 <translation id="5033137252639132982">Хөдөлгөөн мэдрэгч ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="5033266061063942743">Геометрийн дүрс</translation>
 <translation id="5036662165765606524">Сайтад автоматаар олон файлуудыг татаж авахыг бүү зөвшөөр</translation>
@@ -6110,7 +6109,6 @@
 <translation id="7968833647796919681">Гүйцэтгэлийн өгөгдөл цуглуулах ажиллагааг идэвхжүүлэх</translation>
 <translation id="7968982339740310781">Дэлгэрэнгүй мэдээлэл харах</translation>
 <translation id="7969046989155602842">Тушаал</translation>
-<translation id="7970618607181090249">Мэдрэгчтэй дэлгэцийг илрүүлсэн</translation>
 <translation id="7970673414865679092">Ethernet-н дэлгэрэнгүй</translation>
 <translation id="7970882136539140748">Картыг яг одоо хадгалах боломжгүй байна</translation>
 <translation id="7972714317346275248">RSA шифрлэлттэй PKCS # 1 SHA-384</translation>
@@ -7136,7 +7134,6 @@
 <translation id="9128870381267983090">Сүлжээнд холбогдох</translation>
 <translation id="9130015405878219958">Хүчин төгөлдөр бус горим оруулсан байна.</translation>
 <translation id="9131487537093447019">Bluethooth төмхөөрөмжид мэдээ илгээх болон мэдээ хүлээн авах.</translation>
-<translation id="9134119143784876218">Англи хэл дээрх аудио болон видеонд автоматаар хадмал үүсгэдэг (одоогоор зөвхөн Chrome хөтчид боломжтой). Аудио болон хадмал таны төхөөрөмжөөс хэзээ ч гардаггүй.</translation>
 <translation id="9137013805542155359">Эх хувийг харуулах</translation>
 <translation id="9137157311132182254">Сонгосон хайлтын систем</translation>
 <translation id="9137248913990643158">Энэ аппыг ашиглахын өмнө Chrome-г эхлүүлж, нэвтэрнэ үү.</translation>

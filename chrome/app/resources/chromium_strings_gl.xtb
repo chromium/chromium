@@ -138,7 +138,6 @@
 <translation id="549669000822060376">Espera a que Chromium instale as actualizacións do sistema máis recentes.</translation>
 <translation id="5496810170689441661">Chromium está tentando editar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hai unha actualización de Chromium dispoñible}=1{Hai unha actualización de Chromium dispoñible}other{Hai unha actualización de Chromium que leva dispoñible # días}}</translation>
-<translation id="5631814766731275228">Imaxe e nome para o perfil de Chromium</translation>
 <translation id="5634636535844844681">Chromium require Windows 7 ou unha versión posterior.</translation>
 <translation id="5653831366781983928">Reinicia Chromium agora</translation>
 <translation id="5698481217667032250">Mostrar Chromium neste idioma</translation>
@@ -281,5 +280,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Sistema Chromium OS</translation>
 <translation id="93478295209880648">É posible que Chromium non funcione correctamente porque xa non admite Windows XP nin Windows Vista</translation>
+<translation id="965162752251293939">Quen está utilizando Chromium?</translation>
 <translation id="985602178874221306">Os autores de Chromium</translation>
 </translationbundle>

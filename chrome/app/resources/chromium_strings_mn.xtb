@@ -136,7 +136,6 @@
 <translation id="549669000822060376">Chromium нь хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
 <translation id="5496810170689441661">Chromium нь нууц үгсийг засах гэж оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-н шинэчлэлт боломжтой байна}=1{Chromium-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>
-<translation id="5631814766731275228">Chromium-н нэр болон зураг</translation>
 <translation id="5634636535844844681">Chromium-д Windows 7 болон үүнээс дээших хувилбарууд шаардлагатай.</translation>
 <translation id="5653831366781983928">Chromium-г одоо дахин эхлүүлнэ үү</translation>
 <translation id="5698481217667032250">Chromium-г энэ хэлээр харуулах</translation>
@@ -278,5 +277,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium үйлдлийн систем</translation>
 <translation id="93478295209880648">Windows XP болон Windows Vista нь цаашид Chromium-г дэмжихгүй тул буруу ажиллаж болзошгүй</translation>
+<translation id="965162752251293939">Chromium-г хэн ашиглаж байна вэ?</translation>
 <translation id="985602178874221306">Chromium-ыг бүтээгчид</translation>
 </translationbundle>

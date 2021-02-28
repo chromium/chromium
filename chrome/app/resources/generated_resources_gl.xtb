@@ -863,7 +863,6 @@
 <translation id="1930879306590754738">O contrasinal eliminouse deste dispositivo e da túa Conta de Google</translation>
 <translation id="1931152874660185993">Non se instalou ningún compoñente.</translation>
 <translation id="1932098463447129402">Posterior a</translation>
-<translation id="1933809209549026293">Conecta un rato ou teclado. Se estás utilizando un dispositivo Bluetooth, asegúrate de que está preparado para a sincronización.</translation>
 <translation id="1935303383381416800">Sitios que poden ver a túa localización</translation>
 <translation id="1936931585862840749">Utiliza un número para indicar cantas copias se deben imprimir (de 1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Non se pode importar a arquitectura do contedor de tipo <ph name="ARCHITECTURE_CONTAINER" /> con este dispositivo, que é <ph name="ARCHITECTURE_DEVICE" />. Podes tentar restaurar este contedor nun dispositivo diferente ou podes acceder aos ficheiros incluídos na imaxe deste contedor abrindo a aplicación Ficheiros.</translation>
@@ -2603,7 +2602,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Incluír historial recente do Asistente a través de Sherlog. Pode conter a túa identidade, a túa localización e información de depuración. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Engadir cartafol</translation>
-<translation id="3894598587402139398">Podes engadir contas adicionais para que <ph name="NAME" /> acceda aos sitios web e ás aplicacións.</translation>
 <translation id="3894770151966614831">Queres mover o contrasinal á Conta de Google?</translation>
 <translation id="3895076768659607631">Xestionar &amp;motores de busca…</translation>
 <translation id="3895090224522145010">Nome de usuario de Kerberos</translation>
@@ -2944,6 +2942,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4301671483919369635">Esta páxina ten permiso para editar os ficheiros</translation>
 <translation id="4303079906735388947">Configura un novo PIN para a chave de seguranza</translation>
 <translation id="4305402730127028764">Copiar en <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">As aplicacións deben incluír o tipo de contido "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4306812610847412719">portapapeis</translation>
 <translation id="4307992518367153382">Opcións básicas</translation>
@@ -3337,7 +3336,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4756378406049221019">Deter/Volver cargar</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4759238208242260848">Descargas</translation>
-<translation id="4759387251871503426">Podes xestionar as Contas de Google coas que teñas a sesión iniciada desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />. Pode que se apliquen a todas as contas os permisos que lles concedeses aos sitios web e ás aplicacións. Se non queres que os sitios ou as aplicacións accedan á información da túa conta, podes iniciar sesión no dispositivo (<ph name="DEVICE_TYPE" />) como convidado ou navegar pola Web a través dunha <ph name="LINK_2_BEGIN" />ventá do modo de incógnito<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Utilizar o micrófono</translation>
 <translation id="4762718786438001384">O dispositivo ten pouquísimo espazo restante en disco</translation>
 <translation id="4763408175235639573">Establecéronse as seguintes cookies cando visualizaches esta páxina</translation>
@@ -3558,6 +3556,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5027550639139316293">Certificado de correo electrónico</translation>
 <translation id="5027562294707732951">Engadir extensión</translation>
 <translation id="5029568752722684782">Borrar copia</translation>
+<translation id="503155457707535043">Descargando aplicacións</translation>
 <translation id="5033137252639132982">Sitios que non poden usar sensores de movemento</translation>
 <translation id="5033266061063942743">Figuras xeométricas</translation>
 <translation id="5036662165765606524">Non permitir que ningún sitio descargue varios ficheiros automaticamente</translation>
@@ -6116,7 +6115,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7968833647796919681">Activar recompilación de datos de rendemento</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
 <translation id="7969046989155602842">Comando</translation>
-<translation id="7970618607181090249">Detectouse unha pantalla táctil</translation>
 <translation id="7970673414865679092">Detalles da rede Ethernet</translation>
 <translation id="7970882136539140748">A tarxeta non se puido gardar neste momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
@@ -7146,7 +7144,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="9128870381267983090">Conectarse á rede</translation>
 <translation id="9130015405878219958">Modo non válido introducido.</translation>
 <translation id="9131487537093447019">Enviar mensaxes a dispositivos Bluetooth e recibilos.</translation>
-<translation id="9134119143784876218">Crea subtítulos automaticamente para o contido de audio e de vídeo que estea en inglés (nestes momentos, esta función só está dispoñible no navegador Chrome). O audio e os subtítulos nunca saen do dispositivo.</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9137157311132182254">Motor de busca preferido</translation>
 <translation id="9137248913990643158">Empeza e inicia sesión en Chrome antes de utilizar esta aplicación.</translation>

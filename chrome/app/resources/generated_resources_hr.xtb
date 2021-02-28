@@ -865,7 +865,6 @@
 <translation id="1930879306590754738">Zaporka je izbrisana s ovog uređaja i vašeg Google računa</translation>
 <translation id="1931152874660185993">Nema instaliranih komponenti.</translation>
 <translation id="1932098463447129402">Ne prije</translation>
-<translation id="1933809209549026293">Priključite miš ili tipkovnicu. Ako upotrebljavate Bluetooth uređaj, provjerite je li spreman za uparivanje.</translation>
 <translation id="1935303383381416800">Dopušten je pregled vaše lokacije</translation>
 <translation id="1936931585862840749">Kako biste odredili broj primjeraka za ispis, navedite broj (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nije moguće uvesti vrstu arhitekture spremnika <ph name="ARCHITECTURE_CONTAINER" /> na ovom uređaju jer je njegova arhitektura <ph name="ARCHITECTURE_DEVICE" />. Pokušajte vratiti spremnik na nekom drugom uređaju ili pristupite datotekama u spremniku pomoću aplikacije Datoteke.</translation>
@@ -2605,7 +2604,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Uključite nedavnu povijest Asistenta putem Sherloga. To može uključivati vaš identitet, lokaciju i informacije o otklanjanju pogrešaka. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Dodavanje mape</translation>
-<translation id="3894598587402139398">Možete dodati dodatne račune putem kojih <ph name="NAME" /> može pristupati web-lokacijama i aplikacijama.</translation>
 <translation id="3894770151966614831">Premjestiti na Google račun?</translation>
 <translation id="3895076768659607631">&amp;Upravljanje tražilicama...</translation>
 <translation id="3895090224522145010">Korisničko ime za Kerberos</translation>
@@ -2946,6 +2944,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4301671483919369635">Ova stranica ima dopuštenje za uređivanje datoteka</translation>
 <translation id="4303079906735388947">Postavite novi PIN za sigurnosni ključ</translation>
 <translation id="4305402730127028764">Kopiraj na uređaj <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Prebaci</translation>
 <translation id="4306119971288449206">Aplikacije moraju biti poslužene s vrstom sadržaja "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4306812610847412719">međuspremnik</translation>
 <translation id="4307992518367153382">Osnove</translation>
@@ -3339,7 +3338,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4756378406049221019">Zaustavi / ponovno učitaj</translation>
 <translation id="4756388243121344051">&amp;Povijest</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
-<translation id="4759387251871503426">Google računima na koje ste prijavljeni možete upravljati u <ph name="LINK_BEGIN" />postavkama<ph name="LINK_END" />. Dopuštenja koja ste dali web-lokacijama i aplikacijama mogu se primijeniti na sve račune. Ako ne želite da web-lokacije i aplikacije pristupaju podacima o vašem računu, možete se prijaviti na uređaj <ph name="DEVICE_TYPE" /> kao gost ili pregledavati web u <ph name="LINK_2_BEGIN" />anonimnom prozoru<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">upotrijebiti vaš mikrofon</translation>
 <translation id="4762718786438001384">Količina prostora na disku uređaja kritično je mala</translation>
 <translation id="4763408175235639573">Prilikom pregledavanja ove stranice postavljeni su sljedeći kolačići</translation>
@@ -3560,6 +3558,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5027550639139316293">Certifikat e-pošte</translation>
 <translation id="5027562294707732951">Dodaj proširenje</translation>
 <translation id="5029568752722684782">Izbriši kopiju</translation>
+<translation id="503155457707535043">Preuzimanje aplikacija</translation>
 <translation id="5033137252639132982">Nije dopuštena upotreba senzora kretanja</translation>
 <translation id="5033266061063942743">Geometrijski likovi</translation>
 <translation id="5036662165765606524">Ne dozvoli nijednoj web-lokaciji automatsko preuzimanje više datoteka</translation>
@@ -6118,7 +6117,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7968833647796919681">Omogući prikupljanje podataka o izvedbi</translation>
 <translation id="7968982339740310781">Prikaži pojedinosti</translation>
 <translation id="7969046989155602842">Tipka Command</translation>
-<translation id="7970618607181090249">Dodirni zaslon otkriven</translation>
 <translation id="7970673414865679092">Pojedinosti o ethernetu</translation>
 <translation id="7970882136539140748">Kartica se trenutačno ne može spremiti</translation>
 <translation id="7972714317346275248">PKCS br. 1 SHA-384 s RSA enkripcijom</translation>
@@ -7150,7 +7148,6 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="9128870381267983090">Povezivanje s mrežom</translation>
 <translation id="9130015405878219958">Unesen je nevažeći način.</translation>
 <translation id="9131487537093447019">slati poruke na Bluetooth uređaje i primati poruke s njih</translation>
-<translation id="9134119143784876218">Automatski izrađuje titlove za zvuk i videozapise na engleskom jeziku (trenutačno dostupno samo u pregledniku Chrome). Audiozapisi i titlovi nikad se ne šalju s uređaja.</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9137157311132182254">Željena tražilica</translation>
 <translation id="9137248913990643158">Pokrenite Chrome i prijavite se na njega da biste mogli upotrebljavati tu aplikaciju.</translation>

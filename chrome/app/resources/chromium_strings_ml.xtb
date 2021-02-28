@@ -138,7 +138,6 @@
 <translation id="549669000822060376">Chromium ഏറ്റവും പുതിയ സിസ്‌റ്റം അപ്‌ഡേറ്റുകൾ ഇൻസ്റ്റാളുചെയ്യുന്നതുവരെ കാത്തിരിക്കുക.</translation>
 <translation id="5496810170689441661">പാസ്‌വേഡുകൾ എഡിറ്റ് ചെയ്യാൻ Chromium ശ്രമിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് ടൈപ്പ് ചെയ്യുക.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}=1{Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}other{# ദിവസമായി Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}}</translation>
-<translation id="5631814766731275228">Chromium പേരും ചിത്രവും</translation>
 <translation id="5634636535844844681">Chromium-ത്തിന് Windows 7 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്.</translation>
 <translation id="5653831366781983928">Chromium ഇപ്പോൾ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="5698481217667032250">ഈ ഭാഷയിൽ Chromium പ്രദർശിപ്പിക്കുക</translation>
@@ -281,5 +280,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS സിസ്‌റ്റം</translation>
 <translation id="93478295209880648">ഇനിയങ്ങോട്ട് Windows XP-യും Windows Vista-യും പിന്തുണയ്‌ക്കാത്തതിനാൽ Chromium ശരിയായി പ്രവർത്തിച്ചേക്കില്ല</translation>
+<translation id="965162752251293939">ആരൊക്കെയാണ് Chromium ഉപയോഗിക്കുന്നത്?</translation>
 <translation id="985602178874221306">Chromium രചയിതാക്കൾ</translation>
 </translationbundle>

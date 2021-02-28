@@ -10,6 +10,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chrome gebruik</translation>
 <translation id="1097330777386562916">Vee webkoekies en werfdata uit wanneer jy Chrome verlaat</translation>
 <translation id="110877069173485804">Dit is jou Chrome</translation>
+<translation id="1125124144982679672">Wie gebruik tans Chrome?</translation>
 <translation id="1142745911746664600">Kan nie Chrome opdateer nie</translation>
 <translation id="1154147086299354128">&amp;Maak in Chrome oop</translation>
 <translation id="123620459398936149">Chrome-bedrystelsel kon nie jou data sinkroniseer nie. Dateer asseblief jou sinkroniseringwagfrase op.</translation>
@@ -123,7 +124,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4050175100176540509">Belangrike sekuriteitverbeterings en nuwe kenmerke is in die jongste weergawe beskikbaar.</translation>
 <translation id="4053720452172726777">Pasmaak en beheer Google Chrome</translation>
 <translation id="4110895483821904099">Stel jou nuwe Chrome-profiel op</translation>
-<translation id="4143243756087420366">Chrome-naam en -prent</translation>
 <translation id="4147555960264124640">Jy meld tans met 'n bestuurde rekening aan en gee sy administrateur beheer oor jou Google Chrome-profiel. Jou Chrome-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings, sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekeningekontroleskerm kan uitvee, maar jy sal hierdie data nie met 'n ander rekening kan assosieer nie. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Die installeerder kon nie die argief se saampersing omkeer nie. Laai Google Chrome asseblief weer af.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Herbegin Chrome binne 'n dag}other{Herbegin Chrome binne # dae}}</translation>

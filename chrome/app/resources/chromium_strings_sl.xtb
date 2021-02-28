@@ -138,7 +138,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="549669000822060376">Počakajte, da Chromium namesti najnovejše sistemske posodobitve.</translation>
 <translation id="5496810170689441661">Chromium poskuša urejati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Posodobitev za Chromium je na voljo}=1{Posodobitev za Chromium je na voljo}one{Posodobitev za Chromium je na voljo že # dan}two{Posodobitev za Chromium je na voljo že # dneva}few{Posodobitev za Chromium je na voljo že # dni}other{Posodobitev za Chromium je na voljo že # dni}}</translation>
-<translation id="5631814766731275228">Ime in slika za Chromium</translation>
 <translation id="5634636535844844681">Za Chromium potrebujete Windows 7 ali novejši.</translation>
 <translation id="5653831366781983928">Znova zaženite Chromium</translation>
 <translation id="5698481217667032250">Prikaži Chromium v tem jeziku</translation>
@@ -166,6 +165,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6266342355635466082">Chromium ne more preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="6268381023930128611">Se želite odjaviti iz Chromiuma?</translation>
 <translation id="6281746429495226318">Prilagajanje profila v Chromiumu</translation>
+<translation id="6290827346642914212">Poimenujte profil v Chromiumu</translation>
 <translation id="6295779123002464101">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chromium blokiral.</translation>
 <translation id="6309712487085796862">Chromium uporablja vašo kamero.</translation>
 <translation id="6333502561965082103">Poteka druga operacija v Chromiumu. Poskusite znova pozneje.</translation>
@@ -281,5 +281,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Sistem Chromium OS</translation>
 <translation id="93478295209880648">Chromium morda ne bo deloval pravilno, ker ni več podprt v sistemu Windows XP ali Windows Vista</translation>
+<translation id="965162752251293939">Kdo uporablja Chromium?</translation>
 <translation id="985602178874221306">Ustvarjalci Chromiuma</translation>
 </translationbundle>

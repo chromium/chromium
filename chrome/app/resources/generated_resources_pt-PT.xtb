@@ -864,7 +864,6 @@
 <translation id="1930879306590754738">Palavra-passe eliminada deste dispositivo e da sua Conta Google</translation>
 <translation id="1931152874660185993">Não existem componentes instalados.</translation>
 <translation id="1932098463447129402">Não anterior a</translation>
-<translation id="1933809209549026293">Ligue um rato ou um teclado. Se estiver a utilizar um dispositivo Bluetooth, certifique-se de que está preparado para sincronizar.</translation>
 <translation id="1935303383381416800">Com autorização para ver a sua localização</translation>
 <translation id="1936931585862840749">Utilize um número para indicar as cópias a imprimir (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contentor <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo cuja arquitetura é <ph name="ARCHITECTURE_DEVICE" />. Pode tentar restaurar este contentor para um dispositivo diferente ou pode aceder aos ficheiros contidos na imagem deste contentor através da aplicação Ficheiros.</translation>
@@ -2604,7 +2603,6 @@ Pretende pará-lo?</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Incluir o histórico recente do Assistente através do Sherlog. Podem ser incluídas as suas informações de identidade, localização e depuração. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Adicionar pasta</translation>
-<translation id="3894598587402139398">Pode adicionar mais contas para que <ph name="NAME" /> aceda a Websites e apps.</translation>
 <translation id="3894770151966614831">Pretende mover para a Conta Google?</translation>
 <translation id="3895076768659607631">&amp;Gerir motores de pesquisa…</translation>
 <translation id="3895090224522145010">Nome de utilizador Kerberos</translation>
@@ -2945,6 +2943,7 @@ Pretende pará-lo?</translation>
 <translation id="4301671483919369635">Esta página tem autorização para editar ficheiros</translation>
 <translation id="4303079906735388947">Configure um novo PIN para a sua chave de segurança.</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Mudar</translation>
 <translation id="4306119971288449206">As aplicações têm de ser publicadas com o tipo de conteúdo "<ph name="CONTENT_TYPE" />".</translation>
 <translation id="4306812610847412719">área de transferência</translation>
 <translation id="4307992518367153382">Noções básicas</translation>
@@ -3338,7 +3337,6 @@ Pretende pará-lo?</translation>
 <translation id="4756378406049221019">Parar/atualizar</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
 <translation id="4759238208242260848">Transferências</translation>
-<translation id="4759387251871503426">Pode gerir Contas Google com sessão iniciada nas <ph name="LINK_BEGIN" />Definições<ph name="LINK_END" />. As autorizações que concedeu aos Websites e apps podem aplicar-se a todas as contas. Se não pretender que os sites ou as apps acedam às informações da sua conta, pode iniciar sessão no dispositivo <ph name="DEVICE_TYPE" /> como convidado ou navegar na Web numa <ph name="LINK_2_BEGIN" />janela de navegação anónima<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Utilizar o seu microfone</translation>
 <translation id="4762718786438001384">Espaço em disco do dispositivo criticamente baixo</translation>
 <translation id="4763408175235639573">Foram definidos os seguintes cookies quando viu esta página</translation>
@@ -3559,6 +3557,7 @@ Pretende pará-lo?</translation>
 <translation id="5027550639139316293">Certificado de email</translation>
 <translation id="5027562294707732951">Adicionar extensão</translation>
 <translation id="5029568752722684782">Limpar cópia</translation>
+<translation id="503155457707535043">A transferir aplicações…</translation>
 <translation id="5033137252639132982">Sem autorização para utilizar sensores de movimentos</translation>
 <translation id="5033266061063942743">Formas geométricas</translation>
 <translation id="5036662165765606524">Não permitir que os sites transfiram vários ficheiros automaticamente</translation>
@@ -6118,7 +6117,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7968833647796919681">Ativar a recolha de dados de desempenho</translation>
 <translation id="7968982339740310781">Ver detalhes</translation>
 <translation id="7969046989155602842">Command</translation>
-<translation id="7970618607181090249">Ecrã tátil detetado</translation>
 <translation id="7970673414865679092">Detalhes de Ethernet</translation>
 <translation id="7970882136539140748">Não é possível guardar o cartão neste momento.</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Com encriptação RSA</translation>
@@ -7148,7 +7146,6 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9128870381267983090">Ligar à rede</translation>
 <translation id="9130015405878219958">Introduzido modo inválido.</translation>
 <translation id="9131487537093447019">Envie mensagens para e receba mensagens de dispositivos Bluetooth.</translation>
-<translation id="9134119143784876218">Cria automaticamente legendas para o áudio e o vídeo em inglês (atualmente, apenas disponível no navegador Chrome). O áudio e as legendas nunca saem do seu dispositivo.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137157311132182254">Motor de pesquisa preferido</translation>
 <translation id="9137248913990643158">Comece e inicie sessão no Chrome antes de utilizar esta aplicação.</translation>

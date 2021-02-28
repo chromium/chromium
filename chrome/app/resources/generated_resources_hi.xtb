@@ -142,6 +142,7 @@
 <translation id="1150490752229770117">इस <ph name="DEVICE_TYPE" /> के लिए अपने-आप होने वाला यह आखिरी साॅफ़्टवेयर और सुरक्षा अपडेट था. आने वाले समय में अपडेट पाने के लिए, नए माॅडल पर अपग्रेड करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">धूप के चश्मे</translation>
 <translation id="1151917987301063366"><ph name="HOST" /> को सेंसर ऐक्सेस करने की हमेशा मंज़ूरी दें</translation>
+<translation id="1152346050262092795">अपने खाते की पुष्टि करने के लिए, फिर से पासवर्ड डालें.</translation>
 <translation id="1153356358378277386">युग्‍मित डिवाइस</translation>
 <translation id="1153636665119721804">Google बेहतर सुरक्षा कार्यक्रम</translation>
 <translation id="1155816283571436363">आपके फ़ोन से कनेक्ट हो रहा है</translation>
@@ -263,6 +264,7 @@
 <translation id="1285625592773741684">डेटा खर्च की मौजूदा सेटिंग के मुताबिक, मोबाइल डेटा इस्तेमाल होगा</translation>
 <translation id="1288037062697528143">सूर्यास्त होने पर नाइट लाइट अपने आप चालू हो जाएगी</translation>
 <translation id="1288300545283011870">बोली के विवरण</translation>
+<translation id="1289619947962767206">यह विकल्प अब काम नहीं करता है. कोई टैब प्रज़ेंट करने के लिए, <ph name="GOOGLE_MEET" /> का इस्तेमाल करें.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> की सेवा की शर्तें</translation>
 <translation id="1292849930724124745">साइन इन रहने के लिए, स्मार्ट कार्ड डालें</translation>
 <translation id="1293264513303784526">USB-C डिवाइस (बायां पोर्ट)</translation>
@@ -863,7 +865,6 @@
 <translation id="1930879306590754738">आपके Google खाते और इस डिवाइस से पासवर्ड को मिटा दिया गया है</translation>
 <translation id="1931152874660185993">कोई घटक इंस्टॉल नहीं.</translation>
 <translation id="1932098463447129402">पहले नहीं</translation>
-<translation id="1933809209549026293">कृपया माउस या कीबोर्ड कनेक्ट करें. अगर आप ब्लूटूथ डिवाइस का उपयोग कर रहे हैं, तो पक्का करें कि वह युग्मित किए जाने के लिए तैयार है.</translation>
 <translation id="1935303383381416800">आपकी जगह की जानकारी देखने की अनुमति है</translation>
 <translation id="1936931585862840749">बताएं कि आपको कितनी कॉपी प्रिंट करनी है (1 से <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">कंटेनर संरचना प्रकार <ph name="ARCHITECTURE_CONTAINER" /> को इस डिवाइस <ph name="ARCHITECTURE_DEVICE" />के साथ इंपोर्ट नहीं किया जा सकता. आप इस कंटेनर को किसी दूसरे डिवाइस में बहाल करके देख सकते हैं या फिर आप फ़ाइल ऐप्लिकेशन खोलकर इस कंटेनर में मौजूद फ़ाइलें ऐक्सेस कर सकते हैं.</translation>
@@ -945,6 +946,7 @@
 आप अपने डिवाइस पर Family Link ऐप्लिकेशन इंस्टॉल करके इस खाते की सेटिंग प्रबंधित कर सकते हैं.  हमने आपको ईमेल से निर्देश भेज दिए हैं.</translation>
 <translation id="2040460856718599782">ओह!  आपको प्रमाणित करने की कोशिश करते समय कुछ गड़बड़ी हो गई. कृपया अपने साइन इन क्रेडेंशियल दोबारा जाँचें और फिर से कोशिश करें.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{आपका 1 पासवर्ड या तो हैक हुआ है या चोरी हुआ है}one{आपका # पासवर्ड या तो हैक हुआ है या चोरी हुआ है}other{आपके # पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं}}</translation>
+<translation id="2044014337866019681">पक्का करें कि आप सत्र को अनलॉक करने के लिए, <ph name="ACCOUNT" /> की पुष्टि कर रहे हैं.</translation>
 <translation id="204497730941176055">माइक्रोसॉफ्ट प्रमाणपत्र टेम्पलेट नाम</translation>
 <translation id="2045117674524495717">कीबोर्ड शॉर्टकट सहायक</translation>
 <translation id="2045969484888636535">कुकी अवरोधित करना जारी रखें</translation>
@@ -1171,6 +1173,7 @@
 <translation id="2292848386125228270">कृपया <ph name="PRODUCT_NAME" /> को सामान्‍य उपयोगकर्ता की तरह शुरू करें. अगर आपको डेवलपमेंट के लिए रूट के रूप में चलाना है, तो --no-sandbox फ़्लैग के साथ फिर से चलाएं.</translation>
 <translation id="2294358108254308676">क्या आप <ph name="PRODUCT_NAME" /> को इंस्‍टॉल करना चाहते हैं?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> नतीजे</translation>
+<translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> के <ph name="EMAIL" /> में साइन इन करते समय, डिवाइस का इंटरनेट से कनेक्ट होना ज़रूरी है</translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • 1 घंटा पहले जांच की गई}one{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • {NUM_HOURS} घंटा पहले जांच की गई}other{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • {NUM_HOURS} घंटे पहले जांच की गई}}</translation>
 <translation id="2297705863329999812">प्रिंटर खोजें</translation>
 <translation id="2299734369537008228">स्लाइडर: <ph name="MIN_LABEL" /> से <ph name="MAX_LABEL" /></translation>
@@ -1442,6 +1445,7 @@
 <translation id="2603463522847370204">&amp;गुप्त विंडो में खोलें</translation>
 <translation id="2604138917550693049">Google Lens से इमेज खोजें</translation>
 <translation id="2604255671529671813">नेटवर्क कनेक्शन गड़बड़ी</translation>
+<translation id="2605668923777146443"><ph name="LINK_BEGIN" />सेटिंग<ph name="LINK_END" /> में जाकर, बेटर टुगेदर के लिए अपने विकल्प देखें</translation>
 <translation id="2606246518223360146">डेटा लिंक करें</translation>
 <translation id="2606454609872547359">नहीं, ChromeVox के बिना जारी रखें</translation>
 <translation id="2606568927909309675">लाइव कैप्शन की सुविधा में, अंग्रेज़ी ऑडियो और वीडियो के कैप्शन अपने-आप बनते हैं. आपके डिवाइस पर ऑडियो और कैप्शन हमेशा सुने और देखे जा सकते हैं.</translation>
@@ -1574,6 +1578,7 @@
 <translation id="2741713322780029189">वापस पाने वाला टर्मिनल खोलें</translation>
 <translation id="2741912629735277980">लाॅगिन स्क्रीन पर यूज़र इंटरफ़ेस (यूआई) दिखाएं</translation>
 <translation id="274290345632688601">Linux ऐप्लिकेशन और फ़ाइलें इंपोर्ट की जा रही हैं</translation>
+<translation id="274318651891194348">कीबोर्ड खोजा जा रहा है</translation>
 <translation id="2743387203779672305">क्लिपबोर्ड में कॉपी करें</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">इस फ़ाइल में संवेदनशील या खतरनाक सामग्री है. इसके मालिक से इसे ठीक करने के लिए कहें.</translation>
@@ -2599,7 +2604,6 @@
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Sherlog की मदद से हाल ही का Assistant इतिहास शामिल करें. इसमें आपकी पहचान, जगह, और डीबग की जानकारी शामिल हो सकती है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">फ़ोल्डर जोड़ें</translation>
-<translation id="3894598587402139398">आप <ph name="NAME" /> के लिए अतिरिक्त खाते जोड़ सकते हैं, ताकि वेबसाइटें और ऐप्लिकेशन ऐक्सेस किए जा सकें.</translation>
 <translation id="3894770151966614831">पासवर्ड को Google खाते में ले जाना चाहते हैं?</translation>
 <translation id="3895076768659607631">सर्च इंजन &amp;प्रबंधित करें...</translation>
 <translation id="3895090224522145010">Kerberos टिकट भेजने वाले उपयोगकर्ता का नाम</translation>
@@ -2931,6 +2935,7 @@
 <translation id="4289372044984810120">अपने खाते यहां प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4295072614469448764">ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध है. आपके 'लॉन्चर' में एक आइकॉन भी मौजूद हो सकता है.</translation>
+<translation id="4295839147292213505">अपने फ़ोन का इस्तेमाल करके, आप <ph name="DEVICE_TYPE" /> को अनलॉक कर सकते हैं, कंप्यूटर से मैसेज भेज सकते हैं, अपना इंटरनेट कनेक्शन शेयर कर सकते हैं, और बातचीत की सूचना का जवाब दे सकते हैं.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">कृपया साइन इन करके यह पुष्टि करें कि आपका खाता <ph name="USER_EMAIL" /> वेबसाइट, ऐप्लिकेशन और Chrome या Google Play के एक्सटेंशन के लिए इस्तेमाल किया जा सकता है. आप यह खाता हटा भी सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">रीस्टार्ट करें और रीसेट करें</translation>
 <translation id="4297813521149011456">डिसप्ले का घुमाव</translation>
@@ -2938,6 +2943,7 @@
 <translation id="4301671483919369635">इस पेज को फ़ाइलों में बदलाव करने की अनुमति है</translation>
 <translation id="4303079906735388947">अपनी 'सुरक्षा कुंजी' के लिए नया पिन सेट अप करें</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> में कॉपी करें</translation>
+<translation id="4305817255990598646">बदलें</translation>
 <translation id="4306119971288449206">ऐप्लिकेशन को सामग्री-प्रकार "<ph name="CONTENT_TYPE" />" के साथ दिया जाना चाहिए</translation>
 <translation id="4306812610847412719">क्लिपबोर्ड</translation>
 <translation id="4307992518367153382">बुनियादी चीज़ें</translation>
@@ -3000,6 +3006,7 @@
 <translation id="4384312707950789900">पसंदीदा में जोड़ें</translation>
 <translation id="4384652540891215547">एक्सटेंशन सक्रिय करें</translation>
 <translation id="438503109373656455">साराटोगा</translation>
+<translation id="4385905942116811558">ब्लूटूथ और यूएसबी डिवाइसों को खोजा जा रहा है</translation>
 <translation id="4387004326333427325">प्रमाणीकरण प्रमाणपत्र को दूरस्थ रूप से अस्वीकार किया गया</translation>
 <translation id="4387890294700445764">चोरी या हैक हुए पासवर्ड</translation>
 <translation id="4389091756366370506">उपयोगकर्ता <ph name="VALUE" /></translation>
@@ -3330,7 +3337,6 @@
 <translation id="4756378406049221019">रोकें/फिर से लोड करें</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
-<translation id="4759387251871503426">आप <ph name="LINK_BEGIN" />सेटिंग<ph name="LINK_END" /> में जाकर, साइन-इन किए गए Google खाते मैनेज कर सकते हैं. आपने वेबसाइटों और ऐप्लिकेशन को जो अनुमतियां दी हैं वे सभी खातों पर लागू हो सकती हैं. अगर आप नहीं चाहते कि साइटें या ऐप्लिकेशन आपके खाते की जानकारी ऐक्सेस करें, तो आप <ph name="DEVICE_TYPE" /> में मेहमान के तौर पर साइन इन कर सकते हैं या वेब को एक <ph name="LINK_2_BEGIN" />गुप्त विंडो<ph name="LINK_2_END" /> में ब्राउज़ कर सकते हैं.</translation>
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
 <translation id="4762718786438001384">डिवाइस के डिस्क में बहुत कम स्पेस है</translation>
 <translation id="4763408175235639573">जब आपने इस पेज को देखा था, तब इन कुकी को सेट किया गया था</translation>
@@ -3551,6 +3557,7 @@
 <translation id="5027550639139316293">ईमेल प्रमाणपत्र</translation>
 <translation id="5027562294707732951">एक्‍सटेंशन जोड़ें</translation>
 <translation id="5029568752722684782">स्‍पष्‍ट कॉपी</translation>
+<translation id="503155457707535043">ऐप्लिकेशन डाउनलोड हो रहे हैं</translation>
 <translation id="5033137252639132982">मोशन सेंसर इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5033266061063942743">जियोमेट्री (रेखागणित) के आकार</translation>
 <translation id="5036662165765606524">किसी भी साइट को स्वचालित रूप से एकाधिक फ़ाइलें डाउनलोड न करने दें</translation>
@@ -3584,6 +3591,7 @@
 <translation id="5071892329440114717">स्टैंडर्ड सुरक्षा की जानकारी देखें</translation>
 <translation id="5072052264945641674">कर्सर का आकार एडजस्ट करें</translation>
 <translation id="5072836811783999860">प्रबंधित बुकमार्क दिखाएं</translation>
+<translation id="5072900412896857127">Google Play सेवा की शर्तें लोड नहीं की जा सकीं. कृपया अपना इंटरनेट देखें और फिर से कोशिश करें.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" />, और # दूसरी फ़ाइल}other{<ph name="FILE1" />, <ph name="FILE2" />, और # दूसरी फ़ाइल}}</translation>
 <translation id="5074318175948309511">नई सेटिंग के प्रभावी होने से पहले इस पृष्‍ठ को रीलोड करने की आवश्‍यकता हो सकती है.</translation>
 <translation id="5075131525758602494">सिम PIN डालें</translation>
@@ -4336,8 +4344,10 @@
 <translation id="5941343993301164315">कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
 <translation id="5941711191222866238">छोटा करें</translation>
 <translation id="5942779427914696408">डिवाइस किसे दिख रहा है</translation>
+<translation id="5943127421590245687">पुष्टि हो गई. अपना स्थानीय डेटा अनलॉक करने और उसे वापस लाने के लिए, अपने <ph name="DEVICE_TYPE" /> का पुराना पासवर्ड डालें.</translation>
 <translation id="5944869793365969636">क्यूआर कोड स्कैन करें</translation>
 <translation id="5946591249682680882">रिपोर्ट आईडी <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5948536763493709626">कोई कीबोर्ड या माउस जोड़ें या अपनी टचस्क्रीन का इस्तेमाल करके, सेट अप करना जारी रखें. अगर आप ब्लूटूथ डिवाइसों का इस्तेमाल कर रहे हैं, तो यह पक्का करें कि वे दूसरे डिवाइसों से जोड़े जाने के लिए तैयार हों.</translation>
 <translation id="5949544233750246342">फ़ाइल को पार्स नहीं किया जा सका</translation>
 <translation id="5950819593680344519">Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • 1 दिन पहले जांच की गई</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> स्थानीय फ़ॉन्ट इस्तेमाल करना चाहता है</translation>
@@ -4458,6 +4468,7 @@
 <translation id="6082651258230788217">टूलबार में दिखाएं</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - बिना नाम वाले ग्रुप का हिस्सा</translation>
 <translation id="6085886413119427067">वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करें</translation>
+<translation id="6086004606538989567">आपने जिस खाते की पुष्टि की है उसके पास इस डिवाइस को ऐक्सेस करने की अनुमति नहीं है.</translation>
 <translation id="6086846494333236931">आपके नियंत्रक द्वारा इंस्‍टॉल किया गया</translation>
 <translation id="6087960857463881712">बढ़िया चेहरा</translation>
 <translation id="6091761513005122595">शेयर माउंट करना सफल रहा.</translation>
@@ -4850,6 +4861,7 @@
 <translation id="6537613839935722475">नाम में अक्षर, अंक, और हाइफ़न (-) शामिल हो सकते हैं</translation>
 <translation id="6537880577641744343">निर्देश देने की सुविधा (कमांडर)</translation>
 <translation id="6538098297809675636">कोड को पहचानते समय गड़बड़ी हुई</translation>
+<translation id="653920215766444089">पॉइंटिंग डिवाइस खोजा जा रहा है</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> सिर्फ़ तभी चालू करें जब आपको पता हो कि आप क्या कर रहे हैं या अगर आप से ऐसा करने के लिए कहा गया हो, क्योंकि डेटा के संग्रह से परफ़ॉर्मेंस में कमी आ सकती है.</translation>
 <translation id="6541638731489116978">इस साइट को आपके हलचल पकड़ने वाले सेंसर ऐक्सेस करने से रोक दिया गया है.</translation>
 <translation id="6545665334409411530">दोहराने की दर</translation>
@@ -5799,6 +5811,7 @@
 <translation id="7646772052135772216">पासवर्ड को सिंक करने की सुविधा काम नहीं कर रही है</translation>
 <translation id="7647403192093989392">कोई हाल की गतिविधि नहीं</translation>
 <translation id="7649070708921625228">सहायता</translation>
+<translation id="7650178491875594325">स्थानीय डेटा वापस लाना</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" "<ph name="EXTENSION_NAME" />" को निकालना चाहता है.</translation>
 <translation id="7650677314924139716">मौजूदा डेटा खर्च सेटिंग के लिए, सिर्फ़ वाई-फ़ाई का इस्तेमाल किया जा सकता है</translation>
 <translation id="765293928828334535">इस वेबसाइट से ऐप्लिकेशन, एक्सटेंशन और उपयोगकर्ता स्क्रिप्ट नहीं जोड़े जा सकते हैं</translation>
@@ -6102,7 +6115,6 @@
 <translation id="7968833647796919681">'परफ़ॉर्मेंस डेटा' इकट्ठा करना चालू करें</translation>
 <translation id="7968982339740310781">विवरण दिखाएं</translation>
 <translation id="7969046989155602842">निर्देश</translation>
-<translation id="7970618607181090249">टचस्क्रीन का पता चला</translation>
 <translation id="7970673414865679092">ईथरनेट की जानकारी</translation>
 <translation id="7970882136539140748">कार्ड को अभी सेव नहीं किया जा सकता</translation>
 <translation id="7972714317346275248">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-512</translation>
@@ -6224,6 +6236,7 @@
 <translation id="80974698889265265">पिन का मिलान नहीं हो रहा है</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> एक एक्सटेंशन की प्रॉक्सी सेटिंग इस्तेमाल कर रहा है</translation>
 <translation id="8097959162767603171">आपके एडमिन को सबसे पहले, Admin console की Chrome डिवाइस सूची में जाकर, सेवा की शर्तों को स्वीकार करना होगा.</translation>
+<translation id="8098616321286360457">इंटरनेट ज़रूरी है</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> चुनी गई. चुने का निशान हटाने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="810185532889603849">पसंद के मुताबिक रंग</translation>
 <translation id="8101987792947961127">अगली बार रीबूट करने पर पावरवॉश ज़रूरी है</translation>
@@ -6696,6 +6709,7 @@
 <translation id="866611985033792019">ईमेल उपयोगकर्ताओं की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
 <translation id="8666584013686199826">जब कोई साइट यूएसबी डिवाइस एक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> अब फ़ुल स्‍क्रीन है और आपका माउस कर्सर बंद कर दिया गया है.</translation>
+<translation id="866851964140184995">आपको इस पेज पर फिर से "<ph name="MODULE_NAME" />" नहीं दिखेगा</translation>
 <translation id="8669284339312441707">वॉर्मर</translation>
 <translation id="8670537393737592796">इसे और जल्दी ऐक्सेस करने के लिए, 'इंस्टॉल करें' बटन पर क्लिक करके <ph name="APP_NAME" /> को इंस्टॉल करें</translation>
 <translation id="867085395664725367">सर्वर में कुछ समय के लिए गड़बड़ी हुई.</translation>
@@ -7132,7 +7146,6 @@
 <translation id="9128870381267983090">नेटवर्क से कनेक्ट करें</translation>
 <translation id="9130015405878219958">गलत मोड डाला गया.</translation>
 <translation id="9131487537093447019">ब्लूटूथ डिवाइस से मैसेज भेजें और मैसेज पाएं.</translation>
-<translation id="9134119143784876218">लाइव कैप्शन की सुविधा में, अंग्रेज़ी ऑडियो और वीडियो के कैप्शन अपने-आप बनते हैं (फ़िलहाल, यह सुविधा सिर्फ़ Chrome ब्राउज़र में उपलब्ध है). आपके डिवाइस पर ऑडियो और कैप्शन हमेशा सुने और देखे जा सकते हैं.</translation>
 <translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9137157311132182254">पसंदीदा सर्च इंजन</translation>
 <translation id="9137248913990643158">इस ऐप्लिकेशन का उपयोग करने से पहले कृपया Chrome शुरू करके उसमें साइन इन करें.</translation>

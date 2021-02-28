@@ -586,6 +586,7 @@
 <translation id="3229041911291329567">Құрылғының және браузердің нұсқасы туралы ақпарат</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> картасының CVC кодын енгізіңіз</translation>
 <translation id="3234666976984236645">Әрқашан осы сайттағы маңызды мазмұнды анықтау</translation>
+<translation id="3252266817569339921">француз</translation>
 <translation id="3266793032086590337">Мән (қарама-қайшы)</translation>
 <translation id="3270847123878663523">&amp;Қайта тәртіпке келтіруді болдырмау</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
@@ -1005,6 +1006,7 @@
 <translation id="4819347708020428563">Аннотацияларды әдепкі көріністе өзгерту керек пе?</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4850886885716139402">Көрініс</translation>
+<translation id="485316830061041779">неміс</translation>
 <translation id="4854362297993841467">Бұл жеткізу әдісі қолжетімді емес. Басқа әдісті қолданып көріңіз.</translation>
 <translation id="4876188919622883022">Қарапайым көрініс</translation>
 <translation id="4876305945144899064">Пайдаланушы аты жоқ</translation>
@@ -1160,6 +1162,7 @@
 <translation id="541416427766103491">4-жинастырушы</translation>
 <translation id="5421136146218899937">Шолу деректерін өшіру…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> хабарландыру жіберуге рұқсат сұрады</translation>
+<translation id="5428105026674456456">испан</translation>
 <translation id="542872847390508405">Қонақ ретінде шолудасыз</translation>
 <translation id="5430298929874300616">Бетбелгіні жою</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" жолындағы схеманы растау қатесі: <ph name="ERROR" /></translation>
@@ -1169,6 +1172,7 @@
 <translation id="5455374756549232013">Саясат уақыт белгісі жарамсыз</translation>
 <translation id="5457113250005438886">Жарамсыз</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5469868506864199649">италиян</translation>
 <translation id="5470861586879999274">&amp;Өзгерту әрекетін қайталау</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">Бұл мазмұн құрылғыңызға ақпаратыңызды ұрлайтын не жоятын қауіпті бағдарламалық құралды орнатуы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
@@ -1876,6 +1880,7 @@
 <translation id="8293206222192510085">Бетбелгі қосу</translation>
 <translation id="8294431847097064396">Дереккөз</translation>
 <translation id="8298115750975731693">Сіз пайдаланып жатқан Wi-Fi желісі (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
+<translation id="8299269255470343364">жапон</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" бөлімі көрсетілді.</translation>
 <translation id="830498451218851433">Жартылай бүктеу</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1955,6 +1960,7 @@
 <translation id="8625384913736129811">Картаны осы құрылғыға сақтау</translation>
 <translation id="8627040765059109009">Экранды түсіру қайта қосылды</translation>
 <translation id="8663226718884576429">Тапсырыс қорытындысы, <ph name="TOTAL_LABEL" />, толығырақ деректер</translation>
+<translation id="8666678546361132282">ағылшын</translation>
 <translation id="867224526087042813">Қолтаңба</translation>
 <translation id="8676424191133491403">Кідіріс жоқ</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, жауап, <ph name="ANSWER" /></translation>

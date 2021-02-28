@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" />-ը նախկինում Chrome է օգտագործել</translation>
 <translation id="1097330777386562916">Chrome-ից դուրս գալիս մաքրել քուքիները և կայքերի տվյալները</translation>
 <translation id="110877069173485804">Սա ձեր Chrome-ն է</translation>
+<translation id="1125124144982679672">Ո՞վ է օգտագործում Chrome-ը</translation>
 <translation id="1142745911746664600">Չհաջողվեց թարմացնել Chrome-ը</translation>
 <translation id="1154147086299354128">&amp;Բացել Chrome-ում</translation>
 <translation id="123620459398936149">Chrome OS-ը չկարողացավ համաժամացնել ձեր տվյալները: Թարմացրեք ձեր անցաբառը Sync-ում:</translation>
@@ -88,6 +89,7 @@
 <translation id="3065168410429928842">Chrome-ի ներդիր</translation>
 <translation id="3080151273017101988">Google Chrome-ը փակելուց հետո շարունակել հավելվածների աշխատանքը հետնաշերտում</translation>
 <translation id="3089968997497233615">Մատչելի է Google Chrome-ի նոր, ավելի ապահով տարբերակը:</translation>
+<translation id="3100998948628680988">Անվանեք ձեր Chrome պրոֆիլը</translation>
 <translation id="3114643501466072395">Որպեսզի պաշտպանեք ձեր մյուս գաղտնաբառերը տվյալների արտահոսքից և խուսափեք անվտանգության հետ կապված այլ խնդիրներից, <ph name="BEGIN_LINK" />մտեք հաշիվ Chrome դիտարկիչում<ph name="END_LINK" />։</translation>
 <translation id="3127818369811890733">Chrome OS-ը չկարողացավ համաժամացնել ձեր տվյալները։</translation>
 <translation id="3140883423282498090">Ձեր փոփոխություններն ուժի մեջ կմտնեն հաջորդ անգամ Google Chrome-ը գործարկելիս:</translation>
@@ -119,7 +121,6 @@
 <translation id="4050175100176540509">Վերջին տարբերակում առկա են անվտանգության կարևոր բարելավումներ և նոր գործառույթներ:</translation>
 <translation id="4053720452172726777">Հարմարեցնել և վերահսկել Google Chrome-ը</translation>
 <translation id="4110895483821904099">Կարգավորեք Chrome-ի ձեր նոր պրոֆիլը</translation>
-<translation id="4143243756087420366">Chrome պրոֆիլի անունն ու պատկերը</translation>
 <translation id="4147555960264124640">Դուք մուտք եք գործում վերահսկվող հաշիվ` թույլ տալով ադմինիստրատորին վերահսկել ձեր Google Chrome պրոֆիլը: Ձեր Chrome տվյալները, ինչպես օրինակ՝ հավելվածները, էջանիշները, պատմությունը, գաղտնաբառերը և այլ կարգավորումները, մշտապես կկցվեն <ph name="USER_NAME" />-ին: Դուք կարող եք ջնջել այս տվյալները Google Dashboard-ի միջոցով, սակայն չեք կարող համակցել դրանք այլ հաշվի հետ: <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Տեղադրիչը չկարողացավ բացել արխիվը: Նորից ներբեռնեք Google Chrome-ը:</translation>
 <translation id="4191857738314598978">{0,plural, =1{Վերագործարկեք Chrome-ը մեկ օրվա ընթացքում}one{Վերագործարկեք Chrome-ը # օրվա ընթացքում}other{Վերագործարկեք Chrome-ը # օրվա ընթացքում}}</translation>

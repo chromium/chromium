@@ -864,7 +864,6 @@
 <translation id="1930879306590754738">Lösenordet har raderats från den här enheten och ditt Google-konto</translation>
 <translation id="1931152874660185993">Det finns inga installerade komponenter.</translation>
 <translation id="1932098463447129402">Inte före</translation>
-<translation id="1933809209549026293">Anslut en mus eller ett tangentbord. Om du använder en Bluetooth-enhet kontrollerar du att den är klar att kopplas.</translation>
 <translation id="1935303383381416800">Får se var du befinner dig</translation>
 <translation id="1936931585862840749">Använd ett nummer som anger hur många kopior som ska skrivas ut (1 till <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Det går inte att importera en behållararkitektur av typen <ph name="ARCHITECTURE_CONTAINER" /> med den här enheten, som är en <ph name="ARCHITECTURE_DEVICE" />. Du kan testa att återställa behållaren till en annan enhet, eller så kan du öppna filerna i behållarbilden via appen Filer.</translation>
@@ -2604,7 +2603,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Inkludera ny historik för assistenten via Sherlog. Historiken kan innehålla din identitet, plats och felsökningsinformation. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Lägg till mapp</translation>
-<translation id="3894598587402139398">Du kan lägga till ytterligare konton för <ph name="NAME" /> så att användaren får åtkomst till webbplatser och appar.</translation>
 <translation id="3894770151966614831">Vill du flytta lösenordet till Google-kontot?</translation>
 <translation id="3895076768659607631">&amp;Hantera sökmotorer …</translation>
 <translation id="3895090224522145010">Användarnamn för Kerberos</translation>
@@ -2945,6 +2943,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4301671483919369635">Sidan har redigeringsbehörighet till filer</translation>
 <translation id="4303079906735388947">Ange en ny pinkod för säkerhetsnyckeln</translation>
 <translation id="4305402730127028764">Kopiera till <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Byt</translation>
 <translation id="4306119971288449206">Apparna måste visas med content-type <ph name="CONTENT_TYPE" /></translation>
 <translation id="4306812610847412719">urklipp</translation>
 <translation id="4307992518367153382">Grunderna</translation>
@@ -3338,7 +3337,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4756378406049221019">Stoppa inläsningen/läs in igen</translation>
 <translation id="4756388243121344051">&amp;Historik</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
-<translation id="4759387251871503426">Du kan hantera inloggade Google-konton i <ph name="LINK_BEGIN" />inställningarna<ph name="LINK_END" />. Behörigheter som du har gett webbplatser och appar kan gälla för alla konton. Om du inte vill ge webbplatser och appar tillgång till information i ditt konto kan du logga in på <ph name="DEVICE_TYPE" /> som gäst eller surfa i ett <ph name="LINK_2_BEGIN" />inkognitofönster<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Använd mikrofonen</translation>
 <translation id="4762718786438001384">Mycket ont om diskutrymme på enheten</translation>
 <translation id="4763408175235639573">Följande cookies sparades när du visade denna sida</translation>
@@ -3559,6 +3557,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5027550639139316293">E-postcertifikat</translation>
 <translation id="5027562294707732951">Lägg till tillägg</translation>
 <translation id="5029568752722684782">Ta bort kopia</translation>
+<translation id="503155457707535043">Appar laddas ned</translation>
 <translation id="5033137252639132982">Får inte använda rörelsesensorer</translation>
 <translation id="5033266061063942743">Geometriska former</translation>
 <translation id="5036662165765606524">Tillåt inte att någon webbplats laddar ned flera filer automatiskt</translation>
@@ -6117,7 +6116,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7968833647796919681">Aktivera insamling av resultatdata</translation>
 <translation id="7968982339740310781">Visa information</translation>
 <translation id="7969046989155602842">Kommando</translation>
-<translation id="7970618607181090249">En pekskärm hittades</translation>
 <translation id="7970673414865679092">Information om Ethernet</translation>
 <translation id="7970882136539140748">Det går inte att spara kortet just nu</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
@@ -7148,7 +7146,6 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9128870381267983090">Anslut till ett nätverk</translation>
 <translation id="9130015405878219958">Du har angett ett ogiltigt läge.</translation>
 <translation id="9131487537093447019">Skicka och ta emot meddelanden från Bluetooth-enheter.</translation>
-<translation id="9134119143784876218">Ljud- och videouppspelning på engelska textas automatiskt (endast tillgängligt i webbläsaren Chrome för närvarande) Ljudet och textningen lämnar aldrig enheten.</translation>
 <translation id="9137013805542155359">Visa original</translation>
 <translation id="9137157311132182254">Prioriterad sökmotor</translation>
 <translation id="9137248913990643158">Logga in på Chrome innan du använder den här appen.</translation>

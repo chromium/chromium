@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">নির্বাচিত কন্টেন্ট ডাউনলোড করার জন্য যথেষ্ট মেমরি নেই৷</translation>
 <translation id="1376578503827013741">গণনা করছে...</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="1384704387250346179">Google Lens <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" />-এর সাহায্যে ছবি অনুবাদ করুন</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> এর সাহায্যে খুঁজুন</translation>
 <translation id="1406000523432664303">"ট্র্যাক করবেন না"</translation>
@@ -73,6 +74,7 @@
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
 <translation id="1477626028522505441">সার্ভার সমস্যার কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
+<translation id="1492417797159476138">আপনি আগেই এই সাইটের জন্য ইউজারনেমটি সেভ করেছেন</translation>
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
 <translation id="1513352483775369820">বুকমার্কগুলি এবং ওয়েব ইতিহাস</translation>
 <translation id="1513858653616922153">পাসওয়ার্ড মুছুন</translation>
@@ -97,6 +99,7 @@
 <translation id="1692118695553449118">সিঙ্ক চালু রয়েছে</translation>
 <translation id="1697284962337958118">এতে যোগ করুন</translation>
 <translation id="1718835860248848330">শেষ ঘণ্টা</translation>
+<translation id="1724977129262658800">আপনার পাসওয়ার্ড এডিট করতে আনলক করুন</translation>
 <translation id="173522743738009831">Privacy Sandbox সম্পর্কে</translation>
 <translation id="1736419249208073774">ঘুরে দেখুন</translation>
 <translation id="1749561566933687563">আপনার বুকমার্কগুলি সিঙ্ক করুন</translation>
@@ -263,7 +266,6 @@
 <translation id="281504910091592009">আপনার <ph name="BEGIN_LINK" />Google অ্যাকাউন্ট<ph name="END_LINK" />-এ সেভ করা পাসওয়ার্ড দেখুন এবং পরিচালনা করুন</translation>
 <translation id="2818669890320396765">আপনার সমস্ত ডিভাইসে বুকমার্কগুলি পেতে সাইন-ইন করে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="2827278682606527653">স্ক্রিনের অর্ধেক উচ্চতা পর্যন্ত ফিড কার্ড মেনু খোলা আছে</translation>
-<translation id="2833452327385637152">কোনও শব্দ বা বাক্য খুঁজতে, ট্যাপ না করে বরং টাচ করে ধরে থাকুন</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{১ দিন আগে চেক করা হয়েছে}one{# দিন আগে চেক করা হয়েছে}other{# দিন আগে চেক করা হয়েছে}}</translation>
 <translation id="2842985007712546952">অভিভাবক ফোল্ডার</translation>
 <translation id="2856503607207334158">সাইন-ইন করা যায়নি</translation>
@@ -605,6 +607,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="5191251636205085390">থার্ড-পার্টি কুকি সরানোর নতুন প্রযুক্তি ও তা নিয়ন্ত্রণ সংক্রান্ত তথ্যগুলি জানুন</translation>
 <translation id="5193988420012215838">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="5199929503336119739">কর্মস্থলের প্রোফাইল</translation>
+<translation id="5204967432542742771">পাসওয়ার্ড প্রবেশ করান</translation>
 <translation id="5210286577605176222">পূর্ববর্তী ট্যাবে চলে যান</translation>
 <translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
 <translation id="5213672942202814946">ভয়েস সার্চ ব্যবহার করুন</translation>
@@ -691,6 +694,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="5765780083710877561">বর্ণনা:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> নামের ট্যাব ফিরিয়ে আনা হয়েছে</translation>
 <translation id="5776970333778123608">গুরুত্বহীন ডেটা</translation>
+<translation id="5780792035410621042">পাসওয়ার্ড কপি করতে, আপনার ডিভাইসে স্ক্রিন লক সেট করুন</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> এর <ph name="SPACE_USED" /> ব্যবহার করা হচ্ছে</translation>
 <translation id="5795872532621730126">সার্চ এবং ব্রাউজ করা</translation>
 <translation id="5797070761912323120">সার্চ, বিজ্ঞাপন এবং অন্যান্য Google পরিষেবাকে আপনার মতো করে সাজিয়ে নিতে Google আপনার ইতিহাস ব্যবহার করতে পারে</translation>
@@ -863,6 +867,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="6850409657436465440">ডাউনলোডটি এখনও চলছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টি ট্যাব বন্ধ হয়েছে</translation>
 <translation id="685850645784703949">Google-এর ডিসকভার - বন্ধ আছে</translation>
+<translation id="686366188661646310">পাসওয়ার্ড মুছবেন?</translation>
 <translation id="6864459304226931083">ছবি ডাউনলোড করুন</translation>
 <translation id="6865313869410766144">স্বতঃপূর্ণ ফর্ম ডেটা</translation>
 <translation id="6882836635272038266">ঝুঁকিপূর্ণ হিসেবে চিহ্নিত ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য স্ট্যান্ডার্ড নিরাপত্তা।</translation>
@@ -1122,7 +1127,6 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="8571213806525832805">গত ৪ সপ্তাহ</translation>
 <translation id="8572344201470131220">ছবি কপি করা হয়েছে</translation>
 <translation id="8583805026567836021">অ্যাকাউন্টের ডেটা সাফ করা হচ্ছে</translation>
-<translation id="8587585930972369234">সার্চ করতে টাচ করে ধরে থাকুন</translation>
 <translation id="860043288473659153">কার্ডধারকের নাম</translation>
 <translation id="8602358303461588329">Chrome-এ সাইন-ইন করার পৃষ্ঠা বন্ধ করা আছে।</translation>
 <translation id="860282621117673749">দাম কমার বিজ্ঞপ্তি</translation>

@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">ఎంచుకున్న కంటెంట్‌ను డౌన్‌లోడ్ చేయడానికి తగినంత మెమరీ లేదు.</translation>
 <translation id="1376578503827013741">గణిస్తోంది...</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
+<translation id="1384704387250346179"><ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /> Google Lensతో ఇమేజ్‌ను అనువదించండి</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />తో వెతకండి</translation>
 <translation id="1406000523432664303">“ట్రాక్ చేయవద్దు”</translation>
@@ -73,6 +74,7 @@
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
+<translation id="1492417797159476138">మీరు ఇప్పటికే ఈ సైట్ కోసం ఈ యూజర్‌నేమ్‌ను సేవ్ చేశారు</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1513352483775369820">బుక్‌మార్క్‌లు మరియు వెబ్ చరిత్ర</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించు</translation>
@@ -97,6 +99,7 @@
 <translation id="1692118695553449118">సమకాలీకరణ ఆన్‌లో ఉంది</translation>
 <translation id="1697284962337958118">దీనికి జోడించు</translation>
 <translation id="1718835860248848330">చివరి గంట</translation>
+<translation id="1724977129262658800">మీ పాస్‌వర్డ్‌ను ఎడిట్ చేయడానికి అన్‌లాక్ చేయండి</translation>
 <translation id="173522743738009831">గోప్యత శాండ్‌బాక్స్ గురించి</translation>
 <translation id="1736419249208073774">అన్వేషించండి</translation>
 <translation id="1749561566933687563">మీ బుక్‌మార్క్‌లను సమకాలీకరించండి</translation>
@@ -263,7 +266,6 @@
 <translation id="281504910091592009">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి మరియు నిర్వహించండి</translation>
 <translation id="2818669890320396765">ఇక ఎప్పుడు ఎక్కడ బుక్‌మార్క్‌లను సెట్‌ చేసినా ఆటోమాటిక్‌గా మీ అన్ని పరికరాలలోనూ పొందాలనుకుంటే, సైన్ ఇన్ చేసి, సమకాలీకరణ ఎంపికను ఆన్ చేయండి</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
-<translation id="2833452327385637152">పదం లేదా ఫ్రేజ్ కోసం సెర్చ్ చేయడానికి, దానిని ట్యాప్ చేయడానికి బదులుగా దానిని నొక్కి, పట్టుకోండి</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 రోజు క్రితం తనిఖీ చేసింది}other{# రోజుల క్రితం తనిఖీ చేసింది}}</translation>
 <translation id="2842985007712546952">మూల ఫోల్డర్</translation>
 <translation id="2856503607207334158">సైన్ ఇన్ చేయడం విఫలమైంది</translation>
@@ -603,6 +605,7 @@
 <translation id="5191251636205085390">థర్డ్-పార్టీ కుక్కీలను భర్తీ చేయడానికి, అలాగే వాటిని కంట్రోల్ చేయడానికి ఉద్దేశించిన కొత్త టెక్నాలిజీల గురించి తెలుసుకోండి</translation>
 <translation id="5193988420012215838">మీ క్లిప్‌బోర్డ్‌కు కోడ్ కాపీ చేయబడింది</translation>
 <translation id="5199929503336119739">కార్యాలయ ప్రొఫైల్</translation>
+<translation id="5204967432542742771">పాస్‌వర్డ్‌ని నమోదు చేయండి</translation>
 <translation id="5210286577605176222">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయి</translation>
 <translation id="5213672942202814946">వాయిస్ సెర్చ్‌ను ఉపయోగించండి</translation>
@@ -689,6 +692,7 @@
 <translation id="5765780083710877561">వివరణ:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> రీస్టోర్ చేయబడింది, ట్యాబ్</translation>
 <translation id="5776970333778123608">ముఖ్యంగా పరిగణించని డేటా</translation>
+<translation id="5780792035410621042">పాస్‌వర్డ్‌లను కాపీ చేయడానికి, ముందుగా మీ పరికరంలో స్క్రీన్ లాక్‍ను సెట్ చేయండి</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />లో <ph name="SPACE_USED" /> ఉపయోగించబడింది</translation>
 <translation id="5795872532621730126">శోధన, బ్రౌజ్</translation>
 <translation id="5797070761912323120">శోధన, ప్రకటనలు, ఇతర Google సేవలను వ్యక్తిగతీకరించడానికి Google మీ చరిత్రను ఉపయోగించే అవకాశం ఉంటుంది</translation>
@@ -861,6 +865,7 @@
 <translation id="6850409657436465440">మీ డౌన్‌లోడ్‌‌ ఇప్పటికీ జరుగుతోంది</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ట్యాబ్‌లు మూసివేయబడ్డాయి</translation>
 <translation id="685850645784703949">Google ద్వారా Discover - ఆఫ్‌లో ఉంది</translation>
+<translation id="686366188661646310">పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="6864459304226931083">చిత్రాన్ని డౌన్‌లోడ్ చేయి</translation>
 <translation id="6865313869410766144">ఆటో-ఫిల్ ఫారమ్ డేటా</translation>
 <translation id="6882836635272038266">ప్రమాదకరంగా గుర్తించిన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి ప్రామాణిక రక్షణ.</translation>
@@ -1120,7 +1125,6 @@
 <translation id="8571213806525832805">గత 4 వారాలు</translation>
 <translation id="8572344201470131220">ఇమేజ్ కాపీ చేయబడింది</translation>
 <translation id="8583805026567836021">ఖాతా డేటాను క్లియర్ చేస్తోంది</translation>
-<translation id="8587585930972369234">సెర్చ్ చేయడానికి నొక్కి, పట్టుకోండి</translation>
 <translation id="860043288473659153">కార్డుదారుని పేరు</translation>
 <translation id="8602358303461588329">Chromeకు సైన్ ఇన్ చేయండి, మూసివేయబడింది.</translation>
 <translation id="860282621117673749">ధర తగ్గింపు అలర్ట్‌లు</translation>

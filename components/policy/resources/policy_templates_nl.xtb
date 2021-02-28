@@ -2574,13 +2574,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gewist. Ook de realmgegevens van kortstondige gebruikers worden opgeslagen. Schakel het cachegeheugen uit als je wilt voorkomen dat de realm van een kortstondige gebruiker wordt bijgehouden.</translation>
 <translation id="4591366717022345234">Gebruikers Quick Fix Build bieden</translation>
-<translation id="4592246263545654202">Specificeert of de gebruiker pagina's mag openen in de incognitomodus in <ph name="PRODUCT_NAME" />.
-
-      Als dit beleid is ingeschakeld of niet is ingesteld, kunnen pagina's worden geopend in de incognitomodus.
-
-      Als dit beleid is uitgeschakeld, kunnen pagina's niet worden geopend in de incognitomodus.
-
-      Als dit beleid wordt afgedwongen, kunnen pagina's UITSLUITEND worden geopend in de incognitomodus. De optie 'Afgedwongen' werkt niet voor Android in Chrome.</translation>
 <translation id="4593391169954484940">De SHA-256-hash van het bestand.</translation>
 <translation id="4594467366027975448">Hiermee wordt de directory geconfigureerd die <ph name="PRODUCT_NAME" /> gebruikt voor het opslaan van het roaming-exemplaar van de profielen.
 
@@ -3625,9 +3618,9 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
       Je kunt de zoek-URL van Google opgeven als: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
 <translation id="6070374129526507093">Beëindigd in M69. Gebruik in plaats hiervan OverrideSecurityRestrictionsOnInsecureOrigin.
 
-Dit beleid specificeert een lijst met beginpunten (URL's) of hostnaampatronen (zoals *.example.com) waarop beveiligingsbeperkingen voor niet-beveiligde beginpunten niet van toepassing zijn.
+Dit beleid specificeert een lijst met herkomsten (URL's) of hostnaampatronen (zoals *.example.com) waarop beveiligingsbeperkingen voor niet-beveiligde herkomsten niet van toepassing zijn.
 
-Het is de bedoeling organisaties de mogelijkheid te geven beginpunten toe te staan voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen in te stellen, zodat de ontwikkelaars functies die een beveiligde context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat het beginpunt wordt aangeduid als niet beveiligd in de omnibox.
+Het is de bedoeling organisaties de mogelijkheid te geven herkomsten toe te staan voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen in te stellen, zodat de ontwikkelaars functies die een beveiligde context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de herkomst wordt aangeduid als niet beveiligd in de omnibox.
 
 Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering --unsafely-treat-insecure-origin-as-secure wordt ingesteld op een door komma's gescheiden lijst met dezelfde URL's. Als het beleid is ingesteld, wordt de opdrachtregelmarkering overschreven.
 
@@ -4280,11 +4273,11 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
       Als dit beleid is ingesteld op:
 
-* PasswordProtectionWarningOff, wordt er geen waarschuwing voor wachtwoordbeveiliging weergegeven.
+* PasswordProtectionWarningOff, wordt er geen waarschuwing voor wachtwoordbeveiliging getoond.
 
-      * PasswordProtectionWarningOnPasswordReuse, wordt de waarschuwing voor wachtwoordbeveiliging weergegeven als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een site die niet op de toelatingslijst is gezet.
+      * PasswordProtectionWarningOnPasswordReuse, wordt de waarschuwing voor wachtwoordbeveiliging getoond als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een site die niet op de toelatingslijst staat.
 
-      * PasswordProtectionWarningOnPhishingReuse, wordt de waarschuwing voor wachtwoordbeveiliging weergegeven als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een phishingsite.
+      * PasswordProtectionWarningOnPhishingReuse, wordt de waarschuwing voor wachtwoordbeveiliging getoond als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een phishingsite.
 
       Als dit beleid niet is ingesteld, beschermt de service voor wachtwoordbeveiliging alleen Google-wachtwoorden, maar de gebruiker kan deze instelling wijzigen.</translation>
 <translation id="6969131408525928234">Als je het beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgeschakeld voor de hostnamen in de opgegeven URL's. Hoewel het moeilijker wordt om misbruik van certificaten vast te stellen, kunnen hosts certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt).
@@ -5608,7 +5601,7 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als je het beleid uitschakelt, wordt geen stroom geleverd.
 
       Als je het beleid niet instelt, is het beleid ingeschakeld en kunnen gebruikers het niet uitschakelen.</translation>
-<translation id="8789338675663014675">Hiermee wordt aan extensies gerelateerd beleid ingesteld. De gebruiker mag geen geblokkeerde extensies installeren, tenzij ze op de toelatingslijst worden gezet. Je kunt <ph name="PRODUCT_NAME" /> ook dwingen extensies automatisch te installeren door ze in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> op te geven. Afgedwongen geïnstalleerde extensies worden geïnstalleerd, ongeacht of ze op de blokkeringslijst zijn gezet.</translation>
+<translation id="8789338675663014675">Stelt aan extensies gerelateerd beleid in. De gebruiker mag geen geblokkeerde extensies installeren, tenzij ze op de toelatingslijst worden gezet. Je kunt <ph name="PRODUCT_NAME" /> ook dwingen extensies automatisch te installeren door ze in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> op te geven. Afgedwongen geïnstalleerde extensies worden geïnstalleerd, ongeacht of ze op de blokkeringslijst zijn gezet.</translation>
 <translation id="879697755145469671">Bedekt venster niet detecteren</translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8799492680917278474">Als je dit beleid aanzet, worden verbindingen voor externe toegang automatisch verbroken nadat het aantal minuten dat in het beleid wordt gedefinieerd, is verstreken. Hierdoor wordt niet voorkomen dat de client opnieuw verbinding maakt nadat de maximale sessieduur is bereikt. Als je het beleid instelt op een waarde die niet binnen het minimale/maximale bereik ligt, kan de host misschien niet worden gestart. Dit beleid heeft geen effect op scenario's voor support op afstand.

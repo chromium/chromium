@@ -863,7 +863,6 @@
 <translation id="1930879306590754738">Lozinka je izbrisana sa ovog uređaja i vašeg Google naloga</translation>
 <translation id="1931152874660185993">Nije instalirana nijedna komponenta.</translation>
 <translation id="1932098463447129402">Ne pre</translation>
-<translation id="1933809209549026293">Povežite miša ili tastaturu. Ako koristite Bluetooth uređaj, proverite da li je spreman za uparivanje.</translation>
 <translation id="1935303383381416800">Dozvoljeno im je da vide vašu lokaciju</translation>
 <translation id="1936931585862840749">Navedite broj primeraka za štampanje (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Ne možete da uvezete tip arhitekture kontejnera <ph name="ARCHITECTURE_CONTAINER" /> pomoću ovog uređaja, koji je <ph name="ARCHITECTURE_DEVICE" />. Možete da probate da vratite ovaj kontejner na drugi uređaj ili da otvorite aplikaciju Datoteke da biste pristupili datotekama u slici ovog kontejnera.</translation>
@@ -2603,7 +2602,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Uvrsti nedavnu istoriju Pomoćnika preko Sherlog-a. Ona može da obuhvata vaš identitet, lokaciju i informacije o otklanjanju grešaka. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Dodajte direktorijum</translation>
-<translation id="3894598587402139398"><ph name="NAME" /> može da pristupa veb-sajtovima i aplikacijama ako dodate još naloga.</translation>
 <translation id="3894770151966614831">Želite li da premestite na Google nalog?</translation>
 <translation id="3895076768659607631">&amp;Upravljaj pretraživačima...</translation>
 <translation id="3895090224522145010">Kerberos korisničko ime</translation>
@@ -2944,6 +2942,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4301671483919369635">Ova stranica može da menja datoteke</translation>
 <translation id="4303079906735388947">Podesite novi PIN za bezbednosni ključ</translation>
 <translation id="4305402730127028764">Kopiraj na: <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Pređi</translation>
 <translation id="4306119971288449206">Aplikacije moraju da se prikazuju sa tipom sadržaja „<ph name="CONTENT_TYPE" />“</translation>
 <translation id="4306812610847412719">privremena memorija</translation>
 <translation id="4307992518367153382">Osnovna</translation>
@@ -3337,7 +3336,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4756378406049221019">Zaustavi/ponovo učitaj</translation>
 <translation id="4756388243121344051">&amp;Istorija</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
-<translation id="4759387251871503426">Možete da upravljate Google nalozima na koje ste prijavljeni u <ph name="LINK_BEGIN" />Podešavanjima<ph name="LINK_END" />. Dozvole koje ste dali veb-sajtovima i aplikacijama mogu da važe za sve naloge. Ako ne želite da sajtovi ili aplikacije pristupaju informacijama o nalogu, možete da se prijavite na <ph name="DEVICE_TYPE" /> kao gost ili da pregledate veb u <ph name="LINK_2_BEGIN" />prozoru bez arhiviranja<ph name="LINK_2_END" />.</translation>
 <translation id="4761104368405085019">Korišćenje mikrofona</translation>
 <translation id="4762718786438001384">Prostor na disku uređaja je zabrinjavajuće mali</translation>
 <translation id="4763408175235639573">Sledeći kolačići su postavljeni dok ste gledali ovu stranicu</translation>
@@ -3558,6 +3556,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5027550639139316293">Sertifikat za e-poštu</translation>
 <translation id="5027562294707732951">Dodaj dodatak</translation>
 <translation id="5029568752722684782">Obriši kopiju</translation>
+<translation id="503155457707535043">Preuzimanje aplikacija</translation>
 <translation id="5033137252639132982">Nije im dozvoljeno da koriste senzore pokreta</translation>
 <translation id="5033266061063942743">Geometrijski oblici</translation>
 <translation id="5036662165765606524">Ne dozvoli nijednom sajtu da automatski preuzima više datoteka</translation>
@@ -6117,7 +6116,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7968833647796919681">Omogući prikupljanje podataka o učinku</translation>
 <translation id="7968982339740310781">Prikaži detalje</translation>
 <translation id="7969046989155602842">Command</translation>
-<translation id="7970618607181090249">Otkriven je dodirni ekran</translation>
 <translation id="7970673414865679092">Detalji o eternetu</translation>
 <translation id="7970882136539140748">Trenutno ne možemo da sačuvamo karticu</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 sa RSA šifrovanjem</translation>
@@ -7150,7 +7148,6 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="9128870381267983090">Povezivanje sa mrežom</translation>
 <translation id="9130015405878219958">Unet je nevažeći režim.</translation>
 <translation id="9131487537093447019">Slanje poruka na Bluetooth uređaje i primanje poruka sa njih.</translation>
-<translation id="9134119143784876218">Automatski pravi titl za audio i video na engleskom (trenutno je dostupno samo u Chrome pregledaču) Audio fajl i titl uvek ostaju na uređaju.</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9137157311132182254">Željeni pretraživač</translation>
 <translation id="9137248913990643158">Prijavite se u Chrome pre korišćenja ove aplikacije.</translation>

@@ -93,7 +93,7 @@
 <translation id="1936717151811561466">Fin tili</translation>
 <translation id="1942765061641586207">Tasvirning piksellar sig‘imi</translation>
 <translation id="1972984168337863910">Fayllar holat panelini yoyish</translation>
-<translation id="1984456723671657197">Bunday fayl turi ochilmaydi. Chrome OS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
+<translation id="1984456723671657197">Bunday fayl turi ochilmaydi. Chrome OS da fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">Fayl joylashuviga kirish</translation>
 <translation id="2001796770603320721">Google Drive orqali ochish</translation>
 <translation id="2009067268969781306">Xotira formatlansa, undagi barcha maʼlumotlar oʻchib ketadi. Bu amal bekor qilinmaydi.</translation>
@@ -666,7 +666,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7972920761225148017">Fransuz (Shveytsariya)</translation>
 <translation id="7980421588063892270">Ingliz (AQSH) va Colemak klaviaturasi</translation>
 <translation id="7982283708762922719">Bo‘yi</translation>
-<translation id="79907182588096956">Bu fayl Windows platformasidagi kompyuterlar uchun ishlab chiqilgan. U qurilmangizdagi Chrome OTʼda ishga tushmaydi. Chrome OS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
+<translation id="79907182588096956">Bu fayl Windows platformasidagi kompyuterlar uchun ishlab chiqilgan. U qurilmangizdagi Chrome OS da ishga tushmaydi. Chrome OS da fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">It</translation>
 <translation id="8028993641010258682">Hajm</translation>
 <translation id="803771048473350947">Fayl</translation>
@@ -746,7 +746,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8900820606136623064">Venger tili</translation>
 <translation id="8919081441417203123">Datcha</translation>
 <translation id="8965697826696209160">Bo‘sh joy yetarli emas.</translation>
-<translation id="8970501467542182729">Bu fayl Mac platformasi uchun ishlab chiqilgan. U qurilmangizdagi Chrome OTʼda ishga tushmaydi. Chrome OS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
+<translation id="8970501467542182729">Bu fayl Mac platformasi uchun ishlab chiqilgan. U qurilmangizdagi Chrome OS da ishga tushmaydi. Chrome OS da fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">Xitoycha Pinyin (odatiy)</translation>
 <translation id="9017798300203431059">Rus (fonetik)</translation>
 <translation id="9034924485347205037">Linux fayllari</translation>

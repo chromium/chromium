@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">선택한 콘텐츠를 다운로드할 공간이 부족합니다.</translation>
 <translation id="1376578503827013741">계산 중...</translation>
 <translation id="1383876407941801731">검색</translation>
+<translation id="1384704387250346179">Google 렌즈로 이미지 번역 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />일 전 동기화됨</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
 <translation id="1406000523432664303">'추적 안함'</translation>
@@ -73,6 +74,7 @@
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
+<translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
 <translation id="1513352483775369820">북마크 및 방문 기록</translation>
 <translation id="1513858653616922153">비밀번호 삭제</translation>
@@ -97,6 +99,7 @@
 <translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1697284962337958118">추가할 위치</translation>
 <translation id="1718835860248848330">지난 1시간</translation>
+<translation id="1724977129262658800">비밀번호를 수정하려면 잠금 해제하세요</translation>
 <translation id="173522743738009831">개인정보 보호 샌드박스 정보</translation>
 <translation id="1736419249208073774">탐색</translation>
 <translation id="1749561566933687563">북마크 동기화</translation>
@@ -263,7 +266,6 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="2818669890320396765">어느 기기에서나 내 북마크를 사용하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
-<translation id="2833452327385637152">단어 또는 구문을 검색하려면 탭하는 대신 길게 터치하세요.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
 <translation id="2856503607207334158">로그인 실패</translation>
@@ -603,6 +605,7 @@
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5199929503336119739">직장용 프로필</translation>
+<translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5210286577605176222">이전 탭으로 이동</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
 <translation id="5213672942202814946">음성 검색 사용하기</translation>
@@ -689,6 +692,7 @@
 <translation id="5765780083710877561">설명:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> 탭 복원됨</translation>
 <translation id="5776970333778123608">중요하지 않은 데이터</translation>
+<translation id="5780792035410621042">비밀번호를 복사하려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> 중 <ph name="SPACE_USED" /> 사용 중</translation>
 <translation id="5795872532621730126">검색 및 탐색</translation>
 <translation id="5797070761912323120">Google에서 내 방문 기록을 사용하여 Google 검색, 광고 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
@@ -861,6 +865,7 @@
 <translation id="6850409657436465440">아직 다운로드 중</translation>
 <translation id="6850830437481525139">탭 <ph name="TAB_COUNT" />개를 닫았습니다.</translation>
 <translation id="685850645784703949">Google 디스커버 - 사용 안함</translation>
+<translation id="686366188661646310">비밀번호를 삭제하시겠습니까?</translation>
 <translation id="6864459304226931083">이미지 다운로드</translation>
 <translation id="6865313869410766144">양식 데이터 자동 완성</translation>
 <translation id="6882836635272038266">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 대응하는 표준 보호 기능입니다.</translation>
@@ -1120,7 +1125,6 @@
 <translation id="8571213806525832805">지난 4주</translation>
 <translation id="8572344201470131220">이미지 복사됨</translation>
 <translation id="8583805026567836021">계정 데이터 지우기</translation>
-<translation id="8587585930972369234">길게 터치하여 검색</translation>
 <translation id="860043288473659153">카드 명의자 이름</translation>
 <translation id="8602358303461588329">Chrome에 로그인, 계정 선택 도구가 닫혔습니다.</translation>
 <translation id="860282621117673749">가격 인하 알림</translation>

@@ -903,13 +903,13 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Les caractères génériques "*" et "?" peuvent être utilisés pour représenter des séquences de caractères arbitraires. "*" représente un nombre arbitraire de caractères, tandis que "?" représente un caractère unique facultatif (soit un seul caractère, soit aucun). Pour représenter les caractères "*", "?" ou "\" proprement dits, le caractère d'échappement "\" doit les précéder.
 
-      Si vous activez ce paramètre, la liste des plug-ins spécifiée peut être utilisée dans <ph name="PRODUCT_NAME" />. Les utilisateurs peuvent activer ou désactiver les plug-ins concernés dans "about:plugins", même s'ils correspondent à un format indiqué dans DisabledPlugins. Les utilisateurs peuvent aussi activer et désactiver des plug-ins qui ne correspondent à aucun format dans DisabledPlugins, DisabledPluginsExceptions et EnabledPlugins.
+      Si vous activez ce paramètre, la liste des plug-ins spécifiée peut être utilisée dans <ph name="PRODUCT_NAME" />. Les utilisateurs peuvent activer ou désactiver les plug-ins concernés dans "about:plugins", même si ces plug-ins correspondent à un format indiqué dans DisabledPlugins. Les utilisateurs peuvent aussi activer et désactiver des plug-ins qui ne correspondent à aucun format dans DisabledPlugins, DisabledPluginsExceptions et EnabledPlugins.
 
       Cette règle permet à l'administrateur de définir un blocage strict des plug-ins quand la liste "DisabledPlugins" contient des caractères génériques (par exemple, "*" qui permet de désactiver tous les plug-ins ou "*Java*" qui permet de désactiver tous les plug-ins Java). Si l'administrateur souhaite activer des versions spécifiques de ces plug-ins ("IcedTea Java 2.3", par exemple), cette règle le permet.
 
       Sachez que l'exclusion doit viser à la fois le nom du plug-in et son nom de groupe. Chaque groupe de plug-ins s'affiche dans une section séparée dans "about:plugins", et chaque section peut contenir un plug-in ou plus. Par exemple, le plug-in "Shockwave Flash" fait partie du groupe "Adobe Flash Player". Ces deux noms doivent donc être indiqués dans la liste d'exceptions pour que le plug-in soit exclu de la liste de blocage.
 
-      Si cette règle n'est pas configurée, tous les plug-ins qui sont détectés par "DisabledPlugins" sont verrouillés/désactivés, et les utilisateurs ne sont pas en mesure de les activer</translation>
+      Si cette règle n'est pas configurée, tous les plug-ins détectés par "DisabledPlugins" sont verrouillés/désactivés, et les utilisateurs ne sont pas en mesure de les activer</translation>
 <translation id="2236488539271255289">Interdire à tous les sites de définir des données locales</translation>
 <translation id="2241498944622759244">Cette fonctionnalité n'a jamais été lancée, la règle est donc obsolète. Si cette règle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> vous proposera des pages en lien avec la page actuelle.
       Ces suggestions sont récupérées à distance depuis les serveurs Google.
@@ -2581,13 +2581,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Remarque : Le cache est vidé en cas de redémarrage de l'appareil. Les données de domaine sont mises en cache même pour les utilisateurs éphémères. Désactivez le cache pour empêcher le traçage du domaine d'un utilisateur éphémère.</translation>
 <translation id="4591366717022345234">Fournir le build Quick Fix aux utilisateurs</translation>
-<translation id="4592246263545654202">Permet de spécifier si l'utilisateur peut ouvrir ou non des pages en mode navigation privée dans <ph name="PRODUCT_NAME" />.
-
-      Si l'option "Activé" est sélectionnée ou si cette règle n'est pas configurée, l'utilisateur peut ouvrir des pages en mode navigation privée.
-
-      Si l'option "Désactivé" est sélectionnée, l'utilisateur ne peut pas ouvrir des pages en mode navigation privée.
-
-      Si l'option "Forcé" est sélectionnée, l'utilisateur peut ouvrir des pages UNIQUEMENT en mode navigation privée. Sachez que l'option "Forcé" ne fonctionne pas avec un appareil Android sur Chrome.</translation>
 <translation id="4593391169954484940">Hachage SHA-256 du fichier.</translation>
 <translation id="4594467366027975448">Permet de configurer le répertoire utilisé par <ph name="PRODUCT_NAME" /> pour stocker la copie itinérante des profils.
 
@@ -4319,7 +4312,7 @@ Si vous sélectionnez les options suivantes :
 
       * PasswordProtectionWarningOnPasswordReuse, l'avertissement est affiché lorsque les utilisateurs réutilisent leur mot de passe protégé sur un site qui ne figure pas dans la liste des sites autorisés ;
 
-      * PasswordProtectionWarningOnPhishingReuse, l'avertissement est affiché lorsque les utilisateurs réutilisent leur mot de passe protégé sur un site d'hameçonnage.
+      * PasswordProtectionWarningOnPhishingReuse, l'avertissement est affiché lorsque les utilisateurs réutilisent leur mot de passe protégé sur un site de hameçonnage.
 
       Si cette règle n'est pas configurée, le service de protection par mot de passe ne protège que les mots de passe Google. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="6969131408525928234">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats pour les noms d'hôte dans la liste d'URL spécifiées. Même si cela complique la détection des certificats qui ne sont pas émis correctement, les hôtes peuvent continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit).

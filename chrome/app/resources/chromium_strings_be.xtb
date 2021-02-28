@@ -138,7 +138,6 @@
 <translation id="549669000822060376">Пачакайце, пакуль Chromium усталюе апошнія абнаўленні сістэмы.</translation>
 <translation id="5496810170689441661">Chromium спрабуе змяніць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ёсць абнаўленне Chromium}=1{Ёсць абнаўленне Chromium}one{Абнаўленне Chromium выйшла # дзень таму}few{Абнаўленне Chromium выйшла # дні таму}many{Абнаўленне Chromium выйшла # дзён таму}other{Абнаўленне Chromium выйшла # дня таму}}</translation>
-<translation id="5631814766731275228">Імя і фота профілю Chromium</translation>
 <translation id="5634636535844844681">Для браўзера Chromium патрабуецца Windows 7 або навейшая версія.</translation>
 <translation id="5653831366781983928">Перазапусціце Chromium</translation>
 <translation id="5698481217667032250">Паказваць інтэрфейс браўзера Chromium на гэтай мове</translation>
@@ -166,6 +165,7 @@
 <translation id="6266342355635466082">Браўзеру Chromium не ўдаецца праверыць наяўнасць абнаўленняў. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="6268381023930128611">Выйсці з уліковага запісу ў браўзеры Chromium?</translation>
 <translation id="6281746429495226318">Наладзьце свой профіль Chromium</translation>
+<translation id="6290827346642914212">Дайце назву свайму профілю Chromium</translation>
 <translation id="6295779123002464101">Файл "<ph name="FILE_NAME" />" можа быць небяспечным, таму Chromium заблакіраваў яго.</translation>
 <translation id="6309712487085796862">Chromium выкарыстоўвае камеру.</translation>
 <translation id="6333502561965082103">У Chromium выконваецца іншая аперацыя. Паўтарыце спробу пазней.</translation>
@@ -280,5 +280,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Сістэма Chromium OS</translation>
 <translation id="93478295209880648">Браўзер Chromium больш не падтрымліваецца на Windows XP і Windows Vista, таму можа працаваць няправільна</translation>
+<translation id="965162752251293939">Хто выкарыстоўвае Chromium?</translation>
 <translation id="985602178874221306">Аўтары Chromium</translation>
 </translationbundle>
