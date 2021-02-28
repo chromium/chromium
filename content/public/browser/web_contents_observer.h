@@ -385,8 +385,10 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void FrameSizeChanged(RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) {}
 
-  // Invoked when the state of render_frame_host->IsInBackForwardCache()
+  // Invoked when the state of `RenderFrameHost::IsInBackForwardCache()`
   // changes.
+  // TODO(crbug.com/1113357): replace this with
+  // RenderFrameHostStateChanged when it's available.
   virtual void FrameBackForwardCacheStateChanged(
       RenderFrameHost* render_frame_host) {}
 
