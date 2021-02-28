@@ -67,5 +67,5 @@ crbug.com/1124979 compositing/video/video-controls-layer-creation.html [ Pass Fa
 crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 
-# [TablesNG]
-crbug.com/958381 fast/table/overflowHidden.html [ Crash ]
+# Duplicated display item id for fragmented TableNG cell background.
+crbug.com/1183098 fast/table/overflowHidden.html [ Crash ]
