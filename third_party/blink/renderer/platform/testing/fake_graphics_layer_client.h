@@ -21,6 +21,9 @@ class FakeGraphicsLayerClient : public GraphicsLayerClient {
   IntRect PaintableRegion(const GraphicsLayer*) const override {
     return IntRect();
   }
+  PaintArtifactCompositor* GetPaintArtifactCompositor() override {
+    return nullptr;
+  }
   String DebugName(const GraphicsLayer*) const override { return String(); }
   bool IsTrackingRasterInvalidations() const override {
     return is_tracking_raster_invalidations_;

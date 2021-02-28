@@ -932,8 +932,16 @@ static void UpdateNonFastScrollableRegion(
       // This is not necessary with ScrollUnification which ensures the
       // complete scroll tree.
       if (!RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
-        DCHECK(property_tree_manager);
-        property_tree_manager->EnsureCompositorScrollNode(*scroll_translation);
+        if (property_tree_manager) {
+          property_tree_manager->EnsureCompositorScrollNode(
+              *scroll_translation);
+        } else {
+          // A repaint-only update does not modify property tree nodes and has
+          // no property tree manager. This DCHECK ensures that a scroll node
+          // has already been created.
+          DCHECK(scroll_translation->CcNodeId(
+              layer.property_tree_sequence_number()));
+        }
       }
     }
   }

@@ -348,8 +348,15 @@ void LinkHighlightImpl::SetPaintArtifactCompositorNeedsUpdate() {
 }
 
 void LinkHighlightImpl::UpdateOpacity(float opacity) {
-  effect_->Update(EffectPaintPropertyNode::Root(),
-                  LinkHighlightEffectNodeState(opacity, element_id_));
+  auto change =
+      effect_->Update(EffectPaintPropertyNode::Root(),
+                      LinkHighlightEffectNodeState(opacity, element_id_));
+  // If there is no |node_|, |ReleaseResources| has already handled the call to
+  // |SetPaintArtifactCompositorNeedsUpdate|.
+  if (!node_)
+    return;
+  if (change > PaintPropertyChangeType::kChangedOnlyCompositedValues)
+    SetPaintArtifactCompositorNeedsUpdate();
 }
 
 }  // namespace blink

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -1911,6 +1912,382 @@ TEST_P(CompositingSimTest, DecompositedTransformWithChange) {
   svg_element->setAttribute(html_names::kClassAttr, "changed");
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(svg_element_layer->subtree_property_changed());
+}
+
+// A simple repaint update should use a fast-path in PaintArtifactCompositor.
+TEST_P(CompositingSimTest, BackgroundColorChangeUsesRepaintUpdate) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #target {
+          width: 100px;
+          height: 100px;
+          will-change: transform;
+          background: white;
+        }
+      </style>
+      <div id='target'></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(CcLayerByDOMElementId("target")->background_color(), SK_ColorWHITE);
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Modifying paint in a simple way only requires a repaint update.
+  auto* target_element = GetElementById("target");
+  target_element->setAttribute(html_names::kStyleAttr, "background: black");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+
+  // Though a repaint-only update was done, the background color should still
+  // be updated.
+  EXPECT_EQ(CcLayerByDOMElementId("target")->background_color(), SK_ColorBLACK);
+}
+
+// Similar to |BackgroundColorChangeUsesRepaintUpdate| but with multiple paint
+// chunks being squashed into a single PendingLayer, and the background coming
+// from the last paint chunk.
+TEST_P(CompositingSimTest, MultipleChunkBackgroundColorChangeRepaintUpdate) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        div {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          top: 0px;
+          left: 0px;
+        }
+        #a {
+          background: lime;
+        }
+        #b {
+          background: red;
+          transform: translate(-100px, -100px);
+        }
+        #c {
+          width: 800px;
+          height: 600px;
+          background: black;
+        }
+      </style>
+      <div id="a"></div>
+      <div id="b"></div>
+      <!-- background color source -->
+      <div id="c"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto* scrolling_contents = ScrollingContentsCcLayerByScrollElementId(
+      RootCcLayer(),
+      MainFrame().GetFrameView()->LayoutViewport()->GetScrollElementId());
+
+  EXPECT_EQ(scrolling_contents->background_color(), SK_ColorBLACK);
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Modifying paint in a simple way only requires a repaint update.
+  auto* background_element = GetElementById("c");
+  background_element->setAttribute(html_names::kStyleAttr, "background: white");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+
+  // Though a repaint-only update was done, the background color should still
+  // be updated.
+  EXPECT_EQ(scrolling_contents->background_color(), SK_ColorWHITE);
+}
+
+// Similar to |BackgroundColorChangeUsesRepaintUpdate| but with CompositeSVG.
+// This test changes paint for a composited SVG element, as well as a regular
+// HTML element in the presence of composited SVG.
+TEST_P(CompositingSimTest, SVGColorChangeUsesRepaintUpdate) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        rect, div {
+          width: 100px;
+          height: 100px;
+          will-change: transform;
+        }
+      </style>
+      <svg>
+        <rect fill="blue" />
+        <rect id="rect" fill="blue" />
+        <rect fill="blue" />
+      </svg>
+      <div id="div" style="background: blue;" />
+      <svg>
+        <rect fill="blue" />
+      </svg>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Modifying paint in a simple way only requires a repaint update.
+  auto* rect_element = GetElementById("rect");
+  rect_element->setAttribute(svg_names::kFillAttr, "black");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Modifying paint in a simple way only requires a repaint update.
+  auto* div_element = GetElementById("div");
+  div_element->setAttribute(html_names::kStyleAttr, "background: black");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+}
+
+TEST_P(CompositingSimTest, ChangingOpaquenessRequiresFullUpdate) {
+  // Contents opaque is set in different places in CAP (PAC) vs pre-CAP (CLM)
+  // and we only want to test the PAC update here.
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #target {
+          width: 100px;
+          height: 100px;
+          will-change: transform;
+          background: lightgreen;
+        }
+      </style>
+      <div id="target"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_TRUE(CcLayerByDOMElementId("target")->contents_opaque());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // A change in opaqueness still requires a full update because opaqueness is
+  // used during compositing to set the cc::Layer's contents opaque property
+  // (see: PaintArtifactCompositor::CompositedLayerForPendingLayer).
+  auto* target_element = GetElementById("target");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               "background: rgba(1, 0, 0, 0.1)");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+  EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque());
+}
+
+TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
+  // Contents opaque for text is set in different places in CAP (PAC) vs pre-CAP
+  // (CLM) and we only want to test the PAC update here.
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #target {
+          width: 100px;
+          height: 100px;
+          will-change: transform;
+        }
+        #textContainer {
+          width: 50px;
+          height: 50px;
+          padding: 5px;
+          background: lightblue;
+        }
+      }
+      </style>
+      <div id="target">
+        <div id="textContainer">
+          mars
+        </div>
+      </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque());
+  EXPECT_TRUE(CcLayerByDOMElementId("target")->contents_opaque_for_text());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // A change in opaqueness for text still requires a full update because
+  // opaqueness is used during compositing to set the cc::Layer's contents
+  // opaque for text property (see:
+  // PaintArtifactCompositor::CompositedLayerForPendingLayer).
+  auto* text_container_element = GetElementById("textContainer");
+  text_container_element->setAttribute(html_names::kStyleAttr,
+                                       "background: rgba(1, 0, 0, 0.1)");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+  EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque());
+  EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque_for_text());
+}
+
+TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        div {
+          width: 100px;
+          height: 100px;
+          will-change: transform;
+          position: absolute;
+        }
+        #a {
+          background: lightgreen;
+          z-index: 10;
+        }
+        #b {
+          background: lightblue;
+          z-index: 20;
+        }
+      </style>
+      <div id="a"></div>
+      <div id="b"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Reordering paint chunks requires a full update. Overlap testing and the
+  // order of synthetic effect layers are two examples of paint changes that
+  // affect compositing decisions.
+  auto* b_element = GetElementById("b");
+  b_element->setAttribute(html_names::kStyleAttr, "z-index: 5");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Removing a paint chunk requires a full update.
+  b_element->setAttribute(html_names::kStyleAttr, "display: none");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Adding a paint chunk requires a full update.
+  b_element->setAttribute(html_names::kStyleAttr, "");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Changing the size of a chunk affects overlap and requires a full update.
+  b_element->setAttribute(html_names::kStyleAttr, "width: 101px");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+}
+
+// Similar to |FullCompositingUpdateReasons| but for changes in CompositeSVG.
+TEST_P(CompositingSimTest, FullCompositingUpdateReasonInCompositeSVG) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #rect {
+          width: 100px;
+          height: 100px;
+          will-change: transform;
+        }
+      </style>
+      <svg>
+        <rect id="rect" fill="blue" />
+      </svg>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // Changing the size of a chunk affects overlap and requires a full update.
+  auto* rect = GetElementById("rect");
+  rect->setAttribute(html_names::kStyleAttr, "width: 101px");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+}
+
+TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        .firstLetterStyle:first-letter {
+          background: red;
+        }
+        rect {
+          width: 100px;
+          height: 100px;
+          fill: blue;
+        }
+      </style>
+      <svg>
+        <rect style="will-change: transform;"></rect>
+        <rect id="target"></rect>
+      </svg>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // A new LayoutObject is "just created" and will not match existing chunks and
+  // needs a full update. A first letter style adds a pseudo element which
+  // results in rebuilding the #target LayoutObject.
+  auto* target = GetElementById("target");
+  target->setAttribute(html_names::kClassAttr, "firstLetterStyle");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
 }
 
 }  // namespace blink

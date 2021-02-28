@@ -556,6 +556,9 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     if (auto* scrolling_coordinator = GetScrollingCoordinator())
       scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this);
+    // TODO(pdr): Optimize this to use a repaint update if possible, rather than
+    // forcing a full update. See: |UpdateCompositingLayersAfterScroll|.
+    frame_view->SetPaintArtifactCompositorNeedsUpdate();
   } else {
     UpdateCompositingLayersAfterScroll();
   }
