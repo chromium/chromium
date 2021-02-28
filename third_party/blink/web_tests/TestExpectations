@@ -5593,7 +5593,7 @@ crbug.com/1164568 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting
 crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [ Pass Failure ]
 
 # Sheriff 2021-01-13
-crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pass Failure ]
+crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pass Failure Timeout ]
 
 # Sheriff 2021-01-15
 crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Pass Failure ]
