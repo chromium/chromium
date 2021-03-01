@@ -155,7 +155,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // The color for the notification badge displayed over the app icon.
   SkColor notification_badge_color_ = SK_ColorWHITE;
 
-  base::ObserverList<AppListItemObserver>::Unchecked observers_;
+  base::ObserverList<AppListItemObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListItem);
 };

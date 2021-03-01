@@ -49,7 +49,7 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   bool is_tablet_mode_ = false;
   bool show_assistant_button_ = false;
 
-  base::ObserverList<SearchBoxModelObserver>::Unchecked observers_;
+  base::ObserverList<SearchBoxModelObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchBoxModel);
 };

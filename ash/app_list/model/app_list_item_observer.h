@@ -6,11 +6,12 @@
 #define ASH_APP_LIST_MODEL_APP_LIST_ITEM_OBSERVER_H_
 
 #include "ash/app_list/model/app_list_model_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 enum class AppListConfigType;
 
-class APP_LIST_MODEL_EXPORT AppListItemObserver {
+class APP_LIST_MODEL_EXPORT AppListItemObserver : public base::CheckedObserver {
  public:
   // Invoked after item's icon is changed.
   // |config_type| The app list configuration type for which the item icon
@@ -30,7 +31,7 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver {
   virtual void ItemBeingDestroyed() {}
 
  protected:
-  virtual ~AppListItemObserver() {}
+  ~AppListItemObserver() override = default;
 };
 
 }  // namespace ash

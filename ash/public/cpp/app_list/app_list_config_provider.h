@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace gfx {
 class Insets;
@@ -24,15 +25,16 @@ enum class AppListConfigType;
 // Used to create and keep track of existing AppListConfigs.
 class ASH_PUBLIC_EXPORT AppListConfigProvider {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-
     // Called when a new config is created. Note that this will not be called
     // for AppListConfigType::kShared configs, as they're assumed to always
     // exist.
     // |config_type| - The created config's type.
     virtual void OnAppListConfigCreated(AppListConfigType config_type) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   static AppListConfigProvider& Get();
@@ -76,7 +78,7 @@ class ASH_PUBLIC_EXPORT AppListConfigProvider {
 
   std::map<AppListConfigType, std::unique_ptr<AppListConfig>> configs_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListConfigProvider);
 };

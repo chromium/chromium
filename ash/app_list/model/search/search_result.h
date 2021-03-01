@@ -185,7 +185,7 @@ class APP_LIST_MODEL_EXPORT SearchResult {
 
   std::unique_ptr<SearchResultMetadata> metadata_;
 
-  base::ObserverList<SearchResultObserver>::Unchecked observers_;
+  base::ObserverList<SearchResultObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchResult);
 };
