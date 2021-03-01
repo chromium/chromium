@@ -37,6 +37,7 @@ const char *kAltGrLayoutIds[] = {
   "es(cat)",
   "fi",
   "fr",
+  "fr(oss)",
   "gb(dvorak)",
   "gb(extd)",
   "gr",
