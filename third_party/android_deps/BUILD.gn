@@ -1574,7 +1574,7 @@ java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_code_findbugs_jFormatString_java") {
   jar_path =
-      "libs/com_google_code_findbugs_jFormatString/jFormatString-3.0.0.jar"
+      "libs/com_google_code_findbugs_jformatstring/jFormatString-3.0.0.jar"
   output_name = "com_google_code_findbugs_jFormatString"
   enable_bytecode_checks = false
 
@@ -1913,7 +1913,7 @@ java_prebuilt("nekohtml_nekohtml_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("nekohtml_xercesMinimal_java") {
-  jar_path = "libs/nekohtml_xercesMinimal/xercesMinimal-1.9.6.2.jar"
+  jar_path = "libs/nekohtml_xercesminimal/xercesMinimal-1.9.6.2.jar"
   output_name = "nekohtml_xercesMinimal"
   enable_bytecode_checks = false
 

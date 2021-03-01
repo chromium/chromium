@@ -3,13 +3,18 @@
 // found in the LICENSE file.
 
 import groovy.json.JsonOutput
+import groovy.text.Template
+import groovy.transform.SourceURI
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
-import java.util.regex.Pattern
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.time.LocalDate
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 /**
  * Task to download dependencies specified in {@link ChromiumPlugin} and configure the
@@ -27,7 +32,7 @@ class BuildConfigGenerator extends DefaultTask {
     private static final BUILD_GN_GEN_PATTERN = Pattern.compile(
             "${BUILD_GN_TOKEN_START}(.*)${BUILD_GN_TOKEN_END}",
             Pattern.DOTALL)
-    private static final BUILD_GN_GEN_REMINDER = "# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.\n"
+    private static final GEN_REMINDER = "# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.\n"
     private static final DEPS_TOKEN_START = "# === ANDROID_DEPS Generated Code Start ==="
     private static final DEPS_TOKEN_END = "# === ANDROID_DEPS Generated Code End ==="
     private static final DEPS_GEN_PATTERN = Pattern.compile(
@@ -53,6 +58,12 @@ class BuildConfigGenerator extends DefaultTask {
     public static final def AUTOROLLED_LIB_PREFIXES = [ ]
 
     public static final def AUTOROLLED_REPO_PATH = 'third_party/android_deps_autorolled'
+
+    public static final def COPYRIGHT_HEADER = """\
+        # Copyright 2021 The Chromium Authors. All rights reserved.
+        # Use of this source code is governed by a BSD-style license that can be
+        # found in the LICENSE file.
+    """.stripIndent()
 
     /**
      * Directory where the artifacts will be downloaded and where files will be generated.
@@ -82,17 +93,27 @@ class BuildConfigGenerator extends DefaultTask {
      */
     String[] internalTargetVisibility
 
-     /**
-      * Whether to ignore DEPS file.
-      */
-     boolean ignoreDEPS
+    /**
+     * Whether to ignore DEPS file.
+     */
+    boolean ignoreDEPS
+
+    /**
+     * The URI of the file BuildConfigGenerator.groovy
+     */
+    @SourceURI
+    URI sourceUri
 
     @TaskAction
     void main() {
         // Do not run task on subprojects.
         if (project != project.getRootProject()) return
- 
+
         skipLicenses = skipLicenses || project.hasProperty("skipLicenses")
+
+        Path fetchTemplatePath = Paths.get(sourceUri).resolveSibling('3ppFetch.template')
+        def fetchTemplate = new groovy.text.SimpleTemplateEngine()
+                                    .createTemplate(fetchTemplatePath.toFile())
 
         def subprojects = new HashSet<Project>()
         subprojects.add(project)
@@ -113,7 +134,7 @@ class BuildConfigGenerator extends DefaultTask {
                 return
             }
             logger.debug "Processing ${dependency.name}: \n${jsonDump(dependency)}"
-            def depDir = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.id}"
+            def depDir = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
             def absoluteDepDir = "${normalisedRepoPath}/${depDir}"
 
             dependencyDirectories.add(depDir)
@@ -132,6 +153,25 @@ class BuildConfigGenerator extends DefaultTask {
             new File("${absoluteDepDir}/cipd.yaml").write(makeCipdYaml(dependency, cipdBucket,
                                                                        repositoryPath))
             new File("${absoluteDepDir}/OWNERS").write(makeOwners())
+
+            // Enable 3pp flow for //third_party/android_deps only.
+            // TODO(crbug.com/1132368): Enable 3pp flow for subprojects as well.
+            if (repositoryPath == "third_party/android_deps") {
+                if (dependency.fileUrl) {
+                    def absoluteDep3ppDir = "${absoluteDepDir}/3pp"
+                    new File(absoluteDep3ppDir).mkdirs()
+                    new File("${absoluteDep3ppDir}/3pp.pb").write(make3ppPb(dependency,
+                                                                            cipdBucket,
+                                                                            repositoryPath))
+                    def fetchFile = new File("${absoluteDep3ppDir}/fetch.py")
+                    fetchFile.write(make3ppFetch(fetchTemplate, dependency))
+                    fetchFile.setExecutable(true, false)
+                } else {
+                    throw new RuntimeException("Failed to generate 3pp files for ${dependency.id} "
+                        + "due to empty file url.")
+                }
+            }
+
             if (!skipLicenses) {
                 if (dependency.licensePath?.trim()) {
                     new File("${absoluteDepDir}/LICENSE").write(
@@ -226,8 +266,8 @@ class BuildConfigGenerator extends DefaultTask {
                 }
             }
 
-            def libPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.id}"
-            sb.append(BUILD_GN_GEN_REMINDER)
+            def libPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
+            sb.append(GEN_REMINDER)
             if (dependency.extension == 'jar') {
                 sb.append("""\
                 java_prebuilt("${targetName}") {
@@ -583,10 +623,11 @@ class BuildConfigGenerator extends DefaultTask {
                     computeJavaGroupForwardingTarget(dependency) != null) {
                 return
             }
-            def depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.id}"
-            def cipdPath = "${cipdBucket}/${repoPath}"
-            // CIPD does not allow uppercase in names.
-            cipdPath += "/${depPath}".toLowerCase()
+            def depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
+            def cipdPath = "${cipdBucket}/${repoPath}/${depPath}"
+            // TODO(crbug.com/1132368): Update the version format to
+            // 'version:${dependency.version}.${dependency.cipdSuffix}'
+            // once ready to roll 3pp-based CIPD packages.
             sb.append("""\
             |
             |  'src/${repoPath}/${depPath}': {
@@ -706,7 +747,7 @@ class BuildConfigGenerator extends DefaultTask {
         def cipdVersion = "${dependency.version}-${dependency.cipdSuffix}"
         def cipdPath = "${cipdBucket}/${repoPath}"
         // CIPD does not allow uppercase in names.
-        cipdPath += "/${DOWNLOAD_DIRECTORY_NAME}/" + dependency.id.toLowerCase()
+        cipdPath += "/${DOWNLOAD_DIRECTORY_NAME}/" + dependency.directoryName
 
         // NOTE: the fetch_all.py script relies on the format of this file!
         // See fetch_all.py:GetCipdPackageInfo().
@@ -726,6 +767,38 @@ class BuildConfigGenerator extends DefaultTask {
         """.stripIndent()
 
         return str
+    }
+
+    static String make3ppPb(ChromiumDepGraph.DependencyDescription dependency,
+                            String cipdBucket, String repoPath) {
+        def pkgPrefix = "${cipdBucket}/${repoPath}/${DOWNLOAD_DIRECTORY_NAME}"
+
+        def str = COPYRIGHT_HEADER + "\n" + GEN_REMINDER
+        str += """
+        create {
+          source {
+            script { name: "fetch.py" }
+            patch_version: "${dependency.cipdSuffix}"
+          }
+        }
+
+        upload {
+          pkg_prefix: "${pkgPrefix}"
+          universal: true
+        }
+        """.stripIndent()
+
+        return str
+
+    }
+
+    static String make3ppFetch(Template fetchTemplate,
+                               ChromiumDepGraph.DependencyDescription dependency) {
+        def bindMap = [
+            copyrightHeader: COPYRIGHT_HEADER,
+            dependency: dependency,
+        ]
+        return fetchTemplate.make(bindMap).toString()
     }
 
     static String jsonDump(obj) {

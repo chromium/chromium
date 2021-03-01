@@ -4,6 +4,7 @@
 
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Project
+import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedConfiguration
 import org.gradle.api.artifacts.ResolvedDependency
@@ -488,6 +489,8 @@ class ChromiumDepGraph {
             (licenseName, licenseUrl) = resolveLicenseInformation(id, pomContent)
         }
 
+        def fileUrl = getFileUrlFromArtifact(artifact)
+
         // Get rid of irrelevant indent that might be present in the XML file.
         def description = pomContent.description?.text()?.trim()?.replaceAll(/\s+/, " ")
         def displayName = pomContent.name?.text()
@@ -507,7 +510,9 @@ class ChromiumDepGraph {
                 licenseName: licenseName,
                 licenseUrl: licenseUrl,
                 licensePath: "",
+                directoryName: id.toLowerCase(),
                 fileName: artifact.file.name,
+                fileUrl: fileUrl,
                 description: description,
                 url: pomContent.url?.text(),
                 displayName: displayName,
@@ -601,12 +606,63 @@ class ChromiumDepGraph {
       return [licenses[0].name.text(), licenses[0].url.text()]
     }
 
+    private getFileUrlFromArtifact(ResolvedArtifact artifact) {
+        for (Project project : projects) {
+            for (ArtifactRepository repository : project.repositories.asList()) {
+                def repoUrl = repository.properties.get('url').toString()
+                // Some repo url may have trailing '/' and this breaks the file
+                // url generation below. So remove it if present.
+                if (repoUrl.endsWith('/')) {
+                    repoUrl = repoUrl.substring(0, repoUrl.length() - 1)
+                }
+                def component = artifact.id.componentIdentifier
+                // Constructs the file url for a artifact. For example, with
+                //   * repoUrl as "https://maven.google.com"
+                //   * component.group as "android.arch.core"
+                //   * component.module as "common"
+                //   * component.version as "1.1.1"
+                //   * artifact.extension as "jar"
+                //
+                // The file url will be:
+                // https://maven.google.com/android/arch/core/common/1.1.1/common-1.1.1.jar
+                def fileUrl = String.format("%s/%s/%s/%s/%s-%s.%s",
+                        repoUrl,
+                        component.group.replace('.', '/'),
+                        component.module,
+                        component.version,
+                        component.module,
+                        // While maven central and maven.google.com use "version",
+                        // https://androidx.dev uses "timestampedVersion" as part
+                        // of the file url
+                        component.hasProperty("timestampedVersion") ? component.timestampedVersion : component.version,
+                        artifact.extension)
+                try {
+                    def url = new URL(fileUrl)
+                    def inStream = url.openStream()
+                    if (inStream != null) {
+                        inStream.close()
+                        logger.debug("Succeeded in resolving url ${fileUrl}")
+                        return fileUrl
+                    }
+                } catch (Exception ignored) {
+                    logger.debug("Failed in resolving url ${fileUrl}")
+                }
+            }
+        }
+        return null
+    }
+
     static class DependencyDescription {
         String id
         ResolvedArtifact artifact
         String group, name, version, extension, displayName, description, url
         String licenseName, licenseUrl, licensePath
-        String fileName
+        String fileName, fileUrl
+        // The local directory name to store the files like artifact, license
+        // file, 3pp subdirectory, and etc. Must be lowercase since 3pp uses
+        // the directory name as part of the CIPD names. However CIPD does not
+        // allow uppercase in names.
+        String directoryName
         boolean supportsAndroid, visible, exclude, testOnly, isShipped
         boolean generateTarget = true
         boolean licenseAndroidCompatible

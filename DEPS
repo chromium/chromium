@@ -2443,7 +2443,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_deps/libs/com_google_code_findbugs_jFormatString': {
+  'src/third_party/android_deps/libs/com_google_code_findbugs_jformatstring': {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_code_findbugs_jformatstring',
@@ -2883,7 +2883,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_deps/libs/nekohtml_xercesMinimal': {
+  'src/third_party/android_deps/libs/nekohtml_xercesminimal': {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/nekohtml_xercesminimal',
