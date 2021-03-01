@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
+import("//remoting/build/config/remoting_logging.gni")
 
 group("all_tests") {
   testonly = true
@@ -46,19 +47,10 @@ source_set("host") {
   deps = [ "//remoting/host/file_transfer" ]
 }
 
-source_set("base") {
+source_set("logging") {
   sources = [
-    "host_exit_codes.cc",
-    "host_exit_codes.h",
+    "logging.cc",
     "logging.h",
-    "switches.cc",
-    "switches.h",
-    "username.cc",
-    "username.h",
-  ]
-  deps = [
-    "//base",
-    "//remoting/base",
   ]
 
   if (is_linux || is_chromeos) {
@@ -72,6 +64,29 @@ source_set("base") {
   if (is_win) {
     sources += [ "logging_win.cc" ]
   }
+
+  if (remoting_webrtc_verbose_logging) {
+    defines = [ "WEBRTC_VERBOSE_LOGGING" ]
+  }
+
+  deps = [ "//base" ]
+}
+
+source_set("base") {
+  sources = [
+    "host_exit_codes.cc",
+    "host_exit_codes.h",
+    "switches.cc",
+    "switches.h",
+    "username.cc",
+    "username.h",
+  ]
+  deps = [
+    ":logging",
+    "//base",
+    "//remoting/base",
+  ]
+  public_deps = [ ":logging" ]
 }
 
 # Split up from common to avoid circular dependency.

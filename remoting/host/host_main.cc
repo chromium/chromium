@@ -167,15 +167,6 @@ int HostMain(int argc, char** argv) {
 
   base::CommandLine::Init(argc, argv);
 
-#if !defined(NDEBUG)
-  // Always enable Webrtc logging for debug builds.
-  // Without this switch, Webrtc errors will still be logged but
-  // RTC_LOG(LS_INFO) lines will not.
-  // See https://webrtc.org/native-code/logging
-  auto* cl = base::CommandLine::ForCurrentProcess();
-  cl->AppendSwitch("vmodule=*/webrtc/*=1");
-#endif
-
   // Parse the command line.
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
