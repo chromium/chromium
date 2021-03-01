@@ -210,7 +210,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
             }
         };
 
-        ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
         ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
     }
 

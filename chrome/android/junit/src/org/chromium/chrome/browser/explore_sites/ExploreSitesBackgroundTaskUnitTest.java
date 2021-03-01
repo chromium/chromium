@@ -142,7 +142,9 @@ public class ExploreSitesBackgroundTaskUnitTest {
     public void setUp() {
         ShadowRecordHistogram.reset();
         MockitoAnnotations.initMocks(this);
-        doNothing().when(mChromeBrowserInitializer).handlePreNativeStartup(any(BrowserParts.class));
+        doNothing()
+                .when(mChromeBrowserInitializer)
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         doAnswer((InvocationOnMock invocation) -> {
             mBrowserParts.getValue().finishNativeInitialization();
             return null;

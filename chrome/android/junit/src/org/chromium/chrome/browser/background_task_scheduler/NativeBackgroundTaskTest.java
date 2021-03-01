@@ -264,7 +264,9 @@ public class NativeBackgroundTaskTest {
     }
 
     private void setUpChromeBrowserInitializer(InitializerSetup setup) {
-        doNothing().when(mChromeBrowserInitializer).handlePreNativeStartup(any(BrowserParts.class));
+        doNothing()
+                .when(mChromeBrowserInitializer)
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         switch (setup) {
             case SUCCESS:
                 doAnswer(new Answer<Void>() {
@@ -300,7 +302,7 @@ public class NativeBackgroundTaskTest {
 
     private void verifyStartupCalls(int expectedPreNativeCalls, int expectedPostNativeCalls) {
         verify(mChromeBrowserInitializer, times(expectedPreNativeCalls))
-                .handlePreNativeStartup(any(BrowserParts.class));
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         verify(mChromeBrowserInitializer, times(expectedPostNativeCalls))
                 .handlePostNativeStartup(eq(true), any(BrowserParts.class));
     }

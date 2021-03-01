@@ -91,7 +91,7 @@ public class VideoTutorialShareHelper {
                 });
             }
         };
-        ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
         ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
     }
 }

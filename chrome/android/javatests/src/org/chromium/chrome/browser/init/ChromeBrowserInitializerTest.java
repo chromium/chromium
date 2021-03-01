@@ -54,7 +54,7 @@ public class ChromeBrowserInitializerTest {
         };
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse(mInstance.isFullBrowserInitialized());
-            mInstance.handlePreNativeStartup(parts);
+            mInstance.handlePreNativeStartupAndLoadLibraries(parts);
             mInstance.handlePostNativeStartup(true, parts);
 
             Assert.assertFalse("Should not be synchronous", mInstance.isFullBrowserInitialized());

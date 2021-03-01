@@ -45,7 +45,7 @@ public class ChromeNativeBackgroundTaskDelegate implements NativeBackgroundTaskD
         };
 
         try {
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+            ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
 
             ChromeBrowserInitializer.getInstance().handlePostNativeStartup(
                     true /* isAsync */, parts);

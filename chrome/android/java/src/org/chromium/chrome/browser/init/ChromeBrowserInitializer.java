@@ -137,17 +137,17 @@ public class ChromeBrowserInitializer {
                 return startGpuProcess;
             }
         };
-        handlePreNativeStartup(parts);
+        handlePreNativeStartupAndLoadLibraries(parts);
         handlePostNativeStartup(false, parts);
     }
 
     /**
-     * Execute startup tasks that can be done without native libraries. See {@link BrowserParts} for
-     * a list of calls to be implemented.
+     * Executes startup tasks that can be done without native libraries, then loads the libraries.
+     * See {@link BrowserParts} for a list of calls to be implemented.
      * @param parts The delegate for the {@link ChromeBrowserInitializer} to communicate
      *              initialization tasks.
      */
-    public void handlePreNativeStartup(final BrowserParts parts) {
+    public void handlePreNativeStartupAndLoadLibraries(final BrowserParts parts) {
         ThreadUtils.checkUiThread();
         if (parts.isActivityFinishingOrDestroyed()) return;
         ProcessInitializationHandler.getInstance().initializePreNative();

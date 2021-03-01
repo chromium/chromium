@@ -138,7 +138,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, productVersion);
 
         try {
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+            ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
             ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
         } catch (Exception e) {
             // We don't want to exit, as the user should still be able to clear all browsing data.

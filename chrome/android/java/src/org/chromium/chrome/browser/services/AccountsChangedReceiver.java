@@ -63,7 +63,7 @@ public class AccountsChangedReceiver extends BroadcastReceiver {
                 SigninPreferencesManager.getInstance().markAccountsChangedPref();
             }
         };
-        ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
         ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
     }
 }
