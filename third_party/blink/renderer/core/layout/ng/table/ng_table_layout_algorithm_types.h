@@ -24,7 +24,8 @@ class NGLayoutInputNode;
 // Define constraint classes for NGTableLayoutAlgorithm.
 class CORE_EXPORT NGTableTypes {
  public:
-  static constexpr LayoutUnit kTableMaxInlineSize = LayoutUnit::Max();
+  static constexpr LayoutUnit kTableMaxInlineSize =
+      LayoutUnit(static_cast<uint64_t>(1000000));
 
   // Inline constraint for a single cell.
   // Takes into account the cell style, and min/max content-sizes.

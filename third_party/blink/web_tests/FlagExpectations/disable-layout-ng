@@ -898,7 +898,6 @@ crbug.com/353580 external/wpt/css/css-tables/height-distribution/percentage-sizi
 ### external/wpt/css/css-tables/tentative/
 crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-height-redistribution.html [ Failure ]
-crbug.com/958381 external/wpt/css/css-tables/tentative/table-fixed-minmax.html [ Failure ]
 
 ### external/wpt/css/css-tables/tentative/paint/
 crbug.com/958381 external/wpt/css/css-tables/tentative/paint/background-image-column-collapsed.html [ Failure ]
