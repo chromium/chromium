@@ -431,6 +431,9 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockWithoutMock) {
 class TracingProfileBuilderTest : public testing::Test {
  public:
   void SetUp() override {
+    PerfettoTracedProcess::ResetTaskRunnerForTesting();
+    PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+
     auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
         task_environment_.GetMainThreadTaskRunner());
     producer_client_ = std::make_unique<TestProducerClient>(

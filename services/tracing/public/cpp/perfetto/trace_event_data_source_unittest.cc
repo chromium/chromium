@@ -119,7 +119,12 @@ class TraceEventDataSourceTest : public testing::Test {
   }
 
   void StartTraceEventDataSource(bool privacy_filtering_enabled = false,
-                                 const std::string& chrome_trace_config = "") {
+                                 std::string chrome_trace_config = "") {
+    if (chrome_trace_config.empty()) {
+      base::trace_event::TraceConfig config(
+          "foo,cat1,cat2,cat3,browser,toplevel,-*", "");
+      chrome_trace_config = config.ToString();
+    }
     perfetto::DataSourceConfig config;
     config.mutable_chrome_config()->set_privacy_filtering_enabled(
         privacy_filtering_enabled);
@@ -1551,6 +1556,8 @@ class TraceEventDataSourceNoInterningTest : public TraceEventDataSourceTest {
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kPerfettoDisableInterning);
+    PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
+    TraceEventDataSource::ResetForTesting();
     TraceEventDataSourceTest::SetUp();
   }
 };
@@ -1617,8 +1624,9 @@ TEST_F(TraceEventDataSourceTest, StartupTracingTimeout) {
   // Start startup tracing with no timeout. This would cause startup tracing to
   // abort and flush as soon the current thread can run tasks.
   producer_client()->set_startup_tracing_timeout_for_testing(base::TimeDelta());
-  producer_client()->SetupStartupTracing(base::trace_event::TraceConfig(),
-                                         /*privacy_filtering_enabled=*/true);
+  producer_client()->SetupStartupTracing(
+      base::trace_event::TraceConfig("foo,cat1,cat2,cat3,-*", ""),
+      /*privacy_filtering_enabled=*/true);
 
   // The trace event will be added to the SMB for the (soon to be aborted)
   // startup tracing session, since the abort didn't run yet.
