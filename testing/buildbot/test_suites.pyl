@@ -3948,6 +3948,15 @@
       }
     },
 
+    'js_code_coverage_browser_tests_reduced' : {
+      'js_code_coverage_browser_tests_reduced': {
+        'args': [
+          '--gtest_filter=*DevToolsListenerBrowserTest*'
+        ],
+        'test': 'browser_tests',
+      }
+    },
+
     'lacros_skylab_poc': {
       'mainline_lacros_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:lacros")',
@@ -4122,7 +4131,7 @@
       'ozone_unittests': {},
       'services_unittests': {},
     },
-    
+
     # These tests run on Ozone/Wayland/X11 CQ.
     'linux_ozone_wayland_and_x11_gtests': {
       'accessibility_unittests': {},
