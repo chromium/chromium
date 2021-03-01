@@ -18,9 +18,8 @@ namespace translate {
 
 namespace metrics_internal {
 
-const char kTranslateContentLanguage[] = "Translate.ContentLanguage";
-const char kTranslateHtmlLang[] = "Translate.HtmlLang";
-const char kTranslateLanguageVerification[] = "Translate.LanguageVerification";
+const char kTranslateLanguageDetectionLanguageVerification[] =
+    "Translate.LanguageDetection.LanguageVerification";
 const char kTranslateTimeToBeReady[] = "Translate.Translation.TimeToBeReady";
 const char kTranslateTimeToLoad[] = "Translate.Translation.TimeToLoad";
 const char kTranslateTimeToTranslate[] =
@@ -33,36 +32,10 @@ const char kTranslateLanguageDeterminedDuration[] =
 
 }  // namespace metrics_internal
 
-namespace {
-
-LanguageCheckType GetLanguageCheckMetric(const std::string& provided_code,
-                                         const std::string& revised_code) {
-  if (provided_code.empty())
-    return LANGUAGE_NOT_PROVIDED;
-  else if (provided_code == revised_code)
-    return LANGUAGE_VALID;
-  return LANGUAGE_INVALID;
-}
-
-}  // namespace
-
-void ReportContentLanguage(const std::string& provided_code,
-                           const std::string& revised_code) {
-  UMA_HISTOGRAM_ENUMERATION(metrics_internal::kTranslateContentLanguage,
-                            GetLanguageCheckMetric(provided_code, revised_code),
-                            LANGUAGE_MAX);
-}
-
-void ReportHtmlLang(const std::string& provided_code,
-                    const std::string& revised_code) {
-  UMA_HISTOGRAM_ENUMERATION(metrics_internal::kTranslateHtmlLang,
-                            GetLanguageCheckMetric(provided_code, revised_code),
-                            LANGUAGE_MAX);
-}
-
 void ReportLanguageVerification(LanguageVerificationType type) {
-  UMA_HISTOGRAM_ENUMERATION(metrics_internal::kTranslateLanguageVerification,
-                            type, LANGUAGE_VERIFICATION_MAX);
+  base::UmaHistogramEnumeration(
+      metrics_internal::kTranslateLanguageDetectionLanguageVerification, type,
+      LANGUAGE_VERIFICATION_MAX);
 }
 
 void ReportTimeToBeReady(double time_in_msec) {

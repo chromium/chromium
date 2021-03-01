@@ -169,6 +169,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.ContentLanguage" enum="TranslateLanguage"
     expires_after="2021-08-09">
+  <obsolete>
+    Removed M90. No longer used.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -275,6 +278,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.HtmlLang" enum="TranslateLanguage"
     expires_after="2021-04-04">
+  <obsolete>
+    Removed M90. No longer used.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -310,6 +316,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of characters of page content used for language detection.
+  </summary>
+</histogram>
+
+<histogram name="Translate.LanguageDetection.LanguageVerification"
+    enum="TranslateLanguageVerification" expires_after="M94">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Measures whether the provided HTML language (i.e. the page lang attribute if
+    it exists, otherwise the header Content-Language value) matches the language
+    determined by the model. Beyond directly matching or mismatching the HTML
+    language, the model can complement the HTML language. For example, suppose
+    the HTML language is 'zh' (general Chinese), a language code that the
+    Translate server does not support. In this case, the model can detect a
+    subcode like '-TW' or '-CN', resulting in language codes 'zh-TW' and
+    'zh-CN', which the Translate server supports. This is referred to as
+    &quot;complementing a language subcode&quot;.
+
+    This histogram is recorded every time language detection is run. This
+    includes for each page load, and for sub frame detection.
   </summary>
 </histogram>
 
@@ -354,6 +381,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.LanguageVerification"
     enum="TranslateLanguageVerification" expires_after="M78">
+  <obsolete>
+    Removed M90. Replaced by Translate.LanguageDetection.LanguageVerification.
+  </obsolete>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

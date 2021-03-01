@@ -35,54 +35,39 @@ class MetricsRecorder {
       base_samples_ = histogram->SnapshotSamples();
   }
 
-  void CheckLanguage(const char* metric_name,
-                     int expected_not_provided,
-                     int expected_valid,
-                     int expected_invalid) {
-    ASSERT_EQ(metric_name, key_);
-
-    Snapshot();
-
-    EXPECT_EQ(expected_not_provided,
-              GetCountWithoutSnapshot(translate::LANGUAGE_NOT_PROVIDED));
-    EXPECT_EQ(expected_valid,
-              GetCountWithoutSnapshot(translate::LANGUAGE_VALID));
-    EXPECT_EQ(expected_invalid,
-              GetCountWithoutSnapshot(translate::LANGUAGE_INVALID));
-  }
-
-  void CheckLanguageVerification(int expected_cld_disabled,
-                                 int expected_cld_only,
+  void CheckLanguageVerification(int expected_model_disabled,
+                                 int expected_model_only,
                                  int expected_unknown,
-                                 int expected_cld_agree,
-                                 int expected_cld_disagree,
-                                 int expected_trust_cld,
-                                 int expected_cld_complement_sub_code) {
-    ASSERT_EQ(translate::metrics_internal::kTranslateLanguageVerification,
+                                 int expected_model_agree,
+                                 int expected_model_disagree,
+                                 int expected_trust_model,
+                                 int expected_model_complement_sub_code) {
+    ASSERT_EQ(translate::metrics_internal::
+                  kTranslateLanguageDetectionLanguageVerification,
               key_);
 
     Snapshot();
 
+    EXPECT_EQ(expected_model_disabled,
+              GetCountWithoutSnapshot(
+                  translate::DEPRECATED_LANGUAGE_VERIFICATION_MODEL_DISABLED));
     EXPECT_EQ(
-        expected_cld_disabled,
-        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_CLD_DISABLED));
-    EXPECT_EQ(
-        expected_cld_only,
-        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_CLD_ONLY));
+        expected_model_only,
+        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_MODEL_ONLY));
     EXPECT_EQ(expected_unknown, GetCountWithoutSnapshot(
                                     translate::LANGUAGE_VERIFICATION_UNKNOWN));
     EXPECT_EQ(
-        expected_cld_agree,
-        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_CLD_AGREE));
-    EXPECT_EQ(
-        expected_cld_disagree,
-        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_CLD_DISAGREE));
-    EXPECT_EQ(
-        expected_trust_cld,
-        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_TRUST_CLD));
-    EXPECT_EQ(expected_cld_complement_sub_code,
+        expected_model_agree,
+        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_MODEL_AGREE));
+    EXPECT_EQ(expected_model_disagree,
               GetCountWithoutSnapshot(
-                  translate::LANGUAGE_VERIFICATION_CLD_COMPLEMENT_SUB_CODE));
+                  translate::LANGUAGE_VERIFICATION_MODEL_DISAGREE));
+    EXPECT_EQ(
+        expected_trust_model,
+        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_TRUST_MODEL));
+    EXPECT_EQ(expected_model_complement_sub_code,
+              GetCountWithoutSnapshot(
+                  translate::LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE));
   }
 
   void CheckScheme(int expected_http, int expected_https, int expected_others) {
@@ -156,64 +141,31 @@ class MetricsRecorder {
 
 }  // namespace
 
-TEST(TranslateMetricsTest, ReportContentLanguage) {
-  MetricsRecorder recorder(
-      translate::metrics_internal::kTranslateContentLanguage);
-
-  recorder.CheckLanguage(translate::metrics_internal::kTranslateContentLanguage,
-                         0, 0, 0);
-  translate::ReportContentLanguage(std::string(), std::string());
-  recorder.CheckLanguage(translate::metrics_internal::kTranslateContentLanguage,
-                         1, 0, 0);
-  translate::ReportContentLanguage("ja_JP", "ja-JP");
-  recorder.CheckLanguage(translate::metrics_internal::kTranslateContentLanguage,
-                         1, 0, 1);
-  translate::ReportContentLanguage("en", "en");
-  recorder.CheckLanguage(translate::metrics_internal::kTranslateContentLanguage,
-                         1, 1, 1);
-}
-
-TEST(TranslateMetricsTest, ReportHtmlLang) {
-  MetricsRecorder recorder(translate::metrics_internal::kTranslateHtmlLang);
-
-  recorder.CheckLanguage(translate::metrics_internal::kTranslateHtmlLang, 0, 0,
-                         0);
-  translate::ReportHtmlLang(std::string(), std::string());
-  recorder.CheckLanguage(translate::metrics_internal::kTranslateHtmlLang, 1, 0,
-                         0);
-  translate::ReportHtmlLang("ja_JP", "ja-JP");
-  recorder.CheckLanguage(translate::metrics_internal::kTranslateHtmlLang, 1, 0,
-                         1);
-  translate::ReportHtmlLang("en", "en");
-  recorder.CheckLanguage(translate::metrics_internal::kTranslateHtmlLang, 1, 1,
-                         1);
-}
-
 TEST(TranslateMetricsTest, ReportLanguageVerification) {
-  MetricsRecorder recorder(
-      translate::metrics_internal::kTranslateLanguageVerification);
+  MetricsRecorder recorder(translate::metrics_internal::
+                               kTranslateLanguageDetectionLanguageVerification);
 
   recorder.CheckLanguageVerification(0, 0, 0, 0, 0, 0, 0);
   translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_CLD_DISABLED);
+      translate::DEPRECATED_LANGUAGE_VERIFICATION_MODEL_DISABLED);
   recorder.CheckLanguageVerification(1, 0, 0, 0, 0, 0, 0);
   translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_CLD_ONLY);
+      translate::LANGUAGE_VERIFICATION_MODEL_ONLY);
   recorder.CheckLanguageVerification(1, 1, 0, 0, 0, 0, 0);
   translate::ReportLanguageVerification(
       translate::LANGUAGE_VERIFICATION_UNKNOWN);
   recorder.CheckLanguageVerification(1, 1, 1, 0, 0, 0, 0);
   translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_CLD_AGREE);
+      translate::LANGUAGE_VERIFICATION_MODEL_AGREE);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 0, 0, 0);
   translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_CLD_DISAGREE);
+      translate::LANGUAGE_VERIFICATION_MODEL_DISAGREE);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 0, 0);
   translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_TRUST_CLD);
+      translate::LANGUAGE_VERIFICATION_TRUST_MODEL);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 1, 0);
   translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_CLD_COMPLEMENT_SUB_CODE);
+      translate::LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 1, 1);
 }
 

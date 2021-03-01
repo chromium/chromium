@@ -186,7 +186,6 @@ std::string DeterminePageLanguage(const std::string& code,
   if (!html_lang.empty()) {
     modified_html_lang = html_lang;
     ApplyLanguageCodeCorrection(&modified_html_lang);
-    translate::ReportHtmlLang(html_lang, modified_html_lang);
     VLOG(9) << "html lang based language code: " << modified_html_lang;
   }
 
@@ -195,7 +194,6 @@ std::string DeterminePageLanguage(const std::string& code,
   if (!code.empty()) {
     modified_code = code;
     ApplyLanguageCodeCorrection(&modified_code);
-    translate::ReportContentLanguage(code, modified_code);
   }
 
   // Adopt |modified_html_lang| if it is valid. Otherwise, adopt
@@ -203,11 +201,11 @@ std::string DeterminePageLanguage(const std::string& code,
   std::string language = modified_html_lang.empty() ? modified_code :
                                                       modified_html_lang;
 
-  // If |language| is empty, just use CLD result even though it might be
+  // If |language| is empty, just use model result even though it might be
   // translate::kUnknownLanguageCode.
   if (language.empty()) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_CLD_ONLY);
+        translate::LANGUAGE_VERIFICATION_MODEL_ONLY);
     return model_detected_language;
   }
 
@@ -219,27 +217,27 @@ std::string DeterminePageLanguage(const std::string& code,
 
   if (CanModelComplementSubCode(language, model_detected_language)) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_CLD_COMPLEMENT_SUB_CODE);
+        translate::LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE);
     return model_detected_language;
   }
 
   if (IsSameOrSimilarLanguages(language, model_detected_language)) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_CLD_AGREE);
+        translate::LANGUAGE_VERIFICATION_MODEL_AGREE);
     return language;
   }
 
   if (MaybeServerWrongConfiguration(language, model_detected_language)) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_TRUST_CLD);
+        translate::LANGUAGE_VERIFICATION_TRUST_MODEL);
     return model_detected_language;
   }
 
-  // Content-Language value might be wrong because CLD says that this page is
+  // Content-Language value might be wrong because model says that this page is
   // written in another language with confidence. In this case, Chrome doesn't
   // rely on any of the language codes, and gives up suggesting a translation.
   translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_CLD_DISAGREE);
+      translate::LANGUAGE_VERIFICATION_MODEL_DISAGREE);
   return kUnknownLanguageCode;
 }
 
