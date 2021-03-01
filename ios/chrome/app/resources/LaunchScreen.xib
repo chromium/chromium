@@ -18,7 +18,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_app_logo" translatesAutoresizingMaskIntoConstraints="NO" id="K7H-Iv-QNk">
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_app_logo" translatesAutoresizingMaskIntoConstraints="NO" id="K7H-Iv-QNk">
                         <rect key="frame" x="128" y="369" width="158" height="158"/>
                         <constraints>
                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="192" id="Ybu-iB-Ad4"/>
@@ -26,23 +26,31 @@
                             <constraint firstAttribute="width" secondItem="K7H-Iv-QNk" secondAttribute="height" multiplier="1:1" id="ion-RZ-6NS"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_brand_name" translatesAutoresizingMaskIntoConstraints="NO" id="bAU-qs-X5w">
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_brand_name" translatesAutoresizingMaskIntoConstraints="NO" id="bAU-qs-X5w">
                         <rect key="frame" x="153.5" y="807" width="107" height="35"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="107" id="0Mf-i7-mvo"/>
                             <constraint firstAttribute="height" constant="35" id="7Gs-G7-OR2"/>
                         </constraints>
                     </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BrowserX" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vzl-yT-hZb">
+                        <rect key="frame" x="136.5" y="427.5" width="141" height="41"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
+                        <color key="textColor" red="0.9394512773" green="0.2508294284" blue="0.2487185895" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <color key="backgroundColor" name="background_color"/>
                 <constraints>
                     <constraint firstItem="K7H-Iv-QNk" firstAttribute="width" secondItem="tRS-Cx-RH3" secondAttribute="width" multiplier="0.381966" id="3hJ-Yo-1Tg"/>
                     <constraint firstItem="K7H-Iv-QNk" firstAttribute="height" secondItem="tRS-Cx-RH3" secondAttribute="height" multiplier="0.381966" id="962-tL-cOd"/>
+                    <constraint firstItem="vzl-yT-hZb" firstAttribute="centerY" secondItem="tRS-Cx-RH3" secondAttribute="centerY" id="DoZ-SJ-CyF"/>
                     <constraint firstItem="K7H-Iv-QNk" firstAttribute="centerY" secondItem="tRS-Cx-RH3" secondAttribute="centerY" id="N7G-n6-9nU">
                         <variation key="heightClass=compact" constant="-10"/>
                     </constraint>
                     <constraint firstItem="K7H-Iv-QNk" firstAttribute="centerX" secondItem="tRS-Cx-RH3" secondAttribute="centerX" id="V5t-fF-KbQ"/>
                     <constraint firstItem="bAU-qs-X5w" firstAttribute="centerX" secondItem="K7H-Iv-QNk" secondAttribute="centerX" id="f8n-OV-luE"/>
+                    <constraint firstItem="vzl-yT-hZb" firstAttribute="centerX" secondItem="tRS-Cx-RH3" secondAttribute="centerX" id="og1-dI-sw7"/>
                     <constraint firstAttribute="bottomMargin" secondItem="bAU-qs-X5w" secondAttribute="bottom" constant="20" id="p2z-ft-dzH"/>
                 </constraints>
                 <variation key="default">
