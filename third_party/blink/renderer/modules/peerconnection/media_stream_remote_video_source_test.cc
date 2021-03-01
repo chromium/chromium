@@ -38,14 +38,6 @@
 namespace blink {
 
 namespace {
-// On Linux the clock in WebRTC and Chromium are more or less the same.
-// On Windows they are not the same and the accuracy of the measured time
-// difference is typically in the range [-1, 1] ms. However, for certain builds
-// such as ASAN it can be in the order of 10-20 ms. Since this is compensated
-// for both here and in MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
-// we need to use the worst case difference between these two measurements.
-float kChromiumWebRtcMaxTimeDiffMs = 40.0f;
-
 using base::test::RunOnceClosure;
 using ::testing::_;
 using ::testing::Gt;
@@ -78,9 +70,8 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
         webrtc_video_source_(blink::MockWebRtcVideoTrackSource::Create(
             /*supports_encoded_output=*/true)),
         webrtc_video_track_(
-            blink::MockWebRtcVideoTrack::Create("test", webrtc_video_source_)),
-        time_diff_(base::TimeTicks::Now() - base::TimeTicks() -
-                   base::TimeDelta::FromMicroseconds(rtc::TimeMicros())) {}
+            blink::MockWebRtcVideoTrack::Create("test", webrtc_video_source_)) {
+  }
 
   void SetUp() override {
     scoped_refptr<base::SingleThreadTaskRunner> main_thread =
@@ -362,21 +353,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
   track->RemoveSink(&sink);
 }
 
-// These tests depend on measuring the difference between the internal WebRTC
-// clock and Chromium's clock. Due to this they are performance sensitive and
-// appear to be flaky for builds with ASAN enabled.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_PopulateRequestAnimationFrameMetadata \
-  DISABLED_PopulateRequestAnimationFrameMetadata
-#define MAYBE_ReferenceTimeEqualsTimestampUs \
-  DISABLED_ReferenceTimeEqualsTimestampUs
-#else
-#define MAYBE_PopulateRequestAnimationFrameMetadata \
-  PopulateRequestAnimationFrameMetadata
-#define MAYBE_ReferenceTimeEqualsTimestampUs ReferenceTimeEqualsTimestampUs
-#endif
 TEST_F(MediaStreamRemoteVideoSourceTest,
-       MAYBE_PopulateRequestAnimationFrameMetadata) {
+       PopulateRequestAnimationFrameMetadata) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(), false);
@@ -403,22 +381,19 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
       clock->CurrentNtpInMilliseconds() - clock->TimeInMilliseconds();
   const webrtc::Timestamp kCaptureTimeNtp =
       kCaptureTime + webrtc::TimeDelta::Millis(ntp_offset);
-  // Expected capture time in Chromium epoch.
+  // Expected capture time.
   base::TimeTicks kExpectedCaptureTime =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(kCaptureTime.ms()) +
-      time_diff();
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(kCaptureTime.ms());
 
   webrtc::RtpPacketInfos::vector_type packet_infos;
   for (int i = 0; i < 4; ++i) {
     packet_infos.emplace_back(kSsrc, kCsrcs, kRtpTimestamp, absl::nullopt,
                               absl::nullopt, kProcessingStart.ms() - 100 + i);
   }
-  // Expected receive time should be the same as the last arrival time, in
-  // Chromium epoch.
+  // Expected receive time should be the same as the last arrival time.
   base::TimeTicks kExpectedReceiveTime =
       base::TimeTicks() +
-      base::TimeDelta::FromMilliseconds(kProcessingStart.ms() - 100 + 3) +
-      time_diff();
+      base::TimeDelta::FromMilliseconds(kProcessingStart.ms() - 100 + 3);
 
   webrtc::VideoFrame input_frame =
       webrtc::VideoFrame::Builder()
@@ -439,14 +414,15 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   EXPECT_FLOAT_EQ(output_frame->metadata().processing_time->InSecondsF(),
                   kProcessingTime);
 
-  EXPECT_NEAR(
+  EXPECT_FLOAT_EQ(
       (*output_frame->metadata().capture_begin_time - kExpectedCaptureTime)
           .InMillisecondsF(),
-      0.0f, kChromiumWebRtcMaxTimeDiffMs);
+      0.0f);
 
-  EXPECT_NEAR((*output_frame->metadata().receive_time - kExpectedReceiveTime)
-                  .InMillisecondsF(),
-              0.0f, kChromiumWebRtcMaxTimeDiffMs);
+  EXPECT_FLOAT_EQ(
+      (*output_frame->metadata().receive_time - kExpectedReceiveTime)
+          .InMillisecondsF(),
+      0.0f);
 
   EXPECT_EQ(static_cast<uint32_t>(*output_frame->metadata().rtp_timestamp),
             kRtpTimestamp);
@@ -454,7 +430,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   track->RemoveSink(&sink);
 }
 
-TEST_F(MediaStreamRemoteVideoSourceTest, MAYBE_ReferenceTimeEqualsTimestampUs) {
+TEST_F(MediaStreamRemoteVideoSourceTest, ReferenceTimeEqualsTimestampUs) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(), false);
@@ -478,12 +454,27 @@ TEST_F(MediaStreamRemoteVideoSourceTest, MAYBE_ReferenceTimeEqualsTimestampUs) {
   scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
   EXPECT_TRUE(output_frame);
 
-  EXPECT_NEAR((*output_frame->metadata().reference_time -
-               (base::TimeTicks() +
-                base::TimeDelta::FromMicroseconds(kTimestampUs) + time_diff()))
-                  .InMillisecondsF(),
-              0.0f, kChromiumWebRtcMaxTimeDiffMs);
+  EXPECT_FLOAT_EQ(
+      (*output_frame->metadata().reference_time -
+       (base::TimeTicks() + base::TimeDelta::FromMicroseconds(kTimestampUs)))
+          .InMillisecondsF(),
+      0.0f);
   track->RemoveSink(&sink);
+}
+
+TEST_F(MediaStreamRemoteVideoSourceTest, BaseTimeTicksAndRtcMicrosAreTheSame) {
+  base::TimeTicks first_chromium_timestamp = base::TimeTicks::Now();
+  base::TimeTicks webrtc_timestamp =
+      base::TimeTicks() + base::TimeDelta::FromMicroseconds(rtc::TimeMicros());
+  base::TimeTicks second_chromium_timestamp = base::TimeTicks::Now();
+
+  // Test that the timestamps are correctly ordered, which they can only be if
+  // the clocks are the same (assuming at least one of the clocks is functioning
+  // correctly).
+  EXPECT_GE((webrtc_timestamp - first_chromium_timestamp).InMillisecondsF(),
+            0.0f);
+  EXPECT_GE((second_chromium_timestamp - webrtc_timestamp).InMillisecondsF(),
+            0.0f);
 }
 
 // This is a special case that is used to signal "render immediately".

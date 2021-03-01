@@ -115,9 +115,7 @@ RTCRtpReceiver::getSynchronizationSources(ScriptState* script_state,
     RTCRtpSynchronizationSource* synchronization_source =
         MakeGarbageCollected<RTCRtpSynchronizationSource>();
     synchronization_source->setTimestamp(
-        time_converter
-            .MonotonicTimeToPseudoWallTime(
-                pc_->WebRtcTimestampToBlinkTimestamp(web_source->Timestamp()))
+        time_converter.MonotonicTimeToPseudoWallTime(web_source->Timestamp())
             .InMilliseconds());
     synchronization_source->setSource(web_source->Source());
     if (web_source->AudioLevel())
@@ -154,9 +152,7 @@ RTCRtpReceiver::getContributingSources(ScriptState* script_state,
     RTCRtpContributingSource* contributing_source =
         MakeGarbageCollected<RTCRtpContributingSource>();
     contributing_source->setTimestamp(
-        time_converter
-            .MonotonicTimeToPseudoWallTime(
-                pc_->WebRtcTimestampToBlinkTimestamp(web_source->Timestamp()))
+        time_converter.MonotonicTimeToPseudoWallTime(web_source->Timestamp())
             .InMilliseconds());
     contributing_source->setSource(web_source->Source());
     if (web_source->AudioLevel())

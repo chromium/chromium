@@ -44,6 +44,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_opus",
   "//third_party/webrtc/api/rtc_event_log:rtc_event_log_factory",
   "//third_party/webrtc/api/transport:enums",
+  "//third_party/webrtc/api/transport/rtp:rtp_source",
   "//third_party/webrtc/api/video:recordable_encoded_frame",
   "//third_party/webrtc/api/video:video_bitrate_allocation",
   "//third_party/webrtc/api/video:video_frame",
