@@ -82,8 +82,14 @@ public class MediaPlayerBridge {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) return;
 
         Log.w(TAG, "Unexpectedly setting playback speed to 0.");
-        MediaPlayer player = getLocalPlayer();
-        player.setPlaybackParams(player.getPlaybackParams().setSpeed((float) speed));
+        try {
+            MediaPlayer player = getLocalPlayer();
+            player.setPlaybackParams(player.getPlaybackParams().setSpeed((float) speed));
+        } catch (IllegalStateException ise) {
+            Log.e(TAG, "Unable to set playback rate", ise);
+        } catch (IllegalArgumentException iae) {
+            Log.e(TAG, "Unable to set playback rate", iae);
+        }
     }
 
     @CalledByNative
