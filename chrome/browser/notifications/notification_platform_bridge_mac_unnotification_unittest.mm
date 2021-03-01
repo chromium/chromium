@@ -444,6 +444,14 @@ TEST_F(UNNotificationPlatformBridgeMacTest,
   }
 }
 
+// Regression test for crbug.com/1182795
+TEST_F(UNNotificationPlatformBridgeMacTest, TestNullProfileShutdown) {
+  if (@available(macOS 10.14, *)) {
+    // Emulate shutdown of the null profile.
+    bridge_->DisplayServiceShutDown(/*profile=*/nullptr);
+  }
+}
+
 TEST_F(UNNotificationPlatformBridgeMacTest, TestNotificationNoButtons) {
   if (@available(macOS 10.14, *)) {
     Notification notification = CreateNotification();

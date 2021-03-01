@@ -350,6 +350,14 @@ TEST_F(NotificationPlatformBridgeMacTest,
                 boolValue]);
 }
 
+// Regression test for crbug.com/1182795
+TEST_F(NotificationPlatformBridgeMacTest, TestNullProfileShutdown) {
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      notification_center(), alert_dispatcher());
+  // Emulate shutdown of the null profile.
+  bridge->DisplayServiceShutDown(/*profile=*/nullptr);
+}
+
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
   if (!MacOSSupportsXPCAlerts())
     return;

@@ -265,12 +265,16 @@ void NotificationPlatformBridgeMac::SetReadyCallback(
 void NotificationPlatformBridgeMac::DisplayServiceShutDown(Profile* profile) {
   // Close all alerts and banners for |profile| on shutdown. We have to clean up
   // here instead of the destructor as mojo messages won't be delivered from
-  // there as it's too late in the shutdown process.
-  CloseAllNotificationsForProfile(profile);
+  // there as it's too late in the shutdown process. If the profile is null it
+  // was the SystemNotificationHelper instance but we never show notifications
+  // without a profile (Type::TRANSIENT) on macOS, so nothing to do here.
+  if (profile)
+    CloseAllNotificationsForProfile(profile);
 }
 
 void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
     Profile* profile) {
+  DCHECK(profile);
   NSString* profile_id = base::SysUTF8ToNSString(GetProfileId(profile));
   bool incognito = profile->IsOffTheRecord();
 
