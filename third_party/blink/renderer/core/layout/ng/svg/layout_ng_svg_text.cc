@@ -19,6 +19,7 @@ const char* LayoutNGSVGText::GetName() const {
 }
 
 bool LayoutNGSVGText::IsOfType(LayoutObjectType type) const {
+  NOT_DESTROYED();
   return type == kLayoutObjectSVG || LayoutNGBlockFlow::IsOfType(type);
 }
 
