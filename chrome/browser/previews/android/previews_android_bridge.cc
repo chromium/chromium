@@ -41,68 +41,6 @@ PreviewsAndroidBridge::PreviewsAndroidBridge(
 
 PreviewsAndroidBridge::~PreviewsAndroidBridge() {}
 
-jboolean PreviewsAndroidBridge::ShouldShowPreviewUI(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  if (!web_contents)
-    return false;
-
-  // Do not show the lite page chip between navigation start and navigation
-  // finish.
-  if (web_contents->GetController().GetPendingEntry())
-    return false;
-
-  PreviewsUITabHelper* tab_helper =
-      PreviewsUITabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
-    return false;
-
-  return tab_helper->should_display_android_omnibox_badge();
-}
-
-void PreviewsAndroidBridge::LoadOriginal(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  if (!web_contents)
-    return;
-
-  PreviewsUITabHelper* tab_helper =
-      PreviewsUITabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
-    return;
-
-  tab_helper->ReloadWithoutPreviews();
-}
-
-base::android::ScopedJavaLocalRef<jstring>
-PreviewsAndroidBridge::GetPreviewsType(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  if (!web_contents)
-    return base::android::ScopedJavaLocalRef<jstring>();
-
-  PreviewsUITabHelper* tab_helper =
-      PreviewsUITabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
-    return base::android::ScopedJavaLocalRef<jstring>();
-
-  previews::PreviewsUserData* data = tab_helper->GetPreviewsUserData();
-  if (!data || !data->HasCommittedPreviewsType())
-    return base::android::ScopedJavaLocalRef<jstring>();
-
-  return base::android::ScopedJavaLocalRef<jstring>(
-      base::android::ConvertUTF8ToJavaString(
-          env, previews::GetStringNameForType(data->CommittedPreviewsType())));
-}
 
 jboolean PreviewsAndroidBridge::IsHttpsImageCompressionApplied(
     JNIEnv* env,

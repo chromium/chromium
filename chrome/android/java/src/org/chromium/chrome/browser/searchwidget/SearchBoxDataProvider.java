@@ -112,11 +112,6 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
-    public boolean isPreview() {
-        return false;
-    }
-
-    @Override
     public int getSecurityLevel() {
         return ConnectionSecurityLevel.NONE;
     }

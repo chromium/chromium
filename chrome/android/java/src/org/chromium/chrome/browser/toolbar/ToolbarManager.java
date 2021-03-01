@@ -78,9 +78,6 @@ import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.previews.Previews;
-import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
-import org.chromium.chrome.browser.previews.PreviewsUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -663,17 +660,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (navigation.hasCommitted() && navigation.isInMainFrame()
                         && !navigation.isSameDocument()) {
                     mToolbar.onNavigatedToDifferentPage();
-                }
-
-                if (navigation.hasCommitted() && Previews.isPreview(tab)) {
-                    // Some previews are not fully decided until the page commits. If this
-                    // is a preview, update the security icon which will also update the verbose
-                    // status view to make sure the "Lite" badge is displayed.
-                    mLocationBarModel.notifySecurityStateChanged();
-                    PreviewsUma.recordLitePageAtCommit(
-                            PreviewsAndroidBridge.getInstance().getPreviewsType(
-                                    tab.getWebContents()),
-                            navigation.isInMainFrame());
                 }
 
                 // If the load failed due to a different navigation, there is no need to reset the

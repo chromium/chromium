@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -132,14 +131,10 @@ public class ToolbarButtonInProductHelpController
                 Tracker tracker = TrackerFactory.getTrackerForProfile(
                         Profile.fromWebContents(tab.getWebContents()));
                 if (dataSaved > 0L) tracker.notifyEvent(EventConstants.DATA_SAVED_ON_PAGE_LOAD);
-                if (Previews.isPreview(tab)) {
-                    tracker.notifyEvent(EventConstants.PREVIEWS_PAGE_LOADED);
-                }
 
                 if (tab.isUserInteractable()) {
                     showDataSaverDetail();
                     if (dataSaved > 0L) showDataSaverMilestonePromo();
-                    if (Previews.isPreview(tab)) showPreviewVerboseStatus();
                 }
 
                 showDownloadPageTextBubble(tab, FeatureConstants.DOWNLOAD_PAGE_FEATURE);
@@ -268,16 +263,6 @@ public class ToolbarButtonInProductHelpController
                                                            getDataReductionMenuItemHighlight()))
                         .setOnDismissCallback(dismissCallback)
                         .build());
-    }
-
-    // Attempts to show an IPH text bubble for page in preview mode.
-    private void showPreviewVerboseStatus() {
-        mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(mActivity.getResources(),
-                FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE, R.string.iph_previews_omnibox_ui_text,
-                R.string.iph_previews_omnibox_ui_accessibility_text)
-                                                    .setAnchorView(mSecurityIconAnchorView)
-                                                    .setShouldHighlight(false)
-                                                    .build());
     }
 
     private void showDownloadHomeIPH() {

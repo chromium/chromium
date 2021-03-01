@@ -231,7 +231,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     private void updateVerboseStatusVisibility() {
         mMediator.setPageSecurityLevel(mLocationBarDataProvider.getSecurityLevel());
         mMediator.setPageIsOffline(mLocationBarDataProvider.isOfflinePage());
-        mMediator.setPageIsPreview(mLocationBarDataProvider.isPreview());
         mMediator.setPageIsPaintPreview(mLocationBarDataProvider.isPaintPreview());
     }
 

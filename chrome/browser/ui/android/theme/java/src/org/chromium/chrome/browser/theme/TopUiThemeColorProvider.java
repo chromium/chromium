@@ -33,14 +33,6 @@ import java.lang.annotation.RetentionPolicy;
 public class TopUiThemeColorProvider extends ThemeColorProvider {
     private static final float LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 0.2f;
 
-    /**
-     * Tells if the given Tab is in preview mode.
-     */
-    @FunctionalInterface
-    public interface PreviewChecker {
-        boolean inPreview(Tab tab);
-    }
-
     @IntDef({ThemeColorUma.NO_COLOR_SET, ThemeColorUma.COLOR_SET_AND_APPLIED,
             ThemeColorUma.COLOR_SET_BUT_NOT_APPLIED, ThemeColorUma.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
@@ -55,7 +47,6 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
 
     private final Supplier<Integer> mActivityThemeColorSupplier;
     private final BooleanSupplier mIsTabletSupplier;
-    private final PreviewChecker mPreviewChecker;
 
     /** Whether or not the default color is used. */
     private boolean mIsDefaultColorUsed;
@@ -65,11 +56,9 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      * @param tabSupplier Supplier of the current tab.
      * @param activityThemeColorSupplier Supplier of activity theme color.
      * @param isTabletSupplier Supplier of a boolean indicating we're on a tablet device.
-     * @param previewChecker {@link PreviewChecker} instance.
      */
     public TopUiThemeColorProvider(Context context, ObservableSupplier<Tab> tabSupplier,
-            Supplier<Integer> activityThemeColorSupplier, BooleanSupplier isTabletSupplier,
-            PreviewChecker previewChecker) {
+            Supplier<Integer> activityThemeColorSupplier, BooleanSupplier isTabletSupplier) {
         super(context);
         mTabObserver = new CurrentTabObserver(tabSupplier,
                 new EmptyTabObserver() {
@@ -88,7 +77,6 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
                 });
         mActivityThemeColorSupplier = activityThemeColorSupplier;
         mIsTabletSupplier = isTabletSupplier;
-        mPreviewChecker = previewChecker;
     }
 
     /**
@@ -163,7 +151,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     private boolean isThemingAllowed(Tab tab) {
         return tab.isThemingAllowed() && !mIsTabletSupplier.getAsBoolean()
                 && !ColorUtils.inNightMode(tab.getContext()) && !tab.isNativePage()
-                && !tab.isIncognito() && !mPreviewChecker.inPreview(tab);
+                && !tab.isIncognito();
     }
 
     /**

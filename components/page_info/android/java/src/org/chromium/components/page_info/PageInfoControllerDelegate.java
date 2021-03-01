@@ -40,20 +40,10 @@ public abstract class PageInfoControllerDelegate {
         int UNTRUSTED_OFFLINE_PAGE = 3;
     }
 
-    @IntDef({PreviewPageState.NOT_PREVIEW, PreviewPageState.SECURE_PAGE_PREVIEW,
-            PreviewPageState.INSECURE_PAGE_PREVIEW})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface PreviewPageState {
-        int NOT_PREVIEW = 1;
-        int SECURE_PAGE_PREVIEW = 2;
-        int INSECURE_PAGE_PREVIEW = 3;
-    }
-
     private final AutocompleteSchemeClassifier mAutocompleteSchemeClassifier;
     private final VrHandler mVrHandler;
     private final boolean mIsSiteSettingsAvailable;
     private final boolean mCookieControlsShown;
-    protected @PreviewPageState int mPreviewPageState;
     protected @OfflinePageState int mOfflinePageState;
     protected boolean mIsHttpsImageCompressionApplied;
     protected String mOfflinePageUrl;
@@ -67,7 +57,6 @@ public abstract class PageInfoControllerDelegate {
         mIsHttpsImageCompressionApplied = false;
 
         // These sometimes get overwritten by derived classes.
-        mPreviewPageState = PreviewPageState.NOT_PREVIEW;
         mOfflinePageState = OfflinePageState.NOT_OFFLINE_PAGE;
         mOfflinePageUrl = null;
     }
@@ -89,32 +78,6 @@ public abstract class PageInfoControllerDelegate {
      * Return the ModalDialogManager to be used.
      */
     public abstract ModalDialogManager getModalDialogManager();
-
-    /**
-     * Initialize viewParams with Preview UI info, if any.
-     * @param viewParams The params to be initialized with Preview UI info.
-     * @param runAfterDismiss Used to set "show original" callback on Previews UI.
-     */
-    public void initPreviewUiParams(
-            PageInfoViewParams viewParams, Consumer<Runnable> runAfterDismiss) {
-        // Don't support Preview UI by default.
-        viewParams.previewUIShown = false;
-        viewParams.previewSeparatorShown = false;
-    }
-
-    /**
-     * Whether website dialog is displayed for a preview.
-     */
-    public boolean isShowingPreview() {
-        return mPreviewPageState != PreviewPageState.NOT_PREVIEW;
-    }
-
-    /**
-     * Whether Preview page state is INSECURE.
-     */
-    public boolean isPreviewPageInsecure() {
-        return mPreviewPageState == PreviewPageState.INSECURE_PAGE_PREVIEW;
-    }
 
     /**
      * Returns whether or not an instant app is available for |url|.
@@ -156,7 +119,7 @@ public abstract class PageInfoControllerDelegate {
      * Whether the page being shown is an offline page.
      */
     public boolean isShowingOfflinePage() {
-        return mOfflinePageState != OfflinePageState.NOT_OFFLINE_PAGE && !isShowingPreview();
+        return mOfflinePageState != OfflinePageState.NOT_OFFLINE_PAGE;
     }
 
     /**
@@ -254,11 +217,6 @@ public abstract class PageInfoControllerDelegate {
      * The UI will use a fallback icon if null is supplied.
      */
     public abstract void getFavicon(String url, Callback<Drawable> callback);
-
-    /**
-     * @return Returns the drawable for the Preview UI.
-     */
-    public abstract Drawable getPreviewUiIcon();
 
     public abstract FragmentManager getFragmentManager();
 }

@@ -12,7 +12,6 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationServiceImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewTabHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/previews/Previews.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/tab",
   "+chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/Tab.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ChipDelegate.java",

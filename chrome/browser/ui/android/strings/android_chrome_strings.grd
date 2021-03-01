@@ -1943,9 +1943,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_TOP_BAR_SCREEN_POSITION" desc="Accessibility label to inform users about the InfoBar location">
         Options available near top of the screen
       </message>
-      <message name="IDS_PREVIEWS_INFOBAR_ACCESSIBILITY_TITLE" desc="Accessibility label to inform users about the InfoBar notifying the user that mobile data usage was reduced and the page was shown faster by showing a preview version of the web page instead of the full page.">
-        Simplified page to save data and load faster.
-      </message>
 
       <!-- DuplicateDownloadInfoBar -->
       <message name="IDS_DUPLICATE_DOWNLOAD_INFOBAR_TEXT" desc="Prompt text for the confirmation dialog asking whether the user really wants to download a file when there already exists a file with the same name">
@@ -2272,9 +2269,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_PAGE_INFO_OFFLINE_PAGE_NOT_TRUSTED_WITHOUT_DATE" desc="Additional message to be shown in the page info bubble, when the offline page shown is not trusted. The offline page creation date will not be displayed.">
         This page may differ from the online version.
-      </message>
-      <message name="IDS_PAGE_INFO_PREVIEW_LOAD_ORIGINAL" desc="This text, when clicked, loads the original page from its origin without any treatments. This text is shown in the page info bubble when the currently viewed page has been modified to be a lighter and faster version of the original page.">
-        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Load original page<ph name="END_LINK">&lt;/link&gt;</ph> from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>
       </message>
       <message name="IDS_PAGE_INFO_CONNECTION_PAINT_PREVIEW" desc="Message to display in the page info bubble when viewing a preview of a page.">
         You are viewing a preview of this page
@@ -3236,9 +3230,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_LOCATION_BAR_VERBOSE_STATUS_OFFLINE" desc="Verbose indication of offline status in the location bar. [CHAR-LIMIT=20]">
         Offline
       </message>
-      <message name="IDS_LOCATION_BAR_PREVIEW_LITE_PAGE_STATUS" desc="An indication in the location bar that the page the user is viewing has been modified in order to speed up the page load or decrease the amount of data used to load the page. [CHAR-LIMIT=10]">
-        Lite
-      </message>
       <message name="IDS_LOCATION_BAR_PAINT_PREVIEW_PAGE_STATUS" desc="An indication in the location bar that the page the user is viewing is a paint preview of the original page. [CHAR-LIMIT=10]">
         Preview
       </message>
@@ -3825,12 +3816,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
       <message name="IDS_IPH_NTP_WITH_FEED_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page with personalized top sites and stories. The 'Home' button name should match TC ID 2821179408673282599.">
         To see top sites and stories for you, tap the Home button
-      </message>
-      <message name="IDS_IPH_PREVIEWS_OMNIBOX_UI_TEXT" desc="The in-product-help text informing the user that the displayed page was modified to make it load faster or use less data. Prompts the user to tap the message and load the original, unaltered, page if they would like. The 'Lite page provided by Google.' sentence should match TC ID 373879247902731825">
-        Lite page provided by Google. Tap to load the original.
-      </message>
-      <message name="IDS_IPH_PREVIEWS_OMNIBOX_UI_ACCESSIBILITY_TEXT" desc="The in-product-help text informing the user that the displayed page was modified to make it load faster or use less data. Prompts the user to tap the message and load the original, unaltered, page if they would like. The 'Lite page provided by Google.' sentence should match TC ID 373879247902731825">
-        Lite page provided by Google. Tap the load original button to load the original page.
       </message>
       <message name="IDS_IPH_TAB_SWITCHER_TEXT" desc="The in-product-help message to open the tab switcher.">
         Open tabs to visit different pages at the same time

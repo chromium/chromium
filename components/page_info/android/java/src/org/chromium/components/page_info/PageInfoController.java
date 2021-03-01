@@ -239,10 +239,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             if (mCookieBridge != null) mCookieBridge.onUiClosing();
         };
 
-        mDelegate.initPreviewUiParams(viewParams, this::runAfterDismiss);
         mDelegate.initOfflinePageUiParams(viewParams, this::runAfterDismiss);
 
-        if (!mIsInternalPage && !mDelegate.isShowingOfflinePage() && !mDelegate.isShowingPreview()
+        if (!mIsInternalPage && !mDelegate.isShowingOfflinePage()
                 && mDelegate.isInstantAppAvailable(mFullUrl.getSpec())) {
             final Intent instantAppIntent = mDelegate.getInstantAppIntentForUrl(mFullUrl.getSpec());
             viewParams.instantAppButtonClickCallback = () -> {
@@ -272,8 +271,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             containerParams.urlTitleClickCallback = mContainer::toggleUrlTruncation;
             containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;
             containerParams.urlTitleShown = viewParams.urlTitleShown;
-            containerParams.previewUIShown = viewParams.previewUIShown;
-            containerParams.previewUIIcon = mDelegate.getPreviewUiIcon();
             mContainer.setParams(containerParams);
             mDelegate.getFavicon(mFullUrl.getSpec(), favicon -> {
                 // Return early if PageInfo has been dismissed.
@@ -380,8 +377,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         // If Paint Preview is being shown, it completely obstructs the WebContents and users
         // cannot interact with it. Hence, showing connection details is not relevant.
         return mContentPublisher == null && !mDelegate.isShowingOfflinePage()
-                && !mDelegate.isShowingPreview() && !mDelegate.isShowingPaintPreviewPage()
-                && !mIsInternalPage;
+                && !mDelegate.isShowingPaintPreviewPage() && !mIsInternalPage;
     }
 
     /**
@@ -427,8 +423,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                     mContext.getString(R.string.page_info_domain_hidden, mContentPublisher));
         } else if (mDelegate.isShowingPaintPreviewPage()) {
             messageBuilder.append(mDelegate.getPaintPreviewPageConnectionMessage());
-        } else if (mDelegate.isShowingPreview() && mDelegate.isPreviewPageInsecure()) {
-            connectionInfoParams.summary = summary;
         } else if (mDelegate.getOfflinePageConnectionMessage() != null) {
             messageBuilder.append(mDelegate.getOfflinePageConnectionMessage());
         } else {

@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
-import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareButtonController;
@@ -270,7 +269,7 @@ public class RootUiCoordinator
             }
         };
         mTopUiThemeColorProvider = new TopUiThemeColorProvider(mActivity, mActivityTabSupplier,
-                mActivity::getActivityThemeColor, mActivity::isTablet, Previews::isPreview);
+                mActivity::getActivityThemeColor, mActivity::isTablet);
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.

@@ -150,15 +150,6 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
                 }));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Nullable
-    public Drawable getPreviewUiIcon() {
-        return null;
-    }
-
     private static boolean isHttpOrHttps(GURL url) {
         String scheme = url.getScheme();
         return UrlConstants.HTTP_SCHEME.equals(scheme) || UrlConstants.HTTPS_SCHEME.equals(scheme);

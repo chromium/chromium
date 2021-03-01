@@ -158,8 +158,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         public boolean instantAppButtonShown = true;
         public boolean siteSettingsButtonShown = true;
         public boolean openOnlineButtonShown = true;
-        public boolean previewUIShown = true;
-        public boolean previewSeparatorShown = true;
         public boolean cookieControlsShown = true;
 
         public Runnable urlTitleClickCallback;
@@ -167,11 +165,9 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         public Runnable instantAppButtonClickCallback;
         public Runnable siteSettingsButtonClickCallback;
         public Runnable openOnlineButtonClickCallback;
-        public Runnable previewShowOriginalClickCallback;
         public Runnable onUiClosingCallback;
 
         public CharSequence url;
-        public CharSequence previewLoadOriginalMessage;
         public int urlOriginLength;
     }
 
@@ -209,9 +205,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     // these components are replaced with different UI and eventually this class will be replaced
     // completely.
     protected ElidedUrlTextView mUrlTitle;
-    protected TextView mPreviewMessage;
-    protected TextView mPreviewLoadOriginal;
-    protected View mPreviewSeparator;
     protected Button mInstantAppButton;
     protected Button mSiteSettingsButton;
     protected Button mOpenOnlineButton;
@@ -241,7 +234,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
 
     protected void init(PageInfoViewParams params) {
         initUrlTitle(params);
-        initPreview(params);
         initConnection(params);
         initPerformance(params);
         initHttpsImageCompression(params);
@@ -262,17 +254,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
             });
         }
         initializePageInfoViewChild(mUrlTitle, params.urlTitleShown, params.urlTitleClickCallback);
-    }
-
-    protected void initPreview(PageInfoViewParams params) {
-        mPreviewMessage = findViewById(R.id.page_info_preview_message);
-        mPreviewLoadOriginal = findViewById(R.id.page_info_preview_load_original);
-        mPreviewSeparator = findViewById(R.id.page_info_preview_separator);
-        initializePageInfoViewChild(mPreviewMessage, params.previewUIShown, null);
-        initializePageInfoViewChild(mPreviewLoadOriginal, params.previewUIShown,
-                params.previewShowOriginalClickCallback);
-        initializePageInfoViewChild(mPreviewSeparator, params.previewSeparatorShown, null);
-        mPreviewLoadOriginal.setText(params.previewLoadOriginalMessage);
     }
 
     protected void initConnection(PageInfoViewParams params) {
@@ -461,9 +442,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         animatableViews.add(mConnectionMessage);
         animatableViews.add(mPerformanceSummary);
         animatableViews.add(mPerformanceMessage);
-        animatableViews.add(mPreviewSeparator);
-        animatableViews.add(mPreviewMessage);
-        animatableViews.add(mPreviewLoadOriginal);
         animatableViews.add(mHttpsImageCompressionMessage);
         animatableViews.add(mInstantAppButton);
         animatableViews.add(mCookieControlsSeparator);

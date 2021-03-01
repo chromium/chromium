@@ -20,11 +20,11 @@ public final class PreviewsUma {
     // //tools/metrics/histograms/enums.xml.
 
     // User opted out of the preview.
-    private static final int ACTION_OPT_OUT = 0;
+    // OBSOLETE: private static final int ACTION_OPT_OUT = 0;
     // User opened the page info dialog.
     private static final int ACTION_PAGE_INFO_OPENED = 1;
     // The Lite Page badge was displayed at commit.
-    private static final int ACTION_LITE_PAGE_AT_COMMIT = 2;
+    // OBSOLETE: private static final int ACTION_LITE_PAGE_AT_COMMIT = 2;
     // OBSOLETE:  private static final int ACTION_LITE_PAGE_AT_FINISH = 3;
     private static final int ACTION_INDEX_BOUNDARY = 4;
 
@@ -39,32 +39,6 @@ public final class PreviewsUma {
 
         final String histogram = String.format(BASE_HISTOGRAM_NAME, previewType);
         RecordHistogram.recordEnumeratedHistogram(histogram, action, ACTION_INDEX_BOUNDARY);
-    }
-
-    /**
-     * Records that the user opted out of the displayed preview.
-     * @param previewType the committed preview type
-     */
-    public static void recordOptOut(final String previewType) {
-        recordHistogram(previewType, ACTION_OPT_OUT);
-    }
-
-    /**
-     * Records that the user opened the page info dialog.
-     * @param previewType the committed preview type
-     */
-    public static void recordPageInfoOpened(final String previewType) {
-        recordHistogram(previewType, ACTION_PAGE_INFO_OPENED);
-    }
-
-    /**
-     * Records that the lite page badge was displayed at commit.
-     * @param previewType the committed preview type
-     */
-    public static void recordLitePageAtCommit(
-            final String previewType, final boolean isInMainFrame) {
-        if (!isInMainFrame) return;
-        recordHistogram(previewType, ACTION_LITE_PAGE_AT_COMMIT);
     }
 
     /**

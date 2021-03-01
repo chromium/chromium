@@ -463,9 +463,8 @@ public final class StatusMediatorUnitTest {
     public void testStatusText() {
         mMediator.setUnfocusedLocationBarWidth(10);
         mMediator.setPageIsOffline(true);
-        mMediator.setPageIsPreview(true);
         mMediator.setPageIsPaintPreview(true);
-        // When all 3 states, offline, preview, and paint preview are enabled, paint preview has
+        // When both states, offline, and preview are enabled, paint preview has
         // the highest priority.
         Assert.assertEquals("Incorrect text for paint preview status text",
                 R.string.location_bar_paint_preview_page_status,
@@ -478,23 +477,9 @@ public final class StatusMediatorUnitTest {
                 R.color.locationbar_status_preview_color,
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
 
-        // When offline and preview are enabled, preview has higher priority.
-        mMediator.setUseDarkColors(false);
-        mMediator.setPageIsPaintPreview(false);
-        Assert.assertEquals("Incorrect text for preview status text",
-                R.string.location_bar_preview_lite_page_status,
-                mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES));
-        Assert.assertEquals("Incorrect color for preview status text",
-                R.color.locationbar_status_preview_color_light,
-                mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
-        mMediator.setUseDarkColors(true);
-        Assert.assertEquals("Incorrect color for preview status text",
-                R.color.locationbar_status_preview_color,
-                mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
-
         // When only offline is enabled, it should be shown.
+        mMediator.setPageIsPaintPreview(false);
         mMediator.setUseDarkColors(false);
-        mMediator.setPageIsPreview(false);
         Assert.assertEquals("Incorrect text for offline page status text",
                 R.string.location_bar_verbose_status_offline,
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES));

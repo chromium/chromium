@@ -102,9 +102,6 @@ public interface LocationBarDataProvider {
     /** Returns whether the page currently shown is an offline page. */
     boolean isOfflinePage();
 
-    /** Returns whether the page currently shown is a preview. */
-    boolean isPreview();
-
     /** Returns whether the page currently shown is a paint preview. */
     default boolean isPaintPreview() {
         return false;

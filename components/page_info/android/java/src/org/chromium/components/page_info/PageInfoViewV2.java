@@ -71,14 +71,6 @@ public class PageInfoViewV2 extends PageInfoView {
     @Override
     protected void initSiteSettings(PageInfoViewParams params) {}
 
-    @Override
-    protected void initPreview(PageInfoViewParams params) {
-        mPreviewLoadOriginal = findViewById(R.id.page_info_preview_load_original);
-        initializePageInfoViewChild(mPreviewLoadOriginal, params.previewUIShown,
-                params.previewShowOriginalClickCallback);
-        mPreviewLoadOriginal.setText(params.previewLoadOriginalMessage);
-    }
-
     public PageInfoRowView getConnectionRowView() {
         return mConnectionRow;
     }

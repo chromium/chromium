@@ -10,7 +10,6 @@ import android.os.Bundle;
 
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
@@ -33,12 +32,10 @@ public class SiteSettingsHelper {
      */
     public static boolean isSiteSettingsAvailable(WebContents webContents) {
         boolean isOfflinePage = OfflinePageUtils.getOfflinePage(webContents) != null;
-        boolean isPreviewPage =
-                PreviewsAndroidBridge.getInstance().shouldShowPreviewUI(webContents);
         // TODO(crbug.com/1033178): dedupe the DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
         GURL url = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl());
-        return !isOfflinePage && !isPreviewPage && url != null && UrlUtilities.isHttpOrHttps(url);
+        return !isOfflinePage && url != null && UrlUtilities.isHttpOrHttps(url);
     }
 
     /**

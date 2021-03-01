@@ -54,7 +54,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
     private boolean mDarkTheme;
     private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
-    private boolean mPageIsPreview;
     private boolean mPageIsPaintPreview;
     private boolean mPageIsOffline;
     private boolean mShowStatusIconWhenUrlFocused;
@@ -158,17 +157,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
     void setPageIsOffline(boolean pageIsOffline) {
         if (mPageIsOffline != pageIsOffline) {
             mPageIsOffline = pageIsOffline;
-            updateStatusVisibility();
-            updateColorTheme();
-        }
-    }
-
-    /**
-     * Specify whether displayed page is a preview page.
-     */
-    void setPageIsPreview(boolean pageIsPreview) {
-        if (mPageIsPreview != pageIsPreview) {
-            mPageIsPreview = pageIsPreview;
             updateStatusVisibility();
             updateColorTheme();
         }
@@ -376,8 +364,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
         if (mPageIsPaintPreview) {
             statusText = R.string.location_bar_paint_preview_page_status;
-        } else if (mPageIsPreview) {
-            statusText = R.string.location_bar_preview_lite_page_status;
         } else if (mPageIsOffline) {
             statusText = R.string.location_bar_verbose_status_offline;
         }
@@ -406,7 +392,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
         @ColorRes
         int textColor = 0;
-        if (mPageIsPreview || mPageIsPaintPreview) {
+        if (mPageIsPaintPreview) {
             textColor = mDarkTheme ? R.color.locationbar_status_preview_color
                                    : R.color.locationbar_status_preview_color_light;
         } else if (mPageIsOffline) {
@@ -436,8 +422,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
      * Compute verbose status text for the current page.
      */
     private boolean shouldShowVerboseStatusText() {
-        return (mPageIsPreview && mPageSecurityLevel != ConnectionSecurityLevel.DANGEROUS)
-                || mPageIsOffline || mPageIsPaintPreview;
+        return mPageIsOffline || mPageIsPaintPreview;
     }
 
     /**
@@ -492,11 +477,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
             icon = mSecurityIconRes;
             tint = mSecurityIconTintRes;
             toast = R.string.menu_page_info;
-        }
-
-        if (mPageIsPreview) {
-            tint = mDarkTheme ? R.color.locationbar_status_preview_color
-                              : R.color.locationbar_status_preview_color_light;
         }
 
         StatusIconResource statusIcon = icon == 0 ? null : new StatusIconResource(icon, tint);

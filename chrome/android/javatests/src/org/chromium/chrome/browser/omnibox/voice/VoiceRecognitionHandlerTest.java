@@ -312,11 +312,6 @@ public class VoiceRecognitionHandlerTest {
         }
 
         @Override
-        public boolean isPreview() {
-            return false;
-        }
-
-        @Override
         public int getSecurityLevel() {
             return 0;
         }

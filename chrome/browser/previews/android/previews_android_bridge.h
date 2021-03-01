@@ -27,20 +27,6 @@ class PreviewsAndroidBridge {
                         const base::android::JavaParamRef<jobject>& obj);
   virtual ~PreviewsAndroidBridge();
 
-  jboolean ShouldShowPreviewUI(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
-
-  void LoadOriginal(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
-                    const base::android::JavaParamRef<jobject>& j_web_contents);
-
-  base::android::ScopedJavaLocalRef<jstring> GetPreviewsType(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
-
   jboolean IsHttpsImageCompressionApplied(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
