@@ -14,6 +14,9 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -102,6 +105,9 @@
 // The timestamp of the user exiting the tab grid.
 @property(nonatomic, assign) base::TimeTicks tabGridExitTime;
 
+// The page configuration used when create the tab grid view controller;
+@property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
+
 @end
 
 @implementation TabGridCoordinator
@@ -131,6 +137,16 @@
                               forProtocol:@protocol(BrowsingDataCommands)];
     _regularBrowser = regularBrowser;
     _incognitoBrowser = incognitoBrowser;
+
+    if (IsIncognitoModeDisabled(
+            _regularBrowser->GetBrowserState()->GetPrefs())) {
+      _pageConfiguration = TabGridPageConfiguration::kIncognitoPageDisabled;
+    } else if (IsIncognitoModeForced(
+                   _incognitoBrowser->GetBrowserState()->GetPrefs())) {
+      _pageConfiguration = TabGridPageConfiguration::kIncognitoPageOnly;
+    } else {
+      _pageConfiguration = TabGridPageConfiguration::kAllPagesEnabled;
+    }
   }
   return self;
 }
@@ -462,8 +478,9 @@
   [self.dispatcher startDispatchingToTarget:reauthAgent
                                 forProtocol:@protocol(IncognitoReauthCommands)];
 
-  TabGridViewController* baseViewController =
-      [[TabGridViewController alloc] init];
+  TabGridViewController* baseViewController;
+  baseViewController = [[TabGridViewController alloc]
+      initWithPageConfiguration:_pageConfiguration];
   baseViewController.handler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
   baseViewController.reauthHandler =
@@ -695,6 +712,12 @@
 - (void)tabGridViewControllerDidDismiss:
     (TabGridViewController*)tabGridViewController {
   [self.delegate tabGridDismissTransitionDidEnd:self];
+}
+
+- (void)openLinkWithURL:(const GURL&)URL {
+  id<ApplicationCommands> handler =
+      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+  [handler openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:URL]];
 }
 
 #pragma mark - RecentTabsPresentationDelegate

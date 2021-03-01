@@ -20,11 +20,22 @@
 @protocol GridCommands;
 @protocol GridDragDropHandler;
 @protocol GridImageDataSource;
+class GURL;
 @protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
 @class TabGridViewController;
 @protocol ViewControllerTraitCollectionObserver;
+
+// Configurations for tab grid pages.
+enum class TabGridPageConfiguration {
+  // All pages are enabled.
+  kAllPagesEnabled = 0,
+  // Only the incognito page is disabled.
+  kIncognitoPageDisabled = 1,
+  // Only incognito page is enabled.
+  kIncognitoPageOnly = 2,
+};
 
 // Delegate protocol for an object that can handle presenting ("opening") tabs
 // from the tab grid.
@@ -50,6 +61,9 @@
 // ViewRevealingAnimatee.
 - (void)tabGridViewControllerDidDismiss:
     (TabGridViewController*)tabGridViewController;
+
+// Opens a link when the user clicks on the in-text link.
+- (void)openLinkWithURL:(const GURL&)URL;
 
 @end
 
@@ -106,6 +120,17 @@
 // model objects used in this view controller should be factored out.
 @property(nonatomic, strong)
     RecentTabsTableViewController* remoteTabsViewController;
+
+// Init with tab grid view configuration, which decides which sub view
+// controller should be added.
+- (instancetype)initWithPageConfiguration:
+    (TabGridPageConfiguration)tabGridPageConfiguration
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 // Tells the receiver to prepare for its appearance by pre-requesting any
 // resources it needs from data sources. This should be called before any

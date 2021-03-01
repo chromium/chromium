@@ -29,7 +29,7 @@ NSString* const kTabGridScrollViewIdentifier = @"kTabGridScrollViewIdentifier";
 // The color of the text buttons in the toolbars.
 const int kTabGridToolbarTextButtonColor = 0xFFFFFF;
 
-// Colors for the empty state.
+// Colors for the empty state and disabled tab view.
 const int kTabGridEmptyStateTitleTextColor = 0xF8F9FA;
 const int kTabGridEmptyStateBodyTextColor = 0xBDC1C6;
 

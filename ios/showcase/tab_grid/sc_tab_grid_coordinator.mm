@@ -28,7 +28,8 @@
 - (void)start {
   self.alerter =
       [[ProtocolAlerter alloc] initWithProtocols:@[ @protocol(GridCommands) ]];
-  self.viewController = [[TabGridViewController alloc] init];
+  self.viewController = [[TabGridViewController alloc]
+      initWithPageConfiguration:TabGridPageConfiguration::kAllPagesEnabled];
   self.alerter.baseViewController = self.viewController;
   self.viewController.incognitoTabsDelegate =
       static_cast<id<GridCommands>>(self.alerter);
