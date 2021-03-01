@@ -218,15 +218,15 @@ void SwitchToExtensionPanel(DevToolsWindow* window,
 
 }  // namespace
 
-class DevToolsSanityTest : public InProcessBrowserTest {
+class DevToolsTest : public InProcessBrowserTest {
  public:
-  DevToolsSanityTest() : window_(nullptr) {}
+  DevToolsTest() : window_(nullptr) {}
 
   void SetUpOnMainThread() override {
     // A number of tests expect favicon requests to succeed - otherwise, they'll
     // generate console errors.
     embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&DevToolsSanityTest::HandleFaviconRequest));
+        base::BindRepeating(&DevToolsTest::HandleFaviconRequest));
     // LoadNetworkResourceForFrontend depends on "hello.html" from content's
     // test directory.
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -314,16 +314,16 @@ class DevToolsSanityTest : public InProcessBrowserTest {
   DevToolsWindow* window_;
 };
 
-class SitePerProcessDevToolsSanityTest : public DevToolsSanityTest {
+class SitePerProcessDevToolsTest : public DevToolsTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    DevToolsSanityTest::SetUpCommandLine(command_line);
+    DevToolsTest::SetUpCommandLine(command_line);
     content::IsolateAllSitesForTesting(command_line);
   }
 
   void SetUpOnMainThread() override {
     content::SetupCrossSiteRedirector(embedded_test_server());
-    DevToolsSanityTest::SetUpOnMainThread();
+    DevToolsTest::SetUpOnMainThread();
   }
 };
 
@@ -365,7 +365,7 @@ void DevToolsWindowBeforeUnloadObserver::BeforeUnloadFired(
     message_loop_runner_->Quit();
 }
 
-class DevToolsBeforeUnloadTest: public DevToolsSanityTest {
+class DevToolsBeforeUnloadTest: public DevToolsTest {
  public:
   void CloseInspectedTab() {
     browser()->tab_strip_model()->CloseWebContentsAt(0,
@@ -389,7 +389,7 @@ class DevToolsBeforeUnloadTest: public DevToolsSanityTest {
     content::PrepContentsForBeforeUnloadTest(web_contents);
   }
 
-  void RunBeforeUnloadSanityTest(
+  void RunBeforeUnloadTest(
       bool is_docked,
       base::RepeatingCallback<void(void)> close_method,
       bool wait_for_browser_close = true) {
@@ -460,7 +460,7 @@ void TimeoutCallback(const std::string& timeout_message) {
 
 // Base class for DevTools tests that test devtools functionality for
 // extensions and content scripts.
-class DevToolsExtensionTest : public DevToolsSanityTest,
+class DevToolsExtensionTest : public DevToolsTest,
                               public content::NotificationObserver {
  public:
   DevToolsExtensionTest()
@@ -646,9 +646,9 @@ class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {
   }
 };
 
-class WorkerDevToolsSanityTest : public InProcessBrowserTest {
+class WorkerDevToolsTest : public InProcessBrowserTest {
  public:
-  WorkerDevToolsSanityTest() : window_(nullptr) {}
+  WorkerDevToolsTest() : window_(nullptr) {}
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -715,7 +715,7 @@ class WorkerDevToolsSanityTest : public InProcessBrowserTest {
 // Tests that BeforeUnload event gets called on docked devtools if
 // we try to close them.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest, TestDockedDevToolsClose) {
-  RunBeforeUnloadSanityTest(
+  RunBeforeUnloadTest(
       true,
       base::BindRepeating(&DevToolsBeforeUnloadTest::CloseDevToolsWindowAsync,
                           base::Unretained(this)),
@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest, TestDockedDevToolsClose) {
 #endif
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        MAYBE_TestDockedDevToolsInspectedTabClose) {
-  RunBeforeUnloadSanityTest(
+  RunBeforeUnloadTest(
       true, base::BindRepeating(&DevToolsBeforeUnloadTest::CloseInspectedTab,
                                 base::Unretained(this)));
 }
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
 // we try to close the inspected browser.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestDockedDevToolsInspectedBrowserClose) {
-  RunBeforeUnloadSanityTest(
+  RunBeforeUnloadTest(
       true,
       base::BindRepeating(&DevToolsBeforeUnloadTest::CloseInspectedBrowser,
                           base::Unretained(this)));
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
 // Tests that BeforeUnload event gets called on undocked devtools if
 // we try to close them.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest, TestUndockedDevToolsClose) {
-  RunBeforeUnloadSanityTest(
+  RunBeforeUnloadTest(
       false,
       base::BindRepeating(&DevToolsBeforeUnloadTest::CloseDevToolsWindowAsync,
                           base::Unretained(this)),
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest, TestUndockedDevToolsClose) {
 // we try to close the inspected page.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestUndockedDevToolsInspectedTabClose) {
-  RunBeforeUnloadSanityTest(
+  RunBeforeUnloadTest(
       false, base::BindRepeating(&DevToolsBeforeUnloadTest::CloseInspectedTab,
                                  base::Unretained(this)));
 }
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
 // we try to close the inspected browser.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestUndockedDevToolsInspectedBrowserClose) {
-  RunBeforeUnloadSanityTest(
+  RunBeforeUnloadTest(
       false,
       base::BindRepeating(&DevToolsBeforeUnloadTest::CloseInspectedBrowser,
                           base::Unretained(this)));
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
 // we try to exit application.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestUndockedDevToolsApplicationClose) {
-  RunBeforeUnloadSanityTest(false,
+  RunBeforeUnloadTest(false,
                             base::BindRepeating(&chrome::CloseAllBrowsers));
 }
 
@@ -878,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
 }
 
 // Tests scripts panel showing.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestShowScriptsTab) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowScriptsTab) {
   RunTest("testShowScriptsTab", kDebuggerTestPage);
 }
 
@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestShowScriptsTab) {
 #define MAYBE_TestScriptsTabIsPopulatedOnInspectedPageRefresh \
   TestScriptsTabIsPopulatedOnInspectedPageRefresh
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        MAYBE_TestScriptsTabIsPopulatedOnInspectedPageRefresh) {
   RunTest("testScriptsTabIsPopulatedOnInspectedPageRefresh",
           kDebuggerTestPage);
@@ -1399,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
 #else
 #define MAYBE_DevtoolsInDevTools DevtoolsInDevTools
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_DevtoolsInDevTools) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
   GURL devtools_url = GURL(chrome::kChromeUIDevToolsURL);
 
   OpenDevToolsWindow(kDebuggerTestPage, false);
@@ -1570,7 +1570,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestEvaluateOnChromeScheme) {
 }
 
 // Tests that scripts are not duplicated after Scripts Panel switch.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        TestNoScriptDuplicatesOnPanelSwitch) {
   RunTest("testNoScriptDuplicatesOnPanelSwitch", kDebuggerTestPage);
 }
@@ -1583,7 +1583,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
 #else
 #define MAYBE_TestPauseWhenLoadingDevTools TestPauseWhenLoadingDevTools
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestPauseWhenLoadingDevTools) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestPauseWhenLoadingDevTools) {
   RunTest("testPauseWhenLoadingDevTools", kPauseWhenLoadingDevTools);
 }
 
@@ -1599,28 +1599,28 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestPauseWhenLoadingDevTools) {
 #else
 #define MAYBE_TestPauseWhenScriptIsRunning TestPauseWhenScriptIsRunning
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        MAYBE_TestPauseWhenScriptIsRunning) {
   RunTest("testPauseWhenScriptIsRunning", kPauseWhenScriptIsRunning);
 }
 
 // Tests network timing.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestNetworkTiming) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkTiming) {
   RunTest("testNetworkTiming", kSlowTestPage);
 }
 
 // Tests network size.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestNetworkSize) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSize) {
   RunTest("testNetworkSize", kChunkedTestPage);
 }
 
 // Tests raw headers text.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestNetworkSyncSize) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSyncSize) {
   RunTest("testNetworkSyncSize", kChunkedTestPage);
 }
 
 // Tests raw headers text.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestNetworkRawHeadersText) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkRawHeadersText) {
   // This test expects headers to be exactly 112 bytes in length, so add an
   // extra header to reach that length.
   RunTest("testNetworkRawHeadersText",
@@ -1673,7 +1673,7 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
 }  // namespace
 
 // TODO(crbug.com/1046784) Flaky
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_TestNetworkPushTime) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestNetworkPushTime) {
   content::URLLoaderInterceptor interceptor(
       base::BindRepeating(InterceptURLLoad));
 
@@ -1691,7 +1691,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_TestNetworkPushTime) {
 #else
 #define MAYBE_TestDOMWarnings TestDOMWarnings
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestDOMWarnings) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestDOMWarnings) {
   RunTest("testDOMWarnings", kDOMWarningsTestPage);
 }
 
@@ -1702,7 +1702,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestDOMWarnings) {
 #else
 #define MAYBE_TestConsoleOnNavigateBack TestConsoleOnNavigateBack
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestConsoleOnNavigateBack) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestConsoleOnNavigateBack) {
   RunTest("testConsoleOnNavigateBack", kNavigateBackTestPage);
 }
 
@@ -1712,11 +1712,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestConsoleOnNavigateBack) {
 #else
 #define MAYBE_TestDeviceEmulation TestDeviceEmulation
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestDeviceEmulation) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestDeviceEmulation) {
   RunTest("testDeviceMetricsOverrides", "about:blank");
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestDispatchKeyEventDoesNotCrash) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDispatchKeyEventDoesNotCrash) {
   RunTest("testDispatchKeyEventDoesNotCrash", "about:blank");
 }
 
@@ -1753,7 +1753,7 @@ class AutofillManagerTestDelegateDevtoolsImpl
 #define MAYBE_TestDispatchKeyEventShowsAutoFill \
   TestDispatchKeyEventShowsAutoFill
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        MAYBE_TestDispatchKeyEventShowsAutoFill) {
   OpenDevToolsWindow(kDispatchKeyEventShowsAutoFill, false);
 
@@ -1772,7 +1772,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
 
 // Tests that whitelisted unhandled shortcuts are forwarded from inspected page
 // into devtools frontend
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, testKeyEventUnhandled) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, testKeyEventUnhandled) {
   OpenDevToolsWindow("about:blank", true);
   RunTestFunction(window_, "testKeyEventUnhandled");
   CloseDevToolsWindow();
@@ -1780,7 +1780,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, testKeyEventUnhandled) {
 
 // Tests that the keys that are forwarded from the browser update
 // when their shortcuts change
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, testForwardedKeysChanged) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, testForwardedKeysChanged) {
   OpenDevToolsWindow("about:blank", true);
   RunTestFunction(window_, "testForwardedKeysChanged");
   CloseDevToolsWindow();
@@ -1794,14 +1794,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, testForwardedKeysChanged) {
 #else
 #define MAYBE_testShowCertificate testShowCertificate
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_testShowCertificate) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_testShowCertificate) {
   OpenDevToolsWindow("about:blank", true);
   RunTestFunction(window_, "testShowCertificate");
   CloseDevToolsWindow();
 }
 
 // Tests that settings are stored in profile correctly.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestSettings) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestSettings) {
   OpenDevToolsWindow("about:blank", true);
   RunTestFunction(window_, "testSettings");
   CloseDevToolsWindow();
@@ -1810,7 +1810,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestSettings) {
 // Tests that external navigation from inspector page is always handled by
 // DevToolsWindow and results in inspected page navigation.  See also
 // https://crbug.com/180555.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestDevToolsExternalNavigation) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDevToolsExternalNavigation) {
   OpenDevToolsWindow(kDebuggerTestPage, true);
   GURL url = embedded_test_server()->GetURL(kNavigateBackTestPage);
   ui_test_utils::UrlLoadObserver observer(url,
@@ -1827,7 +1827,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestDevToolsExternalNavigation) {
 }
 
 // Tests that toolbox window is loaded when DevTools window is undocked.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestToolboxLoadedUndocked) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestToolboxLoadedUndocked) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
   ASSERT_TRUE(toolbox_web_contents());
   DevToolsWindow* on_self =
@@ -1838,7 +1838,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestToolboxLoadedUndocked) {
 }
 
 // Tests that toolbox window is not loaded when DevTools window is docked.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestToolboxNotLoadedDocked) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestToolboxNotLoadedDocked) {
   OpenDevToolsWindow(kDebuggerTestPage, true);
   ASSERT_FALSE(toolbox_web_contents());
   DevToolsWindow* on_self =
@@ -1851,11 +1851,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestToolboxNotLoadedDocked) {
 // Tests that inspector will reattach to inspected page when it is reloaded
 // after a crash. See http://crbug.com/101952
 // Disabled. it doesn't check anything right now: http://crbug.com/461790
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_TestReattachAfterCrash) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestReattachAfterCrash) {
   RunTest("testReattachAfterCrash", kArbitraryPage);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestPageWithNoJavaScript) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestPageWithNoJavaScript) {
   OpenDevToolsWindow("about:blank", false);
   std::string result;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -1867,7 +1867,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestPageWithNoJavaScript) {
   CloseDevToolsWindow();
 }
 
-class DevToolsAutoOpenerTest : public DevToolsSanityTest {
+class DevToolsAutoOpenerTest : public DevToolsTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kAutoOpenDevToolsForTabs);
@@ -1905,7 +1905,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutoOpenerTest, MAYBE_TestAutoOpenForTabs) {
   observer_->CloseAllSync();
 }
 
-class DevToolsReattachAfterCrashTest : public DevToolsSanityTest {
+class DevToolsReattachAfterCrashTest : public DevToolsTest {
  protected:
   void RunTestWithPanel(const char* panel_name) {
     OpenDevToolsWindow("about:blank", false);
@@ -1933,7 +1933,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
   RunTestWithPanel("network");
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, AutoAttachToWindowOpen) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, AutoAttachToWindowOpen) {
   OpenDevToolsWindow(kWindowOpenTestPage, false);
   DevToolsWindowTesting::Get(window_)->SetOpenNewWindowForPopups(true);
   DevToolsWindowCreationObserver observer;
@@ -1946,7 +1946,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, AutoAttachToWindowOpen) {
 }
 
 // TODO(crbug.com/1102964) Flaky
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_SecondTabAfterDevTools) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_SecondTabAfterDevTools) {
   OpenDevToolsWindow(kDebuggerTestPage, true);
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1963,7 +1963,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_SecondTabAfterDevTools) {
   CloseDevToolsWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(WorkerDevToolsSanityTest, InspectSharedWorker) {
+IN_PROC_BROWSER_TEST_F(WorkerDevToolsTest, InspectSharedWorker) {
   GURL url = embedded_test_server()->GetURL(kSharedWorkerTestPage);
   ui_test_utils::NavigateToURL(browser(), url);
 
@@ -1975,7 +1975,7 @@ IN_PROC_BROWSER_TEST_F(WorkerDevToolsSanityTest, InspectSharedWorker) {
 }
 
 // Flaky on multiple platforms. See http://crbug.com/432444
-IN_PROC_BROWSER_TEST_F(WorkerDevToolsSanityTest,
+IN_PROC_BROWSER_TEST_F(WorkerDevToolsTest,
                        PauseInSharedWorkerInitialization) {
   GURL url = embedded_test_server()->GetURL(kReloadSharedWorkerTestPage);
   ui_test_utils::NavigateToURL(browser(), url);
@@ -2037,7 +2037,7 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, MAYBE_RemoteDebugger) {
   ASSERT_TRUE(RunExtensionTest("target_list")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, PolicyDisallowed) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
@@ -2050,7 +2050,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, PolicyDisallowed) {
   ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
-class DevToolsSanityExtensionTest : public extensions::ExtensionBrowserTest {
+class DevToolsExtensionForceInstallTest : public extensions::ExtensionBrowserTest {
  public:
   // Installs an extensions, emulating that it has been force-installed by
   // policy.
@@ -2081,7 +2081,7 @@ class DevToolsSanityExtensionTest : public extensions::ExtensionBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityExtensionTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionForceInstallTest,
                        PolicyDisallowedForForceInstalledExtensions) {
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
@@ -2097,7 +2097,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityExtensionTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DevToolsSanityExtensionTest,
+    DevToolsExtensionForceInstallTest,
     PolicyDisallowedForForceInstalledExtensionsAfterNavigation) {
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
@@ -2121,7 +2121,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
-class DevToolsAllowedByCommandLineSwitch : public DevToolsSanityExtensionTest {
+class DevToolsAllowedByCommandLineSwitch : public DevToolsExtensionForceInstallTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
@@ -2156,11 +2156,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAllowedByCommandLineSwitch,
 #endif
 }
 
-class DevToolsPixelOutputTests : public DevToolsSanityTest {
+class DevToolsPixelOutputTests : public DevToolsTest {
  public:
   void SetUp() override {
     EnablePixelOutput();
-    DevToolsSanityTest::SetUp();
+    DevToolsTest::SetUp();
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kUseGpuInTests);
@@ -2210,7 +2210,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPixelOutputTests,
   CloseDevToolsWindow();
 }
 
-class DevToolsNetInfoTest : public DevToolsSanityTest {
+class DevToolsNetInfoTest : public DevToolsTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableNetworkInformationDownlinkMax);
@@ -2277,7 +2277,7 @@ class MockWebUIProvider
 // This tests checks that window is correctly initialized when DevTools is
 // opened while navigation through history with forward and back actions.
 // (crbug.com/627407)
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        TestWindowInitializedOnNavigateBack) {
   TestChromeWebUIControllerFactory test_factory;
   MockWebUIProvider mock_provider("dummyurl",
@@ -2302,7 +2302,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
   content::WebUIControllerFactory::UnregisterFactoryForTesting(&test_factory);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestRawHeadersWithRedirectAndHSTS) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
@@ -2343,7 +2343,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestRawHeadersWithRedirectAndHSTS) {
 #else
 #define MAYBE_TestOpenInNewTabFilter TestOpenInNewTabFilter
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestOpenInNewTabFilter) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
   DevToolsUIBindings::Delegate* bindings_delegate_ =
       static_cast<DevToolsUIBindings::Delegate*>(window_);
@@ -2388,7 +2388,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestOpenInNewTabFilter) {
   CloseDevToolsWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, LoadNetworkResourceForFrontend) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
   std::string file_url =
       "file://" + base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
                       .AppendASCII("content/test/data/devtools/navigation.html")
@@ -2406,7 +2406,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, LoadNetworkResourceForFrontend) {
 }
 
 // TODO(crbug.com/921608) Disabled for flakiness.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_CreateBrowserContext) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_CreateBrowserContext) {
   GURL url(embedded_test_server()->GetURL("/devtools/empty.html"));
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
       browser()->profile());
@@ -2415,7 +2415,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_CreateBrowserContext) {
 }
 
 // TODO(crbug.com/1110417): Flaky.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        DISABLED_DisposeEmptyBrowserContext) {
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
       browser()->profile());
@@ -2425,14 +2425,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest,
 
 // TODO(1078348): Find a better strategy for testing protocol methods against
 // non-headless Chrome.
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, NewWindowFromBrowserContext) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, NewWindowFromBrowserContext) {
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
       browser()->profile());
   RunTestMethod("testNewWindowFromBrowserContext");
   DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
 }
 
-IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsSanityTest, InspectElement) {
+IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
   GURL url(embedded_test_server()->GetURL("a.com", "/devtools/oopif.html"));
   GURL iframe_url(
       embedded_test_server()->GetURL("b.com", "/devtools/oopif_frame.html"));
@@ -2463,7 +2463,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsSanityTest, InspectElement) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, ExistsForWebContentsAfterClosing) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, ExistsForWebContentsAfterClosing) {
   ASSERT_FALSE(content::DevToolsAgentHost::HasFor(GetInspectedTab()));
 
   // Simulate opening devtools for the current tab.
@@ -2581,7 +2581,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlackListedDevTools) {
 }
 
 // Flaky on Mus. See https://crbug.com/819285.
-IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsSanityTest,
+IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest,
                        DISABLED_InputDispatchEventsToOOPIF) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/devtools/oopif-input.html"));
@@ -2628,7 +2628,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
 namespace {
 
-class DevToolsLocalizationTest : public DevToolsSanityTest {
+class DevToolsLocalizationTest : public DevToolsTest {
  public:
   bool NavigatorLanguageMatches(const std::string& expected_locale) {
     bool result = false;

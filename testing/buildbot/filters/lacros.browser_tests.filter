@@ -212,7 +212,7 @@
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
 -DevToolsExtensionTest.HttpIframeInDevToolsExtensionDevtools
--DevToolsSanityTest.*
+-DevToolsTest.*
 -FindInPageControllerTest.SingleOccurrence
 -MediaRouterUIBrowserTest.PinAndUnpinToolbarIcon
 -MultiActionAPITest.PopupCreation/*

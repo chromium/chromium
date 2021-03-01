@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest, NoFetchHandler) {
       false);
 }
 
-// Copied from devtools_sanity_browsertest.cc.
+// Copied from devtools_browsertest.cc.
 class StaticURLDataSource : public content::URLDataSource {
  public:
   StaticURLDataSource(const std::string& source, const std::string& content)
@@ -730,7 +730,7 @@ class StaticURLDataSource : public content::URLDataSource {
   DISALLOW_COPY_AND_ASSIGN(StaticURLDataSource);
 };
 
-// Copied from devtools_sanity_browsertest.cc.
+// Copied from devtools_browsertest.cc.
 class MockWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
