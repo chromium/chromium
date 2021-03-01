@@ -396,6 +396,8 @@ used when committed.
     patterns for practical IPC conversion work
 *   [Mojo “Style” Guide](security/mojo.md) - Recommendations for best practices
     from Mojo and IPC reviewers
+*   [D-Bus Mojo Connection Service](dbus_mojo_connection_service.md) - A service
+    in Chrome to bootstrap CrOS services' Mojo connection.
 
 ### Speed
 *   [Chrome Speed](speed/README.md) - Documentation for performance measurements and regressions in Chrome.
