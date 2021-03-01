@@ -2825,6 +2825,7 @@
                     "name": "DnsHttpssvcStudy",
                     "params": {
                         "DnsHttpssvcControlDomainWildcard": "true",
+                        "DnsHttpssvcEnableQueryOverInsecure": "true",
                         "DnsHttpssvcExperimentDomains": "youtube.com.au",
                         "DnsHttpssvcExtraTimeMs": "50",
                         "DnsHttpssvcExtraTimePercent": "20",
