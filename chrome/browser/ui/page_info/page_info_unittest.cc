@@ -35,6 +35,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/infobar.h"
+#include "components/page_info/features.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -645,6 +646,10 @@ TEST_F(PageInfoTest, HTTPSConnection) {
 #endif
 
 TEST_F(PageInfoTest, InsecureContent) {
+#if defined(OS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(page_info::kPageInfoV2);
+#endif
   struct TestCase {
     security_state::SecurityLevel security_level;
     net::CertStatus cert_status;
@@ -938,7 +943,7 @@ TEST_F(PageInfoTest, HTTPSSHA1) {
   EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM,
             page_info()->site_identity_status());
 #if defined(OS_ANDROID)
-  EXPECT_EQ(IDR_PAGEINFO_WARNING_MINOR,
+  EXPECT_EQ(IDR_PAGEINFO_BAD_V2,
             PageInfoUI::GetIdentityIconID(page_info()->site_identity_status()));
 #endif
 }
