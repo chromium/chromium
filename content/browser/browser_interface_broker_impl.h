@@ -77,6 +77,7 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
     CHECK(blink::features::IsPrerender2Enabled());
     // TODO(crbug.com/1174506): Temporary until we understand the cause of the
     // crash. Return to `DCHECK(policy_applier_)` after the bug is fixed.
+    CHECK(policy_applier_);
     if (policy_applier_) {
       policy_applier_->GrantAll();
       // Reset `policy_applier_` to disable capability control.
