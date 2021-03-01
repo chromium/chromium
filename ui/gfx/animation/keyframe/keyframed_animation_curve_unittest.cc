@@ -916,5 +916,78 @@ TEST(KeyframedAnimationCurveTest, RepeatedSizeKeyFrame) {
   EXPECT_SIZEF_EQ(size_b, curve->GetValue(base::TimeDelta::FromSecondsD(3.f)));
 }
 
+// Tests that the computing of tick interval for STEPS TimingFunction works
+// correctly.
+TEST(KeyFrameAnimationCurveTest, TickIntervalForStepsTimingFunction) {
+  double kDuration = 1.0;
+  int kNumSteps = 10;
+  std::unique_ptr<KeyframedFloatAnimationCurve> curve(
+      KeyframedFloatAnimationCurve::Create());
+  curve->AddKeyframe(FloatKeyframe::Create(base::TimeDelta(), 2.0, nullptr));
+  curve->AddKeyframe(FloatKeyframe::Create(
+      base::TimeDelta::FromSecondsD(kDuration), 4.0, nullptr));
+  curve->SetTimingFunction(StepsTimingFunction::Create(
+      kNumSteps, StepsTimingFunction::StepPosition::START));
+  EXPECT_FLOAT_EQ(kDuration / kNumSteps, curve->TickInterval().InSecondsF());
+}
+
+// Tests that the computing of tick interval for CUBIC_BEZIER TimingFunction
+// works correctly.
+TEST(KeyFrameAnimationCurveTest, TickIntervalForCubicBezierTimingFunction) {
+  SkColor color_a = SkColorSetARGB(255, 255, 0, 0);
+  SkColor color_b = SkColorSetARGB(255, 0, 255, 0);
+  double kDuration = 1.0;
+  std::unique_ptr<KeyframedColorAnimationCurve> curve(
+      KeyframedColorAnimationCurve::Create());
+  curve->AddKeyframe(
+      ColorKeyframe::Create(base::TimeDelta(), color_a, nullptr));
+  curve->AddKeyframe(ColorKeyframe::Create(
+      base::TimeDelta::FromSecondsD(kDuration), color_b, nullptr));
+  curve->SetTimingFunction(
+      CubicBezierTimingFunction::Create(0.75f, 0.25f, 0.9f, 0.4f));
+  EXPECT_FLOAT_EQ(0, curve->TickInterval().InSecondsF());
+}
+
+// Tests that the computing of tick interval for LINEAR TimingFunction works
+// correctly.
+TEST(KeyFrameAnimationCurveTest, TickIntervalForLinearTimingFunction) {
+  gfx::SizeF size_a = gfx::SizeF(100, 64);
+  gfx::SizeF size_b = gfx::SizeF(100, 192);
+  gfx::SizeF size_c = gfx::SizeF(100, 218);
+  gfx::SizeF size_d = gfx::SizeF(100, 321);
+  double kDurationAB = 1.0;
+  double kDurationBC = 2.0;
+  double kDurationCD = 1.0;
+  int kNumStepsAB = 10;
+  int kNumStepsBC = 100;
+  std::unique_ptr<KeyframedSizeAnimationCurve> curve(
+      KeyframedSizeAnimationCurve::Create());
+  curve->AddKeyframe(SizeKeyframe::Create(
+      base::TimeDelta(), size_a,
+      StepsTimingFunction::Create(kNumStepsAB,
+                                  StepsTimingFunction::StepPosition::START)));
+  curve->AddKeyframe(SizeKeyframe::Create(
+      base::TimeDelta::FromSecondsD(kDurationAB), size_b,
+      StepsTimingFunction::Create(kNumStepsBC,
+                                  StepsTimingFunction::StepPosition::START)));
+  curve->AddKeyframe(SizeKeyframe::Create(
+      base::TimeDelta::FromSecondsD(kDurationAB + kDurationBC), size_c,
+      nullptr));
+
+  // Without explicitly setting a timing function, the default is linear.
+  EXPECT_FLOAT_EQ(kDurationBC / kNumStepsBC,
+                  curve->TickInterval().InSecondsF());
+  curve->SetTimingFunction(LinearTimingFunction::Create());
+  EXPECT_FLOAT_EQ(kDurationBC / kNumStepsBC,
+                  curve->TickInterval().InSecondsF());
+
+  // Add a 4th keyframe.
+  // Now the 3rd keyframe's "easing" into the 4th isn't STEPS.
+  curve->AddKeyframe(SizeKeyframe::Create(
+      base::TimeDelta::FromSecondsD(kDurationAB + kDurationBC + kDurationCD),
+      size_d, nullptr));
+  EXPECT_FLOAT_EQ(0, curve->TickInterval().InSecondsF());
+}
+
 }  // namespace
 }  // namespace gfx

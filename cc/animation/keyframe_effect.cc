@@ -748,6 +748,18 @@ std::string KeyframeEffect::KeyframeModelsToString() const {
   return str;
 }
 
+base::TimeDelta KeyframeEffect::MinimumTickInterval() const {
+  base::TimeDelta min_interval = base::TimeDelta::Max();
+  for (const auto& model : keyframe_models_) {
+    base::TimeDelta interval = model->curve()->TickInterval();
+    if (interval.is_zero())
+      return interval;
+    if (interval < min_interval)
+      min_interval = interval;
+  }
+  return min_interval;
+}
+
 void KeyframeEffect::StartKeyframeModels(base::TimeTicks monotonic_time) {
   DCHECK(needs_to_start_keyframe_models_);
   needs_to_start_keyframe_models_ = false;

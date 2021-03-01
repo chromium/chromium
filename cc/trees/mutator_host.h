@@ -160,6 +160,11 @@ class MutatorHost {
   virtual bool HasCanvasInvalidation() const = 0;
   virtual bool HasJSAnimation() const = 0;
 
+  // Iterates through all animations and returns the minimum tick interval.
+  // Returns 0 if there is a continuous animation which should be ticked
+  // as fast as possible.
+  virtual base::TimeDelta MinimumTickInterval() const = 0;
+
   using TrackedAnimationSequenceId = size_t;
   struct PendingThroughputTrackerInfo {
     // Id of a tracked animation sequence.

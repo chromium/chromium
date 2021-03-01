@@ -149,6 +149,12 @@ class CC_ANIMATION_EXPORT KeyframeEffect {
 
   std::string KeyframeModelsToString() const;
 
+  // Iterates through all |keyframe_models_| and returns the minimum of their
+  // animation curve's tick intervals.
+  // Returns 0 if there is a continuous animation which should be ticked as
+  // fast as possible.
+  base::TimeDelta MinimumTickInterval() const;
+
  private:
   void StartKeyframeModels(base::TimeTicks monotonic_time);
   void PromoteStartedKeyframeModels(AnimationEvents* events);

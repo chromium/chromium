@@ -100,6 +100,60 @@ double TransformedKeyframeProgress(
              : progress;
 }
 
+int GetTimingFunctionSteps(const TimingFunction* timing_function) {
+  DCHECK(timing_function &&
+         timing_function->GetType() == TimingFunction::Type::STEPS);
+  const StepsTimingFunction* steps_timing_function =
+      reinterpret_cast<const StepsTimingFunction*>(timing_function);
+  DCHECK(steps_timing_function);
+  return steps_timing_function->steps();
+}
+
+template <class KeyframeType>
+base::TimeDelta ComputeTickInterval(
+    const std::unique_ptr<TimingFunction>& timing_function,
+    double scaled_duration,
+    const std::vector<std::unique_ptr<KeyframeType>>& keyframes) {
+  // TODO(crbug.com/1140603): include animation progress in order to pinpoint
+  // which keyframe's timing function is in effect at any point in time.
+  DCHECK_LT(0u, keyframes.size());
+  TimingFunction::Type timing_function_type =
+      timing_function ? timing_function->GetType()
+                      : TimingFunction::Type::LINEAR;
+  // Even if the keyframe's have step timing functions, a non-linear
+  // animation-wide timing function results in unevenly timed steps.
+  switch (timing_function_type) {
+    case TimingFunction::Type::LINEAR: {
+      base::TimeDelta min_interval = base::TimeDelta::Max();
+      // If any keyframe uses non-step "easing", return 0, except for the last
+      // keyframe, whose "easing" is never used.
+      for (size_t ii = 0; ii < keyframes.size() - 1; ++ii) {
+        KeyframeType* keyframe = keyframes[ii].get();
+        if (!keyframe->timing_function() ||
+            keyframe->timing_function()->GetType() !=
+                TimingFunction::Type::STEPS) {
+          return base::TimeDelta();
+        }
+        KeyframeType* next_keyframe = keyframes[ii + 1].get();
+        int steps = GetTimingFunctionSteps(keyframe->timing_function());
+        DCHECK_LT(0, steps);
+        base::TimeDelta interval = (next_keyframe->Time() - keyframe->Time()) *
+                                   scaled_duration / steps;
+        if (interval < min_interval)
+          min_interval = interval;
+      }
+      return min_interval;
+    }
+    case TimingFunction::Type::STEPS: {
+      return (keyframes.back()->Time() - keyframes.front()->Time()) *
+             scaled_duration / GetTimingFunctionSteps(timing_function.get());
+    }
+    case TimingFunction::Type::CUBIC_BEZIER:
+      break;
+  }
+  return base::TimeDelta();
+}
+
 }  // namespace
 
 Keyframe::Keyframe(base::TimeDelta time,
@@ -237,6 +291,10 @@ base::TimeDelta KeyframedColorAnimationCurve::Duration() const {
          scaled_duration();
 }
 
+base::TimeDelta KeyframedColorAnimationCurve::TickInterval() const {
+  return ComputeTickInterval(timing_function_, scaled_duration(), keyframes_);
+}
+
 std::unique_ptr<AnimationCurve> KeyframedColorAnimationCurve::Clone() const {
   std::unique_ptr<KeyframedColorAnimationCurve> to_return =
       KeyframedColorAnimationCurve::Create();
@@ -288,6 +346,10 @@ base::TimeDelta KeyframedFloatAnimationCurve::Duration() const {
          scaled_duration();
 }
 
+base::TimeDelta KeyframedFloatAnimationCurve::TickInterval() const {
+  return ComputeTickInterval(timing_function_, scaled_duration(), keyframes_);
+}
+
 std::unique_ptr<AnimationCurve> KeyframedFloatAnimationCurve::Clone() const {
   std::unique_ptr<KeyframedFloatAnimationCurve> to_return =
       KeyframedFloatAnimationCurve::Create();
@@ -337,6 +399,10 @@ void KeyframedTransformAnimationCurve::AddKeyframe(
 base::TimeDelta KeyframedTransformAnimationCurve::Duration() const {
   return (keyframes_.back()->Time() - keyframes_.front()->Time()) *
          scaled_duration();
+}
+
+base::TimeDelta KeyframedTransformAnimationCurve::TickInterval() const {
+  return ComputeTickInterval(timing_function_, scaled_duration(), keyframes_);
 }
 
 std::unique_ptr<AnimationCurve> KeyframedTransformAnimationCurve::Clone()
@@ -409,6 +475,10 @@ void KeyframedSizeAnimationCurve::AddKeyframe(
 base::TimeDelta KeyframedSizeAnimationCurve::Duration() const {
   return (keyframes_.back()->Time() - keyframes_.front()->Time()) *
          scaled_duration();
+}
+
+base::TimeDelta KeyframedSizeAnimationCurve::TickInterval() const {
+  return ComputeTickInterval(timing_function_, scaled_duration(), keyframes_);
 }
 
 std::unique_ptr<AnimationCurve> KeyframedSizeAnimationCurve::Clone() const {

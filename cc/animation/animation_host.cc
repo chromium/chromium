@@ -20,6 +20,7 @@
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/element_animations.h"
+#include "cc/animation/keyframe_effect.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animations.h"
 #include "cc/animation/scroll_offset_animations_impl.h"
@@ -97,6 +98,20 @@ void AnimationHost::ClearMutators() {
   for (auto& kv : id_to_timeline_map_)
     EraseTimeline(kv.second);
   id_to_timeline_map_.clear();
+}
+
+base::TimeDelta AnimationHost::MinimumTickInterval() const {
+  base::TimeDelta min_interval = base::TimeDelta::Max();
+  for (const auto& animation : ticking_animations_) {
+    DCHECK(animation->keyframe_effect());
+    base::TimeDelta interval =
+        animation->keyframe_effect()->MinimumTickInterval();
+    if (interval.is_zero())
+      return interval;
+    if (interval < min_interval)
+      min_interval = interval;
+  }
+  return min_interval;
 }
 
 void AnimationHost::EraseTimeline(scoped_refptr<AnimationTimeline> timeline) {
