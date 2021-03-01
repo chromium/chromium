@@ -78,14 +78,13 @@ public class TabUtils {
     /**
      * Call when tab need to switch user agent between desktop and mobile.
      * @param tab The tab to be switched the user agent.
+     * @param switchToDesktop Whether switching the user agent to desktop.
      * @param forcedByUser Whether this was triggered by users action.
      */
-    public static void switchUserAgent(Tab tab, boolean forcedByUser) {
+    public static void switchUserAgent(Tab tab, boolean switchToDesktop, boolean forcedByUser) {
         final boolean reloadOnChange = !tab.isNativePage();
-        final boolean usingDesktopUserAgent =
-                tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
         tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
-                !usingDesktopUserAgent, reloadOnChange);
+                switchToDesktop, reloadOnChange);
         if (forcedByUser) ((TabImpl) tab).setUserForcedUserAgent();
     }
 

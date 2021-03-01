@@ -24,6 +24,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WarmupManager;
@@ -551,9 +552,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                     /*loadUrlDelegate=*/new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(this));
         } else {
             if (getWebContents() != null) {
-                if (calculateUserAgentOverrideOption() != UserAgentOverrideOption.INHERIT) {
-                    TabUtils.switchUserAgent(this, /* forcedByUser */ false);
-                }
+                switchUserAgentIfNeeded();
                 getWebContents().getNavigationController().reload(true);
             }
         }
@@ -562,9 +561,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     @Override
     public void reloadIgnoringCache() {
         if (getWebContents() != null) {
-            if (calculateUserAgentOverrideOption() != UserAgentOverrideOption.INHERIT) {
-                TabUtils.switchUserAgent(this, /* forcedByUser */ false);
-            }
+            switchUserAgentIfNeeded();
             getWebContents().getNavigationController().reloadBypassingCache(true);
         }
     }
@@ -1627,28 +1624,48 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private @UserAgentOverrideOption int calculateUserAgentOverrideOption() {
-        if (mUserForcedUserAgent || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
-                || !CachedFeatureFlags.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS)
-                || !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS,
-                        REQUEST_DESKTOP_ENABLED_PARAM, false)) {
-            return UserAgentOverrideOption.INHERIT;
-        }
-
-        boolean shouldRequestDesktopSite = TabUtils.isTabLargeEnoughForDesktopSite(this);
         boolean currentRequestDesktopSite = getWebContents() == null
                 ? false
                 : getWebContents().getNavigationController().getUseDesktopUserAgent();
-        if (shouldRequestDesktopSite == currentRequestDesktopSite) {
-            return UserAgentOverrideOption.INHERIT;
-        }
 
-        return shouldRequestDesktopSite ? UserAgentOverrideOption.TRUE
-                                        : UserAgentOverrideOption.FALSE;
+        if (!mUserForcedUserAgent && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS)
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS,
+                        REQUEST_DESKTOP_ENABLED_PARAM, false)) {
+            // We only do the following logic to choose the desktop/mobile user agent if
+            // 1. User never manually made choice in app menu for requesting desktop site or not.
+            // 2. The browser is running in tablets.
+            boolean shouldRequestDesktopSite = TabUtils.isTabLargeEnoughForDesktopSite(this);
+
+            if (shouldRequestDesktopSite != currentRequestDesktopSite) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.RequestDesktopSite.UseDesktopUserAgent", shouldRequestDesktopSite);
+
+                // The user is not forcing any mode and we determined that we need to change,
+                // therefore we are using TRUE or FALSE option. On Android TRUE mean override to
+                // Desktop user agent, while FALSE means go with Mobile version.
+                return shouldRequestDesktopSite ? UserAgentOverrideOption.TRUE
+                                                : UserAgentOverrideOption.FALSE;
+            }
+        }
+        RecordHistogram.recordBooleanHistogram(
+                "Android.RequestDesktopSite.UseDesktopUserAgent", currentRequestDesktopSite);
+
+        // INHERIT means use the same that was used last time.
+        return UserAgentOverrideOption.INHERIT;
     }
 
     void setUserForcedUserAgent() {
         mUserForcedUserAgent = true;
+    }
+
+    private void switchUserAgentIfNeeded() {
+        if (calculateUserAgentOverrideOption() == UserAgentOverrideOption.INHERIT) return;
+        boolean usingDesktopUserAgent =
+                getWebContents().getNavigationController().getUseDesktopUserAgent();
+        TabUtils.switchUserAgent(this, /* switchToDesktop */ !usingDesktopUserAgent,
+                /* forcedByUser */ false);
     }
 
     @NativeMethods

@@ -2297,8 +2297,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.request_desktop_site_id || id == R.id.request_desktop_site_check_id) {
-            TabUtils.switchUserAgent(currentTab, /* forcedByUser */ true);
+            boolean usingDesktopUserAgent =
+                    currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
+            usingDesktopUserAgent = !usingDesktopUserAgent;
+            TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent, /* forcedByUser */ true);
             RecordUserAction.record("MobileMenuRequestDesktopSite");
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.RequestDesktopSite.UserSwitchToDesktop", usingDesktopUserAgent);
             return true;
         }
 
