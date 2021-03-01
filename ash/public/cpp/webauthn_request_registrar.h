@@ -22,7 +22,8 @@ class ASH_PUBLIC_EXPORT WebAuthnRequestRegistrar {
   // Returns the singleton instance.
   static WebAuthnRequestRegistrar* Get();
 
-  // Returns a callback to generate request id for |window|.
+  // Returns a callback to generate request id for |window|. The callback is
+  // not thread-safe, and must be invoked from the browser UI thread only.
   using GenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
   virtual GenerateRequestIdCallback GetRegisterCallback(
       aura::Window* window) = 0;
