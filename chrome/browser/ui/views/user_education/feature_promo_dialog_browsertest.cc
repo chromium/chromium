@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -41,6 +42,12 @@ using ::testing::Return;
 class FeaturePromoDialogTest : public DialogBrowserTest {
  public:
   FeaturePromoDialogTest() {
+    // TODO(crbug.com/1182859): Update this test to enable the
+    // kUseSodaForLiveCaption feature.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {media::kLiveCaption, media::kUseSodaForLiveCaption,
+             feature_engagement::kIPHLiveCaptionFeature});
+
     // TODO(crbug.com/1141984): fix cause of bubbles overflowing the
     // screen and remove this.
     set_should_verify_dialog_bounds(false);
@@ -81,6 +88,8 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   static void RegisterMockTracker(content::BrowserContext* context) {
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(CreateMockTracker));

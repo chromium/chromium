@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
@@ -321,10 +322,12 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
+    // TODO(crbug.com/1182859): Update this test to enable the
+    // kUseSodaForLiveCaption feature.
     feature_list_.InitWithFeatures(
         {media::kGlobalMediaControls, media::kGlobalMediaControlsForCast,
-         media::kLiveCaption},
-        {});
+         media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature},
+        {media::kUseSodaForLiveCaption});
 
     presentation_manager_ =
         std::make_unique<TestWebContentsPresentationManager>();

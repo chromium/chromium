@@ -46,7 +46,10 @@
 class BrowserViewTest : public InProcessBrowserTest {
  public:
   BrowserViewTest() : devtools_(nullptr) {
-    scoped_feature_list_.InitAndEnableFeature(media::kLiveCaption);
+    // TODO(crbug.com/1182859): Update this test to enable the
+    // kUseSodaForLiveCaption feature.
+    scoped_feature_list_.InitWithFeatures({media::kLiveCaption},
+                                          {media::kUseSodaForLiveCaption});
   }
 
  protected:
