@@ -27,9 +27,6 @@ constexpr char kAssistantRelatedInfoUrl[] =
 constexpr char kDogfoodUrl[] =
     "https://goto.google.com/quick-answers-dogfood-bugs";
 
-// TODO(yanxiao): move the string to grd source file.
-constexpr char kNoResult[] = "See result in Assistant";
-
 base::string16 IntentTypeToString(IntentType intent_type) {
   switch (intent_type) {
     case IntentType::kUnit:
@@ -153,7 +150,7 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
         std::make_unique<chromeos::quick_answers::QuickAnswerText>(title_));
     quick_answer_with_no_result.first_answer_row.push_back(
         std::make_unique<chromeos::quick_answers::QuickAnswerResultText>(
-            kNoResult));
+            l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT)));
     quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
         anchor_bounds_, quick_answer_with_no_result);
     // Fallback query to title if no result is available.
