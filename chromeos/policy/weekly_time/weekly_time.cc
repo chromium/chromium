@@ -4,6 +4,8 @@
 
 #include "chromeos/policy/weekly_time/weekly_time.h"
 
+#include <algorithm>
+
 #include "base/logging.h"
 #include "base/time/time.h"
 
@@ -36,6 +38,10 @@ WeeklyTime GetWeeklyTimeFromExploded(
 const char WeeklyTime::kDayOfWeek[] = "day_of_week";
 const char WeeklyTime::kTime[] = "time";
 const char WeeklyTime::kTimezoneOffset[] = "timezon_offset";
+
+const std::vector<std::string> WeeklyTime::kWeekDays = {
+    "UNSPECIFIED", "MONDAY", "TUESDAY",  "WEDNESDAY",
+    "THURSDAY",    "FRIDAY", "SATURDAY", "SUNDAY"};
 
 WeeklyTime::WeeklyTime(int day_of_week,
                        int milliseconds,
@@ -151,10 +157,16 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromValue(
     LOG(ERROR) << "Passed nullptr value.";
     return nullptr;
   }
-  auto day_of_week = value->FindIntKey(kDayOfWeek);
-  if (!day_of_week.has_value() || day_of_week.value() < 1 ||
-      day_of_week.value() > 7) {
-    LOG(ERROR) << "Day of week is absent or invalid";
+  auto* day_of_week = value->FindStringKey(kDayOfWeek);
+  if (!day_of_week) {
+    LOG(ERROR) << "day_of_week is absent.";
+    return nullptr;
+  }
+  int day_of_week_value =
+      std::find(kWeekDays.begin(), kWeekDays.end(), *day_of_week) -
+      kWeekDays.begin();
+  if (day_of_week_value <= 0 || day_of_week_value > 7) {
+    LOG(ERROR) << "Invalid day_of_week: " << day_of_week;
     return nullptr;
   }
   auto time_of_day = value->FindIntKey(kTime);
@@ -170,7 +182,7 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromValue(
                << ").";
     return nullptr;
   }
-  return std::make_unique<WeeklyTime>(day_of_week.value(), time_of_day.value(),
+  return std::make_unique<WeeklyTime>(day_of_week_value, time_of_day.value(),
                                       timezone_offset);
 }
 
