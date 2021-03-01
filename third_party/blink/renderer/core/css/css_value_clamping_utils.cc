@@ -7,10 +7,14 @@
 
 namespace blink {
 
-double CSSValueClampingUtils::ClampLength(double value) {
+double CSSValueClampingUtils::ClampDouble(double value) {
   if (std::isnan(value))
     value = std::numeric_limits<double>::max();
   return clampTo<double>(value);
+}
+
+double CSSValueClampingUtils::ClampLength(double value) {
+  return ClampDouble(value);
 }
 
 float CSSValueClampingUtils::ClampLength(float value) {

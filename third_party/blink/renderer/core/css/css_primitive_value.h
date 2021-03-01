@@ -229,6 +229,10 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // expression can be resolved into a single numeric value *without any type
   // conversion* (e.g., between px and em). Otherwise, it hits a DCHECK.
   double GetDoubleValue() const;
+
+  // Returns Double Value including infinity, -infinity, and NaN.
+  double GetDoubleValueWithoutClamping() const;
+
   float GetFloatValue() const { return GetValue<float>(); }
   int GetIntValue() const { return GetValue<int>(); }
   template <typename T>

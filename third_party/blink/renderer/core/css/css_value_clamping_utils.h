@@ -14,6 +14,7 @@ class CORE_EXPORT CSSValueClampingUtils {
   STATIC_ONLY(CSSValueClampingUtils);
 
  public:
+  static double ClampDouble(double value);
   static double ClampLength(double value);
   static float ClampLength(float value);
   // TODO(crbug.com/1133390): The clamping functions for specific properties

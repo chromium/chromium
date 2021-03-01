@@ -215,7 +215,7 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
       // PixelsAndPercent. Therefore, we need to use a function that doesn't
       // internally clamp the result to the float range.
       if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
-        value.percent = value_->GetDoubleValue();
+        value.percent = value_->GetDoubleValueWithoutClamping();
       else
         value.percent = value_->GetFloatValue();
       break;
@@ -240,7 +240,7 @@ CSSMathExpressionNumericLiteral::ToCalculationExpression(
 
 double CSSMathExpressionNumericLiteral::DoubleValue() const {
   if (HasDoubleValue(ResolvedUnitType()))
-    return value_->GetDoubleValue();
+    return value_->GetDoubleValueWithoutClamping();
   NOTREACHED();
   return 0;
 }

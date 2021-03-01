@@ -153,5 +153,44 @@ TEST(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
   EXPECT_EQ(std::numeric_limits<float>::max(), length.Percent());
 }
 
+TEST(CSSPrimitiveValueTest, GetDoubleValueWithoutClampingAllowNaN) {
+  CSSPrimitiveValue* value =
+      Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
+  EXPECT_TRUE(std::isnan(value->GetDoubleValueWithoutClamping()));
+}
+
+TEST(CSSPrimitiveValueTest, GetDoubleValueWithoutClampingAllowPositveInfinity) {
+  CSSPrimitiveValue* value =
+      Create({std::numeric_limits<double>::infinity(), UnitType::kPixels});
+  EXPECT_TRUE(std::isinf(value->GetDoubleValueWithoutClamping()) &&
+              value->GetDoubleValueWithoutClamping() > 0);
+}
+
+TEST(CSSPrimitiveValueTest,
+     GetDoubleValueWithoutClampingAllowNegativeInfinity) {
+  CSSPrimitiveValue* value =
+      Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
+
+  EXPECT_TRUE(std::isinf(value->GetDoubleValueWithoutClamping()) &&
+              value->GetDoubleValueWithoutClamping() < 0);
+}
+
+TEST(CSSPrimitiveValueTest, GetDoubleValueClampNaN) {
+  CSSPrimitiveValue* value =
+      Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
+  EXPECT_EQ(std::numeric_limits<double>::max(), value->GetDoubleValue());
+}
+
+TEST(CSSPrimitiveValueTest, GetDoubleValueClampPositiveInfinity) {
+  CSSPrimitiveValue* value =
+      Create({std::numeric_limits<double>::infinity(), UnitType::kPixels});
+  EXPECT_EQ(std::numeric_limits<double>::max(), value->GetDoubleValue());
+}
+
+TEST(CSSPrimitiveValueTest, GetDoubleValueClampNegativeInfinity) {
+  CSSPrimitiveValue* value =
+      Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
+  EXPECT_EQ(std::numeric_limits<double>::lowest(), value->GetDoubleValue());
+}
 }  // namespace
 }  // namespace blink

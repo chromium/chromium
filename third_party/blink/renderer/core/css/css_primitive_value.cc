@@ -377,7 +377,7 @@ Length CSSPrimitiveValue::ConvertToLength(
   if (IsPercentage()) {
     if (IsNumericLiteralValue() ||
         !To<CSSMathFunctionValue>(this)->AllowsNegativePercentageReference()) {
-      double value = GetDoubleValue();
+      double value = GetDoubleValueWithoutClamping();
       if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
         value = CSSValueClampingUtils::ClampLength(value);
       }
@@ -389,6 +389,10 @@ Length CSSPrimitiveValue::ConvertToLength(
 }
 
 double CSSPrimitiveValue::GetDoubleValue() const {
+  return CSSValueClampingUtils::ClampDouble(GetDoubleValueWithoutClamping());
+}
+
+double CSSPrimitiveValue::GetDoubleValueWithoutClamping() const {
   return IsCalculated() ? To<CSSMathFunctionValue>(this)->DoubleValue()
                         : To<CSSNumericLiteralValue>(this)->DoubleValue();
 }
