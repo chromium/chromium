@@ -13,12 +13,16 @@ namespace web {
 
 class BrowserState;
 class JavaScriptFeature;
+class ScrollHelperJavaScriptFeature;
 
 namespace java_script_features {
 
 // Returns the JavaScriptFeatures built in to //ios/web.
 std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state);
+
+// Returns the ScrollHelperJavaScriptFeature.
+ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature();
 
 // For testing only: Force next webview creation to reset plugin placeholder
 // information.

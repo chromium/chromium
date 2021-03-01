@@ -625,7 +625,6 @@ js_compile_bundle("main_frame_web_bundle") {
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
     "web_state/js/resources/main_frame_web_bundle.js",
     "web_state/js/resources/navigation.js",
-    "web_state/js/resources/scroll_workaround.js",
     "web_state/js/resources/text_fragments.js",
   ]
 }

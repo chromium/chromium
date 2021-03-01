@@ -25,8 +25,10 @@
 #import "ios/web/favicon/favicon_manager.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #include "ios/web/history_state_util.h"
+#include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
+#include "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
@@ -1269,17 +1271,15 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 // window.scrollTo while user is scrolling. See crbug.com/554257
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  [_jsInjector
-      executeJavaScript:@"__gCrWeb.setWebViewScrollViewIsDragging(true)"
-      completionHandler:nil];
+  web::java_script_features::GetScrollHelperJavaScriptFeature()
+      ->SetWebViewScrollViewIsDragging(self.webState, true);
 }
 
 - (void)webViewScrollViewDidEndDragging:
             (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
                          willDecelerate:(BOOL)decelerate {
-  [_jsInjector
-      executeJavaScript:@"__gCrWeb.setWebViewScrollViewIsDragging(false)"
-      completionHandler:nil];
+  web::java_script_features::GetScrollHelperJavaScriptFeature()
+      ->SetWebViewScrollViewIsDragging(self.webState, false);
 }
 
 #pragma mark - Page State

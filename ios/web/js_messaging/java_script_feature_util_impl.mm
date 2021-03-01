@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
+#include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/web_client.h"
@@ -100,7 +101,19 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
   return {ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
           GetPluginPlaceholderJavaScriptFeature(),
+          GetScrollHelperJavaScriptFeature(),
           GetWindowErrorJavaScriptFeature()};
+}
+
+ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature() {
+  // Static storage is ok for |scroll_helper_feature| as it holds no state.
+  static std::unique_ptr<ScrollHelperJavaScriptFeature> scroll_helper_feature =
+      nullptr;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    scroll_helper_feature = std::make_unique<ScrollHelperJavaScriptFeature>();
+  });
+  return scroll_helper_feature.get();
 }
 
 JavaScriptFeature* GetBaseJavaScriptFeature() {

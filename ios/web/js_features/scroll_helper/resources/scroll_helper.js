@@ -6,7 +6,7 @@
  * @fileoverview APIs used for the scroll workaround. See crbug.com/554257.
  */
 
-goog.provide('__crWeb.scrollWorkaround');
+goog.provide('__crWeb.scrollHelper');
 
 /** Beginning of anonymous object */
 (function() {
