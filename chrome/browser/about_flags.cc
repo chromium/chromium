@@ -1644,6 +1644,19 @@ const FeatureEntry::FeatureVariation kLongpressResolveVariations[] = {
     {"and preserve Tap behavior", &kLongpressResolvePreserveTap, 1, nullptr},
 };
 
+const FeatureEntry::FeatureParam kRelatedSearchesUrl = {"stamp", "1Ru"};
+const FeatureEntry::FeatureParam kRelatedSearchesContent = {"stamp", "1Rc"};
+const FeatureEntry::FeatureVariation kRelatedSearchesVariations[] = {
+    {"from URL", &kRelatedSearchesUrl, 1, nullptr},
+    {"from content", &kRelatedSearchesContent, 1, nullptr},
+};
+const FeatureEntry::FeatureParam kRelatedSearchesUiVerbose = {"verbosity", "v"};
+const FeatureEntry::FeatureParam kRelatedSearchesUiExtreme = {"verbosity", "x"};
+const FeatureEntry::FeatureVariation kRelatedSearchesUiVariations[] = {
+    {"verbose", &kRelatedSearchesUiVerbose, 1, nullptr},
+    {"extreme", &kRelatedSearchesUiExtreme, 1, nullptr},
+};
+
 #endif  // defined(OS_ANDROID)
 
 const FeatureEntry::FeatureParam kResamplingInputEventsLSQEnabled[] = {
@@ -2765,10 +2778,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ExploreSites InitialCountries")},
     {"related-searches", flag_descriptions::kRelatedSearchesName,
      flag_descriptions::kRelatedSearchesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRelatedSearches)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearches,
+                                    kRelatedSearchesVariations,
+                                    "RelatedSearches")},
     {"related-searches-ui", flag_descriptions::kRelatedSearchesUiName,
      flag_descriptions::kRelatedSearchesUiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRelatedSearchesUi)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearchesUi,
+                                    kRelatedSearchesUiVariations,
+                                    "RelatedSearchesUi")},
     {"bento-offline", flag_descriptions::kBentoOfflineName,
      flag_descriptions::kBentoOfflineDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBentoOffline)},

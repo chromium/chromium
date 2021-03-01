@@ -51,6 +51,16 @@ class ContextualSearchPolicy {
     private static final String RELATED_SEARCHES_DARK_LAUNCH = "d";
     private static final String NO_EXPERIMENT_STAMP = RELATED_SEARCHES_STAMP_VERSION
             + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE + RELATED_SEARCHES_NO_EXPERIMENT;
+    /**
+     * Verbosity param used to control requested results.
+     * <ul>
+     *   <li> "d" specifies a dark launch, which means return none </li>
+     *   <li> "v" for verbose  </li>
+     *   <li> "x" for extra verbose </li>
+     *   <li> "" for the default </li></ul>
+     * See also the verbosity entry in about_flags to correlate.
+     */
+    private static final String RELATED_SEARCHES_VERBOSITY_PARAM = "verbosity";
 
     // TODO(donnd): remove -- deprecated.
     private static final HashSet<String> PREDOMINENTLY_ENGLISH_SPEAKING_COUNTRIES =
@@ -681,15 +691,26 @@ class ContextualSearchPolicy {
         String experimentConfigStamp =
                 ContextualSearchFieldTrial.getRelatedSearchesExperiementConfigurationStamp();
         if (TextUtils.isEmpty(experimentConfigStamp)) experimentConfigStamp = NO_EXPERIMENT_STAMP;
-        // TODO(donnd): Consider supporting URL-only requests -- for now content is required.
         StringBuilder stampBuilder = new StringBuilder().append(experimentConfigStamp);
         if (isLanguageRestricted) stampBuilder.append(RELATED_SEARCHES_LANGUAGE_RESTRICTION);
         // Add a tag so the server knows this version of the client is doing a dark launch
         // and cannot decode Related Searches, unless overridden by a Feature flag.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_UI)) {
-            stampBuilder.append(RELATED_SEARCHES_DARK_LAUNCH);
-        }
+        String resultsToReturnCode = getNumberOfRelatedSearchesToRequestCode();
+        if (resultsToReturnCode.length() > 0) stampBuilder.append(resultsToReturnCode);
         return stampBuilder.toString();
+    }
+
+    /**
+     * Returns the number of results to request from the server, as a single coded letter, or
+     * {@code null} if the server should just return the default number of Related Searches.
+     */
+    private String getNumberOfRelatedSearchesToRequestCode() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_UI)) {
+            return RELATED_SEARCHES_DARK_LAUNCH;
+        }
+        // Return the Feature param, which could be an empty string if not present.
+        return ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.RELATED_SEARCHES_UI, RELATED_SEARCHES_VERBOSITY_PARAM);
     }
 
     // --------------------------------------------------------------------------------------------
