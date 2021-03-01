@@ -874,8 +874,8 @@ message CommitResponse {
     // a new entry's been created to hold the data the client's sending up.
     optional string id_string = 3;
 
-    // should be filled if our parent was assigned a new ID.
-    optional string parent_id_string = 4;
+    reserved 4;
+    reserved "parent_id_string";
 
     reserved 5;
     reserved "position_in_parent";
@@ -883,20 +883,18 @@ message CommitResponse {
     // The item's current version.
     optional int64 version = 6;
 
-    // Allows the server to move-aside an entry as it's being committed.
-    // This name is the same as the name field returned within the SyncEntity
-    // message in GetUpdatesResponse.
-    optional string name = 7;
+    reserved 7;
+    reserved "name";
 
-    // This name is the same as the non_unique_name field returned within the
-    // SyncEntity message in GetUpdatesResponse.
-    optional string non_unique_name = 8;
+    reserved 8;
+    reserved "non_unique_name";
 
     optional string error_message = 9;
 
     // Last modification time (in java time milliseconds).  Allows the server
     // to override the client-supplied mtime during a commit operation.
-    optional int64 mtime = 10;
+    // TODO(crbug.com/1182252): Delete this field too.
+    optional int64 mtime = 10 [deprecated = true];
 
     message DatatypeSpecificError {
       oneof datatype_error {

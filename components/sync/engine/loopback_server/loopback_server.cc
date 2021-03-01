@@ -582,7 +582,6 @@ void LoopbackServer::BuildEntryResponseForSuccessfulCommit(
     entry_response->set_version(entity.GetVersion() + 1);
   } else {
     entry_response->set_version(entity.GetVersion());
-    entry_response->set_name(entity.GetName());
   }
 }
 

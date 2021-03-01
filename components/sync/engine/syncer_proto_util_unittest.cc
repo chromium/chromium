@@ -57,56 +57,6 @@ TEST(SyncerProtoUtil, ConvertErrorPBToSyncProtocolError) {
             error.error_data_types);
 }
 
-// Tests NameFromSyncEntity and NameFromCommitEntryResponse when only the name
-// field is provided.
-TEST(SyncerProtoUtil, NameExtractionOneName) {
-  SyncEntity one_name_entity;
-  CommitResponse_EntryResponse one_name_response;
-
-  const std::string one_name_string("Eggheadednesses");
-  one_name_entity.set_name(one_name_string);
-  one_name_response.set_name(one_name_string);
-
-  const std::string name_a =
-      SyncerProtoUtil::NameFromSyncEntity(one_name_entity);
-  EXPECT_EQ(one_name_string, name_a);
-}
-
-TEST(SyncerProtoUtil, NameExtractionOneUniqueName) {
-  SyncEntity one_name_entity;
-  CommitResponse_EntryResponse one_name_response;
-
-  const std::string one_name_string("Eggheadednesses");
-
-  one_name_entity.set_non_unique_name(one_name_string);
-  one_name_response.set_non_unique_name(one_name_string);
-
-  const std::string name_a =
-      SyncerProtoUtil::NameFromSyncEntity(one_name_entity);
-  EXPECT_EQ(one_name_string, name_a);
-}
-
-// Tests NameFromSyncEntity and NameFromCommitEntryResponse when both the name
-// field and the non_unique_name fields are provided.
-// Should prioritize non_unique_name.
-TEST(SyncerProtoUtil, NameExtractionTwoNames) {
-  SyncEntity two_name_entity;
-  CommitResponse_EntryResponse two_name_response;
-
-  const std::string neuro("Neuroanatomists");
-  const std::string oxyphen("Oxyphenbutazone");
-
-  two_name_entity.set_name(oxyphen);
-  two_name_entity.set_non_unique_name(neuro);
-
-  two_name_response.set_name(oxyphen);
-  two_name_response.set_non_unique_name(neuro);
-
-  const std::string name_a =
-      SyncerProtoUtil::NameFromSyncEntity(two_name_entity);
-  EXPECT_EQ(neuro, name_a);
-}
-
 class SyncerProtoUtilTest : public testing::Test {
  public:
   void SetUp() override {

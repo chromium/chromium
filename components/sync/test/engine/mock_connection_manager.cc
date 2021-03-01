@@ -53,10 +53,6 @@ MockConnectionManager::~MockConnectionManager() {
   EXPECT_TRUE(update_queue_.empty()) << "Unfetched updates.";
 }
 
-void MockConnectionManager::SetCommitTimeRename(const string& prepend) {
-  commit_time_rename_prepended_string_ = prepend;
-}
-
 void MockConnectionManager::SetMidCommitCallback(base::OnceClosure callback) {
   mid_commit_callback_ = std::move(callback);
 }
@@ -551,7 +547,6 @@ bool MockConnectionManager::ProcessCommit(
     ADD_FAILURE() << "Wrong contents, found " << csm->message_contents();
     return false;
   }
-  map<string, string> changed_ids;
   const CommitMessage& commit_message = csm->commit();
   CommitResponse* commit_response = response_buffer->mutable_commit();
   commit_messages_.push_back(std::make_unique<CommitMessage>());
@@ -595,21 +590,10 @@ bool MockConnectionManager::ProcessCommit(
     }
     er->set_response_type(CommitResponse::SUCCESS);
     er->set_version(entry.version() + 1);
-    if (!commit_time_rename_prepended_string_.empty()) {
-      // Commit time rename sent down from the server.
-      er->set_name(commit_time_rename_prepended_string_ + entry.name());
-    }
-    string parent_id_string = entry.parent_id_string();
-    // Remap id's we've already assigned.
-    if (changed_ids.end() != changed_ids.find(parent_id_string)) {
-      parent_id_string = changed_ids[parent_id_string];
-      er->set_parent_id_string(parent_id_string);
-    }
     if (entry.has_version() && 0 != entry.version()) {
       er->set_id_string(id_string);  // Allows verification.
     } else {
       string new_id = base::StringPrintf("mock_server:%d", next_new_id_++);
-      changed_ids[id_string] = new_id;
       er->set_id_string(new_id);
     }
   }

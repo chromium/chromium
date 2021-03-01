@@ -324,9 +324,7 @@ VISIT_PROTO_FIELDS(const sync_pb::CommitResponse& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::CommitResponse::EntryResponse& proto) {
   VISIT_ENUM(response_type);
   VISIT(id_string);
-  VISIT(parent_id_string);
   VISIT(version);
-  VISIT(name);
   VISIT(error_message);
   VISIT(mtime);
 }

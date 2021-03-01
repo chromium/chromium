@@ -597,22 +597,6 @@ bool SyncerProtoUtil::ShouldMaintainHierarchy(
          sync_entity.parent_id_string() == "0";
 }
 
-// static
-const std::string& SyncerProtoUtil::NameFromSyncEntity(
-    const sync_pb::SyncEntity& entry) {
-  if (entry.has_non_unique_name())
-    return entry.non_unique_name();
-  return entry.name();
-}
-
-// static
-const std::string& SyncerProtoUtil::NameFromCommitEntryResponse(
-    const sync_pb::CommitResponse_EntryResponse& entry) {
-  if (entry.has_non_unique_name())
-    return entry.non_unique_name();
-  return entry.name();
-}
-
 std::string SyncerProtoUtil::SyncEntityDebugString(
     const sync_pb::SyncEntity& entry) {
   const std::string& mtime_str =

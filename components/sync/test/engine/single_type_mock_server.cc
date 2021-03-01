@@ -113,9 +113,7 @@ sync_pb::ClientToServerResponse SingleTypeMockServer::DoSuccessfulCommit(
         commit_response->add_entryresponse();
     entryresponse->set_response_type(sync_pb::CommitResponse::SUCCESS);
     entryresponse->set_id_string(GenerateId(tag_hash));
-    entryresponse->set_parent_id_string(entry.parent_id_string());
     entryresponse->set_version(version);
-    entryresponse->set_name(entry.name());
     entryresponse->set_mtime(entry.mtime());
   }
 

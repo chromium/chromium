@@ -18,7 +18,6 @@ namespace sync_pb {
 class ClientToServerMessage;
 class ClientToServerResponse;
 class ClientToServerResponse_Error;
-class CommitResponse_EntryResponse;
 class SyncEntity;
 }  // namespace sync_pb
 
@@ -60,14 +59,6 @@ class SyncerProtoUtil {
   // Specifies where entity's parent ID should be updated from the data in
   // GetUpdates message.
   static bool ShouldMaintainHierarchy(const sync_pb::SyncEntity& sync_entity);
-
-  // Extract the name field from a sync entity.
-  static const std::string& NameFromSyncEntity(
-      const sync_pb::SyncEntity& entry);
-
-  // Extract the name field from a commit entry response.
-  static const std::string& NameFromCommitEntryResponse(
-      const sync_pb::CommitResponse_EntryResponse& entry);
 
   // Get a debug string representation of the client to server response.
   static std::string ClientToServerResponseDebugString(
