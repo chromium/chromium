@@ -31,6 +31,7 @@ android_library("java") {
     "$google_play_services_package:google_play_services_auth_base_java",
     "//base:base_java",
     "//base:jni_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/util/android:java",
@@ -60,6 +61,7 @@ android_library("javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/signin/public/android:java",

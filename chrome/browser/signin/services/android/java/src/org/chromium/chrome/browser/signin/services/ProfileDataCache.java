@@ -26,8 +26,10 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -108,7 +110,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
-    private @Nullable final ProfileDataSource mProfileDataSource;
+    private @Nullable ProfileDataSource mProfileDataSource;
     private final IdentityManager mIdentityManager;
 
     @VisibleForTesting
@@ -179,6 +181,18 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     }
 
     /**
+     * Disables the Gms profile data source in this class. The {@link AccountInfoService} will
+     * query the native code for profile data in this case.
+     * This method is only used to deprecate the Gms profile data source.
+     * TODO(crbug/1154606): Remove this method after retiring the GmsProfileDataSource.
+     */
+    public void disableGmsProfileDataSource() {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
+            : "This method should only be called with DEPRECATE_MENAGERIE_API enabled";
+        mProfileDataSource = null;
+    }
+
+    /**
      * @return The {@link DisplayableProfileData} containing the profile data corresponding to the
      *         given account or a {@link DisplayableProfileData} with a placeholder image and null
      *         full and given name.
@@ -199,9 +213,9 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
         if (mObservers.isEmpty()) {
             if (mProfileDataSource != null) {
                 mProfileDataSource.addObserver(this);
-                updateCacheFromProfileDataSource();
             }
             mIdentityManager.addObserver(this);
+            populateCache();
         }
         mObservers.addObserver(observer);
     }
@@ -220,18 +234,23 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
         }
     }
 
-    private void updateCacheFromProfileDataSource() {
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(this::updateAccounts);
-    }
-
-    private void updateAccounts(final List<Account> accounts) {
-        for (Account account : accounts) {
-            ProfileData profileData = mProfileDataSource.getProfileDataForAccount(account.name);
-            if (profileData != null) {
-                updateCachedProfileDataAndNotifyObservers(
-                        createDisplayableProfileData(profileData));
+    private void populateCache() {
+        final Callback<String> fetchDataForAccount = accountEmail -> {
+            if (mProfileDataSource != null) {
+                ProfileData profileData = mProfileDataSource.getProfileDataForAccount(accountEmail);
+                if (profileData != null) {
+                    onProfileDataUpdated(profileData);
+                }
+            } else {
+                AccountInfoService.get().startFetchingAccountInfoFor(
+                        accountEmail, this::onExtendedAccountInfoUpdated);
             }
-        }
+        };
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+            for (Account account : accounts) {
+                fetchDataForAccount.onResult(account.name);
+            }
+        });
     }
 
     private DisplayableProfileData createDisplayableProfileData(
