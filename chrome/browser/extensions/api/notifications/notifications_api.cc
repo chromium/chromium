@@ -82,7 +82,7 @@ const char kExtraImageProvided[] =
 const char kNotificationIdTooLong[] =
     "The notification's ID should be %d characters or less";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
 const char kLowPriorityDeprecatedOnPlatform[] =
     "Low-priority notifications are deprecated on this platform.";
 #endif
@@ -237,7 +237,7 @@ bool NotificationsApiFunction::CreateNotification(
     return false;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   if (options->priority &&
       *options->priority < message_center::DEFAULT_PRIORITY) {
     *error = kLowPriorityDeprecatedOnPlatform;
@@ -391,7 +391,7 @@ bool NotificationsApiFunction::UpdateNotification(
     api::notifications::NotificationOptions* options,
     message_center::Notification* notification,
     std::string* error) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   if (options->priority &&
       *options->priority < message_center::DEFAULT_PRIORITY) {
     *error = kLowPriorityDeprecatedOnPlatform;
