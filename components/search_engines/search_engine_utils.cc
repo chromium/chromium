@@ -35,14 +35,14 @@ SearchEngineType GetEngineType(const GURL& url) {
   // incoming URL's host is "[*.]google.<TLD>".
   if (google_util::IsGoogleHostname(url.host(),
                                     google_util::DISALLOW_SUBDOMAIN))
-    return TemplateURLPrepopulateData::google.type;
+    return SEARCH_ENGINE_DUCKDUCKGO; //TemplateURLPrepopulateData::google.type;
 
   // Now check the rest of the prepopulate data.
   for (size_t i = 0; i < TemplateURLPrepopulateData::kAllEnginesLength; ++i) {
     // First check the main search URL.
     if (SameDomain(
             url, GURL(TemplateURLPrepopulateData::kAllEngines[i]->search_url)))
-      return TemplateURLPrepopulateData::kAllEngines[i]->type;
+      return SEARCH_ENGINE_DUCKDUCKGO; //TemplateURLPrepopulateData::kAllEngines[i]->type;
 
     // Then check the alternate URLs.
     for (size_t j = 0;
@@ -50,7 +50,7 @@ SearchEngineType GetEngineType(const GURL& url) {
          ++j) {
       if (SameDomain(url, GURL(TemplateURLPrepopulateData::kAllEngines[i]
                                    ->alternate_urls[j])))
-        return TemplateURLPrepopulateData::kAllEngines[i]->type;
+        return SEARCH_ENGINE_DUCKDUCKGO; //TemplateURLPrepopulateData::kAllEngines[i]->type;
     }
   }
 
