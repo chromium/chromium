@@ -323,7 +323,7 @@ void VideoDecoderClient::DecodeNextFragmentTask() {
 
   num_outstanding_decode_requests_++;
 
-  // Throw event when we encounter a config info in a H.264 stream.
+  // Throw event when we encounter a config info in a H.264/HEVC stream.
   if (has_config_info)
     FireEvent(VideoPlayerEvent::kConfigInfo);
 }

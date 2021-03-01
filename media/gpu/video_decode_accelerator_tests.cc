@@ -353,11 +353,11 @@ TEST_F(VideoDecoderTest, ResetBeforeFlushDone) {
 }
 
 // Reset the decoder immediately when encountering the first config info in a
-// H.264 video stream. After resetting the video is played until the end.
+// H.264/HEVC video stream. After resetting the video is played until the end.
 TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
-  // This test is only relevant for H.264 video streams.
-  if (g_env->Video()->Profile() < H264PROFILE_MIN ||
-      g_env->Video()->Profile() > H264PROFILE_MAX)
+  // This test is only relevant for H.264/HEVC video streams.
+  if (g_env->Video()->Codec() != media::kCodecH264 &&
+      g_env->Video()->Codec() != media::kCodecHEVC)
     GTEST_SKIP();
 
   auto tvp = CreateVideoPlayer(g_env->Video());
@@ -526,7 +526,7 @@ int main(int argc, char** argv) {
   // Print the help message if requested. This needs to be done before
   // initializing gtest, to overwrite the default gtest help message.
   base::CommandLine::Init(argc, argv);
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   LOG_ASSERT(cmd_line);
   if (cmd_line->HasSwitch("help")) {
     std::cout << media::test::usage_msg << "\n" << media::test::help_msg;
@@ -623,6 +623,10 @@ int main(int argc, char** argv) {
   }
 
   testing::InitGoogleTest(&argc, argv);
+
+  // Add the command line flag for HEVC testing which will be checked by the
+  // video decoder to allow clear HEVC decoding.
+  cmd_line->AppendSwitch("enable-clear-hevc-for-testing");
 
   // Set up our test environment.
   media::test::VideoPlayerTestEnvironment* test_environment =

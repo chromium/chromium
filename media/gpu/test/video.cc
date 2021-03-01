@@ -456,14 +456,15 @@ bool Video::LoadMetadata() {
   }
   num_frames_ = static_cast<uint32_t>(num_frames->GetInt());
 
-  // Find the number of fragments, only required for H.264 video streams.
+  // Find the number of fragments, only required for H.264/HEVC video streams.
   num_fragments_ = num_frames_;
-  if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
+  if ((profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
+      (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX)) {
     const base::Value* num_fragments =
         metadata->FindKeyOfType("num_fragments", base::Value::Type::INTEGER);
     if (!num_fragments) {
-      LOG(ERROR) << "Key \"num_fragments\" is required for H.264 video streams "
-                    "but could not be found in "
+      LOG(ERROR) << "Key \"num_fragments\" is required for H.264/HEVC video "
+                    "streams but could not be found in "
                  << metadata_file_path_;
       return false;
     }
@@ -652,6 +653,10 @@ base::Optional<VideoCodecProfile> Video::ConvertStringtoProfile(
     return VP9PROFILE_PROFILE2;
   } else if (profile == "AV1PROFILE_PROFILE_MAIN") {
     return AV1PROFILE_PROFILE_MAIN;
+  } else if (profile == "HEVCPROFILE_MAIN") {
+    return HEVCPROFILE_MAIN;
+  } else if (profile == "HEVCPROFILE_MAIN10") {
+    return HEVCPROFILE_MAIN10;
   } else {
     VLOG(2) << profile << " is not supported";
     return base::nullopt;
@@ -669,6 +674,8 @@ base::Optional<VideoCodec> Video::ConvertProfileToCodec(
     return kCodecVP9;
   } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
     return kCodecAV1;
+  } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
+    return kCodecHEVC;
   } else {
     VLOG(2) << GetProfileName(profile) << " is not supported";
     return base::nullopt;

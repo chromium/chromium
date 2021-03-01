@@ -124,8 +124,7 @@ class EncodedDataHelper {
   size_t num_skipped_fragments() { return num_skipped_fragments_; }
 
  private:
-
-  // For h.264.
+  // For h.264/HEVC.
   scoped_refptr<DecoderBuffer> GetNextFragment();
   // For VP8/9.
   scoped_refptr<DecoderBuffer> GetNextFrame();
