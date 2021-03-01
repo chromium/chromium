@@ -99,13 +99,15 @@ base::string16 KeywordProvider::SplitKeywordFromInput(
     return input;  // Only one token provided.
 
   // Set |remaining_input| to everything after the first token.
-  DCHECK(remaining_input != nullptr);
-  const size_t remaining_start = trim_leading_whitespace ?
-      input.find_first_not_of(base::kWhitespaceUTF16, first_white) :
-      first_white + 1;
+  if (remaining_input != nullptr) {
+    const size_t remaining_start =
+        trim_leading_whitespace
+            ? input.find_first_not_of(base::kWhitespaceUTF16, first_white)
+            : first_white + 1;
 
-  if (remaining_start < input.length())
-    remaining_input->assign(input.begin() + remaining_start, input.end());
+    if (remaining_start < input.length())
+      remaining_input->assign(input.begin() + remaining_start, input.end());
+  }
 
   // Return first token as keyword.
   return input.substr(0, first_white);
@@ -177,7 +179,15 @@ base::string16 KeywordProvider::GetKeywordForText(
   if (!url_service)
     return base::string16();
 
-  const base::string16 keyword(CleanUserInputKeyword(url_service, text));
+  base::string16 keyword;
+  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
+    // We want the Search button to persist as long as the input begins with a
+    // keyword. This is found by taking the input until the first white space.
+    keyword = CleanUserInputKeyword(url_service,
+                                    SplitKeywordFromInput(text, true, nullptr));
+  } else {
+    keyword = CleanUserInputKeyword(url_service, text);
+  }
 
   if (keyword.empty())
     return keyword;

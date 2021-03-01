@@ -44,6 +44,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/history_quick_provider.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -521,10 +522,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
   // Backspace at the beginning of the search text shall turn off
   // the keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-  ASSERT_EQ(base::string16(), omnibox_view->model()->keyword());
-  ASSERT_EQ(std::string(kSearchKeyword) + ' ' + kSearchText,
-            UTF16ToUTF8(omnibox_view->GetText()));
+  // When the keyword search button is enabled, a keyword 'hint'/button will
+  // persist as long as the entry begins with a keyword.
+  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
+    ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
+    ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+  } else {
+    ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+    ASSERT_EQ(base::string16(), omnibox_view->model()->keyword());
+    ASSERT_EQ(std::string(kSearchKeyword) + ' ' + kSearchText,
+              UTF16ToUTF8(omnibox_view->GetText()));
+  }
 }
 
 // TODO(https://crbug.com/1030551): This test flakily times out.

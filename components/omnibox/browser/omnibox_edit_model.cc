@@ -965,7 +965,9 @@ bool OmniboxEditModel::AcceptKeyword(
   // default match would have inline autocompleted a further string (e.g.
   // because there's a past multi-word search beginning with this keyword), the
   // inline autocompletion doesn't get filled in as the keyword search query
-  // text.
+  // text. When the Keyword Search Button is enabled, the keyword hint/button is
+  // visible even if their query looks like "<keyword><space><user text>",
+  // so treat it as a space in this instance.
   //
   // We also treat tabbing into keyword mode like tabbing through the popup in
   // that we set |has_temporary_text_|, whereas pressing space is treated like
@@ -976,7 +978,9 @@ bool OmniboxEditModel::AcceptKeyword(
   // which we don't want to switch back to when exiting keyword mode; see
   // comments in ClearKeyword().
   const AutocompleteMatch& match = CurrentMatch(nullptr);
-  if (entry_method == OmniboxEventProto::TAB) {
+  if (entry_method == OmniboxEventProto::TAB &&
+      (!OmniboxFieldTrial::IsKeywordSearchButtonEnabled() ||
+       user_text_.empty())) {
     // Ensure the current selection is saved before showing keyword mode
     // so that moving to another line and then reverting the text will restore
     // the current state properly.
@@ -985,6 +989,9 @@ bool OmniboxEditModel::AcceptKeyword(
   } else {
     view_->OnTemporaryTextMaybeChanged(user_text_, match, !has_temporary_text_,
                                        true);
+    if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
+      view_->UpdatePopup();
+    }
   }
 
   base::RecordAction(base::UserMetricsAction("AcceptedKeywordHint"));
