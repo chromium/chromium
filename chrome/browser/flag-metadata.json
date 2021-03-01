@@ -2464,7 +2464,7 @@
   {
     "name": "enable-tab-search",
     "owners": [ "tluk@google.com", "robliao@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "enable-tab-switcher-on-return",
