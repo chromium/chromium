@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">Memorie e pamjaftueshme për të shkarkuar përmbajtjen e përzgjedhur.</translation>
 <translation id="1376578503827013741">Po llogarit...</translation>
 <translation id="1383876407941801731">Kërko</translation>
+<translation id="1384704387250346179">Përkthe imazhin me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiv <ph name="LAST_UPDATED" /> ditë më parë</translation>
 <translation id="1397811292916898096">Kërko me <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">"Mos gjurmo"</translation>
@@ -98,6 +99,7 @@
 <translation id="1692118695553449118">Sinkronizimi është aktiv</translation>
 <translation id="1697284962337958118">Shto në</translation>
 <translation id="1718835860248848330">Ora e fundit</translation>
+<translation id="1724977129262658800">Shkyçe për të modifikuar fjalëkalimin tënd</translation>
 <translation id="173522743738009831">Rreth "Kufizuesit të privatësisë"</translation>
 <translation id="1736419249208073774">Eksploro</translation>
 <translation id="1749561566933687563">Sinkronizo faqeshënuesit e tu</translation>
@@ -690,6 +692,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5765780083710877561">Përshkrimi:</translation>
 <translation id="5767013862801005129">Rikthyer <ph name="TAB_TITLE" />, skedë</translation>
 <translation id="5776970333778123608">Të dhëna të parëndësishme</translation>
+<translation id="5780792035410621042">Për të parë fjalëkalimet, në fillim cakto një kyçje ekrani në pajisjen tënde</translation>
 <translation id="5793665092639000975">Po përdoret <ph name="SPACE_USED" /> nga <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Kërko dhe shfleto</translation>
 <translation id="5797070761912323120">Google mund ta përdorë historikun tënd për të personalizuar "Kërko me Google", reklamat dhe shërbime të tjera të Google</translation>
