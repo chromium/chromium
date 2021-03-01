@@ -284,7 +284,7 @@ function sendReport() {
     feedbackInfo.screenshot = null;
   }
 
-  let productId = parseInt('' + feedbackInfo.productId);
+  let productId = parseInt('' + feedbackInfo.productId, 10);
   if (isNaN(productId)) {
     // For apps that still use a string value as the |productId|, we must clear
     // that value since the API uses an integer value, and a conflict in data
@@ -296,7 +296,8 @@ function sendReport() {
   // Request sending the report, show the landing page (if allowed), and close
   // this window right away. The FeedbackRequest object that represents this
   // report will take care of sending the report in the background.
-  sendFeedbackReport(useSystemInfo);
+  // TODO(crbug.com/1167223): Implement this.
+  // sendFeedbackReport(useSystemInfo);
   scheduleWindowClose();
   return true;
 }

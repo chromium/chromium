@@ -4,7 +4,7 @@
 
 /**
  * Function to take the screenshot of the current screen.
- * @param {function(HTMLCanvasElement)} callback Callback for returning the
+ * @param {function(?HTMLCanvasElement)} callback Callback for returning the
  *     canvas with the screenshot. Called with null if the screenshot failed.
  */
 function takeScreenshot(callback) {
@@ -13,7 +13,8 @@ function takeScreenshot(callback) {
 
   video.addEventListener('canplay', function(e) {
     if (screenshotStream) {
-      const canvas = document.createElement('canvas');
+      const canvas =
+          /** @type {!HTMLCanvasElement} */ (document.createElement('canvas'));
       canvas.setAttribute('width', video.videoWidth);
       canvas.setAttribute('height', video.videoHeight);
       canvas.getContext('2d').drawImage(

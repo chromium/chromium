@@ -3,12 +3,6 @@
 // found in the LICENSE file.
 
 /**
- * The global load time data that contains the localized strings that we will
- * get from the main page when this page first loads.
- */
-let loadTimeData = null;
-
-/**
  * A queue of a sequence of closures that will incrementally build the sys info
  * html table.
  */
@@ -61,7 +55,7 @@ function collapse(button, valueDiv) {
   button.textContent = loadTimeData.getString('sysinfoPageExpandBtn');
   valueDiv.parentNode.className = 'number-collapsed';
   // Don't have screen readers announce the empty cell.
-  valueCell = valueDiv.parentNode;
+  const valueCell = valueDiv.parentNode;
   valueCell.setAttribute('aria-hidden', 'true');
 }
 
@@ -88,7 +82,7 @@ function collapseAll() {
     }
     const button = getButtonForValueDiv(valueDivs[i]);
     if (button) {
-      collapse(button, valueDivs[i]);
+      collapse(button, /** @type {!HTMLElement} */ (valueDivs[i]));
     }
   }
 }
@@ -104,7 +98,7 @@ function expandAll() {
     }
     const button = getButtonForValueDiv(valueDivs[i]);
     if (button) {
-      expand(button, valueDivs[i], i + 1);
+      expand(button, /** @type {!HTMLElement} */ (valueDivs[i]), i + 1);
     }
   }
 }
@@ -233,6 +227,6 @@ function createTable(systemInfo) {
  * Initializes the page when the window is loaded.
  */
 window.onload = function() {
-  loadTimeData = getLoadTimeData();
-  getFullSystemInfo(createTable);
+  // TODO(crbug.com/1167223): Implement this.
+  // getFullSystemInfo(createTable);
 };
