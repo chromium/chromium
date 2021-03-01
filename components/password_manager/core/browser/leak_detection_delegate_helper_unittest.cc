@@ -199,11 +199,11 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
        CreateForm(kLeakedOrigin, kOtherUsername, kLeakedPassword)});
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true),
                                                 CompromisedSitesCount(2));
-  EXPECT_CALL(*store_, AddInsecureCredentialImpl(CompromisedCredentials(
+  EXPECT_CALL(*store_, AddInsecureCredentialImpl(InsecureCredential(
                            GetSignonRealm(GURL(kLeakedOrigin)),
                            ASCIIToUTF16(kLeakedUsername), base::Time::Now(),
                            InsecureType::kLeaked, IsMuted(false))));
-  EXPECT_CALL(*store_, AddInsecureCredentialImpl(CompromisedCredentials(
+  EXPECT_CALL(*store_, AddInsecureCredentialImpl(InsecureCredential(
                            GetSignonRealm(GURL(kOtherOrigin)),
                            ASCIIToUTF16(kLeakedUsername), base::Time::Now(),
                            InsecureType::kLeaked, IsMuted(false))));
@@ -218,7 +218,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
                                                 CompromisedSitesCount(1));
 
   EXPECT_CALL(*store_,
-              AddInsecureCredentialImpl(CompromisedCredentials(
+              AddInsecureCredentialImpl(InsecureCredential(
                   GetSignonRealm(GURL(kOtherOrigin)),
                   ASCIIToUTF16(kLeakedUsernameNonCanonicalized),
                   base::Time::Now(), InsecureType::kLeaked, IsMuted(false))));

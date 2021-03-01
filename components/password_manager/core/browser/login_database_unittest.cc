@@ -2600,15 +2600,15 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
   ASSERT_FALSE(forms[0]->encrypted_password.empty());
 }
 
-TEST_F(LoginDatabaseTest, RemovingLoginRemovesCompromisedCredentials) {
+TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
   PasswordForm form;
   GenerateExamplePasswordForm(&form);
 
   ignore_result(db().AddLogin(form));
-  CompromisedCredentials credential1{form.signon_realm, form.username_value,
-                                     base::Time(), InsecureType::kLeaked,
-                                     IsMuted(false)};
-  CompromisedCredentials credential2 = credential1;
+  InsecureCredential credential1{form.signon_realm, form.username_value,
+                                 base::Time(), InsecureType::kLeaked,
+                                 IsMuted(false)};
+  InsecureCredential credential2 = credential1;
   credential2.insecure_type = InsecureType::kPhished;
 
   db().insecure_credentials_table().AddRow(credential1);

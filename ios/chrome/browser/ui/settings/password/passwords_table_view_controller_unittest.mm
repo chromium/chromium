@@ -230,18 +230,11 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     AddPasswordForm(std::move(form));
   }
 
-  password_manager::CompromisedCredentials MakeCompromised(
-      base::StringPiece signon_realm,
-      base::StringPiece username) {
-    return password_manager::CompromisedCredentials(
-        std::string(signon_realm), base::ASCIIToUTF16(username),
+  void AddCompromisedCredential() {
+    GetTestStore().AddInsecureCredential(password_manager::InsecureCredential(
+        "http://www.example.com/", base::ASCIIToUTF16("test@egmail.com"),
         base::Time::Now(), InsecureType::kLeaked,
-        password_manager::IsMuted(false));
-  }
-
-  void AddCompromisedCredential1() {
-    GetTestStore().AddInsecureCredential(
-        MakeCompromised("http://www.example.com/", "test@egmail.com"));
+        password_manager::IsMuted(false)));
     RunUntilIdle();
   }
 
@@ -589,7 +582,7 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateSafe) {
 // Test verifies unsafe state of password check cell.
 TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateUnSafe) {
   AddSavedForm1();
-  AddCompromisedCredential1();
+  AddCompromisedCredential();
   ChangePasswordCheckState(PasswordCheckStateUnSafe);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,

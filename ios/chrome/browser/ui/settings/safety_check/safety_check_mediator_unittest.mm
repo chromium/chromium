@@ -102,7 +102,7 @@ typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
   TimestampFooterItem,
 };
 
-using password_manager::CompromisedCredentials;
+using password_manager::InsecureCredential;
 using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 using l10n_util::GetNSString;
@@ -194,15 +194,6 @@ class SafetyCheckMediatorTest : public PlatformTest {
     AddPasswordForm(std::move(form));
   }
 
-  password_manager::CompromisedCredentials MakeCompromised(
-      base::StringPiece signon_realm,
-      base::StringPiece username) {
-    return password_manager::CompromisedCredentials(
-        std::string(signon_realm), base::ASCIIToUTF16(username),
-        base::Time::Now(), InsecureType::kLeaked,
-        password_manager::IsMuted(false));
-  }
-
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
         IOSChromePasswordStoreFactory::GetForBrowserState(
@@ -211,8 +202,10 @@ class SafetyCheckMediatorTest : public PlatformTest {
   }
 
   void AddCompromisedCredential() {
-    GetTestStore().AddInsecureCredential(
-        MakeCompromised("http://www.example.com/", "test@egmail.com"));
+    GetTestStore().AddInsecureCredential(password_manager::InsecureCredential(
+        "http://www.example.com/", base::ASCIIToUTF16("test@egmail.com"),
+        base::Time::Now(), InsecureType::kLeaked,
+        password_manager::IsMuted(false)));
     RunUntilIdle();
   }
 

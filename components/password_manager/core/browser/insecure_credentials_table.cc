@@ -15,9 +15,9 @@ namespace password_manager {
 namespace {
 
 // Returns a compromised credentials vector from the SQL statement.
-std::vector<CompromisedCredentials> StatementToCompromisedCredentials(
+std::vector<InsecureCredential> StatementToInsecureCredential(
     sql::Statement* s) {
-  std::vector<CompromisedCredentials> results;
+  std::vector<InsecureCredential> results;
   while (s->Step()) {
     int parent_key = s->ColumnInt64(0);
     std::string signon_realm = s->ColumnString(1);
@@ -26,9 +26,8 @@ std::vector<CompromisedCredentials> StatementToCompromisedCredentials(
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
         (base::TimeDelta::FromMicroseconds(s->ColumnInt64(4))));
     bool is_muted = !!s->ColumnInt64(5);
-    CompromisedCredentials issue(std::move(signon_realm), std::move(username),
-                                 create_time, insecurity_type,
-                                 IsMuted(is_muted));
+    InsecureCredential issue(std::move(signon_realm), std::move(username),
+                             create_time, insecurity_type, IsMuted(is_muted));
     issue.parent_key = FormPrimaryKey(parent_key);
     results.emplace_back(std::move(issue));
   }
@@ -37,35 +36,32 @@ std::vector<CompromisedCredentials> StatementToCompromisedCredentials(
 
 }  // namespace
 
-CompromisedCredentials::CompromisedCredentials() = default;
+InsecureCredential::InsecureCredential() = default;
 
-CompromisedCredentials::CompromisedCredentials(std::string signon_realm,
-                                               base::string16 username,
-                                               base::Time create_time,
-                                               InsecureType insecurity_type,
-                                               IsMuted is_muted)
+InsecureCredential::InsecureCredential(std::string signon_realm,
+                                       base::string16 username,
+                                       base::Time create_time,
+                                       InsecureType insecurity_type,
+                                       IsMuted is_muted)
     : signon_realm(std::move(signon_realm)),
       username(std::move(username)),
       create_time(create_time),
       insecure_type(insecurity_type),
       is_muted(is_muted) {}
 
-CompromisedCredentials::CompromisedCredentials(
-    const CompromisedCredentials& rhs) = default;
+InsecureCredential::InsecureCredential(const InsecureCredential& rhs) = default;
 
-CompromisedCredentials::CompromisedCredentials(CompromisedCredentials&& rhs) =
+InsecureCredential::InsecureCredential(InsecureCredential&& rhs) = default;
+
+InsecureCredential& InsecureCredential::operator=(
+    const InsecureCredential& rhs) = default;
+
+InsecureCredential& InsecureCredential::operator=(InsecureCredential&& rhs) =
     default;
 
-CompromisedCredentials& CompromisedCredentials::operator=(
-    const CompromisedCredentials& rhs) = default;
+InsecureCredential::~InsecureCredential() = default;
 
-CompromisedCredentials& CompromisedCredentials::operator=(
-    CompromisedCredentials&& rhs) = default;
-
-CompromisedCredentials::~CompromisedCredentials() = default;
-
-bool operator==(const CompromisedCredentials& lhs,
-                const CompromisedCredentials& rhs) {
+bool operator==(const InsecureCredential& lhs, const InsecureCredential& rhs) {
   return lhs.signon_realm == rhs.signon_realm && lhs.username == rhs.username &&
          lhs.create_time == rhs.create_time &&
          lhs.insecure_type == rhs.insecure_type &&
@@ -79,7 +75,7 @@ void InsecureCredentialsTable::Init(sql::Database* db) {
 }
 
 bool InsecureCredentialsTable::AddRow(
-    const CompromisedCredentials& compromised_credentials) {
+    const InsecureCredential& compromised_credentials) {
   DCHECK(db_);
   if (compromised_credentials.signon_realm.empty())
     return false;
@@ -130,7 +126,7 @@ bool InsecureCredentialsTable::RemoveRow(
   DCHECK(db_->DoesTableExist(kTableName));
 
   // Retrieve the rows that are to be removed to log.
-  const std::vector<CompromisedCredentials> compromised_credentials =
+  const std::vector<InsecureCredential> compromised_credentials =
       GetRows(signon_realm);
   if (compromised_credentials.empty())
     return false;
@@ -156,11 +152,11 @@ bool InsecureCredentialsTable::RemoveRow(
   return s.Run();
 }
 
-std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
+std::vector<InsecureCredential> InsecureCredentialsTable::GetRows(
     const std::string& signon_realm) const {
   DCHECK(db_);
   if (signon_realm.empty())
-    return std::vector<CompromisedCredentials>{};
+    return std::vector<InsecureCredential>{};
 
   DCHECK(db_->DoesTableExist(kTableName));
 
@@ -173,10 +169,10 @@ std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
                          kTableName)
           .c_str()));
   s.BindString(0, signon_realm);
-  return StatementToCompromisedCredentials(&s);
+  return StatementToInsecureCredential(&s);
 }
 
-std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
+std::vector<InsecureCredential> InsecureCredentialsTable::GetRows(
     FormPrimaryKey parent_key) const {
   DCHECK(db_);
   DCHECK(db_->DoesTableExist(kTableName));
@@ -190,10 +186,10 @@ std::vector<CompromisedCredentials> InsecureCredentialsTable::GetRows(
                          kTableName)
           .c_str()));
   s.BindInt(0, *parent_key);
-  return StatementToCompromisedCredentials(&s);
+  return StatementToInsecureCredential(&s);
 }
 
-std::vector<CompromisedCredentials> InsecureCredentialsTable::GetAllRows() {
+std::vector<InsecureCredential> InsecureCredentialsTable::GetAllRows() {
   DCHECK(db_);
   DCHECK(db_->DoesTableExist(kTableName));
 
@@ -204,7 +200,7 @@ std::vector<CompromisedCredentials> InsecureCredentialsTable::GetAllRows() {
                          "INNER JOIN logins ON parent_id = logins.id",
                          kTableName)
           .c_str()));
-  return StatementToCompromisedCredentials(&s);
+  return StatementToInsecureCredential(&s);
 }
 
 void InsecureCredentialsTable::ReportMetrics(BulkCheckDone bulk_check_done) {

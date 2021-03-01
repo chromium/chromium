@@ -37,7 +37,7 @@ constexpr char kUsername2[] = "bob";
 constexpr char kPassword[] = "s3cre3t";
 
 using password_manager::PasswordForm;
-using password_manager::CompromisedCredentials;
+using password_manager::InsecureCredential;
 using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 
@@ -54,12 +54,12 @@ scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
 }
 
 // Returns compromised credential structure.
-CompromisedCredentials MakeCompromised(base::StringPiece signon_realm,
-                                       base::StringPiece username) {
-  return CompromisedCredentials(std::string(signon_realm),
-                                base::ASCIIToUTF16(username), base::Time::Now(),
-                                InsecureType::kLeaked,
-                                password_manager::IsMuted(false));
+InsecureCredential MakeInsecureCredential(base::StringPiece signon_realm,
+                                          base::StringPiece username) {
+  return InsecureCredential(std::string(signon_realm),
+                            base::ASCIIToUTF16(username), base::Time::Now(),
+                            InsecureType::kLeaked,
+                            password_manager::IsMuted(false));
 }
 }  // namespace
 
@@ -116,7 +116,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     form.username_element = base::ASCIIToUTF16("email");
 
     store()->AddLogin(form);
-    store()->AddInsecureCredential(MakeCompromised(website, username));
+    store()->AddInsecureCredential(MakeInsecureCredential(website, username));
   }
 
   TestPasswordStore* store() { return store_.get(); }

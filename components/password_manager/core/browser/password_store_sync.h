@@ -21,9 +21,8 @@ class MetadataBatch;
 namespace password_manager {
 
 struct PasswordForm;
-struct CompromisedCredentials;
+struct InsecureCredential;
 
-using InsecureCredential = CompromisedCredentials;
 using ForceInitialSyncCycle =
     base::StrongAlias<class ForceInitialSyncCycleTag, bool>;
 using PrimaryKeyToFormMap =

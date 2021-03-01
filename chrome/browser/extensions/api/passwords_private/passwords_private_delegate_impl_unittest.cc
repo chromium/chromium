@@ -609,7 +609,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnGetPlaintextCompPassword) {
   PasswordsPrivateDelegateImpl delegate(&profile_);
 
   password_manager::PasswordForm form = CreateSampleForm();
-  password_manager::CompromisedCredentials compromised_credentials;
+  password_manager::InsecureCredential compromised_credentials;
   compromised_credentials.signon_realm = form.signon_realm;
   compromised_credentials.username = form.username_value;
   store_->AddLogin(form);
