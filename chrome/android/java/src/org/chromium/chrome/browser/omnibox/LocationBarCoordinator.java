@@ -493,6 +493,11 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarMediator.updateButtonVisibility();
     }
 
+    /** Returns whether the layout is RTL. */
+    public boolean isLayoutRtl() {
+        return mLocationBarLayout.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+    }
+
     // Tablet-specific methods.
 
     /**
