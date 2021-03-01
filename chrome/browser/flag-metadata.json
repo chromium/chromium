@@ -658,7 +658,7 @@
       "msramek",
       "chrome-friendly-settings@google.com"
     ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "context-menu-google-lens-chip",
@@ -2484,7 +2484,7 @@
   {
     "name": "enable-tflite-language-detection",
     "owners": [ "mcrouse@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 94 
+    "expiry_milestone": 94
   },
   {
     "name": "enable-tls13-early-data",
