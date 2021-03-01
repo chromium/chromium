@@ -204,8 +204,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public String getCurrentUrl() {
         // Provide NTP url instead of most recent tab url for searches in overview mode (when Start
         // Surface is enabled). .
-        if (isInOverviewAndShowingOmnibox()
-                || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
+        if (isInOverviewAndShowingOmnibox() || StartSurfaceConfiguration.handleAsNtp(getTab())) {
             return UrlConstants.NTP_URL;
         }
 

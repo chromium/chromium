@@ -806,7 +806,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             public void onSceneChange(Layout layout) {
                 mToolbar.setContentAttached(layout.shouldDisplayContentOverlay());
 
-                if (StartSurfaceConfiguration.consumeFocusOnOmnibox(
+                if (StartSurfaceConfiguration.handleFocusOnOmnibox(
                             mActivityTabProvider.get(), layout)) {
                     setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB);
                     if (shouldShowCursorInLocationBar()) {

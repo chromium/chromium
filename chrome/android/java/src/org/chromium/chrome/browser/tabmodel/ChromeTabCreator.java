@@ -54,13 +54,6 @@ public class ChromeTabCreator extends TabCreator {
          * @return Whether NTP creation was handled.
          */
         boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito, Tab parentTab);
-
-        /**
-         * Called before the Tab is loading its URL.
-         * @param tab The newly created Tab.
-         * @param url The URL to load.
-         */
-        void onTabWillLoadUrl(Tab tab, String url);
     }
 
     private static final String TAG = "ChromeTabCreator";
@@ -224,9 +217,6 @@ public class ChromeTabCreator extends TabCreator {
                                   .setDelegateFactory(delegateFactory)
                                   .setInitiallyHidden(!openInForeground)
                                   .build();
-                    if (mOverviewNTPCreator != null) {
-                        mOverviewNTPCreator.onTabWillLoadUrl(tab, loadUrlParams.getUrl());
-                    }
                     tab.loadUrl(loadUrlParams);
                     TraceEvent.end("ChromeTabCreator.loadUrl");
                 }

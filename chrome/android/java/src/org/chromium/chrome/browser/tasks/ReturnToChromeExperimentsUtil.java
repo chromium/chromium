@@ -303,6 +303,8 @@ public final class ReturnToChromeExperimentsUtil {
             new TabStateObserver(newTab, currentTabModel,
                     chromeActivity.getToolbarManager().getFakeboxDelegate(), emptyTabCloseCallback,
                     chromeActivity.getActivityTabProvider());
+            StartSurfaceUserData.setFocusOnOmnibox(newTab, true);
+            StartSurfaceUserData.setCreatedAsNtp(newTab);
         }
 
         if (params.getTransitionType() == PageTransition.AUTO_BOOKMARK) {

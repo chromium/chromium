@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import android.text.TextUtils;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -24,7 +22,6 @@ import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /**
@@ -177,11 +174,10 @@ public class StartSurfaceConfiguration {
     }
 
     /**
-     * Returns whether the given Tab has the flag of focusing on its Omnibox on the first time the
-     * Tab is showing, and resets the flag in the Tab's UserData. This function returns true only
-     * when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled.
+     * @return Whether the caller should set focus on omnibox. This function returns true only when
+     * {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled.
      */
-    public static boolean consumeFocusOnOmnibox(Tab tab, Layout layout) {
+    public static boolean handleFocusOnOmnibox(Tab tab, Layout layout) {
         if (layout instanceof StaticLayout && tab != null
                 && StartSurfaceUserData.getFocusOnOmnibox(tab)) {
             assert OMNIBOX_FOCUSED_ON_NEW_TAB.getValue();
@@ -196,23 +192,10 @@ public class StartSurfaceConfiguration {
      *         true only when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, the tab is newly
      *         created from the new Tab menu or "+" button, and it hasn't navigate to any URL yet.
      */
-    public static boolean shouldHandleAsNtp(Tab tab) {
+    public static boolean handleAsNtp(Tab tab) {
         if (tab == null || tab.getUrl() == null) return false;
 
         return tab.getUrl().isEmpty() && StartSurfaceUserData.getCreatedAsNtp(tab);
-    }
-
-    /**
-     * Sets the UserData if the Tab is a newly created empty Tab when
-     * {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled.
-     */
-    public static void maySetUserDataForEmptyTab(Tab tab, String url) {
-        if (!OMNIBOX_FOCUSED_ON_NEW_TAB.getValue() || tab == null || !TextUtils.isEmpty(url)
-                || tab.getLaunchType() != TabLaunchType.FROM_START_SURFACE) {
-            return;
-        }
-        StartSurfaceUserData.setFocusOnOmnibox(tab, true);
-        StartSurfaceUserData.setCreatedAsNtp(tab);
     }
 
     public static boolean shouldShowNewSurfaceFromHomeButton() {
