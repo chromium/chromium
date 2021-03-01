@@ -29,8 +29,7 @@ and _haystacks_ under a certain size.
 ## The matrix algorithm
 
       Aside: for simplicity, steps 1 and 2 above are performed in terms of UTF-16
-      code units. The matrix algorithm, on the other hand, works in [code points](),
-      which makes it more accurate for languages outside the [basic multilingual plane]().
+      code units. The matrix algorithm, on the other hand, works in [code points](https://unicode.org/glossary/#code_point), which makes it more accurate for languages outside the [basic multilingual plane](https://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane).
 
 This is easiest to present in a worked example, so let's use
 `needle` = "nwi"
@@ -59,8 +58,7 @@ The exact calculation of the score for a match is arbitrary and subject to
 change so we won't get into it in detail here. We *will* get into detail about
 how the scores of previously filled cells affect the scores of subsequent cells.
 
-#### A `n x m` "consecutive matrix" (not pictured, it looks exactly like the above
-when empty).
+#### A `n x m` "consecutive matrix" (not pictured, it looks exactly like the above when empty).
 
  The cell at i,j represents how many consecutive matched characters
 of `needle` were found ending at this position. I guess formally, you could say:
@@ -161,6 +159,7 @@ a match, so we're in a gap, and so the cell in the consecutive matrix is set to
 Now our matrices are filled!
 
 Score:
+
 |   | w | i | n  | t  | e  | r  |    | n  | e  | w  |    | w  | i  | n  | d  | o  | w  |
 |---|---|---|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
 | n | 0 | 0 | 16 | 13 | 12 | 11 | 10 | 32 | 29 | 28 | 27 | 26 | 25 | 16 | 13 | 12 | 11 |
@@ -168,6 +167,7 @@ Score:
 | i | 0 | 0 | 0  | 0  | 0  | 0  | 0  | 0  | 0  | 0  | 0  | 0  | 71 | 68 | 67 | 66 | 65 |
 
 and consecutive:
+
 |   | w | i | n | t | e | r |   | n | e | w |   | w | i | n | d | o | w |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | n | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
