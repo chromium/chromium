@@ -10,16 +10,6 @@
 <dom-module id="settings-peripheral-data-access-protection-dialog">
   <template>
     <style include="settings-shared">
-      paper-progress {
-        --paper-progress-active-color: var(--google-blue-600);
-        padding-bottom: 40px;
-        width: auto;
-      }
-
-      #disablingDescription {
-        padding-bottom: 20px;
-      }
-
       cr-dialog::part(dialog) {
         width: 370px;
       }
@@ -27,37 +17,21 @@
 
     <cr-dialog id="warningDialog" show-on-attach>
       <div slot="title">
-        <div hidden="[[!showDisablingDialog_]]">
-          $i18n{peripheralDataAccessProtectionDisablingTitle}
-        </div>
-        <div hidden="[[showDisablingDialog_]]">
-          $i18n{peripheralDataAccessProtectionWarningTitle}
-        </div>
+        $i18n{peripheralDataAccessProtectionWarningTitle}
       </div>
       <div slot="body">
-        <template is="dom-if" if="[[showDisablingDialog_]]">
-          <div id="disablingDescription">
-            $i18n{peripheralDataAccessProtectionDisablingDescription}
-          </div>
-          <paper-progress id="progressLoad" indeterminate>
-          </paper-progress>
-        </template>
-        <div hidden="[[showDisablingDialog_]]">
-          $i18n{peripheralDataAccessProtectionWarningDescription}
-        </div>
+        $i18n{peripheralDataAccessProtectionWarningDescription}
       </div>
-      <template is="dom-if" if="[[!showDisablingDialog_]]">
-        <div slot="button-container">
-          <cr-button id="cancelButton" class="cancel-button"
-              on-click="onCancelButtonClicked_">
-            $i18n{peripheralDataAccessProtectionCancelButton}
-          </cr-button>
-          <cr-button id="disableConfirmation" class="action-button"
-              on-click="onDisableClicked_">
-            $i18n{peripheralDataAccessProtectionDisableButton}
-          </cr-button>
-        </div>
-      </template>
+      <div slot="button-container">
+        <cr-button id="cancelButton" class="cancel-button"
+            on-click="onCancelButtonClicked_">
+          $i18n{peripheralDataAccessProtectionCancelButton}
+        </cr-button>
+        <cr-button id="disableConfirmation" class="action-button"
+            on-click="onDisableClicked_">
+          $i18n{peripheralDataAccessProtectionDisableButton}
+        </cr-button>
+      </div>
     </cr-dialog>
 
   </template>
