@@ -32,6 +32,7 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "services/network/public/mojom/url_request.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-shared.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -88,6 +89,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return std::move(
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .auth_cert_observer);
+  }
+  static mojo::PendingRemote<network::mojom::DevToolsObserver>
+  devtools_observer(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    if (!trusted_params.devtools_observer)
+      return mojo::NullRemote();
+    return std::move(
+        const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
+            .devtools_observer);
   }
   static const network::mojom::ClientSecurityStatePtr& client_security_state(
       const network::ResourceRequest::TrustedParams& trusted_params) {

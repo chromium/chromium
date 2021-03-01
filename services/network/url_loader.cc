@@ -468,7 +468,8 @@ URLLoader::URLLoader(
     const cors::OriginAccessList& origin_access_list,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-        auth_cert_observer)
+        auth_cert_observer,
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
     : url_request_context_(url_request_context),
       network_service_client_(network_service_client),
       network_context_client_(network_context_client),
@@ -510,12 +511,14 @@ URLLoader::URLLoader(
       origin_access_list_(origin_access_list),
       cookie_observer_(std::move(cookie_observer)),
       auth_cert_observer_(std::move(auth_cert_observer)),
+      devtools_observer_(std::move(devtools_observer)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
           request.request_body &&
           request.request_body->AllowHTTP1ForStreamingUpload()) {
   DCHECK(delete_callback_);
   DCHECK(factory_params_);
+
   if (url_loader_header_client &&
       (options_ & mojom::kURLLoadOptionUseHeaderClient)) {
     if (options_ & mojom::kURLLoadOptionAsCorsPreflight) {
@@ -849,14 +852,13 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
                                   weak_ptr_factory_.GetWeakPtr(),
                                   net::ERR_TRUST_TOKEN_OPERATION_FAILED));
 
-    if (network_service_client_ && devtools_request_id()) {
+    if (devtools_observer_ && devtools_request_id()) {
       mojom::TrustTokenOperationResultPtr operation_result =
           mojom::TrustTokenOperationResult::New();
       operation_result->status = *trust_token_status_;
       operation_result->type = type;
-      network_service_client_->OnTrustTokenOperationDone(
-          GetProcessId(), GetRenderFrameId(), devtools_request_id().value(),
-          std::move(operation_result));
+      devtools_observer_->OnTrustTokenOperationDone(
+          devtools_request_id().value(), std::move(operation_result));
     }
     return;
   }
@@ -1066,11 +1068,10 @@ bool URLLoader::CanConnectToAddressSpace(
              << (is_warning ? "but not enforcing blocking of insecure private "
                               "network request."
                             : "blocking insecure private network request.");
-    if (network_service_client_) {
-      network_service_client_->OnPrivateNetworkRequest(
-          factory_params_->process_id, render_frame_id_, devtools_request_id(),
-          url_request_->url(), is_warning, resource_address_space,
-          security_state->Clone());
+    if (devtools_observer_) {
+      devtools_observer_->OnPrivateNetworkRequest(
+          devtools_request_id(), url_request_->url(), is_warning,
+          resource_address_space, security_state->Clone());
     }
     return is_warning;
   }
@@ -1309,15 +1310,14 @@ void URLLoader::OnDoneFinalizingTrustTokenOperation(
 void URLLoader::MaybeSendTrustTokenOperationResultToDevTools() {
   CHECK(trust_token_helper_ && trust_token_status_);
 
-  if (!network_service_client_ || !devtools_request_id())
+  if (!devtools_observer_ || !devtools_request_id())
     return;
 
   mojom::TrustTokenOperationResultPtr operation_result =
       trust_token_helper_->CollectOperationResultWithStatus(
           *trust_token_status_);
-  network_service_client_->OnTrustTokenOperationDone(
-      GetProcessId(), GetRenderFrameId(), devtools_request_id().value(),
-      std::move(operation_result));
+  devtools_observer_->OnTrustTokenOperationDone(devtools_request_id().value(),
+                                                std::move(operation_result));
 }
 
 void URLLoader::ContinueOnResponseStarted() {
@@ -1902,7 +1902,7 @@ void URLLoader::SetRawResponseHeaders(
 
 void URLLoader::SetRawRequestHeadersAndNotify(
     net::HttpRawRequestHeaders headers) {
-  if (network_service_client_ && devtools_request_id()) {
+  if (devtools_observer_ && devtools_request_id()) {
     std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
     header_array.reserve(headers.headers().size());
 
@@ -1921,10 +1921,9 @@ void URLLoader::SetRawRequestHeadersAndNotify(
       client_security_state = request_client_security_state_->Clone();
     }
 
-    network_service_client_->OnRawRequest(
-        GetProcessId(), GetRenderFrameId(), devtools_request_id().value(),
-        url_request_->maybe_sent_cookies(), std::move(header_array),
-        std::move(client_security_state));
+    devtools_observer_->OnRawRequest(
+        devtools_request_id().value(), url_request_->maybe_sent_cookies(),
+        std::move(header_array), std::move(client_security_state));
   }
 
   if (cookie_observer_) {
@@ -2117,7 +2116,7 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
 }
 
 void URLLoader::ReportFlaggedResponseCookies() {
-  if (network_service_client_ && devtools_request_id() &&
+  if (devtools_observer_ && devtools_request_id() &&
       url_request_->response_headers()) {
     std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
 
@@ -2144,10 +2143,9 @@ void URLLoader::ReportFlaggedResponseCookies() {
               url_request_->response_headers()->raw_headers()));
     }
 
-    network_service_client_->OnRawResponse(
-        GetProcessId(), GetRenderFrameId(), devtools_request_id().value(),
-        url_request_->maybe_stored_cookies(), std::move(header_array),
-        raw_response_headers,
+    devtools_observer_->OnRawResponse(
+        devtools_request_id().value(), url_request_->maybe_stored_cookies(),
+        std::move(header_array), raw_response_headers,
         IPAddressToIPAddressSpace(response_info.remote_endpoint.address()));
   }
 

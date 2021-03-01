@@ -271,6 +271,18 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
                         : network_loader_factory_.get();
   DCHECK(inner_url_loader_factory);
   if (!disable_web_security_) {
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+    if (resource_request.trusted_params &&
+        resource_request.trusted_params->devtools_observer) {
+      ResourceRequest::TrustedParams cloned_params =
+          *resource_request.trusted_params;
+      devtools_observer = std::move(cloned_params.devtools_observer);
+    } else if (!factory_override_) {
+      if (auto* observer = network_loader_factory_->GetDevToolsObserver()) {
+        observer->Clone(devtools_observer.InitWithNewPipeAndPassReceiver());
+      }
+    }
+
     auto loader = std::make_unique<CorsURLLoader>(
         std::move(receiver), process_id_, routing_id, request_id, options,
         base::BindOnce(&CorsURLLoaderFactory::DestroyURLLoader,
@@ -281,7 +293,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         std::move(client), traffic_annotation, inner_url_loader_factory,
         origin_access_list_, context_->cors_preflight_controller(),
         context_->cors_exempt_header_list(),
-        GetAllowAnyCorsExemptHeaderForBrowser(), isolation_info_);
+        GetAllowAnyCorsExemptHeaderForBrowser(), isolation_info_,
+        std::move(devtools_observer));
     auto* raw_loader = loader.get();
     OnLoaderCreated(std::move(loader));
     raw_loader->Start();

@@ -9,7 +9,7 @@ import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
-import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_request.mojom";
 
 // An HTTPS server to send DNS queries to, per the DNS Queries over HTTPS spec.
 // spec:  https://tools.ietf.org/html/draft-ietf-doh-dns-over-https-12

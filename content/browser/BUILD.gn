@@ -716,6 +716,8 @@ source_set("browser") {
     "devtools/devtools_video_consumer.h",
     "devtools/forwarding_agent_host.cc",
     "devtools/forwarding_agent_host.h",
+    "devtools/network_service_devtools_observer.cc",
+    "devtools/network_service_devtools_observer.h",
     "devtools/protocol/audits_handler.cc",
     "devtools/protocol/audits_handler.h",
     "devtools/protocol/background_service_handler.cc",

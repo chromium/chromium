@@ -74,7 +74,8 @@ CorsURLLoader::CorsURLLoader(
     PreflightController* preflight_controller,
     const base::flat_set<std::string>* allowed_exempt_headers,
     bool allow_any_cors_exempt_header,
-    const net::IsolationInfo& isolation_info)
+    const net::IsolationInfo& isolation_info,
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       routing_id_(routing_id),
@@ -90,7 +91,8 @@ CorsURLLoader::CorsURLLoader(
       allowed_exempt_headers_(allowed_exempt_headers),
       skip_cors_enabled_scheme_check_(skip_cors_enabled_scheme_check),
       allow_any_cors_exempt_header_(allow_any_cors_exempt_header),
-      isolation_info_(isolation_info) {
+      isolation_info_(isolation_info),
+      devtools_observer_(std::move(devtools_observer)) {
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = base::nullopt;
 
@@ -476,6 +478,13 @@ void CorsURLLoader::StartRequest() {
     return;
   }
 
+  // Clone the devtools observer
+  mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+  if (devtools_observer_) {
+    devtools_observer_->Clone(
+        devtools_observer.InitWithNewPipeAndPassReceiver());
+  }
+
   // Since we're doing a preflight, we won't reuse the original request. Cancel
   // it now to free up the socket.
   network_loader_.reset();
@@ -487,7 +496,7 @@ void CorsURLLoader::StartRequest() {
       PreflightController::WithTrustedHeaderClient(
           options_ & mojom::kURLLoadOptionUseHeaderClient),
       tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
-      network_loader_factory_, process_id_, isolation_info_);
+      network_loader_factory_, isolation_info_, std::move(devtools_observer));
 }
 
 void CorsURLLoader::StartNetworkRequest(

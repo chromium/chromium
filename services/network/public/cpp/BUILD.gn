@@ -171,7 +171,7 @@ component("ip_address_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_ip_address_shared",
   ]
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_IP_ADDRESS_IMPL" ]
 }
 
 component("cookies_mojom_support") {
@@ -185,7 +185,7 @@ component("cookies_mojom_support") {
     "//net",
     "//services/network/public/mojom:cookies_mojom_shared",
   ]
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_COOKIES_IMPL" ]
 }
 
 component("network_param_mojom_support") {
@@ -203,7 +203,7 @@ component("network_param_mojom_support") {
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_origin",
   ]
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_NETWORK_PARAM_IMPL" ]
 }
 
 # This component is separate from cpp_base as it is a dependency of
@@ -222,7 +222,7 @@ component("cross_origin_embedder_policy") {
     "//services/network/public/mojom:url_loader_base_shared",
   ]
 
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_CROSS_ORIGIN_IMPL" ]
 }
 
 # This component is separate from cpp_base as it is a dependency of
@@ -237,7 +237,7 @@ component("schemeful_site_mojom_support") {
     "//services/network/public/mojom:mojom_schemeful_site_shared",
     "//url/mojom:url_mojom_origin",
   ]
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_SCHEMEFUL_IMPL" ]
 }
 
 component("cpp_base") {
@@ -258,6 +258,8 @@ component("cpp_base") {
     "http_request_headers_mojom_traits.h",
     "isolation_info_mojom_traits.cc",
     "isolation_info_mojom_traits.h",
+    "load_timing_info_mojom_traits.cc",
+    "load_timing_info_mojom_traits.h",
     "mutable_network_traffic_annotation_tag_mojom_traits.h",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits.h",
     "network_interface_mojom_traits.cc",
@@ -311,9 +313,18 @@ component("cpp_base") {
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:cookies_mojom",
-    "//services/network/public/mojom:mojom_shared",
+    "//services/network/public/mojom:url_loader_base",
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+
+  # Since URLLoader is typedmapped in mojo and the class also uses the mojo
+  # interfaces a circular dependency exists. Allow this and ignore windows
+  # errors from it.
+  allow_circular_includes_from =
+      [ "//services/network/public/mojom:url_loader_base" ]
+  if (is_win && is_component_build) {
+    ldflags = [ "/IGNORE:4217" ]
+  }
 }
 
 mojom("test_interfaces") {

@@ -79,6 +79,7 @@ class URLLoaderFactoryParamsHelper {
           coep_reporter,
       mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
           auth_cert_observer,
+      mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       base::StringPiece debug_tag);
 
   // TODO(https://crbug.com/1114822): CreateForRendererProcess is unused and can

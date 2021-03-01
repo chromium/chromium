@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/inspector_handler.h"
 #include "content/browser/devtools/protocol/io_handler.h"
@@ -222,13 +223,15 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
       cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
                                     : network::CrossOriginEmbedderPolicy(),
       std::move(coep_reporter_for_script_loader),
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript);
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
+      GetId());
   auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, origin,
       cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
                                     : network::CrossOriginEmbedderPolicy(),
       std::move(coep_reporter_for_subresource_loader),
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource);
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
+      GetId());
 
   auto* version = context_wrapper_->GetLiveVersion(version_id_);
   if (!version)
@@ -251,6 +254,7 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
       /*coep_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
           ->CreateAuthCertObserverForServiceWorker(),
+      NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
       /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools");
   return {url::Origin::Create(GetURL()), net::SiteForCookies::FromUrl(GetURL()),
           std::move(factory)};

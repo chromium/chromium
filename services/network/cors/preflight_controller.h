@@ -65,8 +65,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       bool tainted,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* loader_factory,
-      int32_t process_id,
-      const net::IsolationInfo& isolation_info);
+      const net::IsolationInfo& isolation_info,
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
 
  private:
   class PreflightLoader;

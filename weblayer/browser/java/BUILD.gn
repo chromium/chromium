@@ -269,6 +269,7 @@ android_library("java") {
     "//net/android:net_java",
     "//services/network/public/mojom:cookies_mojom_java",
     "//services/network/public/mojom:mojom_java",
+    "//services/network/public/mojom:url_loader_base_java",
     "//services/service_manager/public/java:service_manager_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

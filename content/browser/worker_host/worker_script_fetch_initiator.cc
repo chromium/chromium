@@ -16,7 +16,9 @@
 #include "base/task/post_task.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/data_url_loader_factory.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/file_url_loader_factory.h"
@@ -335,6 +337,7 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
     DCHECK(factory_bundle_for_browser_info);
     mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
         auth_cert_observer;
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer;
     // If we have a |creator_render_frame_host| associate the load with that
     // RenderFrameHost. Note that |factory_process| may be different than the
     // |creator_render_frame_host|'s RenderProcessHost.
@@ -344,6 +347,8 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
               ->CreateAuthAndCertObserverForFrame(
                   creator_render_frame_host->GetProcess()->GetID(),
                   creator_render_frame_host->GetRoutingID());
+      devtools_observer = NetworkServiceDevToolsObserver::MakeSelfOwned(
+          creator_render_frame_host->GetDevToolsFrameToken().ToString());
     }
 
     const url::Origin& request_initiator = *resource_request->request_initiator;
@@ -353,6 +358,7 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
         URLLoaderFactoryParamsHelper::CreateForWorker(
             factory_process, request_initiator, trusted_isolation_info,
             /*coep_reporter=*/mojo::NullRemote(), std::move(auth_cert_observer),
+            std::move(devtools_observer),
             /*debug_tag=*/"WorkerScriptFetchInitiator::CreateScriptLoader");
 
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>

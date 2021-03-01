@@ -101,7 +101,8 @@ class NavigationURLLoaderTest : public testing::Test {
         nullptr, nullptr, nullptr, nullptr, delegate,
         NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote(),
         storage_partition->CreateAuthAndCertObserverForNavigationRequest(
-            -1 /* frame_tree_node_id */));
+            -1 /* frame_tree_node_id */),
+        /*devtools_observer=*/mojo::NullRemote());
   }
 
  protected:

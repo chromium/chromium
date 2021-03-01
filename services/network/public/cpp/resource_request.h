@@ -27,6 +27,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -58,6 +59,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
     mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
         auth_cert_observer;
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
     mojom::ClientSecurityStatePtr client_security_state;
   };
 

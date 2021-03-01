@@ -18,6 +18,8 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -108,8 +110,12 @@ void NotifyForegroundServiceWorker(bool added, int process_id) {
 // ServiceWorkerOnUI.
 class EmbeddedWorkerInstance::DevToolsProxy {
  public:
-  DevToolsProxy(int process_id, int agent_route_id)
-      : process_id_(process_id), agent_route_id_(agent_route_id) {}
+  DevToolsProxy(int process_id,
+                int agent_route_id,
+                const base::UnguessableToken& devtools_id)
+      : process_id_(process_id),
+        agent_route_id_(agent_route_id),
+        devtools_id_(devtools_id) {}
 
   ~DevToolsProxy() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -140,9 +146,12 @@ class EmbeddedWorkerInstance::DevToolsProxy {
 
   int agent_route_id() const { return agent_route_id_; }
 
+  const base::UnguessableToken& devtools_id() const { return devtools_id_; }
+
  private:
   const int process_id_;
   const int agent_route_id_;
+  const base::UnguessableToken devtools_id_;
   bool worker_stop_ignored_notified_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsProxy);
@@ -351,7 +360,7 @@ void EmbeddedWorkerInstance::Start(
     // Create DevToolsProxy here to ensure that the WorkerCreated() call is
     // balanced by DevToolsProxy's destructor calling WorkerStopped().
     devtools_proxy = std::make_unique<EmbeddedWorkerInstance::DevToolsProxy>(
-        process_id, routing_id);
+        process_id, routing_id, params->devtools_worker_token);
 
     // Create factory bundles for this worker to do loading. These bundles don't
     // support reconnection to the network service, see below comments.
@@ -368,7 +377,8 @@ void EmbeddedWorkerInstance::Start(
               rph, routing_id, origin,
               owner_version_->cross_origin_embedder_policy(),
               std::move(coep_reporter_for_scripts),
-              ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript);
+              ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
+              params->devtools_worker_token.ToString());
     }
 
     // The bundle for the renderer is passed to the service worker, and
@@ -379,7 +389,8 @@ void EmbeddedWorkerInstance::Start(
     factory_bundle_for_renderer = EmbeddedWorkerInstance::CreateFactoryBundle(
         rph, routing_id, origin, owner_version_->cross_origin_embedder_policy(),
         std::move(coep_reporter_for_subresources),
-        ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource);
+        ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
+        params->devtools_worker_token.ToString());
   }
 
   // TODO(crbug.com/862854): Support changes to blink::RendererPreferences while
@@ -754,7 +765,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
         cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
-    ContentBrowserClient::URLLoaderFactoryType factory_type) {
+    ContentBrowserClient::URLLoaderFactoryType factory_type,
+    const std::string& devtools_worker_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto factory_bundle =
       std::make_unique<blink::PendingURLLoaderFactoryBundle>();
@@ -770,6 +782,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
           std::move(coep_reporter),
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
               ->CreateAuthCertObserverForServiceWorker(),
+          NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
           "EmbeddedWorkerInstance::CreateFactoryBundle");
   bool bypass_redirect_checks = false;
 
@@ -897,12 +910,14 @@ EmbeddedWorkerInstance::CreateFactoryBundles() {
       rph, worker_devtools_agent_route_id(), origin,
       owner_version_->cross_origin_embedder_policy(),
       std::move(coep_reporter_for_scripts),
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript);
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
+      WorkerDevtoolsId().ToString());
   result.subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_devtools_agent_route_id(), origin,
       owner_version_->cross_origin_embedder_policy(),
       std::move(coep_reporter_for_subresources),
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource);
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
+      WorkerDevtoolsId().ToString());
 
   BindCacheStorageInternal();
 
@@ -942,6 +957,12 @@ int EmbeddedWorkerInstance::worker_devtools_agent_route_id() const {
   if (devtools_proxy_)
     return devtools_proxy_->agent_route_id();
   return MSG_ROUTING_NONE;
+}
+
+base::UnguessableToken EmbeddedWorkerInstance::WorkerDevtoolsId() const {
+  if (devtools_proxy_)
+    return devtools_proxy_->devtools_id();
+  return base::UnguessableToken();
 }
 
 void EmbeddedWorkerInstance::AddObserver(Listener* listener) {

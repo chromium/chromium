@@ -79,7 +79,8 @@ URLLoaderFactory::URLLoaderFactory(
       coep_reporter_(std::move(params_->coep_reporter)),
       cors_url_loader_factory_(cors_url_loader_factory),
       cookie_observer_(std::move(params_->cookie_observer)),
-      auth_cert_observer_(std::move(params_->auth_cert_observer)) {
+      auth_cert_observer_(std::move(params_->auth_cert_observer)),
+      devtools_observer_(std::move(params_->devtools_observer)) {
   DCHECK(context);
   DCHECK_NE(mojom::kInvalidProcessId, params_->process_id);
   DCHECK(!params_->factory_override);
@@ -279,6 +280,17 @@ void URLLoaderFactory::CreateLoaderAndStart(
         auth_cert_observer.InitWithNewPipeAndPassReceiver());
   }
 
+  mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+  if (url_request.trusted_params &&
+      url_request.trusted_params->devtools_observer) {
+    devtools_observer =
+        std::move(const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
+            url_request.trusted_params->devtools_observer));
+  } else if (devtools_observer_) {
+    devtools_observer_->Clone(
+        devtools_observer.InitWithNewPipeAndPassReceiver());
+  }
+
   auto loader = std::make_unique<URLLoader>(
       context_->url_request_context(), network_service_client,
       context_->client(),
@@ -295,7 +307,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
       header_client_.is_bound() ? header_client_.get() : nullptr,
       context_->origin_policy_manager(), std::move(trust_token_factory),
       context_->cors_origin_access_list(), std::move(cookie_observer),
-      std::move(auth_cert_observer));
+      std::move(auth_cert_observer), std::move(devtools_observer));
 
   cors_url_loader_factory_->OnLoaderCreated(std::move(loader));
 }
@@ -303,6 +315,12 @@ void URLLoaderFactory::CreateLoaderAndStart(
 void URLLoaderFactory::Clone(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
   NOTREACHED();
+}
+
+mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() {
+  if (devtools_observer_)
+    return devtools_observer_.get();
+  return nullptr;
 }
 
 }  // namespace network

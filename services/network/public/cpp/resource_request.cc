@@ -7,6 +7,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/url_request.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 
 namespace network {
@@ -32,6 +33,17 @@ mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver> Clone(
   mojo::Remote<mojom::AuthenticationAndCertificateObserver> remote(
       std::move(*observer));
   mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver> new_remote;
+  remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
+  *observer = remote.Unbind();
+  return new_remote;
+}
+
+mojo::PendingRemote<mojom::DevToolsObserver> Clone(
+    mojo::PendingRemote<mojom::DevToolsObserver>* observer) {
+  if (!*observer)
+    return mojo::NullRemote();
+  mojo::Remote<mojom::DevToolsObserver> remote(std::move(*observer));
+  mojo::PendingRemote<mojom::DevToolsObserver> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
   *observer = remote.Unbind();
   return new_remote;
@@ -76,6 +88,9 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
       Clone(&const_cast<
             mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>&>(
           other.auth_cert_observer));
+  devtools_observer =
+      Clone(&const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
+          other.devtools_observer));
   client_security_state = other.client_security_state.Clone();
   return *this;
 }

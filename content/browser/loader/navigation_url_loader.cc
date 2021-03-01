@@ -34,6 +34,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
         auth_cert_observer,
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
         initial_interceptors) {
   if (g_loader_factory) {
@@ -51,7 +52,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
       std::move(navigation_ui_data), service_worker_handle, appcache_handle,
       std::move(prefetched_signed_exchange_cache), delegate,
       std::move(cookie_observer), std::move(auth_cert_observer),
-      std::move(initial_interceptors));
+      std::move(devtools_observer), std::move(initial_interceptors));
 }
 
 void NavigationURLLoader::SetFactoryForTesting(

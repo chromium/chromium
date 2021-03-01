@@ -194,7 +194,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     int frame_tree_node_id,
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-        auth_cert_observer) {
+        auth_cert_observer,
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer) {
   auto new_request = std::make_unique<network::ResourceRequest>();
 
   new_request->method = request_info->common_params->method;
@@ -206,6 +207,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->trusted_params->cookie_observer = std::move(cookie_observer);
   new_request->trusted_params->auth_cert_observer =
       std::move(auth_cert_observer);
+  new_request->trusted_params->devtools_observer = std::move(devtools_observer);
   new_request->trusted_params->client_security_state =
       request_info->client_security_state.Clone();
   new_request->is_main_frame = request_info->is_main_frame;
@@ -1089,6 +1091,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
         auth_cert_observer,
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
         initial_interceptors)
     : delegate_(delegate),
@@ -1119,7 +1122,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
 
   resource_request_ = CreateResourceRequest(
       request_info_.get(), frame_tree_node_id_, std::move(cookie_observer),
-      std::move(auth_cert_observer));
+      std::move(auth_cert_observer), std::move(devtools_observer));
 
   std::string accept_langs =
       GetContentClient()->browser()->GetAcceptLangs(browser_context_);

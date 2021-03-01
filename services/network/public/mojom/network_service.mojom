@@ -27,6 +27,7 @@ import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "url/mojom/origin.mojom";
@@ -59,80 +60,6 @@ interface NetworkServiceClient {
   // identifies the annotation of the request.
   OnDataUseUpdate(int32 network_traffic_annotation_id_hash, int64 recv_bytes,
                   int64 sent_bytes);
-
-  // Called to send raw header information and information about excluded
-  // cookies. Only called when |devtool_request_id| is available to the
-  // URLLoader.
-  OnRawRequest(
-    int32 process_id,
-    int32 routing_id,
-    string devtool_request_id,
-    array<CookieWithAccessResult> cookies_with_access_result,
-    array<HttpRawHeaderPair> headers,
-    ClientSecurityState? client_security_state);
-
-  // Called to send information about the cookies blocked from storage from a
-  // received response. Only called when |devtool_request_id| is available to
-  // the URLLoader.
-  OnRawResponse(
-    int32 process_id,
-    int32 routing_id,
-    string devtool_request_id,
-    array<CookieAndLineWithAccessResult> cookies_with_access_result,
-    array<HttpRawHeaderPair> headers,
-    string? raw_response_headers,
-    IPAddressSpace resource_address_space);
-
-  // Called to send information about a private network request that was blocked
-  // (then |is_warning| is false), or will be blocked in the future (then
-  // |is_warning| is true). It is possible to share sensitive information with
-  // DevTools as this is handled in the browser process. Called even when
-  // |devtool_request_id| is not available to the URLLoader to ensure the
-  // information can be recorded even when DevTools is closed.
-  OnPrivateNetworkRequest(
-    int32 process_id,
-    int32 routing_id,
-    string? devtool_request_id,
-    url.mojom.Url url,
-    bool is_warning,
-    IPAddressSpace resource_address_space,
-    ClientSecurityState client_security_state);
-
-  // Called to send the CORS preflight request information. Only called when
-  // |devtool_request_id| is available on the original request.
-  OnCorsPreflightRequest(
-    int32 process_id,
-    int32 render_frame_id,
-    mojo_base.mojom.UnguessableToken devtool_request_id,
-    URLRequest request,
-    url.mojom.Url initiator_url,
-    string initiator_devtool_request_id);
-
-  // Called to send the CORS preflight response information. Only called when
-  // |devtool_request_id| is available on the original request.
-  OnCorsPreflightResponse(
-    int32 process_id,
-    int32 render_frame_id,
-    mojo_base.mojom.UnguessableToken devtool_request_id,
-    url.mojom.Url url,
-    URLResponseHead head);
-
-  // Called to send the CORS preflight completion status. Only called when
-  // |devtool_request_id| is available on the original request.
-  OnCorsPreflightRequestCompleted(
-    int32 process_id,
-    int32 render_frame_id,
-    mojo_base.mojom.UnguessableToken devtool_request_id,
-    URLLoaderCompletionStatus status);
-
-  // Called to send the result of a successful or failed Trust Token
-  // operation. Only called when |devtools_request_id| is available on the
-  // original request.
-  OnTrustTokenOperationDone(
-    int32 process_id,
-    int32 routing_id,
-    string devtool_request_id,
-    TrustTokenOperationResult result);
 };
 
 // Values for configuring HTTP authentication that can only be set once.

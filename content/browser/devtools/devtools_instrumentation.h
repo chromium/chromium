@@ -142,51 +142,6 @@ void OnSignedExchangeCertificateRequestCompleted(
     const base::UnguessableToken& request_id,
     const network::URLLoaderCompletionStatus& status);
 
-void OnRequestWillBeSentExtraInfo(
-    int process_id,
-    int routing_id,
-    const std::string& devtools_request_id,
-    const net::CookieAccessResultList& request_cookie_list,
-    const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
-    const network::mojom::ClientSecurityStatePtr security_state);
-void OnResponseReceivedExtraInfo(
-    int process_id,
-    int routing_id,
-    const std::string& devtools_request_id,
-    const net::CookieAndLineAccessResultList& response_cookie_list,
-    const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
-    const base::Optional<std::string>& response_headers_text,
-    network::mojom::IPAddressSpace resource_address_space);
-void OnPrivateNetworkRequest(
-    int32_t process_id,
-    int32_t routing_id,
-    const base::Optional<std::string>& devtools_request_id,
-    const GURL& url,
-    bool is_warning,
-    network::mojom::IPAddressSpace resource_address_space,
-    const network::mojom::ClientSecurityStatePtr client_security_state);
-void OnCorsPreflightRequest(int32_t process_id,
-                            int32_t render_frame_id,
-                            const base::UnguessableToken& devtools_request_id,
-                            const network::ResourceRequest& request,
-                            const GURL& signed_exchange_url,
-                            const std::string& initiator_devtools_request_id);
-void OnCorsPreflightResponse(int32_t process_id,
-                             int32_t render_frame_id,
-                             const base::UnguessableToken& devtools_request_id,
-                             const GURL& url,
-                             network::mojom::URLResponseHeadPtr head);
-void OnCorsPreflightRequestCompleted(
-    int32_t process_id,
-    int32_t render_frame_id,
-    const base::UnguessableToken& devtools_request_id,
-    const network::URLLoaderCompletionStatus& status);
-void OnTrustTokenOperationDone(
-    int32_t process_id,
-    int32_t routing_id,
-    const std::string& devtools_request_id,
-    const network::mojom::TrustTokenOperationResultPtr result);
-
 std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
     NavigationHandle* navigation_handle);
 

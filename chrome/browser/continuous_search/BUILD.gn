@@ -33,6 +33,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//services/network/public/mojom:mojom_java",
+    "//services/network/public/mojom:url_loader_base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

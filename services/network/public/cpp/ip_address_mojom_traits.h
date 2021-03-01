@@ -12,7 +12,7 @@
 
 namespace mojo {
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_IP_ADDRESS)
     StructTraits<network::mojom::IPAddressDataView, net::IPAddress> {
   static base::span<const uint8_t> address_bytes(
       const net::IPAddress& ip_address) {

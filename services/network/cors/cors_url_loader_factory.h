@@ -26,6 +26,7 @@ namespace network {
 class NetworkContext;
 class ResourceSchedulerClient;
 class URLLoader;
+class URLLoaderFactory;
 struct ResourceRequest;
 
 namespace cors {
@@ -114,7 +115,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // Relative order of |network_loader_factory_| and |loaders_| matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the
   // factory.  See also https://crbug.com/906305.
-  std::unique_ptr<mojom::URLLoaderFactory> network_loader_factory_;
+  std::unique_ptr<network::URLLoaderFactory> network_loader_factory_;
 
   // Used when the network loader factory is overridden.
   std::unique_ptr<FactoryOverride> factory_override_;

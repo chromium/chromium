@@ -168,6 +168,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   int process_id() const;
   int thread_id() const { return thread_id_; }
   int worker_devtools_agent_route_id() const;
+  base::UnguessableToken WorkerDevtoolsId() const;
 
   // DEPRECATED, only for use by ServiceWorkerVersion.
   // TODO(crbug.com/855852): Remove the Listener interface.
@@ -240,7 +241,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
           cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      ContentBrowserClient::URLLoaderFactoryType factory_type);
+      ContentBrowserClient::URLLoaderFactoryType factory_type,
+      const std::string& devtools_worker_token);
 
   // Creates a set of factory bundles for scripts and subresources. This must be
   // called after the COEP value for the worker script is known.

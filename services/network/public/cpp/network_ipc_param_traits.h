@@ -36,6 +36,9 @@
 #include "url/ipc/url_param_traits.h"
 #include "url/origin.h"
 
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT COMPONENT_EXPORT(NETWORK_CPP_BASE)
+
 // This file defines IPC::ParamTraits for network:: classes / structs.
 // For IPC::ParamTraits for net:: class / structs, see net_ipc_param_traits.h.
 

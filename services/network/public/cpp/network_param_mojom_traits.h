@@ -15,7 +15,7 @@
 namespace mojo {
 
 template <>
-class COMPONENT_EXPORT(NETWORK_CPP_BASE)
+class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     StructTraits<network::mojom::AuthChallengeInfoDataView,
                  net::AuthChallengeInfo> {
  public:
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
 };
 
 template <>
-class COMPONENT_EXPORT(NETWORK_CPP_BASE)
+class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     StructTraits<network::mojom::HttpVersionDataView, net::HttpVersion> {
  public:
   static int16_t major_value(net::HttpVersion version) {

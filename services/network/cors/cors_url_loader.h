@@ -54,7 +54,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       PreflightController* preflight_controller,
       const base::flat_set<std::string>* allowed_exempt_headers,
       bool allow_any_cors_exempt_header,
-      const net::IsolationInfo& isolation_info);
+      const net::IsolationInfo& isolation_info,
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
 
   ~CorsURLLoader() override;
 
@@ -194,6 +195,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   net::IsolationInfo isolation_info_;
 
   bool has_cors_been_affected_by_isolated_world_origin_ = false;
+
+  mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   // Used to run asynchronous class instance bound callbacks safely.
   base::WeakPtrFactory<CorsURLLoader> weak_factory_{this};

@@ -47,6 +47,7 @@ import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/websocket.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
@@ -653,6 +654,9 @@ struct URLLoaderFactoryParams {
 
   // Used to notify clients about authentication and certificate events.
   pending_remote<AuthenticationAndCertificateObserver>? auth_cert_observer;
+
+  // Used to notify devtools about events.
+  pending_remote<DevToolsObserver>? devtools_observer;
 
   // If this equals kForbid, the context to which this loader is bound does not
   // allow any Trust Tokens (https://github.com/wicg/trust-token-api)

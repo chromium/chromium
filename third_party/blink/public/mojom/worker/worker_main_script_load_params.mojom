@@ -4,8 +4,8 @@
 
 module blink.mojom;
 
-import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_response_head.mojom";
 
 // NetworkService (PlzWorker):
 // Used for passing the web worker main script pre-requested by the browser

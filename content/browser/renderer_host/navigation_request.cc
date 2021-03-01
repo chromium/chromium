@@ -34,6 +34,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/cached_navigation_url_loader.h"
@@ -3144,6 +3145,7 @@ void NavigationRequest::OnStartChecksComplete(
       static_cast<StoragePartitionImpl*>(partition)
           ->CreateAuthAndCertObserverForNavigationRequest(
               frame_tree_node_->frame_tree_node_id()),
+      NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
       std::move(interceptor));
 
   DCHECK(!render_frame_host_);

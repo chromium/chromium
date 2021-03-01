@@ -552,6 +552,7 @@ android_library("browser_java") {
     "//mojo/public/java/system:system_impl_java",
     "//net/android:net_java",
     "//services/network/public/mojom:mojom_java",
+    "//services/network/public/mojom:url_loader_base_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public:blink_headers_java",

@@ -21,6 +21,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "services/network/public/mojom/url_request.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -160,6 +161,8 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
       mojo::PendingRemote<network::mojom::CookieAccessObserver>>();
   out->auth_cert_observer = data.TakeAuthCertObserver<mojo::PendingRemote<
       network::mojom::AuthenticationAndCertificateObserver>>();
+  out->devtools_observer = data.TakeDevtoolsObserver<
+      mojo::PendingRemote<network::mojom::DevToolsObserver>>();
   if (!data.ReadClientSecurityState(&out->client_security_state)) {
     return false;
   }

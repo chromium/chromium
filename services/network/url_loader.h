@@ -136,7 +136,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const cors::OriginAccessList& origin_access_list,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
       mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer);
+          auth_cert_observer,
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
   ~URLLoader() override;
 
   // mojom::URLLoader implementation:
@@ -529,6 +530,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
 
   mojo::Remote<mojom::AuthenticationAndCertificateObserver> auth_cert_observer_;
+
+  mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   // Client security state copied from the input ResourceRequest.
   //

@@ -63,6 +63,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
                                 traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
+  mojom::DevToolsObserver* GetDevToolsObserver();
+
   static constexpr int kMaxKeepaliveConnections = 2048;
   static constexpr int kMaxKeepaliveConnectionsPerTopLevelFrame = 256;
   static constexpr int kMaxTotalKeepaliveRequestSize = 512 * 1024;
@@ -80,6 +82,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::AuthenticationAndCertificateObserver> auth_cert_observer_;
+  mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderFactory);
 };

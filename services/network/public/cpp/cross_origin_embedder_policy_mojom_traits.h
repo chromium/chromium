@@ -16,7 +16,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_CROSS_ORIGIN)
     StructTraits<network::mojom::CrossOriginEmbedderPolicyDataView,
                  network::CrossOriginEmbedderPolicy> {
   static network::mojom::CrossOriginEmbedderPolicyValue value(
