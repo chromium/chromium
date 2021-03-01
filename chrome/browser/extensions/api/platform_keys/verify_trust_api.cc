@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -198,25 +199,21 @@ void VerifyTrustAPI::IOPart::Verify(std::unique_ptr<Params> params,
   net::CertVerifyResult* const verify_result_ptr = verify_result.get();
 
   RequestState* request_state = new RequestState();
-  // Using AdaptCallbackForRepeating() is safe here, because |bound_callback|
-  // can be called only once (at the end of this function or by |verifier|,
-  // depending on whether Verify() can be completed synchronously).
-  // TODO(crbug.com/730593): AdaptCallbackForRepeating() is being deprecated and
-  // should be avoided. In this case it's caused by "sometimes asynchronous" API
-  // issue which is common in net code (see crbug.com/730593#c12).
-  base::RepeatingCallback<void(int)> bound_callback =
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&IOPart::CallBackWithResult, base::Unretained(this),
-                         std::move(callback), base::Passed(&verify_result),
-                         base::Owned(request_state)));
+  using VerificationCallback = base::OnceCallback<void(int)>;
+  VerificationCallback bound_callback = base::BindOnce(
+      &IOPart::CallBackWithResult, base::Unretained(this), std::move(callback),
+      std::move(verify_result), base::Owned(request_state));
+  std::pair<VerificationCallback, VerificationCallback> split_callback =
+      base::SplitOnceCallback(std::move(bound_callback));
 
   const int return_value = verifier->Verify(
       net::CertVerifier::RequestParams(std::move(cert_chain), details.hostname,
                                        flags, ocsp_response, sct_list),
-      verify_result_ptr, bound_callback, &request_state->request, *net_log);
+      verify_result_ptr, std::move(split_callback.first),
+      &request_state->request, *net_log);
 
   if (return_value != net::ERR_IO_PENDING) {
-    bound_callback.Run(return_value);
+    std::move(split_callback.second).Run(return_value);
     return;
   }
 }
