@@ -104,7 +104,7 @@ Video playback via the `<video>` tag currently uses a screen wake lock behind th
 
 This is an implementation detail, but the code handling wake locks in `VideoWakeLock` is similar to `WakeLockManager`'s, where Blink needs to talk to `//content` to connect to a `WakeLockServiceImpl` and use that to get to a `device::mojom::blink::WakeLock`.
 
-**Note:** when writing new code that uses Wake Locks in Blink, it is recommended to follow the same pattern outlined above. That is, connect to `WakeLockService` via the `//content` layer and request a `device::mojom::blink::WakeLock` via `WakeLockService::GetWakeLock()`. Do not go through the classes in this module, and [**do not connect to the Wake Lock services directly**](/docs/servicification.md#Frame-Scoped-Connections). See the example below:
+**Note:** when writing new code that uses Wake Locks in Blink, it is recommended to follow the same pattern outlined above. That is, connect to `WakeLockService` via the `//content` layer and request a `device::mojom::blink::WakeLock` via `WakeLockService::GetWakeLock()`. Do not go through the classes in this module, and [**do not connect to the Wake Lock services directly**](/docs/servicification.md#frame_scoped-connections). See the example below:
 
 ```c++
 mojo::Remote<mojom::blink::WakeLockService> wake_lock_service;
