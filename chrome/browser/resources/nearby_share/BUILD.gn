@@ -39,12 +39,10 @@ generate_grd("build_grd") {
     ":build_mojo_grdp",
     ":preprocess_gen",
     ":preprocess_src",
-    "shared:build_v2_grdp",
     "shared:build_v3_grdp",
   ]
   grdp_files = [
     "$target_gen_dir/nearby_share_mojo_resources.grdp",
-    "$target_gen_dir/shared/nearby_share_resources_v2.grdp",
     "$target_gen_dir/shared/nearby_share_resources_v3.grdp",
   ]
   input_files = [ "nearby_share_pulse_animation.json" ]

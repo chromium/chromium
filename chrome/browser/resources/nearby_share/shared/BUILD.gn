@@ -12,16 +12,7 @@ import("./nearby_shared.gni")
 assert(is_chromeos, "Nearby Share is CrOS only")
 
 os_settings_dir = "$root_gen_dir/chrome/browser/resources/settings/chromeos"
-preprocess_v2_manifest = "preprocessed_v2_manifest.json"
 preprocess_v3_manifest = "preprocessed_v3_manifest.json"
-
-generate_grd("build_v2_grdp") {
-  grd_prefix = "nearby_share"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources_v2.grdp"
-  deps = [ ":preprocess_v2" ]
-  manifest_files = [ "$target_gen_dir/$preprocess_v2_manifest" ]
-  resource_path_prefix = "shared"
-}
 
 generate_grd("build_v3_grdp") {
   grd_prefix = "nearby_share"
@@ -29,38 +20,6 @@ generate_grd("build_v3_grdp") {
   deps = [ ":preprocess_v3" ]
   manifest_files = [ "$target_gen_dir/$preprocess_v3_manifest" ]
   resource_path_prefix = "shared"
-}
-
-preprocess_if_expr("preprocess_v2") {
-  in_folder = "./"
-  out_folder = "$os_settings_dir/preprocess_v2/shared"
-  out_manifest = "$target_gen_dir/$preprocess_v2_manifest"
-  in_files = [
-    "nearby_contact_manager.html",
-    "nearby_contact_manager.js",
-    "nearby_contact_visibility.html",
-    "nearby_contact_visibility.js",
-    "nearby_device_icon.html",
-    "nearby_device_icon.js",
-    "nearby_device.html",
-    "nearby_device.js",
-    "nearby_onboarding_page.html",
-    "nearby_onboarding_page.js",
-    "nearby_page_template.html",
-    "nearby_page_template.js",
-    "nearby_preview.html",
-    "nearby_preview.js",
-    "nearby_progress.html",
-    "nearby_progress.js",
-    "nearby_share_settings.html",
-    "nearby_share_settings.js",
-    "nearby_share_settings_behavior.html",
-    "nearby_share_settings_behavior.js",
-    "nearby_shared_share_type_icons.html",
-    "nearby_shared_icons.html",
-    "nearby_visibility_page.html",
-    "nearby_visibility_page.js",
-  ]
 }
 
 preprocess_if_expr("preprocess_v3") {

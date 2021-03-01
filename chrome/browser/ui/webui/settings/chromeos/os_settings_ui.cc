@@ -64,27 +64,10 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
       std::make_unique<chromeos::settings::StorageHandler>(profile,
                                                            html_source));
 
-  int default_resource =
-      base::FeatureList::IsEnabled(chromeos::features::kOsSettingsPolymer3)
-          ? IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-          : IDR_OS_SETTINGS_VULCANIZED_HTML;
-#else
-          : IDR_OS_SETTINGS_CHROMEOS_OS_SETTINGS_HTML;
-#endif
-
   webui::SetupWebUIDataSource(
       html_source,
       base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
-      default_resource);
-
-  // For Polymer 2 optimized builds that rely on loading individual subpages,
-  // set the default resource for tests.
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kOsSettingsPolymer3)) {
-    html_source->SetDefaultResource(default_resource);
-  }
-#endif
+      IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML);
 
   ManagedUIHandler::Initialize(web_ui, html_source);
 
