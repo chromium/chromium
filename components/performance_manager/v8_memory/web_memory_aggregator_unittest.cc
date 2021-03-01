@@ -652,6 +652,24 @@ TEST_F(WebMemoryAggregatorTest, BlinkMemoryMultipleBrowsingInstances) {
   }
 }
 
+TEST_F(WebMemoryAggregatorTest, WorkerWithoutData) {
+  FrameNodeImpl* main_frame = AddFrameNode("https://example.com/", Bytes{10});
+  WorkerNodeImpl* worker =
+      AddWorkerNodeWithoutData(WorkerNode::WorkerType::kDedicated, main_frame);
+  WebMemoryAggregator aggregator(main_frame);
+
+  auto expected_result = CreateExpectedMemoryMeasurement({
+      ExpectedMemoryBreakdown(10, AttributionScope::kWindow,
+                              "https://example.com/"),
+      ExpectedMemoryBreakdown(base::nullopt, AttributionScope::kDedicatedWorker,
+                              ""),
+  });
+  auto result = aggregator.AggregateMeasureMemoryResult();
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
+  worker->RemoveClientFrame(main_frame);
+}
+
 }  // namespace v8_memory
 
 }  // namespace performance_manager
