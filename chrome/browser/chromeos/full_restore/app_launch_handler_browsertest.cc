@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/autotest_desks_api.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -44,7 +45,7 @@ constexpr int32_t kId = 100;
 
 // Test values for a test WindowInfo object.
 constexpr int kActivationIndex = 2;
-constexpr int kDeskId = 5;
+constexpr int kDeskId = 2;
 constexpr gfx::Rect kRestoreBounds(100, 100);
 constexpr gfx::Rect kCurrentBounds(200, 200);
 constexpr chromeos::WindowStateType kWindowStateType =
@@ -75,6 +76,7 @@ void SaveWindowInfo(aura::Window* window) {
   ::full_restore::WindowInfo window_info;
   window_info.window = window;
   window_info.activation_index = kActivationIndex;
+  window_info.desk_id = kDeskId;
   ::full_restore::SaveWindowInfo(window_info);
 }
 
@@ -407,6 +409,11 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
+  // Have 4 desks total.
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
   // Create the restore data.
@@ -442,6 +449,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
   ASSERT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
   EXPECT_EQ(kActivationIndex, window_info->activation_index.value());
+  EXPECT_EQ(kDeskId, window->GetProperty(aura::client::kWindowWorkspaceKey));
 
   EXPECT_EQ(0, ::full_restore::FetchRestoreWindowId(extension->id()));
 
