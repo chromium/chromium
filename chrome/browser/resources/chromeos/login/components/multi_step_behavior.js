@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="../../../../../../ui/login/display_manager.js">
+// <include src="../display_manager.js">
 
 /**
  * @fileoverview

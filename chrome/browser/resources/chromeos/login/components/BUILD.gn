@@ -40,21 +40,24 @@ js_type_check("closure_compile_local") {
 js_library("oobe_types") {
 }
 
+js_library("display_manager_types") {
+}
+
 # This is special file to be used as a substutute of Oobe object for closure
 # compilation until we make real one closure compile.
 # TODO (https://crbug.com/950198)
 js_library("fake_oobe") {
   deps = [
+    ":display_manager_types",
     ":oobe_types",
-    "//ui/login:display_manager_types",
     "//ui/webui/resources/js:util",
   ]
 }
 
 js_library("login_screen_behavior") {
   deps = [
+    ":display_manager_types",
     ":fake_oobe",
-    "//ui/login:display_manager_types",
   ]
 }
 

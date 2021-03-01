@@ -130,7 +130,7 @@ html[dir=rtl] .bubble-right::after {
 /* --- oldstyle end --- */
 
 body.chromeos .error-message-bubble::before {
-  -webkit-mask-image: url(../../ui/webui/resources/images/warning.svg);
+  -webkit-mask-image: url(../../../../../ui/webui/resources/images/warning.svg);
   -webkit-mask-position: left top;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 20px;

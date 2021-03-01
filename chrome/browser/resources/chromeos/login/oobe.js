@@ -8,11 +8,11 @@
  */
 
 // <include src="test_util.js">
-// <include src="../../../../../ui/login/bubble.js">
-// <include src="../../../../../ui/login/display_manager.js">
+// <include src="bubble.js">
+// <include src="display_manager.js">
 // <include src="demo_mode_test_helper.js">
 
-// <include src="../../../../../ui/login/login_ui_tools.js">
+// <include src="login_ui_tools.js">
 // <include src="cr_ui.js">
 // <include src="oobe_select.js">
 

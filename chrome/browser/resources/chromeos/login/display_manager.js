@@ -6,7 +6,7 @@
  * @fileoverview Display manager for WebUI OOBE and login.
  */
 
-// <include src="display_manager_types.js">
+// <include src="components/display_manager_types.js">
 
 // TODO(xiyuan): Find a better to share those constants.
 /** @const */ var SCREEN_WELCOME = 'connect';
@@ -98,11 +98,11 @@ cr.define('cr.ui.login', function() {
    * @param {string} name function name
    * @param {...*} arguments arguments for the function
    */
-  var invokePolymerMethod = function(element, name, ...arguments) {
+  function invokePolymerMethod(element, name, ...args) {
     let method = element[name];
     if (!method || typeof method !== 'function')
       return;
-    method.apply(element, arguments);
+    method.apply(element, args);
     if (!element.behaviors)
       return;
 
@@ -110,14 +110,14 @@ cr.define('cr.ui.login', function() {
     // ignoring case when method on element was derived from behavior.
     for (var i = element.behaviors.length - 1; i >= 0; i--) {
       let behavior = element.behaviors[i];
-      let b_method = behavior[name];
-      if (!b_method || typeof b_method !== 'function')
+      let behaviorMethod = behavior[name];
+      if (!behaviorMethod || typeof behaviorMethod !== 'function')
         continue;
-      if (b_method == method)
+      if (behaviorMethod == method)
         continue;
-      b_method.apply(element, arguments);
+      behaviorMethod.apply(element, args);
     }
-  };
+  }
 
   /**
    * Constructor a display manager that manages initialization of screens,
@@ -125,8 +125,7 @@ cr.define('cr.ui.login', function() {
    *
    * @constructor
    */
-  function DisplayManager() {
-  }
+  function DisplayManager() {}
 
   DisplayManager.prototype = {
     /**
@@ -280,9 +279,9 @@ cr.define('cr.ui.login', function() {
 
     setDialogSize: function(width, height) {
       document.documentElement.style.setProperty(
-        '--oobe-oobe-dialog-height-base', height + 'px');
+          '--oobe-oobe-dialog-height-base', height + 'px');
       document.documentElement.style.setProperty(
-        '--oobe-oobe-dialog-width-base', width + 'px');
+          '--oobe-oobe-dialog-width-base', width + 'px');
     },
 
     /**
@@ -374,7 +373,8 @@ cr.define('cr.ui.login', function() {
       } else if (name == ACCELERATOR_RESET) {
         if (currentStepId == SCREEN_OOBE_RESET) {
           $('reset').userActed(USER_ACTION_ROLLBACK_TOGGLED);
-        } else if (attributes.resetAllowed ||
+        } else if (
+            attributes.resetAllowed ||
             RESET_AVAILABLE_SCREEN_GROUP.indexOf(currentStepId) != -1) {
           chrome.send('toggleResetScreen');
         }
@@ -421,7 +421,7 @@ cr.define('cr.ui.login', function() {
       //
       // TODO(alemate): make every screen a single Polymer element, so that
       // we could simply use OobeDialogHostBehavior in stead of this.
-      for(let dialog of newStep.getElementsByTagName('oobe-dialog'))
+      for (let dialog of newStep.getElementsByTagName('oobe-dialog'))
         invokePolymerMethod(dialog, 'onBeforeShow', screenData);
 
       if (newStep.defaultControl)
@@ -527,7 +527,7 @@ cr.define('cr.ui.login', function() {
     registerScreen: function(el, attributes) {
       var screenId = el.id;
       assert(screenId);
-      assert(!this.screens_.includes(screenId), "Duplicate screen ID.");
+      assert(!this.screens_.includes(screenId), 'Duplicate screen ID.');
 
       this.screens_.push(screenId);
       this.screensAttributes_.push(attributes);
@@ -552,8 +552,9 @@ cr.define('cr.ui.login', function() {
         screen.style.height = '';
       }
 
-      $('outer-container').classList.toggle(
-        'fullscreen', screen.classList.contains('fullscreen'));
+      $('outer-container')
+          .classList.toggle(
+              'fullscreen', screen.classList.contains('fullscreen'));
 
       var width = screen.getPreferredSize().width;
       var height = screen.getPreferredSize().height;
@@ -586,7 +587,7 @@ cr.define('cr.ui.login', function() {
       }
       var dynamicElements = document.getElementsByClassName('i18n-dynamic');
       for (var child of dynamicElements) {
-        if (typeof(child.i18nUpdateLocale) === 'function') {
+        if (typeof (child.i18nUpdateLocale) === 'function') {
           child.i18nUpdateLocale();
         }
       }
@@ -628,13 +629,13 @@ cr.define('cr.ui.login', function() {
     /** Initializes demo mode start listener. */
     initializeDemoModeMultiTapListener: function() {
       if (this.displayType_ == DISPLAY_TYPE.OOBE) {
-        this.demoModeStartListener_ = new MultiTapDetector(
-            $('outer-container'), 10, () => {
+        this.demoModeStartListener_ =
+            new MultiTapDetector($('outer-container'), 10, () => {
               let currentScreen = Oobe.getInstance().currentScreen;
               if (currentScreen.id === SCREEN_WELCOME) {
                 currentScreen.onSetupDemoModeGesture();
               }
-        });
+            });
       }
     },
 
@@ -710,8 +711,7 @@ cr.define('cr.ui.login', function() {
     });
     if (instance.displayType == DISPLAY_TYPE.UNKNOWN) {
       console.error(
-          'Unknown display type "' + givenDisplayType +
-          '". Setting default.');
+          'Unknown display type "' + givenDisplayType + '". Setting default.');
       instance.displayType = DISPLAY_TYPE.LOGIN;
     }
 
@@ -733,7 +733,7 @@ cr.define('cr.ui.login', function() {
       y += element.offsetTop - element.scrollTop;
       element = element.offsetParent;
     }
-    return { top: y, left: x };
+    return {top: y, left: x};
   };
 
   /**

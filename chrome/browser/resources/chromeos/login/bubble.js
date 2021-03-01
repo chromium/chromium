@@ -19,23 +19,13 @@ cr.define('cr.ui', function() {
    * Bubble key codes.
    * @enum {number}
    */
-  var Keys = {
-    TAB: 'Tab',
-    ENTER: 'Enter',
-    ESC: 'Escape',
-    SPACE: ' '
-  };
+  var Keys = {TAB: 'Tab', ENTER: 'Enter', ESC: 'Escape', SPACE: ' '};
 
   /**
    * Bubble attachment side.
    * @enum {number}
    */
-  Bubble.Attachment = {
-    RIGHT: 0,
-    LEFT: 1,
-    TOP: 2,
-    BOTTOM: 3
-  };
+  Bubble.Attachment = {RIGHT: 0, LEFT: 1, TOP: 2, BOTTOM: 3};
 
   Bubble.prototype = {
     __proto__: HTMLDivElement.prototype,
@@ -61,17 +51,15 @@ cr.define('cr.ui', function() {
     decorate: function() {
       this.docKeyDownHandler_ = this.handleDocKeyDown_.bind(this);
       this.selfClickHandler_ = this.handleSelfClick_.bind(this);
-      this.ownerDocument.addEventListener('click',
-                                          this.handleDocClick_.bind(this));
+      this.ownerDocument.addEventListener(
+          'click', this.handleDocClick_.bind(this));
       // Set useCapture to true because scroll event does not bubble.
-      this.ownerDocument.addEventListener('scroll',
-                                          this.handleScroll_.bind(this),
-                                          true);
-      this.ownerDocument.addEventListener('keydown',
-                                          this.docKeyDownHandler_);
+      this.ownerDocument.addEventListener(
+          'scroll', this.handleScroll_.bind(this), true);
+      this.ownerDocument.addEventListener('keydown', this.docKeyDownHandler_);
       window.addEventListener('blur', this.handleWindowBlur_.bind(this));
-      this.addEventListener('transitionend',
-                            this.handleTransitionEnd_.bind(this));
+      this.addEventListener(
+          'transitionend', this.handleTransitionEnd_.bind(this));
       // Guard timer for 200ms + epsilon.
       ensureTransitionEndEvent(this, 250);
     },
@@ -101,7 +89,7 @@ cr.define('cr.ui', function() {
      * @type {boolean}
      */
     set persistent(value) {
-      this.persistent_ = value
+      this.persistent_ = value;
     },
 
     /**
@@ -158,8 +146,8 @@ cr.define('cr.ui', function() {
      * @param {!Attachment} attachment Bubble attachment.
      */
     setAttachment_: function(attachment) {
-      var styleClassList = ['bubble-right', 'bubble-left',
-                            'bubble-top', 'bubble-bottom'];
+      var styleClassList =
+          ['bubble-right', 'bubble-left', 'bubble-top', 'bubble-bottom'];
       for (var i = 0; i < styleClassList.length; ++i)
         this.classList.toggle(styleClassList[i], i == attachment);
     },
@@ -252,8 +240,10 @@ cr.define('cr.ui', function() {
 
       var origin = cr.ui.login.DisplayManager.getPosition(el);
       var offset = opt_offset == undefined ?
-          [Math.min(ARROW_OFFSET, el.offsetWidth / 2),
-           Math.min(ARROW_OFFSET, el.offsetHeight / 2)] :
+          [
+            Math.min(ARROW_OFFSET, el.offsetWidth / 2),
+            Math.min(ARROW_OFFSET, el.offsetHeight / 2)
+          ] :
           [opt_offset, opt_offset];
 
       var pos = {};
@@ -303,9 +293,9 @@ cr.define('cr.ui', function() {
         var elWidth =
             window.getComputedStyle(el, null).getPropertyValue('width');
         var paddingLeft = parseInt(window.getComputedStyle(this, null)
-            .getPropertyValue('padding-left'));
+                                       .getPropertyValue('padding-left'));
         var paddingRight = parseInt(window.getComputedStyle(this, null)
-            .getPropertyValue('padding-right'));
+                                        .getPropertyValue('padding-right'));
         if (elWidth)
           this.style.width =
               (parseInt(elWidth) - paddingLeft - paddingRight) + 'px';
@@ -427,7 +417,5 @@ cr.define('cr.ui', function() {
     }
   };
 
-  return {
-    Bubble: Bubble
-  };
+  return {Bubble: Bubble};
 });
