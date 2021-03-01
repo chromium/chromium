@@ -1101,7 +1101,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->BindTexture(target, texture);
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl, *cropped_frame(), target, texture,
+      media_context_.get(), destination_gl, cropped_frame(), target, texture,
       GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
       false /* flip_y */);
 
@@ -1133,7 +1133,7 @@ TEST_P(PaintCanvasVideoRendererWithGLTest,
   destination_gl->BindTexture(target, texture);
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl, *cropped_frame(), target, texture,
+      media_context_.get(), destination_gl, cropped_frame(), target, texture,
       GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
       true /* flip_y */);
 

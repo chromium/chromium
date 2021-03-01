@@ -1420,7 +1420,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
         level == 0 && video_frame->NumTextures() > 1) {
       if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
-                                      video_frame, target, texture,
+                                      video_frame.get(), target, texture,
                                       internal_format, format, type, flip_y)) {
         return true;
       }
@@ -1494,7 +1494,6 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     bool flip_y) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(video_frame);
-  DCHECK(video_frame->HasTextures());
   // Support uploading for NV12 and I420 video frame only.
   if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
     return false;
@@ -1546,8 +1545,10 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   destination_gl->WaitSyncTokenCHROMIUM(
       mailbox_holder.sync_token.GetConstData());
 
-  WaitAndReplaceSyncTokenClient client(source_ri);
-  video_frame->UpdateReleaseSyncToken(&client);
+  if (video_frame->HasTextures()) {
+    WaitAndReplaceSyncTokenClient client(source_ri);
+    video_frame->UpdateReleaseSyncToken(&client);
+  }
 
   return true;
 }
@@ -1617,7 +1618,7 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
-    const VideoFrame& video_frame,
+    scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
     unsigned int internal_format,
@@ -1627,14 +1628,28 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     bool premultiply_alpha,
     bool flip_y) {
   DCHECK(raster_context_provider);
-  if (!video_frame.IsMappable()) {
+  if (!video_frame->IsMappable()) {
     return false;
   }
 
-  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(video_frame)) {
+  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
     return false;
   }
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
+
+  // Since skia always produces premultiply alpha outputs,
+  // trying direct uploading path when video format is opaque or premultiply
+  // alpha been requested. And dst texture mipLevel must be 0.
+  // TODO(crbug.com/1155003): Figure out whether premultiply options here are
+  // accurate.
+  if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
+      level == 0) {
+    if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
+                                    video_frame, target, texture,
+                                    internal_format, format, type, flip_y)) {
+      return true;
+    }
+  }
 
   auto* sii = raster_context_provider->SharedImageInterface();
   gpu::raster::RasterInterface* source_ri =
@@ -1644,13 +1659,13 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // one if compatible, otherwise create a new one.
   gpu::SyncToken token;
   if (!yuv_cache_.mailbox.IsZero() &&
-      yuv_cache_.size == video_frame.coded_size() &&
+      yuv_cache_.size == video_frame->coded_size() &&
       yuv_cache_.raster_context_provider == raster_context_provider) {
     token = yuv_cache_.sync_token;
   } else {
     yuv_cache_.Reset();
     yuv_cache_.raster_context_provider = raster_context_provider;
-    yuv_cache_.size = video_frame.coded_size();
+    yuv_cache_.size = video_frame->coded_size();
 
     uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2;
     if (raster_context_provider->ContextCapabilities().supports_oop_raster) {
@@ -1659,7 +1674,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     }
 
     yuv_cache_.mailbox = sii->CreateSharedImage(
-        viz::ResourceFormat::RGBA_8888, video_frame.coded_size(),
+        viz::ResourceFormat::RGBA_8888, video_frame->coded_size(),
         gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         gpu::kNullSurfaceHandle);
     token = sii->GenUnverifiedSyncToken();
@@ -1671,7 +1686,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   dest_holder.texture_target = GL_TEXTURE_2D;
   dest_holder.sync_token = token;
   yuv_cache_.yuv_converter.ConvertYUVVideoFrame(
-      &video_frame, raster_context_provider, dest_holder);
+      video_frame.get(), raster_context_provider, dest_holder);
 
   gpu::SyncToken post_conversion_sync_token;
   source_ri->GenUnverifiedSyncTokenCHROMIUM(
@@ -1685,7 +1700,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     ScopedSharedImageAccess access(destination_gl, intermediate_texture,
                                    yuv_cache_.mailbox);
     VideoFrameCopyTextureOrSubTexture(
-        destination_gl, video_frame.coded_size(), video_frame.visible_rect(),
+        destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         intermediate_texture, target, texture, internal_format, format, type,
         level, premultiply_alpha, flip_y);
   }

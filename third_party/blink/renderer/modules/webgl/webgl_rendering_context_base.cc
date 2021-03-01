@@ -5980,7 +5980,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     if (!media_video_frame->HasTextures() &&
         media::IsOpaque(media_video_frame->format()) &&
         video_renderer->CopyVideoFrameYUVDataToGLTexture(
-            raster_context_provider, ContextGL(), *media_video_frame, target,
+            raster_context_provider, ContextGL(), media_video_frame, target,
             texture->Object(), adjusted_internalformat, format, type, level,
             unpack_premultiply_alpha_, unpack_flip_y_)) {
       texture->UpdateLastUploadedFrame(metadata);
