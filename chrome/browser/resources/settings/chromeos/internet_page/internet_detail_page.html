@@ -89,8 +89,7 @@
         </network-icon>
         <div id="networkState" class="title settings-box-text"
             connected$="[[isConnectedState_(managedProperties_)]]"
-            error$="[[isConnectionErrorState_(
-                managedProperties_, outOfRange_, deviceState_)]]">
+            error$="[[isOutOfRangeOrNotEnabled_(outOfRange_, deviceState_)]]">
           [[getStateText_(managedProperties_, propertiesReceived_,
               outOfRange_, deviceState_)]]
         </div>

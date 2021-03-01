@@ -272,6 +272,16 @@
   }
 
   /**
+   * @param {!chromeos.networkConfig.mojom.NetworkType} value
+   * @return {boolean}
+   */
+  static networkTypeHasConfigurationFlow(value) {
+    // Cellular networks are considered "configured" by their SIM, and Instant
+    // Tethering networks do not have a configuration flow.
+    return !OncMojo.networkTypeIsMobile(value);
+  }
+
+  /**
    * @param {string} value
    * @return {!chromeos.networkConfig.mojom.NetworkType}
    */
@@ -542,6 +552,25 @@
     }
     assertNotReached();
     return 0;
+  }
+
+  /**
+   * Determines whether a connection to |network| can be attempted. Note that
+   * this function does not consider policies which may block a connection from
+   * succeeding.
+   * @param {!chromeos.networkConfig.mojom.NetworkStateProperties|
+   *     !chromeos.networkConfig.mojom.ManagedProperties} network
+   * @return {boolean} Whether the network can currently be connected; if the
+   *     network is not connectable, it must first be configured.
+   */
+  static isNetworkConnectable(network) {
+    // Networks without a configuration flow are always connectable since no
+    // additional configuration can be performed to attempt a connection.
+    if (!OncMojo.networkTypeHasConfigurationFlow(network.type)) {
+      return true;
+    }
+
+    return network.connectable;
   }
 
   /**

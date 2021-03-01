@@ -302,7 +302,8 @@ suite('InternetDetailPage', function() {
   });
 
   suite('DetailsPageCellular', function() {
-    test('Connect button disabled when not connectable', function() {
+    // Regression test for https://crbug.com/1182884.
+    test('Connect button enabled when not connectable', function() {
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
       const cellularNetwork =
@@ -314,7 +315,7 @@ suite('InternetDetailPage', function() {
       return flushAsync().then(() => {
         const connectButton = getButton('connectDisconnect');
         assertFalse(connectButton.hasAttribute('hidden'));
-        assertTrue(connectButton.hasAttribute('disabled'));
+        assertFalse(connectButton.hasAttribute('disabled'));
       });
     });
 
