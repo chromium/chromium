@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/login/chrome_restart_request.h"
 
 #include <sys/socket.h>
+
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -333,7 +335,7 @@ void ChromeRestartRequest::RestartJob() {
   SessionManagerClient::Get()->RestartJob(
       remote_auth_fd.get(), argv_,
       base::BindOnce(&ChromeRestartRequest::OnRestartJob, AsWeakPtr(),
-                     base::Passed(&local_auth_fd)));
+                     std::move(local_auth_fd)));
 }
 
 void ChromeRestartRequest::OnRestartJob(base::ScopedFD local_auth_fd,

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 
+#include <utility>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/scoped_guest_button_blocker.h"
@@ -137,7 +139,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
     // Check if powerwash is only allowed by the admin specifically for the
     // purpose of installing a TPM firmware update.
     tpm_firmware_update::GetAvailableUpdateModes(
-        base::BindOnce(&OnUpdateModesAvailable, base::Passed(&callback)),
+        base::BindOnce(&OnUpdateModesAvailable, std::move(callback)),
         base::TimeDelta());
     return;
   }

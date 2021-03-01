@@ -359,7 +359,7 @@ void ProviderAsyncFileUtil::GetFileInfo(
       FROM_HERE,
       base::BindOnce(
           &GetFileInfoOnUIThread, std::move(context), url, fields,
-          base::BindOnce(&OnGetFileInfo, fields, base::Passed(&callback))));
+          base::BindOnce(&OnGetFileInfo, fields, std::move(callback))));
 }
 
 void ProviderAsyncFileUtil::ReadDirectory(

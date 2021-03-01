@@ -193,8 +193,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
   extended_authenticator_->AuthenticateWithFingerprint(
       user_context,
       base::BindOnce(&InSessionAuthDialogClient::OnFingerprintAuthDone,
-                     weak_factory_.GetWeakPtr(),
-                     base::Passed(std::move(callback))));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void InSessionAuthDialogClient::OnFingerprintAuthDone(

@@ -1373,10 +1373,9 @@ void ArcBluetoothBridge::RemoveBond(mojom::BluetoothAddressPtr addr) {
 
   // If unpairing finished successfully, DevicePairedChanged will notify Android
   // on paired state change event, so DoNothing is passed as a success callback.
-  device->Forget(
-      base::DoNothing(),
-      base::BindOnce(&ArcBluetoothBridge::OnForgetError,
-                     weak_factory_.GetWeakPtr(), base::Passed(&addr)));
+  device->Forget(base::DoNothing(),
+                 base::BindOnce(&ArcBluetoothBridge::OnForgetError,
+                                weak_factory_.GetWeakPtr(), std::move(addr)));
 }
 
 void ArcBluetoothBridge::CancelBond(mojom::BluetoothAddressPtr addr) {
@@ -1511,10 +1510,9 @@ void ArcBluetoothBridge::ConnectLEDevice(
   mojom::BluetoothAddressPtr remote_addr_clone = remote_addr.Clone();
   device->CreateGattConnection(
       base::BindOnce(&ArcBluetoothBridge::OnGattConnected,
-                     weak_factory_.GetWeakPtr(), base::Passed(&remote_addr)),
+                     weak_factory_.GetWeakPtr(), std::move(remote_addr)),
       base::BindOnce(&ArcBluetoothBridge::OnGattConnectError,
-                     weak_factory_.GetWeakPtr(),
-                     base::Passed(&remote_addr_clone)));
+                     weak_factory_.GetWeakPtr(), std::move(remote_addr_clone)));
 }
 
 void ArcBluetoothBridge::DisconnectLEDevice(

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 
+#include <utility>
+
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/hash/sha1.h"
@@ -294,7 +296,7 @@ void WallpaperControllerClient::SetPolicyWallpaper(
   if (!CanGetFilesId()) {
     AddCanGetFilesIdCallback(base::BindOnce(
         &WallpaperControllerClient::SetPolicyWallpaper,
-        weak_factory_.GetWeakPtr(), account_id, base::Passed(std::move(data))));
+        weak_factory_.GetWeakPtr(), account_id, std::move(data)));
     return;
   }
 

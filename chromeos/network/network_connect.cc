@@ -5,6 +5,7 @@
 #include "chromeos/network/network_connect.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -481,7 +482,7 @@ void NetworkConnectImpl::ConfigureNetworkIdAndConnect(
       network->path(), profile_path,
       base::BindOnce(&NetworkConnectImpl::ConfigureSetProfileSucceeded,
                      weak_factory_.GetWeakPtr(), network_id,
-                     base::Passed(&properties_to_set)),
+                     std::move(properties_to_set)),
       base::BindOnce(&NetworkConnectImpl::SetPropertiesFailed,
                      weak_factory_.GetWeakPtr(), "SetProfile: " + profile_path,
                      network_id));

@@ -70,7 +70,7 @@ void MTPReadFileWorker::ReadDataChunkFromDeviceFile(
       snapshot_file_details_ptr->BytesToRead(),
       base::BindOnce(&MTPReadFileWorker::OnDidReadDataChunkFromDeviceFile,
                      weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(&snapshot_file_details)));
+                     std::move(snapshot_file_details)));
 }
 
 void MTPReadFileWorker::OnDidReadDataChunkFromDeviceFile(

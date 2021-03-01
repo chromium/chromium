@@ -94,7 +94,7 @@ void PlatformVerificationImpl::ChallengePlatform(
       content::WebContents::FromRenderFrameHost(render_frame_host()),
       service_id, challenge,
       base::BindOnce(&PlatformVerificationImpl::OnPlatformChallenged,
-                     weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 #else
   // Not supported, so return failure.
   std::move(callback).Run(false, std::string(), std::string(), std::string());

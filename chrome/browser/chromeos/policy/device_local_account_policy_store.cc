@@ -182,7 +182,7 @@ void DeviceLocalAccountPolicyStore::CheckKeyAndValidate(
   if (validate_in_background) {
     device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
         &DeviceLocalAccountPolicyStore::Validate, weak_factory_.GetWeakPtr(),
-        valid_timestamp_required, base::Passed(&policy), std::move(callback),
+        valid_timestamp_required, std::move(policy), std::move(callback),
         validate_in_background));
   } else {
     chromeos::DeviceSettingsService::OwnershipStatus ownership_status =

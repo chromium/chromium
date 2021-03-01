@@ -52,7 +52,7 @@ class FileStreamWriter::OperationRunner
     file_opener_.reset(new ScopedFileOpener(
         parser.file_system(), parser.file_path(), OPEN_FILE_MODE_WRITE,
         base::BindOnce(&OperationRunner::OnOpenFileCompletedOnUIThread, this,
-                       base::Passed(&callback))));
+                       std::move(callback))));
   }
 
   // Requests writing bytes to the file. In case of either success or a failure

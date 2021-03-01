@@ -650,8 +650,7 @@ AbortCallback ProvidedFileSystem::RemoveWatcherInQueue(
           event_router_, file_system_info_, entry_path, recursive,
           base::BindOnce(&ProvidedFileSystem::OnRemoveWatcherInQueueCompleted,
                          weak_ptr_factory_.GetWeakPtr(), token, origin, key,
-                         base::Passed(&callback),
-                         true /* extension_response */)));
+                         std::move(callback), true /* extension_response */)));
 
   return AbortCallback();
 }
@@ -684,10 +683,9 @@ AbortCallback ProvidedFileSystem::NotifyInQueue(
   const ProvidedFileSystemObserver::Changes& changes_ref = *args->changes.get();
   const storage::WatcherManager::ChangeType change_type = args->change_type;
 
-  scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(
-      base::BindOnce(&ProvidedFileSystem::OnNotifyInQueueCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&args),
-                     base::File::FILE_OK)));
+  scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(base::BindOnce(
+      &ProvidedFileSystem::OnNotifyInQueueCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(args), base::File::FILE_OK)));
 
   // Call all notification callbacks (if any).
   for (const auto& subscriber_it : watcher_it->second.subscribers) {

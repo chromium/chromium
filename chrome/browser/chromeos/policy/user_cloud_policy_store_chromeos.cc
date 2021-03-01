@@ -70,7 +70,7 @@ void UserCloudPolicyStoreChromeOS::Store(
       new em::PolicyFetchResponse(policy));
   cached_policy_key_loader_->EnsurePolicyKeyLoaded(
       base::BindOnce(&UserCloudPolicyStoreChromeOS::ValidatePolicyForStore,
-                     weak_factory_.GetWeakPtr(), base::Passed(&response)));
+                     weak_factory_.GetWeakPtr(), std::move(response)));
 }
 
 void UserCloudPolicyStoreChromeOS::Load() {
@@ -253,7 +253,7 @@ void UserCloudPolicyStoreChromeOS::OnPolicyRetrieved(
   } else {
     cached_policy_key_loader_->EnsurePolicyKeyLoaded(
         base::BindOnce(&UserCloudPolicyStoreChromeOS::ValidateRetrievedPolicy,
-                       weak_factory_.GetWeakPtr(), base::Passed(&policy)));
+                       weak_factory_.GetWeakPtr(), std::move(policy)));
   }
 }
 

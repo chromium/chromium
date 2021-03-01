@@ -1092,7 +1092,8 @@ void DidGetCertificates(std::unique_ptr<GetCertificatesState> state,
 void GetCertificatesWithDB(std::unique_ptr<GetCertificatesState> state,
                            net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // Get the pointer to slot before base::Passed releases |state|.
+  // Get the pointer to slot before transferring ownership of |state| to the
+  // callback's bound arguments.
   PK11SlotInfo* slot = state->slot_.get();
   cert_db->ListCertsInSlot(
       base::BindOnce(&DidGetCertificates, std::move(state)), slot);
@@ -1257,9 +1258,8 @@ void RemoveCertificateWithDB(std::unique_ptr<RemoveCertificateState> state,
 
   bool certificate_found = nss_cert->isperm;
   cert_db->DeleteCertAndKeyAsync(
-      std::move(nss_cert),
-      base::BindOnce(&DidRemoveCertificate, base::Passed(&state),
-                     certificate_found));
+      std::move(nss_cert), base::BindOnce(&DidRemoveCertificate,
+                                          std::move(state), certificate_found));
 }
 
 // Does the actual key pair removal on a worker thread. Used by
@@ -1507,10 +1507,11 @@ void PlatformKeysServiceImpl::GenerateRSAKey(TokenId token_id,
     return;
   }
 
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
   GetCertDatabase(token_id,
-                  base::BindOnce(&GenerateRSAKeyWithDB, base::Passed(&state)),
+                  base::BindOnce(&GenerateRSAKeyWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1524,10 +1525,11 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
   }
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
   GetCertDatabase(token_id,
-                  base::BindOnce(&GenerateECKeyWithDB, base::Passed(&state)),
+                  base::BindOnce(&GenerateECKeyWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1547,13 +1549,14 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Digest(
     return;
   }
 
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. But in case it's not available
   // we would get more informative status codes and we can double check that we
   // use a key of the correct token.
-  GetCertDatabase(token_id, base::BindOnce(&SignWithDB, base::Passed(&state)),
+  GetCertDatabase(token_id, base::BindOnce(&SignWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1572,13 +1575,14 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
     return;
   }
 
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. But in case it's not available
   // we would get more informative status codes and we can double check that we
   // use a key of the correct token.
-  GetCertDatabase(token_id, base::BindOnce(&SignWithDB, base::Passed(&state)),
+  GetCertDatabase(token_id, base::BindOnce(&SignWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1598,13 +1602,14 @@ void PlatformKeysServiceImpl::SignECDSADigest(
     return;
   }
 
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. But in case it's not available
   // we would get more informative status codes and we can double check that we
   // use a key of the correct token.
-  GetCertDatabase(token_id, base::BindOnce(&SignWithDB, base::Passed(&state)),
+  GetCertDatabase(token_id, base::BindOnce(&SignWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1773,10 +1778,11 @@ void PlatformKeysServiceImpl::GetCertificates(
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
   }
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
   GetCertDatabase(token_id,
-                  base::BindOnce(&GetCertificatesWithDB, base::Passed(&state)),
+                  base::BindOnce(&GetCertificatesWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1791,9 +1797,10 @@ void PlatformKeysServiceImpl::GetAllKeys(TokenId token_id,
     return;
   }
 
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
-  GetCertDatabase(token_id,
-                  base::BindOnce(&GetAllKeysWithDb, base::Passed(&state)),
+  GetCertDatabase(token_id, base::BindOnce(&GetAllKeysWithDb, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1808,15 +1815,16 @@ void PlatformKeysServiceImpl::ImportCertificate(
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
   }
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. But in case it's not available
   // we would get more informative status codes and we can double check that we
   // use a key of the correct token.
-  GetCertDatabase(
-      token_id, base::BindOnce(&ImportCertificateWithDB, base::Passed(&state)),
-      delegate_.get(), state_ptr);
+  GetCertDatabase(token_id,
+                  base::BindOnce(&ImportCertificateWithDB, std::move(state)),
+                  delegate_.get(), state_ptr);
 }
 
 void PlatformKeysServiceImpl::RemoveCertificate(
@@ -1830,14 +1838,15 @@ void PlatformKeysServiceImpl::RemoveCertificate(
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
   }
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. But in case it's not available
   // we would get more informative status codes.
-  GetCertDatabase(
-      token_id, base::BindOnce(&RemoveCertificateWithDB, base::Passed(&state)),
-      delegate_.get(), state_ptr);
+  GetCertDatabase(token_id,
+                  base::BindOnce(&RemoveCertificateWithDB, std::move(state)),
+                  delegate_.get(), state_ptr);
 }
 
 void PlatformKeysServiceImpl::RemoveKey(TokenId token_id,
@@ -1852,13 +1861,13 @@ void PlatformKeysServiceImpl::RemoveKey(TokenId token_id,
     return;
   }
 
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. But in case it's not available
   // we would get more informative status codes.
-  GetCertDatabase(token_id,
-                  base::BindOnce(&RemoveKeyWithDb, base::Passed(&state)),
+  GetCertDatabase(token_id, base::BindOnce(&RemoveKeyWithDb, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 
@@ -1870,7 +1879,8 @@ void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
   }
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
   GetCertDatabase(/*token_id=*/base::nullopt /* don't get any specific slot */,
                   base::BindOnce(&GetTokensWithDB, std::move(state)),
@@ -1889,10 +1899,12 @@ void PlatformKeysServiceImpl::GetKeyLocations(
   }
   NSSOperationState* state_ptr = state.get();
 
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   GetCertDatabase(
       /*token_id=*/base::nullopt /* don't get any specific slot */,
-      base::BindOnce(&GetKeyLocationsWithDB, base::Passed(&state)),
-      delegate_.get(), state_ptr);
+      base::BindOnce(&GetKeyLocationsWithDB, std::move(state)), delegate_.get(),
+      state_ptr);
 }
 
 void PlatformKeysServiceImpl::SetAttributeForKey(
@@ -1915,14 +1927,15 @@ void PlatformKeysServiceImpl::SetAttributeForKey(
     return;
   }
 
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. Only setting the state slot is
   // required.
-  GetCertDatabase(
-      token_id, base::BindOnce(&SetAttributeForKeyWithDb, base::Passed(&state)),
-      delegate_.get(), state_ptr);
+  GetCertDatabase(token_id,
+                  base::BindOnce(&SetAttributeForKeyWithDb, std::move(state)),
+                  delegate_.get(), state_ptr);
 }
 
 void PlatformKeysServiceImpl::GetAttributeForKey(
@@ -1944,14 +1957,15 @@ void PlatformKeysServiceImpl::GetAttributeForKey(
     return;
   }
 
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. Only setting the state slot is
   // required.
-  GetCertDatabase(
-      token_id, base::BindOnce(&GetAttributeForKeyWithDb, base::Passed(&state)),
-      delegate_.get(), state_ptr);
+  GetCertDatabase(token_id,
+                  base::BindOnce(&GetAttributeForKeyWithDb, std::move(state)),
+                  delegate_.get(), state_ptr);
 }
 
 void PlatformKeysServiceImpl::IsKeyOnToken(
@@ -1967,13 +1981,14 @@ void PlatformKeysServiceImpl::IsKeyOnToken(
     return;
   }
 
-  // Get the pointer to |state| before base::Passed releases |state|.
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
 
   // The NSSCertDatabase object is not required. Only setting the state slot is
   // required.
   GetCertDatabase(token_id,
-                  base::BindOnce(&IsKeyOnTokenWithDb, base::Passed(&state)),
+                  base::BindOnce(&IsKeyOnTokenWithDb, std::move(state)),
                   delegate_.get(), state_ptr);
 }
 

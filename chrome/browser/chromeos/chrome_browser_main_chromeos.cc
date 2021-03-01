@@ -911,8 +911,8 @@ void GuestLanguageSetCallbackData::Callback(
 void SetGuestLocale(Profile* const profile) {
   std::unique_ptr<GuestLanguageSetCallbackData> data(
       new GuestLanguageSetCallbackData(profile));
-  locale_util::SwitchLanguageCallback callback(base::BindOnce(
-      &GuestLanguageSetCallbackData::Callback, base::Passed(std::move(data))));
+  locale_util::SwitchLanguageCallback callback(
+      base::BindOnce(&GuestLanguageSetCallbackData::Callback, std::move(data)));
   const user_manager::User* const user =
       ProfileHelper::Get()->GetUserByProfile(profile);
   UserSessionManager::GetInstance()->RespectLocalePreference(

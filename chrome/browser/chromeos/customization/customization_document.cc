@@ -826,8 +826,7 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
   wallpaper_downloader_.reset(new CustomizationWallpaperDownloader(
       wallpaper_url, dir, file,
       base::BindOnce(&ServicesCustomizationDocument::OnOEMWallpaperDownloaded,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(std::move(applying)))));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(applying))));
 
   wallpaper_downloader_->Start();
 }

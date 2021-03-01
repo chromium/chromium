@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -229,7 +230,7 @@ void FileManagerPrivateInternalGetFileTasksFunction::OnMimeTypesCollected(
       local_paths_,
       base::BindOnce(&FileManagerPrivateInternalGetFileTasksFunction::
                          OnAreDirectoriesAndMimeTypesCollected,
-                     this, base::Passed(std::move(mime_types))));
+                     this, std::move(mime_types)));
 }
 
 void FileManagerPrivateInternalGetFileTasksFunction::

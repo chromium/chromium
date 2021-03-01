@@ -574,8 +574,7 @@ void PepperUDPSocketMessageFilter::DoBindCallback(
       *local_addr_out,
       base::BindOnce(&PepperUDPSocketMessageFilter::OnFirewallHoleOpened,
                      firewall_hole_weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(std::move(listener_receiver)), context,
-                     net_address));
+                     std::move(listener_receiver), context, net_address));
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   OnBindComplete(std::move(listener_receiver), context, net_address);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

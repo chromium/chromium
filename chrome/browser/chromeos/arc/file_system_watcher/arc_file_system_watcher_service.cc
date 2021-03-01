@@ -397,7 +397,7 @@ void ArcFileSystemWatcherService::StopWatchingFileSystem(
   file_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce([](std::unique_ptr<FileSystemWatcher> watcher) {},
-                     base::Passed(&myfiles_watcher_)),
+                     std::move(myfiles_watcher_)),
       std::move(callback));
 }
 
