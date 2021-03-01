@@ -1609,8 +1609,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsHasBeenDismissed);
 
-  _passwordCheckObserver.reset();
-
   [_googleServicesSettingsCoordinator stop];
   _googleServicesSettingsCoordinator.delegate = nil;
   _googleServicesSettingsCoordinator = nil;

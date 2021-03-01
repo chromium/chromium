@@ -295,7 +295,6 @@ TEST_F(IOSChromePasswordCheckManagerTest,
       kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1),
       InsecureType::kPhished));
   RunUntilIdle();
-  manager().RemoveObserver(&observer);
 }
 
 // Tests whether adding and removing an observer works as expected.
@@ -319,7 +318,6 @@ TEST_F(IOSChromePasswordCheckManagerTest, NotifyObserversAboutStateChanges) {
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
       ->OnStateChanged(BulkLeakCheckServiceInterface::State::kRunning);
   RunUntilIdle();
-  manager().RemoveObserver(&observer);
 }
 
 // Tests password deleted.
@@ -446,5 +444,4 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
   EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
       .Times(1);
   FastForwardBy(base::TimeDelta::FromSeconds(1));
-  manager().RemoveObserver(&observer);
 }

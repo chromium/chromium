@@ -112,9 +112,7 @@ IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
   insecure_credentials_manager_.Init();
 }
 
-IOSChromePasswordCheckManager::~IOSChromePasswordCheckManager() {
-  DCHECK(observers_.empty());
-}
+IOSChromePasswordCheckManager::~IOSChromePasswordCheckManager() = default;
 
 void IOSChromePasswordCheckManager::StartPasswordCheck() {
   if (is_initialized_) {
