@@ -235,6 +235,10 @@ constexpr int kPayloadSize = 1;
 const std::vector<int64_t> kValidIntroductionFramePayloadIds = {1, 2, 3,
                                                                 kFilePayloadId};
 
+constexpr size_t kMaxCertificateDownloadsDuringDiscovery = 3u;
+constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
+    base::TimeDelta::FromSeconds(10);
+
 bool FileExists(const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   return base::PathExists(file_path);
@@ -605,6 +609,7 @@ class NearbySharingServiceImplTest : public testing::Test {
 
   void SetUpAdvertisementDecoder(const std::vector<uint8_t>& endpoint_info,
                                  bool return_empty_advertisement,
+                                 bool return_empty_device_name,
                                  size_t expected_number_of_calls) {
     EXPECT_CALL(mock_decoder_,
                 DecodeAdvertisement(testing::Eq(endpoint_info), testing::_))
@@ -618,11 +623,15 @@ class NearbySharingServiceImplTest : public testing::Test {
                 return;
               }
 
+              base::Optional<std::string> device_name;
+              if (!return_empty_device_name)
+                device_name = kDeviceName;
+
               sharing::mojom::AdvertisementPtr advertisement =
                   sharing::mojom::Advertisement::New(
                       GetNearbyShareTestEncryptedMetadataKey().salt(),
                       GetNearbyShareTestEncryptedMetadataKey().encrypted_key(),
-                      kDeviceType, kDeviceName);
+                      kDeviceType, device_name);
               std::move(callback).Run(std::move(advertisement));
             }));
   }
@@ -662,6 +671,7 @@ class NearbySharingServiceImplTest : public testing::Test {
                                                                 kToken);
     SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                               /*return_empty_advertisement=*/false,
+                              /*return_empty_device_name=*/false,
                               /*expected_number_of_calls=*/1u);
     SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
@@ -714,6 +724,7 @@ class NearbySharingServiceImplTest : public testing::Test {
     // Ensure decoder parses a valid endpoint advertisement.
     SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                               /*return_empty_advertisement=*/false,
+                              /*return_empty_device_name=*/false,
                               /*expected_number_of_calls=*/1u);
 
     // Start discovering, to ensure a discovery listener is registered.
@@ -879,6 +890,17 @@ class NearbySharingServiceImplTest : public testing::Test {
 
     return sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
         *fake_nearby_connections_manager_->advertising_endpoint_info()));
+  }
+
+  void FindEndpoint(const std::string& endpoint_id) {
+    fake_nearby_connections_manager_->OnEndpointFound(
+        endpoint_id,
+        location::nearby::connections::mojom::DiscoveredEndpointInfo::New(
+            kValidV1EndpointInfo, kServiceId));
+  }
+
+  void LoseEndpoint(const std::string& endpoint_id) {
+    fake_nearby_connections_manager_->OnEndpointLost(endpoint_id);
   }
 
  protected:
@@ -1316,6 +1338,7 @@ TEST_F(NearbySharingServiceImplTest,
   // Ensure decoder parses a valid endpoint advertisement.
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
 
   // Start discovering, to ensure a discovery listener is registered.
@@ -1379,6 +1402,7 @@ TEST_F(NearbySharingServiceImplTest, RegisterSendSurfaceEmptyCertificate) {
   // Ensure decoder parses a valid endpoint advertisement.
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
 
   // Start discovering, to ensure a discovery listener is registered.
@@ -2041,6 +2065,7 @@ TEST_F(NearbySharingServiceImplTest,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -2073,6 +2098,7 @@ TEST_F(NearbySharingServiceImplTest,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/true);
 
@@ -2122,6 +2148,7 @@ TEST_F(NearbySharingServiceImplTest,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
@@ -2205,6 +2232,7 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
 
   // Set a huge file size in introduction frame to go out of storage.
@@ -2277,6 +2305,7 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
 
   // Set file size sum huge to check for overflow.
@@ -2352,6 +2381,7 @@ TEST_F(NearbySharingServiceImplTest,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
@@ -2940,6 +2970,7 @@ TEST_F(NearbySharingServiceImplTest,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
@@ -2993,6 +3024,7 @@ TEST_F(NearbySharingServiceImplTest,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
@@ -3050,6 +3082,7 @@ TEST_F(NearbySharingServiceImplTest,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -3084,6 +3117,7 @@ TEST_F(NearbySharingServiceImplTest,
        IncomingConnection_EmptyAuthToken_KeyVerificationRunnerStatusFail) {
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -3665,16 +3699,12 @@ TEST_F(NearbySharingServiceImplTest, OrderedEndpointDiscoveryEvents) {
   // Expect the advertisement decoder  to be invoked once for each discovery.
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/3u);
   {
     base::RunLoop run_loop;
-    fake_nearby_connections_manager_->OnEndpointFound(
-        /*endpoint_id=*/"1",
-        location::nearby::connections::mojom::DiscoveredEndpointInfo::New(
-            kValidV1EndpointInfo, kServiceId));
-    fake_nearby_connections_manager_->OnEndpointLost(
-        /*endpoint_id=*/"1");
-
+    FindEndpoint(/*endpoint_id=*/"1");
+    LoseEndpoint(/*endpoint_id=*/"1");
     ::testing::InSequence s;
     EXPECT_CALL(discovery_callback, OnShareTargetDiscovered);
     EXPECT_CALL(discovery_callback, OnShareTargetLost)
@@ -3687,19 +3717,10 @@ TEST_F(NearbySharingServiceImplTest, OrderedEndpointDiscoveryEvents) {
   }
   {
     base::RunLoop run_loop;
-    fake_nearby_connections_manager_->OnEndpointFound(
-        /*endpoint_id=*/"2",
-        location::nearby::connections::mojom::DiscoveredEndpointInfo::New(
-            kValidV1EndpointInfo, kServiceId));
-    fake_nearby_connections_manager_->OnEndpointFound(
-        /*endpoint_id=*/"3",
-        location::nearby::connections::mojom::DiscoveredEndpointInfo::New(
-            kValidV1EndpointInfo, kServiceId));
-    fake_nearby_connections_manager_->OnEndpointLost(
-        /*endpoint_id=*/"3");
-    fake_nearby_connections_manager_->OnEndpointLost(
-        /*endpoint_id=*/"2");
-
+    FindEndpoint(/*endpoint_id=*/"2");
+    FindEndpoint(/*endpoint_id=*/"3");
+    LoseEndpoint(/*endpoint_id=*/"3");
+    LoseEndpoint(/*endpoint_id=*/"2");
     ::testing::InSequence s;
     EXPECT_CALL(discovery_callback, OnShareTargetDiscovered)
         .WillOnce([](ShareTarget share_target) {
@@ -3728,6 +3749,207 @@ TEST_F(NearbySharingServiceImplTest, OrderedEndpointDiscoveryEvents) {
 
     run_loop.Run();
   }
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       RetryDiscoveredEndpoints_NoDownloadIfDecryption) {
+  // Start discovery.
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                SendSurfaceState::kForeground);
+  EXPECT_EQ(1u,
+            certificate_manager()->num_download_public_certificates_calls());
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                            /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/true,
+                            /*expected_number_of_calls=*/1u);
+  // Order of events:
+  // - Discover endpoint 1 --> decrypts public certificate
+  // - Fire certificate download timer --> no download because no cached
+  //                                       advertisements
+  {
+    base::RunLoop run_loop;
+    FindEndpoint(/*endpoint_id=*/"1");
+    EXPECT_CALL(discovery_callback, OnShareTargetDiscovered)
+        .WillOnce([&run_loop](ShareTarget share_target) { run_loop.Quit(); });
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
+                                             /*success=*/true);
+    run_loop.Run();
+  }
+  task_environment_.FastForwardBy(kCertificateDownloadDuringDiscoveryPeriod);
+  EXPECT_EQ(1u,
+            certificate_manager()->num_download_public_certificates_calls());
+
+  EXPECT_CALL(discovery_callback, OnShareTargetLost);
+  service_->Shutdown();
+  service_.reset();
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       RetryDiscoveredEndpoints_DownloadCertsAndRetryDecryption) {
+  // Start discovery.
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                SendSurfaceState::kForeground);
+  EXPECT_EQ(1u,
+            certificate_manager()->num_download_public_certificates_calls());
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                            /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/true,
+                            /*expected_number_of_calls=*/6u);
+  // Order of events:
+  // - Discover endpoint 1 --> decrypts public certificate
+  // - Discover endpoint 2 --> cannot decrypt public certificate
+  // - Discover endpoint 3 --> decrypts public certificate
+  // - Discover endpoint 4 --> cannot decrypt public certificate
+  // - Lose endpoint 3
+  // - Fire certificate download timer --> certificates downloaded
+  // - (Re)discover endpoints 2 and 4
+  {
+    base::RunLoop run_loop;
+    FindEndpoint(/*endpoint_id=*/"1");
+    FindEndpoint(/*endpoint_id=*/"2");
+    FindEndpoint(/*endpoint_id=*/"3");
+    FindEndpoint(/*endpoint_id=*/"4");
+    LoseEndpoint(/*endpoint_id=*/"3");
+    ::testing::InSequence s;
+    EXPECT_CALL(discovery_callback, OnShareTargetDiscovered).Times(2);
+    EXPECT_CALL(discovery_callback, OnShareTargetLost)
+        .WillOnce([&run_loop](ShareTarget share_target) { run_loop.Quit(); });
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
+                                             /*success=*/true);
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/2,
+                                             /*success=*/false);
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/3,
+                                             /*success=*/true);
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/4,
+                                             /*success=*/false);
+    run_loop.Run();
+  }
+  task_environment_.FastForwardBy(kCertificateDownloadDuringDiscoveryPeriod);
+  EXPECT_EQ(2u,
+            certificate_manager()->num_download_public_certificates_calls());
+  certificate_manager()->NotifyPublicCertificatesDownloaded();
+  {
+    base::RunLoop run_loop;
+    ::testing::InSequence s;
+    EXPECT_CALL(discovery_callback, OnShareTargetDiscovered);
+    EXPECT_CALL(discovery_callback, OnShareTargetDiscovered)
+        .WillOnce([&run_loop](ShareTarget share_target) { run_loop.Quit(); });
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/5,
+                                             /*success=*/true);
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/6,
+                                             /*success=*/true);
+    run_loop.Run();
+  }
+  EXPECT_CALL(discovery_callback, OnShareTargetLost).Times(3);
+  service_->Shutdown();
+  service_.reset();
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       RetryDiscoveredEndpoints_DiscoveryRestartClearsCache) {
+  // Start discovery.
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                SendSurfaceState::kForeground);
+  EXPECT_EQ(1u,
+            certificate_manager()->num_download_public_certificates_calls());
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                            /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/true,
+                            /*expected_number_of_calls=*/1u);
+  // Order of events:
+  // - Discover endpoint 1 --> cannot decrypt public certificate
+  // - Stop discovery
+  // - Certificate download timer not running; not discovering
+  // - Start discovery
+  // - Fire certificate download timer --> certificates not downloaded; cached
+  //                                       advertisement map has been cleared
+  FindEndpoint(/*endpoint_id=*/"1");
+  ::testing::InSequence s;
+  EXPECT_CALL(discovery_callback, OnShareTargetDiscovered).Times(0);
+  EXPECT_CALL(discovery_callback, OnShareTargetLost).Times(0);
+  ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
+                                           /*success=*/false);
+  service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
+  task_environment_.FastForwardBy(kCertificateDownloadDuringDiscoveryPeriod);
+  EXPECT_EQ(1u,
+            certificate_manager()->num_download_public_certificates_calls());
+  service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                SendSurfaceState::kForeground);
+  // Note: Certificate downloads are also requested in RegisterSendSurface; this
+  // is not related to the retry timer.
+  EXPECT_EQ(2u,
+            certificate_manager()->num_download_public_certificates_calls());
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+  task_environment_.FastForwardBy(kCertificateDownloadDuringDiscoveryPeriod);
+  EXPECT_EQ(2u,
+            certificate_manager()->num_download_public_certificates_calls());
+  service_->Shutdown();
+  service_.reset();
+}
+
+TEST_F(NearbySharingServiceImplTest, RetryDiscoveredEndpoints_DownloadLimit) {
+  // Start discovery.
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                SendSurfaceState::kForeground);
+  EXPECT_EQ(1u,
+            certificate_manager()->num_download_public_certificates_calls());
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                            /*return_empty_advertisement=*/false,
+                            /*return_empty_device_name=*/true,
+                            /*expected_number_of_calls=*/2u +
+                                kMaxCertificateDownloadsDuringDiscovery);
+  // Order of events:
+  // - x3:
+  //   - (Re)discover endpoint 1 --> cannot decrypt public certificate
+  //   - Fire certificate download timer --> certificates downloaded
+  // - Rediscover endpoint 1 --> cannot decrypt public certificate
+  // - Fire certificate download timer --> no download; limit reached
+  // - Restart discovery which resets limit counter
+  FindEndpoint(/*endpoint_id=*/"1");
+  for (size_t i = 1; i <= kMaxCertificateDownloadsDuringDiscovery; ++i) {
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/i,
+                                             /*success=*/false);
+    task_environment_.FastForwardBy(kCertificateDownloadDuringDiscoveryPeriod);
+    EXPECT_EQ(1u + i,
+              certificate_manager()->num_download_public_certificates_calls());
+    certificate_manager()->NotifyPublicCertificatesDownloaded();
+  }
+  task_environment_.FastForwardBy(kCertificateDownloadDuringDiscoveryPeriod);
+  EXPECT_EQ(1u + kMaxCertificateDownloadsDuringDiscovery,
+            certificate_manager()->num_download_public_certificates_calls());
+  service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
+  service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                SendSurfaceState::kForeground);
+  // Note: Certificate downloads are also requested in RegisterSendSurface; this
+  // is not related to the retry timer.
+  EXPECT_EQ(2u + kMaxCertificateDownloadsDuringDiscovery,
+            certificate_manager()->num_download_public_certificates_calls());
+  FindEndpoint(/*endpoint_id=*/"1");
+  ProcessLatestPublicCertificateDecryption(
+      /*expected_num_calls=*/1u + kMaxCertificateDownloadsDuringDiscovery,
+      /*success=*/false);
+  task_environment_.FastForwardBy(kCertificateDownloadDuringDiscoveryPeriod);
+  EXPECT_EQ(3u + kMaxCertificateDownloadsDuringDiscovery,
+            certificate_manager()->num_download_public_certificates_calls());
+
+  service_->Shutdown();
+  service_.reset();
 }
 
 using ServiceRestartTestParams = std::tuple<bool, NearbyProcessShutdownReason>;

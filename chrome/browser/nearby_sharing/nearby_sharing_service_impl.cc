@@ -65,6 +65,15 @@ constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMax =
 constexpr base::TimeDelta kInvalidateSurfaceStateDelayAfterTransferDone =
     base::TimeDelta::FromMilliseconds(3000);
 
+// The maximum number of certificate downloads that can be performed during a
+// discovery session.
+constexpr size_t kMaxCertificateDownloadsDuringDiscovery = 3u;
+// The time between certificate downloads during a discovery session. The
+// download is only attempted if there are discovered, contact-based
+// advertisements that cannot decrypt any currently stored public certificates.
+constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
+    base::TimeDelta::FromSeconds(10);
+
 // Used to hash a token into a 4 digit string.
 constexpr int kHashModulo = 9973;
 constexpr int kHashBaseMultiplier = 31;
@@ -875,6 +884,7 @@ void NearbySharingServiceImpl::CleanupAfterNearbyProcessStopped() {
 
   ClearOutgoingShareTargetInfoMap();
   incoming_share_target_info_map_.clear();
+  discovered_advertisements_to_retry_map_.clear();
 
   foreground_send_transfer_callbacks_.Clear();
   background_send_transfer_callbacks_.Clear();
@@ -896,6 +906,7 @@ void NearbySharingServiceImpl::CleanupAfterNearbyProcessStopped() {
   advertising_power_level_ = PowerLevel::kUnknown;
 
   process_shutdown_pending_timer_.Stop();
+  certificate_download_during_discovery_timer_.Stop();
   rotate_background_advertisement_timer_.Stop();
 }
 
@@ -1048,8 +1059,18 @@ void NearbySharingServiceImpl::OnAllowedContactsChanged(
 }
 
 void NearbySharingServiceImpl::OnPublicCertificatesDownloaded() {
-  // TODO(https://crbug.com/1152158): Possibly restart scanning after public
-  // certificates are downloaded.
+  if (!is_scanning_ || discovered_advertisements_to_retry_map_.empty())
+    return;
+
+  NS_LOG(VERBOSE) << __func__
+                  << ": Public certificates downloaded while scanning. "
+                  << "Retrying decryption with "
+                  << discovered_advertisements_to_retry_map_.size()
+                  << " previously discovered advertisements.";
+  const auto map_copy = discovered_advertisements_to_retry_map_;
+  discovered_advertisements_to_retry_map_.clear();
+  for (const auto& id_info_pair : map_copy)
+    OnEndpointDiscovered(id_info_pair.first, id_info_pair.second);
 }
 
 void NearbySharingServiceImpl::OnPrivateCertificatesChanged() {
@@ -1291,13 +1312,14 @@ void NearbySharingServiceImpl::HandleEndpointDiscovered(
       endpoint_info,
       base::BindOnce(&NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded,
                      endpoint_discovery_weak_ptr_factory_.GetWeakPtr(),
-                     endpoint_id));
+                     endpoint_id, endpoint_info));
 }
 
 void NearbySharingServiceImpl::HandleEndpointLost(
     const std::string& endpoint_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NS_LOG(VERBOSE) << __func__ << ": endpoint_id=" << endpoint_id;
+
   if (!is_scanning_) {
     NS_LOG(VERBOSE)
         << __func__
@@ -1306,6 +1328,7 @@ void NearbySharingServiceImpl::HandleEndpointLost(
     return;
   }
 
+  discovered_advertisements_to_retry_map_.erase(endpoint_id);
   RemoveOutgoingShareTargetWithEndpointId(endpoint_id);
   FinishEndpointDiscoveryEvent();
 }
@@ -1324,6 +1347,7 @@ void NearbySharingServiceImpl::FinishEndpointDiscoveryEvent() {
 
 void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
     const std::string& endpoint_id,
+    const std::vector<uint8_t>& endpoint_info,
     sharing::mojom::AdvertisementPtr advertisement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!advertisement) {
@@ -1352,11 +1376,12 @@ void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
       std::move(encrypted_metadata_key),
       base::BindOnce(&NearbySharingServiceImpl::OnOutgoingDecryptedCertificate,
                      endpoint_discovery_weak_ptr_factory_.GetWeakPtr(),
-                     endpoint_id, std::move(advertisement)));
+                     endpoint_id, endpoint_info, std::move(advertisement)));
 }
 
 void NearbySharingServiceImpl::OnOutgoingDecryptedCertificate(
     const std::string& endpoint_id,
+    const std::vector<uint8_t>& endpoint_info,
     sharing::mojom::AdvertisementPtr advertisement,
     base::Optional<NearbyShareDecryptedPublicCertificate> certificate) {
   // Check again for this endpoint id, to avoid race conditions.
@@ -1374,7 +1399,9 @@ void NearbySharingServiceImpl::OnOutgoingDecryptedCertificate(
   if (!share_target) {
     NS_LOG(VERBOSE) << __func__
                     << ": Failed to convert advertisement to share target from "
-                       "discovered advertisement. Ignoring endpoint.";
+                    << "discovered advertisement. Ignoring endpoint until next "
+                    << "certificate download.";
+    discovered_advertisements_to_retry_map_[endpoint_id] = endpoint_info;
     FinishEndpointDiscoveryEvent();
     return;
   }
@@ -1401,6 +1428,34 @@ void NearbySharingServiceImpl::OnOutgoingDecryptedCertificate(
   // share targets.
 
   FinishEndpointDiscoveryEvent();
+}
+
+void NearbySharingServiceImpl::ScheduleCertificateDownloadDuringDiscovery(
+    size_t download_count) {
+  if (download_count >= kMaxCertificateDownloadsDuringDiscovery)
+    return;
+
+  certificate_download_during_discovery_timer_.Start(
+      FROM_HERE, kCertificateDownloadDuringDiscoveryPeriod,
+      base::BindOnce(&NearbySharingServiceImpl::
+                         OnCertificateDownloadDuringDiscoveryTimerFired,
+                     weak_ptr_factory_.GetWeakPtr(), download_count));
+}
+
+void NearbySharingServiceImpl::OnCertificateDownloadDuringDiscoveryTimerFired(
+    size_t download_count) {
+  if (!is_scanning_)
+    return;
+
+  if (!discovered_advertisements_to_retry_map_.empty()) {
+    NS_LOG(VERBOSE) << __func__ << ": Detected "
+                    << discovered_advertisements_to_retry_map_.size()
+                    << " discovered advertisements that could not decrypt any "
+                    << "public certificates. Re-downloading certificates.";
+    certificate_manager_->DownloadPublicCertificates();
+    ++download_count;
+  }
+  ScheduleCertificateDownloadDuringDiscovery(download_count);
 }
 
 bool NearbySharingServiceImpl::IsBluetoothPresent() const {
@@ -1799,6 +1854,7 @@ void NearbySharingServiceImpl::StartScanning() {
   InvalidateReceiveSurfaceState();
 
   ClearOutgoingShareTargetInfoMap();
+  discovered_advertisements_to_retry_map_.clear();
 
   nearby_connections_manager_->StartDiscovery(
       /*listener=*/this, settings_.GetDataUsage(),
@@ -1817,6 +1873,9 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::StopScanning() {
 
   nearby_connections_manager_->StopDiscovery();
   is_scanning_ = false;
+
+  certificate_download_during_discovery_timer_.Stop();
+  discovered_advertisements_to_retry_map_.clear();
 
   // Note: We don't know if we stopped scanning in preparation to send a file,
   // or we stopped because the user left the page. We'll invalidate after a
@@ -3711,6 +3770,10 @@ void NearbySharingServiceImpl::OnStartDiscoveryResult(
     NS_LOG(VERBOSE)
         << __func__
         << ": StartDiscovery over Nearby Connections was successful.";
+
+    // Periodically download certificates if there are discovered, contact-based
+    // advertisements that cannot decrypt any currently stored certificates.
+    ScheduleCertificateDownloadDuringDiscovery(/*attempt_count=*/0);
   } else {
     NS_LOG(ERROR) << __func__
                   << ": StartDiscovery over Nearby Connections failed: "

@@ -44,7 +44,8 @@ void FakeNearbyConnectionsManager::StartDiscovery(
     ConnectionsCallback callback) {
   is_shutdown_ = false;
   discovery_listener_ = listener;
-  // TODO(alexchau): Implement.
+  std::move(callback).Run(
+      NearbyConnectionsManager::ConnectionsStatus::kSuccess);
 }
 
 void FakeNearbyConnectionsManager::StopDiscovery() {
