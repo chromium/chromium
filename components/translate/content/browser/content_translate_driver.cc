@@ -316,6 +316,15 @@ void ContentTranslateDriver::RegisterPage(
 
   for (auto& observer : language_detection_observers())
     observer.OnLanguageDetermined(details);
+
+  translate_manager_->GetActiveTranslateMetricsLogger()
+      ->LogHTMLDocumentLanguage(details.html_root_language);
+  translate_manager_->GetActiveTranslateMetricsLogger()->LogHTMLContentLanguage(
+      details.content_language);
+  translate_manager_->GetActiveTranslateMetricsLogger()->LogDetectedLanguage(
+      details.model_detected_language);
+  translate_manager_->GetActiveTranslateMetricsLogger()
+      ->LogDetectionReliabilityScore(details.model_reliability_score);
 }
 
 void ContentTranslateDriver::OnPageTranslated(

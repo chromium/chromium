@@ -65,6 +65,12 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
                                 bool is_in_users_content_languages) override {}
   void LogSourceLanguage(const std::string& source_language_code) override {}
   void LogTargetLanguage(const std::string& target_language_code) override {}
+  void LogHTMLDocumentLanguage(const std::string& html_doc_language) override {}
+  void LogHTMLContentLanguage(
+      const std::string& html_content_language) override {}
+  void LogDetectedLanguage(const std::string& detected_language) override {}
+  void LogDetectionReliabilityScore(
+      const float& model_detection_reliability_score) override {}
   void LogUIInteraction(UIInteraction ui_interaction) override {}
   TranslationType GetNextManualTranslationType() override;
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override {}
@@ -112,6 +118,12 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
                                 bool is_in_users_content_languages) override;
   void LogSourceLanguage(const std::string& source_language_code) override;
   void LogTargetLanguage(const std::string& target_language_code) override;
+  void LogHTMLDocumentLanguage(const std::string& html_doc_language) override;
+  void LogHTMLContentLanguage(
+      const std::string& html_content_language) override;
+  void LogDetectedLanguage(const std::string& detected_language) override;
+  void LogDetectionReliabilityScore(
+      const float& model_detection_reliability_score) override;
   void LogUIInteraction(UIInteraction ui_interaction) override;
   TranslationType GetNextManualTranslationType() override;
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override;
@@ -222,6 +234,14 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   std::string initial_target_language_;
   std::string current_target_language_;
   int num_target_language_changes_ = 0;
+
+  // Tracks this record's HTML language attributes.
+  std::string html_doc_language_;
+  std::string html_content_language_;
+
+  // Tracks this record's language model's prediction and reliability.
+  std::string model_detected_language_;
+  float model_detection_reliability_score_ = 0.0;
 
   // Tracks any translation errors that occur over the course of the page load.
   TranslateErrors::Type first_translate_error_type_ = TranslateErrors::NONE;

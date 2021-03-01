@@ -149,6 +149,19 @@ class TranslateMetricsLogger {
   virtual void LogSourceLanguage(const std::string& source_language_code) = 0;
   virtual void LogTargetLanguage(const std::string& target_language_code) = 0;
 
+  // Used to record the language attributes specified by the HTML document.
+  // Recorded for each language detection.
+  virtual void LogHTMLDocumentLanguage(
+      const std::string& html_doc_language) = 0;
+  virtual void LogHTMLContentLanguage(
+      const std::string& html_content_language) = 0;
+
+  // Used to record the language detection model's prediction and reliability
+  // based on the page content's text. Recorded for each language detection.
+  virtual void LogDetectedLanguage(const std::string& detected_language) = 0;
+  virtual void LogDetectionReliabilityScore(
+      const float& model_detection_reliability_score) = 0;
+
   // Records the user's high level interactions with the Translate UI.
   virtual void LogUIInteraction(UIInteraction ui_interaction) = 0;
 

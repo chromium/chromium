@@ -101,9 +101,10 @@ void TranslateMetricsLoggerImpl::RecordMetrics(bool is_final) {
 
   // The first time |RecordMetrics| is called, record all page load frequency
   // UMA metrcis.
-  if (sequence_no_ == 0)
+  if (sequence_no_ == 0) {
     RecordPageLoadUmaMetrics(this_initial_state_is_translated,
                              this_current_state_is_translated);
+  }
 
   // Record metrics to UKM.
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
@@ -146,6 +147,12 @@ void TranslateMetricsLoggerImpl::RecordMetrics(bool is_final) {
           total_time_not_translated_.InSeconds()))
       .SetMaxTimeToTranslate(ukm::GetExponentialBucketMinForUserTiming(
           max_time_to_translate_.InMilliseconds()))
+      .SetModelDetectionReliabilityScore(ukm::GetLinearBucketMin(
+          static_cast<int64_t>(100 * model_detection_reliability_score_), 5))
+      .SetModelDetectedLanguage(
+          int(base::HashMetricName(model_detected_language_)))
+      .SetHTMLContentLanguage(int(base::HashMetricName(html_content_language_)))
+      .SetHTMLDocumentLanguage(int(base::HashMetricName(html_doc_language_)))
       .Record(ukm_recorder);
 
   sequence_no_++;
@@ -484,6 +491,25 @@ void TranslateMetricsLoggerImpl::SetInternalClockForTesting(
     base::TickClock* clock) {
   clock_ = clock;
   time_of_last_state_change_ = clock_->NowTicks();
+}
+
+void TranslateMetricsLoggerImpl::LogHTMLDocumentLanguage(
+    const std::string& html_doc_language) {
+  html_doc_language_ = html_doc_language;
+}
+
+void TranslateMetricsLoggerImpl::LogHTMLContentLanguage(
+    const std::string& html_content_language) {
+  html_content_language_ = html_content_language;
+}
+void TranslateMetricsLoggerImpl::LogDetectedLanguage(
+    const std::string& model_detected_language) {
+  model_detected_language_ = model_detected_language;
+}
+
+void TranslateMetricsLoggerImpl::LogDetectionReliabilityScore(
+    const float& model_detection_reliability_score) {
+  model_detection_reliability_score_ = model_detection_reliability_score;
 }
 
 }  // namespace translate
