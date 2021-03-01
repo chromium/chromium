@@ -267,6 +267,7 @@ extern const char kChromeUIOobeHost[];
 extern const char kChromeUIOobeURL[];
 extern const char kChromeUIPasswordChangeHost[];
 extern const char kChromeUIPasswordChangeUrl[];
+extern const char kChromeUIPluginVmInternalHost[];
 extern const char kChromeUIPrintManagementUrl[];
 extern const char kChromeUIPowerHost[];
 extern const char kChromeUIScanningAppURL[];
