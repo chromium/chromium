@@ -389,6 +389,8 @@ class PictureInPicturePixelComparisonBrowserTest
 
       ui::Layer* const layer = GetOverlayWindow()->GetRootView()->layer();
       layer->CompleteAllAnimations();
+      layer->GetCompositor()->ScheduleFullRedraw();
+      ui::DrawWaiterForTest::WaitForCompositingEnded(layer->GetCompositor());
 
       base::RunLoop run_loop;
       std::unique_ptr<viz::CopyOutputRequest> request =
@@ -398,16 +400,6 @@ class PictureInPicturePixelComparisonBrowserTest
                   &PictureInPicturePixelComparisonBrowserTest::ReadbackResult,
                   base::Unretained(this), run_loop.QuitClosure()));
       layer->RequestCopyOfOutput(std::move(request));
-
-      // Wait for copy response. This needs to wait as the compositor could be
-      // in the middle of a draw right now, and the commit with the copy output
-      // request may not be done on the first draw.
-      for (int i = 0; i < 2; i++) {
-        layer->GetCompositor()->ScheduleFullRedraw();
-        ui::DrawWaiterForTest::WaitForCompositingStarted(
-            layer->GetCompositor());
-      }
-
       run_loop.Run();
 
       if (bounds_change_waiter.bounds_change_count() == initial_count)
