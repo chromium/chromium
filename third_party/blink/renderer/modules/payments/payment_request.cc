@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -699,6 +700,16 @@ void ValidateAndConvertPaymentMethodData(
             "or \"requestPayerPhone\" options.");
         return;
       }
+    }
+
+    KURL url(payment_method_data->supportedMethod());
+    if (url.IsValid() &&
+        !execution_context.GetContentSecurityPolicy()->AllowConnectToSource(
+            url, url, RedirectStatus::kNoRedirect)) {
+      exception_state.ThrowRangeError(
+          payment_method_data->supportedMethod() +
+          " payment method identifier violates Content Security Policy.");
+      return;
     }
 
     method_names.insert(payment_method_data->supportedMethod());
