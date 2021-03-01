@@ -812,15 +812,21 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     if (UseRTLLayout()) {
       offset = -self.collectionView.contentOffset.x;
     } else {
+      // Use collectionViewLayout.collectionViwContentSize because it has the
+      // correct size during a batch update.
       offset = self.collectionView.contentOffset.x +
                self.collectionView.frame.size.width -
-               self.collectionView.contentSize.width;
+               self.collectionView.collectionViewLayout
+                   .collectionViewContentSize.width;
     }
   } else {
     DCHECK_EQ(self.gridLayout, self.currentLayout);
+    // Use collectionViewLayout.collectionViwContentSize because it has the
+    // correct size during a batch update.
     offset = self.collectionView.contentOffset.y +
              self.collectionView.frame.size.height -
-             self.collectionView.contentSize.height;
+             self.collectionView.collectionViewLayout.collectionViewContentSize
+                 .width;
   }
   return offset;
 }
