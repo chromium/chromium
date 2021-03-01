@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_canvas.h"
@@ -498,6 +499,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
  protected:
   explicit NativeTheme(bool should_only_use_dark_colors);
   virtual ~NativeTheme();
+
+  // Gets the color from the color provider if using a color provider is enable.
+  base::Optional<SkColor> GetColorProviderColor(ColorId color_id,
+                                                ColorScheme color_scheme) const;
 
   // Whether high contrast is forced via command-line flag.
   bool IsForcedHighContrast() const;

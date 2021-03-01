@@ -159,17 +159,8 @@ SkColor NativeThemeMac::GetSystemColor(ColorId color_id,
   if (color_scheme == ColorScheme::kDefault)
     color_scheme = GetDefaultSystemColorScheme();
 
-  // The first check makes sure that when we are using the color providers that
-  // we actually go to the providers instead of just returning the  colors
-  // below. The second check is to make sure that when not using color
-  // providers, we only skip the rest of the method when we are in an incognito
-  // window.
-  // TODO(http://crbug.com/1057754): Remove the && kPlatformHighContrast
-  // once NativeTheme.cc handles kColorProviderReirection and
-  // kPlatformHighContrast both being on.
-  if ((base::FeatureList::IsEnabled(features::kColorProviderRedirection) &&
-       color_scheme != ColorScheme::kPlatformHighContrast))
-    return NativeTheme::GetSystemColor(color_id, color_scheme);
+  if (auto color = GetColorProviderColor(color_id, color_scheme))
+    return color.value();
 
   if (UserHasContrastPreference()) {
     switch (color_id) {
