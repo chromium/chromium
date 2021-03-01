@@ -150,6 +150,20 @@ class StreamDelegateCloseOnHeaders : public StreamDelegateBase {
       const spdy::Http2HeaderBlock* pushed_request_headers) override;
 };
 
+// Test delegate that sets a flag when EOF is detected.
+class StreamDelegateDetectEOF : public StreamDelegateBase {
+ public:
+  explicit StreamDelegateDetectEOF(const base::WeakPtr<SpdyStream>& stream);
+  ~StreamDelegateDetectEOF() override;
+
+  void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
+
+  bool eof_detected() const { return eof_detected_; }
+
+ private:
+  bool eof_detected_ = false;
+};
+
 }  // namespace test
 
 }  // namespace net

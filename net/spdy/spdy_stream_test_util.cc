@@ -176,6 +176,18 @@ void StreamDelegateCloseOnHeaders::OnHeadersReceived(
   stream()->Cancel(ERR_ABORTED);
 }
 
+StreamDelegateDetectEOF::StreamDelegateDetectEOF(
+    const base::WeakPtr<SpdyStream>& stream)
+    : StreamDelegateBase(stream) {}
+
+StreamDelegateDetectEOF::~StreamDelegateDetectEOF() = default;
+
+void StreamDelegateDetectEOF::OnDataReceived(
+    std::unique_ptr<SpdyBuffer> buffer) {
+  if (!buffer)
+    eof_detected_ = true;
+}
+
 }  // namespace test
 
 }  // namespace net
