@@ -1726,6 +1726,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     }
                     return shouldShowStart;
                 }
+
+                @Override
+                public void onTabWillLoadUrl(Tab tab, String url) {
+                    StartSurfaceConfiguration.maySetUserDataForEmptyTab(tab, url);
+                }
             };
         }
         return Pair.create(new ChromeTabCreator(this, getWindowAndroid(), getStartupTabPreloader(),
