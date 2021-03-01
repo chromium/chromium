@@ -9,6 +9,7 @@
   }
 
   .learn-more-button {
+    @apply --diagnostics-button-font;
     background-color: rgba(var(--google-blue-600), .06);
     border-radius: 4px;
     height: 32px;
@@ -17,7 +18,6 @@
   }
 
   #learnMoreText {
-    color: var(--google-blue-600);
     cursor: pointer;
   }
 
@@ -53,6 +53,7 @@
 
   #testStatusText {
     @apply --diagnostics-test-status-text-font;
+    padding-inline-start: 6px;
   }
 
   #toggleReportButton {
