@@ -255,44 +255,47 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     CrossOriginOpenerPolicyBrowserTest,
     NewPopupCOOP_SameOriginPolicyAndCrossOriginIframeSetsNoopener) {
-  GURL starting_page(
-      https_server()->GetURL("a.com", "/cross_site_iframe_factory.html?a(b)"));
-  EXPECT_TRUE(NavigateToURL(shell(), starting_page));
+  for (auto coop_value : {CoopSameOriginPlusCoep(), CoopSameOrigin()}) {
+    GURL starting_page(https_server()->GetURL(
+        "a.com", "/cross_site_iframe_factory.html?a(b)"));
+    EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
-  RenderFrameHostImpl* main_frame = current_frame_host();
-  main_frame->set_cross_origin_opener_policy_for_testing(CoopSameOrigin());
+    RenderFrameHostImpl* main_frame = current_frame_host();
+    main_frame->set_cross_origin_opener_policy_for_testing(coop_value);
 
-  ShellAddedObserver new_shell_observer;
-  RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
-  EXPECT_TRUE(ExecJs(iframe, "window.open('about:blank')"));
+    ShellAddedObserver new_shell_observer;
+    RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
+    EXPECT_TRUE(ExecJs(iframe, "window.open('about:blank')"));
 
-  Shell* new_shell = new_shell_observer.GetShell();
-  RenderFrameHostImpl* popup_frame =
-      static_cast<WebContentsImpl*>(new_shell->web_contents())
-          ->GetFrameTree()
-          ->root()
-          ->current_frame_host();
+    Shell* new_shell = new_shell_observer.GetShell();
+    RenderFrameHostImpl* popup_frame =
+        static_cast<WebContentsImpl*>(new_shell->web_contents())
+            ->GetFrameTree()
+            ->root()
+            ->current_frame_host();
 
-  scoped_refptr<SiteInstance> main_frame_site_instance(
-      main_frame->GetSiteInstance());
-  scoped_refptr<SiteInstance> iframe_site_instance(iframe->GetSiteInstance());
-  scoped_refptr<SiteInstance> popup_site_instance(
-      popup_frame->GetSiteInstance());
+    scoped_refptr<SiteInstance> main_frame_site_instance(
+        main_frame->GetSiteInstance());
+    scoped_refptr<SiteInstance> iframe_site_instance(iframe->GetSiteInstance());
+    scoped_refptr<SiteInstance> popup_site_instance(
+        popup_frame->GetSiteInstance());
 
-  ASSERT_TRUE(main_frame_site_instance);
-  ASSERT_TRUE(iframe_site_instance);
-  ASSERT_TRUE(popup_site_instance);
-  EXPECT_FALSE(main_frame_site_instance->IsRelatedSiteInstance(
-      popup_site_instance.get()));
-  EXPECT_FALSE(
-      iframe_site_instance->IsRelatedSiteInstance(popup_site_instance.get()));
+    ASSERT_TRUE(main_frame_site_instance);
+    ASSERT_TRUE(iframe_site_instance);
+    ASSERT_TRUE(popup_site_instance);
+    EXPECT_FALSE(main_frame_site_instance->IsRelatedSiteInstance(
+        popup_site_instance.get()));
+    EXPECT_FALSE(
+        iframe_site_instance->IsRelatedSiteInstance(popup_site_instance.get()));
 
-  // Check that `window.opener` is not set.
-  bool success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      new_shell, "window.domAutomationController.send(window.opener == null);",
-      &success));
-  EXPECT_TRUE(success) << "window.opener is set";
+    // Check that `window.opener` is not set.
+    bool success = false;
+    EXPECT_TRUE(ExecuteScriptAndExtractBool(
+        new_shell,
+        "window.domAutomationController.send(window.opener == null);",
+        &success));
+    EXPECT_TRUE(success) << "window.opener is set";
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -2410,7 +2413,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   {
     RenderFrameHostImpl* popup_frame =
         static_cast<WebContentsImpl*>(
-            OpenPopup(iframe, isolated_page, "")->web_contents())
+            OpenPopup(iframe, isolated_page, "", "", false)->web_contents())
             ->GetFrameTree()
             ->root()
             ->current_frame_host();
