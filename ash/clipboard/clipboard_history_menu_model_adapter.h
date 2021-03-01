@@ -157,6 +157,9 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
 
   std::unique_ptr<ScopedA11yIgnore> scoped_ignore_;
 
+  // Indicates whether `Run()` has been called before.
+  bool run_before_ = false;
+
   // Called when an item view is removed from the root menu.
   base::RepeatingClosure item_removal_callback_for_test_;
 
