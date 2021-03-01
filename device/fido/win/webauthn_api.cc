@@ -39,7 +39,7 @@ constexpr uint32_t kWinWebAuthnTimeoutMilliseconds = 1000 * 60 * 5;
 class WinWebAuthnApiImpl : public WinWebAuthnApi {
  public:
   WinWebAuthnApiImpl() : WinWebAuthnApi(), is_bound_(false) {
-    if (base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
+    if (!base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
       FIDO_LOG(DEBUG) << "Windows WebAuthn API deactivated via feature flag";
       return;
     }
