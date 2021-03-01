@@ -130,6 +130,8 @@ class SettingsTableViewControllerMICETest
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
     ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
         .WillByDefault(Return(true));
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(), GetSelectedTypes())
+        .WillByDefault(Return(syncer::UserSelectableTypeSet::All()));
     ON_CALL(*sync_service_mock_, IsAuthenticatedAccountPrimary())
         .WillByDefault(Return(true));
   }
@@ -219,6 +221,35 @@ TEST_F(SettingsTableViewControllerMICETest, TurnsSyncOffAfterFirstSetup) {
       .WillByDefault(Return(true));
   ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
       .WillByDefault(Return(false));
+  auth_service_->SignIn(fake_identity_);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_EQ(3U, account_items.count);
+
+  TableViewDetailIconItem* sync_item =
+      static_cast<TableViewDetailIconItem*>(account_items[1]);
+  ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE),
+              sync_item.text);
+  ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
+              sync_item.detailText);
+}
+
+// Verifies that the Sync icon displays the off state when the user has
+// completed the sign-in and sync flow then explcitly turned off all data types
+// in the Sync settings.
+TEST_F(SettingsTableViewControllerMICETest,
+       DisablesAllSyncSettingsAfterFirstSetup) {
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(), GetSelectedTypes())
+      .WillByDefault(Return(syncer::UserSelectableTypeSet()));
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+      .WillByDefault(Return(true));
+  ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
+      .WillByDefault(Return(true));
   auth_service_->SignIn(fake_identity_);
 
   CreateController();

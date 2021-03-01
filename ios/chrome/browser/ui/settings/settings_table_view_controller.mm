@@ -143,6 +143,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 enum SyncState {
   kSyncDisabledByAdministrator,
   kSyncOff,
+  kSyncEnabledWithNoSelectedTypes,
   kSyncEnabledWithError,
   kSyncEnabled,
 };
@@ -152,20 +153,25 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       ProfileSyncServiceFactory::GetForBrowserState(browserState);
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browserState);
+  // Sync is disabled by administrator policy.
   if (syncService->GetDisableReasons().Has(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     return kSyncDisabledByAdministrator;
+    // User has completed Sync setup in sign-in flow.
   } else if (syncSetupService->IsFirstSetupComplete() &&
              syncSetupService->IsSyncEnabled()) {
+    // User has deselected all sync data types.
+    if (syncService->GetUserSettings()->GetSelectedTypes().Empty()) {
+      return kSyncEnabledWithNoSelectedTypes;
+    }
     SyncSetupService::SyncServiceState errorState =
         syncSetupService->GetSyncServiceState();
     if (IsTransientSyncError(errorState)) {
       return kSyncEnabled;
     }
     return kSyncEnabledWithError;
-  } else {
-    return kSyncOff;
   }
+  return kSyncOff;
 }
 
 }  // namespace
@@ -1104,17 +1110,27 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       base::RecordAction(base::UserMetricsAction("Settings.GoogleServices"));
       [self showGoogleServices];
       break;
-    case SettingsItemTypeGoogleSync:
+    case SettingsItemTypeGoogleSync: {
       base::RecordAction(base::UserMetricsAction("Settings.Sync"));
-      if (GetSyncStateFromBrowserState(_browserState) == kSyncOff) {
-        [self showSignInWithIdentity:nil
-                         promoAction:signin_metrics::PromoAction::
-                                         PROMO_ACTION_NO_SIGNIN_PROMO
-                          completion:nil];
-      } else {
-        [self showGoogleSync];
+      switch (GetSyncStateFromBrowserState(_browserState)) {
+        case kSyncOff: {
+          [self showSignInWithIdentity:nil
+                           promoAction:signin_metrics::PromoAction::
+                                           PROMO_ACTION_NO_SIGNIN_PROMO
+                            completion:nil];
+          break;
+        }
+        case kSyncEnabled:
+        case kSyncEnabledWithError:
+        case kSyncEnabledWithNoSelectedTypes: {
+          [self showGoogleSync];
+          break;
+        }
+        case kSyncDisabledByAdministrator:
+          break;
       }
       break;
+    }
     case SettingsItemTypeDefaultBrowser:
       base::RecordAction(
           base::UserMetricsAction("Settings.ShowDefaultBrowser"));
@@ -1473,7 +1489,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
       break;
     }
-    case kSyncOff: {
+    case kSyncOff:
+    case kSyncEnabledWithNoSelectedTypes: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
       break;
