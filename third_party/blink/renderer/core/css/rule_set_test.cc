@@ -334,11 +334,13 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
 TEST(RuleSetTest, UACounterStyleRules) {
   ScopedCSSAtRuleCounterStyleForTest enabled_scope(true);
 
-  RuleSet* default_rule_set = CSSDefaultStyleSheets::Instance().DefaultStyle();
-  ASSERT_TRUE(default_rule_set);
-  ASSERT_FALSE(default_rule_set->CounterStyleRules().IsEmpty());
+  RuleSet* default_counter_style_rule_set =
+      CSSDefaultStyleSheets::Instance().DefaultCounterStyle();
+  ASSERT_TRUE(default_counter_style_rule_set);
+  ASSERT_FALSE(default_counter_style_rule_set->CounterStyleRules().IsEmpty());
 
-  EXPECT_EQ("decimal", default_rule_set->CounterStyleRules()[0]->GetName());
+  EXPECT_EQ("decimal",
+            default_counter_style_rule_set->CounterStyleRules()[0]->GetName());
 }
 
 }  // namespace blink

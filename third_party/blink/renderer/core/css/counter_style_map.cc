@@ -22,7 +22,8 @@ const char* predefined_symbol_markers[] = {
 CounterStyleMap* CreateUACounterStyleMap() {
   CounterStyleMap* map =
       MakeGarbageCollected<CounterStyleMap>(nullptr, nullptr);
-  map->AddCounterStyles(*CSSDefaultStyleSheets::Instance().DefaultStyle());
+  map->AddCounterStyles(
+      *CSSDefaultStyleSheets::Instance().DefaultCounterStyle());
   map->SetIsPredefined();
   for (const char* symbol_marker : predefined_symbol_markers) {
     map->FindCounterStyleAcrossScopes(symbol_marker)

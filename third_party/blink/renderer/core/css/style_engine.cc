@@ -541,13 +541,6 @@ void StyleEngine::UpdateActiveStyleSheets() {
       active_tree_scopes_.erase(tree_scope);
   }
 
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    // TODO(crbug.com/687225): We initialize the predefined counter styles here.
-    // Moving the initialization to other places causes test failures, which
-    // needs investigation and fixing.
-    CounterStyleMap::GetUACounterStyleMap();
-  }
-
   probe::ActiveStyleSheetsUpdated(document_);
 
   dirty_tree_scopes_.clear();

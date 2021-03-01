@@ -89,16 +89,9 @@ static StyleSheetContents* ParseUASheet(const String& str) {
 
 CSSDefaultStyleSheets::CSSDefaultStyleSheets()
     : media_controls_style_sheet_loader_(nullptr) {
-  // Predefined @counter-style rules
-  String predefined_counter_styles_sheet =
-      RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()
-          ? UncompressResourceAsASCIIString(
-                IDR_UASTYLE_PREDEFINED_COUNTER_STYLES_CSS)
-          : String();
   // Strict-mode rules.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
-                         LayoutTheme::GetTheme().ExtraDefaultStyleSheet() +
-                         predefined_counter_styles_sheet;
+                         LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
 
   default_style_sheet_ = ParseUASheet(default_rules);
 
@@ -137,6 +130,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   fullscreen_style_sheet_.Clear();
   webxr_overlay_style_sheet_.Clear();
   marker_style_sheet_.Clear();
+  counter_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
@@ -157,6 +151,7 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_media_controls_style_ = MakeGarbageCollected<RuleSet>();
   default_forced_color_style_.Clear();
   default_pseudo_element_style_.Clear();
+  default_counter_style_.Clear();
 
   default_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval());
   default_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(), ScreenEval());
@@ -379,6 +374,25 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
   return true;
 }
 
+RuleSet* CSSDefaultStyleSheets::DefaultCounterStyle() {
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
+
+  if (!default_counter_style_) {
+    String predefined_counter_styles = UncompressResourceAsASCIIString(
+        IDR_UASTYLE_PREDEFINED_COUNTER_STYLES_CSS);
+    counter_style_sheet_ = ParseUASheet(predefined_counter_styles);
+
+    default_counter_style_ = MakeGarbageCollected<RuleSet>();
+
+    // Use an arbitrary media query evaluator, which doesn't matter because
+    // predefined_counter_styles.css doesn't have media queries.
+    default_counter_style_->AddRulesFromSheet(counter_style_sheet_,
+                                              ScreenEval());
+  }
+
+  return default_counter_style_;
+}
+
 void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
                                               RuleFeatureSet& features) {
   if (DefaultStyle())
@@ -402,6 +416,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(default_media_controls_style_);
   visitor->Trace(default_style_sheet_);
   visitor->Trace(default_pseudo_element_style_);
+  visitor->Trace(default_counter_style_);
   visitor->Trace(mobile_viewport_style_sheet_);
   visitor->Trace(television_viewport_style_sheet_);
   visitor->Trace(xhtml_mobile_profile_style_sheet_);
@@ -414,6 +429,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(webxr_overlay_style_sheet_);
   visitor->Trace(marker_style_sheet_);
+  visitor->Trace(counter_style_sheet_);
 }
 
 }  // namespace blink
