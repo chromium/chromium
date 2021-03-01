@@ -1,8 +1,8 @@
 {
   "schema": "pedal_concepts_runtime",
-  "schema_version": 1,
-  "data_version": 15538875,
-  "tokenize_characters": " -",
+  "schema_version": 2,
+  "data_version": 15750708,
+  "tokenize_each_character": false,
   "dictionary": [
     "chrome",
     "do",
@@ -64,7 +64,6 @@
   ],
   "pedals": [
     {
-      "name": "CLEAR_BROWSING_DATA",
       "id": 1,
       "groups": [
         {
@@ -129,7 +128,6 @@
       ]
     },
     {
-      "name": "MANAGE_PASSWORDS",
       "id": 2,
       "groups": [
         {
@@ -199,7 +197,6 @@
       ]
     },
     {
-      "name": "UPDATE_CREDIT_CARD",
       "id": 3,
       "groups": [
         {
@@ -281,7 +278,6 @@
       ]
     },
     {
-      "name": "LAUNCH_INCOGNITO",
       "id": 4,
       "groups": [
         {
@@ -355,7 +351,6 @@
       ]
     },
     {
-      "name": "TRANSLATE",
       "id": 5,
       "groups": [
         {
@@ -407,7 +402,6 @@
       ]
     },
     {
-      "name": "UPDATE_CHROME",
       "id": 6,
       "groups": [
         {
@@ -458,12 +452,6 @@
         16
       ],
       [
-        16
-      ],
-      [
-        12
-      ],
-      [
         12
       ],
       [
@@ -471,9 +459,6 @@
       ],
       [
         17
-      ],
-      [
-        18
       ],
       [
         18

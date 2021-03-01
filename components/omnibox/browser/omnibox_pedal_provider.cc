@@ -167,8 +167,11 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   // to sanity check input since it is trusted and used for vector reserve.
   DCHECK_LT(max_tokens_, size_t{64});
 
-  concept_data->FindKey("tokenize_characters")
-      ->GetAsString(&tokenize_characters_);
+  if (concept_data->FindKey("tokenize_each_character")->GetBool()) {
+    tokenize_characters_ = base::ASCIIToUTF16("");
+  } else {
+    tokenize_characters_ = base::ASCIIToUTF16(" -");
+  }
 
   const auto& dictionary = concept_data->FindKey("dictionary")->GetList();
   dictionary_.reserve(dictionary.size());

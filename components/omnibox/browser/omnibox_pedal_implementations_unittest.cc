@@ -49,8 +49,9 @@ TEST_F(OmniboxPedalImplementationsTest,
       // clang-format off
       // Note: The lists below are auto-generated from raw synonym group data.
 
-      // CLEAR_BROWSING_DATA
+      // ID#1
       {
+          // Generated suggestions:
           "browser cache clear",
           "browser cache delete",
           "browser cache erase",
@@ -833,8 +834,9 @@ TEST_F(OmniboxPedalImplementationsTest,
           "wipe information google chrome",
       },
 
-      // MANAGE_PASSWORDS
+      // ID#2
       {
+          // Generated suggestions:
           "browser change credentials",
           "browser change password",
           "browser change passwords",
@@ -1317,8 +1319,9 @@ TEST_F(OmniboxPedalImplementationsTest,
           "view passwords google chrome",
       },
 
-      // UPDATE_CREDIT_CARD
+      // ID#3
       {
+          // Generated suggestions:
           "browser card info change",
           "browser card info edit",
           "browser card info manage",
@@ -2321,8 +2324,9 @@ TEST_F(OmniboxPedalImplementationsTest,
           "update payments google chrome",
       },
 
-      // LAUNCH_INCOGNITO
+      // ID#4
       {
+          // Generated suggestions:
           "browser create incognito",
           "browser create incognito mode",
           "browser create incognito tab",
@@ -3074,8 +3078,9 @@ TEST_F(OmniboxPedalImplementationsTest,
           "start private window google chrome",
       },
 
-      // TRANSLATE
+      // ID#5
       {
+          // Generated suggestions:
           "browser change language page",
           "browser change language this",
           "browser change language this page",
@@ -3278,8 +3283,9 @@ TEST_F(OmniboxPedalImplementationsTest,
           "webpage translate google chrome",
       },
 
-      // UPDATE_CHROME
+      // ID#6
       {
+          // Generated suggestions:
           "browser install",
           "browser update",
           "browser updates",
