@@ -15,7 +15,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.signin.SigninFragmentBase;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -42,15 +41,13 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
         final @ChildAccountStatus.Status int childAccountStatus =
                 freProperties.getInt(CHILD_ACCOUNT_STATUS);
         setArguments(ChildAccountStatus.isChild(childAccountStatus)
-                        ? createArgumentsForForcedSigninFlow(
+                        ? createArgumentsForForcedSigninFlow(SigninAccessPoint.START_PAGE,
                                 accounts.get(0).name, childAccountStatus)
-                        : createArguments(null));
+                        : createArguments(SigninAccessPoint.START_PAGE, null));
         // Records if there are {0, 1, 2+} accounts on device for default/non-default flows.
         RecordHistogram.recordCountHistogram(
                 "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", Math.min(accounts.size(), 2));
         RecordUserAction.record("MobileFre.SignInShown");
-        SigninMetricsUtils.logSigninStartAccessPoint(SigninAccessPoint.START_PAGE);
-        SigninMetricsUtils.logSigninUserActionForAccessPoint(SigninAccessPoint.START_PAGE);
     }
 
     @Override
@@ -72,11 +69,6 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
         getPageDelegate().acceptSignIn(accountName, isDefaultAccount, settingsClicked);
         getPageDelegate().advanceToNextPage();
         callback.run();
-    }
-
-    @Override
-    protected int getNegativeButtonTextId() {
-        return R.string.no_thanks;
     }
 
     @Override

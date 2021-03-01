@@ -83,7 +83,7 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
      */
     @Override
     public void launchActivity(Context context, @SigninAccessPoint int accessPoint) {
-        launchInternal(context, SigninFragment.createArguments(accessPoint));
+        launchInternal(context, SigninFragmentBase.createArguments(accessPoint, null));
     }
 
     /**

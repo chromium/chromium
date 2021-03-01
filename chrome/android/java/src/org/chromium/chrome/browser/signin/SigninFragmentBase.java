@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachine;
 import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate;
 import org.chromium.chrome.browser.signin.ui.ConsentTextTracker;
@@ -55,6 +56,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.GmsAvailabilityException;
 import org.chromium.components.signin.GmsJustUpdatedException;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -75,6 +77,8 @@ import java.util.List;
 public abstract class SigninFragmentBase
         extends Fragment implements AccountPickerCoordinator.Listener {
     private static final String TAG = "SigninFragmentBase";
+
+    private static final String ARGUMENT_ACCESS_POINT = "SigninFragmentBase.AccessPoint";
 
     private static final String SETTINGS_LINK_OPEN = "<LINK1>";
     private static final String SETTINGS_LINK_CLOSE = "</LINK1>";
@@ -121,6 +125,7 @@ public abstract class SigninFragmentBase
     private boolean mIsSigninInProgress;
     private boolean mHasGmsError;
     private boolean mRecordUndoSignin;
+    protected @SigninAccessPoint int mSigninAccessPoint;
 
     private UserRecoverableErrorHandler.ModalDialog mGooglePlayServicesUpdateErrorHandler;
     private AlertDialog mGmsIsUpdatingDialog;
@@ -130,11 +135,14 @@ public abstract class SigninFragmentBase
     /**
      * Creates an argument bundle for the default SigninFragmentBase flow (account selection is
      * enabled, etc.).
+     * @param accessPoint The access point for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
      */
-    protected static Bundle createArguments(@Nullable String accountName) {
+    protected static Bundle createArguments(
+            @SigninAccessPoint int accessPoint, @Nullable String accountName) {
         Bundle result = new Bundle();
         result.putInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
+        result.putInt(ARGUMENT_ACCESS_POINT, accessPoint);
         result.putString(ARGUMENT_ACCOUNT_NAME, accountName);
         return result;
     }
@@ -144,9 +152,11 @@ public abstract class SigninFragmentBase
      * be shown at the start of the sign-in process.
      * @param accountName The account to preselect or null to preselect the default account.
      */
-    protected static Bundle createArgumentsForChooseAccountFlow(@Nullable String accountName) {
+    protected static Bundle createArgumentsForChooseAccountFlow(
+            @SigninAccessPoint int accessPoint, @Nullable String accountName) {
         Bundle result = new Bundle();
         result.putInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.CHOOSE_ACCOUNT);
+        result.putInt(ARGUMENT_ACCESS_POINT, accessPoint);
         result.putString(ARGUMENT_ACCOUNT_NAME, accountName);
         return result;
     }
@@ -155,9 +165,10 @@ public abstract class SigninFragmentBase
      * Creates an argument bundle for "Add account" sign-in flow. Activity to add an account will be
      * shown at the start of the sign-in process.
      */
-    protected static Bundle createArgumentsForAddAccountFlow() {
+    protected static Bundle createArgumentsForAddAccountFlow(@SigninAccessPoint int accessPoint) {
         Bundle result = new Bundle();
         result.putInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.ADD_ACCOUNT);
+        result.putInt(ARGUMENT_ACCESS_POINT, accessPoint);
         return result;
     }
 
@@ -166,10 +177,11 @@ public abstract class SigninFragmentBase
      * @param accountName The account to preselect.
      * @param childAccountStatus Whether the selected account is a child one.
      */
-    protected static Bundle createArgumentsForForcedSigninFlow(
+    protected static Bundle createArgumentsForForcedSigninFlow(@SigninAccessPoint int accessPoint,
             String accountName, @ChildAccountStatus.Status int childAccountStatus) {
         Bundle result = new Bundle();
         result.putInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.FORCED);
+        result.putInt(ARGUMENT_ACCESS_POINT, accessPoint);
         result.putString(ARGUMENT_ACCOUNT_NAME, accountName);
         result.putInt(ARGUMENT_CHILD_ACCOUNT_STATUS, childAccountStatus);
         return result;
@@ -194,13 +206,6 @@ public abstract class SigninFragmentBase
     protected abstract void onSigninAccepted(String accountName, boolean isDefaultAccount,
             boolean settingsClicked, Runnable callback);
 
-    /**
-     * Returns the string resource id for the negative button. This is invoked once from
-     * {@link #onCreateView}.
-     */
-    @StringRes
-    protected abstract int getNegativeButtonTextId();
-
     /** Returns whether this fragment is in "force sign-in" mode. */
     protected boolean isForcedSignin() {
         return mSigninFlowType == SigninFlowType.FORCED;
@@ -211,6 +216,8 @@ public abstract class SigninFragmentBase
         super.onCreate(savedInstanceState);
 
         Bundle arguments = getArguments();
+        mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
+        assert mSigninAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
         mRequestedAccountName = arguments.getString(ARGUMENT_ACCOUNT_NAME, null);
         mChildAccountStatus =
                 arguments.getInt(ARGUMENT_CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
@@ -238,6 +245,8 @@ public abstract class SigninFragmentBase
         // By default this is set to true so that when system back button is pressed user action
         // is recorded in onDestroy().
         mRecordUndoSignin = true;
+        SigninMetricsUtils.logSigninStartAccessPoint(mSigninAccessPoint);
+        SigninMetricsUtils.logSigninUserActionForAccessPoint(mSigninAccessPoint);
     }
 
     @Override
@@ -333,7 +342,12 @@ public abstract class SigninFragmentBase
                 : R.string.signin_sync_description;
         mConsentTextTracker.setText(mView.getSyncDescriptionView(), syncDescription);
 
-        mConsentTextTracker.setText(mView.getRefuseButton(), getNegativeButtonTextId());
+        final @StringRes int refuseButtonTextId =
+                mSigninAccessPoint == SigninAccessPoint.SIGNIN_PROMO
+                        || mSigninAccessPoint == SigninAccessPoint.START_PAGE
+                ? R.string.no_thanks
+                : R.string.cancel;
+        mConsentTextTracker.setText(mView.getRefuseButton(), refuseButtonTextId);
         mConsentTextTracker.setText(mView.getMoreButton(), R.string.more);
     }
 
