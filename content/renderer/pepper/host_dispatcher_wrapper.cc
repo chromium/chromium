@@ -32,7 +32,9 @@ HostDispatcherWrapper::HostDispatcherWrapper(
       permissions_(perms),
       is_external_(is_external) {}
 
-HostDispatcherWrapper::~HostDispatcherWrapper() {}
+HostDispatcherWrapper::~HostDispatcherWrapper() {
+  hung_plugin_filter_->HostDispatcherDestroyed();
+}
 
 bool HostDispatcherWrapper::Init(
     const IPC::ChannelHandle& channel_handle,

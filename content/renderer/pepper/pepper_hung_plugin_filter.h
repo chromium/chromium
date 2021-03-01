@@ -50,6 +50,9 @@ class PepperHungPluginFilter
   void OnChannelError() override;
   bool OnMessageReceived(const IPC::Message& message) override;
 
+  // Notification the HostDispatcher on the main thread has been destroyed.
+  void HostDispatcherDestroyed();
+
  protected:
   ~PepperHungPluginFilter() override;
 
@@ -57,6 +60,9 @@ class PepperHungPluginFilter
   // Binds the mojo channel on the IO thread (where it will be used).
   void BindHungDetectorHostOnIOThread(
       mojo::PendingRemote<mojom::PepperHungDetectorHost> hung_host);
+
+  // Unbinds the mojo channel on the IO thread.
+  void UnbindHungDetectorHostOnIOThread();
 
   // Makes sure that the hung timer is scheduled.
   void EnsureTimerScheduled();

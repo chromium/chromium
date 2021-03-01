@@ -35,6 +35,10 @@ void PepperHungPluginFilter::BindHungDetectorHost(
                      this, std::move(hung_host)));
 }
 
+void PepperHungPluginFilter::UnbindHungDetectorHostOnIOThread() {
+  hung_host_.reset();
+}
+
 void PepperHungPluginFilter::BindHungDetectorHostOnIOThread(
     mojo::PendingRemote<mojom::PepperHungDetectorHost> hung_host) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
@@ -78,6 +82,13 @@ bool PepperHungPluginFilter::OnMessageReceived(const IPC::Message& message) {
 }
 
 PepperHungPluginFilter::~PepperHungPluginFilter() {}
+
+void PepperHungPluginFilter::HostDispatcherDestroyed() {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PepperHungPluginFilter::UnbindHungDetectorHostOnIOThread,
+                     this));
+}
 
 void PepperHungPluginFilter::EnsureTimerScheduled() {
   lock_.AssertAcquired();
