@@ -3664,7 +3664,7 @@
   {
     "name": "ntp-chrome-cart-module",
     "owners": [ "wychen", "tiborg", "yuezhanggg" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 92
   },
   {
     "name": "ntp-drive-module",
@@ -3679,7 +3679,7 @@
   {
     "name": "ntp-modules",
     "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 92
   },
   {
     "name": "ntp-one-google-bar-modal-overlays",
@@ -3689,7 +3689,7 @@
   {
     "name": "ntp-recipe-tasks-module",
     "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 92
   },
   {
     "name": "ntp-repeatable-queries",
@@ -3699,7 +3699,7 @@
   {
     "name": "ntp-shopping-tasks-module",
     "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 92
   },
   {
     "name": "ntp-webui",
