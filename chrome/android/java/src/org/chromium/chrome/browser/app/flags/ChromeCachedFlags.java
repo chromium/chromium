@@ -69,6 +69,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.IMMERSIVE_UI_MODE,
                 ChromeFeatureList.INSTANT_START,
                 ChromeFeatureList.INTEREST_FEED_V2,
+                ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
                 ChromeFeatureList.PAINT_PREVIEW_DEMO,
                 ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP,
                 ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS,
