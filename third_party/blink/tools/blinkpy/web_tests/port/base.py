@@ -1332,7 +1332,8 @@ class Port(object):
         return self.results_directory()
 
     def inspector_build_directory(self):
-        return self._build_path('resources', 'inspector')
+        return self._build_path('gen', 'third_party', 'devtools-frontend',
+                                'src', 'front_end')
 
     def generated_sources_directory(self):
         return self._build_path('gen')
