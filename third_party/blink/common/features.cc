@@ -837,7 +837,7 @@ const base::Feature kSendCnameAliasesToSubresourceFilterFromRenderer{
 
 // Enables the declarative Shadow DOM feature.
 const base::Feature kDeclarativeShadowDOM{"DeclarativeShadowDOM",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Kill switch for the InterestCohort API origin trial, i.e. if disabled, the
 // API exposure will be disabled regardless of the OT config.

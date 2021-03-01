@@ -113,6 +113,7 @@ namespace http://www.w3.org/1999/xhtml
     property getElementsByClassName
     property getElementsByTagName
     property getElementsByTagNameNS
+    property getInnerHTML
     property getRootNode
     property hasAttribute
     property hasAttributeNS
@@ -1271,6 +1272,7 @@ namespace http://www.w3.org/2000/svg
     property getElementsByClassName
     property getElementsByTagName
     property getElementsByTagNameNS
+    property getInnerHTML
     property getRootNode
     property hasAttribute
     property hasAttributeNS

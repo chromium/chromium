@@ -1745,6 +1745,7 @@ interface Element : Node
     method getElementsByClassName
     method getElementsByTagName
     method getElementsByTagNameNS
+    method getInnerHTML
     method hasAttribute
     method hasAttributeNS
     method hasAttributes
@@ -3687,6 +3688,7 @@ interface HTMLTableSectionElement : HTMLElement
 interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
+    getter shadowRoot
     method constructor
 interface HTMLTextAreaElement : HTMLElement
     attribute @@toStringTag
@@ -7119,6 +7121,7 @@ interface ShadowRoot : DocumentFragment
     method elementFromPoint
     method elementsFromPoint
     method getAnimations
+    method getInnerHTML
     method getSelection
     setter adoptedStyleSheets
     setter fullscreenElement
