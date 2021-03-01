@@ -3392,7 +3392,7 @@
     },
 
     'system_gbm_libdrm': {
-      'gn_args': 'use_system_libdrm=true use_system_minigbm=true',
+      'gn_args': 'use_system_libdrm=true use_system_minigbm=true ozone_platform_gbm=true',
     },
 
     'thin_lto': {

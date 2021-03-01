@@ -144,6 +144,7 @@
       "is_component_build": true,
       "is_debug": false,
       "ozone_platform": "headless",
+      "ozone_platform_gbm": true,
       "symbol_level": 1,
       "use_bundled_weston": true,
       "use_goma": true,
