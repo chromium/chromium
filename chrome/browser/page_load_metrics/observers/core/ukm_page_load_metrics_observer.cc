@@ -1137,17 +1137,23 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   if (!success)
     return;
 
-  ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames(
-      GetDelegate().GetPageUkmSourceId())
-      .SetAverage(smoothness_data.avg_smoothness)
+  ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames builder(
+      GetDelegate().GetPageUkmSourceId());
+  builder.SetAverage(smoothness_data.avg_smoothness)
       .SetPercentile95(smoothness_data.percentile_95)
       .SetAboveThreshold(smoothness_data.above_threshold)
       .SetWorstCase(smoothness_data.worst_smoothness)
       .SetTimingSinceFCPWorstCase(
           (smoothness_data.time_max_delta.InMilliseconds() > 5000)
               ? 5000
-              : smoothness_data.time_max_delta.InMilliseconds())
-      .Record(ukm::UkmRecorder::Get());
+              : smoothness_data.time_max_delta.InMilliseconds());
+  if (smoothness_data.worst_smoothness_after1sec >= 0)
+    builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
+  if (smoothness_data.worst_smoothness_after2sec >= 0)
+    builder.SetWorstCaseAfter2Sec(smoothness_data.worst_smoothness_after2sec);
+  if (smoothness_data.worst_smoothness_after5sec >= 0)
+    builder.SetWorstCaseAfter5Sec(smoothness_data.worst_smoothness_after5sec);
+  builder.Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramPercentage(
       "Graphics.Smoothness.PerSession.AveragePercentDroppedFrames",
@@ -1155,7 +1161,7 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   base::UmaHistogramPercentage(
       "Graphics.Smoothness.PerSession.95pctPercentDroppedFrames_1sWindow",
       smoothness_data.percentile_95);
-  base::UmaHistogramPercentage( 
+  base::UmaHistogramPercentage(
       "Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow",
       smoothness_data.worst_smoothness);
   base::UmaHistogramCustomTimes(

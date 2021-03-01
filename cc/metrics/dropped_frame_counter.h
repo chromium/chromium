@@ -6,10 +6,12 @@
 #define CC_METRICS_DROPPED_FRAME_COUNTER_H_
 
 #include <stddef.h>
+#include <map>
 #include <queue>
 #include <utility>
 
 #include "base/containers/ring_buffer.h"
+#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -102,6 +104,8 @@ class CC_EXPORT DroppedFrameCounter {
   void NotifyFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
   base::TimeDelta ComputeCurrentWindowSize() const;
 
+  void UpdateMaxPercentDroppedFrame(double percent_dropped_frame);
+
   const base::TimeDelta kSlidingWindowInterval =
       base::TimeDelta::FromSeconds(1);
   std::queue<std::pair<const viz::BeginFrameArgs, bool>> sliding_window_;
@@ -119,6 +123,9 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_smoothness_dropped_ = 0;
   bool fcp_received_ = false;
   double sliding_window_max_percent_dropped_ = 0;
+  base::Optional<double> sliding_window_max_percent_dropped_After_1_sec_;
+  base::Optional<double> sliding_window_max_percent_dropped_After_2_sec_;
+  base::Optional<double> sliding_window_max_percent_dropped_After_5_sec_;
   base::TimeTicks time_fcp_received_;
   base::TimeDelta time_max_delta_;
   UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;

@@ -15,6 +15,13 @@ namespace cc {
 struct UkmSmoothnessData {
   double avg_smoothness = 0.0;
   double worst_smoothness = 0.0;
+
+  // Values are set to -1 to help with recognizing when these metrics are not
+  // calculated.
+  double worst_smoothness_after1sec = -1.0;
+  double worst_smoothness_after2sec = -1.0;
+  double worst_smoothness_after5sec = -1.0;
+
   double above_threshold = 0.0;
   double percentile_95 = 0.0;
   base::TimeDelta time_max_delta = base::TimeDelta::FromMilliseconds(1);

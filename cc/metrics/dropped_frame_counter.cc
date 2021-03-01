@@ -228,6 +228,16 @@ void DroppedFrameCounter::ReportFrames() {
         static_cast<double>(total_smoothness_dropped_) * 100 / total_frames;
     smoothness_data.worst_smoothness = sliding_window_max_percent_dropped_;
     smoothness_data.percentile_95 = sliding_window_95pct_percent_dropped;
+
+    if (sliding_window_max_percent_dropped_After_1_sec_.has_value())
+      smoothness_data.worst_smoothness_after1sec =
+          sliding_window_max_percent_dropped_After_1_sec_.value();
+    if (sliding_window_max_percent_dropped_After_2_sec_.has_value())
+      smoothness_data.worst_smoothness_after2sec =
+          sliding_window_max_percent_dropped_After_2_sec_.value();
+    if (sliding_window_max_percent_dropped_After_5_sec_.has_value())
+      smoothness_data.worst_smoothness_after5sec =
+          sliding_window_max_percent_dropped_After_5_sec_.value();
     smoothness_data.time_max_delta = time_max_delta_;
     ukm_smoothness_data_->Write(smoothness_data);
   }
@@ -258,6 +268,9 @@ void DroppedFrameCounter::Reset() {
   total_dropped_ = 0;
   total_smoothness_dropped_ = 0;
   sliding_window_max_percent_dropped_ = 0;
+  sliding_window_max_percent_dropped_After_1_sec_.reset();
+  sliding_window_max_percent_dropped_After_2_sec_.reset();
+  sliding_window_max_percent_dropped_After_5_sec_.reset();
   dropped_frame_count_in_window_ = 0;
   fcp_received_ = false;
   sliding_window_ = {};
@@ -332,6 +345,7 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
       time_max_delta_ = args.frame_time - time_fcp_received_;
       sliding_window_max_percent_dropped_ = percent_dropped_frame;
     }
+    UpdateMaxPercentDroppedFrame(percent_dropped_frame);
 
     latest_sliding_window_start_ = last_timestamp;
     latest_sliding_window_interval_ = remaining_oldest_args.interval;
@@ -339,6 +353,27 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
 
   if (is_dropped)
     ++dropped_frame_count_in_window_;
+}
+
+void DroppedFrameCounter::UpdateMaxPercentDroppedFrame(
+    double percent_dropped_frame) {
+  if (!fcp_received_)
+    return;
+
+  const auto fcp_time_delta = base::TimeTicks::Now() - time_fcp_received_;
+
+  if (fcp_time_delta > base::TimeDelta::FromSeconds(1))
+    sliding_window_max_percent_dropped_After_1_sec_ =
+        std::max(sliding_window_max_percent_dropped_After_1_sec_.value_or(0.0),
+                 percent_dropped_frame);
+  if (fcp_time_delta > base::TimeDelta::FromSeconds(2))
+    sliding_window_max_percent_dropped_After_2_sec_ =
+        std::max(sliding_window_max_percent_dropped_After_2_sec_.value_or(0.0),
+                 percent_dropped_frame);
+  if (fcp_time_delta > base::TimeDelta::FromSeconds(5))
+    sliding_window_max_percent_dropped_After_5_sec_ =
+        std::max(sliding_window_max_percent_dropped_After_5_sec_.value_or(0.0),
+                 percent_dropped_frame);
 }
 
 void DroppedFrameCounter::OnFcpReceived() {
