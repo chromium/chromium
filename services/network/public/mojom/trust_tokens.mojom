@@ -286,3 +286,11 @@ struct StoredTrustTokensForIssuer {
   url.mojom.Origin issuer;
   int32 count;
 };
+
+// Returned by DeleteStoredTrustTokens method on the NetworkContext.
+enum DeleteStoredTrustTokensStatus {
+  kSuccessTokensDeleted,
+  kSuccessNoTokensDeleted,
+  kFailureFeatureDisabled,
+  kFailureInvalidOrigin,
+};

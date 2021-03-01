@@ -68,6 +68,9 @@ class TestNetworkContext : public mojom::NetworkContext {
       const url::Origin& top_frame_origin) override {}
   void GetStoredTrustTokenCounts(
       GetStoredTrustTokenCountsCallback callback) override {}
+  void DeleteStoredTrustTokens(
+      const url::Origin& issuer,
+      DeleteStoredTrustTokensCallback callback) override {}
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,

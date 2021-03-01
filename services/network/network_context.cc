@@ -662,6 +662,36 @@ void NetworkContext::GetStoredTrustTokenCounts(
   }
 }
 
+void NetworkContext::DeleteStoredTrustTokens(
+    const url::Origin& issuer,
+    DeleteStoredTrustTokensCallback callback) {
+  if (!trust_token_store_) {
+    std::move(callback).Run(
+        mojom::DeleteStoredTrustTokensStatus::kFailureFeatureDisabled);
+    return;
+  }
+
+  base::Optional<SuitableTrustTokenOrigin> suitable_issuer_origin =
+      SuitableTrustTokenOrigin::Create(issuer);
+  if (!suitable_issuer_origin) {
+    std::move(callback).Run(
+        mojom::DeleteStoredTrustTokensStatus::kFailureInvalidOrigin);
+    return;
+  }
+
+  trust_token_store_->ExecuteOrEnqueue(base::BindOnce(
+      [](SuitableTrustTokenOrigin issuer,
+         DeleteStoredTrustTokensCallback callback, TrustTokenStore* store) {
+        const bool did_delete_tokens = store->DeleteStoredTrustTokens(issuer);
+        const auto status =
+            did_delete_tokens
+                ? mojom::DeleteStoredTrustTokensStatus::kSuccessTokensDeleted
+                : mojom::DeleteStoredTrustTokensStatus::kSuccessNoTokensDeleted;
+        std::move(callback).Run(status);
+      },
+      std::move(*suitable_issuer_origin), std::move(callback)));
+}
+
 void NetworkContext::OnProxyLookupComplete(
     ProxyLookupRequest* proxy_lookup_request) {
   auto it = proxy_lookup_requests_.find(proxy_lookup_request);

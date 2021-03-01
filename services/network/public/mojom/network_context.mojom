@@ -818,6 +818,13 @@ interface NetworkContext {
   GetStoredTrustTokenCounts()
       => (array<StoredTrustTokensForIssuer> tokens);
 
+  // Deletes all Trust Tokens issued by |issuer|.
+  //
+  // This method is narrower as ClearTrustTokenData. ClearTrustTokenData
+  // also clears out Redemption Records.
+  DeleteStoredTrustTokens(url.mojom.Origin issuer)
+      => (DeleteStoredTrustTokensStatus status);
+
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be
   // retained. Only applies to network objects without more specific methods

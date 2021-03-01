@@ -210,6 +210,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                            base::OnceClosure done) override;
   void GetStoredTrustTokenCounts(
       GetStoredTrustTokenCountsCallback callback) override;
+  void DeleteStoredTrustTokens(
+      const url::Origin& issuer,
+      DeleteStoredTrustTokensCallback callback) override;
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,

@@ -7022,6 +7022,167 @@ TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
             reentrant_trust_tokens.value()[0]->count);
 }
 
+TEST_F(NetworkContextTest,
+       DeleteStoredTrustTokensReportsErrorWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  // Allow the store time to initialize asynchronously.
+  base::RunLoop run_loop;
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
+  network_context->DeleteStoredTrustTokens(
+      url::Origin::Create(GURL("https://example.com")),
+      base::BindLambdaForTesting(
+          [&](mojom::DeleteStoredTrustTokensStatus status) {
+            actual_status = status;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_THAT(
+      actual_status,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kFailureFeatureDisabled));
+}
+
+TEST_F(NetworkContextTest,
+       DeleteStoredTrustTokensReportsErrorWithInvalidOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  // Allow the store time to initialize asynchronously.
+  base::RunLoop run_loop;
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
+  network_context->DeleteStoredTrustTokens(
+      url::Origin::Create(GURL("ws://example.com")),
+      base::BindLambdaForTesting(
+          [&](mojom::DeleteStoredTrustTokensStatus status) {
+            actual_status = status;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_THAT(
+      actual_status,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kFailureInvalidOrigin));
+}
+
+TEST_F(NetworkContextTest, DeleteStoredTrustTokens) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  base::RunLoop run_loop;
+
+  const SuitableTrustTokenOrigin issuer_origin_to_delete =
+      *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken-delete.com"));
+  const SuitableTrustTokenOrigin issuer_origin_to_keep =
+      *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken-keep.com"));
+
+  // Add two mock tokens from different issuers.
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        DCHECK(store);
+        store->AddTokens(issuer_origin_to_delete,
+                         std::vector<std::string>{"token"}, "issuing key");
+        store->AddTokens(issuer_origin_to_keep,
+                         std::vector<std::string>{"token"}, "issuing key");
+
+        ASSERT_EQ(store->GetStoredTrustTokenCounts().size(), 2ul);
+      }));
+
+  // Delete all Trust Tokens for one of the issuers.
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status;
+  network_context->DeleteStoredTrustTokens(
+      issuer_origin_to_delete.origin(),
+      base::BindLambdaForTesting(
+          [&](mojom::DeleteStoredTrustTokensStatus status) {
+            delete_status = status;
+          }));
+
+  // Query Trust Tokens after deleting one of the mock token.
+  base::Optional<base::flat_map<SuitableTrustTokenOrigin, int>> trust_tokens;
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        trust_tokens = store->GetStoredTrustTokenCounts();
+        run_loop.Quit();
+      }));
+
+  // Allow the store time to initialize asynchronously and execute the
+  // operations.
+  run_loop.Run();
+
+  EXPECT_THAT(
+      delete_status,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kSuccessTokensDeleted));
+
+  ASSERT_TRUE(trust_tokens->contains(issuer_origin_to_keep));
+  EXPECT_EQ(trust_tokens->at(issuer_origin_to_keep), 1);
+}
+
+TEST_F(NetworkContextTest, DeleteStoredTrustTokensReentrant) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  base::RunLoop run_loop;
+
+  const SuitableTrustTokenOrigin issuer_origin_foo =
+      *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken-foo.com"));
+  const SuitableTrustTokenOrigin issuer_origin_bar =
+      *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken-bar.com"));
+
+  // Add two mock tokens from different issuers.
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        DCHECK(store);
+        store->AddTokens(issuer_origin_foo, std::vector<std::string>{"token"},
+                         "issuing key");
+        store->AddTokens(issuer_origin_bar, std::vector<std::string>{"token"},
+                         "issuing key");
+
+        ASSERT_EQ(store->GetStoredTrustTokenCounts().size(), 2ul);
+      }));
+
+  // Delete all Trust Tokens for both issuers simultaneously.
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status_foo;
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status_bar;
+  network_context->DeleteStoredTrustTokens(
+      issuer_origin_foo.origin(),
+      base::BindLambdaForTesting(
+          [&](mojom::DeleteStoredTrustTokensStatus status) {
+            delete_status_foo = status;
+            network_context->DeleteStoredTrustTokens(
+                issuer_origin_bar,
+                base::BindLambdaForTesting(
+                    [&](mojom::DeleteStoredTrustTokensStatus status) {
+                      delete_status_bar = status;
+                      run_loop.Quit();
+                    }));
+          }));
+
+  // Allow the store time to initialize asynchronously and execute the
+  // operations.
+  run_loop.Run();
+
+  EXPECT_THAT(
+      delete_status_foo,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kSuccessTokensDeleted));
+
+  EXPECT_THAT(
+      delete_status_bar,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kSuccessTokensDeleted));
+}
+
 }  // namespace
 
 }  // namespace network
