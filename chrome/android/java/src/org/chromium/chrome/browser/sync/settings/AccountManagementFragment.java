@@ -138,19 +138,16 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
                 .getSigninManager(Profile.getLastUsedRegularProfile())
                 .addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        List<String> accountNames = AccountUtils.toAccountNames(
-                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts());
-        mProfileDataCache.update(accountNames);
         update();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        mProfileDataCache.removeObserver(this);
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
                 .removeSignInStateObserver(this);
-        mProfileDataCache.removeObserver(this);
     }
 
     public void update() {
