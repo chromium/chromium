@@ -183,62 +183,6 @@ void RecordDictionaryToHistogram(const std::string& histogram_name,
 }
 #endif
 
-// These obsolete prefs were deleted without first clearing them (see
-// https://crbug.com/934982#c10). We readd them for two milestones in order to
-// increase the chance they get removed from profile directories.
-void ClearTemporarilyReaddedObsoletePrefsToFreeStorage(
-    PrefService& pref_service) {
-  pref_service.ClearPref(prefs::kDailyHttpOriginalContentLengthApplication);
-  pref_service.ClearPref(prefs::kDailyHttpOriginalContentLengthVideo);
-  pref_service.ClearPref(prefs::kDailyHttpOriginalContentLengthUnknown);
-  pref_service.ClearPref(prefs::kDailyHttpReceivedContentLengthApplication);
-  pref_service.ClearPref(prefs::kDailyHttpReceivedContentLengthVideo);
-  pref_service.ClearPref(prefs::kDailyHttpReceivedContentLengthUnknown);
-
-  pref_service.ClearPref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyApplication);
-  pref_service.ClearPref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyVideo);
-  pref_service.ClearPref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyUnknown);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthViaDataReductionProxyApplication);
-  pref_service.ClearPref(prefs::kDailyContentLengthViaDataReductionProxyVideo);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthViaDataReductionProxyUnknown);
-
-  pref_service.ClearPref(
-      prefs::
-          kDailyOriginalContentLengthWithDataReductionProxyEnabledApplication);
-  pref_service.ClearPref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabledVideo);
-  pref_service.ClearPref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabledUnknown);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledApplication);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledVideo);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledUnknown);
-
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthHttpsWithDataReductionProxyEnabled);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthLongBypassWithDataReductionProxyEnabled);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthShortBypassWithDataReductionProxyEnabled);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthUnknownWithDataReductionProxyEnabled);
-  pref_service.ClearPref(prefs::kDailyContentLengthViaDataReductionProxy);
-  pref_service.ClearPref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabled);
-
-  pref_service.ClearPref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxy);
-  pref_service.ClearPref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabled);
-}
-
 }  // namespace
 
 class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
@@ -417,8 +361,6 @@ void DataReductionProxyCompressionStats::Init() {
   // Init all list prefs.
   InitListPref(prefs::kDailyHttpOriginalContentLength);
   InitListPref(prefs::kDailyHttpReceivedContentLength);
-
-  ClearTemporarilyReaddedObsoletePrefsToFreeStorage(*pref_service_);
 }
 
 void DataReductionProxyCompressionStats::RecordDataUseWithMimeType(

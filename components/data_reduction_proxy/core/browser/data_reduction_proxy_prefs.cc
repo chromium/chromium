@@ -14,125 +14,6 @@
 
 namespace data_reduction_proxy {
 
-namespace {
-
-// Re-register a collection of obsolete prefs we're temporarily readding in
-// order to clear them to save space in profile directories.
-void RegisterObsoleteSyncablePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterInt64Pref(prefs::kDailyHttpOriginalContentLengthApplication,
-                              0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpOriginalContentLengthVideo, 0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpOriginalContentLengthUnknown,
-                              0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpReceivedContentLengthApplication,
-                              0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpReceivedContentLengthVideo, 0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpReceivedContentLengthUnknown,
-                              0L);
-
-  registry->RegisterListPref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabled);
-  registry->RegisterInt64Pref(
-      prefs::
-          kDailyOriginalContentLengthWithDataReductionProxyEnabledApplication,
-      0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabledVideo, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabledUnknown,
-      0L);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabled);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledApplication, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledVideo, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledUnknown, 0L);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthHttpsWithDataReductionProxyEnabled);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthShortBypassWithDataReductionProxyEnabled);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthLongBypassWithDataReductionProxyEnabled);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthUnknownWithDataReductionProxyEnabled);
-  registry->RegisterListPref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxy);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyApplication, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyVideo, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyUnknown, 0L);
-  registry->RegisterListPref(prefs::kDailyContentLengthViaDataReductionProxy);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthViaDataReductionProxyApplication, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthViaDataReductionProxyVideo, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthViaDataReductionProxyUnknown, 0L);
-}
-
-// Re-register a collection of obsolete prefs we're temporarily readding in
-// order to clear them to save space in profile directories.
-void RegisterObsoleteSimplePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterInt64Pref(prefs::kDailyHttpOriginalContentLengthApplication,
-                              0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpOriginalContentLengthVideo, 0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpOriginalContentLengthUnknown,
-                              0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpReceivedContentLengthApplication,
-                              0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpReceivedContentLengthVideo, 0L);
-  registry->RegisterInt64Pref(prefs::kDailyHttpReceivedContentLengthUnknown,
-                              0L);
-  registry->RegisterListPref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabled);
-  registry->RegisterInt64Pref(
-      prefs::
-          kDailyOriginalContentLengthWithDataReductionProxyEnabledApplication,
-      0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabledVideo, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabledUnknown,
-      0L);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabled);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledApplication, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledVideo, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledUnknown, 0L);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthHttpsWithDataReductionProxyEnabled);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthShortBypassWithDataReductionProxyEnabled);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthLongBypassWithDataReductionProxyEnabled);
-  registry->RegisterListPref(
-      prefs::kDailyContentLengthUnknownWithDataReductionProxyEnabled);
-  registry->RegisterListPref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxy);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyApplication, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyVideo, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyUnknown, 0L);
-  registry->RegisterListPref(prefs::kDailyContentLengthViaDataReductionProxy);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthViaDataReductionProxyApplication, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthViaDataReductionProxyVideo, 0L);
-  registry->RegisterInt64Pref(
-      prefs::kDailyContentLengthViaDataReductionProxyUnknown, 0L);
-}
-
-}  // namespace
-
 // Make sure any changes here that have the potential to impact android_webview
 // are reflected in RegisterSimpleProfilePrefs.
 void RegisterSyncableProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -168,8 +49,6 @@ void RegisterSyncableProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(
       prefs::kLastWeekUserTrafficContentTypeDownstreamKB,
       PrefRegistry::LOSSY_PREF);
-
-  RegisterObsoleteSyncablePrefs(registry);
 }
 
 void RegisterSimpleProfilePrefs(PrefRegistrySimple* registry) {
@@ -209,8 +88,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(
       prefs::kLastWeekUserTrafficContentTypeDownstreamKB,
       PrefRegistry::LOSSY_PREF);
-
-  RegisterObsoleteSimplePrefs(registry);
 }
 
 }  // namespace data_reduction_proxy
