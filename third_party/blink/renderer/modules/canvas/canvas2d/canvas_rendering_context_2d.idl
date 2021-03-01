@@ -154,7 +154,7 @@ interface CanvasRenderingContext2D {
 
     // Context state
     // Should be merged with WebGL counterpart in CanvasRenderingContext, once no-longer experimental
-    [RuntimeEnabled=Canvas2dContextLostRestored] boolean isContextLost();
+    [RuntimeEnabled=NewCanvas2DAPI] boolean isContextLost();
 
     [MeasureAs=GetCanvas2DContextAttributes] CanvasRenderingContext2DSettings getContextAttributes();
 

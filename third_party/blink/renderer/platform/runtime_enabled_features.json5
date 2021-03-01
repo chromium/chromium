@@ -311,10 +311,6 @@
       status: "experimental",
     },
     {
-      name: "Canvas2dContextLostRestored",
-      status: "experimental",
-    },
-    {
       name: "Canvas2dImageChromium",
     },
     {
