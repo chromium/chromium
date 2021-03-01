@@ -10,10 +10,13 @@
 
 #include "base/bind.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/search_engines/template_url_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #include "ios/chrome/browser/main/test_browser.h"
+#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -59,6 +62,12 @@ class SettingsNavigationControllerTest : public PlatformTest {
 
     mockDelegate_ = [OCMockObject
         niceMockForProtocol:@protocol(SettingsNavigationControllerDelegate)];
+
+    IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
+        browser_->GetBrowserState(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                web::BrowserState, password_manager::TestPasswordStore>));
 
     TemplateURLService* template_url_service =
         ios::TemplateURLServiceFactory::GetForBrowserState(
