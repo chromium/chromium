@@ -1167,17 +1167,17 @@
   {
     "name": "download-auto-resumption-native",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "download-later",
     "owners": [ "xingliu", "dtrainor" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 93
   },
   {
     "name": "download-later-debug-on-wifi",
     "owners": [ "xingliu", "dtrainor" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 93
   },
   {
     "name": "draw-predicted-ink-point",
@@ -2093,7 +2093,7 @@
   {
     "name": "enable-new-download-backend",
     "owners": [ "shaktisahu", "dtrainor" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 93
   },
   {
     "name": "enable-new-mac-notification-api",
@@ -4275,57 +4275,57 @@
   {
     "name": "query-tiles",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-country-code",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-enable-query-editing",
     "owners": [ "shaktisahu" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-enable-trending",
     "owners": [ "qinmin" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-instant-fetch",
     "owners": [ "xingliu" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-local-ordering",
     "owners": [ "hesen", "qinmin" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-more-trending",
     "owners": [ "qinmin" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-ntp",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-omnibox",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-single-tier",
     "owners": [ "shaktisahu" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-swap-trending",
     "owners": [ "qinmin" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 93
   },
   {
     "name": "quiet-notification-prompts",
@@ -4813,7 +4813,7 @@
   {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 93
   },
   {
     "name": "smbfs-file-shares",
@@ -5205,13 +5205,13 @@
   },
   {
     "name": "video-tutorials",
-    "owners": [ "shaktisahu", "hesen" ],
-    "expiry_milestone": 90
+    "owners": [ "shaktisahu"],
+    "expiry_milestone": 93
   },
   {
     "name": "video-tutorials-instant-fetch",
     "owners": [ "shaktisahu"],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "videotoolbox-vp9-decoding",
