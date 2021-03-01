@@ -10,9 +10,11 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -115,6 +117,26 @@ std::string PowerLevelToString(PowerLevel level) {
   }
 }
 
+base::Optional<std::vector<uint8_t>> GetBluetoothMacAddressFromCertificate(
+    const NearbyShareDecryptedPublicCertificate& certificate) {
+  if (!certificate.unencrypted_metadata().has_bluetooth_mac_address()) {
+    NS_LOG(WARNING) << __func__ << ": Public certificate "
+                    << base::HexEncode(certificate.id()) << " did not contain "
+                    << "a Bluetooth mac address.";
+    return base::nullopt;
+  }
+
+  std::string mac_address =
+      certificate.unencrypted_metadata().bluetooth_mac_address();
+  if (mac_address.size() != 6) {
+    NS_LOG(ERROR) << __func__ << ": Invalid bluetooth mac address: '"
+                  << mac_address << "'";
+    return base::nullopt;
+  }
+
+  return std::vector<uint8_t>(mac_address.begin(), mac_address.end());
+}
+
 base::Optional<std::string> GetDeviceName(
     const sharing::mojom::AdvertisementPtr& advertisement,
     const base::Optional<NearbyShareDecryptedPublicCertificate>& certificate) {
@@ -132,13 +154,25 @@ base::Optional<std::string> GetDeviceName(
   return certificate->unencrypted_metadata().device_name();
 }
 
+// Return the most stable device identifier with the following priority:
+//   1. Hash of Bluetooth MAC address.
+//   2. Certificate ID.
+//   3. Endpoint ID.
 std::string GetDeviceId(
     const std::string& endpoint_id,
     const base::Optional<NearbyShareDecryptedPublicCertificate>& certificate) {
-  if (!certificate || certificate->id().empty())
+  if (!certificate)
     return endpoint_id;
 
-  return std::string(certificate->id().begin(), certificate->id().end());
+  base::Optional<std::vector<uint8_t>> mac_address =
+      GetBluetoothMacAddressFromCertificate(*certificate);
+  if (mac_address)
+    return base::NumberToString(base::FastHash(base::make_span(*mac_address)));
+
+  if (!certificate->id().empty())
+    return std::string(certificate->id().begin(), certificate->id().end());
+
+  return endpoint_id;
 }
 
 base::Optional<std::string> ToFourDigitString(
@@ -2394,7 +2428,7 @@ void NearbySharingServiceImpl::OnCreatePayloads(
   }
 
   base::Optional<std::vector<uint8_t>> bluetooth_mac_address =
-      GetBluetoothMacAddress(share_target);
+      GetBluetoothMacAddressForShareTarget(share_target);
 
   // For metrics.
   cancelled_share_target_ids_.clear();
@@ -3638,7 +3672,7 @@ NearbyConnection* NearbySharingServiceImpl::GetConnection(
 }
 
 base::Optional<std::vector<uint8_t>>
-NearbySharingServiceImpl::GetBluetoothMacAddress(
+NearbySharingServiceImpl::GetBluetoothMacAddressForShareTarget(
     const ShareTarget& share_target) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info) {
@@ -3655,22 +3689,7 @@ NearbySharingServiceImpl::GetBluetoothMacAddress(
     return base::nullopt;
   }
 
-  if (!certificate->unencrypted_metadata().has_bluetooth_mac_address()) {
-    NS_LOG(WARNING) << __func__ << ": Public certificate "
-                    << base::HexEncode(certificate->id()) << " did not contain "
-                    << "a Bluetooth mac address.";
-    return base::nullopt;
-  }
-
-  std::string mac_address =
-      certificate->unencrypted_metadata().bluetooth_mac_address();
-  if (mac_address.size() != 6) {
-    NS_LOG(ERROR) << __func__ << ": Invalid bluetooth mac address: '"
-                  << mac_address << "'";
-    return base::nullopt;
-  }
-
-  return std::vector<uint8_t>(mac_address.begin(), mac_address.end());
+  return GetBluetoothMacAddressFromCertificate(*certificate);
 }
 
 void NearbySharingServiceImpl::ClearOutgoingShareTargetInfoMap() {
