@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
@@ -661,32 +660,13 @@ void PasswordSaveUpdateWithAccountStoreView::UpdateBubbleUIElements() {
 }
 
 void PasswordSaveUpdateWithAccountStoreView::UpdateHeaderImage() {
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   int light_image_id = controller_.IsCurrentStateAffectingTheAccountStore()
                            ? IDR_SAVE_PASSWORD_MULTI_DEVICE
                            : IDR_SAVE_PASSWORD_ONE_DEVICE;
   int dark_image_id = controller_.IsCurrentStateAffectingTheAccountStore()
                           ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
                           : IDR_SAVE_PASSWORD_ONE_DEVICE_DARK;
-  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(light_image_id),
-      *bundle.GetImageSkiaNamed(dark_image_id),
-      base::BindRepeating(
-          [](PasswordSaveUpdateWithAccountStoreView* view) {
-            return view->GetBubbleFrameView()->GetBackgroundColor();
-          },
-          this));
-
-  gfx::Size preferred_size = image_view->GetPreferredSize();
-  if (preferred_size.width()) {
-    float scale =
-        static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
-        preferred_size.width();
-    preferred_size = gfx::ScaleToRoundedSize(preferred_size, scale);
-    image_view->SetImageSize(preferred_size);
-  }
-  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+  SetBubbleHeader(light_image_id, dark_image_id);
 }
 
 bool PasswordSaveUpdateWithAccountStoreView::ShouldShowFailedReauthIPH() {

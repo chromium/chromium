@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -64,16 +63,6 @@ PostSaveCompromisedBubbleView::GetController() const {
 }
 
 void PostSaveCompromisedBubbleView::AddedToWidget() {
-  // Set the header image.
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(controller_.GetImageID(/*dark=*/false)),
-      *bundle.GetImageSkiaNamed(controller_.GetImageID(/*dark=*/true)),
-      base::BindRepeating(
-          [](PostSaveCompromisedBubbleView* view) {
-            return view->GetBubbleFrameView()->GetBackgroundColor();
-          },
-          this));
-
-  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+  SetBubbleHeader(controller_.GetImageID(/*dark=*/false),
+                  controller_.GetImageID(/*dark=*/true));
 }

@@ -82,6 +82,10 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
   static std::unique_ptr<views::Label> CreatePasswordLabel(
       const password_manager::PasswordForm& form);
 
+  // Sets the resource ids of the images used in the header in light and dark
+  // mode.
+  void SetBubbleHeader(int light_image_id, int dark_image_id);
+
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;
