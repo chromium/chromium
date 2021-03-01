@@ -6821,6 +6821,20 @@ void RenderFrameHostImpl::FailedNavigation(
 
   DCHECK(navigation_request);
 
+  // The failed navigation still results in a document that may make Mojo
+  // interface requests, so set the MojoBinderPolicyApplier for prerendering if
+  // needed.
+  // TODO(lingqi): Set the MojoBinderPolicyApplier at DidCommitNavigation
+  // instead to align with the prerendering LifecycleState.
+  if (blink::features::IsPrerender2Enabled()) {
+    if (IsPrerendering()) {
+      broker_.ApplyMojoBinderPolicies(
+          MojoBinderPolicyApplier::CreateForPrerendering(
+              base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
+                             base::Unretained(this))));
+    }
+  }
+
   // Update renderer permissions even for failed commits, so that for example
   // the URL bar correctly displays privileged URLs instead of filtering them.
   UpdatePermissionsForNavigation(common_params, commit_params);
