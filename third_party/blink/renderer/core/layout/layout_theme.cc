@@ -250,11 +250,6 @@ void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
            style.Display() == EDisplay::kTable)
     style.SetDisplay(EDisplay::kBlock);
 
-  // TODO(tkent): We should not update Appearance, which is a source of
-  // getComputedStyle(). https://drafts.csswg.org/css-ui-4/#propdef-appearance
-  // says "Computed value: specified keyword".
-  style.SetAppearance(AdjustAppearanceWithAuthorStyle(original_part, style));
-
   ControlPart part = AdjustAppearanceWithAuthorStyle(
       AdjustAppearanceWithElementType(style, e), style);
   style.SetEffectiveAppearance(part);

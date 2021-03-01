@@ -1756,7 +1756,6 @@ enum WebFeature {
   kAsyncClipboardAPIReadText = 2371,
   kAsyncClipboardAPIWriteText = 2372,
   kOpenerNavigationWithoutGesture = 2373,
-  kGetComputedStyleWebkitAppearance = 2374,
   kV8LockManager_Request_Method = 2375,
   kV8LockManager_Query_Method = 2376,
   kV8RTCDTMFSender_Track_AttributeGetter = 2378,
@@ -1941,7 +1940,6 @@ enum WebFeature {
   kCSSValueAppearanceMenuListButtonRendered = 2582,
   kCSSValueAppearancePushButtonRendered = 2584,
   kCSSValueAppearanceSquareButtonRendered = 2586,
-  kGetComputedStyleForWebkitAppearanceExcludeDevTools = 2588,  // M73
   kCursorImageLE32x32 = 2589,
   kCursorImageGT32x32 = 2590,
   kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics = 2591,

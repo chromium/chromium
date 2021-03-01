@@ -30125,7 +30125,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2371" label="AsyncClipboardAPIReadText"/>
   <int value="2372" label="AsyncClipboardAPIWriteText"/>
   <int value="2373" label="OpenerNavigationWithoutGesture"/>
-  <int value="2374" label="GetComputedStyleWebkitAppearance"/>
+  <int value="2374" label="OBSOLETE_GetComputedStyleWebkitAppearance"/>
   <int value="2375" label="V8LockManager_Request_Method"/>
   <int value="2376" label="V8LockManager_Query_Method"/>
   <int value="2377"
@@ -30364,7 +30364,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2586" label="CSSValueAppearanceSquareButtonRendered"/>
   <int value="2587"
       label="OBSOLETE_CSSValueAppearanceSquareButtonForOthersRendered"/>
-  <int value="2588" label="GetComputedStyleForWebkitAppearanceExcludeDevTools"/>
+  <int value="2588"
+      label="OBSOLETE_GetComputedStyleForWebkitAppearanceExcludeDevTools"/>
   <int value="2589" label="CursorImageLE32x32"/>
   <int value="2590" label="CursorImageGT32x32"/>
   <int value="2591"

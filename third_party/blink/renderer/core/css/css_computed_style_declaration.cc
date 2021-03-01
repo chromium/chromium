@@ -469,12 +469,6 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
 
 String CSSComputedStyleDeclaration::GetPropertyValue(
     CSSPropertyID property_id) const {
-  // allow_visited_style_ is true only for access from DevTools.
-  if (!allow_visited_style_ && property_id == CSSPropertyID::kAppearance) {
-    UseCounter::Count(
-        node_->GetDocument(),
-        WebFeature::kGetComputedStyleForWebkitAppearanceExcludeDevTools);
-  }
   const CSSValue* value = GetPropertyCSSValue(property_id);
   if (value)
     return value->CssText();
@@ -595,10 +589,6 @@ String CSSComputedStyleDeclaration::removeProperty(
 
 const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValueInternal(
     CSSPropertyID property_id) {
-  if (property_id == CSSPropertyID::kAppearance && node_) {
-    UseCounter::Count(node_->GetDocument(),
-                      WebFeature::kGetComputedStyleWebkitAppearance);
-  }
   return GetPropertyCSSValue(property_id);
 }
 
