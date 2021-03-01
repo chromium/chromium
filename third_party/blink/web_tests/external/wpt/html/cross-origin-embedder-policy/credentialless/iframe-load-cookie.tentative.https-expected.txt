@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Setup
+PASS same_origin iframe can send same_origin credentials
+FAIL same_origin iframe can't send cross_origin credentials assert_equals: expected (undefined) undefined but got (string) "cross_origin"
+FAIL cross_origin iframe can send cross_origin credentials assert_equals: expected (undefined) undefined but got (string) "cross_origin"
+FAIL Cross origin iframe can't send same_origin credentials assert_equals: expected (undefined) undefined but got (string) "same_origin"
+Harness: the test ran to completion.
+
