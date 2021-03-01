@@ -46,4 +46,10 @@ interface Renderer {
   UpdateDefaultPolicyHostRestrictions(
         URLPatternSet default_policy_blocked_hosts,
         URLPatternSet default_policy_allowed_hosts);
+
+  // Tells the render view about new tab-specific permissions for an extension.
+  UpdateTabSpecificPermissions(string extension_id,
+                               URLPatternSet new_hosts,
+                               int32 tab_id,
+                               bool update_origin_whitelist);
 };

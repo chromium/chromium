@@ -23,9 +23,11 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
@@ -36,16 +38,6 @@ namespace extensions {
 namespace {
 
 using CreateMessageFunction = base::RepeatingCallback<IPC::Message*(bool)>;
-
-// Creates a new IPC message for updating tab-specific permissions.
-IPC::Message* CreateUpdateMessage(const GURL& visible_url,
-                                  const std::string& extension_id,
-                                  const URLPatternSet& new_hosts,
-                                  int tab_id,
-                                  bool update_allowlist) {
-  return new ExtensionMsg_UpdateTabSpecificPermissions(
-      visible_url, extension_id, new_hosts, update_allowlist, tab_id);
-}
 
 // Creates a new IPC message for clearing tab-specific permissions.
 IPC::Message* CreateClearMessage(const std::vector<std::string>& ids,
@@ -75,6 +67,46 @@ void SendMessageToProcesses(
   // wasn't), update it. Tabs don't need to update the origin allowlist.
   if (sent_to_hosts.count(tab_process) == 0)
     tab_process->Send(create_message.Run(false));
+}
+
+using RendererMessageFunction =
+    base::RepeatingCallback<void(bool, content::RenderProcessHost*)>;
+
+void UpdateTabSpecificPermissions(const std::string& extension_id,
+                                  const extensions::URLPatternSet& new_hosts,
+                                  int tab_id,
+                                  bool update_origin_whitelist,
+                                  content::RenderProcessHost* process) {
+  mojom::Renderer* renderer =
+      RendererStartupHelperFactory::GetForBrowserContext(
+          process->GetBrowserContext())
+          ->GetRenderer(process);
+  if (renderer) {
+    renderer->UpdateTabSpecificPermissions(extension_id, new_hosts, tab_id,
+                                           update_origin_whitelist);
+  }
+}
+
+// Sends a message exactly once to each render process host owning one of the
+// given |frame_hosts| and |tab_process|. If |tab_process| doesn't own any of
+// the |frame_hosts|, it will not be signaled to update its origin allowlist.
+void SendRendererMessageToProcesses(
+    const std::set<content::RenderFrameHost*>& frame_hosts,
+    content::RenderProcessHost* tab_process,
+    const RendererMessageFunction& renderer_message) {
+  std::set<content::RenderProcessHost*> sent_to_hosts;
+  for (content::RenderFrameHost* frame_host : frame_hosts) {
+    content::RenderProcessHost* process_host = frame_host->GetProcess();
+    if (!base::Contains(sent_to_hosts, process_host)) {
+      // Extension processes have to update the origin allowlists.
+      renderer_message.Run(true, process_host);
+      sent_to_hosts.insert(frame_host->GetProcess());
+    }
+  }
+  // If the tab wasn't one of those processes already updated (it likely
+  // wasn't), update it. Tabs don't need to update the origin allowlist.
+  if (!base::Contains(sent_to_hosts, tab_process))
+    renderer_message.Run(false, tab_process);
 }
 
 std::unique_ptr<ActiveTabPermissionGranter::Delegate>&
@@ -170,24 +202,22 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
         base::nullopt,  // compute the `target_mode` based on the `extension`
         base::DoNothing::Once());
 
-    content::NavigationEntry* navigation_entry =
-        web_contents()->GetController().GetVisibleEntry();
-    if (navigation_entry) {
+    if (web_contents()->GetController().GetVisibleEntry()) {
       // We update all extension render views with the new tab permissions, and
       // also the tab itself.
-      CreateMessageFunction update_message =
-          base::BindRepeating(&CreateUpdateMessage, navigation_entry->GetURL(),
-                              extension->id(), new_hosts.Clone(), tab_id_);
+      RendererMessageFunction update_message =
+          base::BindRepeating(&UpdateTabSpecificPermissions, extension->id(),
+                              new_hosts.Clone(), tab_id_);
       ProcessManager* process_manager = ProcessManager::Get(browser_context);
-      SendMessageToProcesses(
+      SendRendererMessageToProcesses(
           process_manager->GetRenderFrameHostsForExtension(extension->id()),
           web_contents()->GetMainFrame()->GetProcess(), update_message);
 
       // If more things ever need to know about this, we should consider making
       // an observer class.
-      // It's important that this comes after the IPC is sent to the renderer,
-      // so that any tasks executing in the renderer occur after it has the
-      // updated permissions.
+      // It's important that this comes after the Mojo message is sent to the
+      // renderer, so that any tasks executing in the renderer occur after it
+      // has the updated permissions.
       ExtensionActionRunner::GetForWebContents(web_contents())
           ->OnActiveTabPermissionGranted(extension);
     }

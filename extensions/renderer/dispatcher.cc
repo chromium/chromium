@@ -876,8 +876,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_Suspend, OnSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_TransferBlobs, OnTransferBlobs)
   IPC_MESSAGE_HANDLER(ExtensionMsg_UpdatePermissions, OnUpdatePermissions)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_UpdateTabSpecificPermissions,
-                      OnUpdateTabSpecificPermissions)
   IPC_MESSAGE_HANDLER(ExtensionMsg_ClearTabSpecificPermissions,
                       OnClearTabSpecificPermissions)
   IPC_MESSAGE_FORWARD(ExtensionMsg_WatchPages,
@@ -1034,6 +1032,24 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
     }
   }
   UpdateAllBindings();
+}
+
+void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
+                                              const URLPatternSet& new_hosts,
+                                              int tab_id,
+                                              bool update_origin_whitelist) {
+  const Extension* extension =
+      RendererExtensionRegistry::Get()->GetByID(extension_id);
+  if (!extension)
+    return;
+
+  extension->permissions_data()->UpdateTabSpecificPermissions(
+      tab_id, extensions::PermissionSet(extensions::APIPermissionSet(),
+                                        extensions::ManifestPermissionSet(),
+                                        new_hosts.Clone(), new_hosts.Clone()));
+
+  if (update_origin_whitelist)
+    UpdateOriginPermissions(*extension);
 }
 
 void Dispatcher::OnCancelSuspend(const std::string& extension_id) {
@@ -1239,25 +1255,6 @@ void Dispatcher::OnUpdatePermissions(
   UpdateOriginPermissions(*extension);
 
   UpdateBindingsForExtension(*extension);
-}
-
-void Dispatcher::OnUpdateTabSpecificPermissions(const GURL& visible_url,
-                                                const std::string& extension_id,
-                                                const URLPatternSet& new_hosts,
-                                                bool update_origin_whitelist,
-                                                int tab_id) {
-  const Extension* extension =
-      RendererExtensionRegistry::Get()->GetByID(extension_id);
-  if (!extension)
-    return;
-
-  extension->permissions_data()->UpdateTabSpecificPermissions(
-      tab_id, extensions::PermissionSet(extensions::APIPermissionSet(),
-                                        extensions::ManifestPermissionSet(),
-                                        new_hosts.Clone(), new_hosts.Clone()));
-
-  if (update_origin_whitelist)
-    UpdateOriginPermissions(*extension);
 }
 
 void Dispatcher::OnClearTabSpecificPermissions(

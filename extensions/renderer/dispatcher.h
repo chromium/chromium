@@ -227,6 +227,10 @@ class Dispatcher : public content::RenderThreadObserver,
   void UpdateDefaultPolicyHostRestrictions(
       const extensions::URLPatternSet& default_policy_blocked_hosts,
       const extensions::URLPatternSet& default_policy_allowed_hosts) override;
+  void UpdateTabSpecificPermissions(const std::string& extension_id,
+                                    const extensions::URLPatternSet& new_hosts,
+                                    int tab_id,
+                                    bool update_origin_whitelist) override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
@@ -250,11 +254,6 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnSuspend(const std::string& extension_id);
   void OnTransferBlobs(const std::vector<std::string>& blob_uuids);
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
-  void OnUpdateTabSpecificPermissions(const GURL& visible_url,
-                                      const std::string& extension_id,
-                                      const URLPatternSet& new_hosts,
-                                      bool update_origin_whitelist,
-                                      int tab_id);
   void OnClearTabSpecificPermissions(
       const std::vector<std::string>& extension_ids,
       bool update_origin_whitelist,

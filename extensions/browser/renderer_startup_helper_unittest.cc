@@ -78,6 +78,11 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
     default_allowed_hosts_.AddPatterns(default_policy_allowed_hosts);
   }
 
+  void UpdateTabSpecificPermissions(const std::string& extension_id,
+                                    const URLPatternSet& new_hosts,
+                                    int tab_id,
+                                    bool update_origin_whitelist) override {}
+
   URLPatternSet default_blocked_hosts_;
   URLPatternSet default_allowed_hosts_;
   std::vector<std::string> activated_extensions_;
