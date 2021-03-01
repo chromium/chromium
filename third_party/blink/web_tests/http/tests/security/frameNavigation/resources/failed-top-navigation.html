@@ -1,0 +1,17 @@
+<html>
+
+<body>
+  The navigation should fail. This text should appear.
+  <script>
+    window.onload = function () {
+      try {
+        top.location = "http://127.0.0.1:8080/security/frameNavigation/resources/navigation-changed-iframe.html";
+        top.postMessage("FAIL", "*");
+      } catch (e) {
+        top.postMessage("PASS", "*");
+      }
+    }
+  </script>
+</body>
+
+</html>

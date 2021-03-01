@@ -194,7 +194,7 @@ class CORE_EXPORT LocalFrame final
   void Navigate(FrameLoadRequest&, WebFrameLoadType) override;
   bool ShouldClose() override;
   const SecurityContext* GetSecurityContext() const override;
-  void PrintNavigationErrorMessage(const Frame&, const char* reason);
+  void PrintNavigationErrorMessage(const Frame&, const String& reason);
   void PrintNavigationWarning(const String&);
   bool DetachDocument() override;
   void CheckCompleted() override;
