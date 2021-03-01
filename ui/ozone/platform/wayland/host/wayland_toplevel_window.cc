@@ -308,11 +308,14 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
   if (pending_bounds_dip_.size() ==
-      gfx::ScaleToRoundedSize(GetBounds().size(), 1.f / buffer_scale())) {
-    // If |pending_bounds_dip_| matches GetBounds(), then a frame matching
-    // |pending_bounds_dip_| may not arrive soon, despite the window delegate
-    // receives the updated bounds. Without a new frame, UpdateVisualSize() is
-    // not invoked, leaving this |configure| unacknowledged.
+          gfx::ScaleToRoundedSize(GetBounds().size(), 1.f / buffer_scale()) &&
+      pending_configures_.empty()) {
+    // If |pending_bounds_dip_| matches GetBounds(), and |pending_configures_|
+    // is empty, implying that the window is already rendering at
+    // |pending_bounds_dip_|, then a frame matching |pending_bounds_dip_| may
+    // not arrive soon, despite the window delegate receives the updated bounds.
+    // Without a new frame, UpdateVisualSize() is not invoked, leaving this
+    // |configure| unacknowledged.
     //   E.g. With static window content, |configure| that does not
     //     change window size will not cause the window to redraw.
     // Hence, acknowledge this |configure| now to tell the Wayland compositor

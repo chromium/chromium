@@ -407,6 +407,8 @@ void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
 }
 
 void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px) {
+  if (visual_size_px_ == size_px)
+    return;
   visual_size_px_ = size_px;
   UpdateWindowMask();
 }
