@@ -232,6 +232,9 @@
         self.discoverFeedWrapperViewController;
     self.ntpViewController.overscrollDelegate = self;
     self.ntpViewController.ntpContentDelegate = self;
+    self.ntpViewController.identityDiscButton =
+        [self.contentSuggestionsCoordinator
+                .headerController identityDiscButton];
 
     self.ntpViewController.headerController =
         self.contentSuggestionsCoordinator.headerController;

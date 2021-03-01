@@ -77,7 +77,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 @property(nonatomic, strong) ContentSuggestionsHeaderView* headerView;
 @property(nonatomic, strong) UIButton* fakeOmnibox;
 @property(nonatomic, strong) UIButton* accessibilityButton;
-@property(nonatomic, strong) UIButton* identityDiscButton;
+@property(nonatomic, strong, readwrite) UIButton* identityDiscButton;
 @property(nonatomic, strong) UIButton* fakeTapButton;
 @property(nonatomic, strong) NSLayoutConstraint* doodleHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* doodleTopMarginConstraint;

@@ -116,6 +116,16 @@ const CGFloat kOffsetToPinOmnibox = 100;
       didMoveToParentViewController:self.discoverFeedWrapperViewController
                                         .discoverFeed];
 
+  // TODO(crbug.com/1170995): The feedCollectionView width might be narrower
+  // than the ContentSuggestions view. This causes elements to be hidden. As a
+  // temporary workaround set clipsToBounds to NO to display these elements, and
+  // add a gesture recognizer to interact with them.
+  self.discoverFeedWrapperViewController.feedCollectionView.clipsToBounds = NO;
+  UITapGestureRecognizer* singleTapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(handleSingleTapInView:)];
+  [self.view addGestureRecognizer:singleTapRecognizer];
+
   // Ensures that there is never any nested scrolling, since we are nesting the
   // content suggestions collection view in the feed collection view.
   self.contentSuggestionsViewController.collectionView.bounces = NO;
@@ -494,6 +504,19 @@ const CGFloat kOffsetToPinOmnibox = 100;
   return self.contentSuggestionsViewController.collectionView.contentSize
              .height +
          self.view.safeAreaInsets.top;
+}
+
+// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// ContentSuggestions.
+- (void)handleSingleTapInView:(UITapGestureRecognizer*)recognizer {
+  CGPoint location = [recognizer locationInView:[recognizer.view superview]];
+  CGRect discBoundsInView =
+      [self.identityDiscButton convertRect:self.identityDiscButton.bounds
+                                    toView:self.view];
+  if (CGRectContainsPoint(discBoundsInView, location)) {
+    [self.identityDiscButton
+        sendActionsForControlEvents:UIControlEventTouchUpInside];
+  }
 }
 
 #pragma mark - Setters

@@ -59,6 +59,11 @@ class ReadingListModel;
 // omnibox.
 - (void)focusFakebox;
 
+// Identity disc shown in this ViewController.
+// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// ContentSuggestions.
+@property(nonatomic, strong, readonly) UIButton* identityDiscButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_CONTROLLER_H_
