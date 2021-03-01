@@ -169,6 +169,8 @@ let kRTCRemoteInboundRtpStreamStats =
   localId: 'string',
   roundTripTime: 'number',
   fractionLost: 'number',
+  totalRoundTripTime: 'number',
+  roundTripTimeMeasurements: 'number',
 });
 // TODO(https://crbug.com/967382): Update the browser_tests to wait for the
 // existence of remote-inbound-rtp as well (these are created later than
