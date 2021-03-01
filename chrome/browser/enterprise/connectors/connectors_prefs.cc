@@ -28,6 +28,10 @@ const char kOnSecurityEventPref[] = "enterprise_connectors.on_security_event";
 
 const char kContextAwareAccessSignalsAllowlistPref[] =
     "enterprise_connectors.device_trust.origins";
+const char kDeviceTrustPrivateKeyPref[] =
+    "enterprise_connectors.device_trust.private_key";
+const char kDeviceTrustPublicKeyPref[] =
+    "enterprise_connectors.device_trust.public_key";
 
 const char kOnFileAttachedScopePref[] =
     "enterprise_connectors.scope.on_file_attached";
@@ -68,7 +72,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
+  // Device Trust prefs
   registry->RegisterListPref(kContextAwareAccessSignalsAllowlistPref);
+  registry->RegisterStringPref(kDeviceTrustPrivateKeyPref, std::string());
+  registry->RegisterStringPref(kDeviceTrustPublicKeyPref, std::string());
 
   RegisterFileSystemPrefs(registry);
 }

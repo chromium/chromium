@@ -34,6 +34,17 @@ extern const char kOnFileDownloadedScopePref[];
 extern const char kOnBulkDataEntryScopePref[];
 extern const char kOnSecurityEventScopePref[];
 
+// The pref name where this class stores the encrypted private key;
+// TODO(b/178422353): The attestation key should be per device. If two
+// instances of chrome are running, they should report the same key.
+// If the machine supports storage in TPM, the private key will be
+// stored there.
+extern const char kDeviceTrustPrivateKeyPref[];
+// The pref name where this class stores the public key;
+// If the machine supports storage in TPM, the public key will be
+// stored there.
+extern const char kDeviceTrustPublicKeyPref[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise_connectors

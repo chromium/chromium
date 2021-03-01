@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 class Profile;
 class PrefService;
@@ -26,6 +30,7 @@ class DeviceTrustService : public KeyedService {
 
   Profile* profile_;
   PrefService* prefs_;
+  std::unique_ptr<DeviceTrustKeyPair> key_pair_;
 };
 
 }  // namespace policy
