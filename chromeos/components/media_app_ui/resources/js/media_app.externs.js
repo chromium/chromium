@@ -84,8 +84,8 @@ mediaApp.AbstractFile.prototype.deleteOriginalFile;
 mediaApp.AbstractFile.prototype.renameOriginalFile;
 /**
  * A function that will save the provided blob in the file pointed to by
- * pickedFileToken. Once saved the new file takes over this.token and becomes
- * the current file. The original file is given a new token
+ * pickedFileToken. Once saved, the new file takes over this.token and becomes
+ * currently writable. The original file is given a new token
  * and pushed forward in the navigation order.
  * @type {function(!Blob, number): !Promise<undefined>|undefined}
  */
@@ -137,7 +137,7 @@ mediaApp.AbstractFileList.prototype.addObserver = function(observer) {};
  * lists implement a openFile function.
  * @type {function(): !Promise<undefined>|undefined}
  */
-mediaApp.AbstractFileList.prototype.openFile;
+mediaApp.AbstractFileList.prototype.openFile = function() {};
 
 /**
  * The delegate which exposes open source privileged WebUi functions to
