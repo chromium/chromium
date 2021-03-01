@@ -106,7 +106,7 @@ public class AssistantChipViewHolder extends ViewHolder {
         int iconDescriptionResource = 0;
         switch (chip.getIcon()) {
             case AssistantChip.Icon.CLEAR:
-                iconResource = R.drawable.ic_clear_black_24dp;
+                iconResource = R.drawable.ic_clear_black_chrome_24dp;
                 iconDescriptionResource = R.string.close;
                 break;
             case AssistantChip.Icon.DONE:

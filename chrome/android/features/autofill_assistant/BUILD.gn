@@ -372,7 +372,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_autofill_assistant_add_circle_24dp.xml",
     "java/res/drawable/ic_autofill_assistant_default_progress_start_black_24dp.xml",
     "java/res/drawable/ic_check_circle_black_24dp.xml",
-    "java/res/drawable/ic_clear_black_24dp.xml",
+    "java/res/drawable/ic_clear_black_chrome_24dp.xml",
     "java/res/drawable/ic_confirmation_number_black_24dp.xml",
     "java/res/drawable/ic_directions_car_black_24dp.xml",
     "java/res/drawable/ic_done_black_24dp.xml",
