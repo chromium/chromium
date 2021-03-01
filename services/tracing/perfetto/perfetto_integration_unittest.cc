@@ -49,6 +49,9 @@ RebindableTaskRunner* GetPerfettoTaskRunner() {
 
 class PerfettoIntegrationTest : public testing::Test {
  public:
+  PerfettoIntegrationTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
   void SetUp() override {
     // Run both the client library and the PerfettoTracedProcess on the same
     // thread (current thread).
