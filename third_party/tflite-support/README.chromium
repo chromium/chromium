@@ -25,6 +25,7 @@ Modifications:
   (0001-remove-unsupported-memory-map-from-file-handler.patch)
 - Fixes sign compare issues in tflite-support (0001-task-utils-sign-compare.patch)
 - Remove support for sentencepiece tokenizers (0001-no-sentencepiece-tokenizer.patch)
+- Allows for the max sequence used by BERT models to be 512 instead of 128 (0001-bert-max-seq-len.patch)
 
 Third party dependencies:
 - tflite

@@ -52,7 +52,7 @@ class BertNLClassifier : public NLClassifier {
  public:
   using NLClassifier::NLClassifier;
   // Max number of tokens to pass to the model.
-  static constexpr int kMaxSeqLen = 128;
+  static constexpr int kMaxSeqLen = 512;
 
   // Factory function to create a BertNLClassifier from TFLite model with
   // metadata.
