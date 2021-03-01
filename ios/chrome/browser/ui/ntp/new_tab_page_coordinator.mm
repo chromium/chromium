@@ -210,6 +210,7 @@
     self.ntpViewController = [[NewTabPageViewController alloc]
         initWithContentSuggestionsViewController:
             self.contentSuggestionsCoordinator.viewController];
+    self.ntpViewController.panGestureHandler = self.panGestureHandler;
     self.ntpMediator.ntpViewController = self.ntpViewController;
 
     UIViewController* discoverFeedViewController =

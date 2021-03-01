@@ -84,7 +84,8 @@ extern NSString* const
 @property(nonatomic, strong)
     DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 
-// The pan gesture handler for the hider view controller.
+// The pan gesture handler to notify of scroll events happening in this view
+// controller.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.

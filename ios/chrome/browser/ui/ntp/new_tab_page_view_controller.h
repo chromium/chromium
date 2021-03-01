@@ -14,6 +14,7 @@
 @class DiscoverFeedWrapperViewController;
 @protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
+@class ViewRevealingVerticalPanHandler;
 
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
@@ -34,6 +35,10 @@
 
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> ntpContentDelegate;
+
+// The pan gesture handler to notify of scroll events happening in this view
+// controller.
+@property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
 // Initializes view controller with NTP content view controllers.
 // |discoverFeedViewController| represents the Discover feed for suggesting
