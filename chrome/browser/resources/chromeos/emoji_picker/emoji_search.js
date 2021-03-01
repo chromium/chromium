@@ -139,10 +139,20 @@ export class EmojiSearch extends PolymerElement {
    * @return {!Array<!EmojiVariants>}
    */
   computeEmojiList(emojiData) {
-    return Array.from(new Map(emojiData.map(group => group.emoji)
-                                  .flat(1)
-                                  .map(emoji => [emoji.base.string, emoji]))
-                          .values());
+    return Array.from(
+        new Map(emojiData.map(group => group.emoji).flat(1).map(emoji => {
+          // The Fuse search library in ChromeOS doesn't support prefix
+          // matching. A workaround is appending a space before all name and
+          // keyword labels. This allows us to force a prefix matching by
+          // prepending a space on users' searches. E.g. for the Emoji "smile
+          // face", we store " smile face", if the user searches for "fa", the
+          // search will be " fa" and will match " smile face", but not "
+          // infant".
+          emoji.base.name = ' ' + emoji.base.name;
+          emoji.base.keywords =
+              emoji.base.keywords.map(keyword => ' ' + keyword);
+          return [emoji.base.string, emoji];
+        })).values());
   }
 
   /**
