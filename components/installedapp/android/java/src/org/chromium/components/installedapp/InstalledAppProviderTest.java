@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.installedapp;
+package org.chromium.components.installedapp;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -140,15 +140,14 @@ public class InstalledAppProviderTest {
     private class InstalledAppProviderTestImpl extends InstalledAppProviderImpl {
         private long mLastDelayMillis;
 
-        public InstalledAppProviderTestImpl(RenderFrameHost renderFrameHost,
-                PackageManagerDelegate packageManagerDelegate,
-                FakeInstantAppsHandler instantAppsHandler) {
+        public InstalledAppProviderTestImpl(
+                RenderFrameHost renderFrameHost, FakeInstantAppsHandler instantAppsHandler) {
             super(new BrowserContextHandle() {
                 @Override
                 public long getNativeBrowserContextPointer() {
                     return 1;
                 }
-            }, renderFrameHost, packageManagerDelegate, instantAppsHandler::isInstantAppAvailable);
+            }, renderFrameHost, instantAppsHandler::isInstantAppAvailable);
         }
 
         public long getLastDelayMillis() {
@@ -373,8 +372,9 @@ public class InstalledAppProviderTest {
         Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
                 .thenReturn(new GURL(URL_ON_ORIGIN));
         mFakeInstantAppsHandler = new FakeInstantAppsHandler();
-        mInstalledAppProvider = new InstalledAppProviderTestImpl(
-                mMockRenderFrameHost, mFakePackageManager, mFakeInstantAppsHandler);
+        mInstalledAppProvider =
+                new InstalledAppProviderTestImpl(mMockRenderFrameHost, mFakeInstantAppsHandler);
+        mInstalledAppProvider.setPackageManagerDelegateForTest(mFakePackageManager);
     }
 
     /** Origin of the page using the API is missing certain parts of the URI. */

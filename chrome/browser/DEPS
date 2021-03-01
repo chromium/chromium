@@ -151,6 +151,7 @@ include_rules = [
   "+components/image_fetcher/core",
   "+components/infobars/content",
   "+components/infobars/core",
+  "+components/installedapp",
   "+components/invalidation/impl",
   "+components/invalidation/public",
   "+components/javascript_dialogs",

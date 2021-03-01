@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SecureRandomInitializer;

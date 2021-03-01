@@ -3746,6 +3746,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/ApplicationStatus.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
+      "android/java/src/org/chromium/base/ByteArrayGenerator.java",
       "android/java/src/org/chromium/base/Callback.java",
       "android/java/src/org/chromium/base/CallbackController.java",
       "android/java/src/org/chromium/base/CollectionUtil.java",

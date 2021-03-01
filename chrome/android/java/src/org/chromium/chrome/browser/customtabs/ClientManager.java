@@ -36,10 +36,9 @@ import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactoryImpl;
-import org.chromium.chrome.browser.installedapp.InstalledAppProviderImpl;
-import org.chromium.chrome.browser.installedapp.PackageManagerDelegate;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.installedapp.InstalledAppProviderImpl;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
@@ -491,8 +490,7 @@ class ClientManager {
                 () -> { params.originVerifier.start(listener, origin); });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
                 && InstalledAppProviderImpl.isAppInstalledAndAssociatedWithOrigin(
-                        params.getPackageName(), URI.create(origin.toString()),
-                        new PackageManagerDelegate())) {
+                        params.getPackageName(), URI.create(origin.toString()))) {
             params.mLinkedOrigins.add(origin);
         }
         return true;

@@ -135,7 +135,6 @@
 #include "net/net_buildflags.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/android/chrome_jni_headers/PackageHash_jni.h"
 #include "chrome/browser/android/customtabs/origin_verifier.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
@@ -148,6 +147,7 @@
 #include "components/feed/buildflags.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/installedapp/android/jni_headers/PackageHash_jni.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "sql/database.h"

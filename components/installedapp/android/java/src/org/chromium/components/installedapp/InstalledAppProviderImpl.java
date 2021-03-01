@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.installedapp;
+package org.chromium.components.installedapp;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -43,6 +44,7 @@ import java.util.Collections;
  * Android implementation of the InstalledAppProvider service defined in
  * installed_app_provider.mojom
  */
+@JNINamespace("installedapp")
 public class InstalledAppProviderImpl implements InstalledAppProvider {
     @VisibleForTesting
     public static final String ASSET_STATEMENTS_KEY = "asset_statements";
@@ -87,17 +89,21 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     // May be null in tests.
     private final BrowserContextHandle mBrowserContextHandle;
     private final RenderFrameHost mRenderFrameHost;
-    private final PackageManagerDelegate mPackageManagerDelegate;
+    // May be overridden in tests.
+    private PackageManagerDelegate mPackageManagerDelegate;
     @Nullable
     private final InstantAppProvider mInstantAppProvider;
 
     public InstalledAppProviderImpl(BrowserContextHandle browserContextHandle,
-            RenderFrameHost renderFrameHost, PackageManagerDelegate packageManagerDelegate,
-            @Nullable InstantAppProvider instantAppProvider) {
+            RenderFrameHost renderFrameHost, @Nullable InstantAppProvider instantAppProvider) {
         mBrowserContextHandle = browserContextHandle;
         mRenderFrameHost = renderFrameHost;
-        mPackageManagerDelegate = packageManagerDelegate;
+        mPackageManagerDelegate = new PackageManagerDelegate();
         mInstantAppProvider = instantAppProvider;
+    }
+
+    void setPackageManagerDelegateForTest(PackageManagerDelegate packageManagerDelegate) {
+        mPackageManagerDelegate = packageManagerDelegate;
     }
 
     @Override
@@ -350,12 +356,17 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
      *                    app is not installed.
      * @param frameUrl Returns false if the Android package does not declare association with the
      *                origin of this URL. Can be null.
+     *
+     * TODO(yusufo): Move this to a better/shared location before crbug.com/749876 is closed.
      */
     @WorkerThread
-    public static boolean isAppInstalledAndAssociatedWithOrigin(
-            String packageName, GURL frameUrl, PackageManagerDelegate pm) {
-        // TODO(yusufo): Move this to a better/shared location before crbug.com/749876 is closed.
+    public static boolean isAppInstalledAndAssociatedWithOrigin(String packageName, GURL frameUrl) {
+        return isAppInstalledAndAssociatedWithOrigin(
+                packageName, frameUrl, new PackageManagerDelegate());
+    }
 
+    private static boolean isAppInstalledAndAssociatedWithOrigin(
+            String packageName, GURL frameUrl, PackageManagerDelegate pm) {
         if (frameUrl == null) return false;
 
         // Early-exit if the Android app is not installed.

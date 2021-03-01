@@ -33,6 +33,7 @@ include_rules = [
   "+components/favicon_base",
   "+components/find_in_page/android",
   "+components/infobars/android",
+  "+components/installedapp/android",
   "+components/invalidation",
   "+components/javascript_dialogs/android",
   "+components/messages/android",

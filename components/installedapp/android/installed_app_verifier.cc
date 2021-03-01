@@ -8,9 +8,9 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/InstalledAppProviderImpl_jni.h"
 #include "components/digital_asset_links/digital_asset_links_handler.h"
 #include "components/embedder_support/android/browser_context/browser_context_handle.h"
+#include "components/installedapp/android/jni_headers/InstalledAppProviderImpl_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -25,6 +25,8 @@ void DidGetResult(
 }
 
 }  // namespace
+
+namespace installedapp {
 
 void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
     JNIEnv* env,
@@ -53,3 +55,5 @@ void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
       web_domain, manifest_url,
       base::BindOnce(&DidGetResult, std::move(handler), std::move(callback)));
 }
+
+}  // namespace installedapp

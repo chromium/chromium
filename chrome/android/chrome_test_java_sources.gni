@@ -253,7 +253,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/init/StartupTabPreloaderTest.java",
   "javatests/src/org/chromium/chrome/browser/init/StartupTabPreloaderUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/input/SelectPopupOtherContentViewTest.java",
-  "javatests/src/org/chromium/chrome/browser/installedapp/InstalledAppProviderTest.java",
   "javatests/src/org/chromium/chrome/browser/instantapps/InstantAppsHandlerTest.java",
   "javatests/src/org/chromium/chrome/browser/interstitials/LookalikeInterstitialTest.java",
   "javatests/src/org/chromium/chrome/browser/javascript/ModalCloseWatcherTest.java",

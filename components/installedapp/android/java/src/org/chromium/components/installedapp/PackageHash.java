@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.installedapp;
+package org.chromium.components.installedapp;
 
 import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.crypto.ByteArrayGenerator;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 
 import java.io.IOException;

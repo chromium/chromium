@@ -10,8 +10,5 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  sources = [
-    "java/src/org/chromium/chrome/browser/crypto/ByteArrayGenerator.java",
-    "java/src/org/chromium/chrome/browser/crypto/CipherFactory.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/crypto/CipherFactory.java" ]
 }

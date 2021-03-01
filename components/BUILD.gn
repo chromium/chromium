@@ -830,6 +830,7 @@ if (is_android) {
       "//components/content_capture/android/junit:components_content_capture_junit_tests",
       "//components/embedder_support/android:components_embedder_support_junit_tests",
       "//components/gcm_driver/android:components_gcm_driver_junit_tests",
+      "//components/installedapp/android:junit",
       "//components/media_router/browser/android:junit",
       "//components/messages/android:junit",
       "//components/messages/android/internal:junit",
