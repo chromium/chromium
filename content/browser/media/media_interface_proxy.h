@@ -135,8 +135,9 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
   void ConnectToMFMediaService();
   InterfaceFactory* GetMFMediaInterfaceFactory();
   void OnMFMediaServiceConnectionError();
-  bool ShouldUseMediaFoundationServiceForCdm(const std::string& key_system,
-                                             base::FilePath& cdm_path);
+  bool ShouldUseMediaFoundationServiceForCdm(
+      const std::string& key_system,
+      const media::CdmConfig& cdm_config);
 
   mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;
   media::mojom::MediaService* mf_service_ptr_ = nullptr;
