@@ -965,6 +965,9 @@ class ResourceScheduler::Client
     }
 
 #if defined(OS_ANDROID)
+    if (!base::android::RadioUtils::IsSupported())
+      return;
+
     if (!GetSignalQualityAllowsForThrottling()) {
       RecordMetricsForWeakSignalThrottlingDuration();
       // Reset windows and stop throttling.
