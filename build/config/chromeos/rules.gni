@@ -405,6 +405,13 @@ template("lacros_tast_test") {
     # pre-deployed lacros-chrome. The location is decided by:
     # https://source.chromium.org/chromium/chromium/src/+/master:third_party/chromite/scripts/deploy_chrome.py;l=80;drc=86f1234a4be8e9574442e076cdc835897f7bea61
     tast_vars = [ "lacrosDeployedBinary=/usr/local/lacros-chrome" ]
+
+    # Lacros tast tests may have different test expectations based on whether
+    # they're for Chromium or Chrome.
+    if (is_chrome_branded) {
+      tast_vars += [ "lacrosIsChromeBranded=true" ]
+    }
+
     data_deps = [
       "//chrome",  # Builds the browser.
 
