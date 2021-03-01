@@ -62,6 +62,7 @@ static_library("test_support") {
 
   deps = [
     "//google_apis",
+    "//jingle:webrtc_glue",
     "//remoting/base:authorization",
     "//remoting/base:test_support",
     "//services/network:network_service",
@@ -102,6 +103,7 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
         ":test_support",
         "//mojo/core/embedder",
         "//remoting/base",
+        "//remoting/base:authorization",
         "//remoting/host",
         "//remoting/host/it2me:common",
         "//remoting/host/native_messaging",
@@ -120,6 +122,8 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
     deps = [
       ":fake_connection_event_logger",
       "//base/test:test_support",
+      "//remoting/protocol:protocol",
+      "//remoting/protocol:test_support",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
 
@@ -139,7 +143,10 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
     deps = [ ":it2me_standalone_host" ]
 
     if (is_linux || is_chromeos_lacros) {
-      deps += [ "//build/config/linux/gtk" ]
+      deps += [
+        "//build/config/linux/gtk",
+        "//ui/events/platform/x11:x11",
+      ]
     }
 
     if (is_win) {
@@ -158,7 +165,10 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
     testonly = true
     sources = [ "capability_test_stub_main.cc" ]
 
-    deps = [ "//base" ]
+    deps = [
+      "//base",
+      "//remoting/host:base",
+    ]
   }
 }
 
@@ -174,7 +184,10 @@ executable("ftl_services_playground") {
     ":test_support",
     "//mojo/core/embedder",
     "//remoting/base",
+    "//remoting/base:authorization",
+    "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/signaling",
+    "//services/network:network_service",
   ]
 }
 
@@ -188,8 +201,11 @@ executable("ftl_signaling_playground") {
   ]
   deps = [
     ":test_support",
+    "//jingle:webrtc_glue",
     "//mojo/core/embedder",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/signaling",
+    "//services/network:network_service",
   ]
 }

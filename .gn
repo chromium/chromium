@@ -103,8 +103,8 @@ no_check_targets = [
   "//remoting/ios/persistence:*",  # 10 errors
   "//remoting/ios/session:*",  # 7 errors
   "//remoting/ios:*",  # 2 errors
-  "//remoting/protocol:*",  # 142 errors
-  "//remoting/test:*",  # 20 errors
+  "//remoting/protocol:*",  # 3 errors
+  "//remoting/test:*",  # 2 error
   "//sandbox/win:*",  # 7 errors
 
   "//third_party/ffmpeg:*",  # 1 error
