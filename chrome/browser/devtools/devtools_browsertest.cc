@@ -1696,8 +1696,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestDOMWarnings) {
 }
 
 // Tests that console messages are not duplicated on navigation back.
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(MEMORY_SANITIZER)
 // Flaking on windows swarm try runs: crbug.com/409285.
+// Also flaking on MSan runs: crbug.com/1182861
 #define MAYBE_TestConsoleOnNavigateBack DISABLED_TestConsoleOnNavigateBack
 #else
 #define MAYBE_TestConsoleOnNavigateBack TestConsoleOnNavigateBack
