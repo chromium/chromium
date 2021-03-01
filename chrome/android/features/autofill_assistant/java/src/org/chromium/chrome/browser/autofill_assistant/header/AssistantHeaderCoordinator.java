@@ -27,8 +27,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.Collections;
-
 /**
  * Coordinator for the header of the Autofill Assistant.
  */
@@ -149,7 +147,6 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
     private void setupProfileImage() {
         if (mSignedInAccountEmail != null) {
             mProfileCache.addObserver(this);
-            mProfileCache.update(Collections.singletonList(mSignedInAccountEmail));
         }
     }
     private void setProfileImageFor(String signedInAccountName) {
