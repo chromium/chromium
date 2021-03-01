@@ -3046,9 +3046,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
-  if (!self.view.superview) {
-    return;
-  }
   CGFloat tabStripHeight = self.tabStripView.frame.size.height;
   CGFloat hideHeight = tabStripHeight + self.headerOffset;
   switch (nextViewRevealState) {
