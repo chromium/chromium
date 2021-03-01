@@ -461,4 +461,9 @@ bool IsTryingToQuit() {
   return g_trying_to_quit;
 }
 
+base::AutoReset<ShutdownType> SetShutdownTypeForTesting(
+    ShutdownType shutdown_type) {
+  return base::AutoReset<ShutdownType>(&g_shutdown_type, shutdown_type);
+}
+
 }  // namespace browser_shutdown

@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -255,12 +256,45 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       entries[0], UkmEntry::kVideoCaptureSecondsName,
       ukm::GetExponentialBucketMinForUserTiming(
           fake_interval_data.time_capturing_video.InSeconds()));
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBrowserShuttingDownName, false);
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
   histogram_tester_.ExpectUniqueSample(
       kBatteryDischargeModeHistogramName,
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
+  UsageScenarioDataStore::IntervalData fake_interval_data = {};
+  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.50, true, base::TimeTicks::Now()});
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+
+  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
+  fake_metrics.cpu_usage = 0.5;
+#if defined(OS_MAC)
+  fake_metrics.idle_wakeups = 42;
+  fake_metrics.package_idle_wakeups = 43;
+  fake_metrics.energy_impact = 44;
+#endif
+
+  {
+    auto fake_shutdown = browser_shutdown::SetShutdownTypeForTesting(
+        browser_shutdown::ShutdownType::kBrowserExit);
+    EXPECT_TRUE(browser_shutdown::HasShutdownStarted());
+    process_monitor_.NotifyObserversForOnAggregatedMetricsSampled(fake_metrics);
+  }
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBrowserShuttingDownName, true);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
