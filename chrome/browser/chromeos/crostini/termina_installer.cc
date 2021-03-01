@@ -57,33 +57,36 @@ void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
   // Remove whichever version of termina we're *not* using and install the right
   // one.
   if (base::FeatureList::IsEnabled(chromeos::features::kCrostiniUseDlc)) {
-    InstallDlc(base::BindOnce(
-        [](base::WeakPtr<TerminaInstaller> weak_this,
-           base::OnceCallback<void(InstallResult)> callback,
-           bool is_initial_install, base::OnceClosure remove_callback,
-           UninstallResult* uninstall_result_ptr, InstallResult result) {
-          if (!weak_this)
-            return;
+    InstallDlc(
+        base::BindOnce(
+            [](base::WeakPtr<TerminaInstaller> weak_this,
+               base::OnceCallback<void(InstallResult)> callback,
+               bool is_initial_install, base::OnceClosure remove_callback,
+               UninstallResult* uninstall_result_ptr, InstallResult result) {
+              if (!weak_this)
+                return;
 
-          // Fallback logic for the transition to DLC.
-          // If we succeeded with DLC, we're good.
-          // If we're running the installer, we can show a useful error message.
-          // Otherwise, try and fall back to installing the cros-termina
-          // component.
-          if (is_initial_install || result == InstallResult::Success) {
-            // Delay removing cros-termina until here so as to avoid messing up
-            // the InstallComponent call below.
-            weak_this->RemoveComponentIfPresent(std::move(remove_callback),
-                                                uninstall_result_ptr);
-            std::move(callback).Run(result);
-            return;
-          }
-          LOG(ERROR)
-              << "Failed to install termina-dlc, falling back to cros-termina";
-          weak_this->InstallComponent(std::move(callback));
-        },
-        weak_ptr_factory_.GetWeakPtr(), std::move(callback), is_initial_install,
-        std::move(remove_callback), uninstall_result_ptr));
+              // Fallback logic for the transition to DLC.
+              // If we succeeded with DLC, we're good.
+              // If we're running the installer, we can show a useful error
+              // message. Otherwise, try and fall back to installing the
+              // cros-termina component.
+              if (is_initial_install || result == InstallResult::Success) {
+                // Delay removing cros-termina until here so as to avoid messing
+                // up the InstallComponent call below.
+                weak_this->RemoveComponentIfPresent(std::move(remove_callback),
+                                                    uninstall_result_ptr);
+                std::move(callback).Run(result);
+                return;
+              }
+              LOG(ERROR) << "Failed to install termina-dlc, falling back to "
+                            "cros-termina";
+              weak_this->InstallComponent(std::move(callback));
+            },
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            is_initial_install, std::move(remove_callback),
+            uninstall_result_ptr),
+        is_initial_install);
   } else {
     RemoveDlcIfPresent(std::move(remove_callback), uninstall_result_ptr);
     InstallComponent(std::move(callback));
@@ -91,16 +94,19 @@ void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
 }
 
 void TerminaInstaller::InstallDlc(
-    base::OnceCallback<void(InstallResult)> callback) {
+    base::OnceCallback<void(InstallResult)> callback,
+    bool is_initial_install) {
   chromeos::DlcserviceClient::Get()->Install(
       kCrostiniDlcName,
       base::BindOnce(&TerminaInstaller::OnInstallDlc,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     is_initial_install),
       base::DoNothing());
 }
 
 void TerminaInstaller::OnInstallDlc(
     base::OnceCallback<void(InstallResult)> callback,
+    bool is_initial_install,
     const chromeos::DlcserviceClient::InstallResult& result) {
   CHECK(result.dlc_id == kCrostiniDlcName);
   InstallResult response;
@@ -109,6 +115,14 @@ void TerminaInstaller::OnInstallDlc(
     dlc_id_ = kCrostiniDlcName;
     termina_location_ = base::FilePath(result.root_path);
     UMA_HISTOGRAM_ENUMERATION(kHistogram, InstallSource::DLC);
+  } else if (is_initial_install && result.error == dlcservice::kErrorBusy) {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TerminaInstaller::InstallDlc,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       is_initial_install),
+        base::TimeDelta::FromSeconds(5));
+    return;
   } else {
     if (content::GetNetworkConnectionTracker()->IsOffline()) {
       LOG(ERROR) << "Failed to install termina-dlc while offline, assuming "

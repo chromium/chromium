@@ -106,37 +106,35 @@ class TerminaInstallTest : public testing::Test {
 
   const std::string dlc_root_path_ = "/dlc/root/path";
 
-  void CheckDlcInstalled() {
+  void CheckDlcInstallCalledTimes(int times) {
     base::RunLoop run_loop;
 
     fake_dlc_client_->GetExistingDlcs(base::BindOnce(
-        [](base::OnceClosure quit, const std::string& err,
+        [](base::OnceClosure quit, int times, const std::string& err,
            const dlcservice::DlcsWithContent& dlcs_with_content) {
           std::move(quit).Run();
-          ASSERT_EQ(dlcs_with_content.dlc_infos_size(), 1);
-          EXPECT_EQ(dlcs_with_content.dlc_infos(0).id(), kCrostiniDlcName);
+          ASSERT_EQ(dlcs_with_content.dlc_infos_size(), times);
+          for (auto dlc : dlcs_with_content.dlc_infos()) {
+            EXPECT_EQ(dlc.id(), kCrostiniDlcName);
+          }
         },
-        run_loop.QuitClosure()));
-
-    EXPECT_EQ(termina_installer_.GetInstallLocation(),
-              base::FilePath(dlc_root_path_));
-    EXPECT_EQ(termina_installer_.GetDlcId(), "termina-dlc");
+        run_loop.QuitClosure(), times));
 
     run_loop.Run();
   }
 
-  void CheckDlcNotInstalled() {
-    base::RunLoop run_loop;
+  void ExpectDlcInstalled() {
+    EXPECT_EQ(termina_installer_.GetInstallLocation(),
+              base::FilePath(dlc_root_path_));
+    EXPECT_EQ(termina_installer_.GetDlcId(), "termina-dlc");
+  }
 
-    fake_dlc_client_->GetExistingDlcs(base::BindOnce(
-        [](base::OnceClosure quit, const std::string& err,
-           const dlcservice::DlcsWithContent& dlcs_with_content) {
-          std::move(quit).Run();
-          EXPECT_EQ(dlcs_with_content.dlc_infos_size(), 0);
-        },
-        run_loop.QuitClosure()));
-
-    run_loop.Run();
+  void ExpectComponentInstalled() {
+    EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
+        imageloader::kTerminaComponentName));
+    EXPECT_EQ(termina_installer_.GetInstallLocation(),
+              base::FilePath(component_mount_path_));
+    EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
   }
 
  protected:
@@ -244,7 +242,7 @@ TEST_F(TerminaInstallTest, UninstallWithDlcInstalled) {
       base::BindOnce(&TerminaInstallTest::ExpectTrue, base::Unretained(this)));
   run_loop_.Run();
 
-  CheckDlcNotInstalled();
+  CheckDlcInstallCalledTimes(0);
 }
 
 TEST_F(TerminaInstallTest, UninstallWithDlcInstalledUninstallError) {
@@ -277,7 +275,7 @@ TEST_F(TerminaInstallTest, UninstallWithBothInstalled) {
 
   EXPECT_FALSE(component_manager_->IsRegisteredMayBlock(
       imageloader::kTerminaComponentName));
-  CheckDlcNotInstalled();
+  CheckDlcInstallCalledTimes(0);
 }
 
 TEST_F(TerminaDlcInstallTest, InstallDlc) {
@@ -286,7 +284,8 @@ TEST_F(TerminaDlcInstallTest, InstallDlc) {
                              /*is_initial_install=*/true);
   run_loop_.Run();
 
-  CheckDlcInstalled();
+  CheckDlcInstallCalledTimes(1);
+  ExpectDlcInstalled();
 }
 
 TEST_F(TerminaDlcInstallTest, InstallDlcError) {
@@ -296,6 +295,32 @@ TEST_F(TerminaDlcInstallTest, InstallDlcError) {
                                             base::Unretained(this)),
                              /*is_initial_install=*/true);
   run_loop_.Run();
+}
+
+TEST_F(TerminaDlcInstallTest, InstallDlcBusyTriggersRetry) {
+  fake_dlc_client_->set_install_error(dlcservice::kErrorBusy);
+
+  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(0));
+
+  fake_dlc_client_->set_install_error(dlcservice::kErrorNone);
+  run_loop_.Run();
+
+  CheckDlcInstallCalledTimes(2);
+  ExpectDlcInstalled();
+}
+
+TEST_F(TerminaDlcInstallTest, InstallDlcBusyDoesntTriggerRetry) {
+  fake_dlc_client_->set_install_error(dlcservice::kErrorBusy);
+
+  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectFailure,
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/false);
+  run_loop_.Run();
+
+  CheckDlcInstallCalledTimes(1);
 }
 
 TEST_F(TerminaDlcInstallTest, InstallDlcOffline) {
@@ -321,7 +346,8 @@ TEST_F(TerminaDlcInstallTest, InstallDlcWithComponentInstalled) {
                              /*is_initial_install=*/true);
   run_loop_.Run();
 
-  CheckDlcInstalled();
+  CheckDlcInstallCalledTimes(1);
+  ExpectDlcInstalled();
 
   task_env_.RunUntilIdle();
   EXPECT_FALSE(component_manager_->IsRegisteredMayBlock(
@@ -338,7 +364,8 @@ TEST_F(TerminaDlcInstallTest, InstallDlcWithComponentInstalledUninstallError) {
                              /*is_initial_install=*/true);
   run_loop_.Run();
 
-  CheckDlcInstalled();
+  CheckDlcInstallCalledTimes(1);
+  ExpectDlcInstalled();
 }
 
 TEST_F(TerminaDlcInstallTest, InstallDlcFallback) {
@@ -347,7 +374,8 @@ TEST_F(TerminaDlcInstallTest, InstallDlcFallback) {
                              /*is_initial_install=*/false);
   run_loop_.Run();
 
-  CheckDlcInstalled();
+  CheckDlcInstallCalledTimes(1);
+  ExpectDlcInstalled();
 }
 
 TEST_F(TerminaDlcInstallTest, InstallDlcFallbackError) {
@@ -359,10 +387,7 @@ TEST_F(TerminaDlcInstallTest, InstallDlcFallbackError) {
                              /*is_initial_install=*/false);
   run_loop_.Run();
 
-  EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
-      imageloader::kTerminaComponentName));
-  EXPECT_EQ(termina_installer_.GetInstallLocation(), component_mount_path_);
-  EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaDlcInstallTest, InstallDlcFallbackOffline) {
@@ -400,8 +425,7 @@ TEST_F(TerminaDlcInstallTest,
                              /*is_initial_install=*/false);
   run_loop_.Run();
 
-  EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
-      imageloader::kTerminaComponentName));
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, InstallComponent) {
@@ -412,10 +436,7 @@ TEST_F(TerminaComponentInstallTest, InstallComponent) {
                              /*is_initial_install=*/true);
   run_loop_.Run();
 
-  EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
-      imageloader::kTerminaComponentName));
-  EXPECT_EQ(termina_installer_.GetInstallLocation(), component_mount_path_);
-  EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, InstallComponentOffline) {
@@ -440,11 +461,8 @@ TEST_F(TerminaComponentInstallTest, InstallComponentWithDlcInstalled) {
                              /*is_initial_install=*/true);
   run_loop_.Run();
 
-  EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
-      imageloader::kTerminaComponentName));
-  CheckDlcNotInstalled();
-  EXPECT_EQ(termina_installer_.GetInstallLocation(), component_mount_path_);
-  EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
+  CheckDlcInstallCalledTimes(0);
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, InstallComponentWithDlcInstalledError) {
@@ -457,10 +475,7 @@ TEST_F(TerminaComponentInstallTest, InstallComponentWithDlcInstalledError) {
                              /*is_initial_install=*/true);
   run_loop_.Run();
 
-  EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
-      imageloader::kTerminaComponentName));
-  EXPECT_EQ(termina_installer_.GetInstallLocation(), component_mount_path_);
-  EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, LoadComponentAlreadyInstalled) {
@@ -482,6 +497,7 @@ TEST_F(TerminaComponentInstallTest, LoadComponentAlreadyInstalled) {
       ComponentInfo(ComponentError::NONE, component_install_path_,
                     component_mount_path_));
   run_loop_.Run();
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, LoadComponentInitiallyOffline) {
@@ -522,7 +538,10 @@ TEST_F(TerminaComponentInstallTest, LoadComponentInitiallyOffline) {
       ComponentInfo(ComponentError::NONE, component_install_path_,
                     component_mount_path_));
   run_loop_.Run();
+  ExpectComponentInstalled();
+
   run_loop_2_.Run();
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, ComponentUpdatesOnlyOnce) {
@@ -547,6 +566,8 @@ TEST_F(TerminaComponentInstallTest, ComponentUpdatesOnlyOnce) {
                              /*is_initial_install=*/true);
   EXPECT_FALSE(
       component_manager_->UpdateRequested(imageloader::kTerminaComponentName));
+
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, UpdateComponentErrorRetry) {
@@ -590,7 +611,10 @@ TEST_F(TerminaComponentInstallTest, UpdateComponentErrorRetry) {
                     component_mount_path_));
 
   run_loop_.Run();
+  ExpectComponentInstalled();
+
   run_loop_2_.Run();
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, InstallComponentErrorNoRetry) {
@@ -624,6 +648,7 @@ TEST_F(TerminaComponentInstallTest, InstallComponentErrorNoRetry) {
 
   run_loop_.Run();
   run_loop_2_.Run();
+  ExpectComponentInstalled();
 }
 
 TEST_F(TerminaComponentInstallTest, UpdateInProgressTriggersRetry) {
@@ -653,7 +678,9 @@ TEST_F(TerminaComponentInstallTest, UpdateInProgressTriggersRetry) {
       imageloader::kTerminaComponentName,
       ComponentInfo(ComponentError::NONE, component_install_path_,
                     component_mount_path_));
+
   run_loop_.Run();
+  ExpectComponentInstalled();
 }
 
 }  // namespace crostini

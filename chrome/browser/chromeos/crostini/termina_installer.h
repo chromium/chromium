@@ -66,8 +66,10 @@ class TerminaInstaller {
   base::Optional<std::string> GetDlcId();
 
  private:
-  void InstallDlc(base::OnceCallback<void(InstallResult)> callback);
+  void InstallDlc(base::OnceCallback<void(InstallResult)> callback,
+                  bool is_initial_install);
   void OnInstallDlc(base::OnceCallback<void(InstallResult)> callback,
+                    bool is_initial_install,
                     const chromeos::DlcserviceClient::InstallResult& result);
 
   void InstallComponent(base::OnceCallback<void(InstallResult)> callback);
