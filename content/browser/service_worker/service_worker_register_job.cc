@@ -160,6 +160,7 @@ bool ServiceWorkerRegisterJob::Equals(ServiceWorkerRegisterJobBase* job) const {
     return register_job->scope_ == scope_;
   DCHECK_EQ(REGISTRATION_JOB, job_type_);
   return register_job->scope_ == scope_ &&
+         register_job->update_via_cache_ == update_via_cache_ &&
          register_job->script_url_ == script_url_;
 }
 
