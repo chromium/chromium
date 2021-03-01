@@ -11,4 +11,3 @@ per-file file_manager*=file://chromeos/components/file_manager/OWNERS
 per-file *media_app*=file://chromeos/components/media_app_ui/OWNERS
 per-file terminal*=calamity@chromium.org
 per-file terminal*=joelhockey@chromium.org
-per-file default_web_app_ids.h=jshikaram@chromium.org
