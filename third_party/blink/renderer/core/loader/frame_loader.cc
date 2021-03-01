@@ -243,7 +243,8 @@ void FrameLoader::Trace(Visitor* visitor) const {
   visitor->Trace(last_origin_window_csp_);
 }
 
-void FrameLoader::Init() {
+void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
+  DCHECK(policy_container);
   ScriptForbiddenScope forbid_scripts;
 
   // Load the initial empty document:
@@ -256,7 +257,8 @@ void FrameLoader::Init() {
 
   DocumentLoader* new_document_loader = Client()->CreateDocumentLoader(
       frame_, kWebNavigationTypeOther, CreateCSPForInitialEmptyDocument(),
-      std::move(navigation_params), nullptr /* extra_data */);
+      std::move(navigation_params), std::move(policy_container),
+      nullptr /* extra_data */);
 
   CommitDocumentLoader(new_document_loader, base::nullopt, nullptr,
                        CommitReason::kInitialization);
@@ -1047,14 +1049,6 @@ void FrameLoader::CommitNavigation(
         network::mojom::ContentSecurityPolicySource::kHTTP);
   }
 
-  // The navigation to the initial empty document is committed directly by Blink
-  // and doesn't have a policy container, so we keep the frame's policy
-  // container (which was inherited by the parent/opener) in that case.
-  if (navigation_params->policy_container) {
-    frame_->SetPolicyContainer(PolicyContainer::CreateFromWebPolicyContainer(
-        std::move(navigation_params->policy_container)));
-  }
-
   // If this is a javascript: URL or XSLT commit, we must copy the ExtraData
   // from the previous DocumentLoader to ensure the new DocumentLoader behaves
   // the same way as the previous one.
@@ -1114,11 +1108,20 @@ void FrameLoader::CommitNavigation(
       navigation_params->frame_load_type,
       !navigation_params->http_body.IsNull(), false /* have_event */);
 
+  std::unique_ptr<PolicyContainer> policy_container = nullptr;
+  if (navigation_params->policy_container) {
+    // Javascript and xslt documents should not change the PolicyContainer.
+    DCHECK(commit_reason == CommitReason::kRegular);
+
+    policy_container = PolicyContainer::CreateFromWebPolicyContainer(
+        std::move(navigation_params->policy_container));
+  }
   // TODO(dgozman): get rid of provisional document loader and most of the code
   // below. We should probably call DocumentLoader::CommitNavigation directly.
   DocumentLoader* new_document_loader = Client()->CreateDocumentLoader(
       frame_, navigation_type, content_security_policy,
-      std::move(navigation_params), std::move(extra_data));
+      std::move(navigation_params), std::move(policy_container),
+      std::move(extra_data));
 
   CommitDocumentLoader(new_document_loader, unload_timing,
                        previous_history_item, commit_reason);

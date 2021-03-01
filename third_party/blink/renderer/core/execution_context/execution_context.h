@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/dom_timer_coordinator.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
@@ -290,9 +291,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   void ParseAndSetReferrerPolicy(const String& policy,
                                  ReferrerPolicySource source);
   void SetReferrerPolicy(network::mojom::ReferrerPolicy);
-  virtual network::mojom::ReferrerPolicy GetReferrerPolicy() const {
-    return referrer_policy_;
-  }
+  virtual network::mojom::ReferrerPolicy GetReferrerPolicy() const;
+
+  PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
+  void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
+  std::unique_ptr<PolicyContainer> TakePolicyContainer();
 
   virtual CoreProbeSink* GetProbeSink() { return nullptr; }
 
@@ -351,10 +354,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& source_file = g_empty_string) const {}
 
   String addressSpaceForBindings() const;
-  void SetAddressSpace(network::mojom::IPAddressSpace space) {
-    address_space_ = space;
-  }
-  network::mojom::IPAddressSpace AddressSpace() const { return address_space_; }
+  network::mojom::IPAddressSpace AddressSpace() const;
+  void SetAddressSpace(network::mojom::blink::IPAddressSpace ip_address_space);
 
   HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet() {
     return ContextLifecycleNotifier::observers();
@@ -458,8 +459,14 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // increment and decrement the counter.
   int window_interaction_tokens_;
 
-  network::mojom::ReferrerPolicy referrer_policy_;
+  // The |policy_container_| contains security policies for this
+  // ExecutionContext.
+  std::unique_ptr<PolicyContainer> policy_container_;
 
+  // |referrer_policy_| and |address_space_| are only used if
+  // ||mojom::features::kPolicyContainer| is disabled. Otherwise, the values of
+  // |the policies are stored in |policy_container_|.
+  network::mojom::ReferrerPolicy referrer_policy_;
   network::mojom::blink::IPAddressSpace address_space_;
 
   Member<OriginTrialContext> origin_trial_context_;

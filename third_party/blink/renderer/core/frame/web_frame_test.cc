@@ -13877,9 +13877,10 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
   {
     // 1.<meta name='referrer' content='no-referrer'>
     MockPolicyContainerHost policy_container_host;
-    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
-        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
-        mojom::blink::PolicyContainerPolicies::New()));
+    frame->GetFrame()->DomWindow()->SetPolicyContainer(
+        std::make_unique<PolicyContainer>(
+            policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+            mojom::blink::PolicyContainerPolicies::New()));
     EXPECT_CALL(policy_container_host,
                 SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever));
     frame_test_helpers::LoadHTMLString(
@@ -13894,9 +13895,10 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
   {
     // 2.<meta name='referrer' content='origin'>
     MockPolicyContainerHost policy_container_host;
-    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
-        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
-        mojom::blink::PolicyContainerPolicies::New()));
+    frame->GetFrame()->DomWindow()->SetPolicyContainer(
+        std::make_unique<PolicyContainer>(
+            policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+            mojom::blink::PolicyContainerPolicies::New()));
     EXPECT_CALL(policy_container_host,
                 SetReferrerPolicy(network::mojom::ReferrerPolicy::kOrigin));
     frame_test_helpers::LoadHTMLString(
@@ -13911,9 +13913,10 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
   {
     // 3.Without any declared referrer-policy attribute
     MockPolicyContainerHost policy_container_host;
-    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
-        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
-        mojom::blink::PolicyContainerPolicies::New()));
+    frame->GetFrame()->DomWindow()->SetPolicyContainer(
+        std::make_unique<PolicyContainer>(
+            policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+            mojom::blink::PolicyContainerPolicies::New()));
     EXPECT_CALL(policy_container_host, SetReferrerPolicy(_)).Times(0);
     frame_test_helpers::LoadHTMLString(
         frame, GetHTMLStringForReferrerPolicy(std::string(), std::string()),
@@ -13928,9 +13931,10 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
   {
     // 4.referrerpolicy='origin'
     MockPolicyContainerHost policy_container_host;
-    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
-        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
-        mojom::blink::PolicyContainerPolicies::New()));
+    frame->GetFrame()->DomWindow()->SetPolicyContainer(
+        std::make_unique<PolicyContainer>(
+            policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+            mojom::blink::PolicyContainerPolicies::New()));
     EXPECT_CALL(policy_container_host, SetReferrerPolicy(_)).Times(0);
     frame_test_helpers::LoadHTMLString(
         frame, GetHTMLStringForReferrerPolicy(std::string(), "origin"),
@@ -13944,9 +13948,10 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
   {
     // 5.referrerpolicy='same-origin'
     MockPolicyContainerHost policy_container_host;
-    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
-        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
-        mojom::blink::PolicyContainerPolicies::New()));
+    frame->GetFrame()->DomWindow()->SetPolicyContainer(
+        std::make_unique<PolicyContainer>(
+            policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+            mojom::blink::PolicyContainerPolicies::New()));
     EXPECT_CALL(policy_container_host, SetReferrerPolicy(_)).Times(0);
     frame_test_helpers::LoadHTMLString(
         frame, GetHTMLStringForReferrerPolicy(std::string(), "same-origin"),
@@ -13960,9 +13965,10 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
   {
     // 6.referrerpolicy='no-referrer'
     MockPolicyContainerHost policy_container_host;
-    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
-        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
-        mojom::blink::PolicyContainerPolicies::New()));
+    frame->GetFrame()->DomWindow()->SetPolicyContainer(
+        std::make_unique<PolicyContainer>(
+            policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+            mojom::blink::PolicyContainerPolicies::New()));
     EXPECT_CALL(policy_container_host, SetReferrerPolicy(_)).Times(0);
     frame_test_helpers::LoadHTMLString(
         frame, GetHTMLStringForReferrerPolicy(std::string(), "no-referrer"),

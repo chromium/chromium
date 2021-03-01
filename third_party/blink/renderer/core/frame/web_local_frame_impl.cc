@@ -2021,7 +2021,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   SetCoreFrame(MakeGarbageCollected<LocalFrame>(
       local_frame_client_.Get(), page, owner, parent_frame,
       previous_sibling_frame, insert_type, GetLocalFrameToken(),
-      window_agent_factory, interface_registry_, std::move(policy_container)));
+      window_agent_factory, interface_registry_));
   frame_->Tree().SetName(name);
 
   // See sandbox inheritance: content/browser/renderer_host/sandbox_flags.md
@@ -2041,7 +2041,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
 
   // We must call init() after frame_ is assigned because it is referenced
   // during init().
-  frame_->Init(opener_frame);
+  frame_->Init(opener_frame, std::move(policy_container));
   CHECK(frame_);
   CHECK(frame_->GetDocument()->IsInitialEmptyDocument());
   if (!Parent() && !Opener() &&
@@ -2096,7 +2096,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
 
   // Inherit policy container from parent.
   mojom::blink::PolicyContainerPoliciesPtr policy_container_data =
-      mojo::Clone(GetFrame()->GetPolicyContainer()->GetPolicies());
+      mojo::Clone(GetFrame()->DomWindow()->GetPolicyContainer()->GetPolicies());
   std::unique_ptr<PolicyContainer> policy_container =
       std::make_unique<PolicyContainer>(std::move(policy_container_remote),
                                         std::move(policy_container_data));

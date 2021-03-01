@@ -432,7 +432,11 @@ LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
   return it == local_frames_map.end() ? nullptr : it->value.Get();
 }
 
-void LocalFrame::Init(Frame* opener) {
+void LocalFrame::Init(Frame* opener,
+                      std::unique_ptr<PolicyContainer> policy_container) {
+  if (!policy_container)
+    policy_container = PolicyContainer::CreateEmpty();
+
   CoreInitializer::GetInstance().InitLocalFrame(*this);
 
   GetRemoteNavigationAssociatedInterfaces()->GetInterface(
@@ -458,7 +462,7 @@ void LocalFrame::Init(Frame* opener) {
   }
 
   SetOpenerDoNotNotify(opener);
-  loader_.Init();
+  loader_.Init(std::move(policy_container));
 }
 
 void LocalFrame::SetView(LocalFrameView* view) {
@@ -861,11 +865,6 @@ void LocalFrame::SetOptimizationGuideHints(
         std::move(optimization_guide_hints_
                       ->delay_competing_low_priority_requests_hints));
   }
-}
-
-void LocalFrame::SetPolicyContainer(
-    std::unique_ptr<PolicyContainer> container) {
-  policy_container_ = std::move(container);
 }
 
 void LocalFrame::Reload(WebFrameLoadType load_type) {
@@ -1502,7 +1501,6 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                        const LocalFrameToken& frame_token,
                        WindowAgentFactory* inheriting_agent_factory,
                        InterfaceRegistry* interface_registry,
-                       std::unique_ptr<PolicyContainer> policy_container,
                        const base::TickClock* clock)
     : Frame(client,
             page,
@@ -1537,9 +1535,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                               ? interface_registry
                               : InterfaceRegistry::GetEmptyInterfaceRegistry()),
       is_save_data_enabled_(GetNetworkStateNotifier().SaveDataEnabled()),
-      lifecycle_state_(mojom::FrameLifecycleState::kRunning),
-      policy_container_(policy_container ? std::move(policy_container)
-                                         : PolicyContainer::CreateEmpty()) {
+      lifecycle_state_(mojom::FrameLifecycleState::kRunning) {
   auto frame_tracking_result =
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";

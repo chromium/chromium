@@ -305,6 +305,11 @@ void TestRenderFrame::BeginNavigation(
     auto navigation_params =
         blink::WebNavigationParams::CreateWithHTMLStringForTesting(
             next_navigation_html_override_.value(), info->url_request.Url());
+    MockPolicyContainerHost mock_policy_container_host;
+    navigation_params->policy_container =
+        std::make_unique<blink::WebPolicyContainer>(
+            blink::WebPolicyContainerPolicies(),
+            mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     next_navigation_html_override_ = base::nullopt;
     frame_->CommitNavigation(std::move(navigation_params),
                              nullptr /* extra_data */);
@@ -321,6 +326,11 @@ void TestRenderFrame::BeginNavigation(
     GURL url = info->url_request.Url();
     auto navigation_params =
         blink::WebNavigationParams::CreateFromInfo(*info.get());
+    MockPolicyContainerHost mock_policy_container_host;
+    navigation_params->policy_container =
+        std::make_unique<blink::WebPolicyContainer>(
+            blink::WebPolicyContainerPolicies(),
+            mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     if (!url.IsAboutBlank() && !url.IsAboutSrcdoc()) {
       std::string mime_type, charset, data;
       if (!net::DataURL::Parse(url, &mime_type, &charset, &data)) {

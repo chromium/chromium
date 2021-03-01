@@ -245,7 +245,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       if (!initiator_frame_token) {
         initiator_frame_token = window->GetFrame()->GetLocalFrameToken();
         initiator_policy_container_keep_alive_handle =
-            window->GetFrame()->GetPolicyContainer()->IssueKeepAliveHandle();
+            window->GetPolicyContainer()->IssueKeepAliveHandle();
       }
     }
   }

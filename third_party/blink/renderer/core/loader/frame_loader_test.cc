@@ -5,6 +5,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
@@ -125,7 +126,7 @@ class FrameLoaderTest : public testing::Test {
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
-TEST_F(FrameLoaderTest, PolicyContainerIsStoredInLocalFrameOnCommitNavigation) {
+TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   WebViewImpl* web_view_impl = web_view_helper_.Initialize();
 
   const KURL& url = KURL(NullURL(), "https://www.example.com/bar.html");
@@ -143,7 +144,7 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredInLocalFrameOnCommitNavigation) {
   EXPECT_EQ(mojom::blink::PolicyContainerPolicies::New(
                 network::mojom::ReferrerPolicy::kAlways,
                 network::mojom::IPAddressSpace::kPublic),
-            local_frame->GetPolicyContainer()->GetPolicies());
+            local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
 }
 
 }  // namespace blink

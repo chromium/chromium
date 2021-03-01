@@ -98,11 +98,11 @@ DummyPageHolder::DummyPageHolder(
       /* Frame* previous_sibling */ nullptr,
       FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       /* WindowAgentFactory* */ nullptr,
-      /* InterfaceRegistry* */ nullptr, /* policy_container */ nullptr, clock);
+      /* InterfaceRegistry* */ nullptr, clock);
   frame_->SetView(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);
-  frame_->Init(nullptr);
+  frame_->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 
   CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(), nullptr);
 }

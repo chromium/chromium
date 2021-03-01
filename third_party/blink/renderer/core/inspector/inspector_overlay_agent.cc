@@ -1117,9 +1117,9 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   auto* frame = MakeGarbageCollected<LocalFrame>(
       dummy_local_frame_client, *overlay_page_, nullptr, nullptr, nullptr,
       FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
-      nullptr, /* policy_container */ nullptr);
+      nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
-  frame->Init(nullptr);
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
   frame->View()->SetCanHaveScrollbars(false);
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
 

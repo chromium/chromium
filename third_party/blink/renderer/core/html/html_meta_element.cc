@@ -593,17 +593,6 @@ void HTMLMetaElement::ProcessContent() {
 
     GetExecutionContext()->ParseAndSetReferrerPolicy(content_value,
                                                      kPolicySourceMetaTag);
-    if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
-      LocalFrame* frame = GetDocument().GetFrame();
-      // If frame is null, this document is not attached to a frame, hence it
-      // has no PolicyContainer, so we ignore the next step. This function will
-      // run again anyway, should this document or this element be attached to a
-      // frame.
-      if (frame) {
-        frame->GetPolicyContainer()->UpdateReferrerPolicy(
-            GetExecutionContext()->GetReferrerPolicy());
-      }
-    }
   } else if (EqualIgnoringASCIICase(name_value, "handheldfriendly") &&
              EqualIgnoringASCIICase(content_value, "true")) {
     ProcessViewportContentAttribute("width=device-width",

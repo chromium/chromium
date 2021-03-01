@@ -173,10 +173,18 @@ class CORE_EXPORT LocalFrame final
       const LocalFrameToken& frame_token,
       WindowAgentFactory* inheriting_agent_factory,
       InterfaceRegistry*,
-      std::unique_ptr<blink::PolicyContainer> policy_container,
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
 
-  void Init(Frame* opener);
+  // Initialize the LocalFrame, creating and initializing its LocalDOMWindow.
+  // |policy_container| is used to set the PolicyContainer of the new
+  // LocalDOMWindow. Usually, it is inherited from the parent or the opener: the
+  // inheritance operation is taken care of by the browser (if this LocalFrame
+  // was just created in response to the creation of a RenderFrameHost) or by
+  // blink if this is a synchronously created LocalFrame child. If you pass a
+  // null |policy_container|, it will be initialized to an empty, default one,
+  // which has no PolicyContainerHost counterpart. This is usually safe to do if
+  // this LocalFrame has no corresponding RenderFrameHost.
+  void Init(Frame* opener, std::unique_ptr<PolicyContainer> policy_container);
   void SetView(LocalFrameView*);
   void CreateView(const IntSize&, const Color&);
 
@@ -753,9 +761,6 @@ class CORE_EXPORT LocalFrame final
     return text_fragment_selector_generator_;
   }
 
-  PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
-  void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
-
   WebURLLoader::DeferType GetLoadDeferType();
   bool IsLoadDeferred();
 
@@ -1012,8 +1017,6 @@ class CORE_EXPORT LocalFrame final
   TransientAllowFullscreen transient_allow_fullscreen_;
 
   PaymentRequestToken payment_request_token_;
-
-  std::unique_ptr<PolicyContainer> policy_container_;
 
   bool is_window_controls_overlay_visible_ = false;
   gfx::Rect window_controls_overlay_rect_;

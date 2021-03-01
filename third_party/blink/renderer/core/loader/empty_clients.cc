@@ -118,11 +118,12 @@ DocumentLoader* EmptyLocalFrameClient::CreateDocumentLoader(
     WebNavigationType navigation_type,
     ContentSecurityPolicy* content_security_policy,
     std::unique_ptr<WebNavigationParams> navigation_params,
+    std::unique_ptr<PolicyContainer> policy_container,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   DCHECK(frame);
-  return MakeGarbageCollected<DocumentLoader>(frame, navigation_type,
-                                              content_security_policy,
-                                              std::move(navigation_params));
+  return MakeGarbageCollected<DocumentLoader>(
+      frame, navigation_type, content_security_policy,
+      std::move(navigation_params), std::move(policy_container));
 }
 
 LocalFrame* EmptyLocalFrameClient::CreateFrame(const AtomicString&,

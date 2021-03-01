@@ -395,8 +395,7 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
       /* Frame* previous_sibling */ nullptr,
       FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       window_agent_factory,
-      /* InterfaceRegistry* */ nullptr,
-      /* policy_container */ nullptr);
+      /* InterfaceRegistry* */ nullptr);
   frame->SetPagePopupOwner(popup_client_->OwnerElement());
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
 
@@ -412,7 +411,7 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
         owner_settings->GetAllowUniversalAccessFromFileURLs());
   }
 
-  frame->Init(nullptr);
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
   frame->View()->SetParentVisible(true);
   frame->View()->SetSelfVisible(true);
 

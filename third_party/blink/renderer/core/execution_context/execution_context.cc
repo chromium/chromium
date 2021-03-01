@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/feature_policy/document_policy_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink.h"
@@ -447,15 +448,49 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
   }
 }
 
+network::mojom::ReferrerPolicy ExecutionContext::GetReferrerPolicy() const {
+  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer))
+    return policy_container_->GetReferrerPolicy();
+
+  return referrer_policy_;
+}
+
 void ExecutionContext::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
   // When a referrer policy has already been set, the latest value takes
   // precedence.
   UseCounter::Count(this, WebFeature::kSetReferrerPolicy);
-  if (referrer_policy_ != network::mojom::ReferrerPolicy::kDefault)
+  if (ExecutionContext::GetReferrerPolicy() !=
+      network::mojom::ReferrerPolicy::kDefault)
     UseCounter::Count(this, WebFeature::kResetReferrerPolicy);
 
-  referrer_policy_ = referrer_policy;
+  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer))
+    policy_container_->UpdateReferrerPolicy(referrer_policy);
+  else
+    referrer_policy_ = referrer_policy;
+}
+
+network::mojom::IPAddressSpace ExecutionContext::AddressSpace() const {
+  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer))
+    return policy_container_->GetIPAddressSpace();
+  return address_space_;
+}
+
+void ExecutionContext::SetAddressSpace(
+    network::mojom::blink::IPAddressSpace ip_address_space) {
+  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer))
+    GetPolicyContainer()->SetIPAddressSpace(ip_address_space);
+  else
+    address_space_ = ip_address_space;
+}
+
+void ExecutionContext::SetPolicyContainer(
+    std::unique_ptr<PolicyContainer> container) {
+  policy_container_ = std::move(container);
+}
+
+std::unique_ptr<PolicyContainer> ExecutionContext::TakePolicyContainer() {
+  return std::move(policy_container_);
 }
 
 void ExecutionContext::RemoveURLFromMemoryCache(const KURL& url) {
@@ -562,7 +597,7 @@ bool ExecutionContext::RequireTrustedTypes() const {
 }
 
 String ExecutionContext::addressSpaceForBindings() const {
-  switch (address_space_) {
+  switch (AddressSpace()) {
     case network::mojom::IPAddressSpace::kPublic:
     case network::mojom::IPAddressSpace::kUnknown:
       return "public";

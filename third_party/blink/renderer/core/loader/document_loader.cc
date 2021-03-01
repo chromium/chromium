@@ -179,6 +179,7 @@ struct SameSizeAsDocumentLoader
   Vector<KURL> redirect_chain;
   Member<MHTMLArchive> archive;
   std::unique_ptr<WebNavigationParams> params;
+  std::unique_ptr<PolicyContainer> policy_container;
   KURL url;
   AtomicString http_method;
   Referrer referrer;
@@ -269,8 +270,10 @@ DocumentLoader::DocumentLoader(
     LocalFrame* frame,
     WebNavigationType navigation_type,
     ContentSecurityPolicy* content_security_policy,
-    std::unique_ptr<WebNavigationParams> navigation_params)
+    std::unique_ptr<WebNavigationParams> navigation_params,
+    std::unique_ptr<PolicyContainer> policy_container)
     : params_(std::move(navigation_params)),
+      policy_container_(std::move(policy_container)),
       url_(params_->url),
       http_method_(static_cast<String>(params_->http_method)),
       referrer_(Referrer(params_->referrer.IsEmpty()
@@ -1804,6 +1807,12 @@ bool ShouldInheritExplicitOriginKeying(const KURL& url, CommitReason reason) {
 }
 
 void DocumentLoader::InitializeWindow(Document* owner_document) {
+  // Javascript URLs and XSLT committed document must not pass a new
+  // policy_container_, since they must keep the previous document one.
+  DCHECK((commit_reason_ != CommitReason::kJavascriptUrl &&
+          commit_reason_ != CommitReason::kXSLT) ||
+         !policy_container_);
+
   // Provisional frames shouldn't be doing anything other than act as a
   // placeholder. Enforce a strict sandbox and ensure a unique opaque origin.
   // TODO(dcheng): Actually enforce strict sandbox flags for provisional frame.
@@ -1822,6 +1831,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     origin_agent_cluster =
         owner_document->domWindow()->GetAgent()->IsExplicitlyOriginKeyed();
   }
+
   // In some rare cases, we'll re-use a LocalDOMWindow for a new Document. For
   // example, when a script calls window.open("..."), the browser gives
   // JavaScript a window synchronously but kicks off the load in the window
@@ -1831,6 +1841,20 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // LocalDOMWindow to the Document that results from the network load. See also
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get())) {
+    if (!policy_container_) {
+      // DocumentLoader::InitializeWindow is called either on FrameLoader::Init
+      // or on FrameLoader::CommitNavigation. FrameLoader::Init always
+      // initializes a non null |policy_container_|. So this is committing a
+      // navigation without a policy container. This can happen in a few
+      // circumstances, for example for a javascript or a xslt document, or when
+      // loading html in a page for testing (however notice that all navigations
+      // committed by the browser have a non null |policy_container_|). In all
+      // those cases, we should keep the PolicyContainer of the previous
+      // document (since the browser does not know about this and is not
+      // changing the RenderFrameHost's PolicyContainerHost).
+      policy_container_ = frame_->DomWindow()->TakePolicyContainer();
+    }
+
     auto* agent = GetWindowAgentForOrigin(frame_.Get(), security_origin.get(),
                                           origin_agent_cluster);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
@@ -1865,6 +1889,28 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     frame_->DomWindow()->ClearForReuse();
   }
 
+  if (policy_container_) {
+    frame_->DomWindow()->SetPolicyContainer(std::move(policy_container_));
+  } else {
+    // This branch should only be taken if one of two things are true:
+    // 1. JS called window.open(), Blink created a new auxiliary browsing
+    //    context, and the target URL is resolved to 'about:blank'.
+    // 2. A new iframe is attached, and the target URL is resolved to
+    //    'about:blank'.
+    // In these cases, Blink immediately synchronously navigates to
+    // about:blank after creating the new browsing context and has initialized
+    // it with the initial empty document. In those cases, we must not pass a
+    // PolicyContainer, as this does not trigger a corresponding browser-side
+    // navigation, and we must reuse the PolicyContainer.
+    //
+    // TODO(antoniosartori): Improve this DCHECK to match exactly the condition
+    // above.
+    DCHECK(WillLoadUrlAsEmpty(Url()));
+  }
+
+  // Every window must have a policy container.
+  DCHECK(frame_->DomWindow()->GetPolicyContainer());
+
   // Now that we have the final window and Agent, ensure the security origin has
   // the appropriate agent cluster id. This may derive a new security origin.
   security_origin = security_origin->GetOriginForAgentCluster(
@@ -1889,25 +1935,12 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       security_context.AddInsecureNavigationUpgrade(to_upgrade);
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
-    frame_->DomWindow()->SetReferrerPolicy(
-        frame_->GetPolicyContainer()->GetReferrerPolicy());
-    frame_->DomWindow()->SetAddressSpace(
-        frame_->GetPolicyContainer()->GetIPAddressSpace());
-  }
-
   String referrer_policy_header =
       response_.HttpHeaderField(http_names::kReferrerPolicy);
   if (!referrer_policy_header.IsNull()) {
     CountUse(WebFeature::kReferrerPolicyHeader);
     frame_->DomWindow()->ParseAndSetReferrerPolicy(referrer_policy_header,
                                                    kPolicySourceHttpHeader);
-    if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
-      if (frame_->GetPolicyContainer()) {
-        frame_->GetPolicyContainer()->UpdateReferrerPolicy(
-            frame_->DomWindow()->GetReferrerPolicy());
-      }
-    }
   }
 }
 

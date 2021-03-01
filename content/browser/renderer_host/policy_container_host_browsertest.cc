@@ -131,54 +131,6 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, CopiedFromPopupOpener) {
     EXPECT_EQ(origin_referrer_page.GetWithEmptyPath(),
               EvalJs(popup_frame, "document.referrer;"));
   }
-
-  // Taint the RFH PolicyContainerHost with (referrer-policy: same-origin).
-  // This is not the same as the one in the renderer
-  // (referrer-policy: origin).
-  // This is not possible in a normal situation, but could occur if the
-  // renderer was compromised.
-  // This will enable the following test, which verifies that the copied policy
-  // comes from the browser.
-  static_cast<blink::mojom::PolicyContainerHost*>(
-      current_frame_host()->policy_container_host())
-      ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kSameOrigin);
-  // Repeat the two previous tests with the tainted Policy ContainerHost:
-  {
-    // Open a popup on a document that inherits the Policy Container and verify
-    // its Policy Container value. The policy container must be copied within
-    // the browser process thus the tainted value should be obtained
-    // (referrer-policy: same-origin).
-    ShellAddedObserver shell_observer;
-    ASSERT_TRUE(ExecJs(current_frame_host(), "window.open('about:blank');"));
-    WebContentsImpl* popup_webcontents = static_cast<WebContentsImpl*>(
-        shell_observer.GetShell()->web_contents());
-    RenderFrameHostImpl* popup_frame =
-        popup_webcontents->GetFrameTree()->root()->current_frame_host();
-    EXPECT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
-              popup_frame->policy_container_host()->referrer_policy());
-  }
-  {
-    // Open a popup that navigates to another document, the initial empty
-    // document should inherit the tainted policy container within the browser
-    // process (referrer-policy: same-origin), and the blink value
-    // (referrer-policy: origin) should be ignored.
-    ShellAddedObserver shell_observer;
-    ASSERT_TRUE(ExecJs(current_frame_host(),
-                       JsReplace("window.open($1);", no_referrer_page)));
-    WebContentsImpl* popup_webcontents = static_cast<WebContentsImpl*>(
-        shell_observer.GetShell()->web_contents());
-    WaitForLoadStop(popup_webcontents);
-    RenderFrameHostImpl* popup_frame =
-        popup_webcontents->GetFrameTree()->root()->current_frame_host();
-    EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
-              popup_frame->policy_container_host()->referrer_policy());
-
-    // The referrer policy used to determine the referrer comes from blink,
-    // resulting in the origin referrer policy being applied instead of the
-    // SameOrigin one from browser.
-    EXPECT_EQ(origin_referrer_page.GetWithEmptyPath(),
-              EvalJs(popup_frame, "document.referrer;"));
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, CopiedFromParent) {

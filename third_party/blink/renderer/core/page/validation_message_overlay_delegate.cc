@@ -163,10 +163,9 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   auto* frame = MakeGarbageCollected<LocalFrame>(
       MakeGarbageCollected<EmptyLocalFrameClient>(), *page_, nullptr, nullptr,
       nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
-      nullptr, nullptr,
-      /* policy_container */ nullptr);
+      nullptr, nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame, view_size));
-  frame->Init(nullptr);
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
   frame->View()->SetCanHaveScrollbars(false);
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
   page_->GetVisualViewport().SetSize(view_size);

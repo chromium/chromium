@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/feature_policy/policy_helper.h"
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/use_counter_helper.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
@@ -111,7 +112,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   DocumentLoader(LocalFrame*,
                  WebNavigationType navigation_type,
                  ContentSecurityPolicy* content_security_policy,
-                 std::unique_ptr<WebNavigationParams> navigation_params);
+                 std::unique_ptr<WebNavigationParams> navigation_params,
+                 std::unique_ptr<PolicyContainer> policy_container);
   ~DocumentLoader() override;
 
   // Returns WebNavigationParams that can be used to clone DocumentLoader. Used
@@ -452,6 +454,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.
   std::unique_ptr<WebNavigationParams> params_;
+
+  // The policy container to be moved into the window at initialization time. We
+  // need this and cannot use params_->policy_container because the latter has
+  // type WebPolicyContainer, and we want to avoid a back-and-forth type
+  // conversion.
+  std::unique_ptr<PolicyContainer> policy_container_;
 
   // These fields are copied from WebNavigationParams, see there for definition.
   KURL url_;

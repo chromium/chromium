@@ -364,13 +364,11 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   std::unique_ptr<TestWebFrameClient> owned_web_frame_client;
   web_frame_client =
       CreateDefaultClientIfNeeded(web_frame_client, owned_web_frame_client);
-  MockPolicyContainerHost mock_policy_container_host;
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
       web_view_, web_frame_client, nullptr, LocalFrameToken(),
-      std::make_unique<WebPolicyContainer>(
-          WebPolicyContainerPolicies(),
-          mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),
-      opener);
+      // Passing a null policy_container will create an empty, default policy
+      // container.
+      /*policy_container=*/nullptr, opener);
   web_frame_client->Bind(frame, std::move(owned_web_frame_client));
 
   TestWebFrameWidget* frame_widget =
@@ -700,6 +698,10 @@ void TestWebFrameClient::CommitNavigation(
   if (!frame_)
     return;
   auto params = WebNavigationParams::CreateFromInfo(*info);
+  MockPolicyContainerHost mock_policy_container_host;
+  params->policy_container = std::make_unique<WebPolicyContainer>(
+      WebPolicyContainerPolicies(),
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
   if (info->archive_status != WebNavigationInfo::ArchiveStatus::Present)
     FillNavigationParamsResponse(params.get());
   frame_->CommitNavigation(std::move(params), nullptr /* extra_data */);

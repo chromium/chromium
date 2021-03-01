@@ -233,6 +233,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       WebNavigationType,
       ContentSecurityPolicy*,
       std::unique_ptr<WebNavigationParams> navigation_params,
+      std::unique_ptr<PolicyContainer> policy_container,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
   virtual void UpdateDocumentLoader(

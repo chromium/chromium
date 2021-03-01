@@ -127,11 +127,13 @@ WebDocumentLoaderImpl::WebDocumentLoaderImpl(
     LocalFrame* frame,
     WebNavigationType navigation_type,
     ContentSecurityPolicy* content_security_policy,
-    std::unique_ptr<WebNavigationParams> navigation_params)
+    std::unique_ptr<WebNavigationParams> navigation_params,
+    std::unique_ptr<PolicyContainer> policy_container)
     : DocumentLoader(frame,
                      navigation_type,
                      content_security_policy,
-                     std::move(navigation_params)),
+                     std::move(navigation_params),
+                     std::move(policy_container)),
       response_wrapper_(DocumentLoader::GetResponse()) {}
 
 WebDocumentLoaderImpl::~WebDocumentLoaderImpl() {

@@ -337,7 +337,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       form->GetDocument().domWindow(),
       form->GetDocument().GetFrame()->GetLocalFrameToken(),
       form->GetDocument()
-          .GetFrame()
+          .domWindow()
           ->GetPolicyContainer()
           ->IssueKeepAliveHandle());
 }

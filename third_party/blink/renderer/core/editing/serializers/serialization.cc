@@ -791,14 +791,13 @@ static Document* CreateStagingDocumentForMarkupSanitization(
       nullptr,  // Frame* previous_sibling
       FrameInsertType::kInsertInConstructor, blink::LocalFrameToken(),
       nullptr,  // WindowAgentFactory*
-      nullptr,  // InterfaceRegistry*
-      nullptr   // policy_container
+      nullptr   // InterfaceRegistry*
   );
   // Don't leak the actual viewport size to unsanitized markup
   LocalFrameView* frame_view =
       MakeGarbageCollected<LocalFrameView>(*frame, IntSize(800, 600));
   frame->SetView(frame_view);
-  frame->Init(nullptr);
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 
   Document* document = frame->GetDocument();
   DCHECK(document);

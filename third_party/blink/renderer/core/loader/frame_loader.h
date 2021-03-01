@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -81,7 +82,7 @@ class CORE_EXPORT FrameLoader final {
   explicit FrameLoader(LocalFrame*);
   ~FrameLoader();
 
-  void Init();
+  void Init(std::unique_ptr<PolicyContainer> policy_container);
 
   ResourceRequest ResourceRequestForReload(
       WebFrameLoadType,
