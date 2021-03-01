@@ -246,11 +246,11 @@ int FileHandlerManager::CleanupAfterOriginTrials() {
 const base::Optional<GURL> FileHandlerManager::GetMatchingFileHandlerURL(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
-  if (!IsFileHandlingAPIAvailable(app_id))
+  if (!IsFileHandlingAPIAvailable(app_id) || launch_files.empty())
     return base::nullopt;
 
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
-  if (!file_handlers || launch_files.empty())
+  if (!file_handlers)
     return base::nullopt;
 
   std::set<std::string> launch_file_extensions;
@@ -267,7 +267,7 @@ const base::Optional<GURL> FileHandlerManager::GetMatchingFileHandlerURL(
     std::set<std::string> supported_file_extensions =
         apps::GetFileExtensionsFromFileHandlers({file_handler});
     for (const auto& file_extension : launch_file_extensions) {
-      if (!supported_file_extensions.count(file_extension)) {
+      if (!base::Contains(supported_file_extensions, file_extension)) {
         all_launch_file_extensions_supported = false;
         break;
       }
