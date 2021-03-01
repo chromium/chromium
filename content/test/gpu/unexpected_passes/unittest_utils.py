@@ -4,6 +4,7 @@
 """Helper methods for unittests."""
 
 from unexpected_passes import data_types
+from unexpected_passes import queries
 
 
 def CreateStatsWithPassFails(passes, fails):
@@ -13,6 +14,17 @@ def CreateStatsWithPassFails(passes, fails):
   for i in xrange(fails):
     stats.AddFailedBuild('build_id%d' % i)
   return stats
+
+
+def CreateGenericQuerier(suite=None,
+                         project=None,
+                         num_samples=None,
+                         large_query_mode=None):
+  suite = suite or 'pixel'
+  project = project or 'project'
+  num_samples = num_samples or 5
+  large_query_mode = large_query_mode or False
+  return queries.BigQueryQuerier(suite, project, num_samples, large_query_mode)
 
 
 class FakePool(object):

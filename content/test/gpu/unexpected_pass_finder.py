@@ -166,20 +166,18 @@ def main():
       args.expectation_file, args.tests)
   ci_builders = builders.GetCiBuilders(
       SUITE_TO_TELEMETRY_SUITE_MAP.get(args.suite, args.suite))
+
+  querier = queries.BigQueryQuerier(args.suite, args.project, args.num_samples,
+                                    args.large_query_mode)
   # Unmatched results are mainly useful for script maintainers, as they don't
   # provide any additional information for the purposes of finding unexpectedly
   # passing tests or unused expectations.
-  unmatched = queries.FillExpectationMapForCiBuilders(test_expectation_map,
-                                                      ci_builders, args.suite,
-                                                      args.project,
-                                                      args.num_samples,
-                                                      args.large_query_mode)
+  unmatched = querier.FillExpectationMapForCiBuilders(test_expectation_map,
+                                                      ci_builders)
   try_builders = builders.GetTryBuilders(ci_builders)
   unmatched.update(
-      queries.FillExpectationMapForTryBuilders(test_expectation_map,
-                                               try_builders, args.suite,
-                                               args.project, args.num_samples,
-                                               args.large_query_mode))
+      querier.FillExpectationMapForTryBuilders(test_expectation_map,
+                                               try_builders))
   unused_expectations = expectations.FilterOutUnusedExpectations(
       test_expectation_map)
   stale, semi_stale, active = expectations.SplitExpectationsByStaleness(

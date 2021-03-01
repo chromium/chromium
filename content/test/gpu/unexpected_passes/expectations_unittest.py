@@ -453,5 +453,461 @@ crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable
         ), 'foo')
 
 
+class AddResultToMapUnittest(unittest.TestCase):
+  def testResultMatchPassingNew(self):
+    """Test adding a passing result when no results for a builder exist."""
+    r = data_types.Result('some/test/case', ['win', 'win10'], 'Pass',
+                          'pixel_tests', 'build_id')
+    e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
+    expectation_map = {
+        'some/test/*': {
+            e: {},
+        },
+    }
+    found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
+    self.assertTrue(found_matching)
+    stats = data_types.BuildStats()
+    stats.AddPassedBuild()
+    expected_expectation_map = {
+        'some/test/*': {
+            e: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            },
+        },
+    }
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testResultMatchFailingNew(self):
+    """Test adding a failing result when no results for a builder exist."""
+    r = data_types.Result('some/test/case', ['win', 'win10'], 'Failure',
+                          'pixel_tests', 'build_id')
+    e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
+    expectation_map = {
+        'some/test/*': {
+            e: {},
+        },
+    }
+    found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
+    self.assertTrue(found_matching)
+    stats = data_types.BuildStats()
+    stats.AddFailedBuild('build_id')
+    expected_expectation_map = {
+        'some/test/*': {
+            e: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            }
+        }
+    }
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testResultMatchPassingExisting(self):
+    """Test adding a passing result when results for a builder exist."""
+    r = data_types.Result('some/test/case', ['win', 'win10'], 'Pass',
+                          'pixel_tests', 'build_id')
+    e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
+    stats = data_types.BuildStats()
+    stats.AddFailedBuild('build_id')
+    expectation_map = {
+        'some/test/*': {
+            e: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            },
+        },
+    }
+    found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
+    self.assertTrue(found_matching)
+    stats = data_types.BuildStats()
+    stats.AddFailedBuild('build_id')
+    stats.AddPassedBuild()
+    expected_expectation_map = {
+        'some/test/*': {
+            e: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            },
+        },
+    }
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testResultMatchFailingExisting(self):
+    """Test adding a failing result when results for a builder exist."""
+    r = data_types.Result('some/test/case', ['win', 'win10'], 'Failure',
+                          'pixel_tests', 'build_id')
+    e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
+    stats = data_types.BuildStats()
+    stats.AddPassedBuild()
+    expectation_map = {
+        'some/test/*': {
+            e: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            },
+        },
+    }
+    found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
+    self.assertTrue(found_matching)
+    stats = data_types.BuildStats()
+    stats.AddFailedBuild('build_id')
+    stats.AddPassedBuild()
+    expected_expectation_map = {
+        'some/test/*': {
+            e: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            },
+        },
+    }
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testResultMatchMultiMatch(self):
+    """Test adding a passing result when multiple expectations match."""
+    r = data_types.Result('some/test/case', ['win', 'win10'], 'Pass',
+                          'pixel_tests', 'build_id')
+    e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
+    e2 = data_types.Expectation('some/test/case', ['win10'], 'Failure')
+    expectation_map = {
+        'some/test/*': {
+            e: {},
+            e2: {},
+        },
+    }
+    found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
+    self.assertTrue(found_matching)
+    stats = data_types.BuildStats()
+    stats.AddPassedBuild()
+    expected_expectation_map = {
+        'some/test/*': {
+            e: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            },
+            e2: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            }
+        }
+    }
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testResultNoMatch(self):
+    """Tests that a result is not added if no match is found."""
+    r = data_types.Result('some/test/case', ['win', 'win10'], 'Failure',
+                          'pixel_tests', 'build_id')
+    e = data_types.Expectation('some/test/*', ['win10', 'foo'], 'Failure')
+    expectation_map = {'some/test/*': {e: {}}}
+    found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
+    self.assertFalse(found_matching)
+    expected_expectation_map = {'some/test/*': {e: {}}}
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+
+class AddResultListToMapUnittest(unittest.TestCase):
+  def GetGenericRetryExpectation(self):
+    return data_types.Expectation('foo/test', ['win10'], 'RetryOnFailure')
+
+  def GetGenericFailureExpectation(self):
+    return data_types.Expectation('foo/test', ['win10'], 'Failure')
+
+  def GetEmptyMapForGenericRetryExpectation(self):
+    foo_expectation = self.GetGenericRetryExpectation()
+    return {
+        'foo/test': {
+            foo_expectation: {},
+        },
+    }
+
+  def GetEmptyMapForGenericFailureExpectation(self):
+    foo_expectation = self.GetGenericFailureExpectation()
+    return {
+        'foo/test': {
+            foo_expectation: {},
+        },
+    }
+
+  def GetPassedMapForExpectation(self, expectation):
+    stats = data_types.BuildStats()
+    stats.AddPassedBuild()
+    return self.GetMapForExpectationAndStats(expectation, stats)
+
+  def GetFailedMapForExpectation(self, expectation):
+    stats = data_types.BuildStats()
+    stats.AddFailedBuild('build_id')
+    return self.GetMapForExpectationAndStats(expectation, stats)
+
+  def GetMapForExpectationAndStats(self, expectation, stats):
+    return {
+        expectation.test: {
+            expectation: {
+                'builder': {
+                    'pixel_tests': stats,
+                },
+            },
+        },
+    }
+
+  def testRetryOnlyPassMatching(self):
+    """Tests when the only tests are retry expectations that pass and match."""
+    foo_result = data_types.Result('foo/test', ['win10'], 'Pass', 'pixel_tests',
+                                   'build_id')
+    expectation_map = self.GetEmptyMapForGenericRetryExpectation()
+    unmatched_results = expectations.AddResultListToMap(expectation_map,
+                                                        'builder', [foo_result])
+    self.assertEqual(unmatched_results, [])
+
+    expected_expectation_map = self.GetPassedMapForExpectation(
+        self.GetGenericRetryExpectation())
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testRetryOnlyFailMatching(self):
+    """Tests when the only tests are retry expectations that fail and match."""
+    foo_result = data_types.Result('foo/test', ['win10'], 'Failure',
+                                   'pixel_tests', 'build_id')
+    expectation_map = self.GetEmptyMapForGenericRetryExpectation()
+    unmatched_results = expectations.AddResultListToMap(expectation_map,
+                                                        'builder', [foo_result])
+    self.assertEqual(unmatched_results, [])
+
+    expected_expectation_map = self.GetFailedMapForExpectation(
+        self.GetGenericRetryExpectation())
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testRetryFailThenPassMatching(self):
+    """Tests when there are pass and fail results for retry expectations."""
+    foo_fail_result = data_types.Result('foo/test', ['win10'], 'Failure',
+                                        'pixel_tests', 'build_id')
+    foo_pass_result = data_types.Result('foo/test', ['win10'], 'Pass',
+                                        'pixel_tests', 'build_id')
+    expectation_map = self.GetEmptyMapForGenericRetryExpectation()
+    unmatched_results = expectations.AddResultListToMap(
+        expectation_map, 'builder', [foo_fail_result, foo_pass_result])
+    self.assertEqual(unmatched_results, [])
+
+    expected_expectation_map = self.GetFailedMapForExpectation(
+        self.GetGenericRetryExpectation())
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testFailurePassMatching(self):
+    """Tests when there are pass results for failure expectations."""
+    foo_result = data_types.Result('foo/test', ['win10'], 'Pass', 'pixel_tests',
+                                   'build_id')
+    expectation_map = self.GetEmptyMapForGenericFailureExpectation()
+    unmatched_results = expectations.AddResultListToMap(expectation_map,
+                                                        'builder', [foo_result])
+    self.assertEqual(unmatched_results, [])
+
+    expected_expectation_map = self.GetPassedMapForExpectation(
+        self.GetGenericFailureExpectation())
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testFailureFailureMatching(self):
+    """Tests when there are failure results for failure expectations."""
+    foo_result = data_types.Result('foo/test', ['win10'], 'Failure',
+                                   'pixel_tests', 'build_id')
+    expectation_map = self.GetEmptyMapForGenericFailureExpectation()
+    unmatched_results = expectations.AddResultListToMap(expectation_map,
+                                                        'builder', [foo_result])
+    self.assertEqual(unmatched_results, [])
+
+    expected_expectation_map = self.GetFailedMapForExpectation(
+        self.GetGenericFailureExpectation())
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testMismatches(self):
+    """Tests that unmatched results get returned."""
+    foo_match_result = data_types.Result('foo/test', ['win10'], 'Pass',
+                                         'pixel_tests', 'build_id')
+    foo_mismatch_result = data_types.Result('foo/not_a_test', ['win10'],
+                                            'Failure', 'pixel_tests',
+                                            'build_id')
+    bar_result = data_types.Result('bar/test', ['win10'], 'Pass', 'pixel_tests',
+                                   'build_id')
+    expectation_map = self.GetEmptyMapForGenericFailureExpectation()
+    unmatched_results = expectations.AddResultListToMap(
+        expectation_map, 'builder',
+        [foo_match_result, foo_mismatch_result, bar_result])
+    self.assertEqual(len(set(unmatched_results)), 2)
+    self.assertEqual(set(unmatched_results),
+                     set([foo_mismatch_result, bar_result]))
+
+    expected_expectation_map = self.GetPassedMapForExpectation(
+        self.GetGenericFailureExpectation())
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+
+class MergeExpectationMapsUnittest(unittest.TestCase):
+  maxDiff = None
+
+  def testEmptyBaseMap(self):
+    """Tests that a merge with an empty base map copies the merge map."""
+    base_map = {}
+    merge_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    original_merge_map = copy.deepcopy(merge_map)
+    expectations.MergeExpectationMaps(base_map, merge_map)
+    self.assertEqual(base_map, merge_map)
+    self.assertEqual(merge_map, original_merge_map)
+
+  def testEmptyMergeMap(self):
+    """Tests that a merge with an empty merge map is a no-op."""
+    base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    merge_map = {}
+    original_base_map = copy.deepcopy(base_map)
+    expectations.MergeExpectationMaps(base_map, merge_map)
+    self.assertEqual(base_map, original_base_map)
+    self.assertEqual(merge_map, {})
+
+  def testMissingKeys(self):
+    """Tests that missing keys are properly copied to the base map."""
+    base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    merge_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step2': data_types.BuildStats(),
+                },
+                'builder2': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+            data_types.Expectation('foo', ['mac'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                }
+            }
+        },
+        'bar': {
+            data_types.Expectation('bar', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    expected_base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                    'step2': data_types.BuildStats(),
+                },
+                'builder2': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+            data_types.Expectation('foo', ['mac'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                }
+            }
+        },
+        'bar': {
+            data_types.Expectation('bar', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    expectations.MergeExpectationMaps(base_map, merge_map)
+    self.assertEqual(base_map, expected_base_map)
+
+  def testMergeBuildStats(self):
+    """Tests that BuildStats for the same step are merged properly."""
+    base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    merge_stats = data_types.BuildStats()
+    merge_stats.AddFailedBuild('1')
+    merge_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': merge_stats,
+                },
+            },
+        },
+    }
+    expected_stats = data_types.BuildStats()
+    expected_stats.AddFailedBuild('1')
+    expected_base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': expected_stats,
+                },
+            },
+        },
+    }
+    expectations.MergeExpectationMaps(base_map, merge_map)
+    self.assertEqual(base_map, expected_base_map)
+
+  def testInvalidMerge(self):
+    """Tests that updating a BuildStats instance twice is an error."""
+    base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    merge_stats = data_types.BuildStats()
+    merge_stats.AddFailedBuild('1')
+    merge_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': merge_stats,
+                },
+            },
+        },
+    }
+    original_base_map = copy.deepcopy(base_map)
+    expectations.MergeExpectationMaps(base_map, merge_map, original_base_map)
+    with self.assertRaises(AssertionError):
+      expectations.MergeExpectationMaps(base_map, merge_map, original_base_map)
+
+
 if __name__ == '__main__':
   unittest.main(verbosity=2)

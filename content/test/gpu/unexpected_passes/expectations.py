@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Methods related to test expectations/expectation files."""
 
+import copy
 import logging
 
 import validate_tag_consistency
@@ -276,6 +277,129 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
     f.write(output_contents)
 
   return removed_urls
+
+
+def MergeExpectationMaps(base_map, merge_map, reference_map=None):
+  """Merges |merge_map| into |base_map|.
+
+  Args:
+    base_map: A dict to be updated with the contents of |merge_map|. Will be
+        modified in place.
+    merge_map: A dict in the format returned by
+        expectations.CreateTestExpectationMap() whose contents will be merged
+        into |base_map|.
+    reference_map: A dict containing the information that was originally in
+        |base_map|. Used for ensuring that a single expectation/builder/step
+        combination is only ever updated once. If None, a copy of |base_map|
+        will be used.
+  """
+  # We should only ever encounter a single updated BuildStats for an
+  # expectation/builder/step combination. Use the reference map to determine
+  # if a particular BuildStats has already been updated or not.
+  reference_map = reference_map or copy.deepcopy(base_map)
+  for key, value in merge_map.iteritems():
+    if key not in base_map:
+      base_map[key] = value
+    else:
+      if isinstance(value, dict):
+        MergeExpectationMaps(base_map[key], value, reference_map.get(key, {}))
+      else:
+        assert isinstance(value, data_types.BuildStats)
+        # Ensure we haven't updated this BuildStats already. If the reference
+        # map doesn't have a corresponding BuildStats, then base_map shouldn't
+        # have initially either, and thus it would have been added before
+        # reaching this point. Otherwise, the two values must match, meaning
+        # that base_map's BuildStats hasn't been updated yet.
+        reference_stats = reference_map.get(key, None)
+        assert reference_stats is not None
+        assert reference_stats == base_map[key]
+        base_map[key] = value
+
+
+def AddResultListToMapMultiprocessing(inputs):
+  """Version of AddResultListToMap meant for multiprocessing.
+
+  Since parallel map() methods typically take an iterable of iterables, we need
+  to expand the inner iterable into arguments to actually use the underlying
+  method.
+  """
+  expectation_map, builder_type, builder_name, results = inputs
+  prefixed_builder_name = '%s:%s' % (builder_type, builder_name)
+  unmatched_results = AddResultListToMap(expectation_map, prefixed_builder_name,
+                                         results)
+  return unmatched_results, prefixed_builder_name, expectation_map
+
+
+def AddResultListToMap(expectation_map, builder, results):
+  """Adds |results| to |expectation_map|.
+
+  Args:
+    expectation_map: A dict in the format returned by
+        expectations.CreateTestExpectationMap(). Will be modified in-place.
+    builder: A string containing the builder |results| came from. Should be
+        prefixed with something to distinguish between identically named CI and
+        try builders.
+    results: A list of data_types.Result objects corresponding to the ResultDB
+        data queried for |builder|.
+
+  Returns:
+    A list of data_types.Result objects who did not have a matching expectation
+    in |expectation_map|.
+  """
+  failure_results = set()
+  pass_results = set()
+  unmatched_results = []
+  for r in results:
+    if r.actual_result == 'Pass':
+      pass_results.add(r)
+    else:
+      failure_results.add(r)
+
+  # Remove any cases of failure -> pass from the passing set. If a test is
+  # flaky, we get both pass and failure results for it, so we need to remove the
+  # any cases of a pass result having a corresponding, earlier failure result.
+  modified_failing_retry_results = set()
+  for r in failure_results:
+    modified_failing_retry_results.add(
+        data_types.Result(r.test, r.tags, 'Pass', r.step, r.build_id))
+  pass_results -= modified_failing_retry_results
+
+  for r in pass_results | failure_results:
+    found_matching = _AddResultToMap(r, builder, expectation_map)
+    if not found_matching:
+      unmatched_results.append(r)
+
+  return unmatched_results
+
+
+def _AddResultToMap(result, builder, expectation_map):
+  """Adds a single |result| to |expectation_map|.
+
+  Args:
+    result: A data_types.Result object to add.
+    builder: A string containing the name of the builder |result| came from.
+    expectation_map: A dict in the format returned by
+        expectations.CreateTestExpectationMap(). Will be modified in-place.
+
+  Returns:
+    True if an expectation in |expectation_map| applied to |result|, otherwise
+    False.
+  """
+  found_matching_expectation = False
+  # We need to use fnmatch since wildcards are supported, so there's no point in
+  # checking the test name key right now. The AppliesToResult check already does
+  # an fnmatch check.
+  for expectations in expectation_map.itervalues():
+    for e, builder_map in expectations.iteritems():
+      if e.AppliesToResult(result):
+        found_matching_expectation = True
+        step_map = builder_map.setdefault(builder, {})
+        stats = step_map.setdefault(result.step, data_types.BuildStats())
+        if result.actual_result == 'Pass':
+          stats.AddPassedBuild()
+        else:
+          stats.AddFailedBuild(result.build_id)
+  return found_matching_expectation
 
 
 def _GetDisableReasonFromComment(line):
