@@ -93,7 +93,7 @@ public interface NativePage {
 
     @IntDef({NativePageType.NONE, NativePageType.CANDIDATE, NativePageType.NTP,
             NativePageType.BOOKMARKS, NativePageType.RECENT_TABS, NativePageType.DOWNLOADS,
-            NativePageType.HISTORY, NativePageType.EXPLORE})
+            NativePageType.HISTORY, NativePageType.EXPLORE, NativePageType.LAUNCHPAD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface NativePageType {
         int NONE = 0;
@@ -104,6 +104,7 @@ public interface NativePage {
         int DOWNLOADS = 5;
         int HISTORY = 6;
         int EXPLORE = 7;
+        int LAUNCHPAD = 8;
     }
 
     /**
@@ -151,6 +152,8 @@ public interface NativePage {
             return NativePageType.RECENT_TABS;
         } else if (UrlConstants.EXPLORE_HOST.equals(host)) {
             return NativePageType.EXPLORE;
+        } else if (UrlConstants.LAUNCHPAD_HOST.equals(host)) {
+            return NativePageType.LAUNCHPAD;
         } else {
             return NativePageType.NONE;
         }

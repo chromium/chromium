@@ -3671,6 +3671,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_WEBAPK_NETWORK_ERROR_MESSAGE_TUNNEL_CONNECTION_FAILED" desc="The error message for ERROR_TUNNEL_CONNECTION_FAILED.">
         Establishing a tunnel via proxy server failed
       </message>
+      <message name="IDS_LAUNCHPAD_TITLE" desc="Title of WebAPKs launchpad page">
+        Apps
+      </message>
 
       <!-- Keyboard shortcuts in Android N-->
       <message name="IDS_KEYBOARD_SHORTCUT_OPEN_NEW_TAB" desc="A text label that appears next to the keyboard shortcut to open a new tab in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR-LIMIT=55]">

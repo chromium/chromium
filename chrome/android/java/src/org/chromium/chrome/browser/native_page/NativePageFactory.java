@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplie
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.download.DownloadPage;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesPage;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPage;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.webapps.launchpad.LaunchpadPage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.util.ColorUtils;
@@ -123,6 +125,14 @@ public class NativePageFactory {
                                     mActivity.getTabModelSelector().isIncognitoSelected()));
             return new RecentTabsPage(mActivity, recentTabsManager, new TabShim(tab, mActivity));
         }
+
+        protected NativePage buildLaunchpadPage(Tab tab) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LAUNCHPAD)) {
+                return new LaunchpadPage(mActivity, new TabShim(tab, mActivity));
+            } else {
+                return null;
+            }
+        }
     }
 
     /**
@@ -167,6 +177,9 @@ public class NativePageFactory {
                 break;
             case NativePageType.EXPLORE:
                 page = getBuilder().buildExploreSitesPage(tab);
+                break;
+            case NativePageType.LAUNCHPAD:
+                page = getBuilder().buildLaunchpadPage(tab);
                 break;
             default:
                 assert false;
