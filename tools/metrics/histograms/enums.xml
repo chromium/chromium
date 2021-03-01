@@ -18006,6 +18006,19 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="105" label="layers.right"/>
 </enum>
 
+<enum name="DevToolsLinearMemoryInspectorRevealedFrom">
+  <int value="0" label="Context menu"/>
+  <int value="1" label="Memory icon"/>
+</enum>
+
+<enum name="DevToolsLinearMemoryInspectorTarget">
+  <int value="0" label="DWARF inspectable address"/>
+  <int value="1" label="ArrayBuffer"/>
+  <int value="2" label="DataView"/>
+  <int value="3" label="TypedArray"/>
+  <int value="4" label="WebAssembly.Memory"/>
+</enum>
+
 <enum name="DevToolsOpenedByAction">
   <int value="1" label="Main menu or main shortcut"/>
   <int value="2" label="Console tab shortcut"/>
