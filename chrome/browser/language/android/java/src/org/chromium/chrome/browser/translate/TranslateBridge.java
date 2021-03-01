@@ -184,6 +184,11 @@ public class TranslateBridge {
         return list;
     }
 
+    public static void setLanguageAlwaysTranslateState(
+            String languageCode, boolean alwaysTranslate) {
+        TranslateBridgeJni.get().setLanguageAlwaysTranslateState(languageCode, alwaysTranslate);
+    }
+
     /**
      * Update accept language for the current user.
      * @param languageCode A valid language code to update.
@@ -262,6 +267,7 @@ public class TranslateBridge {
         void getChromeAcceptLanguages(List<LanguageItem> list);
         void getUserAcceptLanguages(List<String> list);
         void getAlwaysTranslateLanguages(List<String> list);
+        void setLanguageAlwaysTranslateState(String language, boolean alwaysTranslate);
         void updateUserAcceptLanguages(String language, boolean add);
         void moveAcceptLanguage(String language, int offset);
         void setLanguageOrder(String[] codes);

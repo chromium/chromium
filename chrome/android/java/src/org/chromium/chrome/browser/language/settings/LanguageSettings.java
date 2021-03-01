@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.language.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceGroup;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.R;
@@ -23,11 +23,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Settings fragment that displays information about Chrome languages, which allow users to
@@ -35,6 +39,10 @@ import org.chromium.components.user_prefs.UserPrefs;
  */
 public class LanguageSettings
         extends PreferenceFragmentCompat implements AddLanguageFragment.Launcher {
+    // Default number of items to list in a collection preference summary.
+    private static final int COLLECTION_SUMMARY_ITEM_LIMIT = 3;
+
+    // Return codes from launching Intents on preferences.
     private static final int REQUEST_CODE_ADD_ACCEPT_LANGUAGE = 1;
     private static final int REQUEST_CODE_CHANGE_APP_LANGUAGE = 2;
     private static final int REQUEST_CODE_CHANGE_TARGET_LANGUAGE = 3;
@@ -46,17 +54,15 @@ public class LanguageSettings
     static final String CONTENT_LANGUAGES_KEY = "content_languages_preference";
     static final String TRANSLATE_SWITCH_KEY = "translate_switch";
 
-    static final String TRANSLATION_SETTINGS_SECTION = "translation_settings_section";
+    static final String TRANSLATION_ADVANCED_SECTION = "translation_advanced_settings_section";
     static final String TARGET_LANGUAGE_KEY = "translate_settings_target_language";
-    static final String AUTOMATIC_LANGUAGES_KEY = "translate_settings_automatic_languages";
-    static final String NO_PROMPT_LANGUAGES_KEY = "translate_settings_no_prompt_languages";
-    static final String NO_PROMPT_SITES_KEY = "translate_settings_no_prompt_sites";
+    static final String ALWAYS_LANGUAGES_KEY = "translate_settings_always_languages";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getActivity().setTitle(R.string.language_settings);
 
-        // Show the detailed language settings if DETAILED_LANGUAGE_SETTINGS feature is enabled
+        // Show the detailed language settings if DETAILED_LANGUAGE_SETTINGS feature is enabled.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
             createDetailedPreferences(savedInstanceState, rootKey);
         } else {
@@ -144,20 +150,26 @@ public class LanguageSettings
         boolean isTranslateEnabled = getPrefService().getBoolean(Pref.OFFER_TRANSLATE_ENABLED);
         translateSwitch.setChecked(isTranslateEnabled);
 
-        PreferenceCategory translationSettingsSection =
-                (PreferenceCategory) findPreference(TRANSLATION_SETTINGS_SECTION);
-        translationSettingsSection.setOnExpandButtonClickListener(
-                new PreferenceGroup.OnExpandButtonClickListener() {
-                    @Override
-                    public void onExpandButtonClick() {
-                        LanguagesManager.recordImpression(LanguagesManager.LanguageSettingsPageType
-                                                                  .ADVANCED_LANGUAGE_SETTINGS);
-                    }
-                });
+        // Setup expandable advanced settings section.
+        PreferenceCategory translationAdvancedSection =
+                (PreferenceCategory) findPreference(TRANSLATION_ADVANCED_SECTION);
+        translationAdvancedSection.setOnExpandButtonClickListener(() -> {
+            // Lambda for PreferenceGroup.OnExpandButtonClickListener.
+            LanguagesManager.recordImpression(
+                    LanguagesManager.LanguageSettingsPageType.ADVANCED_LANGUAGE_SETTINGS);
+        });
+        translationAdvancedSection.setVisible(
+                getPrefService().getBoolean(Pref.OFFER_TRANSLATE_ENABLED));
 
-        // Get advanced section preference items
+        // Get advanced section preference items.
         LanguageItemPickerPreference targetLanguagePreference =
                 (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
+
+        ChromeBasePreference alwaysTranslateLanguagesPreference =
+                (ChromeBasePreference) findPreference(ALWAYS_LANGUAGES_KEY);
+        String alwaysTranslateSummary = makeSummaryForCollection(
+                LanguagesManager.getInstance().getAlwaysTranslateLanguageItems());
+        alwaysTranslateLanguagesPreference.setSummary(alwaysTranslateSummary);
 
         translateSwitch.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
@@ -165,7 +177,7 @@ public class LanguageSettings
                 boolean enabled = (boolean) newValue;
                 getPrefService().setBoolean(Pref.OFFER_TRANSLATE_ENABLED, enabled);
                 languageListPreference.notifyPrefChanged();
-                targetLanguagePreference.setVisible(enabled);
+                translationAdvancedSection.setVisible(enabled);
                 LanguagesManager.recordAction(enabled ? LanguagesManager.LanguageSettingsActionType
                                                                 .ENABLE_TRANSLATE_GLOBALLY
                                                       : LanguagesManager.LanguageSettingsActionType
@@ -260,6 +272,23 @@ public class LanguageSettings
                 getActivity(), AddLanguageFragment.class.getName());
         intent.putExtra(AddLanguageFragment.INTENT_LANGUAGE_OPTIONS, launchCode);
         startActivityForResult(intent, requestCode);
+    }
+
+    /**
+     * Given a collection of LanguageItems return a comma separated string of the display names for
+     * at most the first three languages. If the list is empty return the empty string.
+     * @param languages List of LanguageItems.
+     * @return Comma sepperated string of language display names.
+     */
+    public static String makeSummaryForCollection(Collection<LanguageItem> languages) {
+        int index = 0;
+        ArrayList<String> languageNames = new ArrayList<String>();
+        for (LanguageItem item : languages) {
+            if (++index > COLLECTION_SUMMARY_ITEM_LIMIT) break;
+            languageNames.add(item.getDisplayName());
+        }
+        // TODO(crbug.com/1181224): Make sure to localize the separator.
+        return TextUtils.join(", ", languageNames);
     }
 
     @VisibleForTesting

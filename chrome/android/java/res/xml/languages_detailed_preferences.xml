@@ -22,10 +22,10 @@
       android:order="2"
       app:allowDividerAbove="true">
 
-        <org.chromium.chrome.browser.language.settings.LanguageListPreference
-            android:key="content_languages_preference"
-            android:layout="@layout/languages_preference"
-            android:widgetLayout="@layout/accept_languages_list" />
+      <org.chromium.chrome.browser.language.settings.LanguageListPreference
+          android:key="content_languages_preference"
+          android:layout="@layout/languages_preference"
+          android:widgetLayout="@layout/accept_languages_list" />
 
     </PreferenceCategory>
 
@@ -33,17 +33,37 @@
         android:key="translation_settings_section"
         android:order="3"
         android:title="@string/languages_settings_title"
-        app:initialExpandedChildrenCount="1">
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="false">
 
         <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
             android:key="translate_switch"
             android:summaryOn="@string/languages_send_translate_switch"
-            android:summaryOff="@string/languages_send_translate_switch" />
+            android:summaryOff="@string/languages_send_translate_switch"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"/>
 
-        <org.chromium.chrome.browser.language.settings.LanguageItemPickerPreference
-            android:key="translate_settings_target_language"
-            android:title="@string/languages_settings_target"
-            app:allowDividerBelow="false" />
+        <PreferenceCategory
+            android:key="translation_advanced_settings_section"
+            android:layout="@layout/preference_category_no_title_or_padding"
+            app:initialExpandedChildrenCount="0"
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="false">
+
+            <org.chromium.chrome.browser.language.settings.LanguageItemPickerPreference
+                android:key="translate_settings_target_language"
+                android:title="@string/languages_settings_target"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false" />
+
+            <org.chromium.components.browser_ui.settings.ChromeBasePreference
+              android:key="translate_settings_always_languages"
+              android:title="@string/languages_settings_automatic"
+              android:fragment="org.chromium.chrome.browser.language.settings.AlwaysTranslateLanguagesFragment"
+              app:allowDividerAbove="false"
+              app:allowDividerBelow="false" />
+
+        </PreferenceCategory>
 
     </PreferenceCategory>
 

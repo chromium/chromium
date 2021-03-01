@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -206,7 +207,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
      *
      * @param languages The language items to show.
      */
-    void setDisplayedLanguages(List<LanguageItem> languages) {
+    void setDisplayedLanguages(Collection<LanguageItem> languages) {
         mElements = new ArrayList<>(languages);
         notifyDataSetChanged();
     }

@@ -20,6 +20,7 @@ android_library("base_module_java") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/language/settings/AddLanguageFragment.java",
+    "java/src/org/chromium/chrome/browser/language/settings/AlwaysTranslateLanguagesFragment.java",
     "java/src/org/chromium/chrome/browser/language/settings/AvailableUiLanguages.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageItem.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageItemPickerPreference.java",
@@ -67,7 +68,9 @@ android_resources("java_resources") {
     "java/res/layout/accept_languages_item.xml",
     "java/res/layout/accept_languages_list.xml",
     "java/res/layout/add_languages_main.xml",
+    "java/res/layout/language_list_with_add_button.xml",
     "java/res/layout/languages_preference.xml",
+    "java/res/layout/preference_category_no_title_or_padding.xml",
     "java/res/menu/languages_action_bar_menu.xml",
   ]
   deps = [

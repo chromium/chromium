@@ -30,6 +30,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
+        android:focusable="true"
         android:gravity="center_vertical"
         android:padding="@dimen/draggable_list_item_padding"
         android:paddingStart="@dimen/pref_languages_add_button_padding"

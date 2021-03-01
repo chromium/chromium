@@ -13,9 +13,11 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Manages languages details for languages settings.
@@ -153,6 +155,23 @@ public class LanguagesManager {
         List<LanguageItem> results = new ArrayList<>();
         for (LanguageItem item : mLanguagesMap.values()) {
             if (item.isSupportedBaseLanguage()) results.add(item);
+        }
+        return results;
+    }
+
+    /**
+     * Get a list of LanguageItems that the user has set to always translate. The list is sorted
+     * alphabetically by display name.
+     * @return List of LanguageItems.
+     */
+    public Collection<LanguageItem> getAlwaysTranslateLanguageItems() {
+        // Always read the latest always translate code list from native. This list has no
+        // guaranteed order.
+        List<String> codes = TranslateBridge.getAlwaysTranslateLanguages();
+        TreeSet<LanguageItem> results = new TreeSet(LanguageItem.COMPARE_BY_DISPLAY_NAME);
+        // Keep the same order as always translate list
+        for (String code : codes) {
+            if (mLanguagesMap.containsKey(code)) results.add(mLanguagesMap.get(code));
         }
         return results;
     }

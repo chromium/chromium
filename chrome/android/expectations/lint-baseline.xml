@@ -1910,17 +1910,6 @@
         errorLine1="        android:clickable=&quot;true&quot;"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/browser/language/android/java/res/layout/languages_preference.xml"
-            line="32"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="        android:clickable=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
             file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_dialog.xml"
             line="38"
             column="9"/>

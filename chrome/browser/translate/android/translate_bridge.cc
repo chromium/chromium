@@ -254,6 +254,28 @@ static void JNI_TranslateBridge_GetAlwaysTranslateLanguages(
                            translate_prefs->GetAlwaysTranslateLanguages()));
 }
 
+// Sets the always translate state for a language.
+// The always translate language list is actually a dict mapping
+// source_language -> target_language.  We use the current target language when
+// adding |language| to the dict.
+static void JNI_TranslateBridge_SetLanguageAlwaysTranslateState(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& language,
+    jboolean alwaysTranslate) {
+  std::string language_code(ConvertJavaStringToUTF8(env, language));
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
+  std::string target_language_code(translate_prefs->GetRecentTargetLanguage());
+
+  if (alwaysTranslate) {
+    translate_prefs->AddLanguagePairToAlwaysTranslateList(language_code,
+                                                          target_language_code);
+  } else {
+    translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(
+        language_code, target_language_code);
+  }
+}
+
 // static
 // Input |locales| is a comma separated locale representation that consists of
 // language tags (BCP47 compliant format). Each language tag contains a language
