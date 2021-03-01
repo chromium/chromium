@@ -11,7 +11,11 @@ namespace blink {
 
 // We don't test legacy layout because it's deprecated, and we don't want to
 // complicate the test with the legacy LayoutListMarker here.
-class ListMarkerTest : public NGLayoutTest {
+class ListMarkerTest : private ScopedCSSAtRuleCounterStyleForTest,
+                       public NGLayoutTest {
+ public:
+  ListMarkerTest() : ScopedCSSAtRuleCounterStyleForTest(true) {}
+
  protected:
   LayoutObject* GetMarker(const char* list_item_id) {
     LayoutNGListItem* list_item =
@@ -231,6 +235,8 @@ TEST_F(ListMarkerTest, RemoveOverrideOfSameScopeCounterStyle) {
 }
 
 TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
+  ScopedCSSAtRuleCounterStyleInShadowDOMForTest scope(true);
+
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       @counter-style foo {

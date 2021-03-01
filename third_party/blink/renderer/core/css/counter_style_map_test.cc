@@ -11,10 +11,14 @@
 
 namespace blink {
 
-class CounterStyleMapTest : public PageTestBase,
-                            private ScopedCSSAtRuleCounterStyleForTest {
+class CounterStyleMapTest
+    : public PageTestBase,
+      private ScopedCSSAtRuleCounterStyleForTest,
+      private ScopedCSSAtRuleCounterStyleInShadowDOMForTest {
  public:
-  CounterStyleMapTest() : ScopedCSSAtRuleCounterStyleForTest(true) {}
+  CounterStyleMapTest()
+      : ScopedCSSAtRuleCounterStyleForTest(true),
+        ScopedCSSAtRuleCounterStyleInShadowDOMForTest(true) {}
 
   ShadowRoot& AttachShadowTo(const char* host_id) {
     Element* host = GetElementById(host_id);
@@ -200,5 +204,13 @@ TEST_F(CounterStyleMapTest, UpdateReferencesInChildScope) {
   EXPECT_NE(&bar, &new_bar);
   EXPECT_EQ("decimal", new_bar.GetExtendedStyle().GetName());
 }
+
+class CounterStyleInitiallyDisabledTest
+    : private ScopedCSSAtRuleCounterStyleForTest,
+      public PageTestBase {
+ public:
+  CounterStyleInitiallyDisabledTest()
+      : ScopedCSSAtRuleCounterStyleForTest(false) {}
+};
 
 }  // namespace blink
