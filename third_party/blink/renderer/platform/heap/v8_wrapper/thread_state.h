@@ -121,6 +121,8 @@ class PLATFORM_EXPORT ThreadState final {
       base::OnceCallback<void(size_t allocated_node_bytes,
                               size_t allocated_css_bytes)>);
 
+  void EnableDetachedGarbageCollectionsForTesting();
+
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.

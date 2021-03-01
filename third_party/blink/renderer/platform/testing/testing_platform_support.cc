@@ -177,7 +177,7 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
 
   ProcessHeap::Init();
   ThreadState::AttachMainThread();
-  blink::ThreadState::Current()->DetachFromIsolate();
+  blink::ThreadState::Current()->EnableDetachedGarbageCollectionsForTesting();
   http_names::Init();
   fetch_initiator_type_names::Init();
 

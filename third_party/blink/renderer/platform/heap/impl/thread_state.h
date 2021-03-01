@@ -390,6 +390,8 @@ class PLATFORM_EXPORT ThreadState final {
     --disable_heap_verification_scope_;
   }
 
+  void EnableDetachedGarbageCollectionsForTesting() { CHECK(!isolate_); }
+
   void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
 
   // Waits until sweeping is done and invokes the given callback with
