@@ -106,6 +106,7 @@ void ListMarker::ListStyleTypeChanged(LayoutObject& marker) {
 
 // If the @counter-style in use has changed, we need to update the marker text.
 void ListMarker::CounterStyleChanged(LayoutObject& marker) {
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
   DCHECK_EQ(Get(&marker), this);
   if (marker_text_type_ == kNotText || marker_text_type_ == kUnresolved)
     return;

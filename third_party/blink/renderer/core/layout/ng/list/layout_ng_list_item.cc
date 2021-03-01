@@ -65,6 +65,9 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutNGListItem::UpdateCounterStyle() {
+  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled())
+    return;
+
   if (!StyleRef().GetListStyleType() ||
       StyleRef().GetListStyleType()->IsCounterStyleReferenceValid(
           GetDocument())) {
