@@ -125,7 +125,6 @@ class PowerMetricsReporterUnitTest : public testing::Test {
     battery_provider_ = battery_provider.get();
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
         data_store_.AsWeakPtr(), std::move(battery_provider));
-    power_metrics_reporter_->EnableUKMReportingForTesting();
   }
 
  protected:

@@ -63,6 +63,12 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   // visible. |visible_tab_iter| should be an iterator in |visible_contents_|.
   void OnTabBecameHidden(VisibleTabsMap::iterator* visible_tab_iter);
 
+  // Should be called when a WebContents is being destroyed, there's 2 possible
+  // causes for this:
+  //   - The tab that contains it is being removed.
+  //   - A tab's WebContents is being replaced.
+  void OnWebContentsRemoved(content::WebContents* web_contents);
+
   void InsertContentsInMapOfVisibleTabs(content::WebContents* web_contents);
 
   // Non-owning. Needs to outlive this class.
