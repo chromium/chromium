@@ -41,6 +41,8 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
  private:
 
   bool ShouldCancelNavigation(content::NavigationHandle* handle) override;
+  bool ShouldShowDisablePage(content::NavigationHandle* handle) override;
+  ThrottleCheckResult MaybeShowCustomResult() override;
 
   DISALLOW_COPY_AND_ASSIGN(CommonAppsNavigationThrottle);
 };

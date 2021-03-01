@@ -12,17 +12,83 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/chromeos/apps/metrics/intent_handling_metrics.h"
+#include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/jstemplate_builder.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/display/types/display_constants.h"
 
+#include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/grit/browser_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/resource/resource_bundle.h"
+
 namespace apps {
+
+namespace {
+
+using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
+
+std::string GetAppDisabledErrorPage() {
+  base::DictionaryValue strings;
+
+  strings.SetString(
+      "disabledPageHeader",
+      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER));
+  strings.SetString(
+      "disabledPageTitle",
+      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_TITLE));
+  strings.SetString(
+      "disabledPageMessage",
+      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE));
+  std::string html =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_CHROME_URLS_DISABLED_PAGE_HTML);
+  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  webui::SetLoadTimeDataDefaults(app_locale, &strings);
+  return webui::GetI18nTemplateHtml(html, &strings);
+}
+
+policy::SystemFeature GetSystemFeatureFromAppId(const std::string& app_id) {
+  // TODO(sanjaperisic): Currently we only support Canvas app. Move this mapping
+  // to an appropriate place when the list of supported apps grows.
+  if (app_id == web_app::kCanvasAppId)
+    return policy::SystemFeature::kCanvas;
+  return policy::SystemFeature::kUnknownSystemFeature;
+}
+
+bool IsAppDisabled(const std::string& app_id) {
+  PrefService* const local_state = g_browser_process->local_state();
+  if (!local_state)
+    return false;
+
+  const base::ListValue* disabled_system_features_pref =
+      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
+  if (!disabled_system_features_pref)
+    return false;
+
+  policy::SystemFeature system_feature = GetSystemFeatureFromAppId(app_id);
+  if (system_feature == policy::SystemFeature::kUnknownSystemFeature)
+    return false;
+
+  const auto disabled_system_features =
+      disabled_system_features_pref->GetList();
+  return base::Contains(disabled_system_features, base::Value(system_feature));
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<apps::AppsNavigationThrottle>
@@ -99,6 +165,33 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
     }
   }
   return false;
+}
+
+bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
+    content::NavigationHandle* handle) {
+  content::WebContents* web_contents = handle->GetWebContents();
+  const GURL& url = handle->GetURL();
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+
+  std::vector<std::string> app_ids =
+      proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
+
+  for (auto app_id : app_ids) {
+    if (IsAppDisabled(app_id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+ThrottleCheckResult CommonAppsNavigationThrottle::MaybeShowCustomResult() {
+  return ThrottleCheckResult(content::NavigationThrottle::CANCEL,
+                             net::ERR_BLOCKED_BY_ADMINISTRATOR,
+                             GetAppDisabledErrorPage());
 }
 
 }  // namespace apps

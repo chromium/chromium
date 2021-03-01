@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -28,17 +31,26 @@
 
 namespace policy {
 
+namespace {
+const char kCanvasAppURL[] = "https://canvas.apps.chrome/";
+const char kCanvasAppTitle[] = "canvas.apps.chrome";
+}  // namespace
+
 class SystemFeaturesPolicyTest : public PolicyTest {
  public:
   SystemFeaturesPolicyTest() = default;
 
  protected:
-  base::string16 GetWebUITitle(const GURL& url) {
+  base::string16 GetWebUITitle(const GURL& url,
+                               bool using_navigation_throttle) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ui_test_utils::NavigateToURL(browser(), url);
-
-    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+    if (using_navigation_throttle) {
+      content::WaitForLoadStopWithoutSuccessCheck(web_contents);
+    } else {
+      EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+    }
     return web_contents->GetTitle();
   }
 
@@ -96,6 +108,18 @@ class SystemFeaturesPolicyTest : public PolicyTest {
           EXPECT_EQ(expected_visibility, update.ShowInSearch());
           EXPECT_EQ(expected_visibility, update.ShowInShelf());
         });
+  }
+
+  void InstallPWA(const GURL& app_url, const web_app::AppId& app_id) {
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = app_url;
+    web_app_info->scope = app_url.GetWithoutFilename();
+    web_app::AppId installed_app_id =
+        web_app::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    EXPECT_EQ(app_id, installed_app_id);
+    // Wait for app service to see the newly installed app.
+    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+        ->FlushMojoCallsForTesting();
   }
 };
 
@@ -162,11 +186,32 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
 
   GURL settings_url = GURL(chrome::kChromeUISettingsURL);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER),
-            GetWebUITitle(settings_url));
+            GetWebUITitle(settings_url, false));
 
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SETTINGS_SETTINGS),
-            GetWebUITitle(settings_url));
+            GetWebUITitle(settings_url, false));
+}
+
+IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectCanvasURL) {
+  const GURL& canvas_url = GURL(kCanvasAppURL);
+  PolicyMap policies;
+  base::Value system_features(base::Value::Type::LIST);
+  system_features.Append(kCanvasFeature);
+  // Disable Canvas app and allow navigation because the app is not installed.
+  UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
+  EXPECT_EQ(base::UTF8ToUTF16(kCanvasAppTitle),
+            GetWebUITitle(canvas_url, true));
+
+  // Install Canvas app.
+  InstallPWA(canvas_url, web_app::kCanvasAppId);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER),
+            GetWebUITitle(canvas_url, true));
+
+  // Enable Canvas app.
+  UpdateSystemFeaturesDisableList(base::Value(), nullptr);
+  EXPECT_EQ(base::UTF8ToUTF16(kCanvasAppTitle),
+            GetWebUITitle(canvas_url, true));
 }
 
 }  // namespace policy

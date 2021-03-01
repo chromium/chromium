@@ -54,6 +54,10 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
 
   virtual bool ShouldCancelNavigation(content::NavigationHandle* handle);
 
+  virtual bool ShouldShowDisablePage(content::NavigationHandle* handle);
+
+  virtual ThrottleCheckResult MaybeShowCustomResult();
+
   bool navigate_from_link() const;
 
   // Keeps track of whether we already shown the UI or preferred app. Since
