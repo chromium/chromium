@@ -153,11 +153,10 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   std::vector<base::Feature> disabled_features = {
     // TODO(crbug.com/1025627): make webauth work with WebLayer.
     ::features::kWebAuth,
-#if !BUILDFLAG(ENABLE_ARCORE)
+    // TODO(crbug.com/1177948): enable WebAR.
     ::features::kWebXr,
     ::features::kWebXrArModule,
     ::features::kWebXrHitTest,
-#endif
     // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
     ::features::kBackgroundFetch,
     // TODO(crbug.com/1130989): Support GetInstalledRelatedApps on WebLayer.
