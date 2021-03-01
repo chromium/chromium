@@ -9,8 +9,7 @@ namespace chromeos {
 class AuthStatusConsumer;
 
 Authenticator::Authenticator(AuthStatusConsumer* consumer)
-    : consumer_(consumer), authentication_context_(NULL) {
-}
+    : consumer_(consumer) {}
 
 Authenticator::~Authenticator() = default;
 

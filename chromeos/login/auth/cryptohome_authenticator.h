@@ -22,10 +22,6 @@
 
 class AuthFailure;
 
-namespace content {
-class BrowserContext;
-}
-
 namespace cryptohome {
 class BaseReply;
 }
@@ -109,8 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
                           AuthStatusConsumer* consumer);
 
   // Authenticator overrides.
-  void CompleteLogin(content::BrowserContext* context,
-                     const UserContext& user_context) override;
+  void CompleteLogin(const UserContext& user_context) override;
 
   // Given |user_context|, this method attempts to authenticate to your
   // Chrome OS device. As soon as we have successfully mounted the encrypted
@@ -118,10 +113,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   // with the username.
   // Upon failure to login consumer_->OnAuthFailure() is called
   // with an error message.
-  //
-  // Uses |context| when doing URL fetches.
-  void AuthenticateToLogin(content::BrowserContext* context,
-                           const UserContext& user_context) override;
+  void AuthenticateToLogin(const UserContext& user_context) override;
 
   // Initiates incognito ("browse without signing in") login.
   // Mounts tmpfs and notifies consumer on the success/failure.
@@ -184,10 +176,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   ~CryptohomeAuthenticator() override;
 
   using IsOwnerCallback = base::OnceCallback<void(bool is_owner)>;
-
-  // Method to be implemented in child. Return |true| if user specified in
-  // |context| exists on device.
-  virtual bool IsKnownUser(const UserContext& context) = 0;
 
   // Method to be implemented in child. Return |true| if device is running
   // in safe mode.

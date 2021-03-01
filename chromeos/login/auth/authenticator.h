@@ -15,10 +15,6 @@
 
 class AccountId;
 
-namespace content {
-class BrowserContext;
-}
-
 namespace chromeos {
 
 class UserContext;
@@ -35,14 +31,12 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
 
   // Given externally authenticated username and password (part of
   // |user_context|), this method attempts to complete authentication process.
-  virtual void CompleteLogin(content::BrowserContext* browser_context,
-                             const UserContext& user_context) = 0;
+  virtual void CompleteLogin(const UserContext& user_context) = 0;
 
   // Given a user credentials in |user_context|,
   // this method attempts to authenticate to login.
   // Must be called on the UI thread.
-  virtual void AuthenticateToLogin(content::BrowserContext* browser_context,
-                                   const UserContext& user_context) = 0;
+  virtual void AuthenticateToLogin(const UserContext& user_context) = 0;
 
   // Initiates incognito ("browse without signing in") login.
   virtual void LoginOffTheRecord() = 0;
@@ -86,12 +80,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
   // and create a new cryptohome.
   virtual void ResyncEncryptedData() = 0;
 
-  // BrowserContext (usually off the record) that was used to perform the last
-  // authentication process.
-  content::BrowserContext* authentication_context() {
-    return authentication_context_;
-  }
-
   // Sets consumer explicitly.
   void SetConsumer(AuthStatusConsumer* consumer);
 
@@ -99,7 +87,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
   virtual ~Authenticator();
 
   AuthStatusConsumer* consumer_;
-  content::BrowserContext* authentication_context_;
 
  private:
   friend class base::RefCountedThreadSafe<Authenticator>;

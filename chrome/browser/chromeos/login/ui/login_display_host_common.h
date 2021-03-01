@@ -45,7 +45,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   KioskLaunchController* GetKioskLaunchController() final;
   void StartUserAdding(base::OnceClosure completion_callback) final;
   void StartSignInScreen() final;
-  void PrewarmAuthentication() final;
   void StartDemoAppLaunch() final;
   void StartKiosk(const KioskAppId& kiosk_app_id, bool is_auto_launch) final;
   void AttemptShowEnableConsumerKioskScreen() final;
@@ -91,9 +90,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   virtual void OnCancelPasswordChangedFlow() = 0;
   virtual void ShowEnableConsumerKioskScreen() = 0;
 
-  // Deletes `auth_prewarmer_`.
-  void OnAuthPrewarmDone();
-
   // Marks display host for deletion.
   void ShutdownDisplayHost();
 
@@ -102,9 +98,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // Common code for ShowGaiaDialog() call above.
   void ShowGaiaDialogCommon(const AccountId& prefilled_account);
-
-  // Active instance of authentication prewarmer.
-  std::unique_ptr<AuthPrewarmer> auth_prewarmer_;
 
   // Kiosk launch controller.
   std::unique_ptr<KioskLaunchController> kiosk_launch_controller_;

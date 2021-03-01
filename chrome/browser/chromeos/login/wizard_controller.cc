@@ -1703,7 +1703,6 @@ void WizardController::PerformPostEulaActions() {
   NetworkHandler::Get()->network_state_handler()->SetCheckPortalList(
       NetworkStateHandler::kDefaultCheckPortalList);
   GetAutoEnrollmentController()->Start();
-  GetLoginDisplayHost()->PrewarmAuthentication();
   network_portal_detector::GetInstance()->Enable(true);
 }
 

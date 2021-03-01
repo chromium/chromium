@@ -138,10 +138,6 @@ bool ChromeLoginPerformer::CheckPolicyForUser(const AccountId& account_id) {
 ////////////////////////////////////////////////////////////////////////////////
 // ChromeLoginPerformer, private:
 
-content::BrowserContext* ChromeLoginPerformer::GetSigninContext() {
-  return ProfileHelper::GetSigninProfile();
-}
-
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeLoginPerformer::GetSigninURLLoaderFactory() {
   return login::GetSigninURLLoaderFactory();

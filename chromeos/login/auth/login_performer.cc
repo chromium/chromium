@@ -235,12 +235,10 @@ void LoginPerformer::EnsureExtendedAuthenticator() {
 void LoginPerformer::StartLoginCompletion() {
   VLOG(1) << "Online login completion started.";
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
-  content::BrowserContext* browser_context = GetSigninContext();
   EnsureAuthenticator();
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&chromeos::Authenticator::CompleteLogin,
-                     authenticator_.get(), browser_context, user_context_));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&chromeos::Authenticator::CompleteLogin,
+                                        authenticator_.get(), user_context_));
   user_context_.ClearSecrets();
 }
 
@@ -249,12 +247,9 @@ void LoginPerformer::StartAuthentication() {
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
   if (delegate_) {
     EnsureAuthenticator();
-    content::BrowserContext* browser_context = GetSigninContext();
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Authenticator::AuthenticateToLogin,
-                       authenticator_.get(), base::Unretained(browser_context),
-                       user_context_));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&Authenticator::AuthenticateToLogin,
+                                          authenticator_.get(), user_context_));
   } else {
     NOTREACHED();
   }

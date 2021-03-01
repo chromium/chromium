@@ -19,7 +19,6 @@ class ChromeCryptohomeAuthenticator : public CryptohomeAuthenticator {
  protected:
   ~ChromeCryptohomeAuthenticator() override;
 
-  bool IsKnownUser(const UserContext& context) override;
   bool IsSafeMode() override;
   void CheckSafeModeOwnership(const UserContext& context,
                               IsOwnerCallback callback) override;

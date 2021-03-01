@@ -16,7 +16,6 @@
 // TODO(https://crbug.com/1164001): move KioskAppId to forward declaration
 // when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/ash/login/auth/auth_prewarmer.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
@@ -136,9 +135,6 @@ class LoginDisplayHost {
 
   // Invoked when system preferences that affect the signin screen have changed.
   virtual void OnPreferencesChanged() = 0;
-
-  // Initiates authentication network prewarming.
-  virtual void PrewarmAuthentication() = 0;
 
   // Starts the demo app launch.
   virtual void StartDemoAppLaunch() = 0;

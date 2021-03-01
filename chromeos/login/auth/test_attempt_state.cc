@@ -9,19 +9,13 @@
 
 namespace chromeos {
 
-TestAttemptState::TestAttemptState(const UserContext& credentials,
-                                   const bool user_is_new)
-    : AuthAttemptState(credentials,
-                       false,  // unlock
-                       false,  // online_complete
-                       user_is_new) {
-}
+TestAttemptState::TestAttemptState(const UserContext& credentials)
+    : AuthAttemptState(credentials, false /* unlock */) {}
 
 TestAttemptState::~TestAttemptState() = default;
 
-void TestAttemptState::PresetOnlineLoginStatus(const AuthFailure& outcome) {
+void TestAttemptState::PresetOnlineLoginComplete() {
   online_complete_ = true;
-  online_outcome_ = outcome;
 }
 
 void TestAttemptState::PresetCryptohomeStatus(
@@ -32,14 +26,6 @@ void TestAttemptState::PresetCryptohomeStatus(
 
 bool TestAttemptState::online_complete() {
   return online_complete_;
-}
-
-const AuthFailure& TestAttemptState::online_outcome() {
-  return online_outcome_;
-}
-
-bool TestAttemptState::is_first_time_user() {
-  return is_first_time_user_;
 }
 
 bool TestAttemptState::cryptohome_complete() {

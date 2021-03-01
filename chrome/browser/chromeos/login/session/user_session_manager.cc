@@ -1809,8 +1809,7 @@ void UserSessionManager::InitSessionRestoreStrategy() {
 void UserSessionManager::RestoreAuthSessionImpl(
     Profile* profile,
     bool restore_from_auth_cookies) {
-  CHECK((authenticator_.get() && authenticator_->authentication_context()) ||
-        !restore_from_auth_cookies);
+  CHECK(authenticator_.get() || !restore_from_auth_cookies);
   if (chrome::IsRunningInForcedAppMode() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kDisableGaiaServices)) {

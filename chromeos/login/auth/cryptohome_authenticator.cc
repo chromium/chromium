@@ -575,17 +575,12 @@ CryptohomeAuthenticator::CryptohomeAuthenticator(
       delayed_login_failure_(AuthFailure::NONE) {}
 
 void CryptohomeAuthenticator::AuthenticateToLogin(
-    content::BrowserContext* context,
     const UserContext& user_context) {
   DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
          user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
          user_context.GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  authentication_context_ = context;
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            false,  // unlock
-                                            false,  // online_complete
-                                            !IsKnownUser(user_context)));
+  current_state_.reset(new AuthAttemptState(user_context, false /* unlock */));
   // Reset the verified flag.
   owner_is_verified_ = false;
 
@@ -594,17 +589,12 @@ void CryptohomeAuthenticator::AuthenticateToLogin(
              false /* ephemeral */, false /* create_if_nonexistent */);
 }
 
-void CryptohomeAuthenticator::CompleteLogin(content::BrowserContext* context,
-                                            const UserContext& user_context) {
+void CryptohomeAuthenticator::CompleteLogin(const UserContext& user_context) {
   DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
          user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
          user_context.GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  authentication_context_ = context;
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            true,   // unlock
-                                            false,  // online_complete
-                                            !IsKnownUser(user_context)));
+  current_state_.reset(new AuthAttemptState(user_context, true /* unlock */));
 
   // Reset the verified flag.
   owner_is_verified_ = false;
@@ -632,9 +622,7 @@ void CryptohomeAuthenticator::LoginOffTheRecord() {
   current_state_.reset(
       new AuthAttemptState(UserContext(user_manager::USER_TYPE_GUEST,
                                        user_manager::GuestAccountId()),
-                           false,    // unlock
-                           false,    // online_complete
-                           false));  // user_is_new
+                           false /* unlock */));
   remove_user_data_on_failure_ = false;
   ephemeral_mount_attempted_ = true;
   MountGuestAndGetHash(current_state_->AsWeakPtr(),
@@ -656,10 +644,8 @@ void CryptohomeAuthenticator::LoginAsPublicSession(
   DCHECK(user_context.GetKey()->GetLabel().empty());
   new_user_context.GetKey()->SetLabel(kCryptohomeGaiaKeyLabel);
 
-  current_state_.reset(new AuthAttemptState(new_user_context,
-                                            false,    // unlock
-                                            false,    // online_complete
-                                            false));  // user_is_new
+  current_state_.reset(
+      new AuthAttemptState(new_user_context, false /* unlock */));
   remove_user_data_on_failure_ = false;
   ephemeral_mount_attempted_ = true;
   StartMount(current_state_->AsWeakPtr(),
@@ -676,9 +662,7 @@ void CryptohomeAuthenticator::LoginAsKioskAccount(
       use_guest_mount ? user_manager::GuestAccountId() : app_account_id;
   current_state_.reset(new AuthAttemptState(
       UserContext(user_manager::USER_TYPE_KIOSK_APP, account_id),
-      false,    // unlock
-      false,    // online_complete
-      false));  // user_is_new
+      false /* unlock */));
 
   remove_user_data_on_failure_ = true;
   if (!use_guest_mount) {
@@ -698,9 +682,7 @@ void CryptohomeAuthenticator::LoginAsArcKioskAccount(
 
   current_state_.reset(new AuthAttemptState(
       UserContext(user_manager::USER_TYPE_ARC_KIOSK_APP, app_account_id),
-      false,    // unlock
-      false,    // online_complete
-      false));  // user_is_new
+      false /* unlock */));
 
   remove_user_data_on_failure_ = true;
   MountPublic(current_state_->AsWeakPtr(),
@@ -714,9 +696,7 @@ void CryptohomeAuthenticator::LoginAsWebKioskAccount(
 
   current_state_.reset(new AuthAttemptState(
       UserContext(user_manager::USER_TYPE_WEB_KIOSK_APP, app_account_id),
-      false,    // unlock
-      false,    // online_complete
-      false));  // user_is_new
+      false /* unlock */));
 
   remove_user_data_on_failure_ = true;
   MountPublic(current_state_->AsWeakPtr(),
@@ -785,10 +765,7 @@ void CryptohomeAuthenticator::OnAuthFailure(const AuthFailure& error) {
 
 void CryptohomeAuthenticator::MigrateKey(const UserContext& user_context,
                                          const std::string& old_password) {
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            false,  // unlock
-                                            false,  // online_complete
-                                            !IsKnownUser(user_context)));
+  current_state_.reset(new AuthAttemptState(user_context, false /* unlock */));
   RecoverEncryptedData(old_password);
 }
 
@@ -1030,11 +1007,8 @@ CryptohomeAuthenticator::AuthState CryptohomeAuthenticator::ResolveState() {
     return state;
 
   if (current_state_->online_complete()) {
-    if (current_state_->online_outcome().reason() == AuthFailure::NONE) {
-      // Online attempt succeeded as well, so combine the results.
-      return ResolveOnlineSuccessState(state);
-    }
-    NOTREACHED() << "Using obsolete ClientLogin code path.";
+    // Online attempt succeeded as well, so combine the results.
+    return ResolveOnlineSuccessState(state);
   }
   // if online isn't complete yet, just return the offline result.
   return state;
@@ -1152,7 +1126,7 @@ CryptohomeAuthenticator::ResolveOnlineSuccessState(
 
 void CryptohomeAuthenticator::ResolveLoginCompletionStatus() {
   // Shortcut online state resolution process.
-  current_state_->RecordOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  current_state_->RecordOnlineLoginComplete();
   Resolve();
 }
 

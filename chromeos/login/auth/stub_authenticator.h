@@ -17,10 +17,6 @@
 
 class AccountId;
 
-namespace content {
-class BrowserContext;
-}
-
 namespace chromeos {
 
 class AuthStatusConsumer;
@@ -42,10 +38,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
                     const UserContext& expected_user_context);
 
   // Authenticator:
-  void CompleteLogin(content::BrowserContext* context,
-                     const UserContext& user_context) override;
-  void AuthenticateToLogin(content::BrowserContext* context,
-                           const UserContext& user_context) override;
+  void CompleteLogin(const UserContext& user_context) override;
+  void AuthenticateToLogin(const UserContext& user_context) override;
   void LoginOffTheRecord() override;
   void LoginAsPublicSession(const UserContext& user_context) override;
   void LoginAsKioskAccount(const AccountId& app_account_id,

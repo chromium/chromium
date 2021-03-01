@@ -297,7 +297,7 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     SystemSaltGetter::Initialize();
 
     auth_ = new ChromeCryptohomeAuthenticator(&consumer_);
-    state_.reset(new TestAttemptState(user_context_, false));
+    state_.reset(new TestAttemptState(user_context_));
   }
 
   // Tears down the test fixture.
@@ -509,7 +509,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveNeedOldPw) {
   // and been rejected because of unmatched key; additionally,
   // an online auth attempt has completed successfully.
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_KEY_FAILURE);
-  state_->PresetOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  state_->PresetOnlineLoginComplete();
 
   EXPECT_EQ(CryptohomeAuthenticator::NEED_OLD_PW,
             SetAndResolveState(auth_.get(), state_.release()));
@@ -574,7 +574,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededFailedMount) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_.reset(new TestAttemptState(user_context_, false));
+  state_.reset(new TestAttemptState(user_context_));
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should not have found the owner key, so login should
@@ -624,7 +624,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededSuccess) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_.reset(new TestAttemptState(user_context_, false));
+  state_.reset(new TestAttemptState(user_context_));
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should find the owner key, so login should succeed.
@@ -681,7 +681,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveDataResync) {
   fake_cryptohome_client_->set_remove_ex_should_succeed(
       true /* should_succeed */);
 
-  state_->PresetOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
   auth_->ResyncEncryptedData();
@@ -706,7 +706,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveRequestOldPassword) {
   ExpectPasswordChange(user_context_);
 
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_KEY_FAILURE);
-  state_->PresetOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
   RunResolve(auth_.get());
@@ -725,7 +725,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveDataRecover) {
   ExpectMountExCall(false /* expect_create_attempt */);
   ExpectMigrateKeyExCall(true /*should_succeed*/);
 
-  state_->PresetOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
   auth_->RecoverEncryptedData(std::string());
@@ -774,7 +774,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveCreateNew) {
   // and been rejected because the user doesn't exist; additionally,
   // an online auth attempt has completed successfully.
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST);
-  state_->PresetOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  state_->PresetOnlineLoginComplete();
 
   EXPECT_EQ(CryptohomeAuthenticator::CREATE_NEW,
             SetAndResolveState(auth_.get(), state_.release()));
@@ -796,7 +796,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveCreateForNewUser) {
   // and been rejected because the user doesn't exist; additionally,
   // an online auth attempt has completed successfully.
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST);
-  state_->PresetOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
   RunResolve(auth_.get());
@@ -821,7 +821,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveOnlineLogin) {
   // Set up state as though a cryptohome mount attempt has occurred and
   // succeeded.
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
-  state_->PresetOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
   RunResolve(auth_.get());
@@ -843,7 +843,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveLoginWithPreHashedPassword) {
                          std::make_unique<std::string>(kSalt));
   ExpectMountExCall(false /* expect_create_attempt */);
 
-  auth_->AuthenticateToLogin(NULL, user_context_);
+  auth_->AuthenticateToLogin(user_context_);
   run_loop_.Run();
 }
 
@@ -859,7 +859,7 @@ TEST_F(CryptohomeAuthenticatorTest, FailLoginWithMissingSalt) {
   ExpectGetKeyDataExCall(std::make_unique<int64_t>(Key::KEY_TYPE_SALTED_SHA256),
                          std::unique_ptr<std::string>());
 
-  auth_->AuthenticateToLogin(NULL, user_context_);
+  auth_->AuthenticateToLogin(user_context_);
   run_loop_.Run();
 }
 

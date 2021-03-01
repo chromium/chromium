@@ -163,8 +163,6 @@ void LoginDisplayHostCommon::StartUserAdding(
 }
 
 void LoginDisplayHostCommon::StartSignInScreen() {
-  PrewarmAuthentication();
-
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetUsers();
 
@@ -189,12 +187,6 @@ void LoginDisplayHostCommon::StartSignInScreen() {
   // Enable status area after starting sign-in screen, as it may depend on the
   // UI being visible.
   SetStatusAreaVisible(true);
-}
-
-void LoginDisplayHostCommon::PrewarmAuthentication() {
-  auth_prewarmer_ = std::make_unique<AuthPrewarmer>();
-  auth_prewarmer_->PrewarmAuthentication(base::BindOnce(
-      &LoginDisplayHostCommon::OnAuthPrewarmDone, weak_factory_.GetWeakPtr()));
 }
 
 void LoginDisplayHostCommon::StartDemoAppLaunch() {
@@ -426,10 +418,6 @@ void LoginDisplayHostCommon::Observe(
 
 void LoginDisplayHostCommon::OnCancelPasswordChangedFlow() {
   LoginDisplayHost::default_host()->StartSignInScreen();
-}
-
-void LoginDisplayHostCommon::OnAuthPrewarmDone() {
-  auth_prewarmer_.reset();
 }
 
 void LoginDisplayHostCommon::ShutdownDisplayHost() {

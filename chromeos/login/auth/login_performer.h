@@ -31,10 +31,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace content {
-class BrowserContext;
-}
-
 namespace chromeos {
 
 // This class encapsulates sign in operations.
@@ -158,9 +154,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   // Run policy check for |account_id|. If something is wrong, delegate's
   // PolicyLoadFailed is called.
   virtual bool CheckPolicyForUser(const AccountId& account_id) = 0;
-
-  // Look up browser context to use during signin.
-  virtual content::BrowserContext* GetSigninContext() = 0;
 
   // Gets the SharedURLLoaderFactory used for sign in.
   virtual scoped_refptr<network::SharedURLLoaderFactory>

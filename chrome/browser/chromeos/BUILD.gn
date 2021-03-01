@@ -569,8 +569,6 @@ source_set("chromeos") {
     "../ash/certificate_provider/thread_safe_certificate_map.h",
     "../ash/login/app_mode/kiosk_launch_controller.cc",
     "../ash/login/app_mode/kiosk_launch_controller.h",
-    "../ash/login/auth/auth_prewarmer.cc",
-    "../ash/login/auth/auth_prewarmer.h",
     "../ash/login/auth/chrome_cryptohome_authenticator.cc",
     "../ash/login/auth/chrome_cryptohome_authenticator.h",
     "../ash/login/auth/chrome_login_performer.cc",
