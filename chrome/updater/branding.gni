@@ -16,10 +16,10 @@ if (is_chrome_branded) {
   mac_browser_bundle_identifier = "com.google.Chrome"
 } else {
   updater_company_full_name = "Chromium Authors"
-  updater_company_short_name = "Chromium"
+  updater_company_short_name = "BrowserX"
   updater_product_full_name = "ChromiumUpdater"
-  browser_name = "Chromium"
-  browser_product_name = "Chromium"
+  browser_name = "BrowserX"
+  browser_product_name = "BrowserX"
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
   mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
