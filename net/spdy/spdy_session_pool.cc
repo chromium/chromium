@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/trace_constants.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_source.h"
 #include "net/http/http_network_session.h"
@@ -152,9 +153,13 @@ SpdySessionPool::CreateAvailableSessionFromSocketHandle(
 
   std::unique_ptr<SpdySession> new_session =
       CreateSession(key, is_trusted_proxy, net_log.net_log());
+  std::vector<std::string> dns_aliases =
+      client_socket_handle->socket()->GetDnsAliases();
+
   new_session->InitializeWithSocketHandle(std::move(client_socket_handle),
                                           this);
-  return InsertSession(key, std::move(new_session), net_log);
+  return InsertSession(key, std::move(new_session), net_log,
+                       std::move(dns_aliases));
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(
@@ -168,11 +173,13 @@ base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(
 
   std::unique_ptr<SpdySession> new_session =
       CreateSession(key, is_trusted_proxy, net_log.net_log());
+  std::vector<std::string> dns_aliases = socket_stream->GetDnsAliases();
 
   new_session->InitializeWithSocket(std::move(socket_stream), connect_timing,
                                     this);
 
-  return InsertSession(key, std::move(new_session), net_log);
+  return InsertSession(key, std::move(new_session), net_log,
+                       std::move(dns_aliases));
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
@@ -327,8 +334,11 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
           adding_pooled_alias = false;
 
         // Remap main session key.
+        std::vector<std::string> main_session_old_dns_aliases =
+            GetDnsAliasesForSessionKey(old_key);
         UnmapKey(old_key);
-        MapKeyToAvailableSession(new_key, available_session);
+        MapKeyToAvailableSession(new_key, available_session,
+                                 std::move(main_session_old_dns_aliases));
 
         // Remap alias. From this point on |alias_it| is invalid, so no more
         // iterations of the loop should be allowed.
@@ -344,12 +354,15 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
             continue;
           }
 
+          std::vector<std::string> pooled_alias_old_dns_aliases =
+              GetDnsAliasesForSessionKey(*it);
           UnmapKey(*it);
           SpdySessionKey new_pool_alias_key = SpdySessionKey(
               it->host_port_pair(), it->proxy_server(), it->privacy_mode(),
               it->is_proxy_session(), key.socket_tag(),
               it->network_isolation_key(), it->disable_secure_dns());
-          MapKeyToAvailableSession(new_pool_alias_key, available_session);
+          MapKeyToAvailableSession(new_pool_alias_key, available_session,
+                                   std::move(pooled_alias_old_dns_aliases));
           auto old_it = it;
           ++it;
           available_session->RemovePooledAlias(*old_it);
@@ -363,8 +376,13 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
       }
 
       if (adding_pooled_alias) {
+        // Sanitize DNS aliases so that they can be added to the DNS alias map.
+        std::vector<std::string> sanitized_dns_aliases =
+            dns_alias_utility::SanitizeDnsAliases(addresses.dns_aliases());
+
         // Add this session to the map so that we can find it next time.
-        MapKeyToAvailableSession(key, available_session);
+        MapKeyToAvailableSession(key, available_session,
+                                 std::move(sanitized_dns_aliases));
         available_session->AddPooledAlias(key);
       }
 
@@ -496,6 +514,15 @@ void SpdySessionPool::OnSSLConfigForServerChanged(const HostPortPair& server) {
   }
 }
 
+std::vector<std::string> SpdySessionPool::GetDnsAliasesForSessionKey(
+    const SpdySessionKey& key) const {
+  auto it = dns_aliases_by_session_key_.find(key);
+  if (it == dns_aliases_by_session_key_.end())
+    return {};
+
+  return it->second;
+}
+
 void SpdySessionPool::RemoveRequestForSpdySession(SpdySessionRequest* request) {
   DCHECK_EQ(this, request->spdy_session_pool());
 
@@ -577,11 +604,14 @@ bool SpdySessionPool::IsSessionAvailable(
 
 void SpdySessionPool::MapKeyToAvailableSession(
     const SpdySessionKey& key,
-    const base::WeakPtr<SpdySession>& session) {
+    const base::WeakPtr<SpdySession>& session,
+    std::vector<std::string> dns_aliases) {
   DCHECK(base::Contains(sessions_, session.get()));
   std::pair<AvailableSessionMap::iterator, bool> result =
       available_sessions_.insert(std::make_pair(key, session));
   CHECK(result.second);
+
+  dns_aliases_by_session_key_[key] = std::move(dns_aliases);
 }
 
 SpdySessionPool::AvailableSessionMap::iterator
@@ -594,6 +624,7 @@ void SpdySessionPool::UnmapKey(const SpdySessionKey& key) {
   auto it = LookupAvailableSessionByKey(key);
   CHECK(it != available_sessions_.end());
   available_sessions_.erase(it);
+  dns_aliases_by_session_key_.erase(key);
 }
 
 void SpdySessionPool::RemoveAliases(const SpdySessionKey& key) {
@@ -675,10 +706,11 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
 base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(
     const SpdySessionKey& key,
     std::unique_ptr<SpdySession> new_session,
-    const NetLogWithSource& source_net_log) {
+    const NetLogWithSource& source_net_log,
+    std::vector<std::string> dns_aliases) {
   base::WeakPtr<SpdySession> available_session = new_session->GetWeakPtr();
   sessions_.insert(new_session.release());
-  MapKeyToAvailableSession(key, available_session);
+  MapKeyToAvailableSession(key, available_session, std::move(dns_aliases));
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&SpdySessionPool::UpdatePendingRequests,

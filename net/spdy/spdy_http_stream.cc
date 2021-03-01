@@ -101,7 +101,8 @@ const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                                spdy::SpdyStreamId pushed_stream_id,
-                               NetLogSource source_dependency)
+                               NetLogSource source_dependency,
+                               std::vector<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
@@ -122,7 +123,8 @@ SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
       request_body_buf_size_(0),
       buffered_read_callback_pending_(false),
       more_read_data_pending_(false),
-      was_alpn_negotiated_(false) {
+      was_alpn_negotiated_(false),
+      dns_aliases_(std::move(dns_aliases)) {
   DCHECK(spdy_session_.get());
 }
 
@@ -713,8 +715,7 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
 }
 
 const std::vector<std::string>& SpdyHttpStream::GetDnsAliases() const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
-  return *emptyvector_result;
+  return dns_aliases_;
 }
 
 }  // namespace net

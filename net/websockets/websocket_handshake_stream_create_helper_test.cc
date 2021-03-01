@@ -268,7 +268,7 @@ class WebSocketHandshakeStreamCreateHelperTest
         base::WeakPtr<SpdySession> spdy_session =
             CreateSpdySession(http_network_session.get(), key, net_log);
         std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
-            create_helper.CreateHttp2Stream(spdy_session);
+            create_helper.CreateHttp2Stream(spdy_session, {} /* dns_aliases */);
 
         int rv = handshake->InitializeStream(
             &request_info, true, DEFAULT_PRIORITY, NetLogWithSource(),

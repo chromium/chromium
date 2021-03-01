@@ -310,16 +310,22 @@ class NET_EXPORT SpdySessionPool
     network_quality_estimator_ = network_quality_estimator;
   }
 
+  // Returns the stored DNS aliases for the session key.
+  std::vector<std::string> GetDnsAliasesForSessionKey(
+      const SpdySessionKey& key) const;
+
  private:
   friend class SpdySessionPoolPeer;  // For testing.
 
-  typedef std::set<SpdySession*> SessionSet;
-  typedef std::vector<base::WeakPtr<SpdySession> > WeakSessionList;
-  typedef std::map<SpdySessionKey, base::WeakPtr<SpdySession>>
-      AvailableSessionMap;
-  typedef std::multimap<IPEndPoint, SpdySessionKey> AliasMap;
+  using SessionSet = std::set<SpdySession*>;
+  using WeakSessionList = std::vector<base::WeakPtr<SpdySession>>;
+  using AvailableSessionMap =
+      std::map<SpdySessionKey, base::WeakPtr<SpdySession>>;
+  using AliasMap = std::multimap<IPEndPoint, SpdySessionKey>;
+  using DnsAliasesBySessionKeyMap =
+      std::map<SpdySessionKey, std::vector<std::string>>;
+  using RequestSet = std::set<SpdySessionRequest*>;
 
-  typedef std::set<SpdySessionRequest*> RequestSet;
   struct RequestInfoForKey {
     RequestInfoForKey();
     ~RequestInfoForKey();
@@ -334,7 +340,7 @@ class NET_EXPORT SpdySessionPool
     std::list<base::RepeatingClosure> deferred_callbacks;
   };
 
-  typedef std::map<SpdySessionKey, RequestInfoForKey> SpdySessionRequestMap;
+  using SpdySessionRequestMap = std::map<SpdySessionKey, RequestInfoForKey>;
 
   // Removes |request| from |spdy_session_request_map_|.
   void RemoveRequestForSpdySession(SpdySessionRequest* request);
@@ -342,17 +348,22 @@ class NET_EXPORT SpdySessionPool
   // Returns true iff |session| is in |available_sessions_|.
   bool IsSessionAvailable(const base::WeakPtr<SpdySession>& session) const;
 
-  // Map the given key to the given session. There must not already be
-  // a mapping for |key|.
+  // Map the given key to the given session. There must not already be a
+  // mapping for `key`. Also adds an entry for `key` and `dns_aliases` in
+  // `dns_aliases_by_session_key_`. If there are already DNS aliases for the
+  // given key, replaces them.
   void MapKeyToAvailableSession(const SpdySessionKey& key,
-                                const base::WeakPtr<SpdySession>& session);
+                                const base::WeakPtr<SpdySession>& session,
+                                std::vector<std::string> dns_aliases);
 
   // Returns an iterator into |available_sessions_| for the given key,
   // which may be equal to |available_sessions_.end()|.
   AvailableSessionMap::iterator LookupAvailableSessionByKey(
       const SpdySessionKey& key);
 
-  // Remove the mapping of the given key, which must exist.
+  // Remove the mapping of the given key, which must exist. Also erases the
+  // key-value pair of SpdySessionKey and DNS aliases from the
+  // `dns_aliases_by_session_key_` map.
   void UnmapKey(const SpdySessionKey& key);
 
   // Remove all aliases for |key| from the aliases table.
@@ -379,7 +390,8 @@ class NET_EXPORT SpdySessionPool
   base::WeakPtr<SpdySession> InsertSession(
       const SpdySessionKey& key,
       std::unique_ptr<SpdySession> new_session,
-      const NetLogWithSource& source_net_log);
+      const NetLogWithSource& source_net_log,
+      std::vector<std::string> dns_aliases);
 
   // If a session with the specified |key| exists, invokes
   // OnSpdySessionAvailable on all matching members of
@@ -412,6 +424,9 @@ class NET_EXPORT SpdySessionPool
 
   // A map of IPEndPoint aliases for sessions.
   AliasMap aliases_;
+
+  // A map of DNS alias vectors by session keys.
+  DnsAliasesBySessionKeyMap dns_aliases_by_session_key_;
 
   // The index of all unclaimed pushed streams of all SpdySessions in this pool.
   Http2PushPromiseIndex push_promise_index_;

@@ -216,8 +216,7 @@ class MockHttpStreamFactoryForPreconnect : public HttpStreamFactory {
 
 class StreamRequestWaiter : public HttpStreamRequest::Delegate {
  public:
-  StreamRequestWaiter()
-      : waiting_for_stream_(false), stream_done_(false), error_status_(OK) {}
+  StreamRequestWaiter() : error_status_(OK) {}
 
   // HttpStreamRequest::Delegate
 
@@ -225,8 +224,8 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
                      const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {
     stream_done_ = true;
-    if (waiting_for_stream_)
-      loop_.Quit();
+    if (loop_)
+      loop_->Quit();
     stream_ = std::move(stream);
     used_ssl_config_ = used_ssl_config;
     used_proxy_info_ = used_proxy_info;
@@ -237,8 +236,8 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override {
     stream_done_ = true;
-    if (waiting_for_stream_)
-      loop_.Quit();
+    if (loop_)
+      loop_->Quit();
     websocket_stream_ = std::move(stream);
     used_ssl_config_ = used_ssl_config;
     used_proxy_info_ = used_proxy_info;
@@ -249,8 +248,8 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<BidirectionalStreamImpl> stream) override {
     stream_done_ = true;
-    if (waiting_for_stream_)
-      loop_.Quit();
+    if (loop_)
+      loop_->Quit();
     bidirectional_stream_impl_ = std::move(stream);
     used_ssl_config_ = used_ssl_config;
     used_proxy_info_ = used_proxy_info;
@@ -262,8 +261,8 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override {
     stream_done_ = true;
-    if (waiting_for_stream_)
-      loop_.Quit();
+    if (loop_)
+      loop_->Quit();
     used_ssl_config_ = used_ssl_config;
     error_status_ = status;
   }
@@ -283,11 +282,11 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
   void WaitForStream() {
-    while (!stream_done_) {
-      waiting_for_stream_ = true;
-      loop_.Run();
-      waiting_for_stream_ = false;
-    }
+    stream_done_ = false;
+    loop_ = std::make_unique<base::RunLoop>();
+    while (!stream_done_)
+      loop_->Run();
+    loop_.reset();
   }
 
   const SSLConfig& used_ssl_config() const { return used_ssl_config_; }
@@ -307,10 +306,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
   bool stream_done() const { return stream_done_; }
   int error_status() const { return error_status_; }
 
- private:
-  bool waiting_for_stream_;
-  bool stream_done_;
-  base::RunLoop loop_;
+ protected:
+  bool stream_done_ = false;
+  std::unique_ptr<base::RunLoop> loop_;
   std::unique_ptr<HttpStream> stream_;
   std::unique_ptr<WebSocketHandshakeStreamBase> websocket_stream_;
   std::unique_ptr<BidirectionalStreamImpl> bidirectional_stream_impl_;
@@ -351,7 +349,8 @@ class WebSocketStreamCreateHelper
         std::move(connection));
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
-      base::WeakPtr<SpdySession> session) override {
+      base::WeakPtr<SpdySession> session,
+      std::vector<std::string> dns_aliases) override {
     NOTREACHED();
     return nullptr;
   }
@@ -3124,6 +3123,196 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   EXPECT_EQ(
       2, GetHandedOutSocketCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+}
+
+TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
+  SpdySessionDependencies session_deps;
+
+  const std::vector<std::string> kDnsAliasesA({"alias1", "alias2"});
+  const std::vector<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
+  const std::string kHostnameC("c.example.org");
+
+  session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "a.example.org", "127.0.0.1", kDnsAliasesA);
+  session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "b.example.org", "127.0.0.1", kDnsAliasesB);
+  session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "c.example.org", "127.0.0.1", {});
+
+  // Prepare for an HTTPS connect.
+  MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
+  SequencedSocketData socket_data(base::make_span(&mock_read, 1),
+                                  base::span<MockWrite>());
+  socket_data.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps.socket_factory->AddSocketDataProvider(&socket_data);
+  SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
+  // Load cert for *.example.org
+  ssl_socket_data.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  ssl_socket_data.next_proto = kProtoHTTP2;
+  session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
+
+  std::unique_ptr<HttpNetworkSession> session(
+      SpdySessionDependencies::SpdyCreateSession(&session_deps));
+
+  // Create three HttpRequestInfos, differing only in host name.
+  // All three will resolve to 127.0.0.1 and hence be IP aliases.
+  HttpRequestInfo request_info_a;
+  request_info_a.method = "GET";
+  request_info_a.url = GURL("https://a.example.org");
+  request_info_a.privacy_mode = PRIVACY_MODE_DISABLED;
+  request_info_a.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  HttpRequestInfo request_info_b = request_info_a;
+  HttpRequestInfo request_info_c = request_info_a;
+  request_info_b.url = GURL("https://b.example.org");
+  request_info_c.url = GURL("https://c.example.org");
+
+  // Open one session.
+  SSLConfig ssl_config;
+  StreamRequestWaiter waiter1;
+  std::unique_ptr<HttpStreamRequest> request1(
+      session->http_stream_factory()->RequestStream(
+          request_info_a, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter1.WaitForStream();
+  EXPECT_TRUE(waiter1.stream_done());
+  EXPECT_FALSE(waiter1.websocket_stream());
+  ASSERT_TRUE(waiter1.stream());
+  EXPECT_EQ(kDnsAliasesA, waiter1.stream()->GetDnsAliases());
+
+  // Verify just one session created.
+  EXPECT_EQ(1, GetSpdySessionCount(session.get()));
+  EXPECT_EQ(
+      1, GetSocketPoolGroupCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+  EXPECT_EQ(
+      1, GetHandedOutSocketCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+
+  // Open a session that IP aliases first session.
+  StreamRequestWaiter waiter2;
+  std::unique_ptr<HttpStreamRequest> request2(
+      session->http_stream_factory()->RequestStream(
+          request_info_b, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter2.WaitForStream();
+  EXPECT_TRUE(waiter2.stream_done());
+  EXPECT_FALSE(waiter2.websocket_stream());
+  ASSERT_TRUE(waiter2.stream());
+  EXPECT_EQ(kDnsAliasesB, waiter2.stream()->GetDnsAliases());
+
+  // Verify the session pool reused the first session and no new session is
+  // created. This will fail unless the session pool supports multiple
+  // sessions aliasing a single IP.
+  EXPECT_EQ(1, GetSpdySessionCount(session.get()));
+  EXPECT_EQ(
+      1, GetSocketPoolGroupCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+  EXPECT_EQ(
+      1, GetHandedOutSocketCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+
+  // Open another session that IP aliases the first session.
+  StreamRequestWaiter waiter3;
+  std::unique_ptr<HttpStreamRequest> request3(
+      session->http_stream_factory()->RequestStream(
+          request_info_c, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter3.WaitForStream();
+  EXPECT_TRUE(waiter3.stream_done());
+  EXPECT_FALSE(waiter3.websocket_stream());
+  ASSERT_TRUE(waiter3.stream());
+  EXPECT_THAT(waiter3.stream()->GetDnsAliases(), ElementsAre(kHostnameC));
+
+  // Verify the session pool reused the first session and no new session is
+  // created. This will fail unless the session pool supports multiple
+  // sessions aliasing a single IP.
+  EXPECT_EQ(1, GetSpdySessionCount(session.get()));
+  EXPECT_EQ(
+      1, GetSocketPoolGroupCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+  EXPECT_EQ(
+      1, GetHandedOutSocketCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+
+  // Clear host resolver rules to ensure that cached values for DNS aliases
+  // are used.
+  session_deps.host_resolver->rules()->ClearRules();
+
+  // Re-request the original resource using `request_info_a`, which had
+  // non-default DNS aliases.
+  std::unique_ptr<HttpStreamRequest> request4(
+      session->http_stream_factory()->RequestStream(
+          request_info_a, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter1.WaitForStream();
+  EXPECT_TRUE(waiter1.stream_done());
+  EXPECT_FALSE(waiter1.websocket_stream());
+  ASSERT_TRUE(waiter1.stream());
+  EXPECT_EQ(kDnsAliasesA, waiter1.stream()->GetDnsAliases());
+
+  // Verify the session pool reused the first session and no new session is
+  // created.
+  EXPECT_EQ(1, GetSpdySessionCount(session.get()));
+  EXPECT_EQ(
+      1, GetSocketPoolGroupCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+  EXPECT_EQ(
+      1, GetHandedOutSocketCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+
+  // Re-request a resource using `request_info_b`, which had non-default DNS
+  // aliases.
+  std::unique_ptr<HttpStreamRequest> request5(
+      session->http_stream_factory()->RequestStream(
+          request_info_b, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter2.WaitForStream();
+  EXPECT_TRUE(waiter2.stream_done());
+  EXPECT_FALSE(waiter2.websocket_stream());
+  ASSERT_TRUE(waiter2.stream());
+  EXPECT_EQ(kDnsAliasesB, waiter2.stream()->GetDnsAliases());
+
+  // Verify the session pool reused the first session and no new session is
+  // created. This will fail unless the session pool supports multiple
+  // sessions aliasing a single IP.
+  EXPECT_EQ(1, GetSpdySessionCount(session.get()));
+  EXPECT_EQ(
+      1, GetSocketPoolGroupCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+  EXPECT_EQ(
+      1, GetHandedOutSocketCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+
+  // Re-request a resource using `request_info_c`, which had only the default
+  // DNS alias (the host name).
+  std::unique_ptr<HttpStreamRequest> request6(
+      session->http_stream_factory()->RequestStream(
+          request_info_c, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter3.WaitForStream();
+  EXPECT_TRUE(waiter3.stream_done());
+  EXPECT_FALSE(waiter3.websocket_stream());
+  ASSERT_TRUE(waiter3.stream());
+  EXPECT_THAT(waiter3.stream()->GetDnsAliases(), ElementsAre(kHostnameC));
+
+  // Verify the session pool reused the first session and no new session is
+  // created. This will fail unless the session pool supports multiple
+  // sessions aliasing a single IP.
+  EXPECT_EQ(1, GetSpdySessionCount(session.get()));
+  EXPECT_EQ(
+      1, GetSocketPoolGroupCount(session->GetSocketPool(
+             HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+  EXPECT_EQ(
+      1, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
 }
 

@@ -1044,6 +1044,8 @@ int HttpStreamFactory::Job::DoWaitingUserAction(int result) {
 int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
     base::WeakPtr<SpdySession> session) {
   DCHECK(using_spdy_);
+  auto dns_aliases = session_->spdy_session_pool()->GetDnsAliasesForSessionKey(
+      spdy_session_key_);
 
   if (is_websocket_) {
     DCHECK_NE(job_type_, PRECONNECT);
@@ -1055,8 +1057,9 @@ int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
       return ERR_NOT_IMPLEMENTED;
     }
 
-    websocket_stream_ = delegate_->websocket_handshake_stream_create_helper()
-                            ->CreateHttp2Stream(session);
+    websocket_stream_ =
+        delegate_->websocket_handshake_stream_create_helper()
+            ->CreateHttp2Stream(session, std::move(dns_aliases));
     return OK;
   }
   if (stream_type_ == HttpStreamRequest::BIDIRECTIONAL_STREAM) {
@@ -1069,8 +1072,8 @@ int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
   // will be creating all the SpdyHttpStreams, since it will know when
   // SpdySessions become available.
 
-  stream_ = std::make_unique<SpdyHttpStream>(session, pushed_stream_id_,
-                                             net_log_.source());
+  stream_ = std::make_unique<SpdyHttpStream>(
+      session, pushed_stream_id_, net_log_.source(), std::move(dns_aliases));
   return OK;
 }
 
