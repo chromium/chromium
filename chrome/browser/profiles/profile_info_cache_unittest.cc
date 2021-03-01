@@ -985,3 +985,30 @@ TEST_F(ProfileInfoCacheTest, RemoveProfileByAccountId) {
   GetCache()->RemoveProfileByAccountId(kTestCases[3].account_id);
   EXPECT_EQ(0u, GetCache()->GetNumberOfProfiles());
 }
+
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_WIN)
+// Checks that ProfileInfoCache doesn't crash when ProfileAttributesEntry
+// initialization modifies the cache entry.
+// This is a regression test for https://crbug.com/1180497.
+TEST_F(ProfileInfoCacheTest, ModifiyEntryWhileInitializing) {
+  base::FilePath profile_path = GetProfilePath("test");
+  AccountId account_id = AccountId::FromUserEmailGaiaId("email", "111111");
+  GetCache()->AddProfileToCache(profile_path, ASCIIToUTF16("Test"),
+                                account_id.GetGaiaId(),
+                                UTF8ToUTF16(account_id.GetUserEmail()), false,
+                                0, std::string(), EmptyAccountId());
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(profile_path);
+  // Set up the state so that ProfileAttributesEntry::Initialize() will modify
+  // the cache entry.
+  entry->SetIsSigninRequired(true);
+  // Reinitialize ProfileInfoCache.
+  ResetCache();
+  GetCache();  // Should not crash.
+
+  // The IsSigninRequired attribute should be cleaned up.
+  entry = GetCache()->GetProfileAttributesWithPath(profile_path);
+  EXPECT_FALSE(entry->IsSigninRequired());
+}
+#endif
