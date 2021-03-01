@@ -16,4 +16,10 @@ static_library("browser") {
     "//components/strings",
     "//components/upload_list",
   ]
+  if (is_chromeos) {
+    sources -= [
+      "crash_upload_list_crashpad.cc",
+      "crash_upload_list_crashpad.h",
+    ]
+  }
 }

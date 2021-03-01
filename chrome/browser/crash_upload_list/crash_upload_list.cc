@@ -14,7 +14,6 @@
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/crash/core/app/crashpad.h"
-#include "components/crash/core/browser/crash_upload_list_crashpad.h"
 #include "components/upload_list/crash_upload_list.h"
 #include "components/upload_list/text_log_upload_list.h"
 #endif
@@ -22,6 +21,10 @@
 #if defined(OS_ANDROID)
 #include "base/android/path_utils.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list_android.h"
+#endif
+
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "components/crash/core/browser/crash_upload_list_crashpad.h"
 #endif
 
 scoped_refptr<UploadList> CreateCrashUploadList() {
