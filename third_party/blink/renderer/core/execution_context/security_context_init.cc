@@ -175,7 +175,8 @@ void SecurityContextInit::ApplyFeaturePolicy(
           report_only_feature_policy_logger,
           report_only_permissions_policy_logger, execution_context_);
 
-  if (!report_only_feature_policy_header.empty()) {
+  if (!response.HttpHeaderField(http_names::kFeaturePolicyReportOnly)
+           .IsEmpty()) {
     UseCounter::Count(execution_context_,
                       WebFeature::kFeaturePolicyReportOnlyHeader);
   }
