@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 
 #import "base/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/optional.h"
 #import "base/timer/elapsed_timer.h"
 #import "base/values.h"
@@ -23,6 +24,23 @@
 namespace {
 const char kGetLinkToTextJavaScript[] = "linkToText.getLinkToText";
 const char kCheckPreconditionsJavaScript[] = "linkToText.checkPreconditions";
+
+// Corresponds to LinkToTextShouldOfferResult in enums.xml; used to log
+// fine-grained behavior of ShouldOffer.
+enum class ShouldOfferResult {
+  kSuccess = 0,
+  kRejectedInJavaScript = 1,
+  kBlockListed = 2,
+  kUnableToInvokeJavaScript = 3,
+  kWebLayerTaskTimeout = 4,
+  kDispatchedTimeout = 5,
+  kMaxValue = kDispatchedTimeout
+};
+
+void LogShouldOfferResult(ShouldOfferResult result) {
+  base::UmaHistogramEnumeration("IOS.LinkToText.ShouldOfferResult", result);
+}
+
 }  // namespace
 
 LinkToTextTabHelper::LinkToTextTabHelper(web::WebState* web_state)
@@ -44,6 +62,7 @@ void LinkToTextTabHelper::CreateForWebState(web::WebState* web_state) {
 bool LinkToTextTabHelper::ShouldOffer() {
   if (!shared_highlighting::ShouldOfferLinkToText(
           web_state_->GetLastCommittedURL())) {
+    LogShouldOfferResult(ShouldOfferResult::kBlockListed);
     return false;
   }
 
@@ -51,6 +70,7 @@ bool LinkToTextTabHelper::ShouldOffer() {
       web_state_->GetWebFramesManager()->GetMainWebFrame();
   if (!web_state_->ContentIsHTML() || !main_frame ||
       !main_frame->CanCallJavaScriptFunction()) {
+    LogShouldOfferResult(ShouldOfferResult::kUnableToInvokeJavaScript);
     return false;
   }
 
@@ -69,8 +89,12 @@ bool LinkToTextTabHelper::ShouldOffer() {
         javascriptEvaluationComplete = YES;
         if (responseAsValue && responseAsValue->is_bool()) {
           response = responseAsValue->GetBool();
+          LogShouldOfferResult(response
+                                   ? ShouldOfferResult::kSuccess
+                                   : ShouldOfferResult::kRejectedInJavaScript);
         } else {
           response = NO;
+          LogShouldOfferResult(ShouldOfferResult::kWebLayerTaskTimeout);
         }
         if (isRunLoopNested) {
           CFRunLoopStop(CFRunLoopGetCurrent());
@@ -91,6 +115,7 @@ bool LinkToTextTabHelper::ShouldOffer() {
                               NSEC_PER_SEC)),
       dispatch_get_main_queue(), ^{
         if (!isRunLoopComplete) {
+          LogShouldOfferResult(ShouldOfferResult::kDispatchedTimeout);
           CFRunLoopStop(CFRunLoopGetCurrent());
           response = NO;
         }
