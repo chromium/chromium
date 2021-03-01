@@ -542,7 +542,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return new WebViewChromium(this, webView, privateAccess, mShouldDisableThreadChecking);
     }
 
-    // Workaround for IME thread crashes on grandfathered OEM apps.
+    // Workaround for IME thread crashes on legacy OEM apps.
     private boolean shouldDisableThreadChecking(Context context) {
         String appName = context.getPackageName();
         int versionCode = PackageUtils.getPackageVersion(context, appName);
