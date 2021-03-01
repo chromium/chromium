@@ -164,8 +164,7 @@ void PendingAnimations::NotifyCompositorAnimationStarted(
       waiting_for_compositor_animation_start_.push_back(animation);
       continue;
     }
-    if (animation->timeline() &&
-        !animation->timeline()->IsMonotonicallyIncreasing()) {
+    if (!animation->timeline()->IsMonotonicallyIncreasing()) {
       animation->NotifyReady(
           animation->timeline()->CurrentTime().value_or(AnimationTimeDelta()));
     } else {
@@ -200,9 +199,8 @@ void PendingAnimations::FlushWaitingNonCompositedAnimations() {
   for (auto& animation : animations) {
     if (animation->HasActiveAnimationsOnCompositor()) {
       waiting_for_compositor_animation_start_.push_back(animation);
-    } else {
-      DCHECK(animation->timeline()->IsActive() &&
-             animation->timeline()->CurrentTime());
+    } else if (animation->timeline() && animation->timeline()->IsActive() &&
+               animation->timeline()->CurrentTime().has_value()) {
       animation->NotifyReady(animation->timeline()->CurrentTime().value());
     }
   }
