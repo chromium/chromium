@@ -126,8 +126,7 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
       const media::CdmConfig& cdm_config,
       CreateCdmCallback callback,
       mojo::PendingRemote<media::mojom::ContentDecryptionModule> receiver,
-      const base::Optional<base::UnguessableToken>& cdm_id,
-      mojo::PendingRemote<media::mojom::Decryptor> decryptor,
+      media::mojom::CdmContextPtr cdm_context,
       const std::string& error_message);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

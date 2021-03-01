@@ -109,14 +109,12 @@ class CdmServiceTest : public testing::Test {
  private:
   void OnCdmCreated(bool expected_result,
                     mojo::PendingRemote<mojom::ContentDecryptionModule> remote,
-                    const base::Optional<base::UnguessableToken>& cdm_id,
-                    mojo::PendingRemote<mojom::Decryptor> decryptor,
+                    media::mojom::CdmContextPtr cdm_context,
                     const std::string& error_message) {
     if (!expected_result) {
       EXPECT_FALSE(remote);
-      EXPECT_FALSE(decryptor);
+      EXPECT_FALSE(cdm_context);
       EXPECT_TRUE(!error_message.empty());
-      EXPECT_FALSE(cdm_id);
       return;
     }
     EXPECT_TRUE(remote);

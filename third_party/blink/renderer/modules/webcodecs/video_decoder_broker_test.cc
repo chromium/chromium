@@ -146,8 +146,7 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   void CreateCdm(const std::string& key_system,
                  const media::CdmConfig& cdm_config,
                  CreateCdmCallback callback) override {
-    std::move(callback).Run(mojo::NullRemote(), base::nullopt,
-                            mojo::NullRemote(), "CDM creation not supported");
+    std::move(callback).Run(mojo::NullRemote(), nullptr, "CDM not supported");
   }
 
 #if defined(OS_WIN)

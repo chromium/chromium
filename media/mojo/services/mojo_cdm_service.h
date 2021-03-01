@@ -45,8 +45,7 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   // indicate a reason.
   // - |cdm_factory| is used to create CDM instances. Must not be null.
   // - |context| is used to keep track of all CDM instances such that we can
-  //   connect the CDM with a media player (e.g. decoder). Can be null if the
-  //   CDM does not need to be connected with any media player in this process.
+  //   connect the CDM with a media player (e.g. decoder). Must not be null.
   static void Create(CdmFactory* cdm_factory,
                      MojoCdmServiceContext* context,
                      const std::string& key_system,
@@ -82,7 +81,7 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   scoped_refptr<::media::ContentDecryptionModule> GetCdm();
 
   // Gets the remote ID of the CDM this is holding.
-  base::Optional<base::UnguessableToken> cdm_id() const { return cdm_id_; }
+  base::UnguessableToken cdm_id() const { return cdm_id_.value(); }
 
  private:
   MojoCdmService(CdmFactory* cdm_factory, MojoCdmServiceContext* context);
@@ -107,8 +106,8 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   // Callback for when |decryptor_| loses connectivity.
   void OnDecryptorConnectionError();
 
-  CdmFactory* cdm_factory_;
-  MojoCdmServiceContext* const context_ = nullptr;
+  CdmFactory* const cdm_factory_;
+  MojoCdmServiceContext* const context_;
   scoped_refptr<::media::ContentDecryptionModule> cdm_;
 
   // MojoDecryptorService is passed the Decryptor from |cdm_|, so

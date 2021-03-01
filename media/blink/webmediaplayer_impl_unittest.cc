@@ -1673,7 +1673,6 @@ TEST_F(WebMediaPlayerImplTest, Encrypted) {
   EXPECT_CALL(mock_cdm_context_, GetDecryptor())
       .Times(AnyNumber())
       .WillRepeatedly(Return(nullptr));
-  mock_cdm_context_.set_cdm_id(nullptr);
 
   {
     // Wait for kNetworkStateFormatError caused by Renderer initialization

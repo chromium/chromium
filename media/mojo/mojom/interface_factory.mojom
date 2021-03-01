@@ -70,14 +70,11 @@ interface InterfaceFactory {
   // untrusted process (e.g. renderer), so the implementation must fully
   // validate |key_system| before creating the CDM. |cdm_config| specifies other
   // properties of the CDM which may influence creation. Upon failure, the
-  // returned |cdm| and |decryptor| will be null, |cdm_id| will be zero and
-  // |error_message| will specify the error reason. Upon success, |cdm| will be
-  // valid, |cdm_id| will be non-zero and will later be used to locate the CDM
-  // at the remote side and |error_message| will be empty. |decryptor| will be
-  // the remote Decryptor if the CDM implementation provides one.
+  // returned |cdm| and |cdm_context| will be null, and |error_message| will
+  // specify the error reason. Upon success, |cdm| and |cdm_context| will be
+  // valid, and |error_message| will be empty.
   CreateCdm(string key_system, CdmConfig cdm_config) =>
             (pending_remote<ContentDecryptionModule>? cdm,
-             mojo_base.mojom.UnguessableToken? cdm_id,
-             pending_remote<Decryptor>? decryptor,
+             CdmContext? cdm_context,
              string error_message);
 };

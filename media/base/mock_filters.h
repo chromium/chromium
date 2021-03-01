@@ -627,7 +627,7 @@ class MockCdmContext : public CdmContext {
 
   base::Optional<base::UnguessableToken> GetCdmId() const override;
 
-  void set_cdm_id(const base::UnguessableToken* cdm_id);
+  void set_cdm_id(const base::UnguessableToken& cdm_id);
 
  private:
   base::Optional<base::UnguessableToken> cdm_id_;

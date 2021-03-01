@@ -60,13 +60,13 @@ MojoCdmService::MojoCdmService(CdmFactory* cdm_factory,
     : cdm_factory_(cdm_factory), context_(context) {
   DVLOG(1) << __func__;
   DCHECK(cdm_factory_);
-  // |context_| can be null.
+  DCHECK(context_);
 }
 
 MojoCdmService::~MojoCdmService() {
   DVLOG(1) << __func__;
 
-  if (!context_ || !cdm_id_)
+  if (!cdm_id_)
     return;
 
   context_->UnregisterCdm(cdm_id_.value());
@@ -160,12 +160,9 @@ void MojoCdmService::OnCdmCreated(
   }
 
   cdm_ = cdm;
-
-  if (context_) {
-    cdm_id_ = context_->RegisterCdm(this);
-    DVLOG(1) << __func__ << ": CDM successfully registered with ID "
-             << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
-  }
+  cdm_id_ = context_->RegisterCdm(this);
+  DVLOG(1) << __func__ << ": CDM successfully registered with ID "
+           << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
 
   // If |cdm| has a decryptor, create the MojoDecryptorService
   // and pass the connection back to the client.
