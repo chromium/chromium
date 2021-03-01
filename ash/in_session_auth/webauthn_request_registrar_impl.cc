@@ -13,10 +13,11 @@ namespace ash {
 
 namespace {
 
-// A property key to tie the WebAuthn request id to a window.
-DEFINE_UI_CLASS_PROPERTY_KEY(uint32_t, kWebAuthnRequestId, 0u)
+constexpr uint32_t kInvalidRequestId = 0u;
+uint32_t g_current_request_id = kInvalidRequestId;
 
-uint32_t g_current_request_id = 0u;
+// A property key to tie the WebAuthn request id to a window.
+DEFINE_UI_CLASS_PROPERTY_KEY(uint32_t, kWebAuthnRequestId, kInvalidRequestId)
 
 }  // namespace
 
@@ -26,6 +27,15 @@ WebAuthnRequestRegistrarImpl::~WebAuthnRequestRegistrarImpl() = default;
 
 WebAuthnRequestRegistrarImpl::GenerateRequestIdCallback
 WebAuthnRequestRegistrarImpl::GetRegisterCallback(aura::Window* window) {
+  // If the window is nullptr, e.g. IsUVPAA() is called shortly before or after
+  // navigation, the render_frame_host may not be initialized properly, we
+  // return a dumb callback. In the worst case, if it's MakeCredential or
+  // GetAssertion, the Chrome OS auth dialog will not show up and the operation
+  // fails gracefully.
+  if (!window) {
+    return base::BindRepeating([] { return kInvalidRequestId; });
+  }
+
   window_tracker_.Add(window);
   // base::Unretained() is safe here because WebAuthnRequestRegistrarImpl
   // has the same lifetime as Shell and is released at
@@ -36,7 +46,13 @@ WebAuthnRequestRegistrarImpl::GetRegisterCallback(aura::Window* window) {
 }
 
 uint32_t WebAuthnRequestRegistrarImpl::DoRegister(aura::Window* window) {
-  g_current_request_id++;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Avoid uint32_t overflow.
+  do {
+    g_current_request_id++;
+  } while (g_current_request_id == kInvalidRequestId);
+
   // If |window| is still valid, associate it with the new request id.
   // If |window| is gone, the incremented id will fail the request later,
   // which is ok.
@@ -47,6 +63,10 @@ uint32_t WebAuthnRequestRegistrarImpl::DoRegister(aura::Window* window) {
 
 aura::Window* WebAuthnRequestRegistrarImpl::GetWindowForRequestId(
     uint32_t request_id) {
+  if (request_id == kInvalidRequestId) {
+    return nullptr;
+  }
+
   MruWindowTracker::WindowList windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
   for (aura::Window* window : windows) {

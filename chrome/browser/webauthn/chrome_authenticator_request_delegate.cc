@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -473,6 +474,7 @@ ChromeAuthenticatorRequestDelegate::TouchIdAuthenticatorConfigForProfile(
 ChromeAuthenticatorRequestDelegate::ChromeOSGenerateRequestIdCallback
 ChromeAuthenticatorRequestDelegate::GetGenerateRequestIdCallback(
     content::RenderFrameHost* render_frame_host) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   aura::Window* window =
       render_frame_host->GetNativeView()->GetToplevelWindow();
   return ash::WebAuthnRequestRegistrar::Get()->GetRegisterCallback(window);
