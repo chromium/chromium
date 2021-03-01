@@ -9,7 +9,10 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 component("pcie_peripheral") {
   defines = [ "IS_ASH_PCIE_PERIPHERAL_IMPL" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/typecd",
+  ]
 
   sources = [
     "pcie_peripheral_manager.cc",
@@ -25,6 +28,7 @@ source_set("unit_tests") {
   deps = [
     ":pcie_peripheral",
     "//base/test:test_support",
+    "//chromeos/dbus/typecd",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
   ]
