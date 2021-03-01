@@ -165,20 +165,11 @@ WindowOcclusionTracker* Env::GetWindowOcclusionTracker() {
 }
 
 void Env::PauseWindowOcclusionTracking() {
-  const bool was_paused = GetWindowOcclusionTracker();
   GetWindowOcclusionTracker()->Pause();
-  if (!was_paused) {
-    for (EnvObserver& observer : observers_)
-      observer.OnWindowOcclusionTrackingPaused();
-  }
 }
 
 void Env::UnpauseWindowOcclusionTracking() {
   GetWindowOcclusionTracker()->Unpause();
-  if (!GetWindowOcclusionTracker()->IsPaused()) {
-    for (EnvObserver& observer : observers_)
-      observer.OnWindowOcclusionTrackingResumed();
-  }
 }
 
 void Env::AddEventObserver(ui::EventObserver* observer,

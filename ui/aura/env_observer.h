@@ -26,11 +26,6 @@ class AURA_EXPORT EnvObserver {
   // Called right before Env is destroyed.
   virtual void OnWillDestroyEnv() {}
 
-  // Called when occlusion tracker pauses/resumes. This is only called in
-  // Mode::LOCAL.
-  virtual void OnWindowOcclusionTrackingPaused() {}
-  virtual void OnWindowOcclusionTrackingResumed() {}
-
  protected:
   virtual ~EnvObserver() {}
 };
