@@ -106,6 +106,9 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
       delete;
 
   void SetUpOnMainThread() override {
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "components/test/data");
+
     // This test suite does "cross-site" navigations to various domains that
     // must all resolve to localhost.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -241,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(subresource_filter::kActivationConsoleMessage);
 
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  GURL test_url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
 
   subresource_filter::TestSubresourceFilterObserver observer(web_contents);
   base::Optional<subresource_filter::mojom::ActivationLevel> page_activation =
@@ -305,8 +308,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        DisallowedSubframeURLNotBlockedOnNonActivatedURL) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  GURL test_url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
 
   // Verify that the "ad" subframe is loaded if it is not flagged by the
   // ruleset.
@@ -337,8 +340,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        MAYBE_ContentSettingsAllowlist_DoNotActivate) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  GURL test_url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
@@ -376,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        MAYBE_ContentSettingsAllowlistGlobal_DoNotActivate) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  GURL test_url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
@@ -413,8 +416,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, InfoBarPresentation) {
 
   // Configure the subresource filter to activate on the test URL and to block
   // its script from loading.
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  GURL test_url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
   ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
@@ -465,8 +468,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  GURL test_url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
   ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
 
   NavigateAndWaitForCompletion(test_url, shell());
@@ -497,8 +500,8 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  GURL test_url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  GURL test_url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
   ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
 
   NavigateAndWaitForCompletion(test_url, shell());
@@ -515,13 +518,14 @@ IN_PROC_BROWSER_TEST_F(
 
   // Another navigation to the same domain should be allowed too.
   NavigateAndWaitForCompletion(
-      embedded_test_server()->GetURL("/frame_with_included_script.html?query"),
+      embedded_test_server()->GetURL(
+          "/subresource_filter/frame_with_included_script.html?query"),
       shell());
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
 
   // A cross site blocklisted navigation should stay activated, however.
   GURL a_url(embedded_test_server()->GetURL(
-      "a.com", "/frame_with_included_script.html"));
+      "a.com", "/subresource_filter/frame_with_included_script.html"));
   ActivateSubresourceFilterInWebContentsForURL(web_contents, a_url);
   NavigateAndWaitForCompletion(a_url, shell());
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
@@ -553,8 +557,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   auto test_clock = std::make_unique<base::SimpleTestClock>();
   ads_intervention_manager->set_clock_for_testing(test_clock.get());
 
-  const GURL url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  const GURL url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
 
@@ -654,8 +658,8 @@ IN_PROC_BROWSER_TEST_F(
   auto test_clock = std::make_unique<base::SimpleTestClock>();
   ads_intervention_manager->set_clock_for_testing(test_clock.get());
 
-  const GURL url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  const GURL url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
 
@@ -776,8 +780,8 @@ IN_PROC_BROWSER_TEST_F(
   auto test_clock = std::make_unique<base::SimpleTestClock>();
   ads_intervention_manager->set_clock_for_testing(test_clock.get());
 
-  const GURL url(
-      embedded_test_server()->GetURL("/frame_with_included_script.html"));
+  const GURL url(embedded_test_server()->GetURL(
+      "/subresource_filter/frame_with_included_script.html"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
 
@@ -843,9 +847,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   GURL a_url(embedded_test_server()->GetURL(
-      "a.com", "/frame_with_included_script.html"));
+      "a.com", "/subresource_filter/frame_with_included_script.html"));
   GURL b_url(embedded_test_server()->GetURL(
-      "b.com", "/frame_with_included_script.html"));
+      "b.com", "/subresource_filter/frame_with_included_script.html"));
   // Test utils only support one blocklisted site at a time.
   // TODO(csharrison): Add support for more than one URL.
   ActivateSubresourceFilterInWebContentsForURL(web_contents, a_url);

@@ -937,6 +937,8 @@ if (!is_android) {
       "//components/test/data/autofill/",
       "//components/test/data/optimization_guide/",
       "//components/test/data/payments/",
+      "//components/test/data/ad_tagging/",
+      "//components/test/data/subresource_filter/",
       "//components/test/data/translate/",
       "//components/test/data/update_client/",
       "//content/test/data/",

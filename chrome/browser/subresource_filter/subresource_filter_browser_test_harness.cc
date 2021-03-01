@@ -58,15 +58,14 @@ void SubresourceFilterBrowserTest::TearDown() {
 }
 
 void SubresourceFilterBrowserTest::SetUpOnMainThread() {
-  base::FilePath test_data_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
-  embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
+  embedded_test_server()->ServeFilesFromSourceDirectory("components/test/data");
   host_resolver()->AddSimulatedFailure("host-with-dns-lookup-failure");
 
   host_resolver()->AddRule("*", "127.0.0.1");
   content::SetupCrossSiteRedirector(embedded_test_server());
 
   // Add content/test/data for cross_site_iframe_factory.html
+  base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(content::DIR_TEST_DATA, &test_data_dir));
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 

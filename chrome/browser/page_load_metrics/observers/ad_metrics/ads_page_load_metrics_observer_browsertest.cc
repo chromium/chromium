@@ -1270,7 +1270,8 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
   ~AdsPageLoadMetricsObserverResourceBrowserTest() override {}
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "components/test/data");
     content::SetupCrossSiteRedirector(embedded_test_server());
     SetRulesetWithRules(
         {subresource_filter::testing::CreateSuffixRule("ad_script.js"),

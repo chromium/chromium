@@ -28,6 +28,9 @@ class AdsPageLoadMetricsObserverBrowserTest : public WebLayerBrowserTest {
   ~AdsPageLoadMetricsObserverBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "components/test/data");
+
     host_resolver()->AddRule("*", "127.0.0.1");
 
     SetRulesetWithRules(
