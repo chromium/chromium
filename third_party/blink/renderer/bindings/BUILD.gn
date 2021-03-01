@@ -226,6 +226,10 @@ generate_bindings("generate_bindings_all") {
     outputs += generated_namespace_sources_in_core +
                generated_namespace_sources_in_modules
   }
+  targets += [ "union" ]
+  outputs +=
+      generated_union_sources_in_core + generated_union_sources_in_modules +
+      generated_union_sources_for_testing_in_core
 }
 
 # Exposes the libraries that affect the resulting blob image of the V8 context
