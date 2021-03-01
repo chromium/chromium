@@ -162,6 +162,12 @@ const char kUmaSelectDefaultSearchEngine[] =
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  // With no header on first appearance, UITableView adds a 35 points space at
+  // the beginning of the table view. This space remains after this table view
+  // reloads with headers. Setting a small tableHeaderView avoids this.
+  self.tableView.tableHeaderView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.separatorInset =
       UIEdgeInsetsMake(0, kTableViewSeparatorLeadingInset, 0, 0);
