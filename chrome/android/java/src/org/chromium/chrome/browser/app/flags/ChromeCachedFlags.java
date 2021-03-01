@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -97,6 +98,9 @@ public class ChromeCachedFlags {
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS,
+                LensFeature.DISABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_INCOGNITO,
+                LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_LOW_END_DEVICE,
+                LensFeature.MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH,
                 PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL,
                 ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS,
                 ShoppingPersistedTabData.TIME_TO_LIVE_MS,
