@@ -51,7 +51,8 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'gestureNavigationIntroTitle')]]
       </h1>
-      <div slot="content" class="flex layout vertical">
+      <div slot="content" class="landscape-header-aligned
+          portrait-horizontal-centered">
         <div class="gesture-list-item">
           <img class="gesture-list-item-icon" src="images/home.svg">
           <div class="gesture-list-item-text">
@@ -88,7 +89,7 @@
       <p slot="subtitle">
         [[i18nDynamic(locale, 'gestureNavigationHomeDescription')]]
       </p>
-      <div slot="content" class="flex layout vertical center">
+      <div slot="content" class="content-centered">
         <div class="gesture-animation-container">
           <cr-lottie animation-url="gesture_go_home.json"
                      class="gesture-animation">
@@ -115,7 +116,7 @@
       <p slot="subtitle">
         [[i18nDynamic(locale, 'gestureNavigationOverviewDescription')]]
       </p>
-      <div slot="content" class="flex layout vertical center">
+      <div slot="content" class="content-centered">
         <div class="gesture-animation-container">
           <cr-lottie animation-url="gesture_hotseat_overview.json"
                      class="gesture-animation">
@@ -141,7 +142,7 @@
       <p slot="subtitle">
         [[i18nDynamic(locale, 'gestureNavigationBackDescription')]]
       </p>
-      <div slot="content" class="flex layout vertical center">
+      <div slot="content" class="content-centered">
         <div class="gesture-animation-container">
           <cr-lottie animation-url="gesture_go_back.json"
                       class="gesture-animation">

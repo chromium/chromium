@@ -32,14 +32,13 @@
           <webview id="value-prop-view-vertical-mode" tabindex="-1"></webview>
         </div>
       </div>
-      <div slot="content" class="flex layout vertical">
-        <div id="content-container">
-          <div id="intro-title-text"></div>
-          <div class="content" id="intro-text"></div>
-          <div class="line"></div>
-          <div id="consents-container"></div>
-          <div class="content" id="footer-text"></div>
-        </div>
+      <div slot="content" id="content-container"
+          class="landscape-vertical-centered">
+        <div id="intro-title-text"></div>
+        <div class="content" id="intro-text"></div>
+        <div class="line"></div>
+        <div id="consents-container"></div>
+        <div class="content" id="footer-text"></div>
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="skip-button" on-click="onSkipTap_"

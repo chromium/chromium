@@ -14,7 +14,7 @@
 
 <dom-module id="oobe-debugging-element">
   <template>
-    <style include="oobe-common action-link">
+    <style include="oobe-dialog-host action-link">
       #password-note {
         color: #c6c6c6;
         font-size: 12px;
@@ -58,7 +58,7 @@
       <div slot="subtitle">
         [[i18nDynamic(locale, 'enableDebuggingSetupMessage')]]
       </div>
-      <div slot="content">
+      <div slot="content" class="landscape-vertical-centered">
         <cr-input id="password" type="password" value="{{password_}}"
                   placeholder="[[i18nDynamic(locale,
                                 'enableDebuggingPasswordLabel')]]"

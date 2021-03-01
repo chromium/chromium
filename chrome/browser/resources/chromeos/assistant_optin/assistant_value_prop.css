@@ -7,24 +7,13 @@
   display: none;
 }
 
-@media screen and (orientation: portrait) {
-  oobe-adaptive-dialog {
-    --oobe-adaptive-dialog-content-top-padding: 0;
-  }
-
-  :host-context(html[new-layout]) #animation-container-vertical-mode {
-    display: block;
-  }
+:host-context([orientation=horizontal]) #animation-container-horizontal-mode,
+:host-context([orientation=vertical]) #animation-container-vertical-mode {
+  display: block;
 }
 
-@media screen and (orientation: landscape) {
-  :host-context(html[new-layout]) #animation-container-horizontal-mode {
-    display: block;
-  }
-
-  :host-context(html[new-layout]) #content-container {
-    margin: auto;
-  }
+:host-context([orientation=vertical]) oobe-adaptive-dialog {
+  --oobe-adaptive-dialog-content-top-padding: 0;
 }
 
 /**

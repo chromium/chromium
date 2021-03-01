@@ -49,12 +49,6 @@
 <dom-module id="offline-ad-login-element">
   <template>
     <style include="md-select oobe-dialog-host">
-      :host-context(html[new-layout]) div[slot='content'] {
-        /* Center content vertically. */
-        margin-bottom: auto;
-        margin-top: auto;
-      }
-
       .select-title {
         color: var(--google-grey-900);
         font-size: 13px;
@@ -121,7 +115,7 @@
       <div slot="subtitle">
         [[i18nDynamic(locale, 'adUnlockSubtitle')]]
       </div>
-      <div slot="content" id="adUnlock">
+      <div slot="content" id="adUnlock" class="landscape-vertical-centered">
         <cr-input id="unlockPasswordInput" type="password" slot="inputs"
             invalid="{{unlockPasswordInvalid}}" class="focus-on-show"
             label="[[i18nDynamic(locale, 'adUnlockPassword')]]"
@@ -150,7 +144,8 @@
       </div>
       <paper-progress slot="progress" hidden="[[!loading]]" indeterminate>
       </paper-progress>
-      <div slot="content" hidden="[[loading]]">
+      <div slot="content" class="landscape-vertical-centered"
+          hidden="[[loading]]">
         <div class="layout vertical" id="joinConfig"
             hidden="[[!joinConfigVisible_]]">
           <span class="select-divider-line top-line"></span>

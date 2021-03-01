@@ -35,10 +35,24 @@
   padding-top: 20px;
 }
 
-:host-context([new-layout][orientation=horizontal])
-    .horizontal-mode-horizontal-centering {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
+/* Center-align both vertically and horizontally */
+.content-centered {
+  margin: auto;
+}
+
+/* Center-align vertically in landscape mode */
+:host-context([orientation=horizontal]) .landscape-vertical-centered {
+  margin: auto 0;
+}
+
+/* Align with header in landscape mode */
+:host-context([orientation=horizontal]) .landscape-header-aligned {
+  padding-top: calc(var(--oobe-adaptive-dialog-header-top-padding)
+      + var(--oobe-adaptive-dialog-title-top-padding)
+      + var(--oobe-adaptive-dialog-icon-size));
+}
+
+/* Center-align horizontally in portrait mode */
+:host-context([orientation=vertical]) .portrait-horizontal-centered {
+  margin: 0 auto;
 }
