@@ -128,7 +128,8 @@ Connection::Connection(const std::string& address)
   DCHECK(connection_);
   if (Ready()) {
     auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
-        xcb_get_setup(XcbConnection())));
+                              xcb_get_setup(XcbConnection())),
+                          true);
     setup_ = Read<Setup>(&buf);
     default_screen_ = &setup_.roots[DefaultScreenId()];
     InitRootDepthAndVisual();
