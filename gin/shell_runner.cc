@@ -63,7 +63,7 @@ void ShellRunner::Run(const std::string& source,
                       const std::string& resource_name) {
   v8::Isolate* isolate = GetContextHolder()->isolate();
   TryCatch try_catch(isolate);
-  v8::ScriptOrigin origin(StringToV8(isolate, resource_name));
+  v8::ScriptOrigin origin(isolate, StringToV8(isolate, resource_name));
   auto maybe_script = Script::Compile(GetContextHolder()->context(),
                                       StringToV8(isolate, source), &origin);
   v8::Local<Script> script;
