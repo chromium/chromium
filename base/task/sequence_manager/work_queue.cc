@@ -316,14 +316,6 @@ void WorkQueue::MaybeShrinkQueue() {
   tasks_.MaybeShrinkQueue();
 }
 
-void WorkQueue::DeletePendingTasks() {
-  tasks_.clear();
-
-  if (work_queue_sets_ && heap_handle().IsValid())
-    work_queue_sets_->OnQueuesFrontTaskChanged(this);
-  DCHECK(!heap_handle_.IsValid());
-}
-
 void WorkQueue::PopTaskForTesting() {
   if (tasks_.empty())
     return;

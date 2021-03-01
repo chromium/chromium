@@ -1221,42 +1221,6 @@ void TaskQueueImpl::ActivateDelayedFenceIfNeeded(TimeTicks now) {
   main_thread_only().delayed_fence = nullopt;
 }
 
-void TaskQueueImpl::DeletePendingTasks() {
-  main_thread_only().delayed_work_queue->DeletePendingTasks();
-  main_thread_only().immediate_work_queue->DeletePendingTasks();
-  // TODO(altimin): Add clear() method to DelayedIncomingQueue.
-  DelayedIncomingQueue queue_to_delete;
-  main_thread_only().delayed_incoming_queue.swap(&queue_to_delete);
-
-  TaskDeque deque;
-  {
-    // Limit the scope of the lock to ensure that the deque is destroyed
-    // outside of the lock to allow it to post tasks.
-    base::internal::CheckedAutoLock lock(any_thread_lock_);
-    deque.swap(any_thread_.immediate_incoming_queue);
-    any_thread_.immediate_work_queue_empty = true;
-    empty_queues_to_reload_handle_.SetActive(false);
-  }
-
-  LazyNow lazy_now = main_thread_only().time_domain->CreateLazyNow();
-  UpdateDelayedWakeUp(&lazy_now);
-}
-
-bool TaskQueueImpl::HasTasks() const {
-  if (!main_thread_only().delayed_work_queue->Empty())
-    return true;
-  if (!main_thread_only().immediate_work_queue->Empty())
-    return true;
-  if (!main_thread_only().delayed_incoming_queue.empty())
-    return true;
-
-  base::internal::CheckedAutoLock lock(any_thread_lock_);
-  if (!any_thread_.immediate_incoming_queue.empty())
-    return true;
-
-  return false;
-}
-
 void TaskQueueImpl::MaybeReportIpcTaskQueuedFromMainThread(
     Task* pending_task,
     const char* task_queue_name) {

@@ -1064,38 +1064,6 @@ SequenceManagerImpl::GetMetricRecordingSettings() const {
   return metric_recording_settings_;
 }
 
-// TODO(altimin): Ensure that this removes all pending tasks.
-void SequenceManagerImpl::DeletePendingTasks() {
-  DCHECK(main_thread_only().task_execution_stack.empty())
-      << "Tasks should be deleted outside RunLoop";
-
-  for (TaskQueueImpl* task_queue : main_thread_only().active_queues)
-    task_queue->DeletePendingTasks();
-  for (const auto& it : main_thread_only().queues_to_gracefully_shutdown)
-    it.first->DeletePendingTasks();
-  for (const auto& it : main_thread_only().queues_to_delete)
-    it.first->DeletePendingTasks();
-}
-
-bool SequenceManagerImpl::HasTasks() {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  RemoveAllCanceledTasksFromFrontOfWorkQueues();
-
-  for (TaskQueueImpl* task_queue : main_thread_only().active_queues) {
-    if (task_queue->HasTasks())
-      return true;
-  }
-  for (const auto& it : main_thread_only().queues_to_gracefully_shutdown) {
-    if (it.first->HasTasks())
-      return true;
-  }
-  for (const auto& it : main_thread_only().queues_to_delete) {
-    if (it.first->HasTasks())
-      return true;
-  }
-  return false;
-}
-
 MessagePumpType SequenceManagerImpl::GetType() const {
   return settings_.message_loop_type;
 }

@@ -156,8 +156,6 @@ class BASE_EXPORT SequenceManagerImpl
 #endif
   bool IsIdleForTesting() override;
   void BindToCurrentThread(std::unique_ptr<MessagePump> pump);
-  void DeletePendingTasks();
-  bool HasTasks();
   MessagePumpType GetType() const;
 
   // Requests that a task to process work is scheduled.
