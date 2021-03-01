@@ -273,7 +273,7 @@ std::string GetTimeStr(base::Time time, const std::string& default_msg) {
 // moving it there if more places need this.
 std::string GetTimeDeltaDebugString(base::TimeDelta t) {
   base::string16 result;
-  if (!base::TimeDurationFormat(t, base::DURATION_WIDTH_WIDE, &result)) {
+  if (!base::TimeDurationFormat(t, base::DURATION_WIDTH_NUMERIC, &result)) {
     return "Invalid TimeDelta?!";
   }
   return base::UTF16ToUTF8(result);
