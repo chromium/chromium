@@ -1446,6 +1446,10 @@ generated_namespace_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css.h",
 ]
 
+generated_typedef_sources_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_typedefs.h",
+]
+
 generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.h",

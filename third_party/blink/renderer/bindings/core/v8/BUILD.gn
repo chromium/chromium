@@ -30,6 +30,7 @@ blink_core_sources("v8") {
     sources += generated_interface_sources_in_core +
                generated_namespace_sources_in_core
   }
+  sources += generated_typedef_sources_in_core
   sources += generated_union_sources_in_core
 
   deps = [

@@ -29,7 +29,7 @@ def blink_class_name(idl_definition):
     # is implemented as |class EXTsRGB|, not as |ExtSRgb| nor |ExtsRgb|.
     if isinstance(idl_definition,
                   (web_idl.CallbackFunction, web_idl.CallbackInterface,
-                   web_idl.Enumeration)):
+                   web_idl.Enumeration, web_idl.Typedef)):
         return "V8{}".format(idl_definition.identifier)
     elif isinstance(idl_definition, web_idl.NewUnion):
         # Technically this name is not guaranteed to be unique because

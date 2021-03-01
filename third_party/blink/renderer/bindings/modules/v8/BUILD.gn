@@ -30,6 +30,7 @@ blink_modules_sources("v8") {
     sources += generated_interface_sources_in_modules +
                generated_namespace_sources_in_modules
   }
+  sources += generated_typedef_sources_in_modules
   sources += generated_union_sources_in_modules
 
   deps = [

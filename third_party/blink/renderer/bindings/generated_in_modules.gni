@@ -2353,6 +2353,10 @@ generated_interface_sources_in_modules = [
 
 generated_namespace_sources_in_modules = []
 
+generated_typedef_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h",
+]
+
 generated_union_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.h",

@@ -226,6 +226,9 @@ generate_bindings("generate_bindings_all") {
     outputs += generated_namespace_sources_in_core +
                generated_namespace_sources_in_modules
   }
+  targets += [ "typedef" ]
+  outputs +=
+      generated_typedef_sources_in_core + generated_typedef_sources_in_modules
   targets += [ "union" ]
   outputs +=
       generated_union_sources_in_core + generated_union_sources_in_modules +
