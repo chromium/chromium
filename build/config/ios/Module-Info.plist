@@ -5,13 +5,13 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
   <key>CFBundleExecutable</key>
-  <string>${EXECUTABLE_NAME}</string>
+  <string>BrowserX</string>
   <key>CFBundleIdentifier</key>
   <string>${IOS_BUNDLE_ID_PREFIX}.${MODULE_BUNDLE_ID:rfc1034identifier}</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
-  <string>${PRODUCT_NAME}</string>
+  <string>BrowserX</string>
   <key>CFBundlePackageType</key>
   <string>BNDL</string>
   <key>CFBundleShortVersionString</key>
