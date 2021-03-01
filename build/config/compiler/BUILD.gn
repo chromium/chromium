@@ -285,6 +285,16 @@ config("compiler") {
     cflags += [ "-fno-delete-null-pointer-checks" ]
   }
 
+  # Don't emit the GCC version ident directives, they just end up in the
+  # .comment section or debug info taking up binary size, and makes comparing
+  # .o files built with different compiler versions harder.
+  if (!is_win) {
+    cflags += [ "-fno-ident" ]
+  } else if (is_clang) {
+    # TODO(crbug.com/1183366): Use -fno-ident once clang-cl supports it.
+    cflags += [ "/clang:-fno-ident" ]
+  }
+
   # In general, Windows is totally different, but all the other builds share
   # some common compiler and linker configuration.
   if (!is_win) {
@@ -2015,10 +2025,6 @@ if (is_win) {
     # Aix does not support these.
 
     common_optimize_on_cflags += [
-      # Don't emit the GCC version ident directives, they just end up in the
-      # .comment section taking up binary size.
-      "-fno-ident",
-
       # Put data and code in their own sections, so that unused symbols
       # can be removed at link time with --gc-sections.
       "-fdata-sections",
