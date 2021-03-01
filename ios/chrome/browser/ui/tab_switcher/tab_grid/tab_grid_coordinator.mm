@@ -65,6 +65,7 @@
                                   TabGridMediatorDelegate,
                                   TabPresentationDelegate,
                                   TabGridViewControllerDelegate,
+                                  SceneStateObserver,
                                   ViewControllerTraitCollectionObserver> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
@@ -569,6 +570,10 @@
     [self installThumbStrip];
   }
 
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  [sceneState addObserver:self];
+
   // Once the mediators are set up, stop keeping pointers to the browsers used
   // to initialize them.
   _regularBrowser = nil;
@@ -576,6 +581,10 @@
 }
 
 - (void)stop {
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  [sceneState removeObserver:self];
+
   if ([self isThumbStripEnabled]) {
     [self uninstallThumbStrip];
   }
@@ -806,6 +815,24 @@
     (NSInteger)sectionIdentifier {
   return [self.baseViewController.remoteTabsViewController
       sessionForSectionIdentifier:sectionIdentifier];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  // If the scene is going to background, it will trigger trait collection
+  // changes, presumably to take screenshots for the system. These changes will
+  // cause the thumb strip to be installed and uninstalled. And thumb strip
+  // doesn't support being installed in peeked state. Hidden state is set here
+  // so the screenshots match the interface when the user comes back.
+  ViewRevealingVerticalPanHandler* panHandler =
+      self.thumbStripCoordinator.panHandler;
+  BOOL isInPeekState = panHandler.currentState == ViewRevealState::Peeked;
+  if ([self isThumbStripEnabled] && isInPeekState &&
+      level <= SceneActivationLevelBackground) {
+    [panHandler setNextState:ViewRevealState::Hidden animated:NO];
+  }
 }
 
 #pragma mark - ViewControllerTraitCollectionObserver
