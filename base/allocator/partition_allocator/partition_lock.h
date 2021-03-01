@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/spinning_mutex.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -93,7 +94,7 @@ class LOCKABLE MaybeSpinLock<true> {
  public:
   constexpr MaybeSpinLock() : lock_() {}
   void Lock() EXCLUSIVE_LOCK_FUNCTION() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
+#if DCHECK_IS_ON()
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
     // instance, a DCHECK() triggers in external code (such as
     // base::Lock). DCHECK() error message formatting allocates, which triggers
@@ -115,27 +116,32 @@ class LOCKABLE MaybeSpinLock<true> {
       // Note that we don't rely on a DCHECK() in base::Lock(), as it would
       // itself allocate. Meaning that without this code, a reentrancy issue
       // hangs on Linux.
-      if (UNLIKELY(TS_UNCHECKED_READ(owning_thread_ref_) == current_thread)) {
+      if (UNLIKELY(owning_thread_ref_.load(std::memory_order_acquire) ==
+                   current_thread)) {
         // Trying to acquire lock while it's held by this thread: reentrancy
         // issue.
         IMMEDIATE_CRASH();
       }
       lock_.Acquire();
     }
-    owning_thread_ref_ = current_thread;
+    owning_thread_ref_.store(current_thread, std::memory_order_release);
 #else
     lock_.Acquire();
 #endif
   }
 
   void Unlock() UNLOCK_FUNCTION() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
-    owning_thread_ref_ = PlatformThreadRef();
+#if DCHECK_IS_ON()
+    owning_thread_ref_.store(PlatformThreadRef(), std::memory_order_release);
 #endif
     lock_.Release();
   }
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
     lock_.AssertAcquired();
+#if DCHECK_IS_ON()
+    PA_DCHECK(owning_thread_ref_.load(std ::memory_order_acquire) ==
+              PlatformThread::CurrentRef());
+#endif
   }
 
  private:
@@ -147,8 +153,10 @@ class LOCKABLE MaybeSpinLock<true> {
   SpinLock lock_;
 #endif  // defined(PA_HAS_SPINNING_MUTEX)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
-  PlatformThreadRef owning_thread_ref_ GUARDED_BY(lock_);
+#if DCHECK_IS_ON()
+  // Should in theory be protected by |lock_|, but we need to read it to detect
+  // recursive lock acquisition (and thus, the allocator becoming reentrant).
+  std::atomic<PlatformThreadRef> owning_thread_ref_{};
 #endif
 };
 // We want PartitionRoot to not have a global destructor, so this should not
