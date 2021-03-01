@@ -87,7 +87,10 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
                 "displayText": {
                   "textSegment": [
                     {
-                      "text": "Foo"
+                      "text": "Foo "
+                    },
+                    {
+                      "text": "bar foo bar"
                     }
                   ]
                 }
@@ -110,7 +113,7 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
   EXPECT_EQ("Bar", actual_documents.at(1)->title);
   EXPECT_EQ("123", actual_documents.at(1)->id);
   EXPECT_EQ(drive::mojom::FileType::kDoc, actual_documents.at(1)->type);
-  EXPECT_EQ("Foo", actual_documents.at(1)->justification_text);
+  EXPECT_EQ("Foo bar foo bar", actual_documents.at(1)->justification_text);
 }
 
 TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
