@@ -458,7 +458,7 @@ class CORE_EXPORT NGFragmentItem {
   // |ShapeResult::Direction()|.
   unsigned text_direction_ : 1;  // TextDirection.
 
-  unsigned ink_overflow_type_ : 3;  // NGInkOverflow::Type
+  unsigned ink_overflow_type_ : NGInkOverflow::kTypeBits;
 
   mutable unsigned is_dirty_ : 1;
 

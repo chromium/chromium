@@ -351,6 +351,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       include_border_bottom_(other.include_border_bottom_),
       include_border_left_(other.include_border_left_),
       has_layout_overflow_(other.has_layout_overflow_),
+      ink_overflow_type_(other.ink_overflow_type_),
       has_borders_(other.has_borders_),
       has_padding_(other.has_padding_),
       has_inflow_bounds_(other.has_inflow_bounds_),

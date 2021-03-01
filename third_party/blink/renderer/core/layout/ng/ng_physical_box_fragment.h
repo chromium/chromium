@@ -57,6 +57,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   scoped_refptr<const NGLayoutResult> CloneAsHiddenForPaint() const;
 
   ~NGPhysicalBoxFragment() {
+    ink_overflow_.Reset(InkOverflowType());
     if (has_fragment_items_)
       ComputeItemsAddress()->~NGFragmentItems();
     if (has_rare_data_)
@@ -232,6 +233,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   LayoutSize PixelSnappedScrolledContentOffset() const;
   PhysicalSize ScrollSize() const;
 
+  NGInkOverflow::Type InkOverflowType() const {
+    return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
+  }
+  bool HasInkOverflow() const {
+    return InkOverflowType() != NGInkOverflow::kNone;
+  }
+
   // Compute visual overflow of this box in the local coordinate.
   PhysicalRect ComputeSelfInkOverflow() const;
 
@@ -403,6 +411,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
 
   LayoutUnit baseline_;
   LayoutUnit last_baseline_;
+  NGInkOverflow ink_overflow_;
   NGLink children_[];
   // fragment_items, borders, padding, and rare_data are after |children_| if
   // they are not empty/initial.

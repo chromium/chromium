@@ -28,6 +28,7 @@ namespace {
 struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalContainerFragment {
   LayoutUnit baseline;
   LayoutUnit last_baseline;
+  NGInkOverflow ink_overflow;
   NGLink children[];
 };
 
@@ -212,6 +213,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     *const_cast<PhysicalRect*>(ComputeLayoutOverflowAddress()) =
         layout_overflow;
   }
+  ink_overflow_type_ = NGInkOverflow::kNotSet;
   has_borders_ = has_borders;
   if (has_borders_)
     *const_cast<NGPhysicalBoxStrut*>(ComputeBordersAddress()) = borders;
@@ -278,7 +280,9 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
                                   recalculate_layout_overflow,
                                   children_),
       baseline_(other.baseline_),
-      last_baseline_(other.last_baseline_) {
+      last_baseline_(other.last_baseline_),
+      ink_overflow_(other.InkOverflowType(), other.ink_overflow_) {
+  ink_overflow_type_ = other.ink_overflow_type_;
   if (has_fragment_items_) {
     NGFragmentItems* items =
         const_cast<NGFragmentItems*>(ComputeItemsAddress());

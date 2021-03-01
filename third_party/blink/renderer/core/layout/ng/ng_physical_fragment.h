@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -499,6 +500,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned include_border_bottom_ : 1;
   unsigned include_border_left_ : 1;
   unsigned has_layout_overflow_ : 1;
+  unsigned ink_overflow_type_ : NGInkOverflow::kTypeBits;
   unsigned has_borders_ : 1;
   unsigned has_padding_ : 1;
   unsigned has_inflow_bounds_ : 1;
