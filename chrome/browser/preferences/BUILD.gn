@@ -10,8 +10,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeyChecker.java",
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/DeprecatedChromePreferenceKeys.java",
-    "android/java/src/org/chromium/chrome/browser/preferences/GrandfatheredChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/KeyPrefix.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/LegacyChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java",
     "android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java",
   ]

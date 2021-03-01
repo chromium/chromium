@@ -15,8 +15,7 @@ import java.util.List;
  * "Chrome.FooBar.FooEnabled", and add them to {@link ChromePreferenceKeys#getKeysInUse()}.
  */
 @CheckDiscard("Validation is performed in tests and in debug builds.")
-public class GrandfatheredChromePreferenceKeys {
-
+public class LegacyChromePreferenceKeys {
     /**
      * @return The list of [keys in use] that do not conform to the "Chrome.[Feature].[Key]"
      *     format.

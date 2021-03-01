@@ -41,9 +41,9 @@ public class ChromePreferenceKeysTest {
     @SmallTest
     public void testKeysAreNotReused() {
         doTestKeysAreNotReused(ChromePreferenceKeys.getKeysInUse(),
-                GrandfatheredChromePreferenceKeys.getKeysInUse(),
+                LegacyChromePreferenceKeys.getKeysInUse(),
                 DeprecatedChromePreferenceKeys.getKeysForTesting(),
-                GrandfatheredChromePreferenceKeys.getPrefixesInUse(),
+                LegacyChromePreferenceKeys.getPrefixesInUse(),
                 DeprecatedChromePreferenceKeys.getPrefixesForTesting());
     }
 
@@ -195,7 +195,7 @@ public class ChromePreferenceKeysTest {
     @Test
     @SmallTest
     public void testGrandfatheredKeysDoNotConformToFormat() {
-        doTestKeysDoNotConformToFormat(GrandfatheredChromePreferenceKeys.getKeysInUse());
+        doTestKeysDoNotConformToFormat(LegacyChromePreferenceKeys.getKeysInUse());
     }
 
     private void doTestKeysConformToFormat(List<String> usedList) {

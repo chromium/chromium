@@ -33,8 +33,8 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
      * ChromePreferenceKeys}.
      */
     private ChromePreferenceKeyChecker() {
-        this(ChromePreferenceKeys.getKeysInUse(), GrandfatheredChromePreferenceKeys.getKeysInUse(),
-                GrandfatheredChromePreferenceKeys.getPrefixesInUse());
+        this(ChromePreferenceKeys.getKeysInUse(), LegacyChromePreferenceKeys.getKeysInUse(),
+                LegacyChromePreferenceKeys.getPrefixesInUse());
     }
 
     /**

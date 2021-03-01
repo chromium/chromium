@@ -23,7 +23,7 @@ import java.util.List;
  * 1. Add its constant value to {@link DeprecatedChromePreferenceKeys#getKeysForTesting()}, in
  * alphabetical order by value.
  * 2. Remove the key from {@link #getKeysInUse()} or {@link
- * GrandfatheredChromePreferenceKeys#getKeysInUse()}.
+ * LegacyChromePreferenceKeys#getKeysInUse()}.
  * 3. Delete the constant.
  *
  * To add a new KeyPrefix:
@@ -35,7 +35,7 @@ import java.util.List;
  * 1. Add its String value to {@link DeprecatedChromePreferenceKeys#getPrefixesForTesting()},
  * including the ".*", in alphabetical order by value.
  * 2. Remove it from {@link #getKeysInUse()} or {@link
- * GrandfatheredChromePreferenceKeys#getPrefixesInUse()}.
+ * LegacyChromePreferenceKeys#getPrefixesInUse()}.
  * 3. Delete the KeyPrefix constant.
  *
  * Tests in ChromePreferenceKeysTest and checks in {@link ChromePreferenceKeyChecker} ensure the
@@ -847,7 +847,7 @@ public final class ChromePreferenceKeys {
 
     /**
      * These values are currently used as SharedPreferences keys, along with the keys in
-     * {@link GrandfatheredChromePreferenceKeys#getKeysInUse()}. Add new SharedPreferences keys
+     * {@link LegacyChromePreferenceKeys#getKeysInUse()}. Add new SharedPreferences keys
      * here.
      *
      * @return The list of [keys in use] conforming to the format.
