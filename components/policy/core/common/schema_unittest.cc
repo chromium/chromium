@@ -788,6 +788,8 @@ TEST(SchemaTest, Validate) {
   bundle.SetString("boom", "bang");
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
   TestSchemaValidation(schema, bundle, SCHEMA_ALLOW_UNKNOWN, true);
+  TestSchemaValidation(schema, bundle,
+                       SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
   TestSchemaValidationWithPath(schema, bundle, "");
   bundle.Remove("boom", nullptr);
 
@@ -795,6 +797,8 @@ TEST(SchemaTest, Validate) {
   bundle.SetInteger("Boolean", 12345);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
   TestSchemaValidation(schema, bundle, SCHEMA_ALLOW_UNKNOWN, false);
+  TestSchemaValidation(schema, bundle,
+                       SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
   TestSchemaValidationWithPath(schema, bundle, "Boolean");
   bundle.SetBoolean("Boolean", true);
 
@@ -808,6 +812,8 @@ TEST(SchemaTest, Validate) {
     root.SetBoolean("Object.three", false);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidationWithPath(subschema, root, "Object");
     root.Remove("Object.three", nullptr);
 
@@ -815,6 +821,8 @@ TEST(SchemaTest, Validate) {
     root.SetInteger("Object.one", 12345);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
     TestSchemaValidationWithPath(subschema, root, "Object.one");
     root.Remove("Object.one", nullptr);
   }
@@ -832,6 +840,8 @@ TEST(SchemaTest, Validate) {
     root.Append(std::move(dict_value));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidationWithPath(subschema, root, "items[0]");
     root.Remove(root.GetSize() - 1, nullptr);
 
@@ -841,6 +851,8 @@ TEST(SchemaTest, Validate) {
     root.Append(std::move(dict_value));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidationWithPath(subschema, root, "items[0].two");
     root.Remove(root.GetSize() - 1, nullptr);
   }
@@ -858,11 +870,15 @@ TEST(SchemaTest, Validate) {
     list_value->AppendInteger(12345);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
 
     // Invalid list item.
     list_value->AppendString("blabla");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidationWithPath(subschema, root, "List.items[1]");
   }
 
@@ -881,11 +897,15 @@ TEST(SchemaTest, Validate) {
     list_value->AppendString("blabla");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
 
     // Invalid list item.
     list_value->AppendInteger(12345);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidationWithPath(subschema, root, "items[0].List.items[1]");
   }
 
@@ -950,6 +970,8 @@ TEST(SchemaTest, Validate) {
     root.SetInteger("foobar", 123);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     root.Remove("foobar", nullptr);
   }
 
@@ -964,11 +986,15 @@ TEST(SchemaTest, Validate) {
     root.SetDouble("Number", 3.14);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
 
     // Invalid required property.
     root.SetInteger("String", 123);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
     root.SetString("String", "a string");
 
     // Invalid subschema of required property with multiple subschemas.
@@ -981,10 +1007,14 @@ TEST(SchemaTest, Validate) {
     root.SetInteger("Integer", 2);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
 
     root.SetInteger("Integer", 3);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
+    TestSchemaValidation(subschema, root,
+                         SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
   }
 
   // Test that integer to double promotion is allowed.

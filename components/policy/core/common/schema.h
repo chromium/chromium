@@ -37,11 +37,17 @@ enum SchemaOnErrorStrategy {
   // No errors will be allowed. This should not be used for policies, since it
   // basically prevents future changes to the policy (Server sends newField, but
   // clients running older versions of Chrome reject the policy because they
-  // don't know newField). Prefer to use |SCHEMA_ALLOW_UNKNOWN| for policies
+  // don't know newField). Prefer to use |SCHEMA_ALLOW_UNKNOWN| or
+  // |SCHEMA_ALLOW_UNKOWN_AND_INVALID_LIST_ENTRY| for policies
   // instead.
   SCHEMA_STRICT = 0,
   // Unknown properties in any dictionary will be ignored.
   SCHEMA_ALLOW_UNKNOWN,
+  // In addition to the previous, invalid list entries will be ignored for all
+  // lists in the schema. Should only be used in cases where dropping list items
+  // is safe. For example, can't be used if an empty list has a special meaning,
+  // like allowing everything.
+  SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
 };
 
 // Schema validation options for Schema::ParseToDictAndValidate().
