@@ -20,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "components/media_router/browser/issue_manager.h"

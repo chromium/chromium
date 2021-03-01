@@ -65,7 +65,6 @@ default_args = {
 no_check_targets = [
   # //chrome/*, https://crbug.com/949535
   "//chrome/browser/media/router/discovery:*",  # 7 errors
-  "//chrome/browser/media/router:*",  # 225 errors
   "//chrome/browser/safe_browsing/android:*",  # 3 errors
   "//chrome/browser/safety_check/android:*",  # 3 errors
   "//chrome/browser/storage_access_api:*",  # 2 errors

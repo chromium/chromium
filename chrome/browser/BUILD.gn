@@ -1917,6 +1917,9 @@ static_library("browser") {
     "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
     "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/safe_browsing:metrics_collector",
+
+    # TODO(crbug.com/1030821): Eliminate usages of browser.h from Media Router.
+    "//chrome/browser/media/router",
   ]
 
   public_deps = [

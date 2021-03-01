@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/mock_log.h"
 #include "base/test/values_test_util.h"
-#include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"

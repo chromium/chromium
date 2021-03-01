@@ -1610,6 +1610,8 @@ static_library("ui") {
     ]
     public_deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
 
+    allow_circular_includes_from += [ "//chrome/browser/media/router" ]
+
     if (use_ozone && !is_chromeos_ash) {
       deps += [
         "//ui/base:features",
