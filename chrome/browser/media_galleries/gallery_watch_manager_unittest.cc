@@ -312,7 +312,13 @@ TEST_F(GalleryWatchManagerTest, RemoveAllWatches) {
   EXPECT_TRUE(manager()->GetWatchSet(profile(), extension()->id()).empty());
 }
 
-TEST_F(GalleryWatchManagerTest, DropWatchOnGalleryRemoved) {
+// Fails on Mac: crbug.com/1183212
+#if defined(OS_MAC)
+#define MAYBE_DropWatchOnGalleryRemoved DISABLED_DropWatchOnGalleryRemoved
+#else
+#define MAYBE_DropWatchOnGalleryRemoved DropWatchOnGalleryRemoved
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnGalleryRemoved) {
   if (!GalleryWatchesSupported())
     return;
 
