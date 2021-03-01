@@ -90,12 +90,11 @@ WheelEvent::WheelEvent()
 WheelEvent::WheelEvent(const AtomicString& type,
                        const WheelEventInit* initializer)
     : MouseEvent(type, initializer),
-      wheel_delta_(initializer->wheelDeltaX()
-                       ? initializer->wheelDeltaX()
-                       : static_cast<int32_t>(initializer->deltaX()),
-                   initializer->wheelDeltaY()
-                       ? initializer->wheelDeltaY()
-                       : static_cast<int32_t>(initializer->deltaY())),
+      wheel_delta_(
+          initializer->wheelDeltaX() ? initializer->wheelDeltaX()
+                                     : clampTo<int32_t>(initializer->deltaX()),
+          initializer->wheelDeltaY() ? initializer->wheelDeltaY()
+                                     : clampTo<int32_t>(initializer->deltaY())),
       delta_x_(initializer->deltaX() ? initializer->deltaX()
                                      : clampTo<int32_t>(-static_cast<double>(
                                            initializer->wheelDeltaX()))),
