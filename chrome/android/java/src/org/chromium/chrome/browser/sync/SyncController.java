@@ -34,13 +34,6 @@ public class SyncController
         implements ProfileSyncService.SyncStateChangedListener, AndroidSyncSettings.Delegate {
     private static final String TAG = "SyncController";
 
-    /**
-     * An identifier for the generator in UniqueIdentificationGeneratorFactory to be used to
-     * generate the sync sessions ID. The generator is registered in the Application's onCreate
-     * method.
-     */
-    public static final String GENERATOR_ID = "SYNC";
-
     @SuppressLint("StaticFieldLeak")
     private static SyncController sInstance;
     private static boolean sInitialized;

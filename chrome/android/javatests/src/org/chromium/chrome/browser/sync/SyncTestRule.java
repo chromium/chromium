@@ -33,9 +33,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
-import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
-import org.chromium.chrome.browser.uid.UuidBasedUniqueIdentificationGenerator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
@@ -61,8 +58,6 @@ import java.util.concurrent.Callable;
  */
 public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private static final String TAG = "SyncTestBase";
-
-    private static final String CLIENT_ID = "Client_ID";
 
     private static final Set<Integer> USER_SELECTABLE_TYPES =
             new HashSet<Integer>(Arrays.asList(new Integer[] {
@@ -348,16 +343,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     FakeServerHelper.useFakeServer(mContext);
                     mFakeServerHelper = FakeServerHelper.get();
                 });
-
-                UniqueIdentificationGeneratorFactory.registerGenerator(
-                        UuidBasedUniqueIdentificationGenerator.GENERATOR_ID,
-                        new UniqueIdentificationGenerator() {
-                            @Override
-                            public String getUniqueId(String salt) {
-                                return CLIENT_ID;
-                            }
-                        },
-                        true);
 
                 startMainActivityForSyncTest();
 
