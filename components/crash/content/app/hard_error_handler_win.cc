@@ -51,7 +51,7 @@ void RaiseHardErrorMsg(DWORD nt_status,
   if (!count)
     return;
   count += p1.size() + p2.size() + 1;
-  base::string16 message;
+  std::wstring message;
   ::wsprintf(base::WriteInto(&message, count), msg_template,
              p1.c_str(), p2.c_str());
   // The MB_SERVICE_NOTIFICATION causes this message to be displayed by

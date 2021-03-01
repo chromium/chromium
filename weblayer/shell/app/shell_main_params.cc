@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "net/base/filename_util.h"
 #include "url/gurl.h"
@@ -37,7 +38,11 @@ GURL GetStartupURL() {
   if (args.empty())
     return GURL("https://www.google.com/");
 
+#if defined(OS_WIN)
+  GURL url(base::WideToUTF16(args[0]));
+#else
   GURL url(args[0]);
+#endif
   if (url.is_valid() && url.has_scheme())
     return url;
 

@@ -24,7 +24,7 @@ namespace {
 
 class TestNamedWaitableEvent : public base::TestWaitableEvent {
  public:
-  TestNamedWaitableEvent(const base::char16* name)
+  TestNamedWaitableEvent(const wchar_t* name)
       : TestWaitableEvent(
             base::win::ScopedHandle(::CreateEvent(nullptr,
                                                   /*bManualReset=*/TRUE,

@@ -367,7 +367,7 @@ int main(int argc, char* argv[]) {
 
 #if defined(OS_WIN)
   for (const auto& path : command_line.GetArgs()) {
-    std::string repaired_path(base::UTF16ToASCII(path));
+    std::string repaired_path(base::WideToASCII(path));
     base::ReplaceChars(repaired_path, "\\", "/", &repaired_path);
     path_filters.push_back(repaired_path);
   }

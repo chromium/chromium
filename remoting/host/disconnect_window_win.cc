@@ -482,8 +482,8 @@ bool DisconnectWindowWin::SetStrings() {
   }
 
   // Format and truncate "Your desktop is shared with ..." message.
-  message_text = base::ReplaceStringPlaceholders(
-      message_text, base::UTF8ToWide(username_), nullptr);
+  message_text = base::AsWString(base::ReplaceStringPlaceholders(
+      base::AsString16(message_text), base::UTF8ToUTF16(username_), nullptr));
   if (message_text.length() > kMaxSharingWithTextLength)
     message_text.erase(kMaxSharingWithTextLength);
 

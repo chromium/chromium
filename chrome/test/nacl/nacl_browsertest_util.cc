@@ -10,6 +10,8 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/values.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -250,7 +252,11 @@ void NaClBrowserTestBase::RunNaClIntegrationTest(
   }
   base::FilePath::StringType url_fragment_with_both = url_fragment_with_pnacl;
   bool ok = RunJavascriptTest(full_url
+#if defined(OS_WIN)
+                              ? GURL(base::WideToUTF16(url_fragment_with_both))
+#else
                               ? GURL(url_fragment_with_both)
+#endif
                               : TestURL(url_fragment_with_both),
                               &handler);
   ASSERT_TRUE(ok) << handler.error_message();

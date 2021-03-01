@@ -70,10 +70,10 @@ class MediaFoundationCdmTest : public testing::Test {
     std::vector<uint8_t> license_request = StringToVector("request");
 
     // Session ID to return. Will be released by |mf_cdm_session_|.
-    base::string16 session_id_16 = base::UTF8ToUTF16(session_id);
+    std::wstring wide_session_id = base::UTF8ToWide(session_id);
     LPWSTR mf_session_id = nullptr;
     ASSERT_SUCCESS(
-        CopyCoTaskMemWideString(session_id_16.data(), &mf_session_id));
+        CopyCoTaskMemWideString(wide_session_id.data(), &mf_session_id));
 
     COM_EXPECT_CALL(mf_cdm_session,
                     GenerateRequest(StrEq(L"webm"), NotNull(), _))

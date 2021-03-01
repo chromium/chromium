@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
 
   std::string cmd;
 #if defined(OS_WIN)
-  cmd = base::UTF16ToASCII(args[0]);
+  cmd = base::WideToASCII(args[0]);
 #else
   cmd = args[0];
 #endif

@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -27,7 +28,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -113,7 +113,7 @@ google_breakpad::CustomClientInfo* GetCustomInfo(
     const std::wstring& profile_type,
     base::CommandLine* cmd_line,
     crash_reporter::CrashReporterClient* crash_client) {
-  base::string16 version, product, special_build, channel_name;
+  std::wstring version, product, special_build, channel_name;
   crash_client->GetProductNameAndVersion(exe_path, &product, &version,
                                          &special_build, &channel_name);
 
@@ -130,7 +130,7 @@ google_breakpad::CustomClientInfo* GetCustomInfo(
   custom_entries->push_back(
       google_breakpad::CustomInfoEntry(L"ptype", type.c_str()));
   custom_entries->push_back(google_breakpad::CustomInfoEntry(
-      L"pid", base::NumberToString16(::GetCurrentProcessId()).c_str()));
+      L"pid", base::NumberToWString(::GetCurrentProcessId()).c_str()));
   custom_entries->push_back(
       google_breakpad::CustomInfoEntry(L"channel", channel_name.c_str()));
   custom_entries->push_back(
@@ -149,7 +149,7 @@ google_breakpad::CustomClientInfo* GetCustomInfo(
                            (cmd_line->HasSwitch(switches::kNoErrorDialogs) ||
                             crash_client->IsRunningUnattended());
   if (use_crash_service) {
-    base::string16 crash_dumps_dir_path;
+    std::wstring crash_dumps_dir_path;
     if (crash_client->GetAlternativeCrashDumpLocation(&crash_dumps_dir_path)) {
       custom_entries->push_back(google_breakpad::CustomInfoEntry(
           L"breakpad-dump-location", crash_dumps_dir_path.c_str()));
@@ -338,8 +338,8 @@ static bool WrapMessageBoxWithSEH(const wchar_t* text, const wchar_t* caption,
 // spawned and basically just shows the 'chrome has crashed' dialog if
 // the CHROME_CRASHED environment variable is present.
 bool ShowRestartDialogIfCrashed(bool* exit_now) {
-  base::string16 message;
-  base::string16 title;
+  std::wstring message;
+  std::wstring title;
   bool is_rtl_locale;
   if (!GetCrashReporterClient()->ShouldShowRestartDialog(
           &title, &message, &is_rtl_locale)) {
@@ -499,7 +499,7 @@ static void InitPipeNameEnvVar(bool is_per_user_install) {
     pipe_name = kGoogleUpdatePipeName;
     pipe_name += user_sid;
   }
-  env->SetVar(kPipeNameVar, base::UTF16ToASCII(pipe_name));
+  env->SetVar(kPipeNameVar, base::WideToASCII(pipe_name));
 }
 
 void InitDefaultCrashCallback(LPTOP_LEVEL_EXCEPTION_FILTER filter) {
@@ -514,7 +514,7 @@ void InitCrashReporter(const std::string& process_type_switch) {
   // Disable the message box for assertions.
   _CrtSetReportMode(_CRT_ASSERT, 0);
 
-  base::string16 process_type = base::ASCIIToUTF16(process_type_switch);
+  std::wstring process_type = base::ASCIIToWide(process_type_switch);
   if (process_type.empty())
     process_type = L"browser";
 
@@ -552,7 +552,7 @@ void InitCrashReporter(const std::string& process_type_switch) {
       InitDefaultCrashCallback(default_filter);
     return;
   }
-  base::string16 pipe_name = base::ASCIIToUTF16(pipe_name_ascii);
+  std::wstring pipe_name = base::ASCIIToWide(pipe_name_ascii);
 
 #ifdef _WIN64
   // The protocol for connecting to the out-of-process Breakpad crash
