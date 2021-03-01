@@ -373,7 +373,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"LangClientHintHeader", features::kLangClientHintHeader},
           {"LayoutNG", blink::features::kLayoutNG},
           {"LayoutNGTable", blink::features::kLayoutNGTable},
-          {"LayoutNGFieldset", blink::features::kLayoutNGFieldset},
           {"LayoutNGTextControl", blink::features::kLayoutNGTextControl},
           {"LegacyWindowsDWriteFontFallback",
            features::kLegacyWindowsDWriteFontFallback},
