@@ -33,4 +33,5 @@ UNDOCUMENTED_BENCHMARKS = {
     'v8.browsing_mobile-future',
     'v8.runtime_stats.top_25',
     'views_perftests',
+    'UNSCHEDULED_wasmpspdfkit',
 }
