@@ -6,43 +6,18 @@
 
 #include "ui/gl/dc_layer_tree.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/swap_chain_presenter.h"
 
-// Required for SFINAE to check if these Win10 types exist.
-struct IDCompositionInkTrailDevice;
-
 namespace gl {
 namespace {
 bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
   return gfx::Rect(a).Contains(gfx::Rect(b));
 }
-
-// SFINAE used to enable building before Delegated Ink types are available in
-// the Win10 SDK.
-// TODO(1171374) : Remove this when the types are available in the Win10 SDK.
-template <typename InkTrailDevice, typename = void>
-struct DelegatedInk {
- public:
-  static bool IsSupported(
-      const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) {
-    return false;
-  }
-};
-
-template <typename InkTrailDevice>
-struct DelegatedInk<InkTrailDevice, decltype(typeid(InkTrailDevice), void())> {
- public:
-  static bool IsSupported(
-      const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) {
-    Microsoft::WRL::ComPtr<InkTrailDevice> ink_trail_device;
-    HRESULT hr = dcomp_device.As(&ink_trail_device);
-    return hr == S_OK;
-  }
-};
 
 }  // namespace
 
@@ -56,7 +31,12 @@ VideoProcessorWrapper& VideoProcessorWrapper::operator=(
 DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
                          bool disable_vp_scaling)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
-      disable_vp_scaling_(disable_vp_scaling) {}
+      disable_vp_scaling_(disable_vp_scaling),
+      ink_renderer_(
+          std::make_unique<
+              DelegatedInkPointRendererGpu<IDCompositionInkTrailDevice,
+                                           IDCompositionDelegatedInkTrail>>()) {
+}
 
 DCLayerTree::~DCLayerTree() = default;
 
@@ -300,6 +280,19 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
       IDCompositionVisual2* visual = video_swap_chains_[i]->visual().Get();
       dcomp_root_visual_->AddVisual(visual, FALSE, nullptr);
     }
+
+    // Only add the ink visual to the tree if it has already been initialized.
+    // It will only have been initialized if delegated ink has been used, so
+    // this ensures the visual is only added when it is needed. The ink renderer
+    // must be updated so that if the root swap chain or dcomp device have
+    // changed the ink visual and delegated ink object can be updated
+    // accordingly.
+    if (ink_renderer_->HasBeenInitialized()) {
+      // Reinitialize the ink renderer in case the root swap chain or dcomp
+      // device changed since initialization.
+      if (InitializeInkRenderer())
+        AddDelegatedInkVisualToTree();
+    }
     needs_commit = true;
   }
 
@@ -328,7 +321,19 @@ void DCLayerTree::SetFrameRate(float frame_rate) {
 }
 
 bool DCLayerTree::SupportsDelegatedInk() {
-  return DelegatedInk<IDCompositionInkTrailDevice>::IsSupported(dcomp_device_);
+  return ink_renderer_->DelegatedInkIsSupported(dcomp_device_);
+}
+
+bool DCLayerTree::InitializeInkRenderer() {
+  return ink_renderer_->Initialize(dcomp_device_, root_swap_chain_);
+}
+
+void DCLayerTree::AddDelegatedInkVisualToTree() {
+  DCHECK(SupportsDelegatedInk());
+  DCHECK(ink_renderer_->HasBeenInitialized());
+
+  root_surface_visual_->AddVisual(ink_renderer_->GetInkVisual(), FALSE,
+                                  nullptr);
 }
 
 }  // namespace gl

@@ -305,6 +305,7 @@ component("gl") {
       "child_window_win.h",
       "dc_layer_tree.cc",
       "dc_layer_tree.h",
+      "delegated_ink_point_renderer_gpu.h",
       "direct_composition_child_surface_win.cc",
       "direct_composition_child_surface_win.h",
       "direct_composition_surface_win.cc",
