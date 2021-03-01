@@ -24,10 +24,6 @@ per-file *mac*=ccameron@chromium.org
 # Android platform code.
 per-file *android*=boliu@chromium.org
 
-# WebSQL.
-per-file web_database_*=jsbell@chromium.org
-per-file web_database_*=pwnall@chromium.org
-
 # Embedded Frame Sinks (eg. Offscreen Canvas).
 per-file embedded_frame_sink*.*=xlai@chromium.org
 per-file embedded_frame_sink*.*=junov@chromium.org
