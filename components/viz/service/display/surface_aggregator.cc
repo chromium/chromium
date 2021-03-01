@@ -242,6 +242,15 @@ gfx::Rect SurfaceAggregator::DamageRectForSurface(
     const Surface* surface,
     const CompositorRenderPass& source,
     const gfx::Rect& full_rect) const {
+  // If we have damage because of surface animation, return the source damage
+  // since we trust the source damage to have correctly computed damage, and we
+  // can't skip it.
+  // TODO(vmpstr): This damage may be too large, but I think it's hard to figure
+  // out a small bounds on the damage given an animation that happens in
+  // SurfaceAnimationManager.
+  if (surface->HasSurfaceAnimationDamange())
+    return source.damage_rect;
+
   if (IsSurfaceFrameIndexSameAsPrevious(surface))
     return gfx::Rect();
 
@@ -360,6 +369,12 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     size_t* overlay_damage_index) {
   Surface* surface = manager_->GetSurfaceForId(surface_id);
 
+  // If we have damage from a surface animation, then we shouldn't have an
+  // overlay candidate from the root render pass, since that's an interpolated
+  // pass with "artificial" damage.
+  if (surface->HasSurfaceAnimationDamange())
+    return nullptr;
+
   // Only process the damage rect at the root render pass, once per surface.
   const CompositorFrame& frame = surface->GetActiveFrame();
   bool is_last_pass_on_src_surface =
@@ -475,9 +490,11 @@ void SurfaceAggregator::HandleSurfaceQuad(
 
   if (latest_surface->surface_id() != primary_surface_id &&
       !surface_quad->stretch_content_to_fill_bounds) {
-    const CompositorFrame& fallback_frame = latest_surface->GetActiveFrame();
+    const CompositorFrame& fallback_frame =
+        latest_surface->GetActiveOrInterpolatedFrame();
 
-    gfx::Rect fallback_rect(latest_surface->GetActiveFrame().size_in_pixels());
+    gfx::Rect fallback_rect(
+        latest_surface->GetActiveOrInterpolatedFrame().size_in_pixels());
 
     float scale_ratio =
         parent_device_scale_factor / fallback_frame.device_scale_factor();
@@ -515,6 +532,8 @@ void SurfaceAggregator::EmitSurfaceContent(
   if (referenced_surfaces_.count(surface_id))
     return;
 
+  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
+
   // If we are stretching content to fill the SurfaceDrawQuad, or if the device
   // scale factor mismatches between content and SurfaceDrawQuad, we appply an
   // additional scale.
@@ -523,16 +542,13 @@ void SurfaceAggregator::EmitSurfaceContent(
     const gfx::Rect& source_rect = surface_quad->rect;
     // Stretches the surface contents to exactly fill the layer bounds,
     // regardless of scale or aspect ratio differences.
-    extra_content_scale_x =
-        source_rect.width() /
-        static_cast<float>(surface->GetActiveFrame().size_in_pixels().width());
-    extra_content_scale_y =
-        source_rect.height() /
-        static_cast<float>(surface->GetActiveFrame().size_in_pixels().height());
+    extra_content_scale_x = source_rect.width() /
+                            static_cast<float>(frame.size_in_pixels().width());
+    extra_content_scale_y = source_rect.height() /
+                            static_cast<float>(frame.size_in_pixels().height());
   } else {
     extra_content_scale_x = extra_content_scale_y =
-        parent_device_scale_factor /
-        surface->GetActiveFrame().device_scale_factor();
+        parent_device_scale_factor / frame.device_scale_factor();
   }
   float inverse_extra_content_scale_x = SK_Scalar1 / extra_content_scale_x;
   float inverse_extra_content_scale_y = SK_Scalar1 / extra_content_scale_y;
@@ -543,7 +559,6 @@ void SurfaceAggregator::EmitSurfaceContent(
   scaled_quad_to_target_transform.Scale(extra_content_scale_x,
                                         extra_content_scale_y);
 
-  const CompositorFrame& frame = surface->GetActiveFrame();
   TRACE_EVENT_WITH_FLOW2(
       "viz,benchmark", "Graphics.Pipeline",
       TRACE_ID_GLOBAL(frame.metadata.begin_frame_ack.trace_id),
@@ -769,6 +784,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   }
 
   referenced_surfaces_.erase(surface_id);
+  surface->DidAggregate();
 }
 
 void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
@@ -1328,7 +1344,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   if (in_moved_pixel_rp)
     moved_pixel_passes_.insert(remapped_pass_id);
 
-  const CompositorFrame& frame = surface->GetActiveFrame();
+  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
   CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
   gfx::Rect full_damage = last_pass->output_rect;
 
@@ -1597,7 +1613,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   if (!surface->HasActiveFrame())
     return gfx::Rect();
 
-  const CompositorFrame& frame = surface->GetActiveFrame();
+  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
   auto remapped_pass_id = pass_id_remapper_.Remap(
       frame.render_pass_list.back()->id, surface->surface_id());
   if (parent_pass_id)
@@ -1731,7 +1747,7 @@ void SurfaceAggregator::CopyUndrawnSurfaces(PrewalkResult* prewalk_result) {
     } else {
       prewalk_result->undrawn_surfaces.erase(surface_id);
       referenced_surfaces_.insert(surface_id);
-      CopyPasses(surface->GetActiveFrame(), surface);
+      CopyPasses(surface->GetActiveOrInterpolatedFrame(), surface);
       referenced_surfaces_.erase(surface_id);
     }
   }
@@ -1802,7 +1818,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   display_trace_id_ = display_trace_id;
   expected_display_time_ = expected_display_time;
 
-  const CompositorFrame& root_surface_frame = surface->GetActiveFrame();
+  const CompositorFrame& root_surface_frame =
+      surface->GetActiveOrInterpolatedFrame();
   TRACE_EVENT_WITH_FLOW2(
       "viz,benchmark", "Graphics.Pipeline",
       TRACE_ID_GLOBAL(root_surface_frame.metadata.begin_frame_ack.trace_id),
@@ -1973,7 +1990,7 @@ bool SurfaceAggregator::NotifySurfaceDamageAndCheckForDisplayDamage(
     Surface* surface = manager_->GetSurfaceForId(surface_id);
     if (surface) {
       DCHECK(surface->HasActiveFrame());
-      if (surface->GetActiveFrame().resource_list.empty())
+      if (surface->GetActiveOrInterpolatedFrame().resource_list.empty())
         ReleaseResources(surface_id);
     }
     return true;

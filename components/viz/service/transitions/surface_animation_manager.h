@@ -74,19 +74,19 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
       const CompositorFrameTransitionDirective& directive,
       SurfaceSavedFrameStorage* storage);
 
-  // Finishes the animation and advance state to kDone if it's time to do so.
-  // This call is only valid if state is kAnimating.
+  // Finishes the animation and advance state to kLastFrame if it's time to do
+  // so. This call is only valid if state is kAnimating.
   void FinishAnimationIfNeeded();
 
   // Disposes of any saved state and switches state to kIdle. This call is only
-  // valid if state is kDone.
+  // valid if state is kLastFrame.
   void FinalizeAndDisposeOfState();
 
   // Returns a value between 0 and 1 representing the current progress of the
-  // animation. This call is only valid if state is kAnimating or kDone.
+  // animation. This call is only valid if state is kAnimating or kLastFrame.
   double CalculateAnimationProgress() const;
 
-  enum class State { kIdle, kAnimating, kDone };
+  enum class State { kIdle, kAnimating, kLastFrame };
 
   SurfaceSavedFrame::TransitionDirectiveCompleteCallback
       sequence_id_finished_callback_;

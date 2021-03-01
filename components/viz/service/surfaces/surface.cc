@@ -614,17 +614,33 @@ const CompositorFrame& Surface::GetActiveFrame() const {
   return active_frame_data_->frame;
 }
 
+const CompositorFrame& Surface::GetActiveOrInterpolatedFrame() const {
+  DCHECK(active_frame_data_);
+  if (interpolated_frame_.has_value())
+    return *interpolated_frame_;
+  return active_frame_data_->frame;
+}
+
 const CompositorFrameMetadata& Surface::GetActiveFrameMetadata() const {
   DCHECK(active_frame_data_);
   return active_frame_data_->frame.metadata;
 }
 
-std::vector<CompositorFrameTransitionDirective>
-Surface::TakeActiveFrameTransitionDirectives() {
-  DCHECK(active_frame_data_);
-  std::vector<CompositorFrameTransitionDirective> result;
-  result.swap(active_frame_data_->frame.metadata.transition_directives);
-  return result;
+void Surface::ResetInterpolatedFrame() {
+  interpolated_frame_.reset();
+  has_damage_from_interpolated_frame_ = true;
+}
+
+void Surface::SetInterpolatedFrame(CompositorFrame frame) {
+  interpolated_frame_.emplace(std::move(frame));
+}
+
+bool Surface::HasSurfaceAnimationDamange() const {
+  return interpolated_frame_.has_value() || has_damage_from_interpolated_frame_;
+}
+
+void Surface::DidAggregate() {
+  has_damage_from_interpolated_frame_ = false;
 }
 
 const CompositorFrame& Surface::GetPendingFrame() {

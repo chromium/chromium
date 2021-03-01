@@ -722,7 +722,9 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
 
   CheckPendingSurfaces();
 
-  if (client_ && ShouldSendBeginFrame(args.frame_time)) {
+  bool send_begin_frame_to_client =
+      client_ && ShouldSendBeginFrame(args.frame_time);
+  if (send_begin_frame_to_client) {
     if (last_activated_surface_id_.is_valid())
       surface_manager_->SurfaceDamageExpected(last_activated_surface_id_, args);
     last_begin_frame_args_ = args;
@@ -753,9 +755,35 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     // animation.
     if (surface_animation_manager_.NeedsBeginFrame()) {
       if (last_activated_surface_id_.is_valid()) {
+        if (!send_begin_frame_to_client)
+          frame_sink_manager_->DidBeginFrame(frame_sink_id_, args);
+
         auto* surface =
             surface_manager_->GetSurfaceForId(last_activated_surface_id_);
         surface_animation_manager_.InterpolateFrame(surface);
+
+        BeginFrameAck ack =
+            surface->GetActiveOrInterpolatedFrame().metadata.begin_frame_ack;
+        // Ensure to mark this as having damage, even if the above call gives us
+        // the non-interpolated active frame with no damage. We need this to
+        // ensure we do a DrawAndSwap.
+        ack.has_damage = true;
+
+        // TODO(crbug.com/1182882): If a client frame is expected, we would not
+        // wait for it as a result of the SurfaceModified() call. This means
+        // that the client may end up delaying every other frame (essentially
+        // dropping any frame rate by half).
+        surface_manager_->SurfaceModified(last_activated_surface_id_, ack);
+
+        // If we didn't send a begin frame to the client, we should still finish
+        // the frame. Since we already finished interpolating, we should do that
+        // now. In cases where we did send a begin frame to client, this will be
+        // called from either `MaybeSubmitCompositorFrame()` or
+        // `DidNotProduceFrame()`.
+        if (!send_begin_frame_to_client && begin_frame_source_) {
+          begin_frame_source_->DidFinishFrame(this);
+          frame_sink_manager_->DidFinishFrame(frame_sink_id_, args);
+        }
       }
     } else {
       // If notifying causes us to stop needing frames, then update needs begin

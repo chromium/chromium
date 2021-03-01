@@ -167,8 +167,13 @@ class VIZ_SERVICE_EXPORT Surface final {
   const CompositorFrame& GetActiveFrame() const;
   const CompositorFrameMetadata& GetActiveFrameMetadata() const;
 
-  std::vector<CompositorFrameTransitionDirective>
-  TakeActiveFrameTransitionDirectives();
+  void ResetInterpolatedFrame();
+  void SetInterpolatedFrame(CompositorFrame frame);
+  const CompositorFrame& GetActiveOrInterpolatedFrame() const;
+  // Returns true if the active or interpolated frame has damage due to a
+  // surface animation. This means that the damage should be respected even if
+  // the active frame index has not changed.
+  bool HasSurfaceAnimationDamange() const;
 
   // Returns the currently pending frame. You must check where HasPendingFrame()
   // returns true before calling this method.
@@ -262,6 +267,8 @@ class VIZ_SERVICE_EXPORT Surface final {
   void RequestCopyOfOutputOnRootRenderPass(
       std::unique_ptr<CopyOutputRequest> copy_request);
 
+  void DidAggregate();
+
  private:
   struct FrameData {
     FrameData(CompositorFrame&& frame, uint64_t frame_index);
@@ -332,6 +339,7 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   base::Optional<FrameData> pending_frame_data_;
   base::Optional<FrameData> active_frame_data_;
+  base::Optional<CompositorFrame> interpolated_frame_;
   bool seen_first_frame_activation_ = false;
   bool seen_first_surface_embedding_ = false;
 
@@ -365,6 +373,8 @@ class VIZ_SERVICE_EXPORT Surface final {
   SurfaceAllocationGroup* const allocation_group_;
 
   SurfaceSavedFrameStorage surface_saved_frame_storage_{this};
+
+  bool has_damage_from_interpolated_frame_ = false;
 
   base::WeakPtrFactory<Surface> weak_factory_{this};
 
