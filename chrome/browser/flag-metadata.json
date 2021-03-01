@@ -4615,12 +4615,12 @@
   {
     "name": "scrollable-tabstrip",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "scrollable-tabstrip-buttons",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "sct-auditing",
