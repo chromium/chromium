@@ -105,9 +105,8 @@ void ThreadState::NotifyGarbageCollection(v8::GCType type,
     if (type == v8::kGCTypeScavenge) {
       forced_scheduled_gc_for_testing_ = true;
     } else if (type == v8::kGCTypeMarkSweepCompact) {
-      // TODO(1056170): Only need to schedule a forced GC if stack was scanned
-      // conservatively in previous GC.
-      forced_scheduled_gc_for_testing_ = true;
+      forced_scheduled_gc_for_testing_ =
+          cppgc::subtle::HeapState::PreviousGCWasConservative(heap_handle());
     }
   }
 }
