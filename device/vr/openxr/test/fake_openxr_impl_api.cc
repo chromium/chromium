@@ -711,6 +711,25 @@ XrResult xrGetSystem(XrInstance instance,
   return XR_SUCCESS;
 }
 
+XrResult xrGetSystemProperties(XrInstance instance,
+                               XrSystemId system_id,
+                               XrSystemProperties* system_properties) {
+  DVLOG(2) << __FUNCTION__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF(system_properties == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrSystemProperties is nullptr");
+  RETURN_IF(system_properties->type != XR_TYPE_SYSTEM_PROPERTIES,
+            XR_ERROR_VALIDATION_FAILURE, "XrSystemProperties type invalid");
+  RETURN_IF(system_properties->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrSystemProperties next is not nullptr");
+
+  *system_properties = g_test_helper.GetSystemProperties();
+  system_properties->systemId = system_id;
+
+  return XR_SUCCESS;
+}
+
 XrResult xrLocateSpace(XrSpace space,
                        XrSpace base_space,
                        XrTime time,
@@ -1012,6 +1031,8 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
         reinterpret_cast<PFN_xrVoidFunction>(xrGetViewConfigurationProperties);
   } else if (strcmp(name, "xrGetSystem") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetSystem);
+  } else if (strcmp(name, "xrGetSystemProperties") == 0) {
+    *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetSystemProperties);
   } else if (strcmp(name, "xrLocateSpace") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrLocateSpace);
   } else if (strcmp(name, "xrLocateViews") == 0) {

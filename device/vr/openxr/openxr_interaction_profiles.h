@@ -13,6 +13,7 @@
 namespace device {
 
 constexpr size_t kMaxNumActionMaps = 3;
+constexpr size_t kMaxInputProfiles = 5;
 
 enum class OpenXrHandednessType {
   kLeft = 0,
@@ -73,13 +74,24 @@ struct OpenXrAxisPathMap {
   const char* const path;
 };
 
+struct OpenXrSystemInputProfiles {
+  // The system_name is matched against the OpenXR XrSystemProperties systemName
+  // so that different hardware revisions can return a more exact input profile.
+  // A nullptr system_name indicates that this set of input profiles matches any
+  // system that doesn't have an explicit match. Each interaction profile should
+  // have one OpenXrSystemInputProfiles with a system_name of nullptr.
+  const char* const system_name;
+  const char* const input_profiles[kMaxInputProfiles];
+  size_t profile_size;
+};
+
 struct OpenXrControllerInteractionProfile {
   OpenXrInteractionProfileType type;
   const char* const path;
   const char* const required_extension;
   GamepadMapping mapping;
-  const char* const* const input_profiles;
-  const size_t profile_size;
+  const OpenXrSystemInputProfiles* const system_input_profiles;
+  const size_t input_profile_size;
   const OpenXrButtonPathMap* left_button_maps;
   size_t left_button_map_size;
   const OpenXrButtonPathMap* right_button_maps;
@@ -99,29 +111,46 @@ struct OpenXrControllerInteractionProfile {
 // MSFT Hand Interaction
 // Declare OpenXR input profile bindings for other runtimes when they become
 // available.
-constexpr const char* kMicrosoftMotionInputProfiles[] = {
-    "windows-mixed-reality", "generic-trigger-squeeze-touchpad-thumbstick"};
+constexpr OpenXrSystemInputProfiles kMicrosoftMotionInputProfiles[] = {
+    {nullptr,
+     {"windows-mixed-reality", "generic-trigger-squeeze-touchpad-thumbstick"},
+     2}};
 
-constexpr const char* kGenericButtonInputProfiles[] = {"generic-button"};
+constexpr OpenXrSystemInputProfiles kGenericButtonInputProfiles[] = {
+    {nullptr, {"generic-button"}, 1}};
 
-constexpr const char* kOculusTouchInputProfiles[] = {
-    "oculus-touch", "generic-trigger-squeeze-thumbstick"};
+constexpr OpenXrSystemInputProfiles kOculusTouchInputProfiles[] = {
+    {nullptr, {"oculus-touch", "generic-trigger-squeeze-thumbstick"}, 2},
+    // TODO: Need to know the system name for the Rift S
+    {"Quest",
+     {"oculus-touch-v2", "oculus-touch", "generic-trigger-squeeze-thumbstick"},
+     3},
+    {"Miramar",  // Name reported to OpenXR for the Quest 2
+     {"oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
+      "generic-trigger-squeeze-thumbstick"},
+     4}};
 
-constexpr const char* kValveIndexInputProfiles[] = {
-    "valve-index", "generic-trigger-squeeze-touchpad-thumbstick"};
+constexpr OpenXrSystemInputProfiles kValveIndexInputProfiles[] = {
+    {nullptr,
+     {"valve-index", "generic-trigger-squeeze-touchpad-thumbstick"},
+     2}};
 
-constexpr const char* kHTCViveInputProfiles[] = {
-    "htc-vive", "generic-trigger-squeeze-touchpad"};
+constexpr OpenXrSystemInputProfiles kHTCViveInputProfiles[] = {
+    {nullptr, {"htc-vive", "generic-trigger-squeeze-touchpad"}, 2}};
 
-constexpr const char* kSamsungOdysseyInputProfiles[] = {
-    "samsung-odyssey", "windows-mixed-reality",
-    "generic-trigger-squeeze-touchpad-thumbstick"};
+constexpr OpenXrSystemInputProfiles kSamsungOdysseyInputProfiles[] = {
+    {nullptr,
+     {"samsung-odyssey", "windows-mixed-reality",
+      "generic-trigger-squeeze-touchpad-thumbstick"},
+     4}};
 
-constexpr const char* kHPReverbG2InputProfiles[] = {
-    "hp-mixed-reality", "oculus-touch", "generic-trigger-squeeze"};
+constexpr OpenXrSystemInputProfiles kHPReverbG2InputProfiles[] = {
+    {nullptr,
+     {"hp-mixed-reality", "oculus-touch", "generic-trigger-squeeze"},
+     3}};
 
-constexpr const char* kGenericHandSelectGraspInputProfile[] = {
-    "generic-hand-select-grasp", "generic-hand-select"};
+constexpr OpenXrSystemInputProfiles kGenericHandSelectGraspInputProfile[] = {
+    {nullptr, {"generic-hand-select-grasp", "generic-hand-select"}, 2}};
 
 constexpr OpenXrButtonPathMap kMicrosoftMotionControllerButtonPathMaps[] = {
     {OpenXrButtonType::kTrigger,

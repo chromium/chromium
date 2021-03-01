@@ -126,7 +126,7 @@ XrResult OpenXRInputHelper::Initialize(
     XrInstance instance,
     XrSystemId system,
     const OpenXrExtensionHelper& extension_helper) {
-  RETURN_IF_XR_FAILED(path_helper_->Initialize(instance));
+  RETURN_IF_XR_FAILED(path_helper_->Initialize(instance, system));
 
   // This map is used to store bindings for different kinds of interaction
   // profiles. This allows the runtime to choose a different input sources based

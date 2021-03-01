@@ -439,8 +439,6 @@ XrResult OpenXrController::UpdateInteractionProfile() {
       interaction_profile_state.interactionProfile);
 
   if (description_) {
-    // TODO(crbug.com/1006072):
-    // Query USB vendor and product ID From OpenXR.
     description_->profiles =
         path_helper_->GetInputProfiles(interaction_profile_);
   }
