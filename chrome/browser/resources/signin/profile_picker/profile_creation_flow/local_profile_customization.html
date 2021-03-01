@@ -91,6 +91,9 @@
     display: flex;
     flex-direction: column;
     padding: 15px 36px 23px;
+    /* Positions tooltips relatively to this container.
+       Fix for https://crbug.com/1182108 */
+    position: relative;
   }
 
   #colorPickerHeader {
