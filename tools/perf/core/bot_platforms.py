@@ -580,7 +580,7 @@ WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(
 ANDROID_NEXUS5X_PERF_FYI = PerfPlatform('android-nexus5x-perf-fyi',
                                         'Android MMB29Q',
                                         _ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS,
-                                        3,
+                                        2,
                                         'android',
                                         is_fyi=True)
 ANDROID_PIXEL2_PERF_AAB_FYI = PerfPlatform(
