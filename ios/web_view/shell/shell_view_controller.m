@@ -754,7 +754,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
         [enteredText stringByAddingPercentEncodingWithAllowedCharacters:
                          [NSCharacterSet URLQueryAllowedCharacterSet]];
     enteredText = [NSString
-        stringWithFormat:@"https://www.google.com/search?q=%@", enteredText];
+        stringWithFormat:@"https://www.duckduckgo.com/?q=%@", enteredText];
     URL = [NSURL URLWithString:enteredText];
   }
   NSURLRequest* request = [NSURLRequest requestWithURL:URL];
