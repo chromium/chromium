@@ -122,20 +122,11 @@ base::FilePath GetUserDataDir() {
   return base_path.Append("lacros");
 }
 
-bool IsLacrosEnabled() {
-  return IsLacrosEnabled(chrome::GetChannel());
-}
-
-bool IsLacrosEnabled(Channel channel) {
+bool IsLacrosAllowed(Channel channel) {
   // Allows tests to avoid enabling the flag, constructing a fake user manager,
   // creating g_browser_process->local_state(), etc.
   if (g_lacros_enabled_for_test)
     return true;
-
-  if (!base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport)) {
-    // Don't log here. It's too spammy.
-    return false;
-  }
 
   const User* user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (!user) {
@@ -170,6 +161,22 @@ bool IsLacrosEnabled(Channel channel) {
     case Channel::STABLE:
       return base::FeatureList::IsEnabled(kLacrosAllowOnStableChannel);
   }
+}
+
+bool IsLacrosEnabled() {
+  return IsLacrosEnabled(chrome::GetChannel());
+}
+
+bool IsLacrosEnabled(Channel channel) {
+  // Allows tests to avoid enabling the flag, constructing a fake user manager,
+  // creating g_browser_process->local_state(), etc.
+  if (g_lacros_enabled_for_test)
+    return true;
+
+  if (!IsLacrosAllowed(channel))
+    return false;
+
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
 void SetLacrosEnabledForTest(bool force_enabled) {
