@@ -81,8 +81,14 @@ enum class CryptAuthFeatureType {
   kWifiSyncClientSupported = 22,
   kWifiSyncClientEnabled = 23,
 
+  // Eche
+  kEcheHostSupported = 24,
+  kEcheHostEnabled = 25,
+  kEcheClientSupported = 26,
+  kEcheClientEnabled = 27,
+
   // Used for UMA logs.
-  kMaxValue = kWifiSyncClientEnabled
+  kMaxValue = kEcheClientEnabled
 };
 
 const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes();

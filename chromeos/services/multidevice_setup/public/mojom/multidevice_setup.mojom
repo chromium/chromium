@@ -56,7 +56,8 @@ enum Feature {
   kPhoneHub = 4,
   kPhoneHubNotifications = 5,
   kPhoneHubTaskContinuation = 6,
-  kWifiSync = 7
+  kWifiSync = 7,
+  kEche = 8
 };
 
 // This enum is tied directly to a UMA enum defined in

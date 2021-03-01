@@ -26,6 +26,8 @@ message BetterTogetherFeatureMetadata {
     PHONE_HUB_CLIENT = 10;
     WIFI_SYNC_HOST = 11;
     WIFI_SYNC_CLIENT = 12;
+    ECHE_HOST = 13;
+    ECHE_CLIENT = 14;
   }
 
   repeated FeatureName supported_features = 1;

@@ -42,7 +42,11 @@ enum SoftwareFeature {
   // Wifi Sync with Android allows users to sync wifi network configurations
   // between Chrome OS devices and a connected Android phone
   WIFI_SYNC_HOST = 11,
-  WIFI_SYNC_CLIENT = 12
+  WIFI_SYNC_CLIENT = 12,
+
+  // Eche
+  ECHE_HOST = 13,
+  ECHE_CLIENT = 14
 };
 
 // Enumeration of what value a SoftwareFeature can be.

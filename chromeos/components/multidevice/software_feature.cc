@@ -37,6 +37,10 @@ SoftwareFeature FromCryptAuthFeature(
       return SoftwareFeature::kWifiSyncHost;
     case cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT:
       return SoftwareFeature::kWifiSyncClient;
+    case cryptauth::SoftwareFeature::ECHE_HOST:
+      return SoftwareFeature::kEcheHost;
+    case cryptauth::SoftwareFeature::ECHE_CLIENT:
+      return SoftwareFeature::kEcheClient;
     case cryptauth::SoftwareFeature::UNKNOWN_FEATURE:
       NOTREACHED();
   }
@@ -73,6 +77,10 @@ cryptauth::SoftwareFeature ToCryptAuthFeature(
       return cryptauth::SoftwareFeature::WIFI_SYNC_HOST;
     case SoftwareFeature::kWifiSyncClient:
       return cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT;
+    case SoftwareFeature::kEcheHost:
+      return cryptauth::SoftwareFeature::ECHE_HOST;
+    case SoftwareFeature::kEcheClient:
+      return cryptauth::SoftwareFeature::ECHE_CLIENT;
   }
 
   NOTREACHED();
@@ -116,6 +124,12 @@ std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature) {
       break;
     case SoftwareFeature::kWifiSyncClient:
       stream << "[Wifi Sync client]";
+      break;
+    case SoftwareFeature::kEcheHost:
+      stream << "[Eche host]";
+      break;
+    case SoftwareFeature::kEcheClient:
+      stream << "[Eche client]";
       break;
   }
   return stream;

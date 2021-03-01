@@ -48,6 +48,7 @@ void SetDeviceSoftwareFeatureState(
           multidevice::SoftwareFeature::kMessagesForWebHost,
           multidevice::SoftwareFeature::kPhoneHubHost,
           multidevice::SoftwareFeature::kWifiSyncHost,
+          multidevice::SoftwareFeature::kEcheHost,
       };
 
   // Special case: when the Chrome OS device changes the value of the phone's

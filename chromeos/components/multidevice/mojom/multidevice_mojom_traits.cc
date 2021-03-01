@@ -198,6 +198,10 @@ EnumTraits<chromeos::multidevice::mojom::SoftwareFeature,
       return chromeos::multidevice::mojom::SoftwareFeature::WIFI_SYNC_HOST;
     case chromeos::multidevice::SoftwareFeature::kWifiSyncClient:
       return chromeos::multidevice::mojom::SoftwareFeature::WIFI_SYNC_CLIENT;
+    case chromeos::multidevice::SoftwareFeature::kEcheHost:
+      return chromeos::multidevice::mojom::SoftwareFeature::ECHE_HOST;
+    case chromeos::multidevice::SoftwareFeature::kEcheClient:
+      return chromeos::multidevice::mojom::SoftwareFeature::ECHE_CLIENT;
   }
 
   NOTREACHED();
@@ -244,6 +248,12 @@ bool EnumTraits<chromeos::multidevice::mojom::SoftwareFeature,
       return true;
     case chromeos::multidevice::mojom::SoftwareFeature::WIFI_SYNC_CLIENT:
       *out = chromeos::multidevice::SoftwareFeature::kWifiSyncClient;
+      return true;
+    case chromeos::multidevice::mojom::SoftwareFeature::ECHE_HOST:
+      *out = chromeos::multidevice::SoftwareFeature::kEcheHost;
+      return true;
+    case chromeos::multidevice::mojom::SoftwareFeature::ECHE_CLIENT:
+      *out = chromeos::multidevice::SoftwareFeature::kEcheClient;
       return true;
   }
 

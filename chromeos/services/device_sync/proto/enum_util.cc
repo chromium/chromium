@@ -97,6 +97,12 @@ std::ostream& operator<<(std::ostream& stream,
     case cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT:
       stream << "[Wifi Sync client]";
       break;
+    case cryptauth::SoftwareFeature::ECHE_HOST:
+      stream << "[Eche host]";
+      break;
+    case cryptauth::SoftwareFeature::ECHE_CLIENT:
+      stream << "[Eche client]";
+      break;
     default:
       stream << "[unknown software feature]";
       break;

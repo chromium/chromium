@@ -26,6 +26,7 @@ const char kPhoneHubNotificationsAllowedPrefName[] =
 const char kPhoneHubTaskContinuationAllowedPrefName[] =
     "phone_hub_task_continuation.allowed";
 const char kWifiSyncAllowedPrefName[] = "wifi_sync.allowed";
+const char kEcheAllowedPrefName[] = "eche.allowed";
 
 // "Enabled by user" preferences:
 const char kBetterTogetherSuiteEnabledPrefName[] =
@@ -39,6 +40,7 @@ const char kPhoneHubNotificationsEnabledPrefName[] =
     "phone_hub_notifications.enabled";
 const char kPhoneHubTaskContinuationEnabledPrefName[] =
     "phone_hub_task_continuation.enabled";
+const char kEcheEnabledPrefName[] = "eche.enabled";
 
 void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kInstantTetheringAllowedPrefName, true);
@@ -49,12 +51,14 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kPhoneHubNotificationsAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubTaskContinuationAllowedPrefName, true);
   registry->RegisterBooleanPref(kWifiSyncAllowedPrefName, true);
+  registry->RegisterBooleanPref(kEcheAllowedPrefName, true);
 
   registry->RegisterBooleanPref(kBetterTogetherSuiteEnabledPrefName, true);
   registry->RegisterBooleanPref(kInstantTetheringEnabledPrefName, true);
   registry->RegisterBooleanPref(kMessagesEnabledPrefName, true);
   registry->RegisterBooleanPref(kSmartLockEnabledDeprecatedPrefName, true);
   registry->RegisterBooleanPref(kSmartLockEnabledPrefName, true);
+  registry->RegisterBooleanPref(kEcheEnabledPrefName, false);
 
   // This pref should be disabled for existing Better Together users;
   // they must go to settings to explicitly enable PhoneHub.
@@ -78,7 +82,7 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
       static const mojom::Feature kTopLevelFeaturesInSuite[] = {
           mojom::Feature::kInstantTethering, mojom::Feature::kMessages,
           mojom::Feature::kPhoneHub,         mojom::Feature::kSmartLock,
-          mojom::Feature::kWifiSync,
+          mojom::Feature::kWifiSync,         mojom::Feature::kEche,
       };
       for (mojom::Feature feature : kTopLevelFeaturesInSuite) {
         if (IsFeatureAllowed(feature, pref_service))
@@ -112,6 +116,10 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
     case mojom::Feature::kWifiSync:
       return features::IsWifiSyncAndroidEnabled() &&
              pref_service->GetBoolean(kWifiSyncAllowedPrefName);
+
+    case mojom::Feature::kEche:
+      return features::IsEcheSWAEnabled() &&
+             pref_service->GetBoolean(kEcheAllowedPrefName);
 
     default:
       NOTREACHED();

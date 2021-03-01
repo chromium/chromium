@@ -57,6 +57,8 @@ RemoteDevice CreateStubHostPhone() {
         SoftwareFeatureState::kEnabled;
     software_features[SoftwareFeature::kWifiSyncHost] =
         SoftwareFeatureState::kEnabled;
+    software_features[SoftwareFeature::kEcheHost] =
+        SoftwareFeatureState::kEnabled;
 
     std::vector<BeaconSeed> beacon_seeds = {multidevice::BeaconSeed(
         kBeaconSeedData, base::Time::FromJavaTime(kBeaconSeedStartTimeMillis),
@@ -95,6 +97,11 @@ RemoteDevice CreateStubClientComputer() {
 
     software_features[SoftwareFeature::kWifiSyncClient] =
         chromeos::features::IsWifiSyncAndroidEnabled()
+            ? SoftwareFeatureState::kSupported
+            : SoftwareFeatureState::kNotSupported;
+
+    software_features[SoftwareFeature::kEcheClient] =
+        chromeos::features::IsEcheSWAEnabled()
             ? SoftwareFeatureState::kSupported
             : SoftwareFeatureState::kNotSupported;
 

@@ -67,6 +67,10 @@ const CryptAuthDevice& GetLocalDeviceForTest() {
              multidevice::SoftwareFeatureState::kNotSupported},
             {multidevice::SoftwareFeature::kWifiSyncClient,
              multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());
   return *device;
@@ -121,6 +125,10 @@ const CryptAuthDevice& GetRemoteDeviceNeedsGroupPrivateKeyForTest() {
              multidevice::SoftwareFeatureState::kNotSupported},
             {multidevice::SoftwareFeature::kWifiSyncClient,
              multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());
   return *device;
@@ -174,6 +182,10 @@ const CryptAuthDevice& GetRemoteDeviceHasGroupPrivateKeyForTest() {
             {multidevice::SoftwareFeature::kWifiSyncHost,
              multidevice::SoftwareFeatureState::kNotSupported},
             {multidevice::SoftwareFeature::kWifiSyncClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kEcheClient,
              multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());

@@ -80,6 +80,13 @@ const cryptauthv2::FeatureMetadata& GenerateFeatureMetadata() {
                   BetterTogetherFeatureMetadata_FeatureName_WIFI_SYNC_CLIENT);
         }
 
+        // Eche is only supported if the associated flag is enabled.
+        if (features::IsEcheSWAEnabled()) {
+          inner_metadata.add_supported_features(
+              cryptauthv2::
+                  BetterTogetherFeatureMetadata_FeatureName_ECHE_CLIENT);
+        }
+
         // Note: |inner_metadata|'s enabled_features field is deprecated and
         // left unset here (the server ignores this value when processing the
         // received proto).

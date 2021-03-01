@@ -101,6 +101,12 @@ const cryptauth::GcmDeviceInfo& GcmDeviceInfoProviderImpl::GetGcmDeviceInfo()
           cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT);
     }
 
+    // Eche is only supported if the associated flag is enabled.
+    if (features::IsEcheSWAEnabled()) {
+      gcm_device_info.add_supported_software_features(
+          cryptauth::SoftwareFeature::ECHE_CLIENT);
+    }
+
     return gcm_device_info;
   }());
 

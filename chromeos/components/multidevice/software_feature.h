@@ -52,7 +52,11 @@ enum class SoftwareFeature {
   // Wifi Sync with Android, which allows users to sync wifi network
   // configurations between Chrome OS devices and a connected Android phone
   kWifiSyncHost = 11,
-  kWifiSyncClient = 12
+  kWifiSyncClient = 12,
+
+  // Eche
+  kEcheHost = 13,
+  kEcheClient = 14
 };
 
 SoftwareFeature FromCryptAuthFeature(

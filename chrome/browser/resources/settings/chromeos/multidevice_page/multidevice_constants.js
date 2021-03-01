@@ -44,6 +44,7 @@ cr.define('settings', function() {
     PHONE_HUB_NOTIFICATIONS: 5,
     PHONE_HUB_TASK_CONTINUATION: 6,
     WIFI_SYNC: 7,
+    ECHE: 8,
   };
 
   /**

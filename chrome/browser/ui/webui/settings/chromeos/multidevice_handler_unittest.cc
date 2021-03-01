@@ -66,6 +66,8 @@ GenerateDefaultFeatureStatesMap() {
       {multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kWifiSync,
+       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+      {multidevice_setup::mojom::Feature::kEche,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost}};
 }
 
@@ -176,7 +178,8 @@ class MultideviceHandlerTest : public testing::Test {
     handler_->RegisterMessages();
     handler_->AllowJavascript();
 
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kPhoneHub}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA}, {});
   }
 
   void CallGetPageContentData() {
