@@ -112,7 +112,7 @@ if (is_chrome_branded) {
   url_unsecure_scheme = "googlechrome"
   url_x_callback_scheme = "googlechrome-x-callback"
 } else {
-  chromium_short_name = "Chromium"
+  chromium_short_name = "BrowserX"
   url_channel_scheme = "chromium-dev"
   url_secure_scheme = "chromiums"
   url_ssoauth_scheme = "$ios_app_bundle_id_prefix.sso.chromium"
