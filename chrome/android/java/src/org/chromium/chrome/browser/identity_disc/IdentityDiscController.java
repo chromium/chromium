@@ -42,7 +42,6 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collections;
 
 /**
  * Handles displaying IdentityDisc on toolbar depending on several conditions
@@ -196,7 +195,6 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         ProfileDataCache profileDataCache =
                 ProfileDataCache.createWithoutBadge(mContext, dimension_id);
         profileDataCache.addObserver(this);
-        profileDataCache.update(Collections.singletonList(accountName));
         mProfileDataCache[state] = profileDataCache;
     }
 
