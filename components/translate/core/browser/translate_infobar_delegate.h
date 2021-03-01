@@ -73,11 +73,11 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   // Factory method to create a translate infobar.  |error_type| must be
   // specified iff |step| == TRANSLATION_ERROR.  For other translate steps,
-  // |original_language| and |target_language| must be ASCII language codes
+  // |source_language| and |target_language| must be ASCII language codes
   // (e.g. "en", "fr", etc.) for languages the TranslateManager supports
   // translating.  The lone exception is when the user initiates translation
   // from the context menu, in which case it's legal to call this with
-  // |step| == TRANSLATING and |original_language| == kUnknownLanguageCode.
+  // |step| == TRANSLATING and |source_language| == kUnknownLanguageCode.
   //
   // If |replace_existing_infobar| is true, the infobar is created and added to
   // the infobar manager, replacing any other translate infobar already present
@@ -88,7 +88,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
                      infobars::InfoBarManager* infobar_manager,
                      bool is_off_the_record,
                      translate::TranslateStep step,
-                     const std::string& original_language,
+                     const std::string& source_language,
                      const std::string& target_language,
                      TranslateErrors::Type error_type,
                      bool triggered_from_menu);
@@ -108,13 +108,13 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   TranslateErrors::Type error_type() const { return error_type_; }
 
-  std::string original_language_code() const {
-    return ui_delegate_.GetOriginalLanguageCode();
+  std::string source_language_code() const {
+    return ui_delegate_.GetSourceLanguageCode();
   }
 
-  virtual base::string16 original_language_name() const;
+  virtual base::string16 source_language_name() const;
 
-  virtual void UpdateOriginalLanguage(const std::string& language_code);
+  virtual void UpdateSourceLanguage(const std::string& language_code);
 
   std::string target_language_code() const {
     return ui_delegate_.GetTargetLanguageCode();
@@ -254,7 +254,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
       const base::WeakPtr<TranslateManager>& translate_manager,
       bool is_off_the_record,
       translate::TranslateStep step,
-      const std::string& original_language,
+      const std::string& source_language,
       const std::string& target_language,
       TranslateErrors::Type error_type,
       bool triggered_from_menu);

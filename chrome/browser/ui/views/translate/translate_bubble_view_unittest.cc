@@ -37,7 +37,7 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
   explicit MockTranslateBubbleModel(TranslateBubbleModel::ViewState view_state)
       : view_state_transition_(view_state),
         error_type_(translate::TranslateErrors::NONE),
-        original_language_index_(1),
+        source_language_index_(1),
         target_language_index_(2),
         never_translate_language_(false),
         never_translate_site_(false),
@@ -48,7 +48,7 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
         translate_called_(false),
         revert_translation_called_(false),
         translation_declined_(false),
-        original_language_index_on_translation_(-1),
+        source_language_index_on_translation_(-1),
         target_language_index_on_translation_(-1),
         can_blocklist_site_(true) {}
 
@@ -80,18 +80,16 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
     return base::ASCIIToUTF16("English");
   }
 
-  std::string GetOriginalLanguageCode() const override {
-    if (original_language_index_ == 0)
+  std::string GetSourceLanguageCode() const override {
+    if (source_language_index_ == 0)
       return "und";
     return "eng-US";
   }
 
-  int GetOriginalLanguageIndex() const override {
-    return original_language_index_;
-  }
+  int GetSourceLanguageIndex() const override { return source_language_index_; }
 
-  void UpdateOriginalLanguageIndex(int index) override {
-    original_language_index_ = index;
+  void UpdateSourceLanguageIndex(int index) override {
+    source_language_index_ = index;
   }
 
   int GetTargetLanguageIndex() const override { return target_language_index_; }
@@ -139,7 +137,7 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
 
   void Translate() override {
     translate_called_ = true;
-    original_language_index_on_translation_ = original_language_index_;
+    source_language_index_on_translation_ = source_language_index_;
     target_language_index_on_translation_ = target_language_index_;
   }
 
@@ -148,8 +146,7 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
   void OnBubbleClosing() override {}
 
   bool IsPageTranslatedInCurrentLanguages() const override {
-    return original_language_index_on_translation_ ==
-               original_language_index_ &&
+    return source_language_index_on_translation_ == source_language_index_ &&
            target_language_index_on_translation_ == target_language_index_;
   }
 
@@ -161,7 +158,7 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
 
   TranslateBubbleViewStateTransition view_state_transition_;
   translate::TranslateErrors::Type error_type_;
-  int original_language_index_;
+  int source_language_index_;
   int target_language_index_;
   bool never_translate_language_;
   bool never_translate_site_;
@@ -172,7 +169,7 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
   bool translate_called_;
   bool revert_translation_called_;
   bool translation_declined_;
-  int original_language_index_on_translation_;
+  int source_language_index_on_translation_;
   int target_language_index_on_translation_;
   bool can_blocklist_site_;
 };
@@ -362,7 +359,7 @@ TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
   bubble_->TargetLanguageChanged();
   PressButton(TranslateBubbleView::BUTTON_ID_DONE);
   EXPECT_TRUE(mock_model_->translate_called_);
-  EXPECT_EQ(10, mock_model_->original_language_index_);
+  EXPECT_EQ(10, mock_model_->source_language_index_);
   EXPECT_EQ(20, mock_model_->target_language_index_);
 
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE,
@@ -382,7 +379,7 @@ TEST_F(TranslateBubbleViewTest, TargetDoneButton) {
   bubble_->TargetLanguageChanged();
   PressButton(TranslateBubbleView::BUTTON_ID_DONE);
   EXPECT_TRUE(mock_model_->translate_called_);
-  EXPECT_EQ(10, mock_model_->original_language_index_);
+  EXPECT_EQ(10, mock_model_->source_language_index_);
   EXPECT_EQ(20, mock_model_->target_language_index_);
 
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE,
@@ -429,7 +426,7 @@ TEST_F(TranslateBubbleViewTest, OptionsMenuRespectsBlocklistSite) {
 
 TEST_F(TranslateBubbleViewTest, MenuOptionsHiddenOnUnknownSource) {
   // Set source language to "Unknown".
-  mock_model_->UpdateOriginalLanguageIndex(0);
+  mock_model_->UpdateSourceLanguageIndex(0);
   CreateAndShowBubble();
 
   TriggerOptionsMenu();

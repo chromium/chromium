@@ -242,7 +242,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   // Retrieve the names of the from/to languages and reset the language
   // indices.
-  void UpdateLanguageNames(base::string16* original_language_name,
+  void UpdateLanguageNames(base::string16* source_language_name,
                            base::string16* target_language_name);
 
   void UpdateInsets(TranslateBubbleModel::ViewState state);

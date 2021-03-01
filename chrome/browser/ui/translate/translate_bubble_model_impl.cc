@@ -89,16 +89,16 @@ base::string16 TranslateBubbleModelImpl::GetTargetLanguageNameAt(
   return ui_delegate_->GetLanguageNameAt(index + 1);
 }
 
-std::string TranslateBubbleModelImpl::GetOriginalLanguageCode() const {
-  return ui_delegate_->GetOriginalLanguageCode();
+std::string TranslateBubbleModelImpl::GetSourceLanguageCode() const {
+  return ui_delegate_->GetSourceLanguageCode();
 }
 
-int TranslateBubbleModelImpl::GetOriginalLanguageIndex() const {
-  return ui_delegate_->GetOriginalLanguageIndex();
+int TranslateBubbleModelImpl::GetSourceLanguageIndex() const {
+  return ui_delegate_->GetSourceLanguageIndex();
 }
 
-void TranslateBubbleModelImpl::UpdateOriginalLanguageIndex(int index) {
-  ui_delegate_->UpdateOriginalLanguageIndex(index);
+void TranslateBubbleModelImpl::UpdateSourceLanguageIndex(int index) {
+  ui_delegate_->UpdateSourceLanguageIndex(index);
 }
 
 int TranslateBubbleModelImpl::GetTargetLanguageIndex() const {
@@ -167,7 +167,7 @@ void TranslateBubbleModelImpl::OnBubbleClosing() {
 bool TranslateBubbleModelImpl::IsPageTranslatedInCurrentLanguages() const {
   const translate::LanguageState& language_state =
       ui_delegate_->GetLanguageState();
-  return ui_delegate_->GetOriginalLanguageCode() ==
+  return ui_delegate_->GetSourceLanguageCode() ==
              language_state.original_language() &&
          ui_delegate_->GetTargetLanguageCode() ==
              language_state.current_language();

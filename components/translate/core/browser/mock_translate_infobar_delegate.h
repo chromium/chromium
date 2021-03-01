@@ -38,7 +38,7 @@ class MockTranslateInfoBarDelegate
       const base::WeakPtr<translate::TranslateManager>& translate_manager,
       bool is_off_the_record,
       translate::TranslateStep step,
-      const std::string& original_language,
+      const std::string& source_language,
       const std::string& target_language,
       translate::TranslateErrors::Type error_type,
       bool triggered_from_menu);
@@ -47,7 +47,7 @@ class MockTranslateInfoBarDelegate
   MOCK_CONST_METHOD0(num_languages, size_t());
   MOCK_CONST_METHOD1(language_code_at, std::string(size_t index));
   MOCK_CONST_METHOD1(language_name_at, base::string16(size_t index));
-  MOCK_CONST_METHOD0(original_language_name, base::string16());
+  MOCK_CONST_METHOD0(source_language_name, base::string16());
   MOCK_CONST_METHOD0(ShouldAlwaysTranslate, bool());
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
@@ -58,7 +58,7 @@ class MockTranslateInfoBarDelegate
   MOCK_METHOD0(ToggleNeverPrompt, void());
   MOCK_METHOD0(RevertWithoutClosingInfobar, void());
   MOCK_METHOD1(UpdateTargetLanguage, void(const std::string& language_code));
-  MOCK_METHOD1(UpdateOriginalLanguage, void(const std::string& language_code));
+  MOCK_METHOD1(UpdateSourceLanguage, void(const std::string& language_code));
 
   void GetLanguagesNames(std::vector<base::string16>* languages) const override;
   void GetLanguagesCodes(
@@ -80,7 +80,7 @@ class MockTranslateInfoBarDelegate
 
 class MockTranslateInfoBarDelegateFactory {
  public:
-  MockTranslateInfoBarDelegateFactory(const std::string& original_language,
+  MockTranslateInfoBarDelegateFactory(const std::string& source_language,
                                       const std::string& target_language);
   ~MockTranslateInfoBarDelegateFactory();
 

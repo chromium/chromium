@@ -136,8 +136,8 @@
 // Returns the menu items for the translate option selection popup menu.
 - (NSArray<NSArray<TableViewItem<PopupMenuItem>*>*>*)
     translateOptionSelectionItems {
-  base::string16 originalLanguageName =
-      self.infobarDelegate->original_language_name();
+  base::string16 sourceLanguageName =
+      self.infobarDelegate->source_language_name();
 
   TranslatePopupMenuItem* selectTargetLanguageItem =
       [[TranslatePopupMenuItem alloc] initWithType:kItemTypeEnumZero];
@@ -152,7 +152,7 @@
       PopupMenuActionAlwaysTranslateSourceLanguage;
   alwaysTranslateLanguageItem.title =
       base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
-          IDS_TRANSLATE_INFOBAR_OPTIONS_ALWAYS, originalLanguageName));
+          IDS_TRANSLATE_INFOBAR_OPTIONS_ALWAYS, sourceLanguageName));
   alwaysTranslateLanguageItem.selected =
       self.infobarDelegate->ShouldAlwaysTranslate();
 
@@ -163,7 +163,7 @@
   neverTranslateLanguageItem.title =
       base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
           IDS_TRANSLATE_INFOBAR_OPTIONS_NEVER_TRANSLATE_LANG,
-          originalLanguageName));
+          sourceLanguageName));
 
   TranslatePopupMenuItem* neverTranslateSiteItem =
       [[TranslatePopupMenuItem alloc] initWithType:kItemTypeEnumZero];
@@ -179,7 +179,7 @@
   selectSourceLanguageItem.title =
       base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
           IDS_TRANSLATE_INFOBAR_OPTIONS_NOT_SOURCE_LANGUAGE,
-          originalLanguageName));
+          sourceLanguageName));
 
   return @[
     @[ selectTargetLanguageItem ],

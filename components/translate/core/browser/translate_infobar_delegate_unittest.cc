@@ -36,7 +36,7 @@ using translate::testing::MockTranslateRanker;
 
 namespace translate {
 
-const char kOriginalLanguage[] = "fr";
+const char kSourceLanguage[] = "fr";
 const char kTargetLanguage[] = "en";
 
 namespace {
@@ -116,7 +116,7 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
         new TranslateInfoBarDelegate(
             manager_->GetWeakPtr(), /*is_off_the_record=*/false,
             translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-            kOriginalLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+            kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
             /*triggered_from_menu=*/false));
   }
 
@@ -137,7 +137,7 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(),
       /*is_off_the_record=*/false,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kOriginalLanguage,
+      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
       kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
@@ -150,15 +150,15 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   EXPECT_FALSE(delegate->is_off_the_record());
   EXPECT_FALSE(delegate->triggered_from_menu());
   EXPECT_EQ(delegate->target_language_code(), kTargetLanguage);
-  EXPECT_EQ(delegate->original_language_code(), kOriginalLanguage);
+  EXPECT_EQ(delegate->source_language_code(), kSourceLanguage);
 
   // Create another one and replace the old one
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(),
       /*is_off_the_record=*/true,
-      translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
-      kOriginalLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE, kSourceLanguage,
+      kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
@@ -173,7 +173,7 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
       infobar_manager_.get(),
       /*is_off_the_record=*/false,
       translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      kOriginalLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
@@ -204,18 +204,17 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
   ON_CALL(*(client_.get()), GetTranslateAcceptLanguages())
       .WillByDefault(Return(&accept_languages));
   ListPrefUpdate update(pref_service_.get(), language::prefs::kFluentLanguages);
-  update->Append(kOriginalLanguage);
-  pref_service_->SetString(language::prefs::kAcceptLanguages,
-                           kOriginalLanguage);
+  update->Append(kSourceLanguage);
+  pref_service_->SetString(language::prefs::kAcceptLanguages, kSourceLanguage);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   pref_service_->SetString(language::prefs::kPreferredLanguages,
-                           kOriginalLanguage);
+                           kSourceLanguage);
 #endif
 
   EXPECT_FALSE(delegate->IsTranslatableLanguageByPrefs());
 
-  // Remove kOriginalLanguage from the blocked languages.
-  update->EraseListValue(base::Value(kOriginalLanguage));
+  // Remove kSourceLanguage from the blocked languages.
+  update->EraseListValue(base::Value(kSourceLanguage));
   EXPECT_TRUE(delegate->IsTranslatableLanguageByPrefs());
 }
 
@@ -225,19 +224,19 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
   base::DictionaryValue* update_translate_accepted_dict =
       update_translate_accepted_count.Get();
   // 6 = kAutoAlwaysThreshold + 1
-  update_translate_accepted_dict->SetInteger(kOriginalLanguage, 6);
+  update_translate_accepted_dict->SetInteger(kSourceLanguage, 6);
 
   const base::DictionaryValue* dict = pref_service_->GetDictionary(
       TranslatePrefs::kPrefTranslateAutoAlwaysCount);
   int translate_auto_always_count = 0;
-  dict->GetInteger(kOriginalLanguage, &translate_auto_always_count);
+  dict->GetInteger(kSourceLanguage, &translate_auto_always_count);
   EXPECT_EQ(0, translate_auto_always_count);
 
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(),
       /*is_off_the_record=*/false,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kOriginalLanguage,
+      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
       kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
@@ -245,12 +244,12 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
   EXPECT_TRUE(delegate->ShouldAutoAlwaysTranslate());
 
   int count = -1;
-  update_translate_accepted_dict->GetInteger(kOriginalLanguage, &count);
+  update_translate_accepted_dict->GetInteger(kSourceLanguage, &count);
   EXPECT_EQ(0, count);
   dict = pref_service_->GetDictionary(
       TranslatePrefs::kPrefTranslateAutoAlwaysCount);
   translate_auto_always_count = 0;
-  dict->GetInteger(kOriginalLanguage, &translate_auto_always_count);
+  dict->GetInteger(kSourceLanguage, &translate_auto_always_count);
   EXPECT_EQ(1, translate_auto_always_count);
 }
 
@@ -259,7 +258,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(), /*is_off_the_record=*/true,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kOriginalLanguage,
+      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
       kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
@@ -280,19 +279,19 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
   base::DictionaryValue* update_translate_denied_dict =
       update_translate_denied_count.Get();
   // 21 = kAutoNeverThreshold + 1
-  update_translate_denied_dict->SetInteger(kOriginalLanguage, 21);
+  update_translate_denied_dict->SetInteger(kSourceLanguage, 21);
 
   const base::DictionaryValue* dict = pref_service_->GetDictionary(
       TranslatePrefs::kPrefTranslateAutoNeverCount);
   int translate_auto_never_count = 0;
-  dict->GetInteger(kOriginalLanguage, &translate_auto_never_count);
+  dict->GetInteger(kSourceLanguage, &translate_auto_never_count);
   EXPECT_EQ(0, translate_auto_never_count);
 
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(),
       /*is_off_the_record=*/false,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kOriginalLanguage,
+      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
       kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
@@ -300,12 +299,12 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
   EXPECT_TRUE(delegate->ShouldAutoNeverTranslate());
 
   int count = -1;
-  update_translate_denied_dict->GetInteger(kOriginalLanguage, &count);
+  update_translate_denied_dict->GetInteger(kSourceLanguage, &count);
   EXPECT_EQ(0, count);
   dict = pref_service_->GetDictionary(
       TranslatePrefs::kPrefTranslateAutoNeverCount);
   translate_auto_never_count = 0;
-  dict->GetInteger(kOriginalLanguage, &translate_auto_never_count);
+  dict->GetInteger(kSourceLanguage, &translate_auto_never_count);
   EXPECT_EQ(1, translate_auto_never_count);
 }
 
@@ -314,7 +313,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate_Not) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(), /*is_off_the_record=*/true,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kOriginalLanguage,
+      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
       kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 

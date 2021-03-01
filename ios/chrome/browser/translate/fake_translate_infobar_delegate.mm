@@ -21,18 +21,18 @@ FakeTranslateInfoBarDelegate::FakeTranslateInfoBarDelegate(
     const base::WeakPtr<translate::TranslateManager>& translate_manager,
     bool is_off_the_record,
     translate::TranslateStep step,
-    const std::string& original_language,
+    const std::string& source_language,
     const std::string& target_language,
     translate::TranslateErrors::Type error_type,
     bool triggered_from_menu)
     : translate::TranslateInfoBarDelegate(translate_manager,
                                           is_off_the_record,
                                           step,
-                                          original_language,
+                                          source_language,
                                           target_language,
                                           error_type,
                                           triggered_from_menu),
-      original_language_(original_language.begin(), original_language.end()),
+      source_language_(source_language.begin(), source_language.end()),
       target_language_(target_language.begin(), target_language.end()) {}
 
 FakeTranslateInfoBarDelegate::~FakeTranslateInfoBarDelegate() {
@@ -57,8 +57,8 @@ void FakeTranslateInfoBarDelegate::TriggerOnTranslateStepChanged(
   }
 }
 
-base::string16 FakeTranslateInfoBarDelegate::original_language_name() const {
-  return original_language_;
+base::string16 FakeTranslateInfoBarDelegate::source_language_name() const {
+  return source_language_;
 }
 
 base::string16 FakeTranslateInfoBarDelegate::target_language_name() const {
@@ -84,11 +84,11 @@ FakeTranslateInfoBarDelegateFactory::~FakeTranslateInfoBarDelegateFactory() {}
 
 std::unique_ptr<FakeTranslateInfoBarDelegate>
 FakeTranslateInfoBarDelegateFactory::CreateFakeTranslateInfoBarDelegate(
-    const std::string& original_language,
+    const std::string& source_language,
     const std::string& target_language) {
   return std::make_unique<FakeTranslateInfoBarDelegate>(
       manager_->GetWeakPtr(), false,
       translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      original_language, target_language,
-      translate::TranslateErrors::Type::NONE, false);
+      source_language, target_language, translate::TranslateErrors::Type::NONE,
+      false);
 }

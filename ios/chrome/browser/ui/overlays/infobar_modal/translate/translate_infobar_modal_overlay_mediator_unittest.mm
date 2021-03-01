@@ -86,7 +86,7 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, SetUpConsumer) {
       [[FakeInfobarTranslateModalConsumer alloc] init];
   mediator_.consumer = consumer;
 
-  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate().original_language_name()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate().source_language_name()),
               consumer.sourceLanguage);
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate().target_language_name()),
               consumer.targetLanguage);

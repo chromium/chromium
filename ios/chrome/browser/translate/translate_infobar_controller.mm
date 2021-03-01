@@ -81,7 +81,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
 // The NSDate of when a Translate or a revert was last executed.
 @property(nonatomic, strong) NSDate* lastTranslateTime;
 
-// Tracks the total number of translations in a page, incl. reverts to original.
+// Tracks the total number of translations in a page, incl. reverts to source.
 @property(nonatomic, assign) NSUInteger translationsCount;
 
 @end
@@ -151,7 +151,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
 
 - (void)translateInfobarViewDidTapSourceLangugage:
     (TranslateInfobarView*)sender {
-  // If already showing original language, no need to revert translate.
+  // If already showing source language, no need to revert translate.
   if (sender.state == TranslateInfobarViewStateBeforeTranslate)
     return;
   if ([self shouldIgnoreUserInteraction])
@@ -251,7 +251,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
     [self recordLanguageDataHistogram:kLanguageHistogramPageNotInLanguage
                          languageCode:languageCode];
 
-    self.infoBarDelegate->UpdateOriginalLanguage(languageCode);
+    self.infoBarDelegate->UpdateSourceLanguage(languageCode);
     _infobarView.sourceLanguage = self.sourceLanguage;
   } else {
     [self recordInfobarEvent:translate::InfobarEvent::
@@ -312,7 +312,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
                                  INFOBAR_SNACKBAR_ALWAYS_TRANSLATE_IMPRESSION];
     [self recordLanguageDataHistogram:kLanguageHistogramAlwaysTranslate
                          languageCode:self.infoBarDelegate
-                                          ->original_language_code()];
+                                          ->source_language_code()];
 
     // Page will be translated once the snackbar finishes showing.
     [self.translateNotificationHandler
@@ -337,7 +337,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
                                  INFOBAR_SNACKBAR_NEVER_TRANSLATE_IMPRESSION];
     [self recordLanguageDataHistogram:kLanguageHistogramNeverTranslate
                          languageCode:self.infoBarDelegate
-                                          ->original_language_code()];
+                                          ->source_language_code()];
 
     // Infobar will dismiss once the snackbar finishes showing.
     [self.translateNotificationHandler
@@ -453,8 +453,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
 }
 
 - (NSString*)sourceLanguage {
-  return base::SysUTF16ToNSString(
-      self.infoBarDelegate->original_language_name());
+  return base::SysUTF16ToNSString(self.infoBarDelegate->source_language_name());
 }
 
 - (NSString*)targetLanguage {
@@ -495,29 +494,29 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
 }
 
 - (void)showLanguageSelector {
-  int originalLanguageIndex = -1;
+  int sourceLanguageIndex = -1;
   int targetLanguageIndex = -1;
   for (size_t i = 0; i < self.infoBarDelegate->num_languages(); ++i) {
     if (self.infoBarDelegate->language_code_at(i) ==
-        self.infoBarDelegate->original_language_code()) {
-      originalLanguageIndex = i;
+        self.infoBarDelegate->source_language_code()) {
+      sourceLanguageIndex = i;
     }
     if (self.infoBarDelegate->language_code_at(i) ==
         self.infoBarDelegate->target_language_code()) {
       targetLanguageIndex = i;
     }
   }
-  DCHECK_GE(originalLanguageIndex, 0);
+  DCHECK_GE(sourceLanguageIndex, 0);
   DCHECK_GE(targetLanguageIndex, 0);
 
   size_t selectedIndex;
   size_t disabledIndex;
   if (self.languageSelectionState == LanguageSelectionStateSource) {
-    selectedIndex = originalLanguageIndex;
+    selectedIndex = sourceLanguageIndex;
     disabledIndex = targetLanguageIndex;
   } else {
     selectedIndex = targetLanguageIndex;
-    disabledIndex = originalLanguageIndex;
+    disabledIndex = sourceLanguageIndex;
   }
   LanguageSelectionContext* context =
       [LanguageSelectionContext contextWithLanguageData:self.infoBarDelegate

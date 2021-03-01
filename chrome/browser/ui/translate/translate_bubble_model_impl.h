@@ -38,9 +38,9 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
   int GetNumberOfTargetLanguages() const override;
   base::string16 GetSourceLanguageNameAt(int index) const override;
   base::string16 GetTargetLanguageNameAt(int index) const override;
-  std::string GetOriginalLanguageCode() const override;
-  int GetOriginalLanguageIndex() const override;
-  void UpdateOriginalLanguageIndex(int index) override;
+  std::string GetSourceLanguageCode() const override;
+  int GetSourceLanguageIndex() const override;
+  void UpdateSourceLanguageIndex(int index) override;
   int GetTargetLanguageIndex() const override;
   void UpdateTargetLanguageIndex(int index) override;
   void DeclineTranslation() override;

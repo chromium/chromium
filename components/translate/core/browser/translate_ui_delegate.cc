@@ -36,7 +36,7 @@ const char kPerformTranslateAmpCacheUrl[] = "Translate.Translate.AMPCacheURL";
 const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
 const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
 const char kAlwaysTranslateLang[] = "Translate.AlwaysTranslateLang";
-const char kModifyOriginalLang[] = "Translate.ModifyOriginalLang";
+const char kModifySourceLang[] = "Translate.ModifyOriginalLang";
 const char kModifyTargetLang[] = "Translate.ModifyTargetLang";
 const char kDeclineTranslateDismissUI[] = "Translate.DeclineTranslateDismissUI";
 const char kShowErrorUI[] = "Translate.ShowErrorUI";
@@ -79,13 +79,13 @@ LanguageNameTriple::LanguageNameTriple(const LanguageNameTriple&) = default;
 
 TranslateUIDelegate::TranslateUIDelegate(
     const base::WeakPtr<TranslateManager>& translate_manager,
-    const std::string& original_language,
+    const std::string& source_language,
     const std::string& target_language)
     : translate_driver_(
           translate_manager->translate_client()->GetTranslateDriver()),
       translate_manager_(translate_manager),
-      original_language_index_(kNoIndex),
-      initial_original_language_index_(kNoIndex),
+      source_language_index_(kNoIndex),
+      initial_source_language_index_(kNoIndex),
       target_language_index_(kNoIndex),
       prefs_(translate_manager_->translate_client()->GetTranslatePrefs()) {
   DCHECK(translate_driver_);
@@ -179,9 +179,9 @@ TranslateUIDelegate::TranslateUIDelegate(
   for (std::vector<LanguageNamePair>::const_iterator iter = languages_.begin();
        iter != languages_.end(); ++iter) {
     const std::string& language_code = iter->first;
-    if (language_code == original_language) {
-      original_language_index_ = iter - languages_.begin();
-      initial_original_language_index_ = original_language_index_;
+    if (language_code == source_language) {
+      source_language_index_ = iter - languages_.begin();
+      initial_source_language_index_ = source_language_index_;
     }
     if (language_code == target_language)
       target_language_index_ = iter - languages_.begin();
@@ -227,12 +227,12 @@ size_t TranslateUIDelegate::GetNumberOfLanguages() const {
   return languages_.size();
 }
 
-void TranslateUIDelegate::UpdateOriginalLanguageIndex(size_t language_index) {
-  if (original_language_index_ == language_index)
+void TranslateUIDelegate::UpdateSourceLanguageIndex(size_t language_index) {
+  if (source_language_index_ == language_index)
     return;
 
-  UMA_HISTOGRAM_BOOLEAN(kModifyOriginalLang, true);
-  original_language_index_ = language_index;
+  UMA_HISTOGRAM_BOOLEAN(kModifySourceLang, true);
+  source_language_index_ = language_index;
 
   std::string language_code = "und";
   if (language_index < GetNumberOfLanguages())
@@ -241,12 +241,12 @@ void TranslateUIDelegate::UpdateOriginalLanguageIndex(size_t language_index) {
       language_code);
 }
 
-void TranslateUIDelegate::UpdateOriginalLanguage(
+void TranslateUIDelegate::UpdateSourceLanguage(
     const std::string& language_code) {
   DCHECK(translate_manager_ != nullptr);
   for (size_t i = 0; i < languages_.size(); ++i) {
     if (languages_[i].first.compare(language_code) == 0) {
-      UpdateOriginalLanguageIndex(i);
+      UpdateSourceLanguageIndex(i);
       translate_manager_->mutable_translate_event()
           ->set_modified_source_language(language_code);
       return;
@@ -321,10 +321,10 @@ void TranslateUIDelegate::GetContentLanguagesCodes(
   }
 }
 
-std::string TranslateUIDelegate::GetOriginalLanguageCode() const {
-  return (GetOriginalLanguageIndex() == kNoIndex)
+std::string TranslateUIDelegate::GetSourceLanguageCode() const {
+  return (GetSourceLanguageIndex() == kNoIndex)
              ? translate::kUnknownLanguageCode
-             : GetLanguageCodeAt(GetOriginalLanguageIndex());
+             : GetLanguageCodeAt(GetSourceLanguageIndex());
 }
 
 std::string TranslateUIDelegate::GetTargetLanguageCode() const {
@@ -335,9 +335,9 @@ std::string TranslateUIDelegate::GetTargetLanguageCode() const {
 
 void TranslateUIDelegate::Translate() {
   if (!translate_driver_->IsIncognito()) {
-    prefs_->ResetTranslationDeniedCount(GetOriginalLanguageCode());
-    prefs_->ResetTranslationIgnoredCount(GetOriginalLanguageCode());
-    prefs_->IncrementTranslationAcceptedCount(GetOriginalLanguageCode());
+    prefs_->ResetTranslationDeniedCount(GetSourceLanguageCode());
+    prefs_->ResetTranslationIgnoredCount(GetSourceLanguageCode());
+    prefs_->IncrementTranslationAcceptedCount(GetSourceLanguageCode());
     prefs_->SetRecentTargetLanguage(GetTargetLanguageCode());
   }
 
@@ -345,7 +345,7 @@ void TranslateUIDelegate::Translate() {
     translate_manager_->RecordTranslateEvent(
         metrics::TranslateEventProto::USER_ACCEPT);
     translate_manager_->TranslatePage(
-        GetOriginalLanguageCode(), GetTargetLanguageCode(), false,
+        GetSourceLanguageCode(), GetTargetLanguageCode(), false,
         translate_manager_->GetActiveTranslateMetricsLogger()
             ->GetNextManualTranslationType());
     UMA_HISTOGRAM_BOOLEAN(kPerformTranslate, true);
@@ -363,7 +363,7 @@ void TranslateUIDelegate::RevertTranslation() {
 
 void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
   if (!translate_driver_->IsIncognito()) {
-    const std::string& language = GetOriginalLanguageCode();
+    const std::string& language = GetSourceLanguageCode();
     if (explicitly_closed) {
       prefs_->ResetTranslationAcceptedCount(language);
       prefs_->IncrementTranslationDeniedCount(language);
@@ -394,12 +394,12 @@ void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
 }
 
 bool TranslateUIDelegate::IsLanguageBlocked() const {
-  return prefs_->IsBlockedLanguage(GetOriginalLanguageCode());
+  return prefs_->IsBlockedLanguage(GetSourceLanguageCode());
 }
 
 void TranslateUIDelegate::SetLanguageBlocked(bool value) {
   if (value) {
-    prefs_->AddToLanguageList(GetOriginalLanguageCode(),
+    prefs_->AddToLanguageList(GetSourceLanguageCode(),
                               /*force_blocked=*/true);
     if (translate_manager_) {
       // Translation has been blocked for this language. Capture that in the
@@ -409,7 +409,7 @@ void TranslateUIDelegate::SetLanguageBlocked(bool value) {
           metrics::TranslateEventProto::USER_NEVER_TRANSLATE_LANGUAGE);
     }
   } else {
-    prefs_->UnblockLanguage(GetOriginalLanguageCode());
+    prefs_->UnblockLanguage(GetSourceLanguageCode());
   }
 
   UMA_HISTOGRAM_BOOLEAN(kNeverTranslateLang, value);
@@ -446,7 +446,7 @@ void TranslateUIDelegate::SetNeverPrompt(bool value) {
 }
 
 bool TranslateUIDelegate::ShouldAlwaysTranslate() const {
-  return prefs_->IsLanguagePairOnAlwaysTranslateList(GetOriginalLanguageCode(),
+  return prefs_->IsLanguagePairOnAlwaysTranslateList(GetSourceLanguageCode(),
                                                      GetTargetLanguageCode());
 }
 
@@ -456,21 +456,21 @@ bool TranslateUIDelegate::ShouldAlwaysTranslateBeCheckedByDefault() const {
 
 bool TranslateUIDelegate::ShouldShowAlwaysTranslateShortcut() const {
   return !translate_driver_->IsIncognito() &&
-         prefs_->GetTranslationAcceptedCount(GetOriginalLanguageCode()) >=
+         prefs_->GetTranslationAcceptedCount(GetSourceLanguageCode()) >=
              kAlwaysTranslateShortcutMinimumAccepts;
 }
 
 bool TranslateUIDelegate::ShouldShowNeverTranslateShortcut() const {
   return !translate_driver_->IsIncognito() &&
-         prefs_->GetTranslationDeniedCount(GetOriginalLanguageCode()) >=
+         prefs_->GetTranslationDeniedCount(GetSourceLanguageCode()) >=
              kNeverTranslateShortcutMinimumDenials;
 }
 
 void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
-  const std::string& original_lang = GetOriginalLanguageCode();
+  const std::string& source_lang = GetSourceLanguageCode();
   const std::string& target_lang = GetTargetLanguageCode();
   if (value) {
-    prefs_->AddLanguagePairToAlwaysTranslateList(original_lang, target_lang);
+    prefs_->AddLanguagePairToAlwaysTranslateList(source_lang, target_lang);
     // A default translation mapping has been accepted for this language.
     // Capture that in the metrics. Note that we don't capture a language being
     // unmapped... which is not the same as accepting some other translation
@@ -480,8 +480,7 @@ void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
           metrics::TranslateEventProto::USER_ALWAYS_TRANSLATE_LANGUAGE);
     }
   } else {
-    prefs_->RemoveLanguagePairFromAlwaysTranslateList(original_lang,
-                                                      target_lang);
+    prefs_->RemoveLanguagePairFromAlwaysTranslateList(source_lang, target_lang);
   }
 
   UMA_HISTOGRAM_BOOLEAN(kAlwaysTranslateLang, value);

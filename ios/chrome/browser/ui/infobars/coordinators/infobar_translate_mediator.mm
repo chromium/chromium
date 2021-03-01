@@ -51,7 +51,7 @@ const int kInvalidLanguageIndex = -1;
 
 - (void)updateLanguagesIfNecessary {
   if (self.newSourceLanguageIndex != kInvalidLanguageIndex) {
-    self.translateInfobarDelegate->UpdateOriginalLanguage(
+    self.translateInfobarDelegate->UpdateSourceLanguage(
         self.translateInfobarDelegate->language_code_at(
             self.newSourceLanguageIndex));
     self.newSourceLanguageIndex = kInvalidLanguageIndex;
@@ -80,7 +80,7 @@ const int kInvalidLanguageIndex = -1;
       setupModalViewControllerWithPrefs:
           [self createPrefDictionaryForSourceLanguage:
                     base::SysUTF16ToNSString(
-                        self.translateInfobarDelegate->original_language_name())
+                        self.translateInfobarDelegate->source_language_name())
                                        targetLanguage:
                                            base::SysUTF16ToNSString(
                                                self.translateInfobarDelegate
@@ -109,15 +109,15 @@ const int kInvalidLanguageIndex = -1;
 
 - (NSArray<TableViewTextItem*>*)loadTranslateLanguageItemsForSelectingLanguage:
     (BOOL)sourceLanguage {
-  int originalLanguageIndex = kInvalidLanguageIndex;
+  int sourceLanguageIndex = kInvalidLanguageIndex;
   int targetLanguageIndex = kInvalidLanguageIndex;
-  // In the instance that the user has already selected a different original
+  // In the instance that the user has already selected a different source
   // language, then we should be using that language as the one to potentially
   // check or not show.
-  std::string originalLanguageCode =
-      self.translateInfobarDelegate->original_language_code();
+  std::string sourceLanguageCode =
+      self.translateInfobarDelegate->source_language_code();
   if (self.newSourceLanguageIndex != kInvalidLanguageIndex) {
-    originalLanguageCode = self.translateInfobarDelegate->language_code_at(
+    sourceLanguageCode = self.translateInfobarDelegate->language_code_at(
         self.newSourceLanguageIndex);
   }
   // In the instance that the user has already selected a different target
@@ -137,8 +137,8 @@ const int kInvalidLanguageIndex = -1;
         self.translateInfobarDelegate->language_name_at((int(i))));
 
     if (self.translateInfobarDelegate->language_code_at(i) ==
-        originalLanguageCode) {
-      originalLanguageIndex = i;
+        sourceLanguageCode) {
+      sourceLanguageIndex = i;
       if (!sourceLanguage) {
         // Disable for source language if selecting the target
         // language to prevent same language translation. Need to add item,
@@ -159,13 +159,13 @@ const int kInvalidLanguageIndex = -1;
       }
     }
 
-    if ((sourceLanguage && originalLanguageIndex == (int)i) ||
+    if ((sourceLanguage && sourceLanguageIndex == (int)i) ||
         (!sourceLanguage && targetLanguageIndex == (int)i)) {
       item.checked = YES;
     }
     [items addObject:item];
   }
-  DCHECK_GT(originalLanguageIndex, kInvalidLanguageIndex);
+  DCHECK_GT(sourceLanguageIndex, kInvalidLanguageIndex);
   DCHECK_GT(targetLanguageIndex, kInvalidLanguageIndex);
 
   return items;
@@ -213,7 +213,7 @@ const int kInvalidLanguageIndex = -1;
   self.newTargetLanguageIndex = languageIndex;
 
   base::string16 sourceLanguage =
-      self.translateInfobarDelegate->original_language_name();
+      self.translateInfobarDelegate->source_language_name();
   if (self.newSourceLanguageIndex != kInvalidLanguageIndex) {
     sourceLanguage = self.translateInfobarDelegate->language_name_at(
         self.newSourceLanguageIndex);

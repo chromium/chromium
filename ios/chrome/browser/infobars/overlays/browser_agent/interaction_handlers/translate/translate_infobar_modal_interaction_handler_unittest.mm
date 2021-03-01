@@ -88,6 +88,6 @@ TEST_F(TranslateInfobarModalInteractionHandlerTest, UpdateLanguages) {
   // Just assert that the methods are called. The actual codes are unecessary to
   // mock since it is dependent on the Translate model.
   EXPECT_CALL(mock_delegate(infobar.get()), UpdateTargetLanguage(_));
-  EXPECT_CALL(mock_delegate(infobar.get()), UpdateOriginalLanguage(_));
+  EXPECT_CALL(mock_delegate(infobar.get()), UpdateSourceLanguage(_));
   handler_.UpdateLanguages(infobar.get(), source_index, target_index);
 }

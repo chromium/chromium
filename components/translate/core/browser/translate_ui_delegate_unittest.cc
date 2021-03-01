@@ -194,25 +194,25 @@ TEST_F(TranslateUIDelegateTest, ShouldShowNeverTranslateShortcut) {
 
 TEST_F(TranslateUIDelegateTest, LanguageCodes) {
   // Test language codes.
-  EXPECT_EQ("ar", delegate_->GetOriginalLanguageCode());
+  EXPECT_EQ("ar", delegate_->GetSourceLanguageCode());
   EXPECT_EQ("fr", delegate_->GetTargetLanguageCode());
 
-  // Test language indicies.
-  const size_t ar_index = delegate_->GetOriginalLanguageIndex();
+  // Test language indices.
+  const size_t ar_index = delegate_->GetSourceLanguageIndex();
   EXPECT_EQ("ar", delegate_->GetLanguageCodeAt(ar_index));
   const size_t fr_index = delegate_->GetTargetLanguageIndex();
   EXPECT_EQ("fr", delegate_->GetLanguageCodeAt(fr_index));
 
-  // Test updating original / target codes.
-  delegate_->UpdateOriginalLanguage("es");
-  EXPECT_EQ("es", delegate_->GetOriginalLanguageCode());
+  // Test updating source / target codes.
+  delegate_->UpdateSourceLanguage("es");
+  EXPECT_EQ("es", delegate_->GetSourceLanguageCode());
   delegate_->UpdateTargetLanguage("de");
   EXPECT_EQ("de", delegate_->GetTargetLanguageCode());
 
-  // Test updating original / target indicies. Note that this also returns
+  // Test updating source / target indices. Note that this also returns
   // the delegate to the starting state.
-  delegate_->UpdateOriginalLanguageIndex(ar_index);
-  EXPECT_EQ("ar", delegate_->GetOriginalLanguageCode());
+  delegate_->UpdateSourceLanguageIndex(ar_index);
+  EXPECT_EQ("ar", delegate_->GetSourceLanguageCode());
   delegate_->UpdateTargetLanguageIndex(fr_index);
   EXPECT_EQ("fr", delegate_->GetTargetLanguageCode());
 }

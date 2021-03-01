@@ -179,7 +179,7 @@ TEST_F(TranslateInfobarMediatorTest, InstallHandlers) {
 // options popup menu on its consumer.
 TEST_F(TranslateInfobarMediatorTest, TranslateOptionMenuItems) {
   // Set up what TranslateInfoBarDelegate should return.
-  EXPECT_CALL(*GetDelegate(), original_language_name())
+  EXPECT_CALL(*GetDelegate(), source_language_name())
       .WillRepeatedly(testing::Return(base::UTF8ToUTF16("French")));
   EXPECT_CALL(*GetDelegate(), ShouldAlwaysTranslate())
       .WillOnce(testing::Return(true));

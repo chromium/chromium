@@ -27,7 +27,7 @@ TranslateModalRequestConfig::TranslateModalRequestConfig(InfoBarIOS* infobar)
   DCHECK(delegate);
 
   current_step_ = delegate->translate_step();
-  source_language_name_ = delegate->original_language_name();
+  source_language_name_ = delegate->source_language_name();
   target_language_name_ = delegate->target_language_name();
   for (size_t i = 0; i < delegate->num_languages(); ++i) {
     language_names_.push_back(delegate->language_name_at((int(i))));
