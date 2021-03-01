@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -71,6 +72,7 @@ public class PaymentRequestPaymentAppAndBasicCardWithModifiersTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @FlakyTest(message = "https://crbug.com/1182584")
     public void testUpdateTotalAndInstrumentLabelWithBobPayModifiers() throws TimeoutException {
         // Mastercard card with complete set of information and unknown type.
         mHelper.setCreditCard(new CreditCard(/*guid=*/"", "https://example.com", true /* isLocal */,
