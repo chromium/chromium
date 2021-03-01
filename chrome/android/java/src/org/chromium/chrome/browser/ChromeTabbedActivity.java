@@ -1810,8 +1810,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         } else if (id == R.id.all_bookmarks_menu_id) {
             // Note that 'currentTab' could be null in overview mode when start surface is
             // enabled.
-            getCompositorViewHolder().hideKeyboard(
-                    () -> { BookmarkUtils.showBookmarkManager(ChromeTabbedActivity.this); });
+            getCompositorViewHolder().hideKeyboard(() -> {
+                BookmarkUtils.showBookmarkManager(
+                        ChromeTabbedActivity.this, getCurrentTabModel().isIncognito());
+            });
             if (currentTabIsNtp) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_BOOKMARKS_MANAGER);
             }

@@ -98,6 +98,7 @@ public class NativePageFactory {
 
         protected NativePage buildBookmarksPage(Tab tab) {
             return new BookmarkPage(mActivity.getComponentName(), mActivity.getSnackbarManager(),
+                    mActivity.getTabModelSelector().isIncognitoSelected(),
                     new TabShim(tab, mActivity));
         }
 

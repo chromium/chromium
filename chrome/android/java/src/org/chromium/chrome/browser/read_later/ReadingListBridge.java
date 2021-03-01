@@ -41,7 +41,8 @@ public final class ReadingListBridge {
     @CalledByNative
     private static void openReadingListPage() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) return;
-        BookmarkUtils.showBookmarkManager(null, new BookmarkId(0, BookmarkType.READING_LIST));
+        BookmarkUtils.showBookmarkManager(
+                null, new BookmarkId(0, BookmarkType.READING_LIST), /*isIncognito=*/false);
     }
 
     @NativeMethods

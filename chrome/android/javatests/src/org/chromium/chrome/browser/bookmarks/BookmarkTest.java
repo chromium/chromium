@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightOff;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightPulse;
 
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
 import android.text.TextUtils;
@@ -61,6 +62,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
@@ -1194,6 +1196,10 @@ public class BookmarkTest {
         CustomTabActivity activity = ApplicationTestUtils.waitForActivityWithClass(
                 CustomTabActivity.class, Stage.CREATED, () -> { readingListRow.performClick(); });
         CriteriaHelper.pollUiThread(() -> activity.getActivityTab() != null);
+        Intent customTabIntent = activity.getInitialIntent();
+        Assert.assertTrue(customTabIntent.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB));
+        Assert.assertFalse(
+                customTabIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertTrue(activity.getActivityTab().getUrl().equals(mTestUrlA)); });
         activity.finish();
@@ -1819,13 +1825,14 @@ public class BookmarkTest {
         if (mActivityTestRule.getActivity().isTablet()) {
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 BookmarkUtils.showBookmarkManager(
-                        null, new BookmarkId(0, BookmarkType.READING_LIST));
+                        null, new BookmarkId(0, BookmarkType.READING_LIST), /*isIncognito=*/false);
             });
         } else {
             mBookmarkActivity = ApplicationTestUtils.waitForActivityWithClass(
                     BookmarkActivity.class, Stage.CREATED, () -> {
-                        BookmarkUtils.showBookmarkManager(
-                                null, new BookmarkId(0, BookmarkType.READING_LIST));
+                        BookmarkUtils.showBookmarkManager(null,
+                                new BookmarkId(0, BookmarkType.READING_LIST),
+                                /*isIncognito=*/false);
                     });
         }
 

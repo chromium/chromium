@@ -67,6 +67,7 @@ public class BookmarkManager
     private boolean mFaviconsNeedRefresh;
     private String mInitialUrl;
     private boolean mIsDialogUi;
+    private boolean mIsIncognito;
     private boolean mIsDestroyed;
 
     private BookmarkItemsAdapter mAdapter;
@@ -164,13 +165,15 @@ public class BookmarkManager
      * @param context The current {@link Context} used to obtain resources or inflate views.
      * @param openBookmarkComponentName The component to use when opening a bookmark.
      * @param isDialogUi Whether the main bookmarks UI will be shown in a dialog, not a NativePage.
+     * @param isIncognito Whether the tab model loading the bookmark manager is for incognito mode.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      */
     public BookmarkManager(Context context, ComponentName openBookmarkComponentName,
-            boolean isDialogUi, SnackbarManager snackbarManager) {
+            boolean isDialogUi, boolean isIncognito, SnackbarManager snackbarManager) {
         mContext = context;
         mOpenBookmarkComponentName = openBookmarkComponentName;
         mIsDialogUi = isDialogUi;
+        mIsIncognito = isIncognito;
 
         mSelectionDelegate = new SelectionDelegate<BookmarkId>() {
             @Override
@@ -496,7 +499,7 @@ public class BookmarkManager
     @Override
     public void openBookmark(BookmarkId bookmark) {
         if (!BookmarkUtils.openBookmark(
-                    mContext, mOpenBookmarkComponentName, mBookmarkModel, bookmark)) {
+                    mContext, mOpenBookmarkComponentName, mBookmarkModel, bookmark, mIsIncognito)) {
             return;
         }
 
