@@ -271,7 +271,6 @@ CSSFilterListInterpolationType::PreInterpolationCompositeIfNeeded(
     EffectModel::CompositeOperation composite,
     ConversionCheckers& conversion_checkers) const {
   DCHECK(!value.non_interpolable_value);
-  DCHECK(!underlying.non_interpolable_value);
 
   // Due to the post-interpolation composite optimization, the interpolation
   // stack aggressively caches interpolated values. When we are doing
@@ -281,6 +280,11 @@ CSSFilterListInterpolationType::PreInterpolationCompositeIfNeeded(
   // TODO(crbug.com/1009230): Remove this once our interpolation code isn't
   // caching composited values.
   conversion_checkers.push_back(std::make_unique<AlwaysInvalidateChecker>());
+
+  // The non_interpolable_value can be non-null, for example, it contains a
+  // single frame url().
+  if (underlying.non_interpolable_value)
+    return nullptr;
 
   // The underlying value can be nullptr, most commonly if it contains a url().
   // TODO(crbug.com/1009229): Properly handle url() in filter composite.
