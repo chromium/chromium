@@ -16,6 +16,8 @@ struct Feature;
 
 namespace flags_ui {
 
+extern const char kMultiSeparatorChar;
+
 // Generic experiment choice option names.
 extern const char kGenericExperimentChoiceDefault[];
 extern const char kGenericExperimentChoiceEnabled[];

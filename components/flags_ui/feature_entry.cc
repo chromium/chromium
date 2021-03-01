@@ -11,13 +11,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace flags_ui {
-namespace {
 
 // WARNING: '@' is also used in the html file. If you update this constant you
 // also need to update the html file.
 const char kMultiSeparatorChar = '@';
-
-}  // namespace
 
 const char kGenericExperimentChoiceDefault[] = "Default";
 const char kGenericExperimentChoiceEnabled[] = "Enabled";

@@ -217,7 +217,9 @@ std::unique_ptr<ChromeLabsItemView> ChromeLabsBubbleView::CreateLabItem(
     int selected_index = item_view->GetSelectedIndex();
     about_flags::SetFeatureEntryEnabled(
         bubble_view->flags_storage_.get(),
-        internal_name + "@" + base::NumberToString(selected_index), true);
+        internal_name + flags_ui::kMultiSeparatorChar +
+            base::NumberToString(selected_index),
+        true);
     bubble_view->ShowRelaunchPrompt();
     EmitToHistogram(
         item_view->GetFeatureEntry()->DescriptionForOption(selected_index),
