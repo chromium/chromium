@@ -186,7 +186,7 @@
     },
     InspectorPageAgent: {
       probes: [
-        "ConsumeCompilationCache",
+        "ApplyCompilationModeOverride",
         "DidChangeViewport",
         "DidClearDocumentOfWindowObject",
         "DidNavigateWithinDocument",
@@ -206,7 +206,7 @@
         "LifecycleEvent",
         "LoadEventFired",
         "PaintTiming",
-        "ProduceCompilationCache",
+        "DidProduceCompilationCache",
         "RecalculateStyle",
         "UpdateLayout",
         "WillRunJavaScriptDialog",

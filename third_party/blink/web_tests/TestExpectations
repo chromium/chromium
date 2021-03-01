@@ -5742,7 +5742,6 @@ crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-
 crbug.com/1182689 [ Mac10.14 ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
 crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Pass Failure ]
 crbug.com/1182691 [ Linux ] external/wpt/webcodecs/audio-encoder.any.html [ Pass Failure ]
-crbug.com/1182727 http/tests/inspector-protocol/page/page-setProduceCompilationCache.js [ Pass Failure ]
 crbug.com/1182749 [ Win7 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/page/page-setProduceCompilationCache.js [ Pass Failure ]
 
 # Temporarily disabled to allow a WebRTC roll fixing the test.

@@ -170,6 +170,9 @@ class CORE_EXPORT InspectorPageAgent final
                                         Maybe<String> group) override;
 
   protocol::Response setProduceCompilationCache(bool enabled) override;
+  protocol::Response produceCompilationCache(
+      std::unique_ptr<protocol::Array<protocol::Page::CompilationCacheParams>>
+          scripts) override;
   protocol::Response addCompilationCache(const String& url,
                                          const protocol::Binary& data) override;
   protocol::Response clearCompilationCache() override;
@@ -213,10 +216,11 @@ class CORE_EXPORT InspectorPageAgent final
                   const AtomicString&,
                   const WebWindowFeatures&,
                   bool);
-  void ConsumeCompilationCache(const ScriptSourceCode& source,
-                               v8::ScriptCompiler::CachedData**);
-  void ProduceCompilationCache(const ScriptSourceCode& source,
-                               v8::Local<v8::Script> script);
+  void ApplyCompilationModeOverride(const ScriptSourceCode& source,
+                                    v8::ScriptCompiler::CachedData**,
+                                    v8::ScriptCompiler::CompileOptions*);
+  void DidProduceCompilationCache(const ScriptSourceCode& source,
+                                  v8::Local<v8::Script> script);
   void FileChooserOpened(LocalFrame* frame,
                          HTMLInputElement* element,
                          bool* intercepted);
@@ -255,6 +259,10 @@ class CORE_EXPORT InspectorPageAgent final
       LocalFrame*);
   Member<InspectedFrames> inspected_frames_;
   HashMap<String, protocol::Binary> compilation_cache_;
+  // TODO(caseq): should this be stored as InspectorAgentState::StringMap
+  // instead? Current use cases do not require this, but we might eventually
+  // reconsider. Value is true iff eager compilation requested.
+  HashMap<String, bool> requested_compilation_cache_;
   using FrameIsolatedWorlds = HashMap<String, scoped_refptr<DOMWrapperWorld>>;
   HeapHashMap<WeakMember<LocalFrame>, FrameIsolatedWorlds> isolated_worlds_;
   v8_inspector::V8InspectorSession* v8_session_;

@@ -1,0 +1,8 @@
+Tests that compilation cache is only being produced for specified scripts
+Compilation cache produced for: http://127.0.0.1:8000/inspector-protocol/page/resources/script-1.js
+Page: Script 1 completed
+Page: Script 2 completed
+Page: Script 1 completed
+Compilation cache produced for: http://127.0.0.1:8000/inspector-protocol/page/resources/script-2.js?v2
+Page: Script 2 completed
+

@@ -21,13 +21,13 @@
       testRunner.completeTest();
   });
 
-  dp.Page.onCompilationCacheProduced(async result => {
+  dp.Page.onCompilationCacheProduced(result => {
     testRunner.log('Compilation cache produced for: ' + result.params.url);
     const url2 = result.params.url.replace(/-1/, '-2');
     testRunner.log('Poisoning cache for: ' + url2);
-    await dp.Page.addCompilationCache({url: url2, data: result.params.data});
+    dp.Page.addCompilationCache({url: url2, data: result.params.data});
     testRunner.log('Loading script 2 with cache poisoined with script 1...');
-    await session.evaluate('loadScript2()');
+    session.evaluate('loadScript2()');
   });
 
   await dp.Page.enable();

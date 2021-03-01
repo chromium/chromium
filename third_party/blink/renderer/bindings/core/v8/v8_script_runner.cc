@@ -135,8 +135,11 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
 
   // Allow inspector to use its own compilation cache store.
   v8::ScriptCompiler::CachedData* inspector_data = nullptr;
-  probe::ConsumeCompilationCache(execution_context, source_code,
-                                 &inspector_data);
+  // The probe below allows inspector to either inject the cached code
+  // or override compile_options to force eager compilation of code
+  // when producing the cache.
+  probe::ApplyCompilationModeOverride(execution_context, source_code,
+                                      &inspector_data, &compile_options);
   if (inspector_data) {
     v8::ScriptCompiler::Source source(code, origin, inspector_data);
     v8::MaybeLocal<v8::Script> script =
@@ -482,8 +485,8 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
             .ToLocal(&script)) {
       maybe_result =
           V8ScriptRunner::RunCompiledScript(isolate, script, execution_context);
-      probe::ProduceCompilationCache(probe::ToCoreProbeSink(execution_context),
-                                     source, script);
+      probe::DidProduceCompilationCache(
+          probe::ToCoreProbeSink(execution_context), source, script);
       V8CodeCache::ProduceCache(isolate, script, source, produce_cache_options);
     }
 
