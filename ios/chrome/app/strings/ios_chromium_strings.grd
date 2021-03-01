@@ -227,7 +227,7 @@ locale.  The strings in this file are specific to iOS.
         Help make BrowserX better by sending usage statistics and crash reports to Google.
       </message>
       <message name="IDS_IOS_FIRSTRUN_WELCOME_TO_CHROME" desc="Title on the Welcome to Chromium screen presented to the user on First Run. [iOS only]">
-        Welcome to Chromium
+        Welcome to BrowserX
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT" desc="Feature title in the settings for the user enable or disable. Related with 'Automatically sends usage statistics and crash reports to Google'. [iOS only]">
         Help Improve Chromium's Features and Performance
