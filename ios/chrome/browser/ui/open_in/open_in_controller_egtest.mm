@@ -43,6 +43,9 @@ id<GREYMatcher> ShareMenuDismissButton() {
 
 }  // namespace
 
+using base::test::ios::kWaitForDownloadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+
 // Tests Open in Feature.
 @interface OpenInManagerTestCase : ChromeTestCase
 @end
@@ -78,13 +81,18 @@ id<GREYMatcher> ShareMenuDismissButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Test filename label.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_text(@"testpage"),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+  // Wait for the dialog with filename label to appear.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_text(@"testpage"),
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
+             @"Waiting for the open in dialog to appear");
 
   // Check that tapping on the Cancel button closes the activity menu and hides
   // the open in toolbar.
@@ -114,13 +122,18 @@ id<GREYMatcher> ShareMenuDismissButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Test filename label.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_text(@"chromium_logo"),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
+  // Wait for the dialog with filename label to appear.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_text(@"chromium_logo"),
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
+             @"Waiting for the open in dialog to appear");
 
   // Check that tapping on the Cancel button closes the activity menu and hides
   // the open in toolbar.
