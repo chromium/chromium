@@ -3,15 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {prefToString, stringToPrefValue} from 'chrome://settings/settings.js';
+import {prefToString, stringToPrefValue} from 'chrome://settings/settings.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for Settings.PrefUtil. */
 suite('PrefUtil', function() {
-  const global = function() {
-    return this;
-  }();
-  const origTraceAssertionsForTesting = global.traceAssertionsForTesting;
+  const origTraceAssertionsForTesting = window.traceAssertionsForTesting;
 
   /**
    * @param {function()} fn Function that should throw.
@@ -19,7 +16,7 @@ suite('PrefUtil', function() {
    */
   const expectThrows = function(fn, message) {
     // Temporarily disable printing of stack traces on assert failures.
-    global.traceAssertionsForTesting = false;
+    window.traceAssertionsForTesting = false;
 
     try {
       fn();
@@ -28,15 +25,14 @@ suite('PrefUtil', function() {
     } catch (e) {
     }
 
-    global.traceAssertionsForTesting = origTraceAssertionsForTesting;
+    window.traceAssertionsForTesting = origTraceAssertionsForTesting;
   };
 
   // Tests that the given value is converted to the expected value, for a
   // given prefType.
   const expectStringToPrefValue = function(value, prefType, expectedValue) {
     const pref = /** @type {PrefObject} */ ({type: prefType});
-    expectEquals(
-        expectedValue, Settings.PrefUtil.stringToPrefValue(value, pref));
+    expectEquals(expectedValue, stringToPrefValue(value, pref));
   };
 
   test('stringToPrefValue', function testStringToPrefValue() {
@@ -72,7 +68,7 @@ suite('PrefUtil', function() {
       type: prefType,
       value: prefValue,
     });
-    expectEquals(expectedValue, Settings.PrefUtil.prefToString(pref));
+    expectEquals(expectedValue, prefToString(pref));
   };
 
   test('prefToString', function testPrefToString() {

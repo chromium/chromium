@@ -514,8 +514,8 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['PeoplePage', 'people_page_test.js'],
  ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],
  ['PeoplePageSyncPage', 'people_page_sync_page_test.js'],
- ['Prefs', 'prefs_tests.m.js'],
- ['PrefUtil', 'pref_util_tests.m.js'],
+ ['Prefs', 'prefs_tests.js'],
+ ['PrefUtil', 'pref_util_tests.js'],
  ['ProtocolHandlers', 'protocol_handlers_tests.js'],
  ['RecentSitePermissions', 'recent_site_permissions_test.js'],
  // Flaky on all OSes. TODO(crbug.com/1127733): Enable the test.
@@ -533,12 +533,12 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['SiteFavicon', 'site_favicon_test.js'],
  ['SiteListEntry', 'site_list_entry_tests.js'],
  ['SiteSettingsPage', 'site_settings_page_test.js'],
- ['Slider', 'settings_slider_tests.m.js'],
+ ['Slider', 'settings_slider_tests.js'],
  ['StartupUrlsPage', 'startup_urls_page_test.js'],
  ['Subpage', 'settings_subpage_test.js'],
  ['SyncAccountControl', 'sync_account_control_test.js'],
- ['Textarea', 'settings_textarea_tests.m.js'],
- ['ToggleButton', 'settings_toggle_button_tests.m.js'],
+ ['Textarea', 'settings_textarea_tests.js'],
+ ['ToggleButton', 'settings_toggle_button_tests.js'],
  ['ZoomLevels', 'zoom_levels_tests.js'],
 ].forEach(test => registerTest(...test));
 
