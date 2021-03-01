@@ -7,13 +7,14 @@ jochen@chromium.org
 thakis@chromium.org
 thomasanderson@chromium.org
 tikuta@chromium.org
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 
 # Clang build config changes:
 hans@chromium.org
 
 # For java build changes:
 wnwen@chromium.org
+
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 
 per-file .gitignore=*
 per-file check_gn_headers_whitelist.txt=*
