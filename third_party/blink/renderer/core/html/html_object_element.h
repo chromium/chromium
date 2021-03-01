@@ -64,7 +64,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   bool IsFormControlElement() const override { return false; }
 
   bool IsEnumeratable() const override { return true; }
-  bool IsInteractiveContent() const override;
 
   bool ChildrenCanHaveStyle() const override { return UseFallbackContent(); }
 

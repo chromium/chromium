@@ -301,8 +301,6 @@ void HTMLObjectElement::ChildrenChanged(const ChildrenChange& change) {
 bool HTMLObjectElement::IsURLAttribute(const Attribute& attribute) const {
   return attribute.GetName() == html_names::kCodebaseAttr ||
          attribute.GetName() == html_names::kDataAttr ||
-         (attribute.GetName() == html_names::kUsemapAttr &&
-          attribute.Value()[0] != '#') ||
          HTMLPlugInElement::IsURLAttribute(attribute);
 }
 
@@ -402,10 +400,6 @@ void HTMLObjectElement::DidMoveToNewDocument(Document& old_document) {
 
 HTMLFormElement* HTMLObjectElement::formOwner() const {
   return ListedElement::Form();
-}
-
-bool HTMLObjectElement::IsInteractiveContent() const {
-  return FastHasAttribute(html_names::kUsemapAttr);
 }
 
 bool HTMLObjectElement::UseFallbackContent() const {
