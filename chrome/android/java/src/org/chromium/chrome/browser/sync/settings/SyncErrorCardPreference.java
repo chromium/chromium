@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
-import java.util.Collections;
-
 public class SyncErrorCardPreference extends Preference
         implements ProfileSyncService.SyncStateChangedListener, ProfileDataCache.Observer {
     /**
@@ -124,8 +122,6 @@ public class SyncErrorCardPreference extends Preference
         if (signedInAccount == null) {
             return;
         }
-
-        mProfileDataCache.update(Collections.singletonList(signedInAccount));
         Drawable accountImage =
                 mProfileDataCache.getProfileDataOrDefault(signedInAccount).getImage();
         errorCardView.getImage().setImageDrawable(accountImage);
