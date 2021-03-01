@@ -240,11 +240,8 @@ void SaveAddressProfileView::AddedToWidget() {
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_SAVE_PASSWORD_MULTI_DEVICE),
       *bundle.GetImageSkiaNamed(IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK),
-      base::BindRepeating(
-          [](SaveAddressProfileView* view) {
-            return view->GetBubbleFrameView()->GetBackgroundColor();
-          },
-          this));
+      base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
+                          base::Unretained(GetBubbleFrameView())));
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
