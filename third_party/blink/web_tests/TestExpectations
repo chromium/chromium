@@ -5742,5 +5742,9 @@ crbug.com/1182691 [ Linux ] external/wpt/webcodecs/audio-encoder.any.html [ Pass
 crbug.com/1182727 http/tests/inspector-protocol/page/page-setProduceCompilationCache.js [ Pass Failure ]
 crbug.com/1182749 [ Win7 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/page/page-setProduceCompilationCache.js [ Pass Failure ]
 
+# Temporarily disabled to allow a WebRTC roll fixing the test.
+crbug.com/614958 external/wpt/webrtc/RTCPeerConnection-addIceCandidate.html [ Pass Failure ]
+crbug.com/614958 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-addIceCandidate.html [ Pass Failure ]
+
 # Sheriff 2021-03-01
 crbug.com/1183243 [ Linux ] http/tests/devtools/console/console-external-array.js [ Pass Failure ]
