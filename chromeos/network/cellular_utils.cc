@@ -127,4 +127,15 @@ const DeviceState::CellularSIMSlotInfos GetSimSlotInfosWithUpdatedEid(
   return sim_slot_infos;
 }
 
+bool IsSimPrimary(const std::string& iccid, const DeviceState* device) {
+  const DeviceState::CellularSIMSlotInfos& sim_slot_infos =
+      device->sim_slot_infos();
+  for (auto& sim_slot_info : sim_slot_infos) {
+    if (sim_slot_info.iccid == iccid && sim_slot_info.primary) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace chromeos
