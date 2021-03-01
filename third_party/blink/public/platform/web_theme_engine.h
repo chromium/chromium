@@ -127,6 +127,7 @@ class WebThemeEngine {
     SkColor background_color;
     bool has_border;
     bool auto_complete_active;
+    float zoom;
   };
 
   // Extra parameters for PartMenuList
@@ -139,6 +140,7 @@ class WebThemeEngine {
     SkColor arrow_color;
     SkColor background_color;
     bool fill_content_area;
+    float zoom;
   };
 
   // Extra parameters for PartSliderTrack and PartSliderThumb
@@ -164,6 +166,7 @@ class WebThemeEngine {
     int value_rect_y;
     int value_rect_width;
     int value_rect_height;
+    float zoom;
   };
 
   // Extra parameters for scrollbar thumb. Used only for overlay scrollbars.
