@@ -32,15 +32,9 @@
   OP(kColorId_ButtonUncheckedColor),                                           \
   OP(kColorId_ButtonEnabledColor),                                             \
   OP(kColorId_ButtonDisabledColor),                                            \
-  OP(kColorId_ButtonHoverColor),                                               \
-  OP(kColorId_ButtonInkDropFillColor),                                         \
-  OP(kColorId_ButtonInkDropShadowColor),                                       \
   OP(kColorId_ProminentButtonColor),                                           \
   OP(kColorId_ProminentButtonDisabledColor),                                   \
   OP(kColorId_ProminentButtonFocusedColor),                                    \
-  OP(kColorId_ProminentButtonHoverColor),                                      \
-  OP(kColorId_ProminentButtonInkDropShadowColor),                              \
-  OP(kColorId_ProminentButtonInkDropFillColor),                                \
   OP(kColorId_TextOnProminentButtonColor),                                     \
   OP(kColorId_PaddedButtonInkDropColor),                                       \
   /* ToggleButton */                                                           \

@@ -84,17 +84,8 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id) {
       return gfx::kGoogleGrey900;
 
     // Button
-    case NativeTheme::kColorId_ButtonInkDropShadowColor:
-      return SkColorSetA(SK_ColorBLACK, 0x7F);
-    case NativeTheme::kColorId_ButtonHoverColor:
-      return SkColorSetA(SK_ColorBLACK, 0x0A);
-    case NativeTheme::kColorId_ButtonInkDropFillColor:
-    case NativeTheme::kColorId_ProminentButtonHoverColor:
-      return SkColorSetA(SK_ColorWHITE, 0x0A);
     case NativeTheme::kColorId_ProminentButtonColor:
       return gfx::kGoogleBlue300;
-    case NativeTheme::kColorId_ProminentButtonInkDropShadowColor:
-      return SkColorSetA(gfx::kGoogleBlue300, 0x7F);
 
     // Custom tab bar
     case NativeTheme::kColorId_CustomTabBarBackgroundColor:
@@ -197,13 +188,6 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_TextOnProminentButtonColor:
       return color_utils::GetColorWithMaxContrast(base_theme->GetSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme));
-    case NativeTheme::kColorId_ProminentButtonHoverColor:
-      return SkColorSetA(SK_ColorWHITE, 0x0D);
-    case NativeTheme::kColorId_ProminentButtonInkDropFillColor:
-      return base_theme->GetSystemColor(
-          NativeTheme::kColorId_ProminentButtonHoverColor, color_scheme);
-    case NativeTheme::kColorId_ButtonInkDropFillColor:
-      return SkColorSetA(SK_ColorWHITE, 0x05);
     case NativeTheme::kColorId_ProminentButtonDisabledColor:
     case NativeTheme::kColorId_DisabledButtonBorderColor: {
       const SkColor bg = base_theme->GetSystemColor(
@@ -223,12 +207,6 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_PaddedButtonInkDropColor:
       return color_utils::GetColorWithMaxContrast(base_theme->GetSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme));
-    case NativeTheme::kColorId_ButtonHoverColor:
-      return SkColorSetA(SK_ColorBLACK, 0x05);
-    case NativeTheme::kColorId_ButtonInkDropShadowColor:
-      return SkColorSetA(SK_ColorBLACK, gfx::kGoogleGreyAlpha200);
-    case NativeTheme::kColorId_ProminentButtonInkDropShadowColor:
-      return SkColorSetA(SK_ColorBLACK, 0x3D);
     case NativeTheme::kColorId_ProminentButtonFocusedColor: {
       const SkColor bg = base_theme->GetSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
