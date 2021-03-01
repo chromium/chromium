@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Autofocus elements in iframed documents with URL fragments should be skipped. assert_true: expected true got false
+FAIL Autofocus elements in top-level browsing context's documents with URL fragments should be skipped. assert_true: expected true got false
+Harness: the test ran to completion.
+

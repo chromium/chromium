@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Autofocus elements in iframed documents with "top" fragments should work. assert_equals: Autofocus elements in iframes should be focused. expected Element node <iframe src="resources/frame-with-autofocus-element.html#... but got Element node <body><iframe src="resources/frame-with-autofocus-element...
+FAIL Autofocus elements in top-level browsing context's documents with "top" fragments should work. assert_not_equals: got disallowed value Element node <body>
+<div id="anchor1"></div>
+<input autofocus="">
+
+</b...
+Harness: the test ran to completion.
+
