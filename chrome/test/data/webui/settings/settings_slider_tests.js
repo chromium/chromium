@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://settings/lazy_load.js';
-
-import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+// #import 'chrome://settings/lazy_load.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-slider. */
@@ -32,12 +31,12 @@ suite('SettingsSlider', function() {
     };
     document.body.appendChild(slider);
     crSlider = slider.$$('cr-slider');
-    return flushTasks();
+    return test_util.flushTasks();
   });
 
   function press(key) {
-    keyDownOn(crSlider, null, [], key);
-    keyUpOn(crSlider, null, [], key);
+    MockInteractions.keyDownOn(crSlider, null, [], key);
+    MockInteractions.keyUpOn(crSlider, null, [], key);
   }
 
   function pressArrowRight() {
@@ -103,7 +102,7 @@ suite('SettingsSlider', function() {
   async function checkSliderValueFromPref(prefValue, sliderValue) {
     assertNotEquals(sliderValue, crSlider.value);
     if (crSlider.updatingFromKey) {
-      await eventToPromise('updating-from-key-changed', crSlider);
+      await test_util.eventToPromise('updating-from-key-changed', crSlider);
     }
     slider.set('pref.value', prefValue);
     assertEquals(sliderValue, crSlider.value);
@@ -120,7 +119,7 @@ suite('SettingsSlider', function() {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: 16,
     };
-    flush();
+    Polymer.dom.flush();
     indicator = slider.$$('cr-policy-pref-indicator');
     assertTrue(!!indicator);
   });
