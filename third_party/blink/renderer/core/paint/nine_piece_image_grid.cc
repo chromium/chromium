@@ -218,7 +218,8 @@ static inline void SetHorizontalEdge(
     const FloatRect& source,
     const FloatRect& destination,
     ENinePieceImageRule tile_rule) {
-  draw_info.is_drawable = edge.IsDrawable() && source.Width() > 0;
+  draw_info.is_drawable =
+      edge.IsDrawable() && source.Width() > 0 && destination.Width() > 0;
   if (draw_info.is_drawable) {
     draw_info.source = source;
     draw_info.destination = destination;
@@ -233,7 +234,8 @@ static inline void SetVerticalEdge(
     const FloatRect& source,
     const FloatRect& destination,
     ENinePieceImageRule tile_rule) {
-  draw_info.is_drawable = edge.IsDrawable() && source.Height() > 0;
+  draw_info.is_drawable =
+      edge.IsDrawable() && source.Height() > 0 && destination.Height() > 0;
   if (draw_info.is_drawable) {
     draw_info.source = source;
     draw_info.destination = destination;
