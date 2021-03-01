@@ -148,7 +148,7 @@ HRESULT CoGetClassObjectAsAdmin(gfx::AcceleratedWidget hwnd,
   // moniker. This ensures that the UAC dialog shows up.
   auto class_id_as_string = base::win::WStringFromGUID(class_id);
 
-  base::string16 elevation_moniker_name = base::StringPrintf(
+  std::wstring elevation_moniker_name = base::StringPrintf(
       L"Elevation:Administrator!clsid:%ls", class_id_as_string.c_str());
 
   BIND_OPTS3 bind_opts;
@@ -577,7 +577,7 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
       // nice to have, a failure to do so does not affect the likelihood that
       // the update check and/or install will succeed.
       app_bundle->put_displayLanguage(
-          base::win::ScopedBstr(base::UTF8ToUTF16(locale_)).Get());
+          base::win::ScopedBstr(base::UTF8ToWide(locale_)).Get());
     }
 
     hresult = app_bundle->initialize();
@@ -687,7 +687,7 @@ bool UpdateCheckDriver::IsErrorState(
 
     base::win::ScopedBstr message;
     if (SUCCEEDED(current_state->get_completionMessage(message.Receive())))
-      error_string->assign(message.Get(), message.Length());
+      error_string->assign(base::as_u16cstr(message.Get()), message.Length());
 
     return true;
   }
@@ -714,7 +714,7 @@ bool UpdateCheckDriver::IsFinalState(
     base::win::ScopedBstr version;
     *upgrade_status = UPGRADE_IS_AVAILABLE;
     if (SUCCEEDED(current_state->get_availableVersion(version.Receive())))
-      new_version->assign(version.Get(), version.Length());
+      new_version->assign(base::as_u16cstr(version.Get()), version.Length());
     return true;
   }
   if (state_value == STATE_INSTALL_COMPLETE) {
@@ -751,7 +751,7 @@ bool UpdateCheckDriver::IsIntermediateState(
     case STATE_UPDATE_AVAILABLE: {
       base::win::ScopedBstr version;
       if (SUCCEEDED(current_state->get_availableVersion(version.Receive())))
-        new_version->assign(version.Get(), version.Length());
+        new_version->assign(base::as_u16cstr(version.Get()), version.Length());
       break;
     }
 
@@ -882,15 +882,17 @@ void UpdateCheckDriver::OnUpgradeError(UpdateCheckResult check_result,
   }
 
   base::string16 html_error_msg = base::StringPrintf(
-      L"%d: <a href='%ls0x%X' target=_blank>0x%X</a>", update_state_.error_code,
-      base::UTF8ToUTF16(chrome::kUpgradeHelpCenterBaseURL).c_str(),
+      STRING16_LITERAL("%d: <a href='%ls0x%X' target=_blank>0x%X</a>"),
+      update_state_.error_code,
+      base::UTF8ToWide(chrome::kUpgradeHelpCenterBaseURL).c_str(),
       update_state_.hresult, update_state_.hresult);
   if (update_state_.installer_exit_code) {
     html_error_msg +=
-        L": " + base::NumberToString16(*update_state_.installer_exit_code);
+        STRING16_LITERAL(": ") +
+        base::NumberToString16(*update_state_.installer_exit_code);
   }
   if (system_level_install_)
-    html_error_msg += L" -- system level";
+    html_error_msg += STRING16_LITERAL(" -- system level");
   if (error_string.empty()) {
     html_error_message_ = l10n_util::GetStringFUTF16(
         IDS_ABOUT_BOX_ERROR_UPDATE_CHECK_FAILED, html_error_msg);

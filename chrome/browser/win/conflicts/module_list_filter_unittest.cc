@@ -129,7 +129,8 @@ ModuleInfo CreateModuleInfo(const base::FilePath& module_path,
 
   result.second.inspection_result =
       base::make_optional<ModuleInspectionResult>();
-  result.second.inspection_result->basename = module_path.BaseName().value();
+  result.second.inspection_result->basename =
+      module_path.BaseName().AsUTF16Unsafe();
 
   return result;
 }
@@ -170,7 +171,8 @@ class ModuleListFilterTest : public ::testing::Test {
 };
 
 TEST_F(ModuleListFilterTest, IsAllowlistedStringPieceVersion) {
-  base::string16 basename = L"basename.dll";  // Must be lowercase.
+  base::string16 basename =
+      STRING16_LITERAL("basename.dll");  // Must be lowercase.
   std::string code_id = GetCodeId(12u, 32u);
 
   ModuleListBuilder module_list_builder(module_list_path());

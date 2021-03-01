@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -143,7 +144,10 @@ bool ChromeRLZTrackerDelegate::ShouldEnableZeroDelayForTesting() {
 
 bool ChromeRLZTrackerDelegate::GetLanguage(base::string16* language) {
 #if defined(OS_WIN)
-  return GoogleUpdateSettings::GetLanguage(language);
+  std::wstring wide_language;
+  bool result = GoogleUpdateSettings::GetLanguage(&wide_language);
+  *language = base::AsString16(wide_language);
+  return result;
 #else
   // On other systems, we don't know the install language of promotions. That's
   // OK, for now all promotions on non-Windows systems will be reported as "en".
@@ -155,7 +159,10 @@ bool ChromeRLZTrackerDelegate::GetLanguage(base::string16* language) {
 
 bool ChromeRLZTrackerDelegate::GetReferral(base::string16* referral) {
 #if defined(OS_WIN)
-  return GoogleUpdateSettings::GetReferral(referral);
+  std::wstring wide_referral;
+  bool result = GoogleUpdateSettings::GetReferral(&wide_referral);
+  *referral = base::AsString16(wide_referral);
+  return result;
 #else
   // The referral program is defunct and not used. No need to implement this
   // function on non-Win platforms.

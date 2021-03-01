@@ -773,7 +773,7 @@ void UpdaterStatusProvider::GetStatus(base::DictionaryValue* dict) {
   if (!updater_status_)
     return;
   if (!updater_status_->version.empty())
-    dict->SetStringKey("version", updater_status_->version);
+    dict->SetStringKey("version", base::WideToUTF8(updater_status_->version));
   if (!updater_status_->last_checked_time.is_null()) {
     dict->SetStringKey(
         "timeSinceLastRefresh",

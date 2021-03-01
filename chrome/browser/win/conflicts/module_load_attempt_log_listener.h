@@ -68,7 +68,7 @@ class ModuleLoadAttemptLogListener : public base::win::ObjectWatcher::Delegate {
 
   // A cache of the mapping of device path roots to their drive letter root
   // equivalent.
-  std::vector<std::pair<base::FilePath, base::string16>>
+  std::vector<std::pair<base::FilePath, std::wstring>>
       device_to_letter_path_mapping_;
 
   base::WeakPtrFactory<ModuleLoadAttemptLogListener> weak_ptr_factory_;

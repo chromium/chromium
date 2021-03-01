@@ -40,7 +40,6 @@
 using ::testing::_;
 using ::testing::AllOfArray;
 using ::testing::DoAll;
-using ::testing::HasSubstr;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Return;
@@ -51,6 +50,12 @@ using ::testing::StrictMock;
 using ::testing::Values;
 
 namespace {
+
+// GMock's HasSubstr does not support base::string16. Hence redefine it as a
+// generic matcher.
+MATCHER_P(HasSubstr, str, "") {
+  return arg.find(str) != arg.npos;
+}
 
 class MockUpdateCheckDelegate : public UpdateCheckDelegate {
  public:
@@ -101,7 +106,7 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
   }
 
   HRESULT GetCompletionMessage(BSTR* completion_message) {
-    *completion_message = SysAllocString(completion_message_.c_str());
+    *completion_message = SysAllocString(base::as_wcstr(completion_message_));
     return S_OK;
   }
 
@@ -115,7 +120,7 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
   }
 
   HRESULT GetAvailableVersion(BSTR* available_version) {
-    *available_version = SysAllocString(available_version_.c_str());
+    *available_version = SysAllocString(base::as_wcstr(available_version_));
     return S_OK;
   }
 
@@ -420,7 +425,7 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
   // instance's get_appWeb method. The returned instance is only valid for use
   // in setting up expectations until a consumer obtains it via get_appWeb, at
   // which time it is owned by the consumer.
-  CComObject<MockApp>* MakeApp(const base::char16* app_guid) {
+  CComObject<MockApp>* MakeApp(const wchar_t* app_guid) {
     // The bundle will be called on to create the installed app.
     EXPECT_CALL(*this, createInstalledApp(StrEq(app_guid)))
         .WillOnce(Return(S_OK));
@@ -583,8 +588,8 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
     ASSERT_EQ(ERROR_SUCCESS,
               key.CreateKey(kChromeGuid, KEY_WRITE | KEY_WOW64_32KEY));
     ASSERT_EQ(ERROR_SUCCESS,
-              key.WriteValue(
-                  L"pv", base::ASCIIToUTF16(CHROME_VERSION_STRING).c_str()));
+              key.WriteValue(L"pv",
+                             base::ASCIIToWide(CHROME_VERSION_STRING).c_str()));
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(root, kClientState, KEY_WRITE | KEY_WOW64_32KEY));
     ASSERT_EQ(ERROR_SUCCESS,
@@ -600,11 +605,10 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
 
     // Compute a newer version.
     base::Version current_version(CHROME_VERSION_STRING);
-    new_version_ = base::StringPrintf(L"%u.%u.%u.%u",
-                                      current_version.components()[0],
-                                      current_version.components()[1],
-                                      current_version.components()[2] + 1,
-                                      current_version.components()[3]);
+    new_version_ = base::StringPrintf(
+        STRING16_LITERAL("%u.%u.%u.%u"), current_version.components()[0],
+        current_version.components()[1], current_version.components()[2] + 1,
+        current_version.components()[3]);
 
     SetUpdateDriverTaskRunnerForTesting(task_runner_.get());
   }
@@ -631,9 +635,9 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
     ::testing::TestWithParam<bool>::TearDown();
   }
 
-  static const base::char16 kClients[];
-  static const base::char16 kClientState[];
-  static const base::char16 kChromeGuid[];
+  static const wchar_t kClients[];
+  static const wchar_t kClientState[];
+  static const wchar_t kChromeGuid[];
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
@@ -662,11 +666,11 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
 };
 
 //  static
-const base::char16 GoogleUpdateWinTest::kClients[] =
+const wchar_t GoogleUpdateWinTest::kClients[] =
     L"Software\\Google\\Update\\Clients";
-const base::char16 GoogleUpdateWinTest::kClientState[] =
+const wchar_t GoogleUpdateWinTest::kClientState[] =
     L"Software\\Google\\Update\\ClientState";
-const base::char16 GoogleUpdateWinTest::kChromeGuid[] =
+const wchar_t GoogleUpdateWinTest::kChromeGuid[] =
     L"{8A69D345-D564-463c-AFF1-A69D9E530F96}";
 
 // Test that an update check fails with the proper error code if Chrome isn't in
@@ -763,7 +767,7 @@ TEST_P(GoogleUpdateWinTest, UpdatesDisabledByPolicy) {
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
   mock_app->PushErrorState(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY,
-                           L"disabled by policy", -1);
+                           STRING16_LITERAL("disabled by policy"), -1);
 
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_DISABLED_BY_POLICY, _, _));
@@ -790,8 +794,9 @@ TEST_P(GoogleUpdateWinTest, ManualUpdatesDisabledByPolicy) {
 
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
-  mock_app->PushErrorState(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL,
-                           L"manual updates disabled by policy", -1);
+  mock_app->PushErrorState(
+      GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL,
+      STRING16_LITERAL("manual updates disabled by policy"), -1);
 
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_DISABLED_BY_POLICY_AUTO_ONLY, _, _));
@@ -841,8 +846,7 @@ TEST_P(GoogleUpdateWinTest, UpdateCheckUpdateAvailable) {
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
   mock_app->PushUpdateAvailableState(new_version_);
 
-  EXPECT_CALL(mock_update_check_delegate_,
-              OnUpdateCheckComplete(StrEq(new_version_)));
+  EXPECT_CALL(mock_update_check_delegate_, OnUpdateCheckComplete(new_version_));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());
   task_runner_->RunUntilIdle();
@@ -879,17 +883,16 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalled) {
   {
     InSequence callback_sequence;
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(0, StrEq(new_version_)));
+                OnUpgradeProgress(0, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(12, StrEq(new_version_)));
+                OnUpgradeProgress(12, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(37, StrEq(new_version_)));
+                OnUpgradeProgress(37, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(50, StrEq(new_version_)));
+                OnUpgradeProgress(50, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(75, StrEq(new_version_)));
-    EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeComplete(StrEq(new_version_)));
+                OnUpgradeProgress(75, new_version_));
+    EXPECT_CALL(mock_update_check_delegate_, OnUpgradeComplete(new_version_));
   }
   BeginUpdateCheck(std::string(), true, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -901,7 +904,7 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalled) {
 
 // Test a failed upgrade where Google Update reports that the installer failed.
 TEST_P(GoogleUpdateWinTest, UpdateFailed) {
-  const base::string16 error(L"It didn't work.");
+  const base::string16 error(STRING16_LITERAL("It didn't work."));
   static const HRESULT GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
   static const int kInstallerError = 12;
 
@@ -932,18 +935,18 @@ TEST_P(GoogleUpdateWinTest, UpdateFailed) {
   {
     InSequence callback_sequence;
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(0, StrEq(new_version_)));
+                OnUpgradeProgress(0, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(12, StrEq(new_version_)));
+                OnUpgradeProgress(12, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(37, StrEq(new_version_)));
+                OnUpgradeProgress(37, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(50, StrEq(new_version_)));
+                OnUpgradeProgress(50, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(75, StrEq(new_version_)));
-    EXPECT_CALL(mock_update_check_delegate_,
-                OnError(GOOGLE_UPDATE_ERROR_UPDATING, HasSubstr(error),
-                        StrEq(new_version_)));
+                OnUpgradeProgress(75, new_version_));
+    EXPECT_CALL(
+        mock_update_check_delegate_,
+        OnError(GOOGLE_UPDATE_ERROR_UPDATING, HasSubstr(error), new_version_));
   }
   BeginUpdateCheck(std::string(), true, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1026,34 +1029,32 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalledMultipleDelegates) {
   {
     InSequence callback_sequence;
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(0, StrEq(new_version_)));
+                OnUpgradeProgress(0, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(0, StrEq(new_version_)));
+                OnUpgradeProgress(0, new_version_));
 
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(12, StrEq(new_version_)));
+                OnUpgradeProgress(12, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(12, StrEq(new_version_)));
+                OnUpgradeProgress(12, new_version_));
 
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(37, StrEq(new_version_)));
+                OnUpgradeProgress(37, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(37, StrEq(new_version_)));
+                OnUpgradeProgress(37, new_version_));
 
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(50, StrEq(new_version_)));
+                OnUpgradeProgress(50, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(50, StrEq(new_version_)));
+                OnUpgradeProgress(50, new_version_));
 
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(75, StrEq(new_version_)));
+                OnUpgradeProgress(75, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(75, StrEq(new_version_)));
+                OnUpgradeProgress(75, new_version_));
 
-    EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeComplete(StrEq(new_version_)));
-    EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeComplete(StrEq(new_version_)));
+    EXPECT_CALL(mock_update_check_delegate_, OnUpgradeComplete(new_version_));
+    EXPECT_CALL(mock_update_check_delegate_2, OnUpgradeComplete(new_version_));
   }
   BeginUpdateCheck(std::string(), true, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1079,8 +1080,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultWithErrorCode) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ONDEMAND_CLASS_NOT_FOUND,
-                      AllOfArray({HasSubstr(L"error code 3:"),
-                                  HasSubstr(L"0x80072EF2")}),
+                      AllOfArray({HasSubstr(STRING16_LITERAL("error code 3:")),
+                                  HasSubstr(STRING16_LITERAL("0x80072EF2"))}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1101,8 +1102,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultOnly) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ERROR_UPDATING,
-                      AllOfArray({HasSubstr(L"error code 7:"),
-                                  HasSubstr(L"0x80072EF2")}),
+                      AllOfArray({HasSubstr(STRING16_LITERAL("error code 7:")),
+                                  HasSubstr(STRING16_LITERAL("0x80072EF2"))}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1121,8 +1122,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultDefault) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ERROR_UPDATING,
-                      AllOfArray({HasSubstr(L"error code 7:"),
-                                  HasSubstr(L"0x80004005")}),
+                      AllOfArray({HasSubstr(STRING16_LITERAL("error code 7:")),
+                                  HasSubstr(STRING16_LITERAL("0x80004005"))}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());

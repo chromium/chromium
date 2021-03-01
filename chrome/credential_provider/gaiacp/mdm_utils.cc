@@ -489,7 +489,7 @@ HRESULT EnrollToGoogleMdmIfNeeded(const base::Value& properties) {
 }
 
 bool IsEnrolledWithGoogleMdm() {
-  base::string16 mdm_url = GetMdmUrl();
+  std::wstring mdm_url = GetMdmUrl();
   return !mdm_url.empty() && IsEnrolledWithGoogleMdm(mdm_url);
 }
 

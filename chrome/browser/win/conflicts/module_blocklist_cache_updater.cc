@@ -112,7 +112,7 @@ ModuleBlocklistCacheUpdater::CacheUpdateResult UpdateModuleBlocklistCache(
   if (write_result) {
     // Write the path of the cache into the registry so that chrome_elf can find
     // it on its own.
-    base::string16 cache_path_registry_key =
+    std::wstring cache_path_registry_key =
         install_static::GetRegistryPath().append(
             third_party_dlls::kThirdPartyRegKeyName);
     base::win::RegKey registry_key(
@@ -134,7 +134,7 @@ void PopulatePackedListModule(
     third_party_dlls::PackedListModule* packed_list_module) {
   // Hash the basename.
   const std::string module_basename = base::UTF16ToUTF8(
-      base::i18n::ToLower(module_key.module_path.BaseName().value()));
+      base::i18n::ToLower(module_key.module_path.BaseName().AsUTF16Unsafe()));
   base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_basename.data()),
                       module_basename.length(),
                       &packed_list_module->basename_hash[0]);

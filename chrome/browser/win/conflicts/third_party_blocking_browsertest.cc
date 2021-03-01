@@ -63,7 +63,7 @@ class ThirdPartyRegistryKeyObserver {
   }
 
  private:
-  base::string16 GetRegistryKeyPath() {
+  std::wstring GetRegistryKeyPath() {
     return install_static::GetRegistryPath().append(
         third_party_dlls::kThirdPartyRegKeyName);
   }

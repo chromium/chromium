@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_WIN_CONFLICTS_UNINSTALL_APPLICATION_H_
 #define CHROME_BROWSER_WIN_CONFLICTS_UNINSTALL_APPLICATION_H_
 
-#include "base/strings/string16.h"
+#include <string>
 
 namespace uninstall_application {
 
 // Uses UI automation to asynchronously open the Apps & Features page with the
 // application name written in the search box, to filter out other applications.
-void LaunchUninstallFlow(const base::string16& application_name);
+void LaunchUninstallFlow(const std::wstring& application_name);
 
 }  // namespace uninstall_application
 

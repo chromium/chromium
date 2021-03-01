@@ -46,8 +46,9 @@ base::Value ConvertToDictionary(
     element.SetKey(
         "registry_is_hkcu",
         base::Value(application.info.registry_root == HKEY_CURRENT_USER));
-    element.SetKey("registry_key_path",
-                   base::Value(application.info.registry_key_path));
+    element.SetKey(
+        "registry_key_path",
+        base::Value(base::WideToUTF8(application.info.registry_key_path)));
     element.SetKey(
         "registry_wow64_access",
         base::Value(static_cast<int>(application.info.registry_wow64_access)));
@@ -60,7 +61,7 @@ base::Value ConvertToDictionary(
     element.SetKey("message_url",
                    base::Value(application.blocklist_action->message_url()));
 
-    result.SetKey(base::UTF16ToUTF8(application.info.name), std::move(element));
+    result.SetKey(base::WideToUTF8(application.info.name), std::move(element));
   }
 
   return result;
@@ -95,10 +96,10 @@ ConvertToIncompatibleApplication(const std::string& name,
   }
 
   InstalledApplications::ApplicationInfo application_info = {
-      base::UTF8ToUTF16(name),
+      base::UTF8ToWide(name),
       registry_is_hkcu_value->GetBool() ? HKEY_CURRENT_USER
                                         : HKEY_LOCAL_MACHINE,
-      base::UTF8ToUTF16(registry_key_path_value->GetString()),
+      base::UTF8ToWide(registry_key_path_value->GetString()),
       static_cast<REGSAM>(registry_wow64_access_value->GetInt())};
 
   auto blocklist_action =
