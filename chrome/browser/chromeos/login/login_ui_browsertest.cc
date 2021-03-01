@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -23,7 +24,9 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
@@ -414,6 +417,74 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
       logged_in_user_mixin_.GetAccountId()));
   EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
       logged_in_user_mixin_.GetAccountId()));
+}
+
+class LoginUIDiagnosticsTest : public LoginUITestBase {
+ public:
+  LoginUIDiagnosticsTest() : LoginUITestBase() {
+    scoped_feature_list_.InitWithFeatures({chromeos::features::kDiagnosticsApp},
+                                          {});
+  }
+  ~LoginUIDiagnosticsTest() override = default;
+
+  bool IsDiagnosticsDialogVisible() {
+    return chromeos::SystemWebDialogDelegate::HasInstance(
+        GURL("chrome://diagnostics"));
+  }
+
+ protected:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Checks accelerator can launch diagnostics app
+IN_PROC_BROWSER_TEST_F(LoginUIDiagnosticsTest, LaunchDiagnostics) {
+  EXPECT_FALSE(IsDiagnosticsDialogVisible());
+
+  int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
+  EXPECT_TRUE(ash::LoginScreenTestApi::PressAccelerator(ui::Accelerator(
+      ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)));
+  ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+
+  EXPECT_TRUE(IsDiagnosticsDialogVisible());
+}
+
+class LoginUIDiagnosticsDisabledTest : public LoginUIDiagnosticsTest {
+ public:
+  LoginUIDiagnosticsDisabledTest() = default;
+  ~LoginUIDiagnosticsDisabledTest() override = default;
+
+  bool IsDiagnosticsDialogVisible() {
+    return chromeos::SystemWebDialogDelegate::HasInstance(
+        GURL("chrome://diagnostics"));
+  }
+
+ protected:
+  // LoginUiDiagnosticsTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    LoginUIDiagnosticsTest::SetUpInProcessBrowserTestFixture();
+    // Disable the device
+    std::unique_ptr<ScopedDevicePolicyUpdate> policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    policy_update->policy_data()->mutable_device_state()->set_device_mode(
+        enterprise_management::DeviceState::DEVICE_MODE_DISABLED);
+  }
+};
+
+// Checks accelerator doesn't launch diagnostics app when device is disabled
+IN_PROC_BROWSER_TEST_F(LoginUIDiagnosticsDisabledTest,
+                       DoesNotLaunchDiagnostics) {
+  EXPECT_FALSE(IsDiagnosticsDialogVisible());
+
+  int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
+  EXPECT_TRUE(ash::LoginScreenTestApi::PressAccelerator(ui::Accelerator(
+      ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)));
+  ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+
+  EXPECT_FALSE(IsDiagnosticsDialogVisible());
 }
 
 }  // namespace chromeos
