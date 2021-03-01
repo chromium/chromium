@@ -18,6 +18,7 @@ namespace {
 
 constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
 constexpr char kIntentExtraSubject[] = "android.intent.extra.SUBJECT";
+constexpr char kIntentExtraStartType[] = "org.chromium.arc.start_type";
 
 const char* GetArcIntentAction(const std::string& action) {
   if (action == apps_util::kIntentActionMain) {
@@ -68,6 +69,10 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
     extras.insert(
         std::make_pair(kIntentExtraSubject, intent->share_title.value()));
   }
+  if (intent->start_type.has_value()) {
+    extras.insert(
+        std::make_pair(kIntentExtraStartType, intent->start_type.value()));
+  }
   return extras;
 }
 
@@ -87,7 +92,8 @@ arc::mojom::IntentInfoPtr CreateArcIntent(
   if (intent->url.has_value()) {
     arc_intent->data = intent->url->spec();
   }
-  if (intent->share_text.has_value() || intent->share_title.has_value()) {
+  if (intent->share_text.has_value() || intent->share_title.has_value() ||
+      intent->start_type.has_value()) {
     arc_intent->extras = CreateArcIntentExtras(intent);
   }
   return arc_intent;
