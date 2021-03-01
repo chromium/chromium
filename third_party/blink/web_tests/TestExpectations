@@ -5271,7 +5271,6 @@ crbug.com/1105271 [ Mac ] scrollbars/custom-scrollbar-adjust-on-inactive-pseudo.
 crbug.com/1105274 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-no-url-end-to-end.js [ Pass Timeout Failure ]
 crbug.com/1105275 [ Mac ] fast/dom/Window/window-onFocus.html [ Pass Failure ]
 
-crbug.com/1105276 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-after-keyboard-scrolling-rtl.html [ Pass Failure ]
 crbug.com/1105279 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-for-different-key-granularity.html [ Pass Timeout Failure ]
 
 # Temporarily disable tests to allow fixing of devtools path escaping
