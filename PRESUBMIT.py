@@ -337,7 +337,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   "^chrome/browser/prefetch/no_state_prefetch/",
   '^chrome/browser/previews/',
   '^chrome/browser/resources/chromeos/accessibility/',
-  '^chrome/browser/signin/',
   '^chrome/browser/sync_file_system/',
   "^components/browsing_data/content/",
   "^components/feature_engagement/internal/",

@@ -556,24 +556,16 @@ INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_SameUser,
                              /*existing_email=*/L"foo@gmail.com",
                              /*expect_is_started=*/true)));
 
-void UnblockOnProfileCreation(Profile::CreateStatus expected_final_status,
-                              const base::Closure& quit_closure,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
+void UnblockOnProfileInitialized(base::OnceClosure quit_closure,
+                                 Profile* profile,
+                                 Profile::CreateStatus status) {
   // If the status is CREATE_STATUS_CREATED, then the function will be called
   // again with CREATE_STATUS_INITIALIZED.
   if (status == Profile::CREATE_STATUS_CREATED)
     return;
 
-  EXPECT_EQ(expected_final_status, status);
-  quit_closure.Run();
-}
-
-void UnblockOnProfileInitialized(const base::Closure& quit_closure,
-                                 Profile* profile,
-                                 Profile::CreateStatus status) {
-  UnblockOnProfileCreation(Profile::CREATE_STATUS_INITIALIZED, quit_closure,
-                           profile, status);
+  EXPECT_EQ(Profile::CREATE_STATUS_INITIALIZED, status);
+  std::move(quit_closure).Run();
 }
 
 void CreateAndSwitchToProfile(const std::string& basepath) {
@@ -586,8 +578,8 @@ void CreateAndSwitchToProfile(const std::string& basepath) {
       path,
       base::BindRepeating(&UnblockOnProfileInitialized, run_loop.QuitClosure()),
       base::string16(), std::string());
-  // Run the message loop to allow profile creation to take place; the loop is
-  // terminated by UnblockOnProfileCreation when the profile is created.
+  // Run the message loop to allow profile initialization to take place; the
+  // loop is terminated by UnblockOnProfileInitialized.
   run_loop.Run();
 
   profiles::SwitchToProfile(path, false, ProfileManager::CreateCallback());
