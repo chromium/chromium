@@ -15,8 +15,8 @@
 namespace WTF {
 
 template <>
-struct WTF::CrossThreadCopier<viz::ResourceId>
-    : public WTF::CrossThreadCopierPassThrough<viz::ResourceId> {};
+struct CrossThreadCopier<viz::ResourceId>
+    : public CrossThreadCopierPassThrough<viz::ResourceId> {};
 
 template <>
 struct HashTraits<viz::ResourceId> : GenericHashTraits<viz::ResourceId> {
