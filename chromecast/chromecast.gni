@@ -135,8 +135,6 @@ declare_args() {
 }
 
 declare_args() {
-  enable_volume_tables_access =
-      is_android_things && chromecast_branding != "public"
   is_android_things_non_public =
       is_android_things && chromecast_branding != "public"
 }

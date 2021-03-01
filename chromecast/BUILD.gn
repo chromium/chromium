@@ -597,7 +597,6 @@ buildflag_header("chromecast_buildflags") {
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
     "ENABLE_PLAYREADY=$enable_playready",
     "ENABLE_VIDEO_CAPTURE_SERVICE=$enable_video_capture_service",
-    "ENABLE_VOLUME_TABLES_ACCESS=$enable_volume_tables_access",
     "IS_ANDROID_APPLIANCE=$is_android_appliance",
     "IS_ANDROID_THINGS=$is_android_things",
     "IS_ANDROID_THINGS_NON_PUBLIC=$is_android_things_non_public",
