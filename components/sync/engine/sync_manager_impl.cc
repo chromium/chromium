@@ -20,7 +20,6 @@
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/engine_components_factory.h"
-#include "components/sync/engine/engine_util.h"
 #include "components/sync/engine/loopback_server/loopback_connection_manager.h"
 #include "components/sync/engine/model_type_connector_proxy.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"

@@ -135,34 +135,6 @@ class ModelTypeWorker : public UpdateHandler,
     int gu_responses_while_should_have_been_known = 0;
   };
 
-  // Attempts to decrypt the given specifics and return them in the |out|
-  // parameter. The cryptographer must know the decryption key, i.e.
-  // cryptographer.CanDecrypt(specifics.encrypted()) must return true.
-  //
-  // Returns false if the decryption failed. There are no guarantees about the
-  // contents of |out| when that happens.
-  //
-  // In theory, this should never fail. Only corrupt or invalid entries could
-  // cause this to fail, and no clients are known to create such entries. The
-  // failure case is an attempt to be defensive against bad input.
-  static bool DecryptSpecifics(const Cryptographer& cryptographer,
-                               const sync_pb::EntitySpecifics& in,
-                               sync_pb::EntitySpecifics* out);
-
-  // Attempts to decrypt the given password specifics and return them in the
-  // |out| parameter. The cryptographer must know the decryption key, i.e.
-  // cryptographer.CanDecrypt(in.password().encrypted()) must return true.
-  //
-  // Returns false if the decryption failed. There are no guarantees about the
-  // contents of |out| when that happens.
-  //
-  // In theory, this should never fail. Only corrupt or invalid entries could
-  // cause this to fail, and no clients are known to create such entries. The
-  // failure case is an attempt to be defensive against bad input.
-  static bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
-                                       const sync_pb::EntitySpecifics& in,
-                                       sync_pb::EntitySpecifics* out);
-
   // Helper function to actually send |pending_updates_| to the processor.
   void ApplyPendingUpdates();
 

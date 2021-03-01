@@ -97,6 +97,56 @@ std::string GetEncryptionKeyName(const sync_pb::SyncEntity& entity) {
   return std::string();
 }
 
+// Attempts to decrypt the given specifics and return them in the |out|
+// parameter. The cryptographer must know the decryption key, i.e.
+// cryptographer.CanDecrypt(specifics.encrypted()) must return true.
+//
+// Returns false if the decryption failed. There are no guarantees about the
+// contents of |out| when that happens.
+//
+// In theory, this should never fail. Only corrupt or invalid entries could
+// cause this to fail, and no clients are known to create such entries. The
+// failure case is an attempt to be defensive against bad input.
+bool DecryptSpecifics(const Cryptographer& cryptographer,
+                      const sync_pb::EntitySpecifics& in,
+                      sync_pb::EntitySpecifics* out) {
+  DCHECK(!in.has_password());
+  DCHECK(in.has_encrypted());
+  DCHECK(cryptographer.CanDecrypt(in.encrypted()));
+
+  if (!cryptographer.Decrypt(in.encrypted(), out)) {
+    DLOG(ERROR) << "Failed to decrypt a decryptable specifics";
+    return false;
+  }
+  return true;
+}
+
+// Attempts to decrypt the given password specifics and return them in the
+// |out| parameter. The cryptographer must know the decryption key, i.e.
+// cryptographer.CanDecrypt(in.password().encrypted()) must return true.
+//
+// Returns false if the decryption failed. There are no guarantees about the
+// contents of |out| when that happens.
+//
+// In theory, this should never fail. Only corrupt or invalid entries could
+// cause this to fail, and no clients are known to create such entries. The
+// failure case is an attempt to be defensive against bad input.
+bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
+                              const sync_pb::EntitySpecifics& in,
+                              sync_pb::EntitySpecifics* out) {
+  DCHECK(in.has_password());
+  DCHECK(in.password().has_encrypted());
+  DCHECK(cryptographer.CanDecrypt(in.password().encrypted()));
+
+  if (!cryptographer.Decrypt(
+          in.password().encrypted(),
+          out->mutable_password()->mutable_client_only_encrypted_data())) {
+    DLOG(ERROR) << "Failed to decrypt a decryptable password";
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 ModelTypeWorker::ModelTypeWorker(
@@ -682,39 +732,6 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
       pending_updates_[existing_index] = std::move(candidate);
     }
   }
-}
-
-// static
-bool ModelTypeWorker::DecryptSpecifics(const Cryptographer& cryptographer,
-                                       const sync_pb::EntitySpecifics& in,
-                                       sync_pb::EntitySpecifics* out) {
-  DCHECK(!in.has_password());
-  DCHECK(in.has_encrypted());
-  DCHECK(cryptographer.CanDecrypt(in.encrypted()));
-
-  if (!cryptographer.Decrypt(in.encrypted(), out)) {
-    DLOG(ERROR) << "Failed to decrypt a decryptable specifics";
-    return false;
-  }
-  return true;
-}
-
-// static
-bool ModelTypeWorker::DecryptPasswordSpecifics(
-    const Cryptographer& cryptographer,
-    const sync_pb::EntitySpecifics& in,
-    sync_pb::EntitySpecifics* out) {
-  DCHECK(in.has_password());
-  DCHECK(in.password().has_encrypted());
-  DCHECK(cryptographer.CanDecrypt(in.password().encrypted()));
-
-  if (!cryptographer.Decrypt(
-          in.password().encrypted(),
-          out->mutable_password()->mutable_client_only_encrypted_data())) {
-    DLOG(ERROR) << "Failed to decrypt a decryptable password";
-    return false;
-  }
-  return true;
 }
 
 bool ModelTypeWorker::ShouldIgnoreUpdatesEncryptedWith(

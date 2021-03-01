@@ -21,7 +21,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon/core/favicon_service.h"
-#include "components/sync/engine/engine_util.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync_bookmarks/switches.h"
@@ -35,6 +34,9 @@ namespace {
 // Maximum number of bytes to allow in a legacy canonicalized title (must match
 // sync's internal limits; see write_node.cc).
 const int kLegacyCanonicalizedTitleLimitBytes = 255;
+
+// The list of bookmark titles which are reserved for use by the server.
+const char* const kForbiddenTitles[] = {"", ".", ".."};
 
 // Used in metrics: "Sync.InvalidBookmarkSpecifics". These values are
 // persisted to logs. Entries should not be renumbered and numeric values
@@ -166,23 +168,35 @@ std::string InferGuidForLegacyBookmark(
   return guid;
 }
 
+bool IsForbiddenTitleWithMaybeTrailingSpaces(const std::string& title) {
+  return base::Contains(
+      kForbiddenTitles,
+      base::TrimWhitespaceASCII(title, base::TrimPositions::TRIM_TRAILING));
+}
+
 base::string16 NodeTitleFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics) {
   if (specifics.has_full_title()) {
     return base::UTF8ToUTF16(specifics.full_title());
   }
-  std::string node_title;
-  syncer::ServerNameToSyncAPIName(specifics.legacy_canonicalized_title(),
-                                  &node_title);
+
+  std::string node_title = specifics.legacy_canonicalized_title();
+  if (base::EndsWith(node_title, " ") &&
+      IsForbiddenTitleWithMaybeTrailingSpaces(node_title)) {
+    // Legacy clients added an extra space to the real title, so remove it here.
+    // See also FullTitleToLegacyCanonicalizedTitle().
+    node_title.pop_back();
+  }
   return base::UTF8ToUTF16(node_title);
 }
 
 }  // namespace
 
 std::string FullTitleToLegacyCanonicalizedTitle(const std::string& node_title) {
-  // Adjust the title for backward compatibility with legacy clients.
-  std::string specifics_title;
-  syncer::SyncAPINameToServerName(node_title, &specifics_title);
+  // Add an extra space for backward compatibility with legacy clients.
+  std::string specifics_title =
+      IsForbiddenTitleWithMaybeTrailingSpaces(node_title) ? node_title + " "
+                                                          : node_title;
   base::TruncateUTF8ToByteSize(
       specifics_title, kLegacyCanonicalizedTitleLimitBytes, &specifics_title);
   return specifics_title;
