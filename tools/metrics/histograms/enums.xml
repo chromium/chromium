@@ -3126,6 +3126,8 @@ Unknown properties are collapsed to zero. -->
   <int value="37" label="Help App"/>
   <int value="38" label="Omnibox, Search Suggest Entity"/>
   <int value="39" label="Omnibox, Navsuggest"/>
+  <int value="40" label="Omnibox Rich Entity, Answer"/>
+  <int value="41" label="Omnibox Rich Entity, Image Entity"/>
 </enum>
 
 <enum name="AppListSearchResultDisplayType">
