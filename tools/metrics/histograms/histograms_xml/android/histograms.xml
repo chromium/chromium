@@ -1211,6 +1211,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.Intent.OverrideUrlLoadingIntentAction"
     enum="StandardActions" expires_after="2021-03-21">
+  <obsolete>
+    Removed in M91. No longer tracked.
+  </obsolete>
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>

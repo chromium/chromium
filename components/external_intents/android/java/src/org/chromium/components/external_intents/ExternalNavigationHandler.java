@@ -125,47 +125,6 @@ public class ExternalNavigationHandler {
         int NUM_ENTRIES = 3;
     }
 
-    // Standard Activity Actions, as defined by:
-    // https://developer.android.com/reference/android/content/Intent.html#standard-activity-actions
-    // These values are persisted in histograms. Please do not renumber.
-    @IntDef({StandardActions.MAIN, StandardActions.VIEW, StandardActions.ATTACH_DATA,
-            StandardActions.EDIT, StandardActions.PICK, StandardActions.CHOOSER,
-            StandardActions.GET_CONTENT, StandardActions.DIAL, StandardActions.CALL,
-            StandardActions.SEND, StandardActions.SENDTO, StandardActions.ANSWER,
-            StandardActions.INSERT, StandardActions.DELETE, StandardActions.RUN,
-            StandardActions.SYNC, StandardActions.PICK_ACTIVITY, StandardActions.SEARCH,
-            StandardActions.WEB_SEARCH, StandardActions.FACTORY_TEST, StandardActions.OTHER})
-    @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting
-    @interface StandardActions {
-        int MAIN = 0;
-        int VIEW = 1;
-        int ATTACH_DATA = 2;
-        int EDIT = 3;
-        int PICK = 4;
-        int CHOOSER = 5;
-        int GET_CONTENT = 6;
-        int DIAL = 7;
-        int CALL = 8;
-        int SEND = 9;
-        int SENDTO = 10;
-        int ANSWER = 11;
-        int INSERT = 12;
-        int DELETE = 13;
-        int RUN = 14;
-        int SYNC = 15;
-        int PICK_ACTIVITY = 16;
-        int SEARCH = 17;
-        int WEB_SEARCH = 18;
-        int FACTORY_TEST = 19;
-        int OTHER = 20;
-
-        int NUM_ENTRIES = 21;
-    }
-
-    @VisibleForTesting
-    static final String INTENT_ACTION_HISTOGRAM = "Android.Intent.OverrideUrlLoadingIntentAction";
-
     // Helper class to return a boolean by reference.
     private static class MutableBoolean {
         private Boolean mValue;
@@ -1292,8 +1251,6 @@ public class ExternalNavigationHandler {
 
         if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
 
-        if (hasIntentScheme) recordIntentActionMetrics(targetIntent);
-
         // From this point on, we have determined it is safe to launch an External App from a
         // fallback URL, provided the user isn't in incognito.
         if (!params.isIncognito()) canLaunchExternalFallbackResult.set(true);
@@ -1799,19 +1756,6 @@ public class ExternalNavigationHandler {
         return mDelegate.getWebContents().getLastCommittedUrl();
     }
 
-    private void recordIntentActionMetrics(Intent intent) {
-        String action = intent.getAction();
-        @StandardActions
-        int standardAction;
-        if (TextUtils.isEmpty(action)) {
-            standardAction = StandardActions.VIEW;
-        } else {
-            standardAction = getStandardAction(action);
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                INTENT_ACTION_HISTOGRAM, standardAction, StandardActions.NUM_ENTRIES);
-    }
-
     /**
      * @param url The requested url.
      * @return Whether we should block the navigation and request file access before proceeding.
@@ -1864,52 +1808,5 @@ public class ExternalNavigationHandler {
         if (referrerUrl == null) return false;
 
         return UrlUtilitiesJni.get().isGoogleSubDomainUrl(referrerUrl);
-    }
-
-    private @StandardActions int getStandardAction(String action) {
-        switch (action) {
-            case Intent.ACTION_MAIN:
-                return StandardActions.MAIN;
-            case Intent.ACTION_VIEW:
-                return StandardActions.VIEW;
-            case Intent.ACTION_ATTACH_DATA:
-                return StandardActions.ATTACH_DATA;
-            case Intent.ACTION_EDIT:
-                return StandardActions.EDIT;
-            case Intent.ACTION_PICK:
-                return StandardActions.PICK;
-            case Intent.ACTION_CHOOSER:
-                return StandardActions.CHOOSER;
-            case Intent.ACTION_GET_CONTENT:
-                return StandardActions.GET_CONTENT;
-            case Intent.ACTION_DIAL:
-                return StandardActions.DIAL;
-            case Intent.ACTION_CALL:
-                return StandardActions.CALL;
-            case Intent.ACTION_SEND:
-                return StandardActions.SEND;
-            case Intent.ACTION_SENDTO:
-                return StandardActions.SENDTO;
-            case Intent.ACTION_ANSWER:
-                return StandardActions.ANSWER;
-            case Intent.ACTION_INSERT:
-                return StandardActions.INSERT;
-            case Intent.ACTION_DELETE:
-                return StandardActions.DELETE;
-            case Intent.ACTION_RUN:
-                return StandardActions.RUN;
-            case Intent.ACTION_SYNC:
-                return StandardActions.SYNC;
-            case Intent.ACTION_PICK_ACTIVITY:
-                return StandardActions.PICK_ACTIVITY;
-            case Intent.ACTION_SEARCH:
-                return StandardActions.SEARCH;
-            case Intent.ACTION_WEB_SEARCH:
-                return StandardActions.WEB_SEARCH;
-            case Intent.ACTION_FACTORY_TEST:
-                return StandardActions.FACTORY_TEST;
-            default:
-                return StandardActions.OTHER;
-        }
     }
 }
