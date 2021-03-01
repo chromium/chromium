@@ -1450,8 +1450,16 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestAddAndRemoveContentScripts) {
              NEEDS_TEST_SERVER);
 }
 
+#if defined(OS_LINUX)
+#define MAYBE_Shim_TestAddContentScriptsWithNewWindowAPI \
+  DISABLED_Shim_TestAddContentScriptsWithNewWindowAPI
+#else
+#define MAYBE_Shim_TestAddContentScriptsWithNewWindowAPI \
+  Shim_TestAddContentScriptsWithNewWindowAPI
+#endif
+// Flaky on Linux: http://crbug.com/1182801.
 IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
-                       Shim_TestAddContentScriptsWithNewWindowAPI) {
+                       MAYBE_Shim_TestAddContentScriptsWithNewWindowAPI) {
   TestHelper("testAddContentScriptsWithNewWindowAPI", "web_view/shim",
              NEEDS_TEST_SERVER);
 }
