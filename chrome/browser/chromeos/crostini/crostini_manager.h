@@ -234,6 +234,11 @@ class CrostiniManager : public KeyedService,
   // depending on the value of chromeos::features::kCrostiniUseDlc
   void InstallTermina(CrostiniResultCallback callback, bool is_initial_install);
 
+  // Try to cancel a previous InstallTermina call. This is done on a best-effort
+  // basis, and we cannot signal if/when it succeeds, but once called the
+  // callback passed to InstallTermina will never be run.
+  void CancelInstallTermina();
+
   // Unloads and removes termina.
   void UninstallTermina(BoolCallback callback);
 

@@ -65,6 +65,11 @@ class TerminaInstaller {
   // Get the id of the installed DLC, or nullopt if DLC is not being used.
   base::Optional<std::string> GetDlcId();
 
+  // Attempt to cancel a pending install. Note that neither DLC service nor
+  // component updater support this, but we have some retry logic that can be
+  // aborted.
+  void Cancel();
+
  private:
   void InstallDlc(base::OnceCallback<void(InstallResult)> callback,
                   bool is_initial_install);

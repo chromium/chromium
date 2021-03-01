@@ -324,6 +324,21 @@ class CrostiniManager::CrostiniRestarter
     // Don't want to use FinishRestart here, because the next restarter in
     // line needs to run.
     RunCallback(result_);
+    if (stage_ == mojom::InstallerState::kInstallImageLoader) {
+      // TerminaInstaller offers a way to cancel installation, which also
+      // prevents any callback from running. In this case we can proceed
+      // directly to running the abort callbacks.
+      crostini_manager_->CancelInstallTermina();
+      // Callers may not expect their callback to be run within the same task.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](base::WeakPtr<CrostiniRestarter> weak_this) {
+                           if (weak_this) {
+                             weak_this->ReturnEarlyIfAborted();
+                           }
+                         },
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   // If this method returns true, then |this| may have been deleted and it is
@@ -1194,6 +1209,10 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
           },
           std::move(callback)),
       is_initial_install);
+}
+
+void CrostiniManager::CancelInstallTermina() {
+  termina_installer_.Cancel();
 }
 
 void CrostiniManager::UninstallTermina(BoolCallback callback) {

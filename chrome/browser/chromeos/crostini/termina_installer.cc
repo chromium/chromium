@@ -42,6 +42,10 @@ enum class InstallSource {
 TerminaInstaller::TerminaInstaller() {}
 TerminaInstaller::~TerminaInstaller() {}
 
+void TerminaInstaller::Cancel() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
                                bool is_initial_install) {
   // The Remove*IfPresent methods require an unowned UninstallResult pointer to
