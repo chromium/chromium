@@ -47,21 +47,6 @@ class TestConsumer : public mojom::PageTextConsumer {
   bool on_chunks_end_called_ = false;
 };
 
-class TestPageTextAgent : public PageTextAgent {
- public:
-  TestPageTextAgent() : PageTextAgent(nullptr) {}
-  ~TestPageTextAgent() override = default;
-
-  void SetFrameArea(uint64_t area) { area_ = area; }
-
-  uint64_t GetFrameArea() const override { return area_; }
-
-  bool IsInMainFrame() const override { return true; }
-
- private:
-  uint64_t area_ = 123;
-};
-
 class PageTextAgentTest : public testing::Test {
  public:
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -71,7 +56,7 @@ class PageTextAgentTest : public testing::Test {
 };
 
 TEST_F(PageTextAgentTest, IncreasesMax) {
-  TestPageTextAgent agent;
+  PageTextAgent agent(nullptr);
 
   mojo::PendingRemote<mojom::PageTextConsumer> consumer_remote;
   TestConsumer consumer;
@@ -103,7 +88,7 @@ TEST_F(PageTextAgentTest, IncreasesMax) {
 }
 
 TEST_F(PageTextAgentTest, MaxStaysSame) {
-  TestPageTextAgent agent;
+  PageTextAgent agent(nullptr);
 
   mojo::PendingRemote<mojom::PageTextConsumer> consumer_remote;
   TestConsumer consumer;
@@ -135,7 +120,7 @@ TEST_F(PageTextAgentTest, MaxStaysSame) {
 }
 
 TEST_F(PageTextAgentTest, FinishedLoading) {
-  TestPageTextAgent agent;
+  PageTextAgent agent(nullptr);
 
   mojo::PendingRemote<mojom::PageTextConsumer> consumer_remote;
   TestConsumer consumer;
@@ -167,7 +152,7 @@ TEST_F(PageTextAgentTest, FinishedLoading) {
 }
 
 TEST_F(PageTextAgentTest, LongTextOnChunkEdge) {
-  TestPageTextAgent agent;
+  PageTextAgent agent(nullptr);
 
   mojo::PendingRemote<mojom::PageTextConsumer> consumer_remote;
   TestConsumer consumer;
@@ -201,7 +186,7 @@ TEST_F(PageTextAgentTest, LongTextOnChunkEdge) {
 }
 
 TEST_F(PageTextAgentTest, LongTextOffOfChunkEdge) {
-  TestPageTextAgent agent;
+  PageTextAgent agent(nullptr);
 
   mojo::PendingRemote<mojom::PageTextConsumer> consumer_remote;
   TestConsumer consumer;
@@ -235,7 +220,7 @@ TEST_F(PageTextAgentTest, LongTextOffOfChunkEdge) {
 }
 
 TEST_F(PageTextAgentTest, NoRequests) {
-  TestPageTextAgent agent;
+  PageTextAgent agent(nullptr);
 
   uint32_t size = 123;
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
@@ -245,27 +230,6 @@ TEST_F(PageTextAgentTest, NoRequests) {
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &size));
   EXPECT_EQ(123U, size);
-}
-
-TEST_F(PageTextAgentTest, MainframeFrameSizeTooSmallIgnored) {
-  TestPageTextAgent agent;
-  agent.SetFrameArea(100);
-
-  mojo::PendingRemote<mojom::PageTextConsumer> consumer_remote;
-  TestConsumer consumer;
-  consumer.Bind(consumer_remote.InitWithNewPipeAndPassReceiver());
-
-  auto request = mojom::PageTextDumpRequest::New();
-  request->max_size = 1024;
-  request->event = mojom::TextDumpEvent::kFirstLayout;
-  request->min_frame_pixel_area = 200;
-  agent.RequestPageTextDump(std::move(request), std::move(consumer_remote));
-
-  uint32_t size = 123;
-  auto callback = agent.MaybeRequestTextDumpOnLayoutEvent(
-      blink::WebMeaningfulLayout::kFinishedParsing, &size);
-  EXPECT_TRUE(callback);
-  EXPECT_EQ(1024U, size);
 }
 
 }  // namespace optimization_guide

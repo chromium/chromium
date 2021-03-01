@@ -247,11 +247,11 @@ TEST_F(PageTextObserverTest, MojoPlumbingSuccessCase) {
   consumer.WaitForPageText();
   EXPECT_EQ(base::ASCIIToUTF16("abc"), *consumer.text());
 
-  EXPECT_THAT(fake_renderer_service.requests(),
-              ::testing::UnorderedElementsAreArray({
-                  mojom::PageTextDumpRequest(
-                      1024U, mojom::TextDumpEvent::kFirstLayout, 0),
-              }));
+  EXPECT_THAT(
+      fake_renderer_service.requests(),
+      ::testing::UnorderedElementsAreArray({
+          mojom::PageTextDumpRequest(1024U, mojom::TextDumpEvent::kFirstLayout),
+      }));
 }
 
 TEST_F(PageTextObserverTest, MaxLengthOnChunkBorder) {
@@ -287,7 +287,7 @@ TEST_F(PageTextObserverTest, MaxLengthOnChunkBorder) {
   EXPECT_THAT(
       fake_renderer_service.requests(),
       ::testing::UnorderedElementsAreArray({
-          mojom::PageTextDumpRequest(3U, mojom::TextDumpEvent::kFirstLayout, 0),
+          mojom::PageTextDumpRequest(3U, mojom::TextDumpEvent::kFirstLayout),
       }));
 }
 
@@ -324,7 +324,7 @@ TEST_F(PageTextObserverTest, MaxLengthWithinChunk) {
   EXPECT_THAT(
       fake_renderer_service.requests(),
       ::testing::UnorderedElementsAreArray({
-          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFirstLayout, 0),
+          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFirstLayout),
       }));
 }
 
@@ -360,7 +360,7 @@ TEST_F(PageTextObserverTest, MaxLengthWithoutOnEnd) {
   EXPECT_THAT(
       fake_renderer_service.requests(),
       ::testing::UnorderedElementsAreArray({
-          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFirstLayout, 0),
+          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFirstLayout),
       }));
 }
 
@@ -405,7 +405,7 @@ TEST_F(PageTextObserverTest, TwoConsumers) {
   EXPECT_THAT(
       fake_renderer_service.requests(),
       ::testing::UnorderedElementsAreArray({
-          mojom::PageTextDumpRequest(3U, mojom::TextDumpEvent::kFirstLayout, 0),
+          mojom::PageTextDumpRequest(3U, mojom::TextDumpEvent::kFirstLayout),
       }));
 }
 
@@ -449,7 +449,7 @@ TEST_F(PageTextObserverTest, RemoveConsumer) {
   EXPECT_THAT(
       fake_renderer_service.requests(),
       ::testing::UnorderedElementsAreArray({
-          mojom::PageTextDumpRequest(3U, mojom::TextDumpEvent::kFirstLayout, 0),
+          mojom::PageTextDumpRequest(3U, mojom::TextDumpEvent::kFirstLayout),
       }));
 }
 
@@ -497,9 +497,8 @@ TEST_F(PageTextObserverTest, TwoEventsRequested) {
   EXPECT_THAT(
       fake_renderer_service.requests(),
       ::testing::UnorderedElementsAreArray({
-          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFirstLayout, 0),
-          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFinishedLoad,
-                                     0),
+          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFirstLayout),
+          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFinishedLoad),
       }));
 }
 

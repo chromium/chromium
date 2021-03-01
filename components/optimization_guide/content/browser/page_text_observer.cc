@@ -184,8 +184,6 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
       auto request = mojom::PageTextDumpRequest::New();
       request->max_size = event_to_max_size_iter.second;
       request->event = event_to_max_size_iter.first;
-      // TODO(crbug/1163244): Set this based on subframes.
-      request->min_frame_pixel_area = 0;
 
       renderer_text_service->RequestPageTextDump(std::move(request),
                                                  std::move(consumer_remote));

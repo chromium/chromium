@@ -11,11 +11,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/numerics/checked_math.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
-#include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,7 +31,6 @@ namespace optimization_guide {
 // events will be added in the future.
 class PageTextAgent
     : public mojom::PageTextService,
-      public content::RenderFrameObserver,
       public content::RenderFrameObserverTracker<PageTextAgent> {
  public:
   explicit PageTextAgent(content::RenderFrame* frame);
@@ -55,24 +52,13 @@ class PageTextAgent
       mojom::PageTextDumpRequestPtr request,
       mojo::PendingRemote<mojom::PageTextConsumer> consumer) override;
 
-  // content::RenderFrameObserver:
-  void OnDestruct() override;
-  void DidFinishLoad() override;
-
   PageTextAgent(const PageTextAgent&) = delete;
   PageTextAgent& operator=(const PageTextAgent&) = delete;
-
- protected:
-  // Virtual for testing.
-  virtual uint64_t GetFrameArea() const;
-  virtual bool IsInMainFrame() const;
 
  private:
   // Called when the text dump is done and it can be sent to |consumer|.
   void OnPageTextDump(mojo::PendingRemote<mojom::PageTextConsumer> consumer,
                       const base::string16& content);
-
-  content::RenderFrame* frame_;
 
   // Keeps track of the text dump events that have been requested. Entries are
   // only present between being added in |RequestPageTextDump| and
