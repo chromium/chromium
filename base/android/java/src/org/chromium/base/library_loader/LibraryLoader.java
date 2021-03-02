@@ -600,17 +600,6 @@ public class LibraryLoader {
         }
     }
 
-    // Helper for loadAlreadyLocked(). Load a native shared library with the Chromium linker.
-    private void loadLibraryWithCustomLinker(Linker linker, String library) {
-        // Attempt shared RELROs, and if that fails then retry without.
-        try {
-            linker.loadLibrary(library, true /* isFixedAddressPermitted */);
-        } catch (UnsatisfiedLinkError e) {
-            Log.w(TAG, "Failed to load native library with shared RELRO, retrying without");
-            linker.loadLibrary(library, false /* isFixedAddressPermitted */);
-        }
-    }
-
     private void loadWithChromiumLinker(ApplicationInfo appInfo, String library) {
         Linker linker = getLinker(appInfo);
 
@@ -623,7 +612,7 @@ public class LibraryLoader {
         }
 
         // Load the library using this Linker. May throw UnsatisfiedLinkError.
-        loadLibraryWithCustomLinker(linker, library);
+        linker.loadLibrary(library);
     }
 
     @GuardedBy("mLock")
