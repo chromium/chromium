@@ -132,8 +132,8 @@ void JsToBrowserMessaging::PostMessage(
 void JsToBrowserMessaging::SetBrowserToJsMessaging(
     mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>
         java_to_js_messaging) {
-  if (render_frame_host_->IsInactiveAndDisallowReactivation())
-    return;
+  // TODO(https://crbug.com/1183557): this should really call
+  // IsInactiveAndDisallowReactivation().
 
   // A RenderFrame may inject JsToBrowserMessaging in the JavaScript context
   // more than once because of reusing of RenderFrame.
