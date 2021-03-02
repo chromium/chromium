@@ -14,13 +14,17 @@ namespace media {
 // This class is the |mojo_media_client| parameter to create
 // media::MediaService. The MediaService itself is running in the mf_cdm utility
 // process to host MediaFoundationRenderer/Cdm.
-class MediaFoundationMojoMediaClient : public media::MojoMediaClient {
+class MediaFoundationMojoMediaClient : public MojoMediaClient {
  public:
   MediaFoundationMojoMediaClient();
   ~MediaFoundationMojoMediaClient() final;
 
   // MojoMediaClient implementation.
-  std::unique_ptr<media::CdmFactory> CreateCdmFactory(
+  std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver) final;
+  std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* frame_interfaces) final;
 
  private:

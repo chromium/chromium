@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/notreached.h"
-#include "build/build_config.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/services/gpu_mojo_media_client.h"
 #include "media/mojo/services/media_service.h"
@@ -28,11 +27,6 @@ std::unique_ptr<MediaService> CreateMediaService(
 #if defined(OS_ANDROID)
   return std::make_unique<MediaService>(
       std::make_unique<AndroidMojoMediaClient>(), std::move(receiver));
-#elif defined(OS_WIN)
-  DVLOG(1) << "Create MediaService with MediaFoundationMojoMediaClient";
-  return std::make_unique<MediaService>(
-      std::make_unique<media::MediaFoundationMojoMediaClient>(),
-      std::move(receiver));
 #else
   NOTREACHED() << "No MediaService implementation available.";
   return nullptr;
@@ -55,6 +49,16 @@ std::unique_ptr<MediaService> CreateGpuMediaService(
           std::move(android_overlay_factory_cb)),
       std::move(receiver));
 }
+
+#if defined(OS_WIN)
+std::unique_ptr<MediaService> CreateMediaFoundationService(
+    mojo::PendingReceiver<mojom::MediaService> receiver) {
+  DVLOG(1) << "Create MediaService with MediaFoundationMojoMediaClient";
+  return std::make_unique<MediaService>(
+      std::make_unique<media::MediaFoundationMojoMediaClient>(),
+      std::move(receiver));
+}
+#endif
 
 std::unique_ptr<MediaService> CreateMediaServiceForTesting(
     mojo::PendingReceiver<mojom::MediaService> receiver) {

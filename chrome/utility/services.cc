@@ -307,9 +307,9 @@ auto RunAssistantAudioDecoder(
 #endif
 
 #if defined(OS_WIN)
-auto RunMediaService(
+auto RunMediaFoundationService(
     mojo::PendingReceiver<media::mojom::MediaService> receiver) {
-  return media::CreateMediaService(std::move(receiver));
+  return media::CreateMediaFoundationService(std::move(receiver));
 }
 #endif  // defined(OS_WIN)
 
@@ -344,7 +344,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunQuarantineService);
   services.Add(RunWindowsUtility);
   services.Add(RunWindowsIconReader);
-  services.Add(RunMediaService);
+  services.Add(RunMediaFoundationService);
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)

@@ -4,21 +4,11 @@
 
 #include "media/mojo/services/media_foundation_mojo_media_client.h"
 
-#include "media/base/audio_decoder.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/cdm/cdm_adapter_factory.h"
-#include "media/mojo/services/mojo_cdm_helper.h"
+#include "media/cdm/win/media_foundation_cdm_factory.h"
+#include "media/mojo/services/media_foundation_renderer_wrapper.h"
 
 namespace media {
-
-namespace {
-
-std::unique_ptr<media::CdmAuxiliaryHelper> CreateCdmHelper(
-    mojom::FrameInterfaceFactory* frame_interfaces) {
-  return std::make_unique<media::MojoCdmHelper>(frame_interfaces);
-}
-
-}  // namespace
 
 MediaFoundationMojoMediaClient::MediaFoundationMojoMediaClient() {
   DVLOG_FUNC(1);
@@ -28,17 +18,21 @@ MediaFoundationMojoMediaClient::~MediaFoundationMojoMediaClient() {
   DVLOG_FUNC(1);
 }
 
-// MojoMediaClient overrides.
+std::unique_ptr<Renderer>
+MediaFoundationMojoMediaClient::CreateMediaFoundationRenderer(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {
+  DVLOG_FUNC(1);
+  return std::make_unique<MediaFoundationRendererWrapper>(
+      /*muted=*/false, std::move(task_runner),
+      std::move(renderer_extension_receiver));
+}
 
-std::unique_ptr<media::CdmFactory>
-MediaFoundationMojoMediaClient::CreateCdmFactory(
+std::unique_ptr<CdmFactory> MediaFoundationMojoMediaClient::CreateCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
   DVLOG_FUNC(1);
-
-  // TODO(frankli): consider to use MediaFoundationCdmFactory instead of
-  // CdmAdapterFactory.
-  return std::make_unique<media::CdmAdapterFactory>(
-      base::BindRepeating(&CreateCdmHelper, frame_interfaces));
+  return std::make_unique<MediaFoundationCdmFactory>();
 }
 
 }  // namespace media

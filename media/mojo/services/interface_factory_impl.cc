@@ -23,21 +23,17 @@
 #include "media/mojo/services/mojo_video_decoder_service.h"
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 
-#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER)
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
+    defined(OS_WIN)
 #include "base/callback_helpers.h"
 #include "media/base/renderer.h"
 #include "media/mojo/services/mojo_renderer_service.h"
-#endif  // BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER)
+#endif
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 #include "media/base/cdm_factory.h"
 #include "media/mojo/services/mojo_cdm_service.h"
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
-
-#if defined(OS_WIN)
-#include "media/mojo/services/media_foundation_renderer_wrapper.h"
-#include "media/mojo/services/mojo_renderer_service.h"
-#endif  // defined(OS_WIN)
 
 namespace media {
 
@@ -102,12 +98,7 @@ void InterfaceFactoryImpl::CreateDefaultRenderer(
     return;
   }
 
-  std::unique_ptr<MojoRendererService> mojo_renderer_service =
-      std::make_unique<MojoRendererService>(&cdm_service_context_,
-                                            std::move(renderer));
-
-  renderer_receivers_.Add(std::move(mojo_renderer_service),
-                          std::move(receiver));
+  AddRenderer(std::move(renderer), std::move(receiver));
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
 }
 
@@ -124,12 +115,7 @@ void InterfaceFactoryImpl::CreateCastRenderer(
     return;
   }
 
-  std::unique_ptr<MojoRendererService> mojo_renderer_service =
-      std::make_unique<MojoRendererService>(&cdm_service_context_,
-                                            std::move(renderer));
-
-  renderer_receivers_.Add(std::move(mojo_renderer_service),
-                          std::move(receiver));
+  AddRenderer(std::move(renderer), std::move(receiver));
 }
 #endif
 
@@ -157,13 +143,16 @@ void InterfaceFactoryImpl::CreateMediaFoundationRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {
-  DVLOG(1) << __func__ << ": this=" << this;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::ThreadTaskRunnerHandle::Get();
-  CreateMediaFoundationRendererOnTaskRunner(
-      std::move(task_runner), std::move(receiver),
+  DVLOG(2) << __func__;
+  auto renderer = mojo_media_client_->CreateMediaFoundationRenderer(
+      base::ThreadTaskRunnerHandle::Get(),
       std::move(renderer_extension_receiver));
+  if (!renderer) {
+    DLOG(ERROR) << "MediaFoundationRenderer creation failed.";
+    return;
+  }
+
+  AddRenderer(std::move(renderer), std::move(receiver));
 }
 #endif  // defined (OS_WIN)
 
@@ -256,6 +245,18 @@ void InterfaceFactoryImpl::OnReceiverDisconnect() {
     std::move(destroy_cb_).Run();
 }
 
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
+    defined(OS_WIN)
+void InterfaceFactoryImpl::AddRenderer(
+    std::unique_ptr<media::Renderer> renderer,
+    mojo::PendingReceiver<mojom::Renderer> receiver) {
+  auto mojo_renderer_service = std::make_unique<MojoRendererService>(
+      &cdm_service_context_, std::move(renderer));
+  renderer_receivers_.Add(std::move(mojo_renderer_service),
+                          std::move(receiver));
+}
+#endif
+
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 CdmFactory* InterfaceFactoryImpl::GetCdmFactory() {
   if (!cdm_factory_) {
@@ -286,34 +287,5 @@ void InterfaceFactoryImpl::OnCdmServiceCreated(
 }
 
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
-
-#if defined(OS_WIN)
-void InterfaceFactoryImpl::CreateMediaFoundationRendererOnTaskRunner(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    mojo::PendingReceiver<media::mojom::Renderer> receiver,
-    mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
-        renderer_extension_receiver) {
-  DVLOG(1) << __func__ << ": this=" << this;
-
-  if (!task_runner->RunsTasksInCurrentSequence()) {
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &InterfaceFactoryImpl::CreateMediaFoundationRendererOnTaskRunner,
-            base::Unretained(this), task_runner, std::move(receiver),
-            std::move(renderer_extension_receiver)));
-    return;
-  }
-
-  DVLOG(1) << __func__ << ": this=" << this;
-
-  auto renderer = std::make_unique<media::MediaFoundationRendererWrapper>(
-      /*muted=*/false, std::move(task_runner),
-      std::move(renderer_extension_receiver));
-
-  media::MojoRendererService::Create(&cdm_service_context_, std::move(renderer),
-                                     std::move(receiver));
-}
-#endif  // defined(OS_WIN)
 
 }  // namespace media

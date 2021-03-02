@@ -17,6 +17,7 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 
@@ -91,9 +92,16 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
       const base::UnguessableToken& overlay_plane_id);
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-  // Returns the CdmFactory to be used by MojoCdmService. |frame_interfaces| can
-  // be used to request interfaces provided remotely by the host. It may be a
-  // nullptr if the host chose not to bind the InterfacePtr.
+#if defined(OS_WIN)
+  virtual std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver);
+#endif  // defined(OS_WIN)
+
+  // Returns the CdmFactory to be used by MojoCdmService. |frame_interfaces|
+  // can be used to request interfaces provided remotely by the host. It may
+  // be a nullptr if the host chose not to bind the InterfacePtr.
   virtual std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* frame_interfaces);
 

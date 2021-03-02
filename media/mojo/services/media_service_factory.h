@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -44,6 +45,11 @@ std::unique_ptr<MediaService> MEDIA_MOJO_EXPORT CreateGpuMediaService(
     base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
+
+#if defined(OS_WIN)
+std::unique_ptr<MediaService> MEDIA_MOJO_EXPORT CreateMediaFoundationService(
+    mojo::PendingReceiver<mojom::MediaService> receiver);
+#endif
 
 // Creates a MediaService instance using the TestMojoMediaClient.
 std::unique_ptr<MediaService> MEDIA_MOJO_EXPORT CreateMediaServiceForTesting(
