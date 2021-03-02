@@ -577,7 +577,7 @@ Polymer({
    * @private
    */
   onCFMBootstrappingClicked_() {
-    cr.ui.Oobe.handleAccelerator(ACCELERATOR_DEVICE_REQUISITION_REMORA);
+    this.userActed('activateRemoraRequisition');
   },
 
   /**
@@ -586,7 +586,7 @@ Polymer({
    * @private
    */
   onDeviceRequisitionClicked_() {
-    cr.ui.Oobe.handleAccelerator(ACCELERATOR_DEVICE_REQUISITION);
+    this.userActed('editDeviceRequisition');
   },
 
   /** ******************** ChromeVox hint section ******************* */

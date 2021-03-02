@@ -78,6 +78,10 @@ constexpr const char kUserActionActivateChromeVoxFromHint[] =
     "activateChromeVoxFromHint";
 constexpr const char kUserActionDismissChromeVoxHint[] = "dismissChromeVoxHint";
 constexpr const char kUserActionCancelChromeVoxHint[] = "cancelChromeVoxHint";
+constexpr const char kUserActionActivateRemoraRequisition[] =
+    "activateRemoraRequisition";
+constexpr const char kUserActionEditDeviceRequisition[] =
+    "editDeviceRequisition";
 
 constexpr base::TimeDelta kChromeVoxHintTimerDuration =
     base::TimeDelta::FromSeconds(20);
@@ -375,6 +379,16 @@ void WelcomeScreen::OnUserAction(const std::string& action_id) {
   }
   if (action_id == kUserActionCancelChromeVoxHint) {
     CancelChromeVoxHintTimer();
+    return;
+  }
+
+  if (action_id == kUserActionActivateRemoraRequisition) {
+    HandleAccelerator(ash::LoginAcceleratorAction::kDeviceRequisitionRemora);
+    return;
+  }
+
+  if (action_id == kUserActionEditDeviceRequisition) {
+    HandleAccelerator(ash::LoginAcceleratorAction::kEditDeviceRequisition);
     return;
   }
 
