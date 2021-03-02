@@ -34,7 +34,7 @@ bool IsEncodedFormat(const assistant_client::OutputStreamFormat& format) {
 class AudioOutputImpl : public assistant_client::AudioOutput {
  public:
   AudioOutputImpl(
-      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+      mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       chromeos::assistant::mojom::AssistantAudioDecoderFactory*
           audio_decoder_factory,
@@ -126,7 +126,7 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory_
+  mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
   chromeos::assistant::mojom::AssistantAudioDecoderFactory*
       audio_decoder_factory_ GUARDED_BY_CONTEXT(main_sequence_checker_);
@@ -181,7 +181,7 @@ AudioOutputProviderImpl::~AudioOutputProviderImpl() = default;
 assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
     assistant_client::OutputStreamType type,
     const assistant_client::OutputStreamFormat& stream_format) {
-  mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory;
+  mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory;
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioOutputProviderImpl::BindStreamFactory,
@@ -230,7 +230,7 @@ void AudioOutputProviderImpl::RegisterAudioEmittingStateCallback(
 }
 
 void AudioOutputProviderImpl::BindStreamFactory(
-    mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+    mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
   platform_delegate_->BindAudioStreamFactory(std::move(receiver));
 }
 

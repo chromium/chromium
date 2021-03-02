@@ -168,7 +168,7 @@ void TtsEngineExtensionObserverChromeOS::BindTtsStreamFactory(
   // Always create a new audio stream for the tts stream. It is assumed once the
   // tts stream is reset by the service, the audio stream is appropriately
   // cleaned up by the audio service.
-  mojo::PendingRemote<media::mojom::AudioStreamFactory> factory_remote;
+  mojo::PendingRemote<audio::mojom::StreamFactory> factory_remote;
   auto factory_receiver = factory_remote.InitWithNewPipeAndPassReceiver();
   content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
   tts_service_->BindTtsStreamFactory(std::move(receiver),

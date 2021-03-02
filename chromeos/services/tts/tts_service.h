@@ -70,7 +70,7 @@ class TtsService : public mojom::TtsService,
   // mojom::TtsService:
   void BindTtsStreamFactory(
       mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
-      mojo::PendingRemote<media::mojom::AudioStreamFactory> factory) override;
+      mojo::PendingRemote<audio::mojom::StreamFactory> factory) override;
 
   // mojom::GoogleTtsStream:
   void CreateGoogleTtsStream(CreateGoogleTtsStreamCallback callback) override;

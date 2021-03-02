@@ -119,8 +119,8 @@ class FakeOutputStreamFactory : public audio::FakeStreamFactory {
   }
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
-    receiver_.Bind(mojo::PendingReceiver<media::mojom::AudioStreamFactory>(
-        std::move(handle)));
+    receiver_.Bind(
+        mojo::PendingReceiver<audio::mojom::StreamFactory>(std::move(handle)));
   }
 
   StrictMock<MockStream> stream_;
@@ -177,7 +177,7 @@ class AudioServiceOutputDeviceTest : public testing::Test {
     task_env_.RunUntilIdle();
   }
 
-  mojo::PendingRemote<media::mojom::AudioStreamFactory> MakeFactoryRemote() {
+  mojo::PendingRemote<audio::mojom::StreamFactory> MakeFactoryRemote() {
     return stream_factory_->receiver_.BindNewPipeAndPassRemote();
   }
 

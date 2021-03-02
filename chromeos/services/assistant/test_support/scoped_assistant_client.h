@@ -40,8 +40,7 @@ class ScopedAssistantClient : AssistantClient {
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver)
       override {}
   void RequestAudioStreamFactory(
-      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
-      override {}
+      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override {}
   void RequestAudioDecoderFactory(
       mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory> receiver)
       override {}

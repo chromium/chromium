@@ -25,7 +25,7 @@ using CreateOutputStreamCallback =
 using CreateLoopbackStreamCallback =
     base::OnceCallback<void(media::mojom::ReadOnlyAudioDataPipePtr)>;
 
-class MockAudioStreamFactory : public media::mojom::AudioStreamFactory {
+class MockAudioStreamFactory : public audio::mojom::StreamFactory {
  public:
   void CreateInputStream(
       PendingReceiver<media::mojom::AudioInputStream> stream,
@@ -55,7 +55,7 @@ class MockAudioStreamFactory : public media::mojom::AudioStreamFactory {
     std::move(callback).Run(nullptr);
   }
   void BindMuter(
-      mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
+      mojo::PendingAssociatedReceiver<audio::mojom::LocalMuter> receiver,
       const base::UnguessableToken& group_id) override {}
 
   void CreateLoopbackStream(
@@ -129,7 +129,7 @@ class TtsServiceTest : public testing::Test {
   mojo::Remote<mojom::TtsService> remote_service_;
   TtsService service_;
   MockAudioStreamFactory mock_audio_stream_factory_;
-  mojo::Receiver<media::mojom::AudioStreamFactory> audio_stream_factory_;
+  mojo::Receiver<audio::mojom::StreamFactory> audio_stream_factory_;
 };
 
 TEST_F(TtsServiceTest, BindMultipleStreamFactories) {

@@ -15,7 +15,7 @@
 namespace audio {
 
 InputIPC::InputIPC(
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
     const std::string& device_id,
     mojo::PendingRemote<media::mojom::AudioLog> log)
     : device_id_(device_id),

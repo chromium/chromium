@@ -5,7 +5,6 @@ include_rules = [
   "+libassistant",
   "+media/audio",
   "+media/base",
-  "+media/mojo/mojom",
   "+services/audio/public",
   "+services/device/public/mojom",
   "+services/media_session/public/mojom",

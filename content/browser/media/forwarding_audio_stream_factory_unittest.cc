@@ -18,11 +18,11 @@
 #include "content/public/test/test_renderer_host.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
-#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
+#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
@@ -38,7 +38,7 @@ namespace content {
 namespace {
 
 class MockStreamFactory : public audio::FakeStreamFactory,
-                          public media::mojom::LocalMuter {
+                          public audio::mojom::LocalMuter {
  public:
   MockStreamFactory() = default;
   ~MockStreamFactory() final = default;
@@ -48,7 +48,7 @@ class MockStreamFactory : public audio::FakeStreamFactory,
 
  private:
   void BindMuter(
-      mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
+      mojo::PendingAssociatedReceiver<audio::mojom::LocalMuter> receiver,
       const base::UnguessableToken& group_id) final {
     muter_receiver_.Bind(std::move(receiver));
     muter_receiver_.set_disconnect_handler(base::BindOnce(
@@ -56,7 +56,7 @@ class MockStreamFactory : public audio::FakeStreamFactory,
   }
   void MuterDisconnected() { muter_receiver_.reset(); }
 
-  mojo::AssociatedReceiver<media::mojom::LocalMuter> muter_receiver_{this};
+  mojo::AssociatedReceiver<audio::mojom::LocalMuter> muter_receiver_{this};
   DISALLOW_COPY_AND_ASSIGN(MockStreamFactory);
 };
 
@@ -67,7 +67,7 @@ class MockBroker : public AudioStreamBroker {
 
   ~MockBroker() override {}
 
-  MOCK_METHOD1(CreateStream, void(media::mojom::AudioStreamFactory* factory));
+  MOCK_METHOD1(CreateStream, void(audio::mojom::StreamFactory* factory));
 
   // Can be used to verify that |this| has been destructed.
   base::WeakPtr<MockBroker> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
@@ -184,13 +184,13 @@ class ForwardingAudioStreamFactoryTest : public RenderViewHostTestHarness {
  public:
   ForwardingAudioStreamFactoryTest()
       : broker_factory_(std::make_unique<MockBrokerFactory>()) {
-    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
         base::BindRepeating(&ForwardingAudioStreamFactoryTest::BindFactory,
                             base::Unretained(this)));
   }
 
   ~ForwardingAudioStreamFactoryTest() override {
-    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
         base::NullCallback());
   }
 
@@ -202,7 +202,7 @@ class ForwardingAudioStreamFactoryTest : public RenderViewHostTestHarness {
   }
 
   void BindFactory(
-      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
     stream_factory_.receiver_.Bind(std::move(receiver));
     stream_factory_.receiver_.set_disconnect_handler(
         base::BindOnce(&audio::FakeStreamFactory::ResetReceiver,

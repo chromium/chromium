@@ -24,7 +24,7 @@
 
 namespace audio {
 namespace mojom {
-class AudioStreamFactory;
+class StreamFactory;
 }
 }  // namespace audio
 
@@ -51,7 +51,7 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
   ~AudioLoopbackStreamBroker() final;
 
   // Creates the stream.
-  void CreateStream(media::mojom::AudioStreamFactory* factory) final;
+  void CreateStream(audio::mojom::StreamFactory* factory) final;
 
   // media::AudioInputStreamObserver implementation.
   void DidStartRecording() final;

@@ -18,6 +18,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 
+namespace audio {
+namespace mojom {
+class StreamFactory;
+}
+}  // namespace audio
+
 namespace base {
 class UnguessableToken;
 }
@@ -25,9 +31,6 @@ class UnguessableToken;
 namespace media {
 class AudioParameters;
 class UserInputMonitorBase;
-namespace mojom {
-class AudioStreamFactory;
-}
 }
 
 namespace content {
@@ -65,7 +68,7 @@ class CONTENT_EXPORT AudioStreamBroker {
   AudioStreamBroker(int render_process_id, int render_frame_id);
   virtual ~AudioStreamBroker();
 
-  virtual void CreateStream(media::mojom::AudioStreamFactory* factory) = 0;
+  virtual void CreateStream(audio::mojom::StreamFactory* factory) = 0;
 
   // Thread-safe utility that notifies the process host identified by
   // |render_process_id| of a started stream to ensure that the renderer is not

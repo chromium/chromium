@@ -23,8 +23,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
 
   // mojom::PlatformDelegate implementation:
   void BindAudioStreamFactory(
-      mojo::PendingReceiver<::media::mojom::AudioStreamFactory> receiver)
-      override;
+      mojo::PendingReceiver<::audio::mojom::StreamFactory> receiver) override;
   void BindAudioDecoderFactory(
       mojo::PendingReceiver<
           chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
@@ -42,7 +41,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
       override {}
 
   // Return the pending receiver passed to the last BindAudioStreamFactory call.
-  mojo::PendingReceiver<::media::mojom::AudioStreamFactory>
+  mojo::PendingReceiver<::audio::mojom::StreamFactory>
   stream_factory_receiver() {
     return std::move(stream_factory_receiver_);
   }
@@ -54,8 +53,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
   }
 
  private:
-  mojo::PendingReceiver<::media::mojom::AudioStreamFactory>
-      stream_factory_receiver_;
+  mojo::PendingReceiver<::audio::mojom::StreamFactory> stream_factory_receiver_;
   mojo::PendingReceiver<::device::mojom::BatteryMonitor>
       battery_monitor_receiver_;
 };

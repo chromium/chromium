@@ -7,9 +7,9 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
-#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
+#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace media {
 class AudioSystem;
@@ -28,9 +28,9 @@ CONTENT_EXPORT std::unique_ptr<media::AudioSystem>
 CreateAudioSystemForAudioService();
 
 // Returns a callback that can be invoked from any sequence to safely bind a
-// AudioStreamFactory interface receiver in the Audio Service.
+// StreamFactory interface receiver in the Audio Service.
 using AudioServiceStreamFactoryBinder = base::RepeatingCallback<void(
-    mojo::PendingReceiver<media::mojom::AudioStreamFactory>)>;
+    mojo::PendingReceiver<audio::mojom::StreamFactory>)>;
 CONTENT_EXPORT AudioServiceStreamFactoryBinder
 GetAudioServiceStreamFactoryBinder();
 

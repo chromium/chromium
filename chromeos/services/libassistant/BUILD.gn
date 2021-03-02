@@ -129,8 +129,8 @@ source_set("audio") {
     "//libassistant/shared/public",
     "//libassistant/shared/public:export",
     "//media",
-    "//media/mojo/mojom"
     "//services/audio/public/cpp",
+    "//services/audio/public/mojom",
     "//services/media_session/public/mojom",
   ]
 }

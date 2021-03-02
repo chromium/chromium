@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module media.mojom;
+module audio.mojom;
 
 import "media/mojo/mojom/audio_data_pipe.mojom";
 import "media/mojo/mojom/audio_input_stream.mojom";
@@ -24,7 +24,7 @@ interface LocalMuter {};
 //
 // The client must keep the connection to the factory while streams are
 // running.
-interface AudioStreamFactory {
+interface StreamFactory {
   // Creates an AudioInputStream and returns the AudioDataPipe it writes data to
   // and a bool indicating whether the stream is initially muted. |data_pipe| is
   // null, |initially_muted| is false and |stream_id| is empty in case stream

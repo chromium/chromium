@@ -11,18 +11,18 @@
 #include "base/run_loop.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
-#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace audio {
 
-class FakeStreamFactory : public media::mojom::AudioStreamFactory {
+class FakeStreamFactory : public mojom::StreamFactory {
  public:
   FakeStreamFactory();
   ~FakeStreamFactory() override;
 
-  mojo::PendingRemote<media::mojom::AudioStreamFactory> MakeRemote() {
+  mojo::PendingRemote<mojom::StreamFactory> MakeRemote() {
     auto remote = receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(base::BindOnce(
         &FakeStreamFactory::ResetReceiver, base::Unretained(this)));
@@ -65,9 +65,8 @@ class FakeStreamFactory : public media::mojom::AudioStreamFactory {
       const media::AudioParameters& params,
       const base::UnguessableToken& group_id,
       CreateOutputStreamCallback created_callback) override {}
-  void BindMuter(
-      mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
-      const base::UnguessableToken& group_id) override {}
+  void BindMuter(mojo::PendingAssociatedReceiver<mojom::LocalMuter> receiver,
+                 const base::UnguessableToken& group_id) override {}
   void CreateLoopbackStream(
       mojo::PendingReceiver<media::mojom::AudioInputStream> receiver,
       mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
@@ -77,7 +76,7 @@ class FakeStreamFactory : public media::mojom::AudioStreamFactory {
       const base::UnguessableToken& group_id,
       CreateLoopbackStreamCallback created_callback) override {}
 
-  mojo::Receiver<media::mojom::AudioStreamFactory> receiver_{this};
+  mojo::Receiver<mojom::StreamFactory> receiver_{this};
 
  private:
   base::Optional<base::RunLoop> disconnect_loop_;

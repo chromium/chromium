@@ -122,7 +122,7 @@ void Service::BindDebugRecording(
 }
 
 void Service::BindStreamFactory(
-    mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+    mojo::PendingReceiver<mojom::StreamFactory> receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!stream_factory_)

@@ -112,7 +112,7 @@ AudioOutputStreamBroker::~AudioOutputStreamBroker() {
 }
 
 void AudioOutputStreamBroker::CreateStream(
-    media::mojom::AudioStreamFactory* factory) {
+    audio::mojom::StreamFactory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(!observer_receiver_.is_bound());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "CreateStream", this, "device id",

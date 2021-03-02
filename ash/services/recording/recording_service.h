@@ -45,15 +45,13 @@ class RecordingService : public mojom::RecordingService,
   void RecordFullscreen(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-      mojo::PendingRemote<media::mojom::AudioStreamFactory>
-          audio_stream_factory,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size) override;
   void RecordWindow(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-      mojo::PendingRemote<media::mojom::AudioStreamFactory>
-          audio_stream_factory,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size,
       const viz::SubtreeCaptureId& subtree_capture_id,
@@ -61,8 +59,7 @@ class RecordingService : public mojom::RecordingService,
   void RecordRegion(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-      mojo::PendingRemote<media::mojom::AudioStreamFactory>
-          audio_stream_factory,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
       const gfx::Size& frame_sink_size,
       const gfx::Rect& crop_region) override;
@@ -96,8 +93,7 @@ class RecordingService : public mojom::RecordingService,
   void StartNewRecording(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-      mojo::PendingRemote<media::mojom::AudioStreamFactory>
-          audio_stream_factory,
+      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       std::unique_ptr<VideoCaptureParams> capture_params);
 
   // Called on the main thread during an on-going recording to reconfigure an
