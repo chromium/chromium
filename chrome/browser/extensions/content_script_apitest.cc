@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/web_package/test_support/web_bundle_builder.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -1786,6 +1788,109 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
   EXPECT_FALSE(IdentifiabilityMetricsTestHelper::ContainsSurfaceOfType(
       merged_entries,
       blink::IdentifiableSurface::Type::kExtensionContentScript));
+}
+
+class SubresourceWebBundlesContentScriptApiTest : public ExtensionApiTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
+    ExtensionApiTest::SetUp();
+  }
+
+ protected:
+  // Registers a request handler for static content.
+  void RegisterRequestHandler(const std::string& relative_url,
+                              const std::string& content_type,
+                              const std::string& content,
+                              bool nosniff) {
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [relative_url, content_type, content,
+         nosniff](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == relative_url) {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type(content_type);
+            response->set_content(content);
+            if (nosniff) {
+              response->AddCustomHeader("X-Content-Type-Options", "nosniff");
+            }
+            return std::move(response);
+          }
+          return nullptr;
+        }));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
+                       SubresourceWebBundleIframe) {
+  // Create an extension that injects a content script in "urn" scheme urls.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Web Request Subresource Web Bundles Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "permissions": ["urn:*"],
+        "content_scripts": [{
+          "matches":[
+            "urn:*"
+          ],
+          "all_frames": true,
+          "js":[
+            "content_script.js"
+          ]
+        }]
+      })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
+                     R"(
+      (() => {
+        const documentUrl = document.location.toString();
+        chrome.test.sendMessage(documentUrl);
+      })();
+      )");
+
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+
+  const std::string urn_uuid_html_url =
+      "urn:uuid:65c6f241-f6b5-4302-9f95-9a826c4dda1c";
+  // Currently the web bundle format requires a valid GURL for the fallback URL
+  // of a web bundle. So we use |urn_uuid_html_url| for the fallback URL.
+  // TODO(crbug.com/966753): Stop using |urn_uuid_html_url| when
+  // https://github.com/WICG/webpackage/issues/590 is resolved.
+  web_package::test::WebBundleBuilder builder(urn_uuid_html_url, "");
+  auto html_location =
+      builder.AddResponse({{":status", "200"}, {"content-type", "text/html"}},
+                          "<script>console.error('hoge');</script>");
+  builder.AddIndexEntry(urn_uuid_html_url, "", {html_location});
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  const std::string web_bundle = std::string(bundle.begin(), bundle.end());
+
+  // For serving web bundles, "Content-Type: application/webbundle" and
+  // "X-Content-Type-Options: nosniff" response headers are required.
+  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-serving-constraints
+  RegisterRequestHandler("/test.wbn", "application/webbundle", web_bundle,
+                         true /* nosniff */);
+
+  const std::string page_html = base::StringPrintf(R"(
+        <link rel="webbundle" href="./test.wbn" scopes="urn:uuid:">
+        <iframe src="%s"></iframe>
+      )",
+                                                   urn_uuid_html_url.c_str());
+  RegisterRequestHandler("/test.html", "text/html", page_html,
+                         false /* nosniff */);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ExtensionTestMessageListener listener(false /* will_reply */);
+
+  GURL page_url = embedded_test_server()->GetURL("/test.html");
+  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_EQ(urn_uuid_html_url, listener.message());
 }
 
 }  // namespace extensions
