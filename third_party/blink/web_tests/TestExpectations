@@ -5703,10 +5703,6 @@ crbug.com/1180227 [ Linux ] virtual/feature-policy-permissions/external/wpt/medi
 crbug.com/1180274 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
 crbug.com/1180479 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollIntoView-smooth.html [ Failure Timeout Pass ]
 
-# Temporarily disabled to enable frontend change (https://crrev.com/c/2716285) to go through
-crbug.com/1176691 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
-crbug.com/1176691 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
-
 # Sheriff 2021-02-21
 crbug.com/1180491 [ Linux ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Pass Failure ]
 crbug.com/1180491 [ Linux ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Pass Failure ]
