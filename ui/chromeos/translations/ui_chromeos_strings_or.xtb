@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">ସମସ୍ତ ଫାଇଲ୍</translation>
 <translation id="1810764548349082891">କୌଣସି ପୂର୍ବାବଲୋକନ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1812302367230252929">ଆମହାରିକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="1813278315230285598">ସେବା</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ସତର୍କତା:<ph name="END_BOLD" />  ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କ‌ରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ହୁଏତ ସ୍ୱଚାଳିତ ରୂପେ ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ପେଙ୍ଗୁଇନ୍‍</translation>
 <translation id="183183971458492120">ସୂଚନା ଲୋଡ୍ ହେଉଛି..</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">ଘୁଞ୍ଚାଇବା କାର୍ଯ୍ୟ ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1942765061641586207">ଛବି ରିଜୋଲ୍ୟୁସନ୍</translation>
-<translation id="1943097386230153518">ନୂଆ ସେବା ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="1972984168337863910">ମତାମତ ପ୍ୟାନେଲ୍‍ଗୁଡ଼ିକୁ ପ୍ରସାରଣ କରନ୍ତୁ</translation>
+<translation id="1984456723671657197">ଏହି ଫାଇଲର ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। Chrome OSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="1995337122023280937">ଫାଇଲ୍ ଲୋକେସନକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2001796770603320721">Driveରେ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2009067268969781306">କୌଣସି ଡ୍ରାଇଭ୍‍କୁ ଡିଲିଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
@@ -646,7 +647,6 @@
 <translation id="7839804798877833423">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଆଣିବା ପାଇଁ ଆନୁମାନିକ <ph name="FILE_SIZE" /> ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର ହେବ।</translation>
 <translation id="7846076177841592234">ଚୟନିତ ଆଇଟମ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="7853966320808728790">ଫ୍ରେଞ୍ଚ BÉPO</translation>
-<translation id="7864662577698025113">ନୂଆ ସେବା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7868774406711971383">ପୋଲିଶ୍</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />ରେ ସେଭ୍ କରିପାରିବ ନାହିଁ। ସମସ୍ତ ଏଡ଼ିଟ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ ଫୋଲ୍ଡର୍‌ର <ph name="DOWNLOADS_FOLDER" />ରେ ସେଭ୍‌ କରାଯିବ।</translation>
 <translation id="7874321682039004450">ଫିଲିପିନୋ</translation>
@@ -661,6 +661,7 @@
 <translation id="7972920761225148017">ଫରାସୀ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="7980421588063892270">କୋଲମାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="7982283708762922719">ଉଚ୍ଚତା</translation>
+<translation id="79907182588096956">Windows ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରୁଥିବା PC ପାଇଁ ଏହି ଫାଇଲ୍ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କ ଡିଭାଇସରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। Chrome OSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="8008366997883261463">ଶ୍ୱାନ</translation>
 <translation id="8028993641010258682">ଆକାର</translation>
 <translation id="803771048473350947">ଫାଇଲ୍</translation>
@@ -740,6 +741,7 @@
 <translation id="8900820606136623064">ହଙ୍ଗେରୀଆନ୍</translation>
 <translation id="8919081441417203123">ଡାନିଶ୍</translation>
 <translation id="8965697826696209160">ଯଥେଷ୍ଟ ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="8970501467542182729">ଏହି ଫାଇଲକୁ Macintosh ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରୁଥିବା କୌଣସି କମ୍ପ୍ୟୁଟର ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କ ଡିଭାଇସରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। Chrome OSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="8997962250644902079">ଚାଇନିଜ୍ (ପାରମ୍ପାରିକ) ପିନୟିନ୍</translation>
 <translation id="9017798300203431059">ରସିଆନ୍ (ଫୋନେଟିକ୍)</translation>
 <translation id="9034924485347205037">Linux ଫାଇଲ୍‍ଗୁଡ଼ିକ</translation>

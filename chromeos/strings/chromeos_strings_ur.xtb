@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">رک گیا - سیاہی ختم ہو گئی</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏DNS ریزولور دستیاب ہے</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> اور <ph name="SECOND_MANAGER" /> کے زیر انتظام ہے</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
 <translation id="1851218745569890714">ویڈیو کانفرنسنگ</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
 <translation id="2364498172489649528">پاس ہو گیا</translation>
+<translation id="2365324413026422635">بیٹری پوری طرح چارج ہونے پر بیٹری چارج کا ٹیسٹ نہیں ہو سکتا</translation>
 <translation id="2391082728065870591">تاثرات کی رپورٹ بھیجیں</translation>
 <translation id="2418150275289244458">ترتیبات میں کھولیں</translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
@@ -115,6 +117,7 @@
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
 <translation id="3865414814144988605">ریزولیوشن</translation>
+<translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
 <translation id="3941014780699102620">میزبان کو حل کرنے میں ناکام</translation>
 <translation id="3942420633017001071">تشخیصات</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
@@ -127,9 +130,7 @@
 <translation id="4155551848414053977">یقینی بنائیں کہ اسکینر آن ہے اور آپ کے نیٹ ورک یا براہ راست کنکشن کے ذریعے دستیاب ہے</translation>
 <translation id="4170700058716978431">ناکام</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
-<translation id="4222698289790462549">موجودہ رفتار</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
-<translation id="4228041325992544252">‏<ph name="TOTAL_MEMORY" /> GB میں سے <ph name="AVAILABLE_MEMORY" /> GB دستیاب ہے۔</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4378373042927530923">نہیں چلا</translation>
@@ -205,7 +206,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} کوشش باقی ہے}other{{0} کوششیں باقی ہیں}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">رپورٹ دیکھیں</translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">فیملی</translation>
@@ -250,7 +250,6 @@
 <translation id="649050271426829538">رک گیا - پیپر جام</translation>
 <translation id="6517239166834772319">دریافت</translation>
 <translation id="6527081081771465939">‏نامعلوم WiFi سیکیورٹی پروٹوکول</translation>
-<translation id="6532051501443766164">رپورٹ چھپائیں</translation>
 <translation id="65587193855025101">فلیٹ بیڈ</translation>
 <translation id="6564646048574748301">ناکام ہو گیا - پرنٹر ناقابل رسائی ہے</translation>
 <translation id="6618744767048954150">جاری ہے</translation>
@@ -342,7 +341,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
 <translation id="8798441408945964110">فراہم کنندہ کا نام</translation>
-<translation id="880791622116642296">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8881098542468797602">ٹیسٹ کامیاب ہو گیا</translation>

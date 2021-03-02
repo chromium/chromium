@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Portal cativo</translation>
 <translation id="2008685064673031089">Busca principal</translation>
 <translation id="2080070583977670716">Máis configuracións</translation>
+<translation id="2126937207024182736">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
+<translation id="2217935453350629363">Velocidade actual</translation>
 <translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Estado de activación</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">O PIN non é válido.</translation>
 <translation id="3838338534323494292">Novo contrasinal</translation>
 <translation id="3865414814144988605">Resolución</translation>
+<translation id="387301095347517405">Número de veces que a batería se someteu a un ciclo de carga completo</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Asegúrate de que o escáner estea acendido e dispoñible a través da túa rede ou mediante unha conexión directa</translation>
 <translation id="4170700058716978431">NON SE SUPEROU</translation>
 <translation id="4176463684765177261">Desactivado</translation>
-<translation id="4222698289790462549">Velocidade actual</translation>
 <translation id="4227825898293920515">O contrasinal caduca en <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Non hai ningunha tarefa de impresión en curso</translation>
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4378373042927530923">Non se executou</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4429881212383817840">O tícket de Kerberos caduca pronto</translation>
+<translation id="4431821876790500265">Ver informe</translation>
 <translation id="445059817448385655">Contrasinal antigo</translation>
 <translation id="4453205916657964690">Máscara de subrede</translation>
 <translation id="4454245904991689773">Gardar en</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
 <translation id="4985509611418653372">Executar</translation>
+<translation id="4999333166442584738">Ocultar informe</translation>
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
@@ -208,7 +211,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento}other{Quedan {0} intentos}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Ver informe</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -253,7 +255,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="649050271426829538">Detívose (atasco de papel)</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
-<translation id="6532051501443766164">Ocultar informe</translation>
 <translation id="65587193855025101">Superficie plana</translation>
 <translation id="6564646048574748301">Produciuse un erro: non se puido acceder á impresora</translation>
 <translation id="6618744767048954150">En execución</translation>
@@ -345,7 +346,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8798441408945964110">Nome do fornecedor</translation>
-<translation id="880791622116642296">Este é o número de veces que a batería se someteu a un ciclo de carga completo</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>

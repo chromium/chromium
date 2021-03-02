@@ -136,7 +136,6 @@
 <translation id="549669000822060376">Chromium нь хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
 <translation id="5496810170689441661">Chromium нь нууц үгсийг засах гэж оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-н шинэчлэлт боломжтой байна}=1{Chromium-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>
-<translation id="5631814766731275228">Chromium-н нэр болон зураг</translation>
 <translation id="5634636535844844681">Chromium-д Windows 7 болон үүнээс дээших хувилбарууд шаардлагатай.</translation>
 <translation id="5653831366781983928">Chromium-г одоо дахин эхлүүлнэ үү</translation>
 <translation id="5698481217667032250">Chromium-г энэ хэлээр харуулах</translation>
@@ -164,6 +163,7 @@
 <translation id="6266342355635466082">Chromium нь шинэчлэлтийг шалгах боломжгүй байна. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="6268381023930128611">Chromium-с гарах уу?</translation>
 <translation id="6281746429495226318">Chromium-н профайлаа өөрчлөх</translation>
+<translation id="6290827346642914212">Chromium-н профайлаа нэрлэнэ үү</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> аюултай байж болзошгүй тул үүнийг Chromium блок хийсэн.</translation>
 <translation id="6309712487085796862">Chromium таны камерыг ашиглаж байна.</translation>
 <translation id="6333502561965082103">Chromium-д өөр үйл ажиллагаа явагдаж байна. Дараа дахин оролдоно уу.</translation>
@@ -277,5 +277,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium үйлдлийн систем</translation>
 <translation id="93478295209880648">Windows XP болон Windows Vista нь цаашид Chromium-г дэмжихгүй тул буруу ажиллаж болзошгүй</translation>
+<translation id="965162752251293939">Chromium-г хэн ашиглаж байна вэ?</translation>
 <translation id="985602178874221306">Chromium-ыг бүтээгчид</translation>
 </translationbundle>

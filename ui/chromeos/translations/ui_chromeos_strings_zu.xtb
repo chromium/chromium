@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Wonke amafayela</translation>
 <translation id="1810764548349082891">Akukho ukubuka kuqala okutholakalayo</translation>
 <translation id="1812302367230252929">Ukuguqulwa kwamaletha ngesi-Amharic</translation>
+<translation id="1813278315230285598">Amasevisi</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Isexwayiso:<ph name="END_BOLD" />  Lawa mafayela angowesikhashana futhi angasuswa ngokuzenzakalela ukuze kukhululwe isikhala sediski.  <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">I-penguin</translation>
 <translation id="183183971458492120">Ilayisha ulwazi...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Ukuhambisa kuhlulekile, iphutha elingalindelekile: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Isi-Finnish</translation>
 <translation id="1942765061641586207">Ukulungiswa kwesithombe</translation>
-<translation id="1943097386230153518">Faka isevisi entsha</translation>
 <translation id="1972984168337863910">Nweba amaphaneli wempendulo yamafayela</translation>
 <translation id="1984456723671657197">Lolu hlobo lwefayela alusekelwa. <ph name="BEGIN_LINK_HELP" />Funda kabanzi<ph name="END_LINK_HELP" /> ngokuvula amafayela ku-Chrome OS.</translation>
 <translation id="1995337122023280937">Iya endaweni yefayela</translation>
@@ -652,7 +652,6 @@
 <translation id="7839804798877833423">Ukulanda lama fayela cishe kuzosebenzisa idatha yeselula engu-<ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">Khansela ukukhetha</translation>
 <translation id="7853966320808728790">I-French BÉPO</translation>
-<translation id="7864662577698025113">Engeza isevisi entsha</translation>
 <translation id="7868774406711971383">Isi-Polish</translation>
 <translation id="7873831373602885875">Ayikwazi ukulondoloza ku-<ph name="FOLDER_NAME" />. Konke ukuhlelwa kuzolondolozwa ku-<ph name="DOWNLOADS_FOLDER" /> kufolda yokulandiwe.</translation>
 <translation id="7874321682039004450">Isi-Filipino</translation>

@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> ले पहिला Chrome प्रयोग गरिरहेको थियो</translation>
 <translation id="1097330777386562916">आफूले Chrome छाडेर बाहिरिँदा कुकी र साइटका डेटा हटाउनुहोस्</translation>
 <translation id="110877069173485804">यो तपाईंको क्रोम हो</translation>
+<translation id="1125124144982679672">Chrome कसले चलाउँदै हुनुहुन्छ?</translation>
 <translation id="1142745911746664600">Chrome लाई अद्यावधिक गर्न सकिएन</translation>
 <translation id="1154147086299354128">Chrome मा खोल्नुहोस्</translation>
 <translation id="123620459398936149">Chrome OS ले तपाइँको लगत समक्रमण गर्न सकेन। कृपया तपाइँको समक्रमण पासफ्रेज अपडेट गर्नुहोस्।</translation>
@@ -89,6 +90,7 @@
 <translation id="3065168410429928842">Chrome को ट्याब</translation>
 <translation id="3080151273017101988">Google Chrome बन्दा हुँदा पृष्ठभूमि एपहरू चालू हुन जारी राख्नुहोस्</translation>
 <translation id="3089968997497233615">Google Chrome खो नयाँ, सुरक्षित संस्करण उपलब्ध छ।</translation>
+<translation id="3100998948628680988">आफ्नो Chrome प्रोफाइलको नाम राख्नुहोस्</translation>
 <translation id="3114643501466072395">तपाईंका अन्य पासवर्डहरू कतै खुलासा भएका छन् कि छैनन् तथा सुरक्षासम्बन्धी अन्य समस्याबाट सुरक्षित छन् कि छैनन् भन्ने कुरा जाँच्न <ph name="BEGIN_LINK" />Chrome मा साइन इन गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="3127818369811890733">Chrome OS ले तपाईंको डेटा सिंक गर्न सकेन।</translation>
 <translation id="3140883423282498090">तपाइँले अर्को पटक Google Chrome पुन: सुरुवात गर्दा तपाइँका परिवर्तनहरू लागू हुनेछन्।</translation>
@@ -120,7 +122,6 @@
 <translation id="4050175100176540509">नवीनतम संस्करणमा महत्वपूर्ण सुरक्षा सुधारहरू र नयाँ सुविधाहरू उपलब्ध छन्।</translation>
 <translation id="4053720452172726777">Google Chrome आफू अनुकूल र नियन्त्रण गर्नुहोस्</translation>
 <translation id="4110895483821904099">Chrome मा आफ्नो नयाँ प्रोफाइल सेटअप गर्नुहोस्</translation>
-<translation id="4143243756087420366">Chrome प्रोफाइलको नाम र तस्बिर</translation>
 <translation id="4147555960264124640">तपाईं एउटा व्यवस्थित खाताद्वारा साइन इन गर्दै हुनुहुन्छ र यसको व्यवस्थापकलाई आफ्नो Google Chrome प्रोफाइल माथिको नियन्त्रण दिँदै हुनुहुन्छ। तपाईंको Chrome डाटा, जस्तै एप्स, बुकमार्कहरू, इतिहास, पासवर्डहरू, र अन्य सेटिङहरू स्थायी रूपमा <ph name="USER_NAME" /> सँग गाँसिनेछन्। तपाईंले यो डाटा Google खाताहरू ड्यासबोर्ड मार्फत मेटाउन सक्नुहुनेछ, तर तपाईं॥े यो डाटालाई अर्को खातासँग सम्बद्ध गर्न सक्नुहुन्न। <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">स्थापनाकर्ता आर्किभलाई अनकम्प्रेस गर्न असफल भयो। कृपया Google Chrome पुन: डाउनलोड गर्नुहोस्।</translation>
 <translation id="4191857738314598978">{0,plural, =1{एक दिनभित्र Chrome पुनः सुरु गर्नुहोस्}other{# दिनभित्र Chrome पुनः सुरु गर्नुहोस्}}</translation>
@@ -172,6 +173,7 @@
 <translation id="5430073640787465221">तपाईंको प्राथमिकता फाइल बिग्रेको वा अवैध छ।
 
 Google Chrome ले तपाईंको सेटिङहरू पुन: प्राप्त गर्न सकदैन।</translation>
+<translation id="5434383153637353914">तपाईं यो पेजमार्फत आफ्ना साइन इन गरिएका Google खाताहरू व्यवस्थापन गर्न सक्नुहुन्छ। यी खाताहरू Gmail, Drive तथा YouTube जस्ता सेवाका साथसाथै Chrome ब्राउजर र Play स्टोरमा भएका एपहरूमा उपलब्ध हुने छन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="556024056938947818">Google Chrome ले पासवर्डहरू देखाउने प्रयास गरिरहेको छ।</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">यो पृष्ठमा कुनै सेटिङ देखिएन भने आफ्नो <ph name="LINK_BEGIN" />

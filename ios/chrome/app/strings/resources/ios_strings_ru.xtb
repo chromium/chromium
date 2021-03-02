@@ -174,6 +174,7 @@
 <translation id="2780046210906776326">Создайте аккаунт</translation>
 <translation id="2781331604911854368">ВКЛ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">Не удалось создать ссылку</translation>
 <translation id="2800683595868705743">Закрыть переключатель вкладок</translation>
 <translation id="2815198996063984598">2. Найдите раздел, где выбирается браузер по умолчанию.</translation>
 <translation id="2830972654601096923">Управление адресами</translation>
@@ -467,6 +468,7 @@
 <translation id="5948291296578561264">Это позволяет вам сохранять фотографии в галерее.</translation>
 <translation id="5955891643922670672">Просматривается в офлайн-режиме</translation>
 <translation id="5957613098218939406">Другое</translation>
+<translation id="5963939892571022323">Не удалось создать ссылку на выделенный текст.</translation>
 <translation id="5964480694698977962">Создать вкладку инкогнито.</translation>
 <translation id="5965679971710331625">Вы вошли в аккаунт</translation>
 <translation id="5979837087407522202">Поиск паролей</translation>
@@ -615,6 +617,7 @@
 <translation id="734758817008927353">Параметры сохранения карты</translation>
 <translation id="7348502496356775519">Закладка</translation>
 <translation id="7383797227493018512">Список для чтения</translation>
+<translation id="7398893703713203428">Создать ссылку</translation>
 <translation id="739941347996872055">Предыдущая вкладка</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906">Непрочитанных статей: <ph name="UNREAD_COUNT" />.</translation>

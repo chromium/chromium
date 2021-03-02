@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">Печать</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3527036260304016759">Сбой: неизвестная ошибка</translation>
+<translation id="3532980081107202182">Осталось примерно <ph name="MIN_REMAINING" /> мин.</translation>
 <translation id="357889014807611375">Wi-Fi с тарификацией</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
@@ -116,6 +117,7 @@
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3865414814144988605">Разрешение</translation>
+<translation id="387301095347517405">Количество полных циклов зарядки батареи</translation>
 <translation id="3941014780699102620">Не удалось преобразовать имя хоста.</translation>
 <translation id="3942420633017001071">Диагностика</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
@@ -128,9 +130,7 @@
 <translation id="4155551848414053977">Убедитесь, что сканер работает и доступен для подключения напрямую или по сети.</translation>
 <translation id="4170700058716978431">ОШИБКА</translation>
 <translation id="4176463684765177261">Отключено</translation>
-<translation id="4222698289790462549">Текущая скорость</translation>
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Доступно <ph name="AVAILABLE_MEMORY" /> из <ph name="TOTAL_MEMORY" /> ГБ.</translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4378373042927530923">Не проверено</translation>
@@ -207,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Осталась {0} попытка.}one{Осталась {0} попытка.}few{Осталось {0} попытки.}many{Осталось {0} попыток.}other{Осталось {0} попытки.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Посмотреть отчет</translation>
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семейство</translation>
@@ -252,7 +251,6 @@
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
-<translation id="6532051501443766164">Скрыть отчет</translation>
 <translation id="65587193855025101">Планшетный</translation>
 <translation id="6564646048574748301">Сбой: принтер недоступен</translation>
 <translation id="6618744767048954150">Выполняется</translation>
@@ -332,6 +330,7 @@
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
 <translation id="8483248364096924578">IP-адрес</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
+<translation id="8503836310948963452">Осталось несколько минут…</translation>
 <translation id="8576249514688522074">Без инициализации</translation>
 <translation id="8620617069779373398">Статус роуминга</translation>
 <translation id="8675354002693747642">Общий ключ</translation>
@@ -343,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8798441408945964110">Название провайдера</translation>
-<translation id="880791622116642296">Количество полных циклов зарядки батареи</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8881098542468797602">Проверка пройдена</translation>
@@ -363,6 +361,7 @@
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>
 <translation id="9149391708638971077">Запустить проверку памяти</translation>
+<translation id="9173638680043580060">Осталось меньше минуты…</translation>
 <translation id="9190063653747922532">L2TP/IPsec + общий ключ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Не активировано</translation>

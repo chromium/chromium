@@ -13,6 +13,7 @@
 <translation id="1272079795634619415">停止</translation>
 <translation id="1289742167380433257">为节省您的流量，Google 已优化了此网页中的图片。</translation>
 <translation id="129382876167171263">网站保存的文件会显示在这里</translation>
+<translation id="1317194122196776028">移除此网站</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">网站 <ph name="SITE_NAME" /> 已添加</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -99,6 +100,7 @@
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="381841723434055211">电话号码</translation>
+<translation id="3835233591525155343">您的设备使用情况</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">前进</translation>
 <translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
@@ -115,6 +117,7 @@
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
 <translation id="42981349822642051">展开</translation>
 <translation id="4336434711095810371">清除所有数据</translation>
+<translation id="4402755511846832236">禁止网站了解您何时在主动使用此设备</translation>
 <translation id="4433925000917964731">由 Google 提供的精简版网页</translation>
 <translation id="4434045419905280838">弹出式窗口和重定向</translation>
 <translation id="445467742685312942">允许网站播放受保护内容。</translation>
@@ -127,6 +130,7 @@
 <translation id="4670064810192446073">虚拟实境</translation>
 <translation id="4708011789095599544">确定要清除此网站的 Cookie 和其他网站数据吗？</translation>
 <translation id="4751476147751820511">动态传感器或光传感器</translation>
+<translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
 <translation id="4883854917563148705">无法重置托管设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟实境设备和数据（推荐）</translation>
 <translation id="4962975101802056554">撤消设备的所有权限</translation>

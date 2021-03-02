@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">Çap edilir</translation>
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
+<translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
 <translation id="357889014807611375">limitli Wi-Fi</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
@@ -116,6 +117,7 @@
 <translation id="3820172043799983114">Yanlış PIN.</translation>
 <translation id="3838338534323494292">Yeni parol</translation>
 <translation id="3865414814144988605">Dəqiqlik</translation>
+<translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
 <translation id="3941014780699102620">Hostu həll etmək alınmadı</translation>
 <translation id="3942420633017001071">Diaqnostika</translation>
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
@@ -128,9 +130,7 @@
 <translation id="4155551848414053977">Skanerin aktiv olduğuna, şəbəkə və ya birbaşa qoşulma üzərindən əlçatan olduğuna əmin olun</translation>
 <translation id="4170700058716978431">UĞURSUZ OLDU</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
-<translation id="4222698289790462549">Cari Sürət</translation>
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB əlçatandır.</translation>
 <translation id="4238516577297848345">Hazırda davam edən çap işləri yoxdur</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
@@ -206,7 +206,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} cəhd qalıb}other{{0} cəhd qalıb}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Hesabata baxın</translation>
 <translation id="5669267381087807207">Aktivləşir</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ailə</translation>
@@ -251,7 +250,6 @@
 <translation id="649050271426829538">Dayanıb - Kağız ilişib</translation>
 <translation id="6517239166834772319">Araşdırın</translation>
 <translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
-<translation id="6532051501443766164">Hesabatı gizlədin</translation>
 <translation id="65587193855025101">Yastı</translation>
 <translation id="6564646048574748301">Alınmadı - Printer əlçatan deyil</translation>
 <translation id="6618744767048954150">İcra olunur</translation>
@@ -331,6 +329,7 @@
 <translation id="8477551185774834963">DNS gecikməsi icazə verilən həddən azca yuxarıdır</translation>
 <translation id="8483248364096924578">IP ünvanı</translation>
 <translation id="8503813439785031346">İstifadəçi adı</translation>
+<translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
 <translation id="8576249514688522074">Başladılmayıb</translation>
 <translation id="8620617069779373398">Rominq statusu</translation>
 <translation id="8675354002693747642">Öncədən paylaşılan açar</translation>
@@ -342,7 +341,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Defolt</translation>
 <translation id="8798441408945964110">Provayder adı</translation>
-<translation id="880791622116642296">Bu, batareyanızın tam şarj edilmə sayıdır</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8881098542468797602">Test uğurlu oldu</translation>
@@ -362,6 +360,7 @@
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>
 <translation id="9111102763498581341">Kiliddən çıxarın</translation>
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
+<translation id="9173638680043580060">Bir dəqiqədən az qalıb</translation>
 <translation id="9190063653747922532">L2TP/IPsec + öncədən paylaşılmış açar</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Aktiv edilməyib</translation>

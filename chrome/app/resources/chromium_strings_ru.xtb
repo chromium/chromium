@@ -134,7 +134,6 @@
 <translation id="549669000822060376">Подождите, пока Chromium устанавливает последние обновления системы</translation>
 <translation id="5496810170689441661">Chromium пытается изменить пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступно обновление Chromium}=1{Доступно обновление Chromium}one{Обновление Chromium доступно # день}few{Обновление Chromium доступно # дня}many{Обновление Chromium доступно # дней}other{Обновление Chromium доступно # дня}}</translation>
-<translation id="5631814766731275228">Имя и изображение профиля Chromium</translation>
 <translation id="5634636535844844681">Для работы Chromium необходима ОС Windows 7 или более поздней версии.</translation>
 <translation id="5653831366781983928">Перезапустите Chromium</translation>
 <translation id="5698481217667032250">Отображать Chromium на этом языке</translation>
@@ -162,6 +161,7 @@
 <translation id="6266342355635466082">Не удалось проверить наличие обновлений в Chromium. Проверьте подключение к Интернету.</translation>
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
 <translation id="6281746429495226318">Настроить профиль Chromium</translation>
+<translation id="6290827346642914212">Настройте профиль Chromium</translation>
 <translation id="6295779123002464101">Chromium заблокировал файл <ph name="FILE_NAME" /> как потенциально опасный.</translation>
 <translation id="6309712487085796862">Chromium использует камеру.</translation>
 <translation id="6333502561965082103">Chromium выполняет другую операцию. Повторите попытку позже.</translation>
@@ -273,5 +273,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS</translation>
 <translation id="93478295209880648">В работе Chromium могут возникать сбои, так как браузер больше не поддерживает Windows XP и Windows Vista.</translation>
+<translation id="965162752251293939">Кто использует Chromium?</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
 </translationbundle>

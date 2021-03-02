@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">थांबले - शाई संपली आहे</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS रिसॉल्व्हर प्रेझेंट</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> आणि <ph name="SECOND_MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
 <translation id="1851218745569890714">व्हिडिओ कॉंफरन्सिंग</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
 <translation id="2364498172489649528">पास झाले</translation>
+<translation id="2365324413026422635">बॅटरी पूर्ण चार्ज केलेली असताना बॅटरी चार्ज चाचणी केली जाऊ शकत नाही</translation>
 <translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
 <translation id="2418150275289244458">सेटिंग्जमध्ये उघडा</translation>
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
@@ -103,6 +105,7 @@
 <translation id="3459509316159669723">प्रिंट</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
+<translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
@@ -114,6 +117,7 @@
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
+<translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
 <translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
 <translation id="3942420633017001071">निदान</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
@@ -126,9 +130,7 @@
 <translation id="4155551848414053977">तुमच्या नेटवर्क किंवा थेट कनेक्शनद्वारे स्कॅनर सुरू आणि उपलब्ध असल्याची खात्री करा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
-<translation id="4222698289790462549">सध्याचा वेग</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
-<translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> GB पैकी <ph name="AVAILABLE_MEMORY" /> उपलब्ध आहे.</translation>
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
@@ -205,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} प्रयत्न शिल्लक}other{{0} प्रयत्न शिल्लक}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">अहवाल पहा</translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">कुटुंब</translation>
@@ -250,7 +251,6 @@
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
 <translation id="6517239166834772319">एक्सप्लोर करा</translation>
 <translation id="6527081081771465939">अनोळखी वायफाय सुरक्षा प्रोटोकॉल</translation>
-<translation id="6532051501443766164">अहवाल लपवा</translation>
 <translation id="65587193855025101">फ्लॅटबेड</translation>
 <translation id="6564646048574748301">अयशस्वी झाले - प्रिंटरशी कनेक्ट करता आले नाही</translation>
 <translation id="6618744767048954150">रन होत आहे</translation>
@@ -330,6 +330,7 @@
 <translation id="8477551185774834963">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा किंचित जास्त आहे</translation>
 <translation id="8483248364096924578">IP पत्ता</translation>
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
+<translation id="8503836310948963452">फक्त आणखी काही मिनिटे...</translation>
 <translation id="8576249514688522074">सुरुवात केलेली नाही</translation>
 <translation id="8620617069779373398">रोमिंग स्थिती</translation>
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
@@ -341,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8798441408945964110">प्रदात्याचे नाव</translation>
-<translation id="880791622116642296">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली ते या चार्जिंग सायकलवरून कळते</translation>
 <translation id="8814190375133053267">वाय-फाय</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>
@@ -361,6 +361,7 @@
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
+<translation id="9173638680043580060">एका मिनिटापेक्षा कमी वेळ शिल्लक आहे</translation>
 <translation id="9190063653747922532">L2TP/IPSec + पूर्व-शेअर की</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय नाही</translation>

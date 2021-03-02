@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Неважечки PIN.</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
 <translation id="3865414814144988605">Резолуција</translation>
+<translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
 <translation id="3941014780699102620">Неуспешно отворање на хостот</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Уверете се дека скенерот е вклучен и достапен преку мрежата или преку директна врска</translation>
 <translation id="4170700058716978431">НЕУСПЕШЕН</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
-<translation id="4222698289790462549">Моментална брзина</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Достапно: <ph name="AVAILABLE_MEMORY" /> GB од <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
 <translation id="4378373042927530923">Не е извршена</translation>
@@ -208,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Уште {0} обид}one{Уште {0} обид}other{Уште {0} обиди}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Прикажи го извештајот</translation>
 <translation id="5669267381087807207">Се активира</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семејни</translation>
@@ -253,7 +251,6 @@
 <translation id="649050271426829538">Запрено - заглавена хартија</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Непознат безбедносен протокол за Wi-Fi</translation>
-<translation id="6532051501443766164">Сокриј го извештајот</translation>
 <translation id="65587193855025101">Со рамна плоча</translation>
 <translation id="6564646048574748301">Неуспешно - печатачот е недостапен</translation>
 <translation id="6618744767048954150">Се извршува</translation>
@@ -345,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Стандардно</translation>
 <translation id="8798441408945964110">Име на оператор</translation>
-<translation id="880791622116642296">Ова означува колку пати батеријата поминала низ целосен циклус на полнење</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8881098542468797602">Тестот успеа</translation>

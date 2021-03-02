@@ -102,6 +102,7 @@
 <translation id="4407044323746248786">ಹೇಗಿದ್ದರೂ Chromium ನಿಂದ ನಿರ್ಗಮಿಸುವುದೇ?</translation>
 <translation id="4415566066719264597">Chromium ಹಿನ್ನೆಲೆಯಲ್ಲಿ ರನ್ ಆಗಲು ಅನುಮತಿಸಿ</translation>
 <translation id="4423735387467980091">Chromium ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಮತ್ತು ನಿಯಂತ್ರಿಸಿ</translation>
+<translation id="4491398312037323794">ಸೈನ್ ಇನ್ ಮಾಡಿದ ನಿಮ್ಮ Google ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಈ ಪುಟವು ನಿಮ್ಮನ್ನು ಅನುಮತಿಸುತ್ತದೆ. ಈ ಖಾತೆಗಳು Chromium ಬ್ರೌಸರ್ ಮತ್ತು Play ಸ್ಟೋರ್ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಲಭ್ಯವಾಗುವುದರ ಜೊತೆಗೆ Gmail, Drive ಮತ್ತು YouTube ನಂತಹ ಸೇವೆಗಳಲ್ಲಿ ಸಹ ಲಭ್ಯವಿರುತ್ತವೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Chromium ಗೆ ಸುಸ್ವಾಗತ; ಹೊಸ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋವನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="4544142686420020088">Chromium ಅಪ್‌ಡೇಟ್ ಆಗಲಿಲ್ಲ, ಏನೋ ಸಮಸ್ಯೆಯಾಗಿದೆ. <ph name="BEGIN_LINK" />Chromium ಅಪ್‌ಡೇಟ್ ಸಮಸ್ಯೆಗಳು ಹಾಗೂ ವಿಫಲವಾದ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸರಿಪಡಿಸಿ.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">ಹೊಸ Chromium ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಮುಂದುವರಿಯಬೇಕೆ?</translation>
@@ -133,7 +134,6 @@
 <translation id="549669000822060376">ದಯವಿಟ್ಟು ಇತ್ತೀಚಿನ ಸಿಸ್ಟಂ ನವೀಕರಣಗಳನ್ನು Chromium ಸ್ಥಾಪಿಸುವಾಗ ಕಾಯಿರಿ.</translation>
 <translation id="5496810170689441661">Chromium, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ. ಇದನ್ನು ಅನುಮತಿಸಲು ನಿಮ್ಮ Windows ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}=1{Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}one{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}other{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}}</translation>
-<translation id="5631814766731275228">Chromium ಹೆಸರು ಮತ್ತು ಚಿತ್ರ</translation>
 <translation id="5634636535844844681">Chromium ಗೆ Windows 7 ಅಥವಾ ಹೆಚ್ಚಿನ ಆವೃತ್ತಿ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="5653831366781983928">ಇದೀಗ Chromium ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5698481217667032250">ಈ ಭಾಷೆಯಲ್ಲಿ Chromium ಪ್ರದರ್ಶಿಸು</translation>
@@ -161,6 +161,7 @@
 <translation id="6266342355635466082">ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು Chromium ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ನೋಡಿ.</translation>
 <translation id="6268381023930128611">Chromium ನಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡುವುದೇ?</translation>
 <translation id="6281746429495226318">ನಿಮ್ಮ Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
+<translation id="6290827346642914212">ನಿಮ್ಮ Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ಹೆಸರಿಸಿ</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> ಅಪಾಯಕಾರಿಯಾಗಿರಬಹುದು, ಹಾಗಾಗಿ Chromium ಅದನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
 <translation id="6309712487085796862">Chromium ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="6333502561965082103">Chromium ನಲ್ಲಿ ಬೇರೆ ಕಾರ್ಯಾಚರಣೆಯು ಪ್ರಗತಿಯಲ್ಲಿದೆ. ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -270,5 +271,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS ಸಿಸ್ಟಂ</translation>
 <translation id="93478295209880648">Windows XP ಅಥವಾ Windows Vista ದಲ್ಲಿ Chromium ಗೆ ಈಗ ಬೆಂಬಲವಿಲ್ಲದೇ ಇರುವುದರಿಂದ ಅದು ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
+<translation id="965162752251293939">Chromium ಅನ್ನು ಯಾರು ಬಳಸುತ್ತಿದ್ದಾರೆ?</translation>
 <translation id="985602178874221306">Chromium ಲೇಖಕರು</translation>
 </translationbundle>

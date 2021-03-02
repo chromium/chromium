@@ -625,6 +625,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6376931439017688372">Aktibatuta dago Bluetooth-a</translation>
 <translation id="6381109794406942707">Gailua desblokeatzeko, idatzi PIN kodea.</translation>
 <translation id="639644700271529076">BLOK MAIUS desaktibatuta dago</translation>
+<translation id="6396835948284782440">Irteteko, eduki sakatuta [Ihes] tekla.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="642644398083277086">Garbitu jakinarazpen guztiak</translation>
@@ -960,7 +961,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="9098969848082897657">Isilarazi telefonoa</translation>
 <translation id="9099154003160514616">Lacros-en eguneratze bat dago</translation>
 <translation id="9133335900048457298">Ezin da kapturatu eduki babestua</translation>
-<translation id="9151726767154816831">Berrabiarazi eta berrezarri fabrikako ezarpenak eguneratzeko</translation>
+<translation id="9151726767154816831">Berrabiarazi eta berrezarri Powerwash bidez fabrikako ezarpenak eguneratzeko</translation>
 <translation id="9166331175924255663">Aldatu Nearby Share-ren ikusgaitasun handia.</translation>
 <translation id="9168436347345867845">Geroago</translation>
 <translation id="9179259655489829027">Saioa hasita daukan edozein erabiltzaile bizkor atzitzea baimentzen dizu eginbideak, pasahitza idatzi beharrik gabe. Erabili eginbide hau kontu fidagarriekin soilik.</translation>

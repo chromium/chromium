@@ -49,6 +49,7 @@
 <translation id="2770231113462710648">Промяна на браузъра по подразбиране с/ъс:</translation>
 <translation id="2799223571221894425">Стартиране отново</translation>
 <translation id="2816712596130903444">Да се създаде ли отделен потребителски профил в Chromium?</translation>
+<translation id="2837693172913560447">Това ще създаде нов потребителски профил в Chromium за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Премахване от Chromium...</translation>
 <translation id="2885378588091291677">Диспечер на задачите</translation>
 <translation id="2910007522516064972">Всичко за &amp;Chromium</translation>
@@ -121,6 +122,7 @@
 <translation id="4987820182225656817">Гостите могат да използват Chromium, без да оставят следи.</translation>
 <translation id="4994636714258228724">Добавяне на вас към Chromium</translation>
 <translation id="5224391634244552924">Няма запазени пароли. Chromium може да проверява паролите ви, когато ги запазите.</translation>
+<translation id="5252179775517634216">Този потребителски профил в Chromium вече се използва от <ph name="EXISTING_USER" />. Това ще създаде нов потребителски профил в браузъра за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">За да приложите промените си, рестартирайте Chromium</translation>
 <translation id="5358375970380395591">Влизате с управляван профил и давате на администратора му контрол над потребителския си профил в Chromium. Данните ви там, като например приложения, отметки, история, пароли и други настройки, ще се свържат за постоянно с/ъс <ph name="USER_NAME" />. Ще можете да ги изтриете чрез таблото за управление на Google Профили, но не и да ги свържете с друг профил. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium се актуализира (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -134,7 +136,6 @@
 <translation id="549669000822060376">Моля, изчакайте, докато Chromium инсталира най-новите системни актуализации.</translation>
 <translation id="5496810170689441661">Chromium опитва да редактира паролите. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Налице е актуализация за Chromium}=1{Налице е актуализация за Chromium}other{Налице е актуализация за Chromium от # дни}}</translation>
-<translation id="5631814766731275228">Име и снимка за Chromium</translation>
 <translation id="5634636535844844681">За Chromium се изисква Windows 7 или по-нова версия.</translation>
 <translation id="5653831366781983928">Моля, рестартирайте Chromium сега</translation>
 <translation id="5698481217667032250">Показване на Chromium на този език</translation>
@@ -162,6 +163,7 @@
 <translation id="6266342355635466082">Chromium не може да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="6268381023930128611">Искате ли да излезете от Chromium?</translation>
 <translation id="6281746429495226318">Персонализиране на потребителския ви профил в Chromium</translation>
+<translation id="6290827346642914212">Наименуване на потребителския ви профил в Chromium</translation>
 <translation id="6295779123002464101">Chromium блокира „<ph name="FILE_NAME" />“, тъй като файлът може да е опасен.</translation>
 <translation id="6309712487085796862">Chromium използва камерата ви.</translation>
 <translation id="6333502561965082103">Извършва се друго действие, свързано с Chromium. Моля, опитайте отново по-късно.</translation>
@@ -226,6 +228,7 @@
 <translation id="7773960292263897147">Предупреждение: Chromium не може да попречи на разширенията да записват историята ви на сърфиране. За да деактивирате това разширение в режим „инкогнито“, премахнете отметката от тази опция.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7827169012280634081">Изчистване на „бисквитките“ и данните за сайтовете при излизане от Chromium</translation>
+<translation id="7828947555739565424">На това устройство вече съществува потребителски профил в Chromium за този профил</translation>
 <translation id="7857220146454061152">За да получавате бъдещи актуализации на Chromium, трябва да използвате OS X 10.11 или по-нова версия. Компютърът ви работи с OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium не можа да се актуализира до най-новата версия. Това означава, че пропускате нови функции и корекции за сигурност.</translation>
 <translation id="7898472181347242998">За да разберете дали устройството ви е актуално, отворете <ph name="LINK_BEGIN" />настройките на Chromium OS<ph name="LINK_END" /></translation>
@@ -272,5 +275,6 @@
 <translation id="9190841055450128916">Chromium (входящ трафик за mDNS)</translation>
 <translation id="9214764063801632699">Система Chromium OS</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно, тъй като вече не се поддържа под Windows XP и Windows Vista</translation>
+<translation id="965162752251293939">Кой използва Chromium?</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
 </translationbundle>

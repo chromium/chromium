@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Todos os arquivos</translation>
 <translation id="1810764548349082891">Nenhuma visualização disponível</translation>
 <translation id="1812302367230252929">Amárico (transliteração)</translation>
+<translation id="1813278315230285598">Serviços</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Atenção:<ph name="END_BOLD" /> Estes arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguim</translation>
 <translation id="183183971458492120">Carregando informações…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Falha ao mover, erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandês</translation>
 <translation id="1942765061641586207">Resolução da imagem</translation>
-<translation id="1943097386230153518">Instalar novo serviço</translation>
 <translation id="1972984168337863910">Expandir painéis de feedback de arquivos</translation>
 <translation id="1984456723671657197">Esse tipo de arquivo não é compatível. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no Chrome OS.</translation>
 <translation id="1995337122023280937">Acessar local do arquivo</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">A busca destes arquivos usará aproximadamente <ph name="FILE_SIZE" /> de dados móveis.</translation>
 <translation id="7846076177841592234">Cancelar seleção</translation>
 <translation id="7853966320808728790">BÉPO francês</translation>
-<translation id="7864662577698025113">Adicionar novo serviço</translation>
 <translation id="7868774406711971383">Polonês</translation>
 <translation id="7873831373602885875">Não é possível salvar em <ph name="FOLDER_NAME" />. Todas as edições serão salvas em <ph name="DOWNLOADS_FOLDER" /> na pasta "Downloads".</translation>
 <translation id="7874321682039004450">Filipino</translation>

@@ -136,7 +136,6 @@
 <translation id="549669000822060376">Зачекайте, доки Chromium установить найновіші оновлення системи.</translation>
 <translation id="5496810170689441661">Chromium намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступне оновлення Chromium}=1{Доступне оновлення Chromium}one{Оновлення Chromium доступне вже # день}few{Оновлення Chromium доступне вже # дні}many{Оновлення Chromium доступне вже # днів}other{Оновлення Chromium доступне вже # дня}}</translation>
-<translation id="5631814766731275228">Ім’я та зображення профілю Chromium</translation>
 <translation id="5634636535844844681">Для роботи Chromium потрібно мати ОС Windows 7 або новішої версії.</translation>
 <translation id="5653831366781983928">Перезапустіть Chromium</translation>
 <translation id="5698481217667032250">Вибрати цю мову для Chromium</translation>
@@ -164,6 +163,7 @@
 <translation id="6266342355635466082">Chromium не може перевірити наявність оновлень. Перевірте інтернет-з'єднання.</translation>
 <translation id="6268381023930128611">Вийти з Chromium?</translation>
 <translation id="6281746429495226318">Налаштувати профіль Chromium</translation>
+<translation id="6290827346642914212">Додайте назву свого профілю Chromium</translation>
 <translation id="6295779123002464101">Файл <ph name="FILE_NAME" /> може бути небезпечним, тому Chromium заблокував його.</translation>
 <translation id="6309712487085796862">Chromium використовує вашу камеру.</translation>
 <translation id="6333502561965082103">У Chromium виконується інша операція. Спробуйте пізніше.</translation>
@@ -279,5 +279,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">ОС Chromium</translation>
 <translation id="93478295209880648">Chromium може працювати неналежним чином, оскільки більше не підтримується у Windows XP та Windows Vista</translation>
+<translation id="965162752251293939">Хто користується веб-переглядачем Chromium?</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

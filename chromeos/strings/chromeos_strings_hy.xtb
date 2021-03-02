@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">Տպում</translation>
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
+<translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
@@ -116,6 +117,7 @@
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
+<translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել</translation>
 <translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
 <translation id="3942420633017001071">Դիագնոստիկա</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
@@ -128,9 +130,7 @@
 <translation id="4155551848414053977">Համոզվեք, որ սկաներն աշխատում է և հասանելի է ցանցի կամ ուղիղ կապի միջոցով</translation>
 <translation id="4170700058716978431">ՁԱԽՈՂՎԵՑ</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
-<translation id="4222698289790462549">Ընթացիկ արագությունը</translation>
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
-<translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> ԳԲ-ից հասանելի է <ph name="AVAILABLE_MEMORY" /> ԳԲ։</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
 <translation id="4378373042927530923">Չի գործարկվել</translation>
@@ -207,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Մնացած փորձերի քանակը՝ {0}}one{Մնացած փորձերի քանակը՝ {0}}other{Մնացած փորձերի քանակը՝ {0}}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />՝ <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Դիտել հաշվետվությունը</translation>
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ընտանիք</translation>
@@ -252,7 +251,6 @@
 <translation id="649050271426829538">Դադարեցվել է – Թղթի խցանում</translation>
 <translation id="6517239166834772319">Հնարավորություններ</translation>
 <translation id="6527081081771465939">Wi-Fi-ի անվտանգության անհայտ հաղորդակարգ</translation>
-<translation id="6532051501443766164">Թաքցնել հաշվետվությունը</translation>
 <translation id="65587193855025101">Պլանշետային</translation>
 <translation id="6564646048574748301">Չհաջողվեց տպել – Տպիչն անհասանելի է</translation>
 <translation id="6618744767048954150">Ստուգումն ընթացքում է</translation>
@@ -332,6 +330,7 @@
 <translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="8483248364096924578">IP հասցե</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
+<translation id="8503836310948963452">Սպասեք ևս մի քանի րոպե…</translation>
 <translation id="8576249514688522074">Սկզբնավորված չէ</translation>
 <translation id="8620617069779373398">Ռոումինգի կարգավիճակը</translation>
 <translation id="8675354002693747642">Ընդհանուր բանալի</translation>
@@ -343,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="8798441408945964110">Մատակարարի անունը</translation>
-<translation id="880791622116642296">Քանի անգամ է ձեր մարտկոցն ամբողջական լիցքավորվել և լիցքաթափվել</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
@@ -363,6 +361,7 @@
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
 <translation id="9149391708638971077">Փորձարկել հիշողությունը</translation>
+<translation id="9173638680043580060">Մնացել է մեկ րոպեից քիչ</translation>
 <translation id="9190063653747922532">L2TP/IPsec + հանրային բանալի</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ակտիվացված չէ</translation>

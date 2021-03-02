@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Hitelesítési portál</translation>
 <translation id="2008685064673031089">Prímszámkeresés</translation>
 <translation id="2080070583977670716">További beállítások</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> GB áll rendelkezésre.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
+<translation id="2217935453350629363">Jelenlegi sebesség</translation>
 <translation id="2224337661447660594">Nincs internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiválás állapota</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">Érvénytelen PIN-kód.</translation>
 <translation id="3838338534323494292">Új jelszó</translation>
 <translation id="3865414814144988605">Felbontás</translation>
+<translation id="387301095347517405">Annak a száma, hogy hány teljes töltési ciklusa volt az akkumulátornak.</translation>
 <translation id="3941014780699102620">Nem sikerült a gazdagép feloldása</translation>
 <translation id="3942420633017001071">Diagnosztika</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Győződjön meg arról, hogy a szkenner be van kapcsolva, és hogy hozzáférhető a hálózaton vagy közvetlen kapcsolaton keresztül</translation>
 <translation id="4170700058716978431">SIKERTELEN</translation>
 <translation id="4176463684765177261">Letiltva</translation>
-<translation id="4222698289790462549">Jelenlegi sebesség</translation>
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
-<translation id="4228041325992544252"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> GB áll rendelkezésre.</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4378373042927530923">Nem fut</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Saját meghajtó</translation>
 <translation id="4429881212383817840">A Kerberos-jegy hamarosan lejár</translation>
+<translation id="4431821876790500265">Jelentés megtekintése</translation>
 <translation id="445059817448385655">Régi jelszó</translation>
 <translation id="4453205916657964690">Alhálózati maszk</translation>
 <translation id="4454245904991689773">Beolvasás ide</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="498186245079027698">Ellenőrizze a szkennert, majd próbálja újra. Győződjön meg arról, hogy van elég helyi tárhely a beolvasott fájlok mentéséhez.</translation>
 <translation id="4985509611418653372">Futtatás</translation>
+<translation id="4999333166442584738">Jelentés elrejtése</translation>
 <translation id="500920857929044050">Teszt leállítása</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Csoport neve</translation>
@@ -208,7 +211,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} próbálkozás maradt.}other{{0} próbálkozás maradt.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Jelentés megtekintése</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Család</translation>
@@ -253,7 +255,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
-<translation id="6532051501443766164">Jelentés elrejtése</translation>
 <translation id="65587193855025101">Síkágy</translation>
 <translation id="6564646048574748301">Sikertelen – Nem lehet hozzáférni a nyomtatóhoz</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
@@ -345,7 +346,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8798441408945964110">Szolgáltató neve</translation>
-<translation id="880791622116642296">Annak a száma, hogy hány teljes töltési ciklusa volt az akkumulátornak.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Súgó</translation>
 <translation id="8881098542468797602">Sikeres tesztelés</translation>

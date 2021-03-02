@@ -138,7 +138,6 @@
 <translation id="549669000822060376">Chromium эң акыркы тутум жаңыртууларын орнотуп бүткүчө күтө туруңуз.</translation>
 <translation id="5496810170689441661">Chromium сырсөздөрдү өзгөртүүгө аракет кылып жатат. Уруксат берүү үчүн Windows сырсөзүңүздү териңиз.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium'дун жаңы версиясы жеткиликтүү}=1{Chromium'дун жаңы версиясы жеткиликтүү}other{Chromium'дун жаңы версиясы # күндөн бери жеткиликтүү}}</translation>
-<translation id="5631814766731275228">Chromium'дагы профилдин аталышы жана сүрөтү</translation>
 <translation id="5634636535844844681">Chromium'га Windows 7 же жаңыраак версиясы талап кылынат.</translation>
 <translation id="5653831366781983928">Chromium'ду азыр өчүрүп күйгүзүңүз</translation>
 <translation id="5698481217667032250">Chromium ушул тилде көрсөтүлсүн</translation>
@@ -166,6 +165,7 @@
 <translation id="6266342355635466082">Chromium жаңыртууларды текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="6268381023930128611">Chromium'дан чыгасызбы?</translation>
 <translation id="6281746429495226318">Chromium профилимди ыңгайлаштыруу</translation>
+<translation id="6290827346642914212">Chromium профилиңиздин аталышын коюңуз</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> файлы кооптуу болушу мүмкүн, ошондуктан Chromium аны бөгөттөп койду.</translation>
 <translation id="6309712487085796862">Chromium камераңызды колдонууда.</translation>
 <translation id="6333502561965082103">Chromium'да башка операция жүрүп жатат. Бир аздан кийин кайталап көрүңүз.</translation>
@@ -281,5 +281,6 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS тутуму</translation>
 <translation id="93478295209880648">Chromium туура эмес иштеши мүмкүн, себеби ал Windows XP же Windows Vista'да мындан ары колдоого алынбайт.</translation>
+<translation id="965162752251293939">Chromium'ду ким колдонуп жатат?</translation>
 <translation id="985602178874221306">Chromium'дун авторлору</translation>
 </translationbundle>

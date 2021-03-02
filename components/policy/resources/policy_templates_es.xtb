@@ -412,7 +412,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si la política se inhabilita o no se establece, las páginas no podrán enviar solicitudes XHR síncronas durante el cierre de la página.
 
-      Esta política se eliminará de la versión 93 de Chrome.
+      Esta política se eliminará en la versión 93 de Chrome.
 
       Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
@@ -578,6 +578,10 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1803646570632580723">Lista de aplicaciones fijadas que deben aparecer en la barra de aplicaciones</translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir conexión compartida instantánea.</translation>
+<translation id="1815386977045680976">Define la lista de usuarios que pueden iniciar sesión en el dispositivo. Las entradas tienen el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (por ejemplo, <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />). Para permitir usuarios arbitrarios en un dominio, utiliza entradas con el formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+
+      Si no se configura esta política, no se aplicarán restricciones respecto a qué usuarios pueden iniciar sesión. Ten en cuenta que sigue siendo necesario configurar adecuadamente la política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> para crear nuevos usuarios.
+      Si se habilita <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, los usuarios de Family Link podrán iniciar sesión, además de las cuentas que se definan en esta política.</translation>
 <translation id="1819272352048746487">Habilitar o inhabilitar distintas funciones en el teclado en pantalla</translation>
 <translation id="1823974945066396306">Define la lista de usuarios a los que se permite iniciar sesión en el dispositivo. Las entradas tienen el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (por ejemplo, <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />). Para permitir usuarios arbitrarios en un dominio, utiliza entradas similares a <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -891,6 +895,19 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2223582957891074498">Si se asigna el valor "Verdadero" a esta política, no se permitirá hacer capturas de pantalla utilizando combinaciones de teclas ni API de extensiones. Si se le asigna el valor "Falso", se permitirán las capturas de pantalla.</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>
 <translation id="2231817271680715693">Importar el historial de navegación desde el navegador predeterminado en la primera ejecución</translation>
+<translation id="2231962946025538735">Esta política está obsoleta. Utiliza <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si el visor de PDF integrado se debe usar para abrir archivos PDF.
+
+      Especifica una lista de complementos que el usuario puede habilitar o inhabilitar en <ph name="PRODUCT_NAME" />.
+
+      Los comodines "*" y "?" se pueden utilizar para buscar coincidencias con secuencias de caracteres arbitrarios. El comodín "*" indica cualquier número de caracteres, mientras que "?" especifica un único carácter opcional (es decir, coincide con un carácter o no coincide con ninguno). El carácter de escape es "\", así que para buscar coincidencias con los caracteres "*", "?" o "\", debes colocar el carácter "\" delante de ellos.
+
+      Si habilitas esta opción, la lista de complementos especificada se podrá utilizar en <ph name="PRODUCT_NAME" />. Los usuarios pueden habilitar o inhabilitar los complementos en about:plugins, aunque el complemento también coincida con un patrón de DisabledPlugins. Además, los usuarios pueden habilitar e inhabilitar los complementos que no coincidan con ningún patrón de DisabledPlugins, DisabledPluginsExceptions o EnabledPlugins.
+
+      El objetivo de la política es permitir bloqueos estrictos de complementos en caso de que la lista DisabledPlugins contenga entradas con comodín —por ejemplo, una entrada para inhabilitar todos los complementos (*) o para inhabilitar todos los complementos Java (*Java*)—, pero el administrador quiera habilitar una versión específica, como IcedTea Java 2.3. En esta política, es posible especificar las versiones concretas.
+
+      Ten en cuenta que se deben excluir tanto el nombre del complemento como el nombre del grupo de complementos. Cada grupo de complementos se muestra en una sección independiente de about:plugins, y cada sección puede incluir uno o varios complementos. Por ejemplo, el complemento Shockwave Flash pertenece al grupo Adobe Flash Player, y ambos nombres deben coincidir con un elemento de la lista de excepciones si ese complemento se quiere excluir de la lista de bloqueados.
+
+      Si esta política no se establece, cualquier complemento que coincida con los patrones de DisabledPlugins se bloqueará e inhabilitará, y el usuario no podrá habilitarlo.</translation>
 <translation id="2236488539271255289">No permitir que ningún sitio establezca datos locales</translation>
 <translation id="2241498944622759244">Esta función nunca se llegó a lanzar. Por lo tanto, esta política no se utiliza. Si se le asigna el valor "True" o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> sugerirá páginas que estén relacionadas con la página actual.
       Estas sugerencias se obtienen de forma remota de los servidores de Google.
@@ -1760,11 +1777,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Esta política es temporal y se eliminará en futuras versiones
       de <ph name="PRODUCT_NAME" />.</translation>
-<translation id="3356657927302977341">Configura si <ph name="PRODUCT_NAME" /> en Linux utilizará notificaciones nativas.
-
-Si se asigna el valor "True" a esta política o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> podrá usar notificaciones nativas.
-
-Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificaciones nativas. Se usará el centro de mensajes de <ph name="PRODUCT_NAME" /> como alternativa.</translation>
 <translation id="3360093276083825336">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
           Permite especificar el tiempo que debe transcurrir sin que el usuario realice ninguna acción antes de mostrar un cuadro de diálogo de advertencia (con batería).
@@ -2400,6 +2412,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="4247914291127524388">Si se asigna el valor "Habilitada" a esta política, se desactivará la sincronización de <ph name="GOOGLE_DRIVE_NAME" /> en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /> cuando se utilice una conexión de datos móviles. Los datos solos se sincronizarán con Drive si el dispositivo está conectado a una red Wi-Fi o Ethernet.
 
       Si se le asigna el valor "Inhabilitada" o no se le asigna ningún valor, los usuarios podrán transferir archivos a Drive con conexiones de datos móviles.</translation>
+<translation id="4248277954659222481">Permitir la reproducción automática de contenido multimedia en una lista de patrones de URL permitidos</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4261820385751181068">Configuración regional para la pantalla de inicio de sesión del dispositivo</translation>
 <translation id="4269859918103560644">Permitir que el usuario decida</translation>
@@ -2593,13 +2606,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Nota: La caché se borra al reiniciar el dispositivo. Los datos de dominio de los usuarios efímeros también se almacenan en caché. Desactiva la caché para evitar el rastreo de los dominios de los usuarios efímeros.</translation>
 <translation id="4591366717022345234">Proporciona a los usuarios una versión Quick Fix</translation>
-<translation id="4592246263545654202">Permite especificar si el usuario podrá abrir páginas en modo de incógnito en <ph name="PRODUCT_NAME" />.
-
-      Si se habilita esta política o no se define, se podrán abrir páginas en modo de incógnito.
-
-      Si se inhabilita, las páginas no se podrán abrir en modo de incógnito.
-
-      Si se asigna el valor "Forced" a esta política, las páginas solo se podrán abrir en modo de incógnito. Ten en cuenta que el valor "Forced" no funciona en dispositivos con Android en Chrome.</translation>
 <translation id="4593391169954484940">El hash SHA-256 del archivo.</translation>
 <translation id="4594467366027975448">Permite configurar el directorio que <ph name="PRODUCT_NAME" /> utilizará para almacenar la copia de itinerancia de los perfiles.
 
@@ -2721,7 +2727,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="4812270373673968774">Si se asigna el valor "Siempre" a esta política, se ocultará automáticamente la estantería de <ph name="PRODUCT_OS_NAME" />. Si se le asigna el valor "Nunca", la estantería nunca se ocultará automáticamente.
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios decidirán si la estantería se oculta automáticamente.</translation>
-<translation id="4812714598405913256">Configurar el mensaje de caducidad de las actualizaciones automáticas de la política DeviceMinimumVersion</translation>
+<translation id="4812714598405913256">Configurar el mensaje de vencimiento de las actualizaciones automáticas de la política DeviceMinimumVersion</translation>
 <translation id="4816674326202173458">Permitir que el usuario de empresa sea principal y secundario (comportamiento predeterminado para usuarios no administrados)</translation>
 <translation id="4826326557828204741">Acción a emprender si se alcanza el retraso de inactividad mientras el dispositivo está usando la batería</translation>
 <translation id="482803100714220060">Mostrar URL completas</translation>
@@ -3124,15 +3130,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
           Si se asigna el valor "False" a esta política, los usuarios no podrán enviar contenido a su dispositivo. Si se le asigna el valor "True", los usuarios podrán enviar contenido. Si no se establece esta política, los usuarios no podrán enviar contenido a los dispositivos Chrome OS registrados, pero sí lo podrán hacer a dispositivos no registrados.</translation>
 <translation id="5323200200131319468">Habilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
-<translation id="532668836479219203">Esta política controla el comportamiento del navegador cuando se inicia sesión. Permite definir si los usuarios pueden iniciar sesión en <ph name="PRODUCT_NAME" /> con su cuenta y usar los servicios asociados a esta, como la función Sincronización de Chrome.
-
-      Si se selecciona "Inhabilitar inicio de sesión en el navegador" en esta política, el usuario no podrá iniciar sesión en el navegador ni utilizar los servicios asociados a su cuenta. Además, las funciones del navegador, como Sincronización de Chrome, no se podrán usar ni estarán disponibles. Si el usuario ha iniciado sesión y la política está inhabilitada, la próxima vez que ejecute Chrome se cerrará la sesión, pero se conservarán los datos de su perfil local, como los marcadores o las contraseñas. Además, el usuario podrá iniciar sesión en servicios web de Google y usarlos (por ejemplo, Gmail).
-
-      Si se selecciona "Habilitar inicio de sesión en el navegador" en esta política, el usuario podrá iniciar sesión en el navegador. Si inicia sesión en servicios web de Google, como Gmail, también lo hará en el navegador automáticamente. Si el usuario ha iniciado sesión en el navegador, este conservará la información de la cuenta. Sin embargo, la función Sincronización de Chrome no se activará de forma predeterminada, sino que deberá activarla el usuario. Si la política está habilitada, se impedirá que el usuario desactive la opción que permite iniciar sesión en el navegador. Para controlar la disponibilidad de Sincronización de Chrome, usa la política SyncDisabled.
-
-      Si se selecciona que se fuerce el inicio de sesión en esta política, se mostrará un cuadro de diálogo de selección de cuenta al usuario para que elija una e inicie sesión en el navegador. De este modo, se garantiza que, en el caso de las cuentas gestionadas, se apliquen y se cumplan las políticas asociadas a la cuenta. Además, se activará de forma predeterminada la función Sincronización de Chrome de la cuenta, excepto si el administrador del dominio la ha inhabilitado o si la política SyncDisabled está activada. El valor predeterminado que se asignará a BrowserGuestModeEnabled es "false". Ten en cuenta que, después de habilitar esta política, los perfiles con los que no se haya iniciado sesión se bloquearán y no se podrá acceder a ellos. Para obtener más información, consulta este artículo del Centro de Ayuda: https://support.google.com/chrome/a/answer/7572556. Esta opción no es compatible con Linux ni Android y, si se usa, cambiará a "Habilitar inicio de sesión en el navegador".
-
-      Si no se establece esta política, el usuario podrá decidir si quiere activar la opción de inicio sesión en el navegador y usarla cuando lo crea oportuno.</translation>
 <translation id="532848608876725157">Habilitar DNS-over-HTTPS con alternativa no segura</translation>
 <translation id="5329007337159326804">Advertencia: La política de la versión máxima de TLS se retirará por completo de <ph name="PRODUCT_NAME" /> aproximadamente en la versión 75 (en torno a junio del 2019).
 
@@ -3220,14 +3217,14 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
           Si se le asigna el valor "Inhabilitada", esta función se inhabilitará de forma forzosa.
           </translation>
 <translation id="5442026853063570579">Esta política también controla el acceso a las opciones para desarrolladores de Android. Si se asigna a esta política el valor DeveloperToolsDisallowed (el valor 2), los usuarios no podrán acceder a las opciones para desarrolladores. Si se le asigna otro valor o no se le asigna ninguno, los usuarios podrán acceder a las opciones para desarrolladores tocando siete veces el número de compilación en la aplicación Ajustes de Android.</translation>
-<translation id="5445596354079213552">Esta política solo será efectiva cuando el dispositivo haya alcanzado la fecha de caducidad de las actualizaciones automáticas y no tenga la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> establecida en la política <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
+<translation id="5445596354079213552">Esta política solo será efectiva cuando el dispositivo haya alcanzado la fecha de vencimiento de las actualizaciones automáticas y no tenga la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> establecida en la política <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
       Si a esta política se le asigna una cadena que no está vacía:
       Si el tiempo de advertencia descrito en la política <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ha caducado, se muestra este mensaje en la pantalla de inicio de sesión cuando ningún usuario pueda iniciar sesión en el dispositivo.
       Si el tiempo de advertencia descrito en la política <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> no ha caducado, se mostrará este mensaje en la página de administración de Chrome cuando el usuario haya iniciado sesión.
 
-      Si no se define esta política o se deja vacía, el usuario visualiza el mensaje predeterminado de caducidad de las actualizaciones automáticas en ambos casos.
-      El mensaje de caducidad de las actualizaciones automáticas debe ser texto sin ningún tipo de formato. No se permiten etiquetas.</translation>
+      Si no se define esta política o se deja vacía, el usuario visualiza el mensaje predeterminado de vencimiento de las actualizaciones automáticas en ambos casos.
+      El mensaje de vencimiento de las actualizaciones automáticas debe ser texto sin ningún tipo de formato. No se permiten etiquetas.</translation>
 <translation id="5445719321399313760">Si se asigna el valor "True" a esta política o no se le asigna ninguno, se permitirá que <ph name="PRODUCT_NAME" /> muestre a los usuarios contenido que ocupe toda la pestaña para proporcionarles información del producto.
 
       Si se le asigna el valor "False", impedirá que <ph name="PRODUCT_NAME" /> muestre contenido que ocupe toda la pestaña para ofrecer información del producto.
@@ -3542,8 +3539,8 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si no se actualiza el dispositivo antes de que termine el periodo de <ph name="WARNING_PERIOD_PROPERTY_NAME" />, se desconectará al usuario del sistema.
       Si la versión actual está obsoleta en el momento de inicio de sesión y el periodo de <ph name="WARNING_PERIOD_PROPERTY_NAME" /> ha terminado, el usuario deberá actualizar el dispositivo antes de iniciar sesión.
 
-      Si la versión actual queda obsoleta durante una sesión y el dispositivo ha alcanzado la fecha de caducidad de las actualizaciones automáticas, se mostrará una notificación en la pantalla para pedir que se devuelva el dispositivo en el periodo de <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" />.
-      Si se determina que el dispositivo ha alcanzado la fecha de caducidad de las actualizaciones automáticas en el momento de iniciar sesión y el periodo de <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> ha terminado, el dispositivo se bloquea y ningún usuario podrá iniciar sesión.
+      Si la versión actual queda obsoleta durante una sesión y el dispositivo ha alcanzado la fecha de vencimiento de las actualizaciones automáticas, se mostrará una notificación en la pantalla para pedir que se devuelva el dispositivo en el periodo de <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" />.
+      Si se determina que el dispositivo ha alcanzado la fecha de vencimiento de las actualizaciones automáticas en el momento de iniciar sesión y el periodo de <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> ha terminado, el dispositivo se bloquea y ningún usuario podrá iniciar sesión.
 
       Si no se establece la política <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> o se le asigna el valor False, las sesiones de usuario no administradas no recibirán notificaciones y forzarán el cierre de sesión.
 
@@ -3663,6 +3660,32 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="6066761914755798079">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />, se especificará la URL que utilizará el buscador para mostrar sugerencias de búsqueda. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario.
 
       Puedes especificar la URL de la Búsqueda de Google introduciendo lo siguiente: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
+<translation id="6070374129526507093">Obsoleta en M69. Utiliza en su lugar
+      OverrideSecurityRestrictionsOnInsecureOrigin.
+
+      La política define una lista de orígenes (URLs) o de patrones de
+      nombres de host (como *.example.com) a los que no se aplican las
+      restricciones de seguridad de los orígenes inseguros.
+
+      El objetivo es dejar que las organizaciones permitan orígenes para aplicaciones antiguas que no pueden implementar
+      TLS, o configurar un servidor provisional para desarrollo web interno y que los desarrolladores puedan probar las funciones que
+      necesiten contextos seguros sin tener que implementar TLS en el
+      servidor provisional. Esta política también evita que el origen aparezca con
+      la etiqueta No es seguro en el omnibox.
+
+      Definir la lista de URLs de esta política tiene el mismo resultado que
+      asignar la marca de línea de comandos --unsafely-treat-insecure-origin-
+      as-secure a una lista de URL separadas por comas.
+      Si se establece la política, se anula la marca de línea de comandos.
+
+      Esta política está obsoleta en M69. La sustituye
+      OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están
+      presentes, OverrideSecurityRestrictionsOnInsecureOrigin anulará esta
+      política.
+
+      Para obtener más información sobre contextos seguros, consulta la página
+      https://www.w3.org/TR/secure-contexts/
+      </translation>
 <translation id="6070667616071269965">Diseños de teclado para la pantalla de inicio de sesión del dispositivo</translation>
 <translation id="6074963268421707432">No permitir que ningún sitio muestre notificaciones de escritorio</translation>
 <translation id="6074964551275531965">Especificar el periodo de notificación de actualizaciones</translation>
@@ -4305,6 +4328,19 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si no se asigna ningún valor a esta política o se le asigna una URL no válida, <ph name="PRODUCT_NAME" /> no la usará como fuente de reglas para no cambiar de navegador.
 
       Nota: Esta política dirige a un archivo XML con el mismo formato que la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" />. Se cargarán las reglas de un archivo XML, sin compartirlas con <ph name="IE_PRODUCT_NAME" />. Puedes consultar más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> en https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
+<translation id="6967623535060479585">Si se establece esta política, podrás controlar la activación de la advertencia de protección de contraseñas. La protección de contraseñas avisa a los usuarios cuando reutilizan su contraseña protegida en sitios potencialmente sospechosos.
+
+      Usa <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> y <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> para indicar qué contraseñas quieres proteger.
+
+      Si a esta política se le asigna:
+
+      * PasswordProtectionWarningOff: no se mostrará ninguna advertencia de protección de contraseñas.
+
+      * PasswordProtectionWarningOnPasswordReuse: se mostrará la advertencia de protección de contraseñas cuando el usuario reutilice la contraseña protegida en sitios no permitidos.
+
+      * PasswordProtectionWarningOnPhishingReuse: se mostrará la advertencia de protección de contraseñas cuando el usuario reutilice la contraseña protegida en sitios de suplantación de identidad (phishing).
+
+      Si no se establece esta política, el servicio de protección de contraseñas solo protegerá las contraseñas de Google, pero el usuario podrá cambiar esta opción.</translation>
 <translation id="6969131408525928234">Si se establece esta política, se desactivarán los requisitos de comunicación de transparencia en los certificados para los nombres de host de las URL especificadas. Aunque resulte más difícil detectar certificados que se hayan publicado incorrectamente, los hosts pueden seguir usando certificados que, de lo contrario, no serían de confianza (por no haberse comunicado públicamente de forma correcta).
 
       Si no se asigna ningún valor a esta política, los certificados que se deban comunicar a través de la transparencia en los certificados no serán de confianza para <ph name="PRODUCT_NAME" /> si no se comunican.
@@ -4470,6 +4506,15 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="7138678301420049075">Otro</translation>
+<translation id="7143539889272595839">Si se habilita esta política, se enviarán a Google informes anónimos de uso y de datos sobre bloqueos de Chrome (de forma predeterminada). Los usuarios podrán cambiar este ajuste en la configuración de Chrome.
+
+      Si se inhabilita esta política, el envío a Google de informes anónimos de uso y de datos sobre bloqueos de Chrome estará inhabilitado. Los usuarios no podrán cambiar este ajuste.
+
+      Si no se establece a esta política, los usuarios podrán elegir el comportamiento del envío de informes anónimos durante la instalación de Chrome o cuando se ejecute por primera vez. Además, podrán cambiar este ajuste en la configuración de Chrome en cualquier momento.
+
+      Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" />, en instancias de Windows 10 Pro o Enterprise que se hayan registrado para gestionar dispositivos, y en instancias de macOS que se gestionen mediante MDM o estén vinculadas a un dominio a través de MCX.
+
+      En el caso de Chrome OS, consulta la política DeviceMetricsReportingEnabled.</translation>
 <translation id="7145335384492396213">Modo predeterminado de impresión con PIN</translation>
 <translation id="7146198347561863646">Si se habilita esta política o no se le asigna ningún valor, se permitirán los wake locks para la gestión de energía. Las extensiones pueden solicitar los wake locks a través de la API de extensión de gestión de energía y las aplicaciones de ARC.
 
@@ -5108,6 +5153,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="8006921530139404577">Si se inhabilita esta política, no se mostrará la UI relacionada con la conexión (por ejemplo, la ventana de desconexión) para las conexiones de acceso remoto que no estén en el modo de cortina. Las sesiones de acceso remoto en modo de cortina y las sesiones de asistencia remotas no se ven afectadas por esta política.
 
           Esta política no tendrá efecto si se le asigna el valor "True", se deja vacía o no se le asigna ningún valor.</translation>
+<translation id="8008421342605619236">Configura las políticas de los mensajes nativos. No se permitirán los hosts de mensajes nativos bloqueados si no se incluyen en la lista de permitidos.</translation>
 <translation id="8011935490612940798">Controlar la función <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Girar la pantalla 0 grados</translation>
 <translation id="802776363472387903">El hash SHA-256 de la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -5621,6 +5667,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si se inhabilita esta política, no se suministra energía.
 
       Si no se le asigna ningún valor a esta política, implica que está activada y los usuarios no pueden desactivarla.</translation>
+<translation id="8789338675663014675">Configura políticas relacionadas con extensiones. Los usuarios no pueden instalar extensiones bloqueadas, a menos que se incluyan en la lista de permitidas. Puedes hacer que <ph name="PRODUCT_NAME" /> realice automáticamente instalaciones forzadas de extensiones especificándolas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones de instalación forzada se instalarán, independientemente de si están incluidas o no en la lista de bloqueadas.</translation>
 <translation id="879697755145469671">No detectar ventanas tapadas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8799492680917278474">Si esta política se habilita, las conexiones de acceso remoto se desconectarán automáticamente después de que hayan pasado el número de minutos definido en la política. Esto no evita que el cliente pueda volver a conectarse después de que se haya alcanzado la duración máxima de la sesión. La asignación de un valor que no esté dentro del intervalo mínimo/máximo puede evitar que el host se inicie. Esta política no afecta a las situaciones de asistencia remota.
@@ -5729,7 +5776,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       sobre el estado de la pantalla y la tarjeta gráfica.</translation>
 <translation id="891435090623616439">codificado como cadena JSON, consulta <ph name="COMPLEX_POLICIES_URL" /> para obtener más información</translation>
 <translation id="8917070657147922192">Permite que los usuarios gestionen los certificados de CA instalados.</translation>
-<translation id="8919100556245407184">Número de días tras la publicación de la caducidad de las actualizaciones automáticas después de los cuales se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
+<translation id="8919100556245407184">Número de días tras la publicación del vencimiento de las actualizaciones automáticas después de los cuales se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="8919369436496201075">Permite que el dispositivo reciba actualizaciones de LTS</translation>
 <translation id="8931555638815157255">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre su versión de firmware y de SO de forma periódica.
 
@@ -5882,6 +5929,16 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="9117826695152538214">Si se le asigna el valor "true" a esta política, las teclas persistentes permanecen activadas. Si se le asigna el valor "false", las teclas persistentes permanecen desactivadas.
 
       Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, las teclas persistentes están en un principio desactivadas, pero los usuarios pueden activarlas en cualquier momento.</translation>
+<translation id="9121178963309901985">Esta política controla las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /> que permiten a los usuarios enviar las solicitudes a la consola de administración de Google para su aprobación.
+
+      Si la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> no se establece o se inhabilita, esta política se ignorará y las solicitudes de instalación de extensiones no se crearán ni se subirán.
+      Si no se establece esta política o se inhabilita, las solicitudes de instalación de extensiones no se crearán ni se subirán.
+      Si se habilita, las solicitudes de instalación de extensiones se crearán y se subirán a la consola de administración de Google.
+
+      Las solicitudes de instalación de extensiones se crean cuando los usuarios intentan instalar una extensión que no está permitida por <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" />.
+
+      Esta política solo es efectiva cuando el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
+      En <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
 <translation id="9123211093995421438">Especifica el número mínimo de reversiones a versiones principales de <ph name="PRODUCT_OS_NAME" /> que se deberían permitir desde la versión estable en cualquier momento.
 
       El valor predeterminado es 0 para dispositivos de consumo y 4 (aproximadamente medio año) para los dispositivos registrados por empresas.

@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">सभी फ़ाइलें</translation>
 <translation id="1810764548349082891">कोई झलक उपलब्ध नहीं है</translation>
 <translation id="1812302367230252929">ऐम्हेरिक ट्रांसलिट्रेशन</translation>
+<translation id="1813278315230285598">सेवाएं</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />चेतावनी:<ph name="END_BOLD" />  ये फ़ाइलें अस्‍थायी हैं और डि‍स्‍क का स्थान खाली करने के लि‍ए अपने आप हटाई जा सकती हैं.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेंगुइन</translation>
 <translation id="183183971458492120">जानकारी लोड हो रही है...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">नहीं ले जाया जा सका, अनचाही गड़बड़ी : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">फ़िनिश</translation>
 <translation id="1942765061641586207">इमेज रिज़ॉल्यूशन</translation>
-<translation id="1943097386230153518">नई सेवा इंस्टॉल करें</translation>
 <translation id="1972984168337863910">फ़ाइल के लिए सुझाव पैनल को बड़ा करें</translation>
 <translation id="1984456723671657197">यह फ़ाइल टाइप, Chrome OS के साथ काम नहीं करता. Chrome OS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">फ़ाइल की जगह पर जाएं</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">इन फ़ाइलों को लाने में मोबाइल डेटा का करीब <ph name="FILE_SIZE" /> उपयोग होगा.</translation>
 <translation id="7846076177841592234">चुना गया हटाएं</translation>
 <translation id="7853966320808728790">फ़्रेंच बेपो</translation>
-<translation id="7864662577698025113">नई सेवा जोड़ें</translation>
 <translation id="7868774406711971383">पोलिश</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> में सेव नहीं किया जा सकता. सभी बदलाव डाउनलोड फ़ोल्डर के <ph name="DOWNLOADS_FOLDER" /> में सेव किए जाएंगे.</translation>
 <translation id="7874321682039004450">फ़िलिपीनो</translation>
@@ -668,7 +667,7 @@
 <translation id="7972920761225148017">फ़्रेंच (स्विट्ज़रलैंड)</translation>
 <translation id="7980421588063892270">कोलमैक कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
 <translation id="7982283708762922719">ऊंचाई</translation>
-<translation id="79907182588096956">यह फ़ाइल, Windows सॉफ़्टवेयर का इस्तेमाल करने वाले कंप्यूटर के लिए बनाई गई है. यह आपके Chrome OS वाले डिवाइस के साथ काम नहीं करती. Chrome OS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
+<translation id="79907182588096956">यह फ़ाइल, Windows सॉफ़्टवेयर का इस्तेमाल करने वाले कंप्यूटर के लिए बनाई गई है. यह Chrome OS वाले आपके डिवाइस के साथ काम नहीं करती. Chrome OS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">श्वान</translation>
 <translation id="8028993641010258682">आकार</translation>
 <translation id="803771048473350947">फ़ाइल</translation>
@@ -748,7 +747,7 @@
 <translation id="8900820606136623064">हंगेरियन</translation>
 <translation id="8919081441417203123">डैनिश</translation>
 <translation id="8965697826696209160">काफ़ी स्थान नहीं है.</translation>
-<translation id="8970501467542182729">यह फ़ाइल, Macintosh सॉफ़्टवेयर का इस्तेमाल करने वाले कंप्यूटर के लिए बनाई गई है. यह आपके Chrome OS वाले डिवाइस के साथ काम नहीं करती. Chrome OS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
+<translation id="8970501467542182729">यह फ़ाइल, Macintosh सॉफ़्टवेयर का इस्तेमाल करने वाले कंप्यूटर के लिए बनाई गई है. यह Chrome OS वाले आपके डिवाइस के साथ काम नहीं करती. Chrome OS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">चाइनीज़ (परंपरागत) पिनयिन</translation>
 <translation id="9017798300203431059">रूसी फ़ोनेटिक</translation>
 <translation id="9034924485347205037">Linux की फ़ाइलें</translation>

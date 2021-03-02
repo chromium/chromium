@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">PIN nevalid.</translation>
 <translation id="3838338534323494292">Parolă nouă</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
+<translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
 <translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
 <translation id="3942420633017001071">Diagnosticare</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Scanerul trebuie să fie pornit și disponibil prin rețea sau prin conexiune directă</translation>
 <translation id="4170700058716978431">NEREUȘIT</translation>
 <translation id="4176463684765177261">Dezactivat</translation>
-<translation id="4222698289790462549">Viteza actuală</translation>
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili.</translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
 <translation id="4378373042927530923">Nu a rulat</translation>
@@ -208,7 +207,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} încercare rămasă}few{{0} încercări rămase}other{{0} de încercări rămase}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Consultă raportul</translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -253,7 +251,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="649050271426829538">Oprită – Blocaj de hârtie</translation>
 <translation id="6517239166834772319">Explorare</translation>
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
-<translation id="6532051501443766164">Ascunde raportul</translation>
 <translation id="65587193855025101">Suport plat</translation>
 <translation id="6564646048574748301">Nereușită – Imprimanta nu poate fi accesată</translation>
 <translation id="6618744767048954150">Rulează</translation>
@@ -345,7 +342,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8798441408945964110">Numele furnizorului</translation>
-<translation id="880791622116642296">Acesta este numărul de cicluri complete de încărcare a bateriei</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>

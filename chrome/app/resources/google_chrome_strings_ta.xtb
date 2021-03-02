@@ -8,6 +8,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> ஏற்கனவே Chromeஐப் பயன்படுத்திக் கொண்டிருந்தது</translation>
 <translation id="1097330777386562916">நீங்கள் Chromeமை விட்டு வெளியேறும் போது குக்கீகளையும் வலைதளத் தரவையும் அழிக்கும்</translation>
 <translation id="110877069173485804">இது உங்கள் Chrome ஆகும்</translation>
+<translation id="1125124144982679672">Chromeமைப் பயன்படுத்துவது யார்?</translation>
 <translation id="1142745911746664600">Chromeஐப் புதுப்பிக்க முடியவில்லை</translation>
 <translation id="1154147086299354128">&amp;Chrome இல் திற</translation>
 <translation id="123620459398936149">உங்கள் தரவை Chrome OS ஆல் ஒத்திசைக்க முடியவில்லை. உங்கள் கடவுச்சொற்றொடரைப் புதுப்பிக்கவும்.</translation>
@@ -20,6 +21,7 @@
 <translation id="1516530951338665275">இணைப்பதைத் தொடர Google Chromeமிற்கு புளூடூத் அணுகல் 
  தேவை. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chromeஐப் புதுப்பி</translation>
+<translation id="1583073672411044740">இந்த Chrome சுயவிவரத்தில் <ph name="EXISTING_USER" /> ஏற்கெனவே உள்நுழைந்துள்ளார். இது <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்குப் புதிய Chrome சுயவிவரத்தை உருவாக்கும்</translation>
 <translation id="1587223624401073077">Google Chrome உங்கள் கேமராவைப் பயன்படுத்துகிறது.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ஆபத்தானது என்பதால் Chrome அதைத் தடுத்துள்ளது.</translation>
 <translation id="1597911401261118146">தரவு மீறல்கள் மற்றும் பிற பாதுகாப்புச் சிக்கல்களிலிருந்து உங்கள் கடவுச்சொற்கள் பாதுகாப்பாக இருக்கின்றனவா என்பதைச் சரிபார்க்க <ph name="BEGIN_LINK" />Chromeமில் உள்நுழையுங்கள்<ph name="END_LINK" />.</translation>
@@ -87,6 +89,7 @@
 <translation id="3065168410429928842">Chrome தாவல்</translation>
 <translation id="3080151273017101988">Google Chrome மூடப்பட்டிருக்கும்போது பின்புல ஆப்ஸை இயக்க அனுமதி</translation>
 <translation id="3089968997497233615">புதிய, இன்னும் பாதுகாப்பான Google Chrome பதிப்பு தற்போது கிடைக்கிறது.</translation>
+<translation id="3100998948628680988">உங்கள் Chrome சுயவிவரத்திற்குப் பெயரிடுங்கள்</translation>
 <translation id="3114643501466072395">தரவு மீறல்கள் மற்றும் பிற பாதுகாப்புச் சிக்கல்களிலிருந்து உங்கள் மற்ற கடவுச்சொற்கள் பாதுகாப்பாக இருக்கின்றனவா என்பதைச் சரிபார்க்க <ph name="BEGIN_LINK" />Chromeமில் உள்நுழையுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">உங்கள் தரவை Chrome OSஸால் ஒத்திசைக்க முடியவில்லை.</translation>
 <translation id="3140883423282498090">அடுத்த முறை Google Chrome ஐ மீண்டும் தொடங்கியவுடன் உங்கள் மாற்றங்கள் செயல்படும்.</translation>
@@ -111,6 +114,7 @@
 <translation id="3735758079232443276">Chromeஐத் தொடங்கும் போது காண்பிக்கப்படும் பக்கத்தை, "<ph name="EXTENSION_NAME" />" நீட்டிப்பு மாற்றியுள்ளது.</translation>
 <translation id="3779473566290487688">இனிவரும் Google Chrome புதுப்பிப்புகளைப் பெற OS X 10.11 அல்லது அதற்குப் பிந்தைய பதிப்பு தேவை. இந்தக் கம்ப்யூட்டர் OS X 10.10 பதிப்பைப் பயன்படுத்துகிறது.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">தொடர்ந்தால் <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்குப் புதிய Chrome சுயவிவரம் உருவாக்கப்படும்</translation>
 <translation id="386202838227397562">அனைத்து Google Chrome சாளரங்களையும் மூடி, பின்னர் முயற்சி செய்க.</translation>
 <translation id="3865754807470779944">Chromeமின் <ph name="PRODUCT_VERSION" /> பதிப்பு நிறுவப்பட்டுள்ளது</translation>
 <translation id="3873044882194371212">Chrome மறை&amp;நிலை சாளரத்தில் இணைப்பைத் திற</translation>
@@ -118,7 +122,6 @@
 <translation id="4050175100176540509">முக்கியப் பாதுகாப்பு மேம்பாடுகளும், புதிய அம்சங்களும் சமீபத்திய பதிப்பில் கிடைக்கின்றன.</translation>
 <translation id="4053720452172726777">Google Chrome ஐ தனிப்பயனாக்கி கட்டுப்படுத்து</translation>
 <translation id="4110895483821904099">உங்கள் புதிய Chrome சுயவிவரத்தை அமைத்திடுங்கள்</translation>
-<translation id="4143243756087420366">Chrome பெயர் மற்றும் படம்</translation>
 <translation id="4147555960264124640">நீங்கள் நிர்வகிக்கப்படும் கணக்கு மூலம் உள்நுழைகிறீர்கள், மேலும் அதன் நிர்வாகிக்கு உங்கள் Google Chrome சுயவிவரத்தின் கட்டுப்பாட்டை வழங்குகிறீர்கள். உங்கள் ஆப்ஸ், புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் போன்ற உங்கள் Chrome தரவு மற்றும் பிற அமைப்புகள் நிரந்தரமாக <ph name="USER_NAME" /> உடன் இணைக்கப்படும். இந்தத் தரவை Google கணக்குகளின் டாஷ்போர்டு வழியாக நீக்க முடியும், ஆனால் இந்தத் தரவை வேறொரு கணக்குடன் தொடர்புப்படுத்த முடியாது. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">காப்பகத்தை விரிவுபடுத்துவதில் இன்ஸ்டாலர் தோல்வியுற்றது. Google Chromeமை மீண்டும் பதிவிறக்குக.</translation>
 <translation id="4191857738314598978">{0,plural, =1{ஒரு நாளுக்குள் Chromeமை மீண்டும் தொடங்கவும்}other{# நாட்களுக்குள் Chromeமை மீண்டும் தொடங்கவும்}}</translation>
@@ -168,6 +171,7 @@
 <translation id="5386244825306882791">Chromeமைத் தொடங்கும்போது அல்லது ஆம்னிபாக்ஸிலிருந்து தேடலை மேற்கொள்ளும்போது காண்பிக்கப்படும் பக்கத்தையும் இது கட்டுப்படுத்துகிறது.</translation>
 <translation id="5394833366792865639">Chrome தாவலைப் பகிர்தல்</translation>
 <translation id="5430073640787465221">உங்கள் விருப்பத்தேர்வுகளின் கோப்பு சிதைவடைந்துள்ளது அல்லது தவறானது. உங்கள் அமைப்புகளை Google Chrome ஆல் மீட்டெடுக்க முடியவில்லை.</translation>
+<translation id="5434383153637353914">நீங்கள் உள்நுழைந்துள்ள Google கணக்குகளை இந்தப் பக்கத்தில் நிர்வகிக்கலாம். Chrome உலாவி, Play ஸ்டோர் ஆகியவற்றிலும் Gmail, Drive, YouTube போன்ற சேவைகளிலும் இந்தக் கணக்குகளைப் பயன்படுத்த முடியும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="556024056938947818">Google Chrome ஆனது கடவுச்சொற்களைக் காட்ட முயற்சிக்கிறது.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">இந்தப் பக்கத்தில் ஓர் அமைப்பு காட்டப்படவில்லை எனில் அதை <ph name="LINK_BEGIN" />
@@ -178,6 +182,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 வினாடியில் மீண்டும் தொடங்கும்}other{Google Chrome # வினாடிகளில் மீண்டும் தொடங்கும்}}</translation>
 <translation id="573759479754913123">Chrome OS அறிமுகம்</translation>
+<translation id="5756509061973259733">இந்தக் கணக்கின் மூலம் ஏற்கெனவே ஒரு Chrome சுயவிவரம் இந்தச் சாதனத்தில் உருவாக்கப்பட்டுள்ளது</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromeஐத் தொடங்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="5867197326698922595">Google Chrome கடவுச்சொற்களைத் திருத்த முயல்கிறது.</translation>

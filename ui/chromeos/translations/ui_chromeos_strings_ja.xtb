@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">すべてのファイル</translation>
 <translation id="1810764548349082891">プレビュー機能はご利用いただけません</translation>
 <translation id="1812302367230252929">アムハラ語（文字変換）</translation>
+<translation id="1813278315230285598">サービス</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ペンギン</translation>
 <translation id="183183971458492120">情報を読み込んでいます...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">移動できませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">フィンランド語</translation>
 <translation id="1942765061641586207">画像解像度</translation>
-<translation id="1943097386230153518">新しいサービスをインストール</translation>
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
 <translation id="1984456723671657197">このファイル形式はサポートされていません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="1995337122023280937">ファイルの場所へ移動</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">このファイルを取得すると、約 <ph name="FILE_SIZE" /> のモバイル データを使用します。</translation>
 <translation id="7846076177841592234">選択解除</translation>
 <translation id="7853966320808728790">フランス語 BÉPO</translation>
-<translation id="7864662577698025113">新しいサービスを追加</translation>
 <translation id="7868774406711971383">ポーランド語</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> に保存できません。編集内容はすべてダウンロード フォルダ内の <ph name="DOWNLOADS_FOLDER" /> に保存されます。</translation>
 <translation id="7874321682039004450">フィリピン語</translation>

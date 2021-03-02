@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1018656279737460067">Abgebrochen</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
@@ -37,6 +38,7 @@
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
+<translation id="1717874160321062422">Verwaltet von <ph name="FIRST_MANAGER" /> und <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Scannen wird abgebrochen</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
@@ -58,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2364498172489649528">Bestanden</translation>
+<translation id="2365324413026422635">Der Ladetest kann nicht ausgeführt werden, wenn der Akku voll ist</translation>
 <translation id="2391082728065870591">Feedbackbericht senden</translation>
 <translation id="2418150275289244458">In den Einstellungen öffnen</translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
@@ -90,6 +93,7 @@
 <translation id="3226405216343213872">Suche nach Scannern läuft</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="3268178239013324452">Fehlgeschlagen – Druckerklappe offen</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3368922792935385530">Verbunden</translation>
@@ -101,6 +105,7 @@
 <translation id="3459509316159669723">Drucken</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
+<translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3595596368722241419">Akku voll</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
@@ -112,6 +117,7 @@
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="3865414814144988605">Auflösung</translation>
+<translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
@@ -125,7 +131,6 @@
 <translation id="4170700058716978431">FEHLGESCHLAGEN</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB von <ph name="TOTAL_MEMORY" /> GB sind verfügbar.</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
@@ -202,7 +207,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Noch {0} Versuch}other{Noch {0} Versuche}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Bericht ansehen</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -247,7 +251,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="649050271426829538">Angehalten – Papierstau</translation>
 <translation id="6517239166834772319">Entdecken</translation>
 <translation id="6527081081771465939">Unbekanntes WLAN-Sicherheitsprotokoll</translation>
-<translation id="6532051501443766164">Bericht ausblenden</translation>
 <translation id="65587193855025101">Flachbett</translation>
 <translation id="6564646048574748301">Fehlgeschlagen – Drucker nicht erreichbar</translation>
 <translation id="6618744767048954150">Läuft</translation>
@@ -327,6 +330,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>
 <translation id="8483248364096924578">IP-Adresse</translation>
 <translation id="8503813439785031346">Nutzername</translation>
+<translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
 <translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
@@ -338,7 +342,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Name des Anbieters</translation>
-<translation id="880791622116642296">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="8814190375133053267">WLAN</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>
@@ -358,6 +361,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
+<translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
 <translation id="9190063653747922532">L2TP/IPSec + vorinstallierter Schlüssel</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nicht aktiviert</translation>

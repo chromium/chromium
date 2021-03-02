@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="3865414814144988605">רזולוציה</translation>
+<translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
 <translation id="4170700058716978431">הבדיקה הסתיימה בכישלון</translation>
 <translation id="4176463684765177261">מושבת</translation>
-<translation id="4222698289790462549">מהירות נוכחית</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
-<translation id="4228041325992544252">‏הנפח הזמין: GB <ph name="AVAILABLE_MEMORY" /> מתוך GB <ph name="TOTAL_MEMORY" />.</translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4378373042927530923">לא הופעל</translation>
@@ -208,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{נותר ניסיון אחד ({0})}two{נותרו {0} ניסיונות}many{נותרו {0} ניסיונות}other{נותרו {0} ניסיונות}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">להצגת הדוח</translation>
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">משפחה</translation>
@@ -253,7 +251,6 @@
 <translation id="649050271426829538">הפסיקה – חסימת נייר</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
-<translation id="6532051501443766164">הסתרת הדוח</translation>
 <translation id="65587193855025101">שטוח</translation>
 <translation id="6564646048574748301">נכשלה – לא ניתן להתחבר אל המדפסת</translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
@@ -345,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8798441408945964110">שם ספק</translation>
-<translation id="880791622116642296">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>

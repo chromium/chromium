@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Semua file</translation>
 <translation id="1810764548349082891">Tidak ada pratinjau yang tersedia</translation>
 <translation id="1812302367230252929">Transliterasi Amhar</translation>
+<translation id="1813278315230285598">Layanan</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Perhatian:<ph name="END_BOLD" /> File ini bersifat sementara dan dapat dihapus secara otomatis untuk menambah ruang disk. <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Memuat informasi...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Pemindahan gagal, terjadi error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandia</translation>
 <translation id="1942765061641586207">Resolusi gambar</translation>
-<translation id="1943097386230153518">Instal layanan baru</translation>
 <translation id="1972984168337863910">Luaskan panel masukan file</translation>
 <translation id="1984456723671657197">Jenis file ini tidak didukung. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di Chrome OS.</translation>
 <translation id="1995337122023280937">Buka lokasi file</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Mengambil file ini akan menggunakan sekitar <ph name="FILE_SIZE" /> data seluler.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7853966320808728790">BÉPO Prancis</translation>
-<translation id="7864662577698025113">Tambahkan layanan baru</translation>
 <translation id="7868774406711971383">Polandia</translation>
 <translation id="7873831373602885875">Tidak dapat menyimpan ke <ph name="FOLDER_NAME" />. Semua pengeditan akan disimpan ke <ph name="DOWNLOADS_FOLDER" /> dalam folder Download.</translation>
 <translation id="7874321682039004450">Filipina</translation>

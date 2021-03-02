@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> өмнө нь Chrome ашиглаж байсан</translation>
 <translation id="1097330777386562916">Таныг Chrome-с гарах үед күүки болон сайтын өгөгдлийг устгах</translation>
 <translation id="110877069173485804">Энэ бол таны Chrome.</translation>
+<translation id="1125124144982679672">Chrome-г хэн ашиглаж байна вэ?</translation>
 <translation id="1142745911746664600">Chrome-г шинэчлэх боломжгүй байна</translation>
 <translation id="1154147086299354128">&amp;Chrome-д нээх</translation>
 <translation id="123620459398936149">Chrome OS нь таны өгөгдлийг sync хийж чадсангүй. Sync-ийн нэвтрэх хэллэгээ шинэчилнэ үү.</translation>
@@ -91,6 +92,7 @@
 <translation id="3065168410429928842">Chrome-н таб</translation>
 <translation id="3080151273017101988">Google Chrome хаагдсан үед үндсэн аппликйешнуудыг үргэлжлүүлэн ажиллуул</translation>
 <translation id="3089968997497233615">Google Chrome-ийн шинэ, илүү аюулгүй хувилбар бэлэн боллоо.</translation>
+<translation id="3100998948628680988">Chrome-н профайлаа нэрлэнэ үү</translation>
 <translation id="3114643501466072395">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome үйлдлийн систем таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="3140883423282498090">Таны оруулсан өөрчлөлт дараа дахин Google Chrome-г ашиглах үед идэвхжинэ.</translation>
@@ -122,7 +124,6 @@
 <translation id="4050175100176540509">Хамгийн сүүлийн хувилбар дээр аюулгүй байдлын чухал сайжруулалт болон шинэ функцийг санал болгож байна.</translation>
 <translation id="4053720452172726777">Google Chrome-ыг өөртөө тохируулан хянах</translation>
 <translation id="4110895483821904099">Chrome-н шинэ профайлаа тохируулах</translation>
-<translation id="4143243756087420366">Chrome-н нэр болон зураг</translation>
 <translation id="4147555960264124640">Та хяналтанд байдаг дансаар нэвтэрч байгаа бөгөөд администраторт таны Google Chrome-ийн профайлыг хянах боломжийг олгож байна. Таны апп, хавчуурга, түүх, нууц үг болон бусад тохиргоо гэх мэт Chrome дата нь байнга <ph name="USER_NAME" />-д хадгалагдана. Та Google Accounts Dashboard-ийн тусламжтай эдгээр датаг устгаж болох боловч энэ датаг өөр данстай хуваалцах боломжгүй. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Суурьлуулагч Archive файлыг задалж чадсангүй. Google Chrome-ыг дахин татаж авна уу.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome-г 1 хоногийн дотор дахин ажиллуулна уу}other{Chrome-г # хоногийн дотор дахин ажиллуулна уу}}</translation>

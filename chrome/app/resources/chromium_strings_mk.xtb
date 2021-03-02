@@ -138,7 +138,6 @@
 <translation id="549669000822060376">Почекајте додека Chromium ги инсталира последните системски ажурирања.</translation>
 <translation id="5496810170689441661">Chromium се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Достапно е ажурирање за Chromium}=1{Достапно е ажурирање за Chromium}one{Достапно е ажурирање за Chromium веќе # ден}other{Достапно е ажурирање за Chromium веќе # дена}}</translation>
-<translation id="5631814766731275228">Име и слика на Chromium</translation>
 <translation id="5634636535844844681">Chromium бара Windows 7 или понова верзија.</translation>
 <translation id="5653831366781983928">Рестартирајте го Chromium сега</translation>
 <translation id="5698481217667032250">Прикажи го Chromium на овој јазик</translation>
@@ -166,6 +165,7 @@
 <translation id="6266342355635466082">Chromium не може да провери дали се достапни ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="6268381023930128611">Ќе се одјавите од Chromium?</translation>
 <translation id="6281746429495226318">Приспособете го вашиот профил на Chromium</translation>
+<translation id="6290827346642914212">Именувајте го профилот на Chromium</translation>
 <translation id="6295779123002464101">Датотеката <ph name="FILE_NAME" /> може да биде опасна, па затоа Chromium ја блокираше.</translation>
 <translation id="6309712487085796862">Chromium ја користи камерата.</translation>
 <translation id="6333502561965082103">Во тек е друга операција на Chromium. Обидете се повторно подоцна.</translation>
@@ -281,5 +281,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Систем Chromium OS</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно затоа што веќе не е поддржан на Windows XP или Windows Vista</translation>
+<translation id="965162752251293939">Кој користи Chromium?</translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
 </translationbundle>

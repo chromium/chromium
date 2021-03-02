@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">ავტორიზაციის პორტალი</translation>
 <translation id="2008685064673031089">Prime Search</translation>
 <translation id="2080070583977670716">დამატებითი პარამეტრები</translation>
+<translation id="2126937207024182736">ხელმისაწვდომია <ph name="TOTAL_MEMORY" /> გბაიტიდან <ph name="AVAILABLE_MEMORY" /> გბაიტი</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">რიგშია</translation>
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
+<translation id="2217935453350629363">ამჟამინდელი სიჩქარე</translation>
 <translation id="2224337661447660594">ინტერნეტ-კავშირი არ არის</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">აქტივაციის სტატუსი</translation>
@@ -105,6 +107,7 @@
 <translation id="3459509316159669723">ბეჭდვა</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
+<translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
@@ -116,6 +119,7 @@
 <translation id="3820172043799983114">PIN-კოდი არასწორია.</translation>
 <translation id="3838338534323494292">ახალი პაროლი</translation>
 <translation id="3865414814144988605">გარჩევადობა</translation>
+<translation id="387301095347517405">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
 <translation id="3941014780699102620">ჰოსტის გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="3942420633017001071">დიაგნოსტიკა</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
@@ -128,15 +132,14 @@
 <translation id="4155551848414053977">დარწმუნდით, რომ სკანერი ჩართულია და ხელმისაწვდომია თქვენი ქსელისა თუ პირდაპირი კავშირის მეშვეობით</translation>
 <translation id="4170700058716978431">ვერ შესრულდა</translation>
 <translation id="4176463684765177261">გამორთული</translation>
-<translation id="4222698289790462549">ამჟამინდელი სიჩქარე</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
-<translation id="4228041325992544252">ხელმისაწვდომია <ph name="TOTAL_MEMORY" /> გბაიტიდან <ph name="AVAILABLE_MEMORY" /> გბაიტი.</translation>
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
 <translation id="4429881212383817840">Kerberos ბილეთის მოქმედების ვადა მალე იწურება</translation>
+<translation id="4431821876790500265">ანგარიშის ნახვა</translation>
 <translation id="445059817448385655">ძველი პაროლი</translation>
 <translation id="4453205916657964690">ქვექსელის ნიღაბი</translation>
 <translation id="4454245904991689773">შენახვის ადგილი</translation>
@@ -174,6 +177,7 @@
 <translation id="4932733599132424254">თარიღი</translation>
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4985509611418653372">გაშვება</translation>
+<translation id="4999333166442584738">ანგარიშის დამალვა</translation>
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">ჯგუფის სახელი</translation>
@@ -207,7 +211,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{დარჩენილია {0} მცდელობა}other{დარჩენილია {0} მცდელობა}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">ანგარიშის ნახვა</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ოჯახი</translation>
@@ -252,7 +255,6 @@
 <translation id="649050271426829538">გაჩერდა — ქაღალდი გაიჭედა</translation>
 <translation id="6517239166834772319">გაცნობა</translation>
 <translation id="6527081081771465939">Wi-Fi-ს უცნობი უსაფრთხოების პროტოკოლი</translation>
-<translation id="6532051501443766164">ანგარიშის დამალვა</translation>
 <translation id="65587193855025101">ბაქანი</translation>
 <translation id="6564646048574748301">ვერ მოხერხდა — პრინტერთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="6618744767048954150">მიმდინარეობს</translation>
@@ -332,6 +334,7 @@
 <translation id="8477551185774834963">DNS-ის რეაგირების დრო ოდნავ აღემატება დასაშვებ ზღვარს</translation>
 <translation id="8483248364096924578">IP მისამართი</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
+<translation id="8503836310948963452">კიდევ რამდენიმე წუთიც...</translation>
 <translation id="8576249514688522074">არაინიცირებული</translation>
 <translation id="8620617069779373398">როუმინგის სტატუსი</translation>
 <translation id="8675354002693747642">წინასწარ გაზიარებული გასაღები</translation>
@@ -343,7 +346,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
 <translation id="8798441408945964110">პროვაიდერის სახელი</translation>
-<translation id="880791622116642296">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">დახმარების მიღება</translation>
 <translation id="8881098542468797602">ტესტი წარმატებით შესრულდა</translation>
@@ -363,6 +365,7 @@
 <translation id="9106415115617144481">სკანირდება გვერდი <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">განბლოკვა</translation>
 <translation id="9149391708638971077">მეხსიერების ტესტის გაშვება</translation>
+<translation id="9173638680043580060">დარჩენილია ერთ წუთზე ნაკლები</translation>
 <translation id="9190063653747922532">L2TP/IPsec + წინასწარ გაზიარებული გასაღები</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">არ არის გააქტიურებული</translation>

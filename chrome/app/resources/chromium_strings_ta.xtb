@@ -49,6 +49,7 @@
 <translation id="2770231113462710648">இயல்புநிலை உலாவியாக இதை அமை:</translation>
 <translation id="2799223571221894425">மீண்டும் தொடங்கு</translation>
 <translation id="2816712596130903444">தனிப்பட்ட Chromium சுயவிவரம் வேண்டுமா?</translation>
+<translation id="2837693172913560447">இது <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்குப் புதிய Chromium சுயவிவரத்தை உருவாக்கும்</translation>
 <translation id="2847479871509788944">Chromium இலிருந்து அகற்று...</translation>
 <translation id="2885378588091291677">செயல் நிர்வாகி</translation>
 <translation id="2910007522516064972">&amp;Chromium அறிமுகம்</translation>
@@ -104,6 +105,7 @@
 <translation id="4407044323746248786">Chromium இலிருந்து வெளியேறவா?</translation>
 <translation id="4415566066719264597">பின்னணியில் Chromiumஐ இயங்க அனுமதி</translation>
 <translation id="4423735387467980091">Chromium ஐ தனிப்பயனாக்கி கட்டுப்படுத்துக</translation>
+<translation id="4491398312037323794">நீங்கள் உள்நுழைந்துள்ள Google கணக்குகளை இந்தப் பக்கத்தில் நிர்வகிக்கலாம். Chromium உலாவி, Play ஸ்டோர் ஆகியவற்றிலும் Gmail, Drive, YouTube போன்ற சேவைகளிலும் இந்தக் கணக்குகளைப் பயன்படுத்த முடியும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Chromiumமிற்கு வரவேற்கிறோம்; புதிய உலாவிச் சாளரம் திறக்கப்பட்டது</translation>
 <translation id="4544142686420020088">ஏதோ தவறாகிவிட்டதால் Chromium புதுப்பிக்கப்படவில்லை. <ph name="BEGIN_LINK" />Chromium புதுப்பிப்பு குறித்த சிக்கல்களையும் தோல்வியடைந்த புதுப்பிப்புகளையும் சரிசெய்யவும்.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">புதிய Chromium சுயவிவரத்தில் தொடரவா?</translation>
@@ -122,6 +124,7 @@
 <translation id="4987820182225656817">எதையும் விட்டுசெல்லாமல் கெஸ்ட் பயனர்கள் Chromium ஐப் பயன்படுத்தலாம்.</translation>
 <translation id="4994636714258228724">உங்களை Chromium இல் சேர்க்கவும்</translation>
 <translation id="5224391634244552924">சேமித்த கடவுச்சொற்கள் எதுவுமில்லை. நீங்கள் அவற்றைச் சேமிக்கும்போது Chromium உலாவியால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியும்.</translation>
+<translation id="5252179775517634216">இந்த Chromium சுயவிவரத்தில் ஏற்கெனவே <ph name="EXISTING_USER" /> உள்நுழைந்துள்ளார். இது <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்குப் புதிய Chromium சுயவிவரத்தை உருவாக்கும்</translation>
 <translation id="5277894862589591112">உங்கள் மாற்றங்களைச் செயல்படுத்த, Chromiumமை மீண்டும் தொடங்கவும்</translation>
 <translation id="5358375970380395591">நீங்கள் நிர்வகிக்கப்படும் கணக்கு மூலம் உள்நுழைகிறீர்கள், மேலும் அதன் நிர்வாகிக்கு உங்கள் Chromium சுயவிவரத்தின் கட்டுப்பாட்டை வழங்குகிறீர்கள். உங்கள் ஆப்ஸ், புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் போன்ற உங்கள் Chromium தரவு மற்றும் பிற அமைப்புகள் நிரந்தரமாக <ph name="USER_NAME" /> உடன் இணைக்கப்படும். இந்தத் தரவை Google கணக்குகளின் டாஷ்போர்டு வழியாக நீக்க முடியும், ஆனால் இந்தத் தரவை வேறொரு கணக்குடன் தொடர்புபடுத்த முடியாது. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromiumஐப் புதுப்பிக்கிறது (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -135,7 +138,6 @@
 <translation id="549669000822060376">சமீபத்திய முறைமை புதுப்பிப்புகளை Chromium நிறுவும் வரை காத்திருக்கவும்.</translation>
 <translation id="5496810170689441661">Chromium கடவுச்சொற்களைத் திருத்த முயல்கிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumமிற்கான புதுப்பிப்பு உள்ளது}=1{Chromiumமிற்கான புதுப்பிப்பு உள்ளது}other{Chromiumமிற்கான புதுப்பிப்பு வந்து # நாட்களாகிறது}}</translation>
-<translation id="5631814766731275228">Chromium பெயர் மற்றும் படம்</translation>
 <translation id="5634636535844844681">Windows 7 அல்லது அதற்குப் பிந்தைய பதிப்புகளில் மட்டுமே Chromium இயங்கும்.</translation>
 <translation id="5653831366781983928">Chromiumமை இப்போது மீண்டும் தொடங்கவும்</translation>
 <translation id="5698481217667032250">Chromiumமை இந்த மொழியில் காட்டு</translation>
@@ -163,6 +165,7 @@
 <translation id="6266342355635466082">Chromiumமால் புதுப்பிப்புகள் உள்ளதா எனப் பார்க்க முடியவில்லை. உங்கள் இணைய இணைப்பைச் சரிபார்க்க முயலவும்.</translation>
 <translation id="6268381023930128611">Chromium இலிருந்து வெளியேறவா?</translation>
 <translation id="6281746429495226318">உங்கள் Chromium சுயவிவரத்தைப் பிரத்தியேகமாக்குக</translation>
+<translation id="6290827346642914212">உங்கள் Chromium சுயவிவரத்திற்குப் பெயரிடுங்கள்</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> ஆபத்தானதாக இருக்கலாம் என்பதால் Chromium அதைத் தடுத்துள்ளது.</translation>
 <translation id="6309712487085796862">Chromium உங்கள் கேமராவைப் பயன்படுத்துகிறது.</translation>
 <translation id="6333502561965082103">Chromium இல் ஏற்கனவே ஒரு நிறுவி செயல்பாட்டில் உள்ளது. பிறகு முயலவும்.</translation>
@@ -232,6 +235,7 @@
 <translation id="7773960292263897147">எச்சரிக்கை: நீட்டிப்புகள் உங்கள் உலாவல் வரலாற்றைப் பதிவுசெய்வதை Chromium ஆல் தடுக்க முடியவில்லை. மறைநிலையில் இந்த நீட்டிப்பை முடக்க, இந்த விருப்பத்தைத் தேர்வுநீக்கவும்.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">நீங்கள் Chromiumமை விட்டு வெளியேறும் போது குக்கீகளையும் வலைதளத் தரவையும் அழிக்கும்</translation>
+<translation id="7828947555739565424">இந்தக் கணக்கின் மூலம் ஏற்கெனவே ஒரு Chromium சுயவிவரம் இந்தச் சாதனத்தில் உருவாக்கப்பட்டுள்ளது</translation>
 <translation id="7857220146454061152">இனிவரும் Chromium புதுப்பிப்புகளைப் பெற OS X 10.11 அல்லது அதற்குப் பிந்தைய பதிப்பு தேவை. இந்தக் கம்ப்யூட்டர் OS X 10.10 பதிப்பைப் பயன்படுத்துகிறது.</translation>
 <translation id="7867198900892795913">Chromium சமீபத்திய பதிப்பிற்குப் புதுப்பிக்கப்படவில்லை என்பதால், புதிய அம்சங்களையும் பாதுகாப்புத் திருத்தங்களையும் தவறவிடுகிறீர்கள்.</translation>
 <translation id="7898472181347242998">உங்கள் சாதனம் புதுப்பித்த நிலையில் உள்ளதா என்பதைப் பார்க்க <ph name="LINK_BEGIN" />Chromium OS அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்</translation>
@@ -278,5 +282,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS சிஸ்டம்</translation>
 <translation id="93478295209880648">Windows XP அல்லது Windows Vista ஆகியவற்றில் Chromium இனி ஆதரிக்கப்படாது என்பதால், அது சரியாகச் செயல்படாது</translation>
+<translation id="965162752251293939">Chromiumமைப் பயன்படுத்துவது யார்?</translation>
 <translation id="985602178874221306">Chromium அங்கீகரிப்பாளர்கள்</translation>
 </translationbundle>

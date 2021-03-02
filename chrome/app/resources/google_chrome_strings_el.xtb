@@ -8,6 +8,7 @@
 <translation id="1088300314857992706">Η διεύθυνση <ph name="USER_EMAIL_ADDRESS" /> χρησιμοποιούσε το Chrome στο παρελθόν</translation>
 <translation id="1097330777386562916">Διαγραφή cookie και δεδομένων ιστοτόπου κατά τον τερματισμό του Chrome.</translation>
 <translation id="110877069173485804">Ορίστε το δικό σας Chrome</translation>
+<translation id="1125124144982679672">Ποιος χρησιμοποιεί το Chrome;</translation>
 <translation id="1142745911746664600">Δεν είναι δυνατή η ενημέρωση του Chrome</translation>
 <translation id="1154147086299354128">&amp;Άνοιγμα στο Chrome</translation>
 <translation id="123620459398936149">Το Chrome OS δεν μπόρεσε να συγχρονίσει τα δεδομένα σας. Ενημερώστε τη φράση πρόσβασης συγχρονισμού.</translation>
@@ -20,6 +21,7 @@
 <translation id="1516530951338665275">Το Google Chrome χρειάζεται πρόσβαση στο Bluetooth για να συνεχιστεί 
  η σύζευξη. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Ενημερώστε το Chrome</translation>
+<translation id="1583073672411044740">Ο χρήστης <ph name="EXISTING_USER" /> είναι συνδεδεμένος ήδη σε αυτό το προφίλ Chrome. Με αυτόν τον τρόπο θα δημιουργηθεί ένα νέο προφίλ Chrome για το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Το Google Chrome χρησιμοποιεί την κάμερά σας.</translation>
 <translation id="1587325591171447154">Το αρχείο <ph name="FILE_NAME" /> είναι επικίνδυνο, επομένως έχει αποκλειστεί από το Chrome.</translation>
 <translation id="1597911401261118146">Για να ελέγξετε αν οι κωδικοί πρόσβασής σας είναι ασφαλείς από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας, <ph name="BEGIN_LINK" />συνδεθείτε στο Chrome<ph name="END_LINK" />.</translation>
@@ -89,6 +91,7 @@
 <translation id="3065168410429928842">Καρτέλα Chrome</translation>
 <translation id="3080151273017101988">Να συνεχίζεται η εκτέλεση εφαρμογών παρασκηνίου όταν το Google Chrome είναι κλειστό</translation>
 <translation id="3089968997497233615">Υπάρχει μια νέα, ασφαλέστερη έκδοση του Google Chrome.</translation>
+<translation id="3100998948628680988">Ονομάστε το προφίλ σας στο Chrome</translation>
 <translation id="3114643501466072395">Για να ελέγξετε αν οι άλλοι κωδικοί πρόσβασής σας είναι ασφαλείς από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας, <ph name="BEGIN_LINK" />συνδεθείτε στο Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Το Chrome OS δεν μπόρεσε να συγχρονίσει τα δεδομένα σας.</translation>
 <translation id="3140883423282498090">Οι αλλαγές που πραγματοποιήσατε θα ισχύσουν την επόμενη φορά που θα επανεκκινήσετε το Google Chrome.</translation>
@@ -113,6 +116,7 @@
 <translation id="3735758079232443276">Η επέκταση <ph name="EXTENSION_NAME" /> άλλαξε τη σελίδα που εμφανίζεται κατά την εκκίνηση του Chrome.</translation>
 <translation id="3779473566290487688">Για τη λήψη των μελλοντικών ενημερώσεων του Google Chrome, θα χρειαστείτε το OS X 10.11 ή νεότερη έκδοση. Αυτός ο υπολογιστής χρησιμοποιεί το OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">Με αυτόν τον τρόπο θα δημιουργηθεί ένα νέο προφίλ Chrome για το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Κλείστε όλα τα παράθυρα του Google Chrome και προσπαθήστε ξανά.</translation>
 <translation id="3865754807470779944">Εγκαταστάθηκε η έκδοση του Chrome <ph name="PRODUCT_VERSION" />.</translation>
 <translation id="3873044882194371212">Άνοιγμα συνδέσμου σε παράθυρο ανών&amp;υμης περιήγησης Chrome</translation>
@@ -120,7 +124,6 @@
 <translation id="4050175100176540509">Στην πιο πρόσφατη έκδοση διατίθενται σημαντικές βελτιώσεις ασφάλειας και νέες λειτουργίες.</translation>
 <translation id="4053720452172726777">Προσαρμογή και έλεγχος του Google Chrome</translation>
 <translation id="4110895483821904099">Ρυθμίστε το νέο σας προφίλ στο Chrome</translation>
-<translation id="4143243756087420366">Όνομα και εικόνα στο Chrome</translation>
 <translation id="4147555960264124640">Είστε συνδεδεμένοι με έναν διαχειριζόμενο λογαριασμό και παραχωρείτε στο διαχειριστή του τον έλεγχο του προφίλ σας στο Google Chrome. Τα δεδομένα σας στο Chrome, όπως οι εφαρμογές, οι σελιδοδείκτες, το ιστορικό, οι κωδικοί πρόσβασης και άλλες ρυθμίσεις θα συνδεθούν μόνιμα με το όνομα χρήστη <ph name="USER_NAME" />. Θα έχετε τη δυνατότητα να διαγράψετε αυτά τα δεδομένα μέσω του Πίνακα ελέγχου των Λογαριασμών Google, αλλά δεν θα μπορείτε να τα συσχετίσετε με άλλο λογαριασμό. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Η αποσυμπίεση του αρχείου από το πρόγραμμα εγκατάστασης απέτυχε. Κατεβάστε το Google Chrome ξανά.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Επανεκκίνηση του Chrome σε μία ημέρα}other{Επανεκκίνηση του Chrome σε # ημέρες}}</translation>
@@ -183,6 +186,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Θα γίνει επανεκκίνηση του Google Chrome σε 1 δευτερόλεπτο}other{Θα γίνει επανεκκίνηση του Google Chrome σε # δευτερόλεπτα}}</translation>
 <translation id="573759479754913123">Σχετικά με το Chrome OS</translation>
+<translation id="5756509061973259733">Υπάρχει ήδη σε αυτήν τη συσκευή ένα προφίλ Chrome με αυτόν τον λογαριασμό</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Δεν ήταν δυνατή η εκκίνηση του Chrome. Προσπάθησε ξανά.</translation>
 <translation id="5867197326698922595">Το Google Chrome προσπαθεί να επεξεργαστεί κωδικούς πρόσβασης.</translation>

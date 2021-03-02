@@ -49,6 +49,7 @@
 <translation id="2770231113462710648">డిఫాల్ట్ బ్రౌజర్‌ను దీనికి మార్చు:</translation>
 <translation id="2799223571221894425">మళ్లీ ప్రారంభించు</translation>
 <translation id="2816712596130903444">Chromium ప్రొఫైల్‌ను వేరు చేయాలా?</translation>
+<translation id="2837693172913560447">ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chromium ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="2847479871509788944">Chromium నుండి తీసివేయి...</translation>
 <translation id="2885378588091291677">విధి సంచాలకులు</translation>
 <translation id="2910007522516064972">&amp;Chromium గురించి</translation>
@@ -102,6 +103,7 @@
 <translation id="4407044323746248786">ఏదేమైనా Chromium నుండి నిష్క్రమించాలా?</translation>
 <translation id="4415566066719264597">నేపథ్యంలో అమలయ్యేందుకు Chromiumని అనుమతించండి</translation>
 <translation id="4423735387467980091">Chromiumను అనుకూలీకరించండి మరియు నియంత్రించండి</translation>
+<translation id="4491398312037323794">ఈ పేజీ మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మేనేజ్ చేయడానికి అనుమతిస్తుంది. ఈ ఖాతాలు Chromium బ్రౌజర్, Play స్టోర్ యాప్‌లలోనే కాకుండా Gmail, Drive, ఇంకా YouTube వంటి సర్వీస్‌లలో కూడా అందుబాటులో ఉంటాయి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Chromiumకు స్వాగతం; కొత్త బ్రౌజర్ విండో తెరవబడింది</translation>
 <translation id="4544142686420020088">Chromium అప్‌డేట్ అవ్వలేదు, ఏదో తప్పు జరిగింది. <ph name="BEGIN_LINK" />Chromium అప్‌డేట్ సమస్యలు, విఫలమైన అప్‌డేట్‌లను పరిష్కరించండి.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">కొత్త Chromium ప్రొఫైల్‌లో కొనసాగించాలా?</translation>
@@ -120,6 +122,7 @@
 <translation id="4987820182225656817">అతిథులు ఎటువంటి చరిత్రను వదలకుండానే Chromiumను ఉపయోగించవచ్చు.</translation>
 <translation id="4994636714258228724">Chromiumకు మిమ్మల్ని జోడించుకోండి</translation>
 <translation id="5224391634244552924">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేవు. మీరు మీ పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chromium వాటిని చెక్ చేయగలదు.</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" /> ఇప్పటికే ఈ Chromium ప్రొఫైల్‌కు సైన్ ఇన్ చేశారు. ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chromium ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="5277894862589591112">మీ మార్పులను వర్తింపజేయడానికి, Chromiumని పునఃప్రారంభించండి</translation>
 <translation id="5358375970380395591">మీరు నిర్వహించబడే ఖాతాతో సైన్ ఇన్ చేస్తున్నారు. దీని నిర్వాహకునికి మీ Chromium ప్రొఫైల్‌పై నియంత్రణను అందిస్తున్నారు. మీ యాప్‌లు, బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల వంటి మీ Chromium డేటా శాశ్వతంగా <ph name="USER_NAME" />కు అనుబంధించబడుతుంది. మీరు Google ఖాతాల డ్యాష్‌బోర్డ్ ద్వారా ఈ డేటాను తొలగించవచ్చు. కానీ ఈ డేటాను మరో ఖాతాతో అనుబంధించలేరు. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium నవీకరించబడుతోంది (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -133,7 +136,6 @@
 <translation id="549669000822060376">దయచేసి Chromium తాజా సిస్టమ్ నవీకరణలను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
 <translation id="5496810170689441661">పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి Chromium ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
 <translation id="5623402015214259806">{0,plural, =0{ఒక Chromium అప్‌డేట్ అందుబాటులో ఉంది}=1{ఒక Chromium అప్‌డేట్ అందుబాటులో ఉంది}other{ఒక Chromium అప్‌డేట్ # రోజులుగా అందుబాటులో ఉంది}}</translation>
-<translation id="5631814766731275228">Chromium పేరు మరియు చిత్రం</translation>
 <translation id="5634636535844844681">Chromiumకి Windows 7 లేదా అంతకంటే ఆధునికమైనది ఉండటం ఆవశ్యకం.</translation>
 <translation id="5653831366781983928">దయచేసి ఇప్పుడు Chromiumను మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5698481217667032250">Chromiumను ఈ భాషలో ప్రదర్శించు</translation>
@@ -161,6 +163,7 @@
 <translation id="6266342355635466082">అప్‌డేట్‌లను Chromium చెక్ చేయలేకపోయింది. మీ ఇంటర్నెట్ కనెక్షన్ సరిచూసుకుని, తర్వాత ట్రై చేయండి.</translation>
 <translation id="6268381023930128611">Chromium నుండి సైన్ అవుట్ చేయాలా?</translation>
 <translation id="6281746429495226318">మీ Chromium ప్రొఫైల్‌ను అనుకూలంగా మార్చండి</translation>
+<translation id="6290827346642914212">మీ Chromium ప్రొఫైల్‌కు పేరు పెట్టండి</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> హానికరం కావచ్చు, కావున Chromium దాన్ని బ్లాక్ చేసింది.</translation>
 <translation id="6309712487085796862">Chromium మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
 <translation id="6333502561965082103">Chromiumలో మరొక వ్యవస్థాపన జరుగుతోంది. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
@@ -228,6 +231,7 @@
 <translation id="7773960292263897147">హెచ్చరిక: Chromium, మీ బ్రౌజింగ్ చరిత్రను రికార్డ్ చేయడం నుండి ఎక్స్‌టెన్ష‌న్‌ను నిరోధించలేదు. ఈ ఎక్స్‌టెన్ష‌న్‌ను అజ్ఞాత మోడ్‌లో నిలిపివేయడానికి, ఈ ఎంపికను రద్దు చేయండి.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">మీరు Chromium నుండి నిష్క్రమించినప్పుడు, కుక్కీలు, సైట్ డేటాను క్లియర్ చేయండి</translation>
+<translation id="7828947555739565424">ఈ పరికరంలో ఇప్పటికే ఈ ఖాతాతో ఒక Chromium ప్రొఫైల్ ఉంది</translation>
 <translation id="7857220146454061152">భవిష్యత్తు Chromium అప్‌డేట్‌లను పొందడానికి, మీకు OS X 10.11 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ OS X 10.10ను ఉపయోగిస్తోంది.</translation>
 <translation id="7867198900892795913">Chromiumను తాజా వెర్షన్‌కు అప్‌డేట్ చేయడం సాధ్యం కాలేదు, కాబట్టి మీరు కొత్త ఫీచర్‌లు మరియు భద్రతా పరిష్కారాలను పొందడం లేదు.</translation>
 <translation id="7898472181347242998">మీ పరికరం అప్‌డేట్ చేయబడి ఉందని చూడటానికి <ph name="LINK_BEGIN" />Chromium OS సెట్టింగ్‌లు<ph name="LINK_END" />కు వెళ్లండి</translation>
@@ -274,5 +278,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS సిస్టమ్</translation>
 <translation id="93478295209880648">Chromiumకి ఇప్పుడు Windows XP లేదా Windows Vistaలో మద్దతు లేనందున ఇది సరిగ్గా పని చేయకపోవచ్చు</translation>
+<translation id="965162752251293939">Chromiumను ఎవరు ఉపయోగిస్తున్నారు?</translation>
 <translation id="985602178874221306">Chromium రచయితలు</translation>
 </translationbundle>

@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Të gjithë skedarët</translation>
 <translation id="1810764548349082891">Nuk ka asnjë pamje paraprake</translation>
 <translation id="1812302367230252929">Amarikisht me transliterim</translation>
+<translation id="1813278315230285598">Shërbimet</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Kujdes!<ph name="END_BOLD" />  Këta skedarë janë të përkohshëm dhe mund të fshihen automatikisht për të liruar vend në disk.  <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguini</translation>
 <translation id="183183971458492120">Informacionet po ngarkohen...</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">Zhvendosja dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandisht</translation>
 <translation id="1942765061641586207">Rezolucioni i imazhit</translation>
-<translation id="1943097386230153518">Instalo shërbim të ri</translation>
 <translation id="1972984168337863910">Zgjero panelet e komenteve të skedarëve</translation>
+<translation id="1984456723671657197">Ky lloj skedari nuk mbështetet. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në Chrome OS.</translation>
 <translation id="1995337122023280937">Shko te vendndodhja e skedarit</translation>
 <translation id="2001796770603320721">Menaxhoje te "Disku"</translation>
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
@@ -651,7 +652,6 @@
 <translation id="7839804798877833423">Marrja e këtyre skedarëve do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
 <translation id="7853966320808728790">Franceze BÉPO</translation>
-<translation id="7864662577698025113">Shto shërbim të ri</translation>
 <translation id="7868774406711971383">Polonisht</translation>
 <translation id="7873831373602885875">Nuk mund të ruajë në <ph name="FOLDER_NAME" />. Të gjitha modifikimet do të ruhen në <ph name="DOWNLOADS_FOLDER" /> në dosjen e "Shkarkimeve".</translation>
 <translation id="7874321682039004450">Filipinisht</translation>
@@ -666,6 +666,7 @@
 <translation id="7972920761225148017">Frëngjisht (Zvicër)</translation>
 <translation id="7980421588063892270">Anglisht (SHBA) me tastierë Colemak</translation>
 <translation id="7982283708762922719">Lartësia</translation>
+<translation id="79907182588096956">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Ai nuk përputhet me pajisjen tënde që punon me sistemin operativ Chrome. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në Chrome OS.</translation>
 <translation id="8008366997883261463">Qeni</translation>
 <translation id="8028993641010258682">Madhësia</translation>
 <translation id="803771048473350947">Skedar</translation>
@@ -745,6 +746,7 @@
 <translation id="8900820606136623064">Hungarisht</translation>
 <translation id="8919081441417203123">Danisht</translation>
 <translation id="8965697826696209160">Nuk ka hapësirë të mjaftueshme</translation>
+<translation id="8970501467542182729">Ky skedar është i projektuar për kompjuterë që përdorin softuer të Macintosh. Ai nuk përputhet me pajisjen tënde që punon me sistemin operativ Chrome. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në Chrome OS.</translation>
 <translation id="8997962250644902079">Kinezisht (tradicionale) Pinyin</translation>
 <translation id="9017798300203431059">Fonetikë ruse</translation>
 <translation id="9034924485347205037">Skedarët e Linux</translation>

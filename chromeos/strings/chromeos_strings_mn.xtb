@@ -105,7 +105,7 @@
 <translation id="3459509316159669723">Хэвлэж байна</translation>
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
-<translation id="3532980081107202182">Ойролцоогоор <ph name="MIN_REMAINING" /> минут үлдсэн байна</translation>
+<translation id="3532980081107202182"><ph name="MIN_REMAINING" /> орчим минут үлдсэн байна</translation>
 <translation id="357889014807611375">хязгаартай Wi-Fi</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">ПИН буруу байна.</translation>
 <translation id="3838338534323494292">Шинэ нууц үг</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
+<translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
 <translation id="3941014780699102620">Хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="3942420633017001071">Оношилгоо</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Сканнер асаалттай бөгөөд таны сүлжээ эсвэл шууд холболтоор боломжтой эсэхийг шалгана уу</translation>
 <translation id="4170700058716978431">АМЖИЛТГҮЙ БОЛЛОО</translation>
 <translation id="4176463684765177261">Хаасан</translation>
-<translation id="4222698289790462549">Одоогийн хурд</translation>
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
-<translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой.</translation>
 <translation id="4238516577297848345">Хэвлэж байгаа ажил алга</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
 <translation id="4378373042927530923">Ажилдаггүй</translation>
@@ -208,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} оролдлого үлдсэн}other{{0} оролдлого үлдсэн}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Тайланг харах</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Гэр бүл</translation>
@@ -253,7 +251,6 @@
 <translation id="649050271426829538">Зогссон - Цаас гацсан</translation>
 <translation id="6517239166834772319">Судлах</translation>
 <translation id="6527081081771465939">WiFi-н аюулгүй байдлын үл мэдэгдэх протокол</translation>
-<translation id="6532051501443766164">Тайланг нуух</translation>
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6564646048574748301">Амжилтгүй болсон - Хэвлэгчид холбогдох боломжгүй</translation>
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
@@ -345,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
 <translation id="8798441408945964110">Үйлчилгээ үзүүлэгчийн нэр</translation>
-<translation id="880791622116642296">Энэ нь таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо юм</translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>
 <translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>

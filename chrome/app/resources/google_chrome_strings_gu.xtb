@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" />, પહેલાં Chrome નો ઉપયોગ કરી રહ્યાં હતાં</translation>
 <translation id="1097330777386562916">જ્યારે તમે Chromeમાંથી બહાર નીકળો ત્યારે કુકી અને સાઇટનો ડેટા સાફ કરો</translation>
 <translation id="110877069173485804">આ તમારું Chrome છે</translation>
+<translation id="1125124144982679672">કોણ Chromeનો ઉપયોગ કરે છે?</translation>
 <translation id="1142745911746664600">Chrome અપડેટ કરી શકતાં નથી</translation>
 <translation id="1154147086299354128">&amp;Chromeમાં ખોલો</translation>
 <translation id="123620459398936149">Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી. કૃપા કરીને તમારા સિંક પાસફ્રેઝને અપડેટ કરો.</translation>
@@ -91,6 +92,7 @@
 <translation id="3065168410429928842">Chrome ટૅબ</translation>
 <translation id="3080151273017101988">જ્યારે Google Chrome બંધ થાય ત્યારે પૃષ્ઠભૂમિમાં  ઍપ્લિકેશનો ચલાવવાનું ચાલુ રાખો </translation>
 <translation id="3089968997497233615">Google Chromeનું નવું, સુરક્ષિત વર્ઝન ઉપલબ્ધ છે.</translation>
+<translation id="3100998948628680988">તમારી Chrome પ્રોફાઇલને નામ આપો</translation>
 <translation id="3114643501466072395">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા અન્ય પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="3140883423282498090">તમે આગલી વખત Google Chrome ને ફરીથી શરૂ કરશો ત્યારે તમારા ફેરફારો પ્રભાવી થશે.</translation>
@@ -122,7 +124,6 @@
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="4053720452172726777">Google Chrome ને કસ્ટમાઇઝ કરો અને તેનું નિયંત્રણ કરો</translation>
 <translation id="4110895483821904099">તમારી નવી Chrome પ્રોફાઇલ સેટઅપ કરો</translation>
-<translation id="4143243756087420366">Chromeમાંનું નામ અને ફોટો</translation>
 <translation id="4147555960264124640">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">ઇન્સ્ટૉલર આર્કાઇવને અનકોમ્પ્રેસ કરવામાં નિષ્ફળ. કૃપા કરીને Google Chrome ફરીથી ડાઉનલોડ કરો.</translation>
 <translation id="4191857738314598978">{0,plural, =1{એક દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}one{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}other{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}}</translation>
@@ -176,6 +177,7 @@
 <translation id="5430073640787465221">તમારી પસંદગીઓ ફાઇલ દૂષિત અથવા અમાન્ય છે.
 
 Google Chrome તમારી સેટિંગ્સને પુનઃપ્રાપ્ત કરવામાં અક્ષમ છે.</translation>
+<translation id="5434383153637353914">આ પેજ તમને તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરવાની મંજૂરી આપે છે. આ એકાઉન્ટ Chrome બ્રાઉઝર અને Play સ્ટોર ઍપમાં તેમજ Gmail, Drive અને YouTube જેવી સેવાઓમાં ઉપલબ્ધ રહેશે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="556024056938947818">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">જો આ પેજ પર સેટિંગ બતાવેલું ન હોય, તો તમારા <ph name="LINK_BEGIN" />

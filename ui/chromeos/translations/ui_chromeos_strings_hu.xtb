@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Minden fájl</translation>
 <translation id="1810764548349082891">Nincs előnézet</translation>
 <translation id="1812302367230252929">amhara, betű szerinti átírás</translation>
+<translation id="1813278315230285598">Szolgáltatások</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Figyelem:<ph name="END_BOLD" /> Ezek ideiglenes fájlok, és automatikusan törlésre kerülnek azért, hogy tárhely szabaduljon fel. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Adatok betöltése…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Az áthelyezés nem várt hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finn</translation>
 <translation id="1942765061641586207">Képfelbontás</translation>
-<translation id="1943097386230153518">Új szolgáltatás telepítése</translation>
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
 <translation id="1984456723671657197">Ez a fájltípus nem támogatott. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok Chrome OS-en való megnyitásáról.</translation>
 <translation id="1995337122023280937">Ugrás a fájl helyéhez</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">E fájlok lekérése mintegy <ph name="FILE_SIZE" />-nyi mobiladat-forgalmat fog generálni.</translation>
 <translation id="7846076177841592234">Kijelölés törlése</translation>
 <translation id="7853966320808728790">Francia BÉPO</translation>
-<translation id="7864662577698025113">Új szolgáltatás hozzáadása</translation>
 <translation id="7868774406711971383">lengyel</translation>
 <translation id="7873831373602885875">Nem lehet menteni a(z) <ph name="FOLDER_NAME" /> mappába. A módosításokat a rendszer a Letöltések mappán belüli <ph name="DOWNLOADS_FOLDER" /> mappába menti.</translation>
 <translation id="7874321682039004450">filippínó</translation>

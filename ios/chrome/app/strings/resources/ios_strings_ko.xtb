@@ -174,6 +174,7 @@
 <translation id="2780046210906776326">이메일 계정이 없음</translation>
 <translation id="2781331604911854368">사용</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">링크를 만들 수 없음</translation>
 <translation id="2800683595868705743">탭 전환 종료</translation>
 <translation id="2815198996063984598">2. 기본 브라우저 앱 탭하기</translation>
 <translation id="2830972654601096923">주소 관리...</translation>
@@ -467,6 +468,7 @@
 <translation id="5948291296578561264">이렇게 하면 사진 라이브러리에 사진을 저장할 수 있습니다.</translation>
 <translation id="5955891643922670672">오프라인 버전 보는 중</translation>
 <translation id="5957613098218939406">옵션 더보기</translation>
+<translation id="5963939892571022323">하이라이트 링크를 생성할 수 없습니다.</translation>
 <translation id="5964480694698977962">새 시크릿 탭 만들기</translation>
 <translation id="5965679971710331625">로그인됨</translation>
 <translation id="5979837087407522202">비밀번호 검색</translation>
@@ -615,6 +617,7 @@
 <translation id="734758817008927353">카드 저장 옵션</translation>
 <translation id="7348502496356775519">북마크</translation>
 <translation id="7383797227493018512">읽기 목록</translation>
+<translation id="7398893703713203428">링크 만들기</translation>
 <translation id="739941347996872055">이전 탭</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906">읽지 않은 기사 <ph name="UNREAD_COUNT" />개 있음</translation>

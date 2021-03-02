@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Ukurasa wa Mwanzo</translation>
 <translation id="2008685064673031089">Prime search</translation>
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
+<translation id="2126937207024182736">Una GB <ph name="AVAILABLE_MEMORY" /> kati ya GB <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">IMEWEKWA KWENYE FOLENI</translation>
 <translation id="2161394479394250669">Ghairi kazi ya kuchapisha</translation>
+<translation id="2217935453350629363">Kasi ya sasa</translation>
 <translation id="2224337661447660594">Hakuna intaneti</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Hali ya kuwasha</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">PIN si sahihi</translation>
 <translation id="3838338534323494292">Nenosiri jipya</translation>
 <translation id="3865414814144988605">Ubora</translation>
+<translation id="387301095347517405">Mara ambazo betri yako imekamilisha mzunguko kamili wa chaji</translation>
 <translation id="3941014780699102620">Imeshindwa kusuluhisha seva pangishi</translation>
 <translation id="3942420633017001071">Vichunguzi</translation>
 <translation id="3967822245660637423">Faili imekamilika kupakuliwa</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Hakikisha kichanganuzi kimewashwa na kinapatikana kupitia mtandao wako au muunganisho wa moja kwa moja</translation>
 <translation id="4170700058716978431">HALIJAFAULU</translation>
 <translation id="4176463684765177261">Imezimwa</translation>
-<translation id="4222698289790462549">Kasi ya Sasa</translation>
 <translation id="4227825898293920515">Muda wa kutumia nenosiri utaisha baada ya <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Una GB <ph name="AVAILABLE_MEMORY" /> kati ya GB <ph name="TOTAL_MEMORY" />.</translation>
 <translation id="4238516577297848345">Hakuna kazi za kuchapisha zinazoendelea</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
 <translation id="4378373042927530923">Usitekeleze</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Hifadhi Yangu</translation>
 <translation id="4429881212383817840">Muda wa kutumia tiketi ya Kerberos unakaribia kuisha</translation>
+<translation id="4431821876790500265">Angalia ripoti</translation>
 <translation id="445059817448385655">Nenosiri la awali</translation>
 <translation id="4453205916657964690">Kichujio cha mtandao mdogo</translation>
 <translation id="4454245904991689773">Hifadhi faili iliyochanganuliwa kwenye</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Tarehe</translation>
 <translation id="498186245079027698">Kagua kichanganuzi kisha ujaribu tena. Hakikisha kuna nafasi ya kutosha kwenye kompyuta yako ya kuhifadhi faili zilizochanganuliwa.</translation>
 <translation id="4985509611418653372">Tekeleza</translation>
+<translation id="4999333166442584738">Ficha ripoti</translation>
 <translation id="500920857929044050">Komesha jaribio</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Jina la kikundi</translation>
@@ -207,7 +210,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Umebakisha mara {0} ya kujaribu}other{Umebakisha mara {0} za kujaribu}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Angalia Ripoti</translation>
 <translation id="5669267381087807207">Inawashwa</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -252,7 +254,6 @@
 <translation id="649050271426829538">Imesimama - Karatasi imekwama</translation>
 <translation id="6517239166834772319">Gundua</translation>
 <translation id="6527081081771465939">Itifaki isiyojulikana ya ulinzi wa WiFi</translation>
-<translation id="6532051501443766164">Ficha Ripoti</translation>
 <translation id="65587193855025101">Kichanganuzi bapa</translation>
 <translation id="6564646048574748301">Haijakamilika - Printa haiwezi kufikiwa</translation>
 <translation id="6618744767048954150">Inakagua</translation>
@@ -344,7 +345,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
 <translation id="8798441408945964110">Jina la mtoa huduma</translation>
-<translation id="880791622116642296">Ni mara ambazo betri yako imekamilisha mzunguko kamili wa chaji</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Pata usaidizi</translation>
 <translation id="8881098542468797602">Jaribio limefaulu</translation>

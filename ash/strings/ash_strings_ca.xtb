@@ -6,7 +6,7 @@
 <translation id="1013923882670373915">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Introduïu aquest codi PIN al dispositiu: <ph name="PINCODE" />.</translation>
 <translation id="1024261588257374085">S'ha seleccionat la captura de pantalla parcial</translation>
 <translation id="1032891413405719768">El llapis òptic té poca bateria</translation>
-<translation id="1036672894875463507">Soc el teu Assistent de Google i et puc ajudar en qualsevol moment del dia.
+<translation id="1036672894875463507">Soc el teu Assistent de Google i et puc ajudar al llarg del dia.
 A continuació t'indico algunes coses que pots provar per començar.</translation>
 <translation id="1037492556044956303">S'ha afegit <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">parcial</translation>
@@ -624,6 +624,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6376931439017688372">El Bluetooth està activat</translation>
 <translation id="6381109794406942707">Per desbloquejar el dispositiu, introdueix el PIN.</translation>
 <translation id="639644700271529076">Bloq Maj està desactivat</translation>
+<translation id="6396835948284782440">Mantén premut [Esc] per sortir.</translation>
 <translation id="6406704438230478924">Alt Gr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="642644398083277086">Esborra totes les notificacions</translation>

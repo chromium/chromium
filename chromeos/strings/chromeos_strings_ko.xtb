@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">인쇄</translation>
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
+<translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
@@ -116,6 +117,7 @@
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
 <translation id="3865414814144988605">해상도</translation>
+<translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
 <translation id="3942420633017001071">진단</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
@@ -128,9 +130,7 @@
 <translation id="4155551848414053977">스캐너가 켜져 있으며 네트워크 또는 직접 연결을 통해 사용 가능한지 확인하세요.</translation>
 <translation id="4170700058716978431">실패</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
-<translation id="4222698289790462549">현재 속도</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
-<translation id="4228041325992544252"><ph name="TOTAL_MEMORY" />GB 중 <ph name="AVAILABLE_MEMORY" />GB를 사용할 수 있습니다.</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
@@ -207,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{남은 시도 {0}회}other{남은 시도 {0}회}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">보고서 보기</translation>
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">가족</translation>
@@ -252,7 +251,6 @@
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
-<translation id="6532051501443766164">보고서 숨기기</translation>
 <translation id="65587193855025101">평판</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
 <translation id="6618744767048954150">실행 중</translation>
@@ -332,6 +330,7 @@
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
 <translation id="8483248364096924578">IP 주소</translation>
 <translation id="8503813439785031346">사용자이름</translation>
+<translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
 <translation id="8675354002693747642">사전 공유 키:</translation>
@@ -343,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8798441408945964110">공급자 이름</translation>
-<translation id="880791622116642296">배터리가 완전 방전 및 충전 사이클을 진행한 횟수입니다.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8881098542468797602">테스트 성공</translation>
@@ -363,6 +361,7 @@
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />페이지 스캔 중</translation>
 <translation id="9111102763498581341">잠금 해제</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
+<translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="9190063653747922532">L2TP/IPSec + 사전 공유 키</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>

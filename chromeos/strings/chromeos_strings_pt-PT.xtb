@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Portal cativo</translation>
 <translation id="2008685064673031089">Pesquisa Prime</translation>
 <translation id="2080070583977670716">Mais definições</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">EM LISTA DE ESPERA</translation>
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
+<translation id="2217935453350629363">Velocidade atual</translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Estado da ativação</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="3838338534323494292">Nova palavra-passe</translation>
 <translation id="3865414814144988605">Resolução</translation>
+<translation id="387301095347517405">O número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Certifique-se de que o lscannerestá ativado e disponível através da sua rede ou de uma ligação direta.</translation>
 <translation id="4170700058716978431">FALHOU</translation>
 <translation id="4176463684765177261">Desativado</translation>
-<translation id="4222698289790462549">Velocidade atual</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis.</translation>
 <translation id="4238516577297848345">Nenhuma tarefa de impressão em curso.</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
 <translation id="4378373042927530923">Não foi executada.</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">O meu disco</translation>
 <translation id="4429881212383817840">A permissão Kerberos expira em breve</translation>
+<translation id="4431821876790500265">Ver relatório</translation>
 <translation id="445059817448385655">Palavra-passe antiga</translation>
 <translation id="4453205916657964690">Máscara de sub-rede</translation>
 <translation id="4454245904991689773">Digitalizar para</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Verifique o scanner e tente novamente. Certifique-se de que existe espaço local suficiente para guardar os ficheiros digitalizados.</translation>
 <translation id="4985509611418653372">Executar</translation>
+<translation id="4999333166442584738">Ocultar relatório</translation>
 <translation id="500920857929044050">Parar teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
@@ -208,7 +211,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante.}other{{0} tentativas restantes.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Ver relatório</translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -253,7 +255,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido.</translation>
-<translation id="6532051501443766164">Ocultar relatório</translation>
 <translation id="65587193855025101">Plano</translation>
 <translation id="6564646048574748301">Falha – Impressora inacessível</translation>
 <translation id="6618744767048954150">Em execução</translation>
@@ -345,7 +346,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predefinição</translation>
 <translation id="8798441408945964110">Nome do fornecedor</translation>
-<translation id="880791622116642296">Este é o número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obter ajuda</translation>
 <translation id="8881098542468797602">Teste com êxito</translation>

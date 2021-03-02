@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="3838338534323494292">Nuova password</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
+<translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
 <translation id="3942420633017001071">Diagnostica</translation>
 <translation id="3967822245660637423">Download completato</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Assicurati che lo scanner sia acceso e disponibile tramite la tua rete o una connessione diretta</translation>
 <translation id="4170700058716978431">OPERAZIONE NON RIUSCITA</translation>
 <translation id="4176463684765177261">Disattivato</translation>
-<translation id="4222698289790462549">Velocità attuale</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB disponibili su <ph name="TOTAL_MEMORY" />.</translation>
 <translation id="4238516577297848345">Nessun processo di stampa in corso</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4378373042927530923">Non eseguito</translation>
@@ -208,7 +207,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativo rimanente}other{{0} tentativi rimanenti}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Visualizza rapporto</translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famiglia</translation>
@@ -253,7 +251,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="649050271426829538">Operazione interrotta - Fogli bloccati nella stampante</translation>
 <translation id="6517239166834772319">Esplora</translation>
 <translation id="6527081081771465939">protocollo di sicurezza Wi-Fi sconosciuto</translation>
-<translation id="6532051501443766164">Nascondi rapporto</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Operazione non riuscita - Stampante non raggiungibile</translation>
 <translation id="6618744767048954150">In corso</translation>
@@ -345,7 +342,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8798441408945964110">Nome provider</translation>
-<translation id="880791622116642296">Si tratta del numero di cicli di ricarica completi della batteria</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8881098542468797602">Test effettuato correttamente</translation>

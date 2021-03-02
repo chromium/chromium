@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
 <translation id="3838338534323494292">Новы пароль</translation>
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
+<translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Упэўніцеся, што сканер уключаны і даступны праз вашу сетку або прамое падключэнне.</translation>
 <translation id="4170700058716978431">НЕ ПРОЙДЗЕНА</translation>
 <translation id="4176463684765177261">Выключана</translation>
-<translation id="4222698289790462549">Бягучая хуткасць</translation>
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Даступна: <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ.</translation>
 <translation id="4238516577297848345">Няма дзеючых заданняў друку</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
 <translation id="4378373042927530923">Паслядоўнасць дзеянняў не запускалася</translation>
@@ -208,7 +207,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Засталася {0} спроба}one{Засталася {0} спроба}few{Засталося {0} спробы}many{Засталося {0} спроб}other{Засталося {0} спробы}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Паглядзець справаздачу</translation>
 <translation id="5669267381087807207">Ідзе актывацыя</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Сям'я</translation>
@@ -246,13 +244,13 @@
 <translation id="6325525973963619867">Збой</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
 <translation id="641081527798843608">Супадзенне суб'екта</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Добры</translation>
 <translation id="6472207088655375767">Аднаразовы пароль</translation>
 <translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
 <translation id="6517239166834772319">Агляд</translation>
 <translation id="6527081081771465939">Невядомы пратакол сістэмы бяспекі Wi-Fi</translation>
-<translation id="6532051501443766164">Схаваць справаздачу</translation>
 <translation id="65587193855025101">Планшэтны сканер</translation>
 <translation id="6564646048574748301">Збой: прынтар недаступны</translation>
 <translation id="6618744767048954150">Выконваецца</translation>
@@ -344,7 +342,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Стандартна</translation>
 <translation id="8798441408945964110">Назва пастаўшчыка</translation>
-<translation id="880791622116642296">Гэта колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Атрымаць даведку</translation>
 <translation id="8881098542468797602">Праверка пройдзена</translation>

@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="3865414814144988605">Peleraian</translation>
+<translation id="387301095347517405">Bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
 <translation id="3941014780699102620">Gagal untuk menyelesaikan hos</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Pastikan pengimbas dihidupkan dan tersedia melalui rangkaian anda atau sambungan langsung</translation>
 <translation id="4170700058716978431">GAGAL</translation>
 <translation id="4176463684765177261">Dilumpuhkan</translation>
-<translation id="4222698289790462549">Kelajuan Semasa</translation>
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB daripada <ph name="TOTAL_MEMORY" /> GB tersedia.</translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
@@ -208,7 +207,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} percubaan lagi}other{{0} percubaan lagi}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Lihat Laporan</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
@@ -253,7 +251,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="649050271426829538">Dihentikan - Kertas tersangkut</translation>
 <translation id="6517239166834772319">Teroka</translation>
 <translation id="6527081081771465939">Protokol keselamatan Wi-Fi tidak diketahui</translation>
-<translation id="6532051501443766164">Sembunyikan Laporan</translation>
 <translation id="65587193855025101">Dasar rata</translation>
 <translation id="6564646048574748301">Gagal - Pencetak tidak dapat dicapai</translation>
 <translation id="6618744767048954150">Berjalan</translation>
@@ -345,7 +342,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
-<translation id="880791622116642296">Ini merupakan bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>

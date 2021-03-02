@@ -10,6 +10,7 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> დრე იყენებდა Chrome-ს</translation>
 <translation id="1097330777386562916">ქუქი-ჩანაწერებისა და საიტების მონაცემების გასუფთავება Chrome-იდან გასვლისას</translation>
 <translation id="110877069173485804">ეს არის თქვენი Chrome</translation>
+<translation id="1125124144982679672">ვინ იყენებს Chrome-ს?</translation>
 <translation id="1142745911746664600">Chrome-ის განახლება ვერ მოხერხდა</translation>
 <translation id="1154147086299354128">Chrome-ში &amp;გახსნა</translation>
 <translation id="123620459398936149">Chrome OS-მა ვერ დაასინქრონა თქვენი მონაცემები. განაახლეთ სინქრონიზაციის საიდუმლო ფრაზა.</translation>
@@ -21,6 +22,7 @@
 <translation id="147727933880789532">Chrome გირჩევთ, გათიშოთ ეს გაფართოება, რადგან ამჟამად ის გაძლიერებული Safe Browsing-ის სტანდარტებს არ შეესაბამება.</translation>
 <translation id="1516530951338665275">დაწყვილების გასაგრძელებლად Google Chrome საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome-ის განახლება</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. ეს მოქმედება შექმნის ახალ Chrome პროფილს <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
 <translation id="1587223624401073077">Google Chrome იყენებს თქვენს კამერას.</translation>
 <translation id="1587325591171447154">Chrome-მა დაბლოკა <ph name="FILE_NAME" />, რადგან ის სახიფათოა.</translation>
 <translation id="1597911401261118146"><ph name="BEGIN_LINK" />შედით Chrome-ში<ph name="END_LINK" />, რომ შეამოწმოთ, შეეხო თუ არა პერსონალურ მონაცემთა გაჟონვის შემთხვევები და უსაფრთხოებასთან დაკავშირებული პრობლემები თქვენს პაროლებს.</translation>
@@ -90,6 +92,7 @@
 <translation id="3065168410429928842">Chrome-ის ჩანართი</translation>
 <translation id="3080151273017101988">გაგრძელება გაშვებული ფონური პროგრამებით Google Chrome-ის დახურვისას</translation>
 <translation id="3089968997497233615">ხელმისაწვდომია Google Chrome-ის უფრო ახალი და უსაფრთხო ვერსია.</translation>
+<translation id="3100998948628680988">დაასათაურეთ თქვენი Chrome პროფილი</translation>
 <translation id="3114643501466072395"><ph name="BEGIN_LINK" />შედით Chrome-ში<ph name="END_LINK" />, რომ შეამოწმოთ, შეეხო თუ არა პერსონალურ მონაცემთა გაჟონვის შემთხვევები და უსაფრთხოებასთან დაკავშირებული პრობლემები თქვენს სხვა პაროლებს.</translation>
 <translation id="3127818369811890733">Chrome OS-მა ვერ მოახერხა თქვენი მონაცემების სინქრონიზაცია.</translation>
 <translation id="3140883423282498090">თქვენი ცვლილებები Google Chrome.ის გადატვირთვის შემდეგ შევა ძალაში.</translation>
@@ -114,6 +117,7 @@
 <translation id="3735758079232443276">გაფართოებამ „<ph name="EXTENSION_NAME" />“ თქვენ მიერ Chrome-ის გაშვებისას ნაჩვენები გვერდი შეცვალა.</translation>
 <translation id="3779473566290487688">Google Chrome-ის მომავალი განახლებების მისაღებად დაგჭირდებათ OS X 10.11 ან უფრო ახალი ვერსია. ეს კომპიუტერი იყენებს OS X 10.10-ს.</translation>
 <translation id="3780814664026482060">Chrome — <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">ეს მოქმედება შექმნის ახალ Chrome პროფილს <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
 <translation id="386202838227397562">დახურეთ Google Chrome-ის ყველა ფანჯარა და ხელახლა სცადეთ.</translation>
 <translation id="3865754807470779944">დაინსტალირებულია Chrome-ის ვერსია <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">ბმულის გახსნა Chrome-ი ინკო&amp;გნიტო ფანჯარაში</translation>
@@ -121,7 +125,6 @@
 <translation id="4050175100176540509">უსაფრთხოების მნიშვნელოვანი გაუმჯობესება და ახალი თვისებები ხელმისაწვდომია უახლეს ვერსიაში.</translation>
 <translation id="4053720452172726777">Google Chrome-ის მორგება და კონტროლი</translation>
 <translation id="4110895483821904099">შექმენით ახალი Chrome პროფილი</translation>
-<translation id="4143243756087420366">სახელი და სურათი Chrome-ში</translation>
 <translation id="4147555960264124640">თქვენ სისტემაში შედიხართ მართული ანგარიშზით და მის ადმინისტრატორს აძლევთ თქვენი Google Chrome-ის პროფილის კონტროლის შესაძლებლობას. თქვენი Chrome მონაცემები, როგორიცაა თქვენი პროგრამები, სანიშნეები, ისტორია, პაროლები, და სხვა პარამეტრები გახდება მუდმივად <ph name="USER_NAME" />-თან მიბმული. თქვენ შეძლებთ ამ მონაცემების წაშლას Google Accounts Dashboard-ის მეშვეობით, მაგრამ თქვენ ვერ შეძლებთ ამ მონაცემების დაკავშირებას სხვა ანგარიშთან. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">ინსტალაციის პროგრამამ ვერ ამოიღო ფაილები არქივიდან. ხელახლა ჩამოტვირთეთ Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{ხელახლა გაუშვით Chrome დღის განმავლობაში}other{ხელახლა გაუშვით Chrome # დღის განმავლობაში}}</translation>
@@ -185,6 +188,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome გადაიტვირთება 1 წამში}other{Google Chrome გადაიტვირთება # წამში}}</translation>
 <translation id="573759479754913123">Chrome-ის OS-ის შესახებ</translation>
+<translation id="5756509061973259733">Chrome პროფილი ამ ანგარიშით უკვე არსებობს ამ მოწყობილობაზე</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> — Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome-ის გაშვება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="5867197326698922595">Google Chrome ცდილობს პაროლების რედაქტირებას.</translation>

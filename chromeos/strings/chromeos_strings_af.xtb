@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Kontroleringsportaal</translation>
 <translation id="2008685064673031089">Hoofsoektog</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beskibaar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">OP WAGLYS</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
+<translation id="2217935453350629363">Huidige spoed</translation>
 <translation id="2224337661447660594">Geen internet nie</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveringstatus</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">Ongeldige PIN.</translation>
 <translation id="3838338534323494292">Nuwe wagwoord</translation>
 <translation id="3865414814144988605">Resolusie</translation>
+<translation id="387301095347517405">Die aantal keer wat jou battery deur 'n volledige laaisiklus gegaan het</translation>
 <translation id="3941014780699102620">Kon nie gasheer bepaal nie</translation>
 <translation id="3942420633017001071">Diagnostiese inligting</translation>
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Maak seker dat die skandeerder aangeskakel is en via jou netwerk of 'n direkte verbinding beskikbaar is</translation>
 <translation id="4170700058716978431">MISLUK</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
-<translation id="4222698289790462549">Huidige spoed</translation>
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beskibaar.</translation>
 <translation id="4238516577297848345">Geen druktake aan die gang nie</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
 <translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos-kaartjie verval binnekort</translation>
+<translation id="4431821876790500265">Sien verslag</translation>
 <translation id="445059817448385655">Ou wagwoord</translation>
 <translation id="4453205916657964690">Subnetmasker</translation>
 <translation id="4454245904991689773">Skandeer na</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Gaan die skandeerder na en probeer weer. Maak seker daar is genoeg plaaslike spasie om lêers wat geskandeer is, te stoor.</translation>
 <translation id="4985509611418653372">Laat loop</translation>
+<translation id="4999333166442584738">Versteek verslag</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Groepnaam</translation>
@@ -208,7 +211,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} poging oor}other{{0} pogings oor}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Sien verslag</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -253,7 +255,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="649050271426829538">Gestop – papierknoop</translation>
 <translation id="6517239166834772319">Verken</translation>
 <translation id="6527081081771465939">Onbekende wi-fi-sekuriteitprotokol</translation>
-<translation id="6532051501443766164">Versteek verslag</translation>
 <translation id="65587193855025101">Plat oppervlak</translation>
 <translation id="6564646048574748301">Misluk – Kon nie drukker bereik nie</translation>
 <translation id="6618744767048954150">Werk tans</translation>
@@ -345,7 +346,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Verstek</translation>
 <translation id="8798441408945964110">Verskaffer se naam</translation>
-<translation id="880791622116642296">Dit is die aantal kere wat jou battery deur 'n volledige laaisiklus gegaan het</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>

@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">PIN коды жарамсыз.</translation>
 <translation id="3838338534323494292">Жаңа құпия сөз</translation>
 <translation id="3865414814144988605">Ажыратымдылық</translation>
+<translation id="387301095347517405">Батареяңыздың толық зарядтау циклінен өту саны</translation>
 <translation id="3941014780699102620">Хост атауы түрлендірілмеді.</translation>
 <translation id="3942420633017001071">Диагностика</translation>
 <translation id="3967822245660637423">Жүктеп алынды</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Сканеріңіз қосылып тұруы керек және желі немесе тікелей қосылым арқылы қолжетімді болуы тиіс.</translation>
 <translation id="4170700058716978431">СӘТСІЗ АЯҚТАЛДЫ</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
-<translation id="4222698289790462549">Қазіргі жылдамдық</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ГБ қолжетімді.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
 <translation id="4378373042927530923">Іске қосылмаған</translation>
@@ -207,7 +206,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} әрекет қалды.}other{{0} мүмкіндік қалды}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Есепті көру</translation>
 <translation id="5669267381087807207">Белсендірілуде</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Отбасы</translation>
@@ -252,7 +250,6 @@
 <translation id="649050271426829538">Тоқтатылды: қағаз кептелісі</translation>
 <translation id="6517239166834772319">Шолу</translation>
 <translation id="6527081081771465939">WiFi қауіпсіздік протоколы белгісіз.</translation>
-<translation id="6532051501443766164">Есепті жасыру</translation>
 <translation id="65587193855025101">Планшет</translation>
 <translation id="6564646048574748301">Сәтсіз: принтер қолжетімді емес</translation>
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
@@ -344,7 +341,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8798441408945964110">Провайдер аты</translation>
-<translation id="880791622116642296">Бұл – батареяңыздың толық зарядтау циклінен өту саны.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Анықтама алу</translation>
 <translation id="8881098542468797602">Тексеріс сәтті аяқталды.</translation>

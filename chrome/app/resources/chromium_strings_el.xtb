@@ -49,6 +49,7 @@
 <translation id="2770231113462710648">Αλλαγή προεπιλεγμένου προγράμματος περιήγησης σε:</translation>
 <translation id="2799223571221894425">Επανεκκίνηση</translation>
 <translation id="2816712596130903444">Δημιουργία ξεχωριστού προφίλ Chromium;</translation>
+<translation id="2837693172913560447">Με αυτόν τον τρόπο θα δημιουργηθεί ένα νέο προφίλ Chromium για το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Κατάργηση από το Chromium…</translation>
 <translation id="2885378588091291677">Διαχείριση εργασιών</translation>
 <translation id="2910007522516064972">Σχετικά με το &amp;Chromium</translation>
@@ -123,6 +124,7 @@
 <translation id="4987820182225656817">Οι επισκέπτες μπορούν να χρησιμοποιούν το Chromium χωρίς να αφήνουν κανένα ίχνος.</translation>
 <translation id="4994636714258228724">Προσθήκη του εαυτού σας στο Chromium</translation>
 <translation id="5224391634244552924">Δεν υπάρχουν αποθηκευμένοι κωδικοί πρόσβασης. Το Chromium μπορεί να ελέγξει τους κωδικούς πρόσβασής σας όταν τους αποθηκεύσετε.</translation>
+<translation id="5252179775517634216">Ο χρήστης <ph name="EXISTING_USER" /> είναι συνδεδεμένος ήδη σε αυτό το προφίλ Chromium. Με αυτόν τον τρόπο θα δημιουργηθεί ένα νέο προφίλ Chromium για το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Για να εφαρμόσετε τις αλλαγές σας, επανεκκινήστε το Chromium</translation>
 <translation id="5358375970380395591">Είστε συνδεδεμένοι με έναν διαχειριζόμενο λογαριασμό και παραχωρείτε στο διαχειριστή του τον έλεγχο του προφίλ σας στο Chromium. Τα δεδομένα σας στο Chromium, όπως οι εφαρμογές, οι σελιδοδείκτες, το ιστορικό, οι κωδικοί πρόσβασης και άλλες ρυθμίσεις θα συνδεθούν μόνιμα με το όνομα χρήστη <ph name="USER_NAME" />. Θα έχετε τη δυνατότητα να διαγράψετε αυτά τα δεδομένα μέσω του Πίνακα ελέγχου των Λογαριασμών Google, αλλά δεν θα μπορείτε να τα συσχετίσετε με άλλο λογαριασμό. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Ενημέρωση του Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -136,7 +138,6 @@
 <translation id="549669000822060376">Περιμένετε μέχρι να γίνει εγκατάσταση των πιο πρόσφατων ενημερώσεων συστήματος από το Chromium.</translation>
 <translation id="5496810170689441661">Το Chromium προσπαθεί να επεξεργαστεί κωδικούς πρόσβασης. Για να επιτρέψετε αυτήν την ενέργεια, πληκτρολογήστε τον κωδικό πρόσβασης των Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium}=1{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium}other{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium για # ημέρες}}</translation>
-<translation id="5631814766731275228">Όνομα και εικόνα στο Chromium</translation>
 <translation id="5634636535844844681">Το Chromium απαιτεί Windows 7 ή νεότερη έκδοση.</translation>
 <translation id="5653831366781983928">Επανεκκινήστε το Chromium τώρα</translation>
 <translation id="5698481217667032250">Να εμφανίζεται το Chromium σε αυτήν τη γλώσσα</translation>
@@ -164,6 +165,7 @@
 <translation id="6266342355635466082">Το Chromium δεν μπορεί να ελέγξει για ενημερώσεις Δοκιμάστε να ελέγξετε τη σύνδεσή σας στο διαδίκτυο.</translation>
 <translation id="6268381023930128611">Θέλετε να αποσυνδεθείτε από το Chromium;</translation>
 <translation id="6281746429495226318">Προσαρμόστε το προφίλ σας Chromium</translation>
+<translation id="6290827346642914212">Ονομάστε το προφίλ σας στο Chromium</translation>
 <translation id="6295779123002464101">Το αρχείο <ph name="FILE_NAME" /> μπορεί να είναι επικίνδυνο, επομένως έχει αποκλειστεί από το Chromium.</translation>
 <translation id="6309712487085796862">Το Chromium χρησιμοποιεί την κάμερά σας.</translation>
 <translation id="6333502561965082103">Μια άλλη λειτουργία στο Chromium βρίσκεται σε εξέλιξη. Δοκιμάστε ξανά αργότερα.</translation>
@@ -233,6 +235,7 @@
 <translation id="7773960292263897147">Προειδοποίηση: Το Chromium δεν μπορεί να αποτρέψει την καταγραφή του ιστορικού περιήγησης από τις επεκτάσεις. Για να απενεργοποιήσετε αυτήν την επέκταση σε κατάσταση ανώνυμης περιήγησης, καταργήστε αυτήν την επιλογή.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">Διαγραφή cookie και δεδομένων ιστοτόπου κατά τον τερματισμό του Chromium.</translation>
+<translation id="7828947555739565424">Υπάρχει ήδη σε αυτήν τη συσκευή ένα προφίλ Chromium με αυτόν τον λογαριασμό</translation>
 <translation id="7857220146454061152">Για τη λήψη των μελλοντικών ενημερώσεων του Chromium, θα χρειαστείτε το OS X 10.11 ή νεότερη έκδοση. Αυτός ο υπολογιστής χρησιμοποιεί το OS X 10.10.</translation>
 <translation id="7867198900892795913">Δεν ήταν δυνατή η ενημέρωση του Chromium στην τελευταία έκδοση και έτσι δεν θα έχετε πρόσβαση στις νέες λειτουργίες και στις επιδιορθώσεις ασφαλείας.</translation>
 <translation id="7898472181347242998">Για να διαπιστώσετε εάν η συσκευή σας είναι ενημερωμένη, μεταβείτε στις <ph name="LINK_BEGIN" />Ρυθμίσεις του Chromium OS<ph name="LINK_END" /></translation>
@@ -279,5 +282,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Σύστημα Chromium OS</translation>
 <translation id="93478295209880648">Το Chromium μπορεί να μην λειτουργεί σωστά, επειδή δεν υποστηρίζεται πια σε Windows XP και Windows Vista</translation>
+<translation id="965162752251293939">Ποιος χρησιμοποιεί το Chromium;</translation>
 <translation id="985602178874221306">Οι συντάκτες του Chromium</translation>
 </translationbundle>

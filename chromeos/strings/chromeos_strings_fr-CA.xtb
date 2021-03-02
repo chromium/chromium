@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">NIP erroné.</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3865414814144988605">Résolution</translation>
+<translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Assurez-vous que le numériseur est allumé et accessible par le biais de votre réseau ou d'une connexion directe</translation>
 <translation id="4170700058716978431">ÉCHEC</translation>
 <translation id="4176463684765177261">Désactivé</translation>
-<translation id="4222698289790462549">Vitesse actuelle</translation>
 <translation id="4227825898293920515">Le mot de passe expire dans <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go.</translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
@@ -208,7 +207,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Il vous reste {0} tentative}one{Il vous reste {0} tentative}other{Il vous reste {0} tentatives}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Afficher le rapport</translation>
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famille</translation>
@@ -253,7 +251,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="649050271426829538">Tâche arrêtée : bourrage de papier</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité Wi-Fi inconnu</translation>
-<translation id="6532051501443766164">Masquer le rapport</translation>
 <translation id="65587193855025101">À plat</translation>
 <translation id="6564646048574748301">Échec : imprimante inaccessible</translation>
 <translation id="6618744767048954150">En cours…</translation>
@@ -345,7 +342,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8798441408945964110">Nom du fournisseur</translation>
-<translation id="880791622116642296">Nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8881098542468797602">Test réussi</translation>

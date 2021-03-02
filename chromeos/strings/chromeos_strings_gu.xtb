@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">બંધ - શાહી ખલાસ થઈ ગઈ</translation>
 <translation id="1703835215927279855">અક્ષર</translation>
 <translation id="1706391837335750954">DNS રિઝોલ્વરનું વર્તમાન પરીક્ષણ</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> અને <ph name="SECOND_MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">સ્કૅન કરવાનું કાર્ય રદ કરી રહ્યાં છીએ</translation>
 <translation id="1851218745569890714">વીડિયો કૉન્ફરન્સિંગ</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
+<translation id="2365324413026422635">બૅટરી સંપૂર્ણપણે ચાર્જ થઈ જાય, પછી ચાર્જિંગનું પરીક્ષણ કરી શકાતું નથી</translation>
 <translation id="2391082728065870591">પ્રતિસાદ રિપોર્ટ મોકલો</translation>
 <translation id="2418150275289244458">સેટિંગમાં ખોલો</translation>
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
@@ -103,6 +105,7 @@
 <translation id="3459509316159669723">છાપવું</translation>
 <translation id="3488065109653206955">આંશિક રીતે સક્રિય કરેલું</translation>
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
+<translation id="3532980081107202182">લગભગ <ph name="MIN_REMAINING" /> મિનિટ બાકી છે</translation>
 <translation id="357889014807611375">મીટર્ડ (ડેટા નિયંત્રણ) વાઇ-ફાઇ</translation>
 <translation id="3595596368722241419">બૅટરી પૂર્ણ ચાર્જ</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
@@ -114,6 +117,7 @@
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
 <translation id="3865414814144988605">રિઝોલ્યુશન</translation>
+<translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
 <translation id="3941014780699102620">હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="3942420633017001071">ડાયગ્નોસ્ટિક્સ</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
@@ -126,9 +130,7 @@
 <translation id="4155551848414053977">ખાતરી કરો કે સ્કૅનર ચાલુ કરેલું છે અને તમારા નેટવર્ક અથવા સીધા જોડાણ મારફતે ઉપલબ્ધ છે</translation>
 <translation id="4170700058716978431">નિષ્ફળ થયું</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
-<translation id="4222698289790462549">વર્તમાન ઝડપ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
-<translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> GBમાંથી <ph name="AVAILABLE_MEMORY" /> GB ઉપલબ્ધ છે.</translation>
 <translation id="4238516577297848345">કોઈ પ્રિન્ટ કામ ચાલુ નથી</translation>
 <translation id="4297501883039923494">બંધ - અજાણી ભૂલ</translation>
 <translation id="4378373042927530923">ચલાવ્યું નથી</translation>
@@ -204,7 +206,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} પ્રયત્ન બાકી}one{{0} પ્રયત્ન બાકી}other{{0} પ્રયત્ન બાકી}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">રિપોર્ટ જુઓ</translation>
 <translation id="5669267381087807207">ચાલુ થાય છે</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">કુટુંબ</translation>
@@ -249,7 +250,6 @@
 <translation id="649050271426829538">બંધ - કાગળ ફસાયો</translation>
 <translation id="6517239166834772319">શોધખોળ કરો</translation>
 <translation id="6527081081771465939">વાઇ-ફાઇ સુરક્ષાનો અજાણ્યો પ્રોટોકૉલ</translation>
-<translation id="6532051501443766164">રિપોર્ટ છુપાવો</translation>
 <translation id="65587193855025101">ફ્લૅટબેડ</translation>
 <translation id="6564646048574748301">નિષ્ફળ થયું - પ્રિન્ટરથી કનેક્ટ થઈ શકાતું નથી</translation>
 <translation id="6618744767048954150">હજીપણ તપાસ થઈ રહી છે</translation>
@@ -329,6 +329,7 @@
 <translation id="8477551185774834963">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં થોડી વધુ છે</translation>
 <translation id="8483248364096924578">IP સરનામું</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
+<translation id="8503836310948963452">બસ થોડો વધુ સમય...</translation>
 <translation id="8576249514688522074">શરૂ કરી નથી</translation>
 <translation id="8620617069779373398">રોમિંગ સ્થિતિ</translation>
 <translation id="8675354002693747642">પહેલેથી-શેર કરેલી કી</translation>
@@ -340,7 +341,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
 <translation id="8798441408945964110">પ્રદાતાનું નામ</translation>
-<translation id="880791622116642296">આટલી વાર તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થઈ છે</translation>
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8881098542468797602">પરીક્ષણ સફળ થયું</translation>
@@ -360,6 +360,7 @@
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
 <translation id="9111102763498581341">અનલોક કરો</translation>
 <translation id="9149391708638971077">મેમરીનું પરીક્ષણ ચાલુ કરો</translation>
+<translation id="9173638680043580060">એક મિનિટ કરતાં ઓછો સમય બાકી છે</translation>
 <translation id="9190063653747922532">L2TP/IPsec + પૂર્વ-શેર કરેલી કી</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>

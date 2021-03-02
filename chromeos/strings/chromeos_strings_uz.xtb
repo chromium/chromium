@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1018656279737460067">Bekor qilindi</translation>
-<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ta oqim, <ph name="CPU_MAX_CLOCK_SPEED" />GGs)</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ta oqim, <ph name="CPU_MAX_CLOCK_SPEED" /> GGs)</translation>
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Kirish portali</translation>
 <translation id="2008685064673031089">Oddiy sonlarni qidirish</translation>
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB joy bor</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NAVBATDA</translation>
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
+<translation id="2217935453350629363">Joriy tezlik</translation>
 <translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivatsiya holati</translation>
@@ -93,7 +95,7 @@
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
-<translation id="3286515922899063534"><ph name="CURRENT" /> GGs</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS kutish vaqti ruxsat etilgan chegaradan juda baland</translation>
 <translation id="3328783797891415197">Tekshirilmoqda</translation>
 <translation id="3368922792935385530">Ulangan</translation>
@@ -105,6 +107,7 @@
 <translation id="3459509316159669723">Chop etish</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
+<translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
 <translation id="357889014807611375">Cheklangan trafikli Wi-Fi</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
@@ -116,6 +119,7 @@
 <translation id="3820172043799983114">PIN kod xato.</translation>
 <translation id="3838338534323494292">Yangi parol</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
+<translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
@@ -128,15 +132,14 @@
 <translation id="4155551848414053977">Skaner yoqilganini va tarmoq orqali ishlashi yoki bevosita ulanganini tekshiring</translation>
 <translation id="4170700058716978431">BAJARILMADI</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
-<translation id="4222698289790462549">Joriy tezlik</translation>
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB joy bor.</translation>
 <translation id="4238516577297848345">Hozir hech nima chop etilmayapti</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4378373042927530923">Ishga tushmadi</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos chiptasi amal qilish muddati tezda tugaydi</translation>
+<translation id="4431821876790500265">Hisobotni ochish</translation>
 <translation id="445059817448385655">Eski parol</translation>
 <translation id="4453205916657964690">Quyi tarmoq niqobi</translation>
 <translation id="4454245904991689773">Saqlash joyi</translation>
@@ -174,6 +177,7 @@
 <translation id="4932733599132424254">Sana</translation>
 <translation id="498186245079027698">Skanerni tekshiring va qayta urining. Skanerlangan fayllarni saqlash uchun joy yetarli ekanini tekshiring.</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
+<translation id="4999333166442584738">Hisobotni yopish</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Guruh nomi</translation>
@@ -207,7 +211,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ta urinish qoldi}other{{0} ta urinish qoldi}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Hisobotni ochish</translation>
 <translation id="5669267381087807207">Faollashmoqda</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Oilaviy</translation>
@@ -252,7 +255,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="649050271426829538">Toʻxtatildi – Qogʻoz tiqilib qoldi</translation>
 <translation id="6517239166834772319">Tanishuv</translation>
 <translation id="6527081081771465939">Notanish WiFi xavfsizlik protokoli</translation>
-<translation id="6532051501443766164">Hisobotni yopish</translation>
 <translation id="65587193855025101">Planshetli</translation>
 <translation id="6564646048574748301">Bajarilmadi - Printer ulanmagan</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
@@ -332,6 +334,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8477551185774834963">DNS kutish vaqti ruxsat etilgan chegaradan biroz baland</translation>
 <translation id="8483248364096924578">IP manzil</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
+<translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
 <translation id="8620617069779373398">Rouming holati</translation>
 <translation id="8675354002693747642">Umumiy kalit</translation>
@@ -343,7 +346,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standart</translation>
 <translation id="8798441408945964110">Ta’minotchi nomi</translation>
-<translation id="880791622116642296">Batareya toʻliq quvvat olgan sikllari soni</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Yordam</translation>
 <translation id="8881098542468797602">Tekshiruv yakunlandi</translation>
@@ -363,6 +365,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>
 <translation id="9111102763498581341">Qulfdan yechish</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
+<translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>
 <translation id="9190063653747922532">L2TP/IPsec + umumiy kalit</translation>
 <translation id="939519157834106403">Tarmoq nomi (SSID)</translation>
 <translation id="952992212772159698">Faollashtirilmagan</translation>

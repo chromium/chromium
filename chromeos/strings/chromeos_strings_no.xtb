@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="3838338534323494292">Nytt passord</translation>
 <translation id="3865414814144988605">Oppløsning</translation>
+<translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
 <translation id="3941014780699102620">Kunne ikke finne tilknytning til verten</translation>
 <translation id="3942420633017001071">Diagnostikk</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Sørg for at skanneren er påslått og tilgjengelig via nettverket eller en direktetilkobling</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
-<translation id="4222698289790462549">Nåværende hastighet</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB av <ph name="TOTAL_MEMORY" /> GB er tilgjengelig.</translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
 <translation id="4378373042927530923">Ikke kjørt</translation>
@@ -208,7 +207,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} forsøk igjen}other{{0} forsøk igjen}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Se rapporten</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -253,7 +251,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="649050271426829538">Stoppet – papirstopp</translation>
 <translation id="6517239166834772319">Utforsk</translation>
 <translation id="6527081081771465939">Ukjent Wi-Fi-sikkerhetsprotokoll</translation>
-<translation id="6532051501443766164">Skjul rapporten</translation>
 <translation id="65587193855025101">Planskanner</translation>
 <translation id="6564646048574748301">Mislykket – skriveren kan ikke nås</translation>
 <translation id="6618744767048954150">Kjører</translation>
@@ -345,7 +342,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverandørnavn</translation>
-<translation id="880791622116642296">Dette er antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Få hjelp</translation>
 <translation id="8881098542468797602">Testen er fullført</translation>

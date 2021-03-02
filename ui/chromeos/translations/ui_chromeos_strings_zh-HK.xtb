@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">所有檔案</translation>
 <translation id="1810764548349082891">無法預覽</translation>
 <translation id="1812302367230252929">阿姆哈拉文 (音譯)</translation>
+<translation id="1813278315230285598">服務</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告：<ph name="END_BOLD" />這些是暫存檔案，系統可能會自動將其刪除，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="183183971458492120">正在載入資料…</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">移動失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">芬蘭文</translation>
 <translation id="1942765061641586207">圖片解像度</translation>
-<translation id="1943097386230153518">安裝新的擴充程式</translation>
 <translation id="1972984168337863910">展開檔案意見面板</translation>
+<translation id="1984456723671657197">不支援此檔案類型。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="1995337122023280937">前往檔案位置</translation>
 <translation id="2001796770603320721">在「雲端硬碟」中管理</translation>
 <translation id="2009067268969781306">格式化硬碟將刪除其中儲存的所有資料。此操作無法復原。</translation>
@@ -652,7 +653,6 @@
 <translation id="7839804798877833423">擷取這些檔案大約會使用 <ph name="FILE_SIZE" /> 流動數據流量。</translation>
 <translation id="7846076177841592234">取消選取</translation>
 <translation id="7853966320808728790">法文 BÉPO</translation>
-<translation id="7864662577698025113">新增服務</translation>
 <translation id="7868774406711971383">波蘭文</translation>
 <translation id="7873831373602885875">無法儲存到「<ph name="FOLDER_NAME" />」。系統會將所有編輯內容儲存到「下載」資料夾中的「<ph name="DOWNLOADS_FOLDER" />」。</translation>
 <translation id="7874321682039004450">菲律賓文</translation>
@@ -667,6 +667,7 @@
 <translation id="7972920761225148017">法文 (瑞士)</translation>
 <translation id="7980421588063892270">英文 (美國)，Colemak 鍵盤</translation>
 <translation id="7982283708762922719">高度</translation>
+<translation id="79907182588096956">這個檔案是專為使用 Windows 軟件的電腦而設，與運行 Chrome 作業系統的裝置並不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="8008366997883261463">傑克羅素梗犬</translation>
 <translation id="8028993641010258682">大小</translation>
 <translation id="803771048473350947">檔案</translation>
@@ -746,6 +747,7 @@
 <translation id="8900820606136623064">匈牙利文</translation>
 <translation id="8919081441417203123">丹麥文</translation>
 <translation id="8965697826696209160">空間不足。</translation>
+<translation id="8970501467542182729">這個檔案是專為使用 Macintosh 軟件的電腦而設，與運行 Chrome 作業系統的裝置並不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="8997962250644902079">繁體中文 (拼音)</translation>
 <translation id="9017798300203431059">俄文 (拼音)</translation>
 <translation id="9034924485347205037">Linux 檔案</translation>

@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Fitxategi guztiak</translation>
 <translation id="1810764548349082891">Ez dago aurrebistarik</translation>
 <translation id="1812302367230252929">Amhareraren transliterazioa</translation>
+<translation id="1813278315230285598">Zerbitzuak</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Kontuz:<ph name="END_BOLD" />  fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.  <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguinoa</translation>
 <translation id="183183971458492120">Informazioa kargatzen…</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">Ezin izan da mugitu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandiarra</translation>
 <translation id="1942765061641586207">Irudiaren bereizmena</translation>
-<translation id="1943097386230153518">Instalatu zerbitzu berri bat</translation>
 <translation id="1972984168337863910">Zabaldu fitxategien oharren panelak</translation>
+<translation id="1984456723671657197">Ez da onartzen mota horretako fitxategirik. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
 <translation id="1995337122023280937">Joan fitxategiaren kokapenera</translation>
 <translation id="2001796770603320721">Kudeatu Drive-n</translation>
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
@@ -651,7 +652,6 @@
 <translation id="7839804798877833423">Fitxategi horiek eskuratzeko, mugikorreko datuen <ph name="FILE_SIZE" /> erabiliko dira.</translation>
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
 <translation id="7853966320808728790">BÉPO teklatu frantsesa</translation>
-<translation id="7864662577698025113">Gehitu zerbitzu berri bat</translation>
 <translation id="7868774406711971383">Poloniarra</translation>
 <translation id="7873831373602885875">Ezin da gorde ezer <ph name="FOLDER_NAME" /> karpetan. Aldaketa guztiak Deskargak karpetako <ph name="DOWNLOADS_FOLDER" /> karpetan gordeko dira.</translation>
 <translation id="7874321682039004450">Filipinarra</translation>
@@ -666,6 +666,7 @@
 <translation id="7972920761225148017">Frantsesa (Suitza)</translation>
 <translation id="7980421588063892270">Ingelesa (AEB), Colemak teklatuarekin</translation>
 <translation id="7982283708762922719">Altuera</translation>
+<translation id="79907182588096956">Windows-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
 <translation id="8008366997883261463">Jack Russell Terrier arrazako zakurra</translation>
 <translation id="8028993641010258682">Tamaina</translation>
 <translation id="803771048473350947">Fitxategia</translation>
@@ -745,6 +746,7 @@
 <translation id="8900820606136623064">Hungariarra</translation>
 <translation id="8919081441417203123">Daniarra</translation>
 <translation id="8965697826696209160">Ez dago memoria nahikorik.</translation>
+<translation id="8970501467542182729">Macintosh-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
 <translation id="8997962250644902079">Txinatarra (tradizionala, pinyin)</translation>
 <translation id="9017798300203431059">Fonetika errusiarra</translation>
 <translation id="9034924485347205037">Linux fitxategiak</translation>

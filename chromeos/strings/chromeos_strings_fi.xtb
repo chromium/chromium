@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2008685064673031089">Ensisijainen haku</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> Gt / <ph name="TOTAL_MEMORY" /> Gt saatavilla</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">JONOSSA</translation>
 <translation id="2161394479394250669">Peruuta tulostustyö</translation>
+<translation id="2217935453350629363">Nykyinen nopeus</translation>
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">Virheellinen PIN-koodi</translation>
 <translation id="3838338534323494292">Uusi salasana</translation>
 <translation id="3865414814144988605">Resoluutio</translation>
+<translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
 <translation id="3942420633017001071">Diagnostiikka</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Varmista, että skanneri on päällä ja käytettävissä verkkosi tai suoran yhteyden kautta</translation>
 <translation id="4170700058716978431">EPÄONNISTUI</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
-<translation id="4222698289790462549">Nykyinen nopeus</translation>
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> Gt / <ph name="TOTAL_MEMORY" /> Gt saatavilla.</translation>
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4378373042927530923">Ei suoritettu</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
+<translation id="4431821876790500265">Katso raportti</translation>
 <translation id="445059817448385655">Vanha salasana</translation>
 <translation id="4453205916657964690">Aliverkon maski</translation>
 <translation id="4454245904991689773">Skannauskohde</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
 <translation id="4985509611418653372">Suorita</translation>
+<translation id="4999333166442584738">Piilota raportti</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Ryhmän nimi</translation>
@@ -208,7 +211,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} yritys jäljellä}other{{0} yritystä jäljellä}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Katso raportti</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Perhe</translation>
@@ -253,7 +255,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Tuntematon Wi-Fi-suojausprotokolla</translation>
-<translation id="6532051501443766164">Piilota raportti</translation>
 <translation id="65587193855025101">Tasoskanneri</translation>
 <translation id="6564646048574748301">Epäonnistui – Ei yhteyttä tulostimeen</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
@@ -345,7 +346,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8798441408945964110">Palveluntarjoajan nimi</translation>
-<translation id="880791622116642296">Kertoo, kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8881098542468797602">Testi onnistui</translation>

@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Prihlasovací portál</translation>
 <translation id="2008685064673031089">Vyhľadávanie prvočísel</translation>
 <translation id="2080070583977670716">Ďalšie nastavenia</translation>
+<translation id="2126937207024182736">K dispozícii je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">V PORADÍ</translation>
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
+<translation id="2217935453350629363">Aktuálna rýchlosť</translation>
 <translation id="2224337661447660594">Bez internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stav aktivácie</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3865414814144988605">Rozlíšenie</translation>
+<translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
 <translation id="4170700058716978431">NEPODARILO SA</translation>
 <translation id="4176463684765177261">Deaktivované</translation>
-<translation id="4222698289790462549">Aktuálna rýchlosť</translation>
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
-<translation id="4228041325992544252">K dispozícii je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
 <translation id="4378373042927530923">Nebolo spustené</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Môj disk</translation>
 <translation id="4429881212383817840">Platnosť tiketu Kerberos čoskoro uplynie</translation>
+<translation id="4431821876790500265">Zobraziť prehľad</translation>
 <translation id="445059817448385655">Staré heslo</translation>
 <translation id="4453205916657964690">Maska podsiete</translation>
 <translation id="4454245904991689773">Adresár na skenovanie</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="498186245079027698">Skontrolujte skener a skúste to znova. Uistite sa, že na uloženie naskenovaných súborov je v zariadení dostatok priestoru.</translation>
 <translation id="4985509611418653372">Spustiť</translation>
+<translation id="4999333166442584738">Skryť prehľad</translation>
 <translation id="500920857929044050">Zastaviť test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Názov skupiny</translation>
@@ -208,7 +211,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zostáva {0} pokus}few{Zostávajú {0} pokusy}many{{0} attempts left}other{Zostáva {0} pokusov}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Zobraziť prehľad</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodina</translation>
@@ -253,7 +255,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
 <translation id="6527081081771465939">Neznámy protokol zabezpečenia siete Wi‑Fi</translation>
-<translation id="6532051501443766164">Skryť prehľad</translation>
 <translation id="65587193855025101">Reflektívny skener</translation>
 <translation id="6564646048574748301">Nepodarilo sa – nedostupné</translation>
 <translation id="6618744767048954150">Beží</translation>
@@ -345,7 +346,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predvolené</translation>
 <translation id="8798441408945964110">Názov poskytovateľa</translation>
-<translation id="880791622116642296">Toto číslo vyjadruje, koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
 <translation id="8814190375133053267">Wi‑Fi</translation>
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8881098542468797602">Test bol úspešný</translation>

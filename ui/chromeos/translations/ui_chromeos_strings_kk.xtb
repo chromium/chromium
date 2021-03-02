@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Барлық файлдар</translation>
 <translation id="1810764548349082891">Алдын ала қаралмайды</translation>
 <translation id="1812302367230252929">Амхар (транслитерация)</translation>
+<translation id="1813278315230285598">Қызметтер</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Абайлаңыз:<ph name="END_BOLD" /> Бұл файлдар уақытша болып, дисктегі орынды босату үшін автоматты түрде жойылуы мүмкін. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Ақпарат жүктелуде…</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Тасымалданбады, күтпеген қате шықты: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">фин</translation>
 <translation id="1942765061641586207">Кескін ажыратымдылығы</translation>
-<translation id="1943097386230153518">Жаңа қызмет орнату</translation>
 <translation id="1972984168337863910">Файлдар пікірі панельдерін жаю</translation>
 <translation id="1984456723671657197">Мұндай файл түріне қолдау көрсетілмейді. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="1995337122023280937">Файл орнына өту</translation>
@@ -652,7 +652,6 @@
 <translation id="7839804798877833423">Бұл файлдарды алу үшін ұялы деректердің шамамен <ph name="FILE_SIZE" /> пайдаланылады.</translation>
 <translation id="7846076177841592234">Таңдаудан бас тарту</translation>
 <translation id="7853966320808728790">Француз BÉPO</translation>
-<translation id="7864662577698025113">Жаңа қызмет енгізу</translation>
 <translation id="7868774406711971383">Поляк</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> қалтасына сақтау мүмкін емес. Барлық өзгертулер "Жүктеп алынғандар" ішіндегі <ph name="DOWNLOADS_FOLDER" /> қалтасына сақталады.</translation>
 <translation id="7874321682039004450">Филиппин</translation>

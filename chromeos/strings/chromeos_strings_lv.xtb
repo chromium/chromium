@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
 <translation id="3838338534323494292">Jaunā parole</translation>
 <translation id="3865414814144988605">Izšķirtspēja</translation>
+<translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
 <translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Skenerim ir jābūt ieslēgtam un ar to ir jāizveido savienojums tīklā vai tiešs savienojums.</translation>
 <translation id="4170700058716978431">NESEKMĪGA</translation>
 <translation id="4176463684765177261">Atspējota</translation>
-<translation id="4222698289790462549">Pašreizējais ātrums</translation>
 <translation id="4227825898293920515">Paroles derīguma termiņš: <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Pieejamais apjoms: <ph name="AVAILABLE_MEMORY" /> GB no <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Nenotiek neviens drukas darbs</translation>
 <translation id="4297501883039923494">Apturēts — nezināma kļūda</translation>
 <translation id="4378373042927530923">Nav veikta izpilde</translation>
@@ -208,7 +207,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Atlicis {0} mēģinājums.}zero{Atlikuši {0} mēģinājumi.}one{Atlicis {0} mēģinājums.}other{Atlikuši {0} mēģinājumi.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Skatīt pārskatu</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ģimene</translation>
@@ -253,7 +251,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="649050271426829538">Apturēts — iestrēdzis papīrs</translation>
 <translation id="6517239166834772319">Izpēte</translation>
 <translation id="6527081081771465939">Nezināms Wi-Fi drošības protokols</translation>
-<translation id="6532051501443766164">Paslēpt pārskatu</translation>
 <translation id="65587193855025101">Plakanvirsma</translation>
 <translation id="6564646048574748301">Neizdevās — printeris nav sasniedzams</translation>
 <translation id="6618744767048954150">Notiek pārbaude</translation>
@@ -345,7 +342,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
 <translation id="8798441408945964110">Pakalpojumu sniedzēja nosaukums</translation>
-<translation id="880791622116642296">Šeit norādīts, cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8881098542468797602">Pārbaude sekmīga</translation>

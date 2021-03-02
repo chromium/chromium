@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Fiksuotasis portalas</translation>
 <translation id="2008685064673031089">Pagrindinė paieška</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
+<translation id="2126937207024182736">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
+<translation id="2217935453350629363">Dabartinė sparta</translation>
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">Netinkamas PIN kodas.</translation>
 <translation id="3838338534323494292">Naujas slaptažodis</translation>
 <translation id="3865414814144988605">Skyra</translation>
+<translation id="387301095347517405">Kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
 <translation id="3941014780699102620">Nepavyko nustatyti prieglobos pavadinimo</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Įsitikinkite, kad skaitytuvas įjungtas ir pasiekiamas tinkle arba tiesioginiu ryšiu</translation>
 <translation id="4170700058716978431">NESĖKMINGAS</translation>
 <translation id="4176463684765177261">Išjungta</translation>
-<translation id="4222698289790462549">Dabartinė sparta</translation>
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
 <translation id="4378373042927530923">Nevykdyti</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
+<translation id="4431821876790500265">Žr. ataskaitą</translation>
 <translation id="445059817448385655">Senas slaptažodis</translation>
 <translation id="4453205916657964690">Potinklio kaukė</translation>
 <translation id="4454245904991689773">Nuskaityti į</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
+<translation id="4999333166442584738">Slėpti ataskaitą</translation>
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Grupės pavadinimas</translation>
@@ -208,7 +211,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Liko {0} bandymas}one{Liko {0} bandymas}few{Liko {0} bandymai}many{Liko {0} bandymo}other{Liko {0} bandymų}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Žr. ataskaitą</translation>
 <translation id="5669267381087807207">Aktyvinama</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Šeima</translation>
@@ -253,7 +255,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="649050271426829538">Sustabdyta – įstrigęs popierius</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
-<translation id="6532051501443766164">Slėpti ataskaitą</translation>
 <translation id="65587193855025101">Plokščiasis</translation>
 <translation id="6564646048574748301">Nepavyko – spausdintuvas nepasiekiamas</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
@@ -345,7 +346,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
 <translation id="8798441408945964110">Teikėjo pavadinimas</translation>
-<translation id="880791622116642296">Tai yra kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
 <translation id="8814190375133053267">WI-Fi</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>

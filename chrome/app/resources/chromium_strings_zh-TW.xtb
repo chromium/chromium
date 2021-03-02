@@ -136,7 +136,6 @@
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發布 # 天}}</translation>
-<translation id="5631814766731275228">Chromium 名稱和相片</translation>
 <translation id="5634636535844844681">Chromium 僅支援 Windows 7 以上版本的作業系統。</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
 <translation id="5698481217667032250">將 Chromium 的介面文字設為這種語言</translation>
@@ -164,6 +163,7 @@
 <translation id="6266342355635466082">Chromium 無法檢查更新，請查看你的網際網路連線狀態。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6281746429495226318">自訂 Chromium 設定檔</translation>
+<translation id="6290827346642914212">為 Chromium 設定檔命名</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> 可能不安全，因此遭到 Chromium 封鎖。</translation>
 <translation id="6309712487085796862">Chromium 正在使用你的攝影機。</translation>
 <translation id="6333502561965082103">Chromium 正在執行另一項作業，請稍後再試。</translation>
@@ -278,5 +278,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium 作業系統</translation>
 <translation id="93478295209880648">Chromium 已不適用於 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
+<translation id="965162752251293939">誰在使用 Chromium？</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

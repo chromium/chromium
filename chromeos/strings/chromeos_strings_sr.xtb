@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Улазни портал</translation>
 <translation id="2008685064673031089">Примарна претрага</translation>
 <translation id="2080070583977670716">Више подешавања</translation>
+<translation id="2126937207024182736">Доступно: <ph name="AVAILABLE_MEMORY" /> GB од <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">НА ЧЕКАЊУ</translation>
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
+<translation id="2217935453350629363">Тренутна брзина</translation>
 <translation id="2224337661447660594">Нема интернета</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус активације</translation>
@@ -117,6 +119,7 @@
 <translation id="3820172043799983114">Неважећи PIN.</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
 <translation id="3865414814144988605">Резолуција</translation>
+<translation id="387301095347517405">Број пута када се батерија напунила до краја</translation>
 <translation id="3941014780699102620">Разрешење хоста није успело</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
@@ -129,15 +132,14 @@
 <translation id="4155551848414053977">Проверите да ли је скенер укључен и доступан преко мреже или директне везе</translation>
 <translation id="4170700058716978431">НИЈЕ УСПЕЛО</translation>
 <translation id="4176463684765177261">Онемогућено</translation>
-<translation id="4222698289790462549">Тренутна брзина</translation>
 <translation id="4227825898293920515">Лозинка истиче за <ph name="TIME" /></translation>
-<translation id="4228041325992544252">Доступно: <ph name="AVAILABLE_MEMORY" /> GB од <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="4238516577297848345">Ниједан задатак штампања није у току</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
 <translation id="4378373042927530923">Није покренуто</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мој диск</translation>
 <translation id="4429881212383817840">Kerberos тикет ускоро истиче</translation>
+<translation id="4431821876790500265">Прикажи извештај</translation>
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4453205916657964690">Маска подмреже</translation>
 <translation id="4454245904991689773">Скенирај у:</translation>
@@ -175,6 +177,7 @@
 <translation id="4932733599132424254">Датум</translation>
 <translation id="498186245079027698">Проверите скенер и пробајте поново. Уверите се да има довољно локалне меморије за чување скенираних фајлова.</translation>
 <translation id="4985509611418653372">Покрени</translation>
+<translation id="4999333166442584738">Сакриј извештај</translation>
 <translation id="500920857929044050">Заустави тест</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Назив групе</translation>
@@ -208,7 +211,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Преостаје {0} покушај}one{Преостаје {0} покушај}few{Преостају {0} покушаја}other{Преостаје {0} покушаја}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Прикажи извештај</translation>
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Породица</translation>
@@ -253,7 +255,6 @@
 <translation id="649050271426829538">Заустављено – папир је заглављен</translation>
 <translation id="6517239166834772319">Истражите</translation>
 <translation id="6527081081771465939">Непознат безбедносни протокол за WiFi</translation>
-<translation id="6532051501443766164">Сакриј извештај</translation>
 <translation id="65587193855025101">Положено</translation>
 <translation id="6564646048574748301">Није успело – штампач није доступан</translation>
 <translation id="6618744767048954150">У току је</translation>
@@ -345,7 +346,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
 <translation id="8798441408945964110">Назив добављача</translation>
-<translation id="880791622116642296">Оволико пута се батерија напунила до краја</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8845001906332463065">Затражите помоћ</translation>
 <translation id="8881098542468797602">Тест је успео</translation>

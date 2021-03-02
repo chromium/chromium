@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">सर्व फाइल</translation>
 <translation id="1810764548349082891">कोणतेही पूर्वावलोकन उपलब्ध नाही</translation>
 <translation id="1812302367230252929">अम्हारिक लिप्यंतरण</translation>
+<translation id="1813278315230285598">सेवा</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ताकीद:<ph name="END_BOLD" />  या फाइल तात्पुरत्या आहेत आणि डिस्क स्थान मुक्त करण्‍यासाठी कदाचित स्वयंचलितपणे हटविल्या जातील.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेंग्विन</translation>
 <translation id="183183971458492120">माहिती लोड करत आहे...</translation>
@@ -91,8 +92,8 @@
 <translation id="1933345018156373194">हलवता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">फिन्निश</translation>
 <translation id="1942765061641586207">इमेज रिझोल्युशन</translation>
-<translation id="1943097386230153518">नवीन सेवा इंस्टॉल करा</translation>
 <translation id="1972984168337863910">फाइल फीडबॅक पॅनलचा विस्तार करा</translation>
+<translation id="1984456723671657197">या फाइलच्या प्रकाराला सपोर्ट नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">फाइल स्थानावर जा</translation>
 <translation id="2001796770603320721">ड्राइव्ह मध्ये व्यवस्थापित करा</translation>
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
@@ -652,7 +653,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7839804798877833423">या फाइल प्राप्त करताना अंदाजे <ph name="FILE_SIZE" /> मोबाइल डेटा वापरला जाईल.</translation>
 <translation id="7846076177841592234">निवड रद्द करा</translation>
 <translation id="7853966320808728790">फ्रेंच बेपो</translation>
-<translation id="7864662577698025113">नवीन सेवा जोडा</translation>
 <translation id="7868774406711971383">पोलिश</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> वर सेव्ह करू शकत नाही. सर्व संपादने डाउनलोड फोल्‍डरमधील <ph name="DOWNLOADS_FOLDER" /> मध्ये सेव्ह केली जातील.</translation>
 <translation id="7874321682039004450">फिलिपिनो</translation>
@@ -667,6 +667,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7972920761225148017">फ्रेंच (स्वित्झर्लंड)</translation>
 <translation id="7980421588063892270">कोलमॅक कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="7982283708762922719">उंची</translation>
+<translation id="79907182588096956">ही फाइल Windows सॉफ्टवेअर वापरणार्‍या PC साठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">कुत्रा</translation>
 <translation id="8028993641010258682">आकार</translation>
 <translation id="803771048473350947">फाइल</translation>
@@ -746,6 +747,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8900820606136623064">हंगेरियन</translation>
 <translation id="8919081441417203123">डॅनिश</translation>
 <translation id="8965697826696209160">पुरेशी जागा नाही.</translation>
+<translation id="8970501467542182729">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरसाठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">चीनी (पारंपरिक) पिनयिन</translation>
 <translation id="9017798300203431059">रशियन ध्वन्यात्मक</translation>
 <translation id="9034924485347205037">Linux फाइल</translation>

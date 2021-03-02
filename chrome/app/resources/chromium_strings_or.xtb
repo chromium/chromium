@@ -106,6 +106,7 @@
 <translation id="4407044323746248786">ଯେକୌଣସିମତେ Chromiumରୁ ବାହାରିବେ?</translation>
 <translation id="4415566066719264597">ପୃଷ୍ଠପଟରେ Chromiumକୁ ଚାଲିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="4423735387467980091">Chromium କଷ୍ଟମାଇଜ୍ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
+<translation id="4491398312037323794">ଏହି ପୃଷ୍ଠା ଆପଣଙ୍କୁ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ ହୋଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବାକୁ ଅନୁମତି ଦେଇଥାଏ। ଏହି ଆକାଉଣ୍ଟଗୁଡ଼ିକ Chromium ବ୍ରାଉଜର୍ ଓ Play Store ଆପଗୁଡ଼ିକ ସହ Gmail, Drive ଏବଂ YouTube ପରି ସେବାଗୁଡ଼ିକରେ ଉପଲବ୍ଧ ହେବ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Chromiumକୁ ସ୍ୱାଗତ; ନୂଆ ବ୍ରାଉଜର୍ ୱିଣ୍ଡୋ ଖୋଲାଯାଇଛି</translation>
 <translation id="4544142686420020088">Chromium ଅପଡେଟ୍ ହେଲା ନାହିଁ, କିଛି ତ୍ରୁଟି ହୋଇଗଲା। <ph name="BEGIN_LINK" />Chromium ଅପଡେଟ୍ ସମସ୍ୟା ଏବଂ ବିଫଳ ଅପଡେଟଗୁଡ଼ିକର ସମାଧାନ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">ଏକ ନୂଆ Chromium ପ୍ରୋଫାଇଲରେ ଜାରି ରଖିବେ?</translation>
@@ -137,7 +138,6 @@
 <translation id="549669000822060376">Chromium ନବୀନତମ ସିଷ୍ଟମ୍ ଅପ୍‌ଡେଟ୍ ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ସମୟରେ ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="5496810170689441661">Chromium ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଆପଣଙ୍କ Windows ପାସୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="5623402015214259806">{0,plural, =0{ଏକ Chromium ଅପ୍‌ଡେଟ୍‍ ଉପଲବ୍ଧ ଅଛି}=1{ଏକ Chromium ଅପ୍‌ଡେଟ୍‍ ଉପଲବ୍ଧ ଅଛି}other{# ଦିନ ପାଇଁ ଏକ Chromium ଅପ୍‌ଡେଟ୍‌ ଉପଲବ୍ଧ ଅଛି}}</translation>
-<translation id="5631814766731275228">Chromium ନାମ ଏବଂ ଛବି</translation>
 <translation id="5634636535844844681">Chromium ପାଇଁ Windows 7 କିମ୍ବା ଏହାଠାରୁ ଉଚ୍ଚତର ସଂସ୍କରଣ ଆବଶ୍ୟକତା ହୋ‍ଇଥାଏ।</translation>
 <translation id="5653831366781983928">ଦୟାକରି ବର୍ତ୍ତମାନ Chromium ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5698481217667032250">Chromiumକୁ ଏହି ଭାଷାରେ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
@@ -165,6 +165,7 @@
 <translation id="6266342355635466082">Chromium ଅପଡେଟଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। ଆପଣଙ୍କର ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="6268381023930128611">Chromiumରୁ ସାଇନ୍ ଆଉଟ୍ କରିବେ କି?</translation>
 <translation id="6281746429495226318">ଆପଣଙ୍କ Chromium ପ୍ରୋଫାଇଲକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
+<translation id="6290827346642914212">ଆପଣଙ୍କ Chromium ପ୍ରୋଫାଇଲର ନାମ ଦିଅନ୍ତୁ</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" />, ବିପଜ୍ଜନକ ହୋଇପାରେ, ତେଣୁ ଏହାକୁ Chromium ଅବରୋଧ କରିଛି।</translation>
 <translation id="6309712487085796862">ଆପଣଙ୍କର କ୍ୟାମେରା Chromium ବ୍ୟବହାର କରୁଛି।</translation>
 <translation id="6333502561965082103">Chromiumରେ ଅନ୍ୟ ଏକ କାର୍ଯ୍ୟ ପ୍ରକ୍ରିୟାରତ ଅଛି। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -278,5 +279,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS ସିଷ୍ଟମ୍</translation>
 <translation id="93478295209880648">Chromium ହୁଏତ ସଠିକ୍ ଭାବେ କାର୍ଯ୍ୟ କରି ନପାରେ କାରଣ ଏହା ଆଉ Windows XP କିମ୍ବା Windows Vistaରେ ସମର୍ଥିତ ନୁହେଁ</translation>
+<translation id="965162752251293939">କିଏ Chromium ବ୍ୟବହାର କରୁଛନ୍ତି?</translation>
 <translation id="985602178874221306">Chromium ଲେଖକ</translation>
 </translationbundle>

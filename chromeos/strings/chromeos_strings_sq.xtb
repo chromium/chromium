@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Zgjidhësi i DNS-së i pranishëm</translation>
+<translation id="1717874160321062422">Menaxhohet nga <ph name="FIRST_MANAGER" /> dhe <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Skanimi po anulohet</translation>
 <translation id="1851218745569890714">Videokonferenca</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivizo "Bluetooth-in" për të zbuluar pajisjet në afërsi</translation>
 <translation id="2364498172489649528">Kaloi</translation>
+<translation id="2365324413026422635">Testi i karikimit të baterisë nuk mund të kryhet kur ajo është plot</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
 <translation id="2418150275289244458">Hape te cilësimet</translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
@@ -103,6 +105,7 @@
 <translation id="3459509316159669723">Po printon</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
+<translation id="3532980081107202182">Rreth <ph name="MIN_REMAINING" /> minuta të mbetura</translation>
 <translation id="357889014807611375">Wi-Fi me matje</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
@@ -114,6 +117,7 @@
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
 <translation id="3838338534323494292">Fjalëkalimi i ri</translation>
 <translation id="3865414814144988605">Rezolucioni</translation>
+<translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
 <translation id="3942420633017001071">Diagnostikimi</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
@@ -126,9 +130,7 @@
 <translation id="4155551848414053977">Sigurohu që skaneri të jetë i ndezur dhe i disponueshëm përmes rrjetit tënd ose një lidhjeje të drejtpërdrejtë</translation>
 <translation id="4170700058716978431">DËSHTOI</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
-<translation id="4222698289790462549">Shpejtësia aktuale</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB nga <ph name="TOTAL_MEMORY" /> GB të disponueshme.</translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
@@ -204,7 +206,6 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} përpjekje e mbetur}other{{0} përpjekje të mbetura}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Shiko raportin</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familja</translation>
@@ -249,7 +250,6 @@
 <translation id="649050271426829538">Ndaloi - Bllokim letre</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
-<translation id="6532051501443766164">Fshih raportin</translation>
 <translation id="65587193855025101">Shtrat i sheshtë</translation>
 <translation id="6564646048574748301">Dështoi - Printeri është i paarritshëm</translation>
 <translation id="6618744767048954150">Në ekzekutim</translation>
@@ -329,6 +329,7 @@
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
 <translation id="8483248364096924578">Adresa e IP-së</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
+<translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
 <translation id="8576249514688522074">E pafilluar</translation>
 <translation id="8620617069779373398">Statusi në roaming</translation>
 <translation id="8675354002693747642">Çelës i ndarë paraprakisht</translation>
@@ -340,7 +341,6 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
 <translation id="8798441408945964110">Emri i ofruesit</translation>
-<translation id="880791622116642296">Ky është numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>
@@ -360,6 +360,7 @@
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
+<translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>
 <translation id="9190063653747922532">L2TP/IPsec + çelësi i ndarë paraprakisht</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nuk është aktivizuar</translation>

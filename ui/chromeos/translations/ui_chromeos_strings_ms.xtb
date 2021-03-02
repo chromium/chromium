@@ -77,6 +77,7 @@
 <translation id="1807938677607439181">Semua fail</translation>
 <translation id="1810764548349082891">Pratonton tidak tersedia</translation>
 <translation id="1812302367230252929">Alih Huruf Amhara</translation>
+<translation id="1813278315230285598">Perkhidmatan</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Awas:<ph name="END_BOLD" />  Fail ini adalah bersifat sementara dan boleh dipadamkan secara automatik untuk mengosongkan ruang cakera.  <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Memuatkan maklumat...</translation>
@@ -91,7 +92,6 @@
 <translation id="1933345018156373194">Pengalihan gagal, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Bahasa Finland</translation>
 <translation id="1942765061641586207">Peleraian imej</translation>
-<translation id="1943097386230153518">Pasang perkhidmatan baharu</translation>
 <translation id="1972984168337863910">Kembangkan panel maklum balas fail</translation>
 <translation id="1984456723671657197">Jenis fail ini tidak disokong. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada OS Chrome.</translation>
 <translation id="1995337122023280937">Pergi ke lokasi fail</translation>
@@ -653,7 +653,6 @@
 <translation id="7839804798877833423">Pengambilan fail ini akan menggunakan kira-kira <ph name="FILE_SIZE" /> data mudah alih.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7853966320808728790">BEPO Perancis</translation>
-<translation id="7864662577698025113">Tambah perkhidmatan baharu</translation>
 <translation id="7868774406711971383">Poland</translation>
 <translation id="7873831373602885875">Tidak boleh disimpan ke <ph name="FOLDER_NAME" />. Semua pengeditan akan disimpan ke <ph name="DOWNLOADS_FOLDER" /> dalam folder Muat Turun.</translation>
 <translation id="7874321682039004450">Filipina</translation>

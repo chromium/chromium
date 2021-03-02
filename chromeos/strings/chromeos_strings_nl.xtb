@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
 <translation id="3865414814144988605">Resolutie</translation>
+<translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
 <translation id="3942420633017001071">Diagnose</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
 <translation id="4170700058716978431">MISLUKT</translation>
 <translation id="4176463684765177261">Uitgeschakeld</translation>
-<translation id="4222698289790462549">Huidige snelheid</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beschikbaar.</translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
@@ -208,7 +207,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Nog {0} poging}other{Nog {0} pogingen}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Rapport bekijken</translation>
 <translation id="5669267381087807207">Activeren</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Gezin</translation>
@@ -253,7 +251,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="649050271426829538">Gestopt: papierstoring</translation>
 <translation id="6517239166834772319">Ontdekken</translation>
 <translation id="6527081081771465939">Onbekend wifi-beveiligingsprotocol</translation>
-<translation id="6532051501443766164">Rapport verbergen</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Mislukt - Printer is niet bereikbaar</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
@@ -345,7 +342,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8798441408945964110">Naam provider</translation>
-<translation id="880791622116642296">Dit is hoe vaak de batterij een volledige oplaadcyclus heeft doorlopen</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>

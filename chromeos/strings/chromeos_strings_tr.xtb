@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">Yazdırma</translation>
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
 <translation id="3527036260304016759">İşlem başarısız - Bilinmeyen hata</translation>
+<translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
 <translation id="357889014807611375">sayaçlı kablosuz ağ</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
@@ -116,6 +117,7 @@
 <translation id="3820172043799983114">Geçersiz PIN.</translation>
 <translation id="3838338534323494292">Yeni şifre</translation>
 <translation id="3865414814144988605">Çözünürlük</translation>
+<translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
 <translation id="3942420633017001071">Teşhis</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
@@ -128,9 +130,7 @@
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
 <translation id="4170700058716978431">BAŞARISIZ</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
-<translation id="4222698289790462549">Şu Anki Hız</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB mevcut.</translation>
 <translation id="4238516577297848345">Devam eden bir yazdırma işi yok</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
@@ -207,7 +207,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} deneme hakkınız kaldı}other{{0} deneme hakkınız kaldı}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Raporu Göster</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Aile</translation>
@@ -252,7 +251,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="649050271426829538">Durduruldu - Kağıt sıkışması</translation>
 <translation id="6517239166834772319">Keşfet</translation>
 <translation id="6527081081771465939">Bilinmeyen kablosuz ağ güvenlik protokolü</translation>
-<translation id="6532051501443766164">Raporu gizle</translation>
 <translation id="65587193855025101">Düz Yataklı</translation>
 <translation id="6564646048574748301">İşlem başarısız - Yazıcıya ulaşılamıyor</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
@@ -332,6 +330,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8477551185774834963">DNS gecikmesi, izin verilen eşiğin biraz üzerinde</translation>
 <translation id="8483248364096924578">IP adresi</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
+<translation id="8503836310948963452">Sadece birkaç dakika kaldı…</translation>
 <translation id="8576249514688522074">Başlatılmamış</translation>
 <translation id="8620617069779373398">Dolaşım durumu</translation>
 <translation id="8675354002693747642">Önceden paylaşılan anahtar</translation>
@@ -343,7 +342,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8798441408945964110">Sağlayıcı adı</translation>
-<translation id="880791622116642296">Bu sayı, pilinizin kaç kere tam şarj döngüsünden geçtiğini gösterir</translation>
 <translation id="8814190375133053267">Kablosuz</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8881098542468797602">Test başarılı oldu</translation>
@@ -363,6 +361,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
 <translation id="9149391708638971077">Bellek testini çalıştır</translation>
+<translation id="9173638680043580060">Bir dakikadan az kaldı</translation>
 <translation id="9190063653747922532">L2TP/IPsec + önceden paylaşılan anahtar</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Etkin değil</translation>

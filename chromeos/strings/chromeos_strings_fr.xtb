@@ -105,6 +105,7 @@
 <translation id="3459509316159669723">Impression</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec – Erreur inconnue</translation>
+<translation id="3532980081107202182">Environ <ph name="MIN_REMAINING" /> minutes restantes</translation>
 <translation id="357889014807611375">Wi-Fi facturé à l'usage</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
@@ -116,6 +117,7 @@
 <translation id="3820172043799983114">Code incorrect.</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3865414814144988605">Résolution</translation>
+<translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -128,9 +130,7 @@
 <translation id="4155551848414053977">Assurez-vous que le scanner est allumé et disponible pour la connexion réseau ou filaire.</translation>
 <translation id="4170700058716978431">ÉCHEC</translation>
 <translation id="4176463684765177261">Désactivé</translation>
-<translation id="4222698289790462549">Vitesse actuelle</translation>
 <translation id="4227825898293920515">Le mot de passe arrive à expiration dans <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> Go disponible(s) sur <ph name="TOTAL_MEMORY" /> Go.</translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
@@ -207,7 +207,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentative restante}one{{0} tentative restante}other{{0} tentatives restantes}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Voir le rapport</translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famille</translation>
@@ -252,7 +251,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="649050271426829538">Tâche suspendue - Bourrage papier</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité du réseau Wi-Fi inconnu</translation>
-<translation id="6532051501443766164">Masquer le rapport</translation>
 <translation id="65587193855025101">Vitre du plateau</translation>
 <translation id="6564646048574748301">Échec – Imprimante inaccessible</translation>
 <translation id="6618744767048954150">En cours</translation>
@@ -332,6 +330,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8477551185774834963">Seuil de latence autorisé légèrement dépassé par le DNS</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
+<translation id="8503836310948963452">Plus que quelques minutes…</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8620617069779373398">État d'itinérance</translation>
 <translation id="8675354002693747642">Clé pré-partagée</translation>
@@ -343,7 +342,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8798441408945964110">Nom du fournisseur</translation>
-<translation id="880791622116642296">Nombre de cycles de charge complets effectués par votre batterie</translation>
 <translation id="8814190375133053267">Wi-Fi </translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8881098542468797602">Test réussi</translation>
@@ -363,6 +361,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
 <translation id="9149391708638971077">Lancer le test de mémoire</translation>
+<translation id="9173638680043580060">Moins d'une minute restante</translation>
 <translation id="9190063653747922532">L2TP/IPSec + Clé pré-partagée</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Désactivé</translation>

@@ -21,7 +21,7 @@
 <translation id="1327977588028644528">Passarel·la</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajusta a l'àrea d'escaneig</translation>
-<translation id="1387854245479784695">És una suma de tots els nuclis</translation>
+<translation id="1387854245479784695">És una agregació de tots els nuclis</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
 <translation id="1398634363027580500">La latència d'HTTPS és molt alta</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="3865414814144988605">Resolució</translation>
+<translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
@@ -129,9 +130,7 @@
 <translation id="4155551848414053977">Comprova que l'escàner estigui encès i disponible a través de la teva xarxa o d'una connexió directa</translation>
 <translation id="4170700058716978431">NO SUPERADA</translation>
 <translation id="4176463684765177261">Desactivat</translation>
-<translation id="4222698289790462549">Velocitat actual</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
-<translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles.</translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4378373042927530923">No s'ha executat</translation>
@@ -208,7 +207,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intent}other{Queden {0} intents}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5635169860413004179">Mostra l'informe</translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -253,7 +251,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
-<translation id="6532051501443766164">Amaga l'informe</translation>
 <translation id="65587193855025101">Finestra plana</translation>
 <translation id="6564646048574748301">Error: no es pot accedir a la impressora</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
@@ -345,7 +342,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
 <translation id="8798441408945964110">Nom del proveïdor</translation>
-<translation id="880791622116642296">Indica el nombre de vegades que la bateria s'ha carregat completament</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
