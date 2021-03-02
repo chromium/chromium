@@ -5006,7 +5006,7 @@ const char kDirectManipulationStylusDescription[] =
 
 const char kCommanderName[] = "Commander";
 const char kCommanderDescription[] =
-    "Enable a text interface to browser features";
+    "Enable a text interface to browser features. Invoke with Ctrl-Space.";
 
 const char kDesktopRestructuredLanguageSettingsName[] =
     "Restructured Language Settings (Desktop)";
