@@ -473,7 +473,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Scrollbar.GpuSwap2"
-    units="microseconds" expires_after="2021-06-27">
+    units="microseconds" expires_after="2021-08-29">
   <owner>nzolghadr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -816,7 +816,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToHandled2"
-    units="microseconds" expires_after="2021-06-26">
+    units="microseconds" expires_after="2021-08-29">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -836,7 +836,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2021-06-27">
+    units="microseconds" expires_after="2021-08-29">
   <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and the start of the frame
@@ -1405,7 +1405,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2021-06-27">
+    units="microseconds" expires_after="2021-08-29">
   <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and start of the frame swap

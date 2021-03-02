@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Stability.Android.OomKillReverseRank" units="rank"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>

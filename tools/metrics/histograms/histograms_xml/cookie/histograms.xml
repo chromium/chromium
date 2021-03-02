@@ -159,14 +159,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesNonSecure" units="minutes"
-    expires_after="2021-06-30">
+    expires_after="2021-08-29">
   <owner>kaustubhag@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>Number of minutes until non-Secure cookie expires when set.</summary>
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesSecure" units="minutes"
-    expires_after="2021-06-30">
+    expires_after="2021-08-29">
   <owner>kaustubhag@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>Number of minutes until Secure cookie expires when set.</summary>

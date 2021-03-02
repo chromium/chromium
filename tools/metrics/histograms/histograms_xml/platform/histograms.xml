@@ -414,7 +414,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.DlcService.InstallResult"
-    enum="DlcService.InstallResult" expires_after="2021-06-30">
+    enum="DlcService.InstallResult" expires_after="2021-08-29">
   <owner>andrewlassalle@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -424,7 +424,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.DlcService.UninstallResult"
-    enum="DlcService.UninstallResult" expires_after="2021-06-30">
+    enum="DlcService.UninstallResult" expires_after="2021-08-29">
   <owner>andrewlassalle@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -995,7 +995,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Temperature.Sensor00" units="Celsius"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>fletcherw@chromium.org</owner>
   <summary>
     Temperature reading from EC temperature sensor 0 (TSR0) taken every 30s.
@@ -1037,7 +1037,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Temperature.Sensor02" units="Celsius"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>fletcherw@chromium.org</owner>
   <summary>
     Temperature reading from EC temperature sensor 2 (TSR2) taken every 30s.

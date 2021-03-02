@@ -198,7 +198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GeolocationDisclosure.DisclosureResult"
-    enum="GeolocationDisclosureResult" expires_after="2021-06-27">
+    enum="GeolocationDisclosureResult" expires_after="2021-08-29">
   <owner>benwells@chromium.org</owner>
   <summary>
     Records the action the user took after the geolocation disclosure has been

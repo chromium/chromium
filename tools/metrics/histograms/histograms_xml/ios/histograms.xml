@@ -514,7 +514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.AverageSuspendedMemory" units="MB"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -599,7 +599,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
-    expires_after="2021-06-30">
+    expires_after="2021-08-29">
   <owner>marq@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>

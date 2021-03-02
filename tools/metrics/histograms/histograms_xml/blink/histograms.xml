@@ -1870,7 +1870,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.PrePaint.UpdateTime" units="microseconds"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2577,7 +2577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.AboveTheFold"
-    units="ms" expires_after="2021-06-27">
+    units="ms" expires_after="2021-08-29">
   <owner>sclittle@chromium.org</owner>
   <summary>
     Milliseconds spent waiting for an above the fold iframe to load. Only fires
@@ -2597,7 +2597,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold"
-    units="ms" expires_after="2021-06-27">
+    units="ms" expires_after="2021-08-29">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -2609,7 +2609,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold"
-    units="ms" expires_after="2021-06-27">
+    units="ms" expires_after="2021-08-29">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>

@@ -429,7 +429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrefetchProxy.SpareRenderer.CountStartedOnSRP" units="count"
-    expires_after="2021-06-20">
+    expires_after="2021-08-29">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>

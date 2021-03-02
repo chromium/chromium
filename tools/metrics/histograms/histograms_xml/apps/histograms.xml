@@ -369,7 +369,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.OmniboxProvider.ZeroStateLatency" units="ms"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -821,7 +821,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListFolder.ShowHide.AnimationSmoothness" units="%"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>wutao@chromium.org</owner>
   <summary>
     Relative smoothness of animations of showing and hiding app list folder.
@@ -948,7 +948,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListPlayStoreQueryState"
-    enum="AppListPlayStoreQueryState" expires_after="2021-06-27">
+    enum="AppListPlayStoreQueryState" expires_after="2021-08-29">
   <owner>hejq@chromium.org</owner>
   <summary>The state of a Play Store app search request.</summary>
 </histogram>
@@ -975,7 +975,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListRecommendedResponse"
-    enum="ReinstallResponseParseResult" expires_after="2021-06-28">
+    enum="ReinstallResponseParseResult" expires_after="2021-08-29">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -1263,7 +1263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Apps.ContextMenuUserJourneyTime" units="ms"
-    expires_after="2021-06-28">
+    expires_after="2021-08-29">
 <!-- Name completed by histogram_suffixes
      name="AppUIComponent" -->
 

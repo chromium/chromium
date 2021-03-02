@@ -531,7 +531,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformOOPMountCleanup" units="ms"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>jorgelo@chromium.org</owner>
   <owner>betuls@chromium.org</owner>
   <summary>

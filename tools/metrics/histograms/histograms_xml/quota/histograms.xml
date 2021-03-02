@@ -133,7 +133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.GlobalUsageOfPersistentStorage" units="MB"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>jarrydg@chromium.org</owner>
   <summary>Global usage of persistent storage.</summary>
 </histogram>

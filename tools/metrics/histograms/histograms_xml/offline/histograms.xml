@@ -198,7 +198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.AccessEntryPoint"
-    enum="OfflinePagesAccessEntryPoint" expires_after="2021-06-25">
+    enum="OfflinePagesAccessEntryPoint" expires_after="2021-08-29">
   <owner>jianli@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -207,7 +207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.AccessPageCount"
-    enum="OfflinePagesNamespaceEnumeration" expires_after="2021-06-25">
+    enum="OfflinePagesNamespaceEnumeration" expires_after="2021-08-29">
   <owner>dimich@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -735,7 +735,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.OfflineUsage" enum="OfflinePagesOfflineUsage"
-    expires_after="2021-06-25">
+    expires_after="2021-08-29">
   <owner>dimich@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -765,7 +765,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="OfflinePages.PageAccessInterval" units="minutes"
-    expires_after="2021-06-25">
+    expires_after="2021-08-29">
   <owner>dimich@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -813,7 +813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.PrefetchEnabled" enum="BooleanEnabled"
-    expires_after="2021-06-25">
+    expires_after="2021-08-29">
   <owner>dimich@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -890,7 +890,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.Prefetching.NotificationAction"
-    enum="OfflinePagePrefetchNotificationAction" expires_after="2021-06-25">
+    enum="OfflinePagePrefetchNotificationAction" expires_after="2021-08-29">
   <owner>dewittj@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -968,7 +968,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.PrefetchUsage" enum="OfflinePagesPrefetchUsage"
-    expires_after="2021-06-25">
+    expires_after="2021-08-29">
   <owner>dimich@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>

@@ -176,7 +176,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ServiceReadyTime" units="ms"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>xiaohuic@chromium.org</owner>
   <owner>jeroendh@google.com</owner>
   <summary>
@@ -186,7 +186,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ServiceStartTime" units="ms"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>updowndota@chromium.org</owner>
   <summary>Amount of time spent in starting Assistant service.</summary>
 </histogram>
@@ -202,7 +202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.ConsentOutcome"
-    enum="AssistantConsentOutcome" expires_after="2021-06-20">
+    enum="AssistantConsentOutcome" expires_after="2021-08-29">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
@@ -233,7 +233,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -272,7 +272,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Consent" units="impressions"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -292,7 +292,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="QuickAnswers.Consent.Impression"
-    units="impressions" expires_after="2021-06-27">
+    units="impressions" expires_after="2021-08-29">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -302,7 +302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>updowndota@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -330,7 +330,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Intent" enum="QuickAnswersIntentType"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -350,7 +350,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Status" enum="QuickAnswersLoadStatus"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -359,7 +359,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.NetworkError.IntentType"
-    enum="QuickAnswersIntentType" expires_after="2021-06-27">
+    enum="QuickAnswersIntentType" expires_after="2021-08-29">
   <owner>updowndota@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -369,7 +369,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Result" enum="QuickAnswersResultType"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -379,7 +379,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Result.Duration" units="ms"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -389,7 +389,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.SelectedContent.Length" units="characters"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

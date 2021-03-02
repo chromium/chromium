@@ -126,7 +126,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeIn" units="%"
-    expires_after="2021-06-04">
+    expires_after="2021-08-29">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
