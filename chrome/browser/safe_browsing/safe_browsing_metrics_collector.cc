@@ -306,7 +306,7 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
     case EventType::USER_STATE_ENABLED:
       return false;
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
-    case EventType::CSD_INTERSITITAL_BYPASS:
+    case EventType::CSD_INTERSTITIAL_BYPASS:
     case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
     case EventType::DANGEROUS_DOWNLOAD_BYPASS:
     case EventType::PASSWORD_REUSE_MODAL_BYPASS:
@@ -335,7 +335,7 @@ std::string SafeBrowsingMetricsCollector::GetEventTypeMetricSuffix(
       return "UserStateEnabled";
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
       return "DatabaseInterstitialBypass";
-    case EventType::CSD_INTERSITITAL_BYPASS:
+    case EventType::CSD_INTERSTITIAL_BYPASS:
       return "CsdInterstitialBypass";
     case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
       return "RealTimeInterstitialBypass";

@@ -58,7 +58,7 @@ SafeBrowsingMetricsCollector::EventType GetEventTypeFromThreatSource(
           DATABASE_INTERSTITIAL_BYPASS;
       break;
     case ThreatSource::CLIENT_SIDE_DETECTION:
-      return SafeBrowsingMetricsCollector::EventType::CSD_INTERSITITAL_BYPASS;
+      return SafeBrowsingMetricsCollector::EventType::CSD_INTERSTITIAL_BYPASS;
       break;
     case ThreatSource::REAL_TIME_CHECK:
       return SafeBrowsingMetricsCollector::EventType::

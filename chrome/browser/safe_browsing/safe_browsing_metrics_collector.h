@@ -38,7 +38,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     DATABASE_INTERSTITIAL_BYPASS = 2,
     // The user bypasses the interstitial that is triggered by client-side
     // detection.
-    CSD_INTERSITITAL_BYPASS = 3,
+    CSD_INTERSTITIAL_BYPASS = 3,
     // The user bypasses the interstitial that is triggered by real time URL
     // check.
     REAL_TIME_INTERSTITIAL_BYPASS = 4,
