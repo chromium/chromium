@@ -122,6 +122,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/window_controls_overlay.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
@@ -2885,6 +2886,14 @@ void LocalFrame::UpdateWindowControlsOverlay(
                    StyleEnvironmentVariables::FormatPx(insets.bottom()));
   vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetRight,
                    StyleEnvironmentVariables::FormatPx(insets.right()));
+
+  auto* window_controls_overlay =
+      WindowControlsOverlay::FromIfExists(*DomWindow()->navigator());
+
+  if (window_controls_overlay) {
+    window_controls_overlay->WindowControlsOverlayChanged(
+        window_controls_overlay_rect);
+  }
 }
 
 void LocalFrame::RequestFullscreenVideoElement() {

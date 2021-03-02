@@ -5,5 +5,6 @@ PASS visible should be false
 PASS getBoundingClientRect should be a method of the windowControlsOverlay object
 PASS getBoundingClientRect return type should be DOMRect
 PASS getBoundingClientRect should return a empty DOMRect
+PASS ongeometrychange should be a member of the windowControlsOverlay object
 Harness: the test ran to completion.
 

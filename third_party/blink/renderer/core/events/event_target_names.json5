@@ -48,5 +48,6 @@
     "Worker",
     "XMLHttpRequest",
     "XMLHttpRequestUpload",
+    "WindowControlsOverlay",
   ],
 }

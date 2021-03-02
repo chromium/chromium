@@ -300,6 +300,8 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/frame/window_event_handlers.idl",
           "//third_party/blink/renderer/core/frame/window_or_worker_global_scope.idl",
           "//third_party/blink/renderer/core/frame/window_post_message_options.idl",
+          "//third_party/blink/renderer/core/frame/window_controls_overlay_geometry_change_event.idl",
+          "//third_party/blink/renderer/core/frame/window_controls_overlay_geometry_change_event_init.idl",
           "//third_party/blink/renderer/core/fullscreen/document_fullscreen.idl",
           "//third_party/blink/renderer/core/fullscreen/element_fullscreen.idl",
           "//third_party/blink/renderer/core/fullscreen/fullscreen_options.idl",

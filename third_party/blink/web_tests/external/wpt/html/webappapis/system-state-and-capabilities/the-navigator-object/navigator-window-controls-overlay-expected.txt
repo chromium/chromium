@@ -5,5 +5,6 @@ FAIL visible should be false Cannot read property 'visible' of undefined
 FAIL getBoundingClientRect should be a method of the windowControlsOverlay object assert_idl_attribute: provided value is not an object
 FAIL getBoundingClientRect return type should be DOMRect Cannot read property 'getBoundingClientRect' of undefined
 FAIL getBoundingClientRect should return a empty DOMRect Cannot read property 'getBoundingClientRect' of undefined
+FAIL ongeometrychange should be a member of the windowControlsOverlay object assert_idl_attribute: provided value is not an object
 Harness: the test ran to completion.
 

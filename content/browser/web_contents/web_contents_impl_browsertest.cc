@@ -4593,4 +4593,47 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   ValidateTitlebarAreaInsetValue("margin-top", "2px");
   ValidateTitlebarAreaInsetValue("margin-bottom", "2px");
 }
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
+                       GeometryChangeEvent) {
+  auto* web_contents = shell()->web_contents();
+
+  GURL url(url::kAboutBlankURL);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ExecuteScript(
+      web_contents->GetMainFrame(),
+      "geometrychangeCount = 0;"
+      "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
+      "  geometrychangeCount++;"
+      "  rect = e.boundingRect;"
+      "  visible = e.visible;"
+      "}"));
+
+  WaitForLoadStop(web_contents);
+
+  // Ensure the "geometrychange" event is only fired when the the window
+  // controls overlay bounds are updated.
+  EXPECT_EQ(0, EvalJs(web_contents, "geometrychangeCount"));
+
+  // information about the bounds should be updated
+  int x = 2;
+  int y = 2;
+  int width = 2;
+  int height = 2;
+
+  gfx::Rect bounding_client_rect = gfx::Rect(x, y, width, height);
+  gfx::Insets insets = gfx::Insets(0, 0, 0, 0);
+
+  web_contents->UpdateWindowControlsOverlay(bounding_client_rect, insets);
+
+  // Expect the "geometrychange" event to have fired once.
+  EXPECT_EQ(1, EvalJs(web_contents, "geometrychangeCount"));
+
+  // Validate the event payload.
+  EXPECT_EQ(true, EvalJs(web_contents, "visible"));
+  EXPECT_EQ(x, EvalJs(web_contents, "rect.x;"));
+  EXPECT_EQ(y, EvalJs(web_contents, "rect.y"));
+  EXPECT_EQ(width, EvalJs(web_contents, "rect.width"));
+  EXPECT_EQ(height, EvalJs(web_contents, "rect.height"));
+}
 }  // namespace content

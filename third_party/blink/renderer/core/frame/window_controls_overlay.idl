@@ -7,7 +7,8 @@
 [
     RuntimeEnabled=WebAppWindowControlsOverlay,
     Exposed=Window
-] interface WindowControlsOverlay {
+] interface WindowControlsOverlay : EventTarget {
     readonly attribute boolean visible;
     DOMRect getBoundingClientRect();
+    attribute EventHandler ongeometrychange;
 };
