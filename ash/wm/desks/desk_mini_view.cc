@@ -413,7 +413,7 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
 
   // Only when the new desk name has been committed is when we can update the
   // desks restore prefs.
-  desks_restore_util::UpdatePrimaryUserDesksPrefs();
+  desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 }
 
 bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {

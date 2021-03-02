@@ -35,6 +35,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
@@ -3002,13 +3003,20 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
   // Initializes the given |prefs| with a desks restore data of 3 desks, with
   // the third desk named "code", and the rest are default-named.
   void InitPrefsWithDesksRestoreData(PrefService* prefs) {
+    InitPrefsWithDesksRestoreData(
+        prefs, {std::string(), std::string(), std::string("code")});
+  }
+
+  // Initializes the given |prefs| with a desks restore data from the
+  // |desk_names| list.
+  void InitPrefsWithDesksRestoreData(PrefService* prefs,
+                                     std::vector<std::string> desk_names) {
     DCHECK(prefs);
     ListPrefUpdate update(prefs, prefs::kDesksNamesList);
     base::ListValue* pref_data = update.Get();
     ASSERT_TRUE(pref_data->empty());
-    pref_data->Append(std::string());
-    pref_data->Append(std::string());
-    pref_data->Append(std::string("code"));
+    for (auto desk_name : desk_names)
+      pref_data->Append(desk_name);
   }
 
   void SimulateUserLogin(const AccountId& account_id) {
@@ -3276,6 +3284,118 @@ TEST_P(DesksRestoreMultiUserTest,
   VerifyDesksRestoreData(user_1_prefs(),
                          {std::string(), std::string("code"), std::string()});
   VerifyDesksRestoreData(user_2_prefs(), {});
+
+  // Move the third desk to the second to test Bento desks reordering.
+  if (IsBentoEnabled()) {
+    controller->ReorderDesk(/*old_index=*/2, /*new_index=*/1);
+    VerifyDesksRestoreData(user_1_prefs(),
+                           {std::string(), std::string(), std::string("code")});
+    VerifyDesksRestoreData(user_2_prefs(), {});
+  }
+}
+
+// Tests that desks reordering updates workspaces of all windows in affected
+// desks for all simultaneously logged-in users.
+TEST_P(DesksRestoreMultiUserTest,
+       DeskIndexChangesMadeByActiveUserAffectsAllUsers) {
+  if (!IsBentoEnabled())
+    return;
+
+  // Setup two users and four desks with one window in each desk --------------
+  // Create user1 and user2 with four shared desks named numerically by their
+  // initial order. Set the user1 active desk to the fourth desk.
+  const int n_desks_per_user = 4;
+  int user_1_active_desk_index = 3;
+  user_1_prefs()->SetInteger(prefs::kDesksActiveDesk, user_1_active_desk_index);
+  InitPrefsWithDesksRestoreData(user_1_prefs(),
+                                std::vector<std::string>{"0", "1", "2", "3"});
+  SimulateUserLogin(GetUser1AccountId());
+  auto* controller = DesksController::Get();
+  const auto& desks = controller->desks();
+  ASSERT_EQ(4u, desks.size());
+
+  // Switch to user2 and activate the third desk. Thus, the desks initial state
+  // is [0, 1, 2**, 3*] where * and ** label active desks of user1 and user2.
+  EXPECT_EQ(desks[user_1_active_desk_index]->container_id(),
+            desks_util::GetActiveDeskContainerId());
+  int user_2_active_desk_index = 2;
+  SwitchActiveUser(GetUser2AccountId());
+  ActivateDesk(desks[user_2_active_desk_index].get());
+  EXPECT_EQ(desks[user_2_active_desk_index]->container_id(),
+            desks_util::GetActiveDeskContainerId());
+  EXPECT_EQ(user_1_active_desk_index,
+            user_1_prefs()->GetInteger(prefs::kDesksActiveDesk));
+
+  // For each user's desk, create a window and set window workspace property.
+  std::vector<std::unique_ptr<aura::Window>> user1_windows;
+  std::vector<std::unique_ptr<aura::Window>> user2_windows;
+  for (int i = 0; i < n_desks_per_user; i++) {
+    user1_windows.push_back(CreateAppWindow());
+    user2_windows.push_back(CreateAppWindow());
+    multi_user_window_manager()->SetWindowOwner(user1_windows[i].get(),
+                                                GetUser1AccountId());
+    multi_user_window_manager()->SetWindowOwner(user2_windows[i].get(),
+                                                GetUser2AccountId());
+    controller->SendToDeskAtIndex(user1_windows[i].get(), i);
+    controller->SendToDeskAtIndex(user2_windows[i].get(), i);
+    EXPECT_EQ(i,
+              user1_windows[i]->GetProperty(aura::client::kWindowWorkspaceKey));
+    EXPECT_EQ(i,
+              user2_windows[i]->GetProperty(aura::client::kWindowWorkspaceKey));
+  }
+  // Done setup four desks with the numerical desk names ----------------------
+
+  // |desk_names_as_ints| represents the numerical desk names in desks order
+  // after a series of desks reordering. The initial order is [0, 1, 2, 3].
+  auto check_window_workspaces =
+      [&](const std::vector<int> desk_names_as_ints) {
+        DCHECK(n_desks_per_user == desk_names_as_ints.size());
+        for (int desk_index = 0; desk_index < n_desks_per_user; desk_index++) {
+          int desk_name_as_int = desk_names_as_ints[desk_index];
+          EXPECT_EQ(desk_index, user1_windows[desk_name_as_int]->GetProperty(
+                                    aura::client::kWindowWorkspaceKey));
+          EXPECT_EQ(desk_index, user2_windows[desk_name_as_int]->GetProperty(
+                                    aura::client::kWindowWorkspaceKey));
+        }
+      };
+
+  // 1. Test that desks reordering from the secondary user updates both users'
+  // saved active desks correctly. Move the fourth desk to the second, so the
+  // desks state become [0, 3*, 1, 2**].
+  controller->ReorderDesk(/*old_index=*/3, /*new_index=*/1);
+  user_1_active_desk_index = 1;
+  user_2_active_desk_index = 3;
+  check_window_workspaces(std::vector<int>{0, 3, 1, 2});
+  VerifyDesksRestoreData(user_1_prefs(),
+                         std::vector<std::string>{"0", "3", "1", "2"});
+  VerifyDesksRestoreData(user_2_prefs(), {});
+  EXPECT_EQ(user_1_active_desk_index,
+            user_1_prefs()->GetInteger(prefs::kDesksActiveDesk));
+  EXPECT_EQ(desks[user_2_active_desk_index]->container_id(),
+            desks_util::GetActiveDeskContainerId());
+
+  // Switch to the primary user1.
+  SwitchActiveUser(GetUser1AccountId());
+  EXPECT_EQ(desks[user_1_active_desk_index]->container_id(),
+            desks_util::GetActiveDeskContainerId());
+
+  // 2. Test that desks reordering from the primary user updates both users'
+  // saved active desks correctly. Move the first desk to the fourth, so the
+  // desks state become [3*, 1, 2**, 0].
+  controller->ReorderDesk(/*old_index=*/0, /*new_index=*/3);
+  user_1_active_desk_index = 0;
+  user_2_active_desk_index = 2;
+  check_window_workspaces(std::vector<int>{3, 1, 2, 0});
+  VerifyDesksRestoreData(user_1_prefs(),
+                         std::vector<std::string>{"3", "1", "2", "0"});
+  VerifyDesksRestoreData(user_2_prefs(), {});
+  EXPECT_EQ(user_1_active_desk_index,
+            user_1_prefs()->GetInteger(prefs::kDesksActiveDesk));
+  EXPECT_EQ(desks[user_1_active_desk_index]->container_id(),
+            desks_util::GetActiveDeskContainerId());
+  SwitchActiveUser(GetUser2AccountId());
+  EXPECT_EQ(desks[user_2_active_desk_index]->container_id(),
+            desks_util::GetActiveDeskContainerId());
 }
 
 }  // namespace
@@ -4422,6 +4542,16 @@ TEST_F(DesksBentoTest, ReorderDesksByMouse) {
   DeskMiniView* mini_view_2 = mini_views[2];
   Desk* desk_2 = mini_view_2->desk();
 
+  // Set desk names. Force update user prefs because `SetName()` does not
+  // trigger it but `DeskMiniView::OnViewBlurred`.
+  desk_0->SetName(base::ASCIIToUTF16("0"), /*set_by_user=*/true);
+  desk_1->SetName(base::ASCIIToUTF16("1"), /*set_by_user=*/true);
+  desk_2->SetName(base::ASCIIToUTF16("2"), /*set_by_user=*/true);
+  desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "1", "2"});
+
   // Dragging the desk preview will trigger drag & drop.
   StartDragDeskPreview(mini_view_1, event_generator);
   EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
@@ -4441,6 +4571,7 @@ TEST_F(DesksBentoTest, ReorderDesksByMouse) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
 
   // Swap the positions of the second desk and the first desk.
   gfx::Point desk_center_0 =
@@ -4451,6 +4582,7 @@ TEST_F(DesksBentoTest, ReorderDesksByMouse) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
 
   // If the cursor is outside the desk bar, the second desk will be moved to the
   // end.
@@ -4463,6 +4595,7 @@ TEST_F(DesksBentoTest, ReorderDesksByMouse) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
 
   event_generator->ReleaseLeftButton();
 }
@@ -4493,6 +4626,15 @@ TEST_F(DesksBentoTest, ReorderDesksByGesture) {
   DeskMiniView* mini_view_2 = mini_views[2];
   Desk* desk_2 = mini_view_2->desk();
 
+  // Set desk names and save to user prefs.
+  desk_0->SetName(base::ASCIIToUTF16("0"), /*set_by_user=*/true);
+  desk_1->SetName(base::ASCIIToUTF16("1"), /*set_by_user=*/true);
+  desk_2->SetName(base::ASCIIToUTF16("2"), /*set_by_user=*/true);
+  desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "1", "2"});
+
   // If long press on the second desk preview, drag & drop will be triggered.
   // Perform by gesture:
   LongTapOnDeskPreview(mini_view_1, event_generator);
@@ -4513,6 +4655,7 @@ TEST_F(DesksBentoTest, ReorderDesksByGesture) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
 
   // Swap the positions of the second desk and the first desk.
   gfx::Point desk_center_0 =
@@ -4523,6 +4666,7 @@ TEST_F(DesksBentoTest, ReorderDesksByGesture) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
 
   // If the touch point is outside the desk bar, the second desk will be moved
   // to the end.
@@ -4535,6 +4679,7 @@ TEST_F(DesksBentoTest, ReorderDesksByGesture) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
 
   event_generator->ReleaseTouch();
 }
@@ -4567,6 +4712,15 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
   DeskMiniView* mini_view_2 = mini_views[2];
   Desk* desk_2 = mini_view_2->desk();
 
+  // Set desk names and save to user prefs.
+  desk_0->SetName(base::ASCIIToUTF16("0"), /*set_by_user=*/true);
+  desk_1->SetName(base::ASCIIToUTF16("1"), /*set_by_user=*/true);
+  desk_2->SetName(base::ASCIIToUTF16("2"), /*set_by_user=*/true);
+  desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "1", "2"});
+
   // Highlight the second desk.
   overview_controller->overview_session()
       ->highlight_controller()
@@ -4580,6 +4734,7 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
 
   // Keep pressing -> won't swap desks.
   event_generator->PressKey(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
@@ -4588,6 +4743,7 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
 
   // Press Ctrl + <- twice will swap the positions of the second and first desk.
   event_generator->PressKey(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
@@ -4597,6 +4753,7 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
 
   // Keep pressing <- won't swap desks.
   event_generator->PressKey(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
@@ -4605,6 +4762,7 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
 }
 
 // TODO(zxdan): Add a regression test for crbug/1171880

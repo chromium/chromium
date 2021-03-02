@@ -555,7 +555,9 @@ bool DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
       (cursor_y < bar_bounds.origin().y() || cursor_y > bar_bounds.bottom())
           ? mini_views_.size() - 1
           : DetermineMoveIndex(mini_views_, old_index, drag_pos_in_screen.x());
-  Shell::Get()->desks_controller()->ReorderDesk(old_index, new_index);
+
+  if (old_index != new_index)
+    Shell::Get()->desks_controller()->ReorderDesk(old_index, new_index);
 
   return true;
 }

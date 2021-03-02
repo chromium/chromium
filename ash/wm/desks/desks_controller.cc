@@ -362,7 +362,7 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   shell->shell_delegate()->DesksStateChanged(desks_.size());
 
   if (!is_first_ever_desk) {
-    desks_restore_util::UpdatePrimaryUserDesksPrefs();
+    desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
     UMA_HISTOGRAM_ENUMERATION(kNewDeskHistogramName, source);
     ReportDesksCountHistogram();
   }
@@ -396,10 +396,60 @@ void DesksController::RemoveDesk(const Desk* desk,
 }
 
 void DesksController::ReorderDesk(int old_index, int new_index) {
+  DCHECK(features::IsBentoEnabled());
+  DCHECK_NE(old_index, new_index);
+  DCHECK_GE(old_index, 0);
+  DCHECK_GE(new_index, 0);
+  DCHECK_LT(old_index, int{desks_.size()});
+  DCHECK_LT(new_index, int{desks_.size()});
   desks_util::ReorderItem(desks_, old_index, new_index);
 
   for (auto& observer : observers_)
     observer.OnDeskReordered(old_index, new_index);
+
+  // Since multi-profile users share the same desks, the active user needs to
+  // update the desk name list to maintain the right desk order for restore
+  // and update workspaces of windows in all affected desks across all profiles.
+  // Meanwhile, only the primary user needs to update the active desk, which is
+  // independent across profiles but only recoverable for the primary user.
+
+  // 1. Update desk name list in the user prefs to maintain the right order.
+  desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  // 2. For multi-profile switching, update all affected active desk index in
+  // |user_to_active_desk_index_|.
+  const int starting_affected_index = std::min(old_index, new_index);
+  const int ending_affected_index = std::max(old_index, new_index);
+  // If the user move a desk to the back, other affected desks in between the
+  // two positions shift left (-1), otherwiser shift right (+1).
+  const int offset = new_index > old_index ? -1 : 1;
+
+  for (auto& iter : user_to_active_desk_index_) {
+    const int old_active_index = iter.second;
+    if (old_active_index < starting_affected_index ||
+        old_active_index > ending_affected_index) {
+      // Skip unaffected desk index.
+      continue;
+    }
+    // The moving desk changes from old_index to new_index, while other desks
+    // between the two positions shift by one position.
+    iter.second =
+        old_active_index == old_index ? new_index : old_active_index + offset;
+  }
+
+  // 3. For primary user's active desks restore, update the active desk index.
+  desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
+      user_to_active_desk_index_[Shell::Get()
+                                     ->session_controller()
+                                     ->GetPrimaryUserSession()
+                                     ->user_info.account_id]);
+
+  // 4. For restoring windows to the right desks, update workspaces of all
+  // windows in the affected desks for all simultaneously logged-in users.
+  for (int i = starting_affected_index; i <= ending_affected_index; i++) {
+    for (auto* window : desks_[i]->windows())
+      window->SetProperty(aura::client::kWindowWorkspaceKey, i);
+  }
 }
 
 void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
@@ -594,6 +644,11 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   if (visible_on_all_desks_windows_.erase(window))
     NotifyAllDesksForContentChanged();
+}
+
+void DesksController::NotifyAllDesksForContentChanged() {
+  for (const auto& desk : desks_)
+    desk->NotifyContentChanged();
 }
 
 void DesksController::RevertDeskNameToDefault(Desk* desk) {
@@ -948,7 +1003,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
           IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED, removed_desk->name(),
           active_desk_->name()));
 
-  desks_restore_util::UpdatePrimaryUserDesksPrefs();
+  desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   DCHECK_LE(available_container_ids_.size(), desks_util::GetMaxNumberOfDesks());
 }
@@ -1005,11 +1060,6 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
                                       *closest_window_below_iter);
     }
   }
-}
-
-void DesksController::NotifyAllDesksForContentChanged() {
-  for (const auto& desk : desks_)
-    desk->NotifyContentChanged();
 }
 
 const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
