@@ -157,7 +157,9 @@ void AppContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
   const gfx::VectorIcon& icon = GetMenuItemVectorIcon(command_id, string_id);
   if (!icon.is_empty()) {
     menu_model->AddItemWithStringIdAndIcon(
-        command_id, string_id, ui::ImageModel::FromVectorIcon(icon));
+        command_id, string_id,
+        ui::ImageModel::FromVectorIcon(icon, /*color_id=*/-1,
+                                       ash::kAppContextMenuIconSize));
     return;
   }
   // Check items use default icons.
