@@ -367,7 +367,14 @@ using MockTabStatsObserver = testing::StrictMock<LenientMockTabStatsObserver>;
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabStatsObserverBasics) {
+// TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
+#if defined(OS_MAC)
+#define MAYBE_TabStatsObserverBasics DISABLED_TabStatsObserverBasics
+#else
+#define MAYBE_TabStatsObserverBasics TabStatsObserverBasics
+#endif
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
+                       MAYBE_TabStatsObserverBasics) {
   MockTabStatsObserver mock_observer;
   TestTabStatsObserver count_observer;
   tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
