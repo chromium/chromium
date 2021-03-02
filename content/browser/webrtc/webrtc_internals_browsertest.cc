@@ -181,7 +181,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     std::stringstream ss;
     ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ << ", " <<
            "url:'u', rtcConfiguration:'s', constraints:'c'}";
-    ASSERT_TRUE(ExecuteJavascript("addPeerConnection(" + ss.str() + ");"));
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('add-peer-connection', " + ss.str() + ");"));
   }
 
   // Execute the javascript of removePeerConnection.
@@ -189,7 +190,9 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     std::stringstream ss;
     ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ << "}";
 
-    ASSERT_TRUE(ExecuteJavascript("removePeerConnection(" + ss.str() + ");"));
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('remove-peer-connection', " + ss.str() +
+        ");"));
   }
 
   // Execute the javascript of addGetUserMedia.
@@ -199,15 +202,17 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
        << request.origin << "', audio:'" << request.audio_constraints
        << "', video:'" << request.video_constraints << "'}";
 
-    ASSERT_TRUE(ExecuteJavascript("addGetUserMedia(" + ss.str() + ");"));
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('add-get-user-media', " + ss.str() + ");"));
   }
 
   // Execute the javascript of removeGetUserMediaForRenderer.
   void ExecuteRemoveGetUserMediaForRendererJs(int rid) {
     std::stringstream ss;
     ss << "{rid:" << rid << "}";
-    ASSERT_TRUE(
-        ExecuteJavascript("removeGetUserMediaForRenderer(" + ss.str() + ");"));
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('remove-get-user-media-for-renderer', " +
+        ss.str() + ");"));
   }
 
   // Verifies that the DOM element with id |id| exists.
@@ -215,7 +220,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     bool result = false;
     ASSERT_TRUE(ExecuteScriptAndExtractBool(
         shell(),
-        "window.domAutomationController.send($('" + id + "') != null);",
+        "window.domAutomationController.send(document.getElementById('" + id +
+            "') != null);",
         &result));
     EXPECT_TRUE(result);
   }
@@ -225,7 +231,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     bool result = false;
     ASSERT_TRUE(ExecuteScriptAndExtractBool(
         shell(),
-        "window.domAutomationController.send($('" + id + "') == null);",
+        "window.domAutomationController.send(document.getElementById('" + id +
+            "') == null);",
         &result));
     EXPECT_TRUE(result);
   }
@@ -269,7 +276,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     ASSERT_TRUE(
         ExecuteScriptAndExtractBool(shell(),
                                     "window.domAutomationController.send("
-                                    "    $('user-media-tab-id') != null);",
+                                    "    document.querySelector("
+                                    "    '#user-media-tab-id') != null);",
                                     &user_media_tab_existed));
     EXPECT_EQ(!requests.empty(), user_media_tab_existed);
 
@@ -278,7 +286,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
       ASSERT_TRUE(ExecuteScriptAndExtractInt(
           shell(),
           "window.domAutomationController.send("
-          "    $('user-media-tab-id').childNodes.length);",
+          "    document.querySelector('#user-media-tab-id')"
+          "        .childNodes.length);",
           &user_media_request_count));
       ASSERT_EQ(requests.size(), static_cast<size_t>(user_media_request_count));
     }
@@ -295,7 +304,9 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     string result;
     for (size_t i = 0; i < pc.events_.size(); ++i) {
       std::stringstream ss;
-      ss << "var row = $('" << log_id << "').rows[" << (i + 1) << "];"
+      ss << "var row = document.getElementById('" << log_id << "').rows["
+         << (i + 1)
+         << "];"
             "var cell = row.lastChild;"
             "window.domAutomationController.send(cell.firstChild.textContent);";
       ASSERT_TRUE(ExecuteScriptAndExtractString(shell(), ss.str(), &result));
@@ -311,7 +322,9 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     std::stringstream ss;
     ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ <<
          ", type:'" << type << "', value:'" << value << "'}";
-    ASSERT_TRUE(ExecuteJavascript("updatePeerConnection(" + ss.str() + ")"));
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('update-peer-connection', " + ss.str() +
+        ")"));
 
     VerifyPeerConnectionEntry(pc);
   }
@@ -329,10 +342,10 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     }
     std::stringstream ss;
     ss << "(() => {\n";
-    ss << "  currentGetStatsMethod = OPTION_GETSTATS_LEGACY;\n";
-    ss << "  addLegacyStats({pid:" << pc.pid_ << ", lid:" << pc.lid_
-       << ", reports:[{id:'" << id << "', type:'" << type
-       << "', stats:" << stats.GetString() << "}]});\n";
+    ss << "  setCurrentGetStatsMethod(OPTION_GETSTATS_LEGACY);\n";
+    ss << "  cr.webUIListenerCallback('add-legacy-stats', "
+       << "{pid:" << pc.pid_ << ", lid:" << pc.lid_ << ", reports:[{id:'" << id
+       << "', type:'" << type << "', stats:" << stats.GetString() << "}]});\n";
     ss << "})()";
     ASSERT_TRUE(ExecuteJavascript(ss.str()));
     VerifyStatsTable(pc, entry);
@@ -363,10 +376,11 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     string result;
     ASSERT_TRUE(ExecuteScriptAndExtractString(
         shell(),
-        "var row = $('" + table_id + "-" + name + "');"
-        "var name = row.cells[0].textContent;"
-        "var value = row.cells[1].textContent;"
-        "window.domAutomationController.send(name + ':' + value)",
+        "var row = document.getElementById('" + table_id + "-" + name +
+            "');"
+            "var name = row.cells[0].textContent;"
+            "var value = row.cells[1].textContent;"
+            "window.domAutomationController.send(name + ':' + value)",
         &result));
     EXPECT_EQ(name + ":" + value, result);
   }
@@ -536,7 +550,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   pc_1.AddEvent("e4", "v4");
   string pc_array = "[" + pc_0.getAllUpdateString() + ", " +
                           pc_1.getAllUpdateString() + "]";
-  EXPECT_TRUE(ExecuteJavascript("updateAllPeerConnections(" + pc_array + ");"));
+  EXPECT_TRUE(ExecuteJavascript(
+      "cr.webUIListenerCallback('update-all-peer-connections', " + pc_array +
+      ");"));
   VerifyPeerConnectionEntry(pc_0);
   VerifyPeerConnectionEntry(pc_1);
 }
@@ -709,29 +725,33 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
       shell2,
       "window.domAutomationController.send("
-      "    $('peer-connections-list').getElementsByTagName('li').length);",
+      "    document.querySelector('#peer-connections-list')"
+      "        .getElementsByTagName('li').length);",
       &count));
   EXPECT_EQ(NUMBER_OF_PEER_CONNECTIONS, count);
 
   // Verifies the the event tables.
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
       shell2,
-      "window.domAutomationController.send($('peer-connections-list')"
-      "    .getElementsByClassName('update-log-table').length);",
+      "window.domAutomationController.send("
+      "    document.querySelector('#peer-connections-list')"
+      "        .getElementsByClassName('update-log-table').length);",
       &count));
   EXPECT_EQ(NUMBER_OF_PEER_CONNECTIONS, count);
 
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
       shell2,
-      "window.domAutomationController.send($('peer-connections-list')"
-      "    .getElementsByClassName('update-log-table')[0].rows.length);",
+      "window.domAutomationController.send("
+      "    document.querySelector('#peer-connections-list')"
+      "        .getElementsByClassName('update-log-table')[0].rows.length);",
       &count));
   EXPECT_GT(count, 1);
 
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
       shell2,
-      "window.domAutomationController.send($('peer-connections-list')"
-      "    .getElementsByClassName('update-log-table')[1].rows.length);",
+      "window.domAutomationController.send("
+      "    document.querySelector('#peer-connections-list')"
+      "        .getElementsByClassName('update-log-table')[1].rows.length);",
       &count));
   EXPECT_GT(count, 1);
 
@@ -741,7 +761,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
     ASSERT_TRUE(ExecuteScriptAndExtractInt(
         shell2,
         "window.domAutomationController.send("
-        "    $('peer-connections-list').getElementsByClassName("
+        "    document.querySelector('#peer-connections-list')"
+        "        .getElementsByClassName("
         "        'stats-table-container').length);",
         &count));
   }
@@ -750,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   bool result = false;
   ASSERT_TRUE(ExecuteScriptAndExtractBool(
       shell2,
-      "var tableContainers = $('peer-connections-list')"
+      "var tableContainers = document.querySelector('#peer-connections-list')"
       "    .getElementsByClassName('stats-table-container');"
       "var result = true;"
       "for (var i = 0; i < tableContainers.length && result; ++i) {"
@@ -783,7 +804,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
   pc_1.AddEvent("e4", "v4");
   string pc_array =
       "[" + pc_0.getAllUpdateString() + ", " + pc_1.getAllUpdateString() + "]";
-  EXPECT_TRUE(ExecuteJavascript("updateAllPeerConnections(" + pc_array + ");"));
+  EXPECT_TRUE(ExecuteJavascript(
+      "cr.webUIListenerCallback('update-all-peer-connections', " + pc_array +
+      ");"));
 
   // Verifies the peer connection data store can be created without stats.
   string dump_json;
