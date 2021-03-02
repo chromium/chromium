@@ -3564,6 +3564,7 @@ if (build_base_unittests) {
         "trace_event/trace_event_filter_test_utils.cc",
         "trace_event/trace_event_filter_test_utils.h",
         "trace_event/trace_event_unittest.cc",
+        "trace_event/traced_value_support_unittest.cc",
         "trace_event/traced_value_unittest.cc",
         "trace_event/typed_macros_unittest.cc",
       ]

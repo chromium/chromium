@@ -169,6 +169,10 @@ static_library("test_support") {
     "//third_party/libxml:xml_reader",
   ]
 
+  if (enable_base_tracing) {
+    public_deps += [ "//third_party/perfetto:perfetto_test_support" ]
+  }
+
   if (is_win) {
     sources += [
       "async_results_test_values_win.h",
