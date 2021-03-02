@@ -175,6 +175,7 @@ export class TabSearchAppElement extends PolymerElement {
   onDocumentHidden_() {
     (this.$.tabsList).selected = NO_SELECTION;
     this.$.searchField.setValue('');
+    this.$.searchField.getSearchInput().focus();
   }
 
   /** @private */
