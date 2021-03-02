@@ -517,6 +517,9 @@ source_set("unit_tests") {
   if (is_win) {
     sources += [ "policy_loader_win_unittest.cc" ]
   }
+  if (is_chromeos_lacros) {
+    sources += [ "policy_loader_lacros_unittest.cc" ]
+  }
 
   deps = [
     ":common_constants",
@@ -542,6 +545,14 @@ source_set("unit_tests") {
   }
   if (is_android) {
     deps += [ "//components/policy/android:test_jni_headers" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chrome/browser",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//chromeos/startup:startup",
+    ]
   }
 }
 

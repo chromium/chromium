@@ -5,11 +5,15 @@
 #ifndef CHROMEOS_LACROS_LACROS_CHROME_SERVICE_IMPL_H_
 #define CHROMEOS_LACROS_LACROS_CHROME_SERVICE_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_threadsafe.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -55,6 +59,16 @@ class LacrosChromeServiceNeverBlockingState;
 // documented with threading requirements.
 class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
  public:
+  class Observer {
+   public:
+    // Called when the new policy data is received from Ash.
+    virtual void NotifyPolicyUpdate(
+        const std::vector<uint8_t>& policy_fetch_response) {}
+
+   protected:
+    virtual ~Observer() = default;
+  };
+
   // The getter is safe to call from all threads.
   //
   // This method returns nullptr very early or late in the application
@@ -105,6 +119,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   bool IsSensorHalClientAvailable() const;
   bool IsTestControllerAvailable() const;
   bool IsUrlHandlerAvailable() const;
+
+  // Methods to add/remove observer. Safe to call from any thread.
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
 
   // --------------------------------------------------------------------------
   // mojo::Remote is sequence affine. The following methods are convenient
@@ -290,6 +308,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Gets Url of the active tab on the affine sequence.
   void GetActiveTabUrlAffineSequence(GetActiveTabUrlCallback callback);
 
+  // Update device account policy with the input data. The data comes as
+  // serialized blob of PolicyFetchResponse object.
+  void UpdateDeviceAccountPolicyAffineSequence(
+      const std::vector<uint8_t>& policy);
+
   // Returns ash's version of the Crosapi mojo interface version. This
   // determines which interface methods are available. This is safe to call from
   // any sequence. This can only be called after BindReceiver().
@@ -333,6 +356,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // Set to true after BindReceiver() is called.
   bool did_bind_receiver_ = false;
+
+  // The list of observers.
+  scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
 
   // Checks that the method is called on the affine sequence.
   SEQUENCE_CHECKER(affine_sequence_checker_);

@@ -130,6 +130,14 @@ class LacrosChromeServiceNeverBlockingState
                                std::move(callback))));
   }
 
+  void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {
+    owner_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceImpl::UpdateDeviceAccountPolicyAffineSequence,
+            owner_, policy));
+  }
+
   // Unlike most of other methods of this class, this is called on the
   // affined thread. Specifically, it is intended to be called before starting
   // the message pumping of the affined thread to pass the initialization
@@ -339,7 +347,9 @@ LacrosChromeServiceImpl* LacrosChromeServiceImpl::Get() {
 LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     std::unique_ptr<LacrosChromeServiceDelegate> delegate)
     : delegate_(std::move(delegate)),
-      sequenced_state_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+      sequenced_state_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
+      observer_list_(
+          base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
   if (g_disable_all_crosapi_for_tests) {
     // Tests don't call BrowserService::InitDeprecated(), so provide
     // BrowserInitParams with default values.
@@ -840,6 +850,21 @@ base::Optional<uint32_t> LacrosChromeServiceImpl::CrosapiVersion() const {
     return base::nullopt;
   DCHECK(did_bind_receiver_);
   return init_params_->crosapi_version;
+}
+
+void LacrosChromeServiceImpl::AddObserver(Observer* obs) {
+  observer_list_->AddObserver(obs);
+}
+
+void LacrosChromeServiceImpl::RemoveObserver(Observer* obs) {
+  observer_list_->RemoveObserver(obs);
+}
+
+void LacrosChromeServiceImpl::UpdateDeviceAccountPolicyAffineSequence(
+    const std::vector<uint8_t>& policy_fetch_response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+  observer_list_->Notify(FROM_HERE, &Observer::NotifyPolicyUpdate,
+                         policy_fetch_response);
 }
 
 }  // namespace chromeos

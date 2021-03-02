@@ -367,6 +367,12 @@ interface BrowserService {
   // Returns Url of the active tab from the browser if there is any.
   [MinVersion=8]
   GetActiveTabUrl@5() => (url.mojom.Url? url);
+
+  // Notifies Lacros to update the policy data from the device account with the
+  // new data from input. The data is serialized blob of PolicyFetchResponse
+  // object.
+  [MinVersion=9]
+  UpdateDeviceAccountPolicy@6(array<uint8> policy);
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular

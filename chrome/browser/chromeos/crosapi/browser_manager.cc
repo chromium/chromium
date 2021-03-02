@@ -591,6 +591,10 @@ void BrowserManager::NotifyMojoDisconnected() {
 
 void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
   environment_provider_->SetDeviceAccountPolicy(policy_blob);
+  if (browser_service_.has_value()) {
+    browser_service_->service->UpdateDeviceAccountPolicy(
+        std::vector<uint8_t>(policy_blob.begin(), policy_blob.end()));
+  }
 }
 
 }  // namespace crosapi
