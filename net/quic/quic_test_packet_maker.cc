@@ -424,6 +424,25 @@ QuicTestPacketMaker::MakeAckRstAndDataPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeAckAndRetransmissionPacket(
+    uint64_t packet_number,
+    uint64_t first_received,
+    uint64_t largest_received,
+    uint64_t smallest_received,
+    const std::vector<uint64_t>& original_packet_numbers) {
+  DCHECK(save_packet_frames_);
+  InitializeHeader(packet_number, /*include_version=*/false);
+  AddQuicAckFrame(first_received, largest_received, smallest_received);
+  for (auto it : original_packet_numbers) {
+    for (auto frame : saved_frames_[quic::QuicPacketNumber(it)]) {
+      frames_.push_back(frame);
+    }
+  }
+
+  return BuildPacket();
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeRstAndConnectionClosePacket(
     uint64_t num,
     bool include_version,

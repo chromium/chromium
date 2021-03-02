@@ -272,6 +272,13 @@ class QuicTestPacketMaker {
       bool fin,
       absl::string_view data);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRetransmissionPacket(
+      uint64_t packet_number,
+      uint64_t first_received,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      const std::vector<uint64_t>& original_packet_numbers);
+
   std::unique_ptr<quic::QuicReceivedPacket>
   MakeRequestHeadersAndMultipleDataFramesPacket(
       uint64_t packet_number,

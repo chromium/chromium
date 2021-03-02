@@ -2693,6 +2693,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   // Using a testing task runner so that we can control time.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -2725,9 +2726,16 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC,
                      server_maker_.MakeConnectivityProbingPacket(1, false));
-  // Ping packet to send after migration is completed.
-  quic_data2.AddWrite(
-      ASYNC, client_maker_.MakeAckAndPingPacket(packet_num++, false, 1, 1));
+  if (version_.UsesHttp3()) {
+    // in-flight SETTINGS and requests will be retransmitted. Since data is
+    // already sent on the new address, ping will no longer be sent.
+    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
+                                   packet_num++, 1, 1, 1, {1, 2}));
+  } else {
+    // Ping packet to send after migration is completed.
+    quic_data2.AddWrite(
+        ASYNC, client_maker_.MakeAckAndPingPacket(packet_num++, false, 1, 1));
+  }
   quic_data2.AddRead(
       ASYNC,
       ConstructOkResponsePacket(
@@ -2897,6 +2905,7 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   // Using a testing task runner so that we can control time.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -2938,9 +2947,10 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
       ConstructOkResponsePacket(
           2, GetNthClientInitiatedBidirectionalStreamId(0), false, false));
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  quic_data2.AddWrite(
-      ASYNC, client_maker_.MakeAckAndPingPacket(packet_num++, false, 1, 1));
+
   if (VersionUsesHttp3(version_.transport_version)) {
+    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
+                                   packet_num++, 1, 1, 1, {1, 2}));
     quic_data2.AddWrite(
         SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
                          packet_num++, false, GetQpackDecoderStreamId(), 2, 2,
@@ -2951,6 +2961,9 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
             packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
             quic::QUIC_STREAM_CANCELLED));
   } else {
+    quic_data2.AddWrite(
+        ASYNC, client_maker_.MakeAckAndPingPacket(packet_num++, false, 1, 1));
+
     quic_data2.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeAckAndRstPacket(
@@ -3198,6 +3211,7 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
       {kDefaultNetworkForTests, kNewNetworkForTests});
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -3227,6 +3241,8 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
                                 StreamCancellationQpackDecoderInstruction(0),
                                 GetNthClientInitiatedBidirectionalStreamId(0),
                                 quic::QUIC_STREAM_CANCELLED, 1, 1));
+        quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
+                                             1, packet_num++, false));
     } else {
       quic_data1.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeAckAndRstPacket(
@@ -3235,8 +3251,8 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
                               quic::QUIC_STREAM_CANCELLED, 1, 1));
     }
     // Ping packet to send after migration is completed.
-      quic_data1.AddWrite(SYNCHRONOUS,
-                          client_maker_.MakePingPacket(packet_num++, false));
+    quic_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.MakePingPacket(packet_num++, false));
   } else {
     if (version_.UsesTls()) {
       if (VersionUsesHttp3(version_.transport_version)) {
@@ -3596,6 +3612,7 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
       {kDefaultNetworkForTests, kNewNetworkForTests});
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -3625,9 +3642,16 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
     quic_data1.AddRead(ASYNC,
                        server_maker_.MakeConnectivityProbingPacket(1, false));
     quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
-    // Ping packet to send after migration is completed.
-    quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeAckAndPingPacket(
-                                         packet_num, false, 1, 1));
+    if (version_.UsesHttp3()) {
+      // in-flight SETTINGS and requests will be retransmitted. Since data is
+      // already sent on the new address, ping will no longer be sent.
+      quic_data1.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
+                                     packet_num++, 1, 1, 1, {1}));
+    } else {
+      // Ping packet to send after migration is completed.
+      quic_data1.AddWrite(
+          ASYNC, client_maker_.MakeAckAndPingPacket(packet_num++, false, 1, 1));
+    }
     quic_data1.AddSocketDataToFactory(socket_factory_.get());
   }
 
@@ -4039,6 +4063,7 @@ TEST_P(QuicStreamFactoryTest, MigrateToProbingSocket) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   // Using a testing task runner so that we can control time.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -4079,8 +4104,13 @@ TEST_P(QuicStreamFactoryTest, MigrateToProbingSocket) {
                      server_maker_.MakeConnectivityProbingPacket(3, false));
   quic_data2.AddRead(SYNCHRONOUS,
                      server_maker_.MakeConnectivityProbingPacket(4, false));
-  quic_data2.AddWrite(ASYNC,
-                      client_maker_.MakeAckPacket(packet_number++, 4, 1));
+  if (version_.UsesHttp3()) {
+    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
+                                   packet_number++, 1, 4, 1, {1, 2}));
+  } else {
+    quic_data2.AddWrite(ASYNC,
+                        client_maker_.MakeAckPacket(packet_number++, 4, 1));
+  }
   quic_data2.AddRead(
       ASYNC,
       ConstructOkResponsePacket(
@@ -4245,6 +4275,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   // Using a testing task runner so that we can control time.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -4281,9 +4312,16 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC,
                      server_maker_.MakeConnectivityProbingPacket(1, false));
-  // Ping packet to send after migration is completed.
-  quic_data2.AddWrite(
-      ASYNC, client_maker_.MakeAckAndPingPacket(packet_number++, false, 1, 1));
+  if (version_.UsesHttp3()) {
+    // in-flight SETTINGS and requests will be retransmitted. Since data is
+    // already sent on the new address, ping will no longer be sent.
+    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
+                                   packet_number++, 1, 1, 1, {1, 2}));
+  } else {
+    // Ping packet to send after migration is completed.
+    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndPingPacket(
+                                   packet_number++, false, 1, 1));
+  }
   quic_data2.AddRead(
       ASYNC,
       ConstructOkResponsePacket(
@@ -5692,6 +5730,7 @@ void QuicStreamFactoryTestBase::TestMigrateSessionWithDrainingStream(
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   // Using a testing task runner so that we can control time.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -5729,8 +5768,14 @@ void QuicStreamFactoryTestBase::TestMigrateSessionWithDrainingStream(
   quic_data2.AddRead(ASYNC,
                      server_maker_.MakeConnectivityProbingPacket(3, false));
   // Ping packet to send after migration is completed.
-  quic_data2.AddWrite(write_mode_for_queued_packet,
-                      client_maker_.MakeAckPacket(packet_number++, 2, 3, 3));
+  if (version_.UsesHttp3()) {
+    quic_data2.AddWrite(write_mode_for_queued_packet,
+                        client_maker_.MakeAckAndRetransmissionPacket(
+                            packet_number++, 2, 3, 3, {1, 2}));
+  } else {
+    quic_data2.AddWrite(write_mode_for_queued_packet,
+                        client_maker_.MakeAckPacket(packet_number++, 2, 3, 3));
+  }
   if (write_mode_for_queued_packet == SYNCHRONOUS) {
     quic_data2.AddWrite(ASYNC,
                         client_maker_.MakePingPacket(packet_number++, false));
@@ -5870,6 +5915,7 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   // Using a testing task runner so that we can control time.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -5902,9 +5948,16 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC,
                      server_maker_.MakeConnectivityProbingPacket(1, false));
-  // Ping packet to send after migration is completed.
-  quic_data2.AddWrite(
-      ASYNC, client_maker_.MakeAckAndPingPacket(packet_num++, false, 1, 1));
+  if (version_.UsesHttp3()) {
+    // in-flight SETTINGS and requests will be retransmitted. Since data is
+    // already sent on the new address, ping will no longer be sent.
+    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
+                                   packet_num++, 1, 1, 1, {1, 2}));
+  } else {
+    // Ping packet to send after migration is completed.
+    quic_data2.AddWrite(
+        ASYNC, client_maker_.MakeAckAndPingPacket(packet_num++, false, 1, 1));
+  }
   quic_data2.AddRead(
       ASYNC,
       ConstructOkResponsePacket(
@@ -6311,6 +6364,7 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
       {kDefaultNetworkForTests, kNewNetworkForTests});
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -6334,12 +6388,14 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
     quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
     // A RESET will be sent to the peer to cancel the non-migratable stream.
     if (VersionUsesHttp3(version_.transport_version)) {
-        quic_data1.AddWrite(SYNCHRONOUS,
-                            client_maker_.MakeDataRstAndAckPacket(
-                                packet_num++, true, GetQpackDecoderStreamId(),
-                                StreamCancellationQpackDecoderInstruction(0),
-                                GetNthClientInitiatedBidirectionalStreamId(0),
-                                quic::QUIC_STREAM_CANCELLED, 1, 1));
+      quic_data1.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeDataRstAndAckPacket(
+                              packet_num++, true, GetQpackDecoderStreamId(),
+                              StreamCancellationQpackDecoderInstruction(0),
+                              GetNthClientInitiatedBidirectionalStreamId(0),
+                              quic::QUIC_STREAM_CANCELLED, 1, 1));
+      quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
+                                           1, packet_num++, false));
     } else {
       quic_data1.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeAckAndRstPacket(
@@ -6348,8 +6404,8 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
                               quic::QUIC_STREAM_CANCELLED, 1, 1));
     }
     // Ping packet to send after migration is completed.
-      quic_data1.AddWrite(SYNCHRONOUS,
-                          client_maker_.MakePingPacket(packet_num++, false));
+    quic_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.MakePingPacket(packet_num++, false));
 
   } else {
     if (version_.UsesTls()) {
@@ -6717,6 +6773,7 @@ TEST_P(QuicStreamFactoryTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
 
   // Using a testing task runner so that we can control time.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -6817,8 +6874,15 @@ TEST_P(QuicStreamFactoryTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   quic_data3.AddRead(ASYNC,
                      server_maker_.MakeConnectivityProbingPacket(2, false));
   quic_data3.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  quic_data3.AddWrite(ASYNC,
-                      client_maker_.MakeAckPacket(packet_num++, 1, 2, 1));
+  if (version_.UsesHttp3()) {
+    // Data sent to the old address was in-flight and thus will be
+    // retransmistted.
+    quic_data3.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
+                                   packet_num++, 1, 2, 1, {1, 2}));
+  } else {
+    quic_data3.AddWrite(ASYNC,
+                        client_maker_.MakeAckPacket(packet_num++, 1, 2, 1));
+  }
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data3.AddWrite(
         SYNCHRONOUS, client_maker_.MakeDataPacket(
