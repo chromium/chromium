@@ -339,8 +339,7 @@ class Array_Data {
   }
 
   const StorageType* storage() const {
-    return reinterpret_cast<const StorageType*>(
-        reinterpret_cast<const char*>(this) + sizeof(*this));
+    return reinterpret_cast<const StorageType*>(this + 1);
   }
 
  private:
