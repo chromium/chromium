@@ -27,7 +27,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -119,9 +118,8 @@ public final class SigninPromoUtil {
     public static void setupSigninPromoViewFromCache(SigninPromoController signinPromoController,
             ProfileDataCache profileDataCache, PersonalizedSigninPromoView view,
             SigninPromoController.OnDismissListener listener) {
-        signinPromoController.detach();
         signinPromoController.setupPromoView(
-                view.getContext(), view, getDefaultProfileData(profileDataCache), listener);
+                view, getDefaultProfileData(profileDataCache), listener);
     }
 
     /**
@@ -138,11 +136,8 @@ public final class SigninPromoUtil {
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED));
         assert signedInAccount != null : "Sync promo should only be shown for a signed in account";
-        profileDataCache.update(Collections.singletonList(signedInAccount));
-        DisplayableProfileData profileData =
-                profileDataCache.getProfileDataOrDefault(signedInAccount);
-        signinPromoController.detach();
-        signinPromoController.setupPromoView(view.getContext(), view, profileData, listener);
+        signinPromoController.setupPromoView(
+                view, profileDataCache.getProfileDataOrDefault(signedInAccount), listener);
 
         view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         view.getSecondaryButton().setVisibility(View.GONE);
@@ -158,9 +153,7 @@ public final class SigninPromoUtil {
         if (accountManagerFacade.isCachePopulated()) {
             final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
             if (accounts.size() > 0) {
-                String defaultAccountName = accounts.get(0).name;
-                profileDataCache.update(Collections.singletonList(defaultAccountName));
-                return profileDataCache.getProfileDataOrDefault(defaultAccountName);
+                return profileDataCache.getProfileDataOrDefault(accounts.get(0).name);
             }
         }
         return null;

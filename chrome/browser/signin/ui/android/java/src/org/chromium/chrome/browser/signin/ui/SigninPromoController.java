@@ -213,7 +213,7 @@ public class SigninPromoController {
 
     /**
      * Configures the signin promo view and resets the impression tracker. If this controller has
-     * been previously set up, it should be {@link #detach detached} first.
+     * been previously set up.
      * @param view The view in which the promo will be added.
      * @param profileData If not null, the promo will be configured to be in the hot state, using
      *         the account image, email and full name of the user to set the picture and the text of
@@ -222,9 +222,10 @@ public class SigninPromoController {
      *         onDismissListener marks that the promo is not dismissible and as a result the close
      *         button is hidden.
      */
-    public void setupPromoView(Context context, PersonalizedSigninPromoView view,
+    public void setupPromoView(PersonalizedSigninPromoView view,
             final @Nullable DisplayableProfileData profileData,
             final @Nullable OnDismissListener onDismissListener) {
+        detach();
         mProfileData = profileData;
         mWasDisplayed = true;
 
@@ -233,6 +234,7 @@ public class SigninPromoController {
         mImpressionTracker = new ImpressionTracker(view);
         mImpressionTracker.setListener(mImpressionFilter);
 
+        final Context context = view.getContext();
         if (mProfileData == null) {
             setupColdState(context, view);
         } else {
