@@ -77,23 +77,6 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
   }
 }
 
-// Translate the relevant ThemeProperty color ids to SecurityChipColorIds so
-// that the security chip color implementation can be shared between NativeTheme
-// and ThemeProvider.
-ui::NativeTheme::SecurityChipColorId GetSecurityChipColorId(int color_id) {
-  static const base::NoDestructor<
-      base::flat_map<int, ui::NativeTheme::SecurityChipColorId>>
-      color_id_map({
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
-           ui::NativeTheme::SecurityChipColorId::DEFAULT},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
-           ui::NativeTheme::SecurityChipColorId::SECURE},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
-           ui::NativeTheme::SecurityChipColorId::DANGEROUS},
-      });
-  return color_id_map->at(color_id);
-}
-
 SkColor IncreaseLightness(SkColor color, double percent) {
   color_utils::HSL result;
   color_utils::SkColorToHSL(color, &result);
@@ -684,12 +667,13 @@ base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
       return blend_toward_max_contrast(bg, gfx::kGoogleGreyAlpha400);
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT:
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE:
-    case TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS: {
-      return {
-          {ui::GetSecurityChipColor(GetSecurityChipColorId(id), fg.value,
-                                    bg_hovered_color().value, high_contrast),
-           fg.custom || (!dark && bg.custom)}};
-    }
+      return blend_for_min_contrast(
+          {dark ? gfx::kGoogleGrey500 : gfx::kGoogleGrey700, false},
+          bg_hovered_color());
+    case TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS:
+      return blend_for_min_contrast(
+          {dark ? gfx::kGoogleRed300 : gfx::kGoogleRed600, false},
+          bg_hovered_color());
     default:
       return base::nullopt;
   }

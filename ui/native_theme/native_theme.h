@@ -147,14 +147,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
                             // Win)
   };
 
-  // This enum represents the available unique security chip color states.
-  enum class SecurityChipColorId {
-    DEFAULT,
-    SECURE,
-    SECURE_WITH_CERT,
-    DANGEROUS,
-  };
-
   // Each structure below holds extra information needed when painting a given
   // part.
 

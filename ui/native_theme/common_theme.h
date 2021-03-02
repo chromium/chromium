@@ -14,14 +14,6 @@ namespace ui {
 
 // Drawing code that is common for all platforms.
 
-// Takes a SecurityChipColorId and |fg| and |bg| colors so that the security
-// chip color implementation can be shared outside of NativeTheme.
-SkColor NATIVE_THEME_EXPORT
-GetSecurityChipColor(NativeTheme::SecurityChipColorId chip_color_id,
-                     SkColor fg,
-                     SkColor bg,
-                     bool high_contrast = false);
-
 // Gets the appropriate alert severity color for light / dark mode.
 // TODO(tluk): Create unique color ids for each use of the alert severity colors
 // and update this function to take the background color over which the alert
