@@ -35194,7 +35194,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="47251880" label="fe8c"/>
   <int value="48328546" label="febf"/>
   <int value="48912332"
-      label="micro:bit event; e95d93af-251d-470a-a062-fa1922dfa9a8"/>
+      label="micro:bit Events; e95d93af-251d-470a-a062-fa1922dfa9a8"/>
   <int value="56938056" label="feb9"/>
   <int value="61502349"
       label="PocketLab; f000aa2c-0452-4000-b000-000000000000"/>
@@ -35217,6 +35217,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="126220948" label="fec4"/>
   <int value="129263762"
       label="PocketLab; f000aa04-0452-4000-b000-000000000000"/>
+  <int value="129862977"
+      label="micro:bit LEDs; e95dd91d-251d-470a-a062-fa1922dfa9a8"/>
   <int value="130754956" label="fe0d"/>
   <int value="134110769" label="fecf"/>
   <int value="141942246" label="fe1d"/>
@@ -35231,6 +35233,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="228594985" label="fe21"/>
   <int value="229725863"
       label="Juggglow; 624e957f-cb42-4cd6-bacc-84aeb898f69b"/>
+  <int value="239513635"
+      label="micro:bit Buttons; e95d9882-251d-470a-a062-fa1922dfa9a8"/>
   <int value="239745754" label="fe22"/>
   <int value="241152428"
       label="PocketLab; f000aa25-0452-4000-b000-000000000000"/>
@@ -35295,6 +35299,8 @@ Called by update_feature_policy_enum.py.-->
       label="PocketLab 1; f000aa10-0451-4000-b000-000000000000"/>
   <int value="534472233" label="feea"/>
   <int value="535574137" label="feb1"/>
+  <int value="539310529"
+      label="micro:bit DFU Control; e95d93b0-251d-470a-a062-fa1922dfa9a8"/>
   <int value="540487861"
       label="Parrot Drone; 9a66fd21-0800-9191-11e4-012d1540cb8e"/>
   <int value="547028880" label="fed0"/>
@@ -35401,6 +35407,8 @@ Called by update_feature_policy_enum.py.-->
       label="CoolBeans Serial; a495ff10-c5b1-4b44-b512-1370f02d74de"/>
   <int value="988476177"
       label="PocketLab 1; f000aa50-0451-4000-b000-000000000000"/>
+  <int value="993332700"
+      label="micro:bit Temperature; e95d6100-251d-470a-a062-fa1922dfa9a8"/>
   <int value="1001310815" label="fe75"/>
   <int value="1018346218"
       label="PocketLab; f000aa03-0452-4000-b000-000000000000"/>
@@ -35469,6 +35477,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="1324131957" label="ff08; 0000ff08-0000-1000-8000-00805f9b34fb"/>
   <int value="1327498374"
       label="nRF UART; 6e400001-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="1328850331"
+      label="micro:bit Accelerometer; e95d0753-251d-470a-a062-fa1922dfa9a8"/>
   <int value="1344502489" label="fe92"/>
   <int value="1352591424" label="fe2d"/>
   <int value="1357782294" label="fe90"/>
@@ -35572,6 +35582,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="1788143374" label="feb3"/>
   <int value="1788905945" label="fedb"/>
   <int value="1789684919" label="fe36"/>
+  <int value="1801426861"
+      label="micro:bit Magnetometer; e95df2d8-251d-470a-a062-fa1922dfa9a8"/>
   <int value="1805849785" label="fe98"/>
   <int value="1808789304" label="fe3a"/>
   <int value="1821803686" label="TI SensorTag Simple Keys; ffe0"/>
@@ -35638,6 +35650,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="2081202638"
       label="PocketLab 1; f000aa60-0451-4000-b000-000000000000"/>
   <int value="2081534039" label="fe83"/>
+  <int value="2083938968"
+      label="micro:bit IO PINs; e95d127b-251d-470a-a062-fa1922dfa9a8"/>
   <int value="2086529225" label="tx_power"/>
   <int value="2093050338"
       label="PocketLab; f000aa08-0452-4000-b000-000000000000"/>
