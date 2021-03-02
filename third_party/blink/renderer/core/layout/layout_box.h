@@ -570,7 +570,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       return false;
     Length h = StyleRef().LogicalHeight();
     return !StyleRef().AspectRatio().IsAuto() &&
-           (h.IsAuto() ||
+           (h.IsAuto() || h.IsMinContent() || h.IsMaxContent() ||
+            h.IsFitContent() ||
             (!IsOutOfFlowPositioned() && h.IsPercentOrCalc() &&
              ComputePercentageLogicalHeight(h) == kIndefiniteSize));
   }

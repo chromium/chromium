@@ -777,8 +777,6 @@ crbug.com/1034611 virtual/use-common-select-popup/fast/forms/color-scheme/select
 crbug.com/958381 external/wpt/css/css-contain/content-visibility/content-visibility-081.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-pseudo/selection-input-011.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-pseudo/selection-textarea-011.html [ Failure ]
-crbug.com/958381 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-004.html [ Failure ]
-crbug.com/958381 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-011.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-text/white-space/tab-bidi-001.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-text/word-break/break-boundary-2-chars-001.html [ Failure ]
 crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.any.html [ Failure ]
