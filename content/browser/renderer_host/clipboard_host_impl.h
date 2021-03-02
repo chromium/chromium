@@ -93,9 +93,18 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
 
   explicit ClipboardHostImpl(RenderFrameHost* render_frame_host);
 
+  // Performs a check to see if pasting `data` is allowed by data transfer
+  // policies and invokes PasteIfPolicyAllowedCallback upon completion.
+  // PerformPasteIfContentAllowed maybe be invoked immediately if the policy
+  // controller doesn't exist.
+  void PasteIfPolicyAllowed(ui::ClipboardBuffer clipboard_buffer,
+                            const ui::ClipboardFormatType& data_type,
+                            std::string data,
+                            IsClipboardPasteContentAllowedCallback callback);
+
   // Performs a check to see if pasting |data| is allowed and invokes |callback|
-  // upon completion. |callback| maybe be invoked immediately if the data has
-  // already been checked.  |data| and |seqno| should corresponds to the same
+  // upon completion. |callback| may be invoked immediately if the data has
+  // already been checked. |data| and |seqno| should corresponds to the same
   // clipboard data.
   void PerformPasteIfContentAllowed(
       uint64_t seqno,
@@ -110,7 +119,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   //  - it is too old
   void CleanupObsoleteRequests();
 
-  // Completion callback of PerformPasteIfContentAllowed().  Sets the allowed
+  // Completion callback of PerformPasteIfContentAllowed(). Sets the allowed
   // status for the clipboard data corresponding to sequence number |seqno|.
   void FinishPasteIfContentAllowed(uint64_t seqno,
                                    ClipboardPasteContentAllowed allowed);
@@ -177,6 +186,16 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
       uint64_t seqno,
       const ui::ClipboardFormatType& data_type,
       std::string data);
+
+  // Completion callback of PasteIfPolicyAllowed. If `is_allowed` is set to
+  // true, PerformPasteIfContentAllowed will be invoked. Otherwise `callback`
+  // will be invoked immediately to cancel the paste.
+  void PasteIfPolicyAllowedCallback(
+      ui::ClipboardBuffer clipboard_buffer,
+      const ui::ClipboardFormatType& data_type,
+      std::string data,
+      IsClipboardPasteContentAllowedCallback callback,
+      bool is_allowed);
 
   void OnReadImage(ui::ClipboardBuffer clipboard_buffer,
                    ReadImageCallback callback,

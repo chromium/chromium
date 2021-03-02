@@ -155,6 +155,15 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
   return is_read_allowed;
 }
 
+void DataTransferDlpController::PasteIfAllowed(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst,
+    base::OnceCallback<void(bool)> callback) {
+  // TODO(crbug.com/1180169): Pass true if the user chose to proceed, otherwise
+  // false should be passed instead.
+  std::move(callback).Run(true);
+}
+
 bool DataTransferDlpController::IsDragDropAllowed(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,

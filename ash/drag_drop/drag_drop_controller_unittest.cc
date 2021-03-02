@@ -1489,6 +1489,10 @@ class MockDataTransferPolicyController
   MOCK_METHOD2(IsClipboardReadAllowed,
                bool(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst));
+  MOCK_METHOD3(PasteIfAllowed,
+               void((const ui::DataTransferEndpoint* const data_src,
+                     const ui::DataTransferEndpoint* const data_dst,
+                     base::OnceCallback<void(bool)> callback)));
   MOCK_METHOD3(IsDragDropAllowed,
                bool(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst,

@@ -94,6 +94,10 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
     return true;
   }
 
+  void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
+                      const ui::DataTransferEndpoint* const data_dst,
+                      base::OnceCallback<void(bool)> callback) override {}
+
   bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
                          const ui::DataTransferEndpoint* const data_dst,
                          const bool is_drop) override {
