@@ -16,13 +16,9 @@
 
 namespace blink {
 
-const base::Feature kSmallTextRatio{"SmallTextRatio",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
-      font_size_check_enabled_(base::FeatureList::IsEnabled(kSmallTextRatio) &&
-                               frame_view_->GetFrame().GetWidgetForLocalRoot()),
+      font_size_check_enabled_(frame_view_->GetFrame().GetWidgetForLocalRoot()),
       needs_report_mf_(false),
       viewport_scalar_(
           font_size_check_enabled_

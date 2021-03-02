@@ -16,8 +16,6 @@ class LocalFrameView;
 class LayoutObject;
 struct ViewportDescription;
 
-CORE_EXPORT extern const base::Feature kSmallTextRatio;
-
 // Calculates the mobile usability of current page, especially friendliness on
 // smart phone devices are checked. The calculated value will be sent as a part
 // of UKM.

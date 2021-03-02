@@ -21,10 +21,6 @@ class MobileFriendlinessCheckerTest : public testing::Test {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kSmallTextRatio);
-  }
-
   static void ConfigureAndroidSettings(WebSettings* settings) {
     settings->SetViewportEnabled(true);
     settings->SetViewportMetaEnabled(true);
