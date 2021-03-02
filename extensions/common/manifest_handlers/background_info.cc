@@ -398,14 +398,6 @@ bool BackgroundManifestHandler::Validate(
       warnings->push_back(
           InstallWarning(errors::kInvalidBackgroundPersistentInPlatformApp));
     }
-    // Validate that packaged apps do not use the key 'background.persistent'.
-    // Use the dictionary directly to prevent an access check as
-    // 'background.persistent' is not available for packaged apps.
-    if (extension->manifest()->value()->Get(keys::kBackgroundPersistent,
-                                            NULL)) {
-      warnings->push_back(
-          InstallWarning(errors::kBackgroundPersistentInvalidForPlatformApps));
-    }
   }
 
   return true;

@@ -244,8 +244,6 @@ const char kAppsNotEnabled[] =
 const char kBackgroundPermissionNeeded[] =
     "Hosted apps that use 'background_page' must have the 'background' "
     "permission.";
-const char kBackgroundPersistentInvalidForPlatformApps[] =
-    "The key 'background.persistent' is not supported for packaged apps.";
 const char kBackgroundRequiredForPlatformApps[] =
     "Packaged apps must have a background page or background scripts.";
 const char kBackgroundSpecificationInvalidForManifestV3[] =
