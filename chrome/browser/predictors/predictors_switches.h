@@ -9,8 +9,6 @@ namespace switches {
 
 extern const char kLoadingPredictorAllowLocalRequestForTesting[];
 
-extern const char kLoadingPredictorOptimizationGuideAllowNonGwsForTesting[];
-
 }  // namespace switches
 
 #endif  // CHROME_BROWSER_PREDICTORS_PREDICTORS_SWITCHES_H_

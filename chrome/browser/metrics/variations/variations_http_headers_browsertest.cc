@@ -848,8 +848,6 @@ class VariationsHttpHeadersBrowserTestWithOptimizationGuide
     VariationsHttpHeadersBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kLoadingPredictorAllowLocalRequestForTesting);
-    command_line->AppendSwitch(
-        switches::kLoadingPredictorOptimizationGuideAllowNonGwsForTesting);
   }
 
   std::unique_ptr<content::TestNavigationManager> NavigateToURLAsync(

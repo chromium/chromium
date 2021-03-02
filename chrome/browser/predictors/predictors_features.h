@@ -49,10 +49,6 @@ bool ShouldUseOptimizationGuidePredictions();
 // even if local predictions are available for preconnect predictions.
 bool ShouldAlwaysRetrieveOptimizationGuidePredictions();
 
-// Returns whether optimization guide predictions should be retrieved on
-// cross-origin navigations.
-bool ShouldRetrieveOptimizationGuidePredictionsOnCrossOriginNavigations();
-
 // Returns the maximum number of preresolves that can be inflight at any given
 // time.
 size_t GetMaxInflightPreresolves();

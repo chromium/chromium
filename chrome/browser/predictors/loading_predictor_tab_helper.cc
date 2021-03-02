@@ -135,15 +135,10 @@ class ScopedOptimizationHintsReceiveStatusRecorder {
 bool ShouldConsultOptimizationGuide(const GURL& current_main_frame_url,
                                     content::WebContents* web_contents) {
   GURL previous_main_frame_url = web_contents->GetLastCommittedURL();
-  if (google_util::IsGoogleSearchUrl(previous_main_frame_url))
-    return true;
 
-  // Check if it is a cross-origin navigation if we are in an experiment to
-  // act on cross-origin navigations.
-  return features::
-             ShouldRetrieveOptimizationGuidePredictionsOnCrossOriginNavigations() &&
-         url::Origin::Create(current_main_frame_url) !=
-             url::Origin::Create(previous_main_frame_url);
+  // Consult the Optimization Guide on all cross-origin page loads.
+  return url::Origin::Create(current_main_frame_url) !=
+         url::Origin::Create(previous_main_frame_url);
 }
 
 }  // namespace
@@ -199,9 +194,7 @@ void LoadingPredictorTabHelper::DidStartNavigation(
     return;
 
   if (!ShouldConsultOptimizationGuide(navigation_handle->GetURL(),
-                                      web_contents()) &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kLoadingPredictorOptimizationGuideAllowNonGwsForTesting)) {
+                                      web_contents())) {
     return;
   }
 
