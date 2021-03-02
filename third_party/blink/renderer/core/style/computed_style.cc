@@ -959,6 +959,11 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
       PotentialCompositingReasonsFor3DTransformChanged(other)) {
     diff.SetCompositingReasonsChanged();
   }
+
+  if (HasCurrentBackgroundColorAnimation() !=
+      other.HasCurrentBackgroundColorAnimation()) {
+    diff.SetCompositablePaintEffectChanged();
+  }
 }
 
 void ComputedStyle::AddPaintImage(StyleImage* image) {
