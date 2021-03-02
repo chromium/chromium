@@ -628,6 +628,7 @@ class MostVisitedElement extends PolymerElement {
 
   /** @private */
   onDialogClose_() {
+    this.dialogTileUrl_ = '';
     if (this.adding_) {
       this.$.addShortcut.focus();
     }
