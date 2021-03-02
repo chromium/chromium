@@ -85,6 +85,8 @@ class GpuServiceTest : public testing::Test {
     io_thread_.Stop();
   }
 
+  base::Optional<bool> visible_;
+
  private:
   base::Thread io_thread_;
   std::unique_ptr<GpuServiceImpl> gpu_service_;
@@ -151,6 +153,38 @@ TEST_F(GpuServiceTest, LoseAllContexts) {
   testing::Mock::VerifyAndClearExpectations(&display_context);
 
   gpu_service()->UnregisterDisplayContext(&display_context);
+}
+
+// Tests that the visibility callback gets called when visibility changes.
+TEST_F(GpuServiceTest, VisibilityCallbackCalled) {
+  mojo::Remote<mojom::GpuService> gpu_service_remote;
+  gpu_service()->Bind(gpu_service_remote.BindNewPipeAndPassReceiver());
+
+  mojo::PendingRemote<mojom::GpuHost> gpu_host_proxy;
+  ignore_result(gpu_host_proxy.InitWithNewPipeAndPassReceiver());
+  gpu_service()->InitializeWithHost(
+      std::move(gpu_host_proxy), gpu::GpuProcessActivityFlags(),
+      gl::init::CreateOffscreenGLSurface(gfx::Size()),
+      /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
+      /*shutdown_event=*/nullptr);
+  gpu_service_remote.FlushForTesting();
+
+  gpu_service()->SetVisibilityChangedCallback(base::BindRepeating(
+      [](GpuServiceTest* test, bool visible) { test->visible_ = visible; },
+      base::Unretained(this)));
+  EXPECT_FALSE(visible_.has_value());
+
+  gpu_service_remote->OnForegrounded();
+  gpu_service_remote.FlushForTesting();
+
+  EXPECT_TRUE(visible_.has_value());
+  EXPECT_TRUE(*visible_);
+
+  gpu_service_remote->OnBackgrounded();
+  gpu_service_remote.FlushForTesting();
+
+  EXPECT_TRUE(visible_.has_value());
+  EXPECT_FALSE(*visible_);
 }
 
 }  // namespace viz
