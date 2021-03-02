@@ -2375,12 +2375,6 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE" desc="Text shown when viewing the Wi-Fi network detail page when the currently-viewed Wi-Fi network has been lost (e.g., has gone out of range).">
     Network out of range
   </message>
-  <message name="IDS_SETTINGS_INTERNET_CELLULAR_CONTACT_SPECIFIC_CARRIER" desc="Text shown when the Chromebook cannot connect to a cellular network, which alerts the user to contact a specific carrier.">
-    Trouble connecting. Please contact <ph name="CARRIER_NAME">$1<ex>Google Fi</ex></ph> for assistance.
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_CELLULAR_CONTACT_DEFAULT_CARRIER" desc="Text shown when the Chromebook cannot connect to a cellular network, which alerts the user to contact their carrier.">
-    Trouble connecting. Please contact your carrier for assistance.
-  </message>
   <message name="IDS_SETTINGS_INTERNET_CELLULAR_SETUP_DIALOG_TITLE" desc="The title text of the cellular setup dialog that allows users set up a new cellular network by activating a physical SIM card or setting up the device's built in eSIM.">
     Set up new network
   </message>
