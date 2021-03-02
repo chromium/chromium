@@ -18,12 +18,25 @@
 
 #include <string>
 
+#include "build/build_config.h"
+
+#if defined(WCHAR_T_IS_UTF16)
+
 // Define a macro for wrapping construction of char16 arrays and string16s from
 // a literal string. This indirection allows for an easier migration of
 // base::char16 to char16_t on platforms where WCHAR_T_IS_UTF16, as only a one
 // character change to the macro will be necessary.
 // TODO(https://crbug.com/911896): Remove this macro once base::char16 is
 // char16_t on all platforms.
+#define STRING16_LITERAL(x) L##x
+
+namespace base {
+using char16 = wchar_t;
+using string16 = std::wstring;
+}  // namespace base
+
+#else
+
 #define STRING16_LITERAL(x) u##x
 
 namespace base {
@@ -31,8 +44,6 @@ using char16 = char16_t;
 using string16 = std::u16string;
 }  // namespace base
 
-#ifndef BASE_STRING16_IS_STD_U16STRING
-#define BASE_STRING16_IS_STD_U16STRING
-#endif  // BASE_STRING16_IS_STD_U16STRING
+#endif  // WCHAR_T_IS_UTF16
 
 #endif  // BASE_STRINGS_STRING16_H_

@@ -39,7 +39,6 @@ inline void BuildLookupTable(StringPiece characters_wanted, bool* table) {
 #if !defined(COMPILER_MSVC)
 template class BasicStringPiece<std::string>;
 template class BasicStringPiece<string16>;
-template class BasicStringPiece<std::wstring>;
 #endif
 
 std::ostream& operator<<(std::ostream& o, StringPiece piece) {
@@ -51,9 +50,11 @@ std::ostream& operator<<(std::ostream& o, StringPiece16 piece) {
   return o << UTF16ToUTF8(piece);
 }
 
+#if !defined(WCHAR_T_IS_UTF16)
 std::ostream& operator<<(std::ostream& o, WStringPiece piece) {
   return o << WideToUTF8(piece);
 }
+#endif
 
 namespace internal {
 
@@ -283,6 +284,7 @@ size_t find_last_not_of(StringPiece16 self, StringPiece16 s, size_t pos) {
   return find_last_not_ofT(self, s, pos);
 }
 
+#if !defined(WCHAR_T_IS_UTF16)
 size_t find(WStringPiece self, WStringPiece s, size_t pos) {
   return findT(self, s, pos);
 }
@@ -306,5 +308,7 @@ size_t find_last_of(WStringPiece self, WStringPiece s, size_t pos) {
 size_t find_last_not_of(WStringPiece self, WStringPiece s, size_t pos) {
   return find_last_not_ofT(self, s, pos);
 }
+#endif
+
 }  // namespace internal
 }  // namespace base
