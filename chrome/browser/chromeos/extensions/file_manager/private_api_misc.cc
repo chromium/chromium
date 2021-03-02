@@ -1078,8 +1078,7 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
       file_manager::util::GetFileSystemContextForExtensionId(profile,
                                                              origin_id),
-      url::Origin::Create(
-          extensions::Extension::GetBaseURLFromExtensionId(origin_id)),
+      url::Origin::Create(source_url().GetOrigin()),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(&FileManagerPrivateInternalGetRecentFilesFunction::
                          OnConvertFileDefinitionListToEntryDefinitionList,
