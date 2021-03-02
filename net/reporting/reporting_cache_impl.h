@@ -146,28 +146,28 @@ class ReportingCacheImpl : public ReportingCache {
 
   ReportSet::const_iterator FindReportToEvict() const;
 
-  // Sanity-checks the entire data structure of clients, groups, and endpoints,
-  // if DCHECK is on. The cached clients should pass this sanity check after
-  // completely parsing a header (i.e. not after the intermediate steps), and
-  // before and after any of the public methods that remove or retrieve client
-  // info. Also calls |sequence_checker_| to DCHECK that we are being called on
-  // a valid sequence.
-  void SanityCheckClients() const;
+  // Consistency-checks the entire data structure of clients, groups, and
+  // endpoints, if DCHECK is on. The cached clients should pass this consistency
+  // check after completely parsing a header (i.e. not after the intermediate
+  // steps), and before and after any of the public methods that remove or
+  // retrieve client info. Also calls |sequence_checker_| to DCHECK that we are
+  // being called on a valid sequence.
+  void ConsistencyCheckClients() const;
 
-  // Helper methods for SanityCheckClients():
+  // Helper methods for ConsistencyCheckClients():
 #if DCHECK_IS_ON()
   // Returns number of endpoint groups found in |client|.
-  size_t SanityCheckClient(const std::string& domain,
-                           const Client& client) const;
+  size_t ConsistencyCheckClient(const std::string& domain,
+                                const Client& client) const;
 
   // Returns the number of endpoints found in |group|.
-  size_t SanityCheckEndpointGroup(
+  size_t ConsistencyCheckEndpointGroup(
       const ReportingEndpointGroupKey& key,
       const CachedReportingEndpointGroup& group) const;
 
-  void SanityCheckEndpoint(const ReportingEndpointGroupKey& key,
-                           const ReportingEndpoint& endpoint,
-                           EndpointMap::const_iterator endpoint_it) const;
+  void ConsistencyCheckEndpoint(const ReportingEndpointGroupKey& key,
+                                const ReportingEndpoint& endpoint,
+                                EndpointMap::const_iterator endpoint_it) const;
 #endif  // DCHECK_IS_ON()
 
   // Finds iterator to the client with the given |network_isolation_key| and

@@ -133,7 +133,6 @@ class ReportingCacheTest : public ReportingTestBase,
     for (const ReportingReport* report : after) {
       // If report isn't in before, we've found the new instance.
       if (std::find(before.begin(), before.end(), report) == before.end()) {
-        // Sanity check the result before we return it.
         EXPECT_EQ(network_isolation_key, report->network_isolation_key);
         EXPECT_EQ(url, report->url);
         EXPECT_EQ(user_agent, report->user_agent);
