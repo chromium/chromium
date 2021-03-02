@@ -24,6 +24,9 @@ namespace ash {
 
 namespace {
 
+// The amount the grid's fling curve's offsets are scaled down.
+constexpr float kFlingScaleDown = 3.f;
+
 // Do not bother moving the grid until a series of scrolls has reached this
 // threshold.
 constexpr float kScrollOffsetThresholdDp = 1.f;
@@ -144,10 +147,11 @@ void OverviewGridEventHandler::OnAnimationStep(base::TimeTicks timestamp) {
   gfx::Vector2dF offset;
   bool continue_fling =
       fling_curve_->ComputeScrollOffset(timestamp, &offset, &fling_velocity_);
-  continue_fling = grid_->UpdateScrollOffset(
+  offset.Scale(1 / kFlingScaleDown);
+  continue_fling = continue_fling &&
+                   grid_->UpdateScrollOffset(
                        fling_last_offset_ ? offset.x() - fling_last_offset_->x()
-                                          : offset.x()) &&
-                   continue_fling;
+                                          : offset.x());
   fling_last_offset_ = base::make_optional(offset);
 
   if (!continue_fling)

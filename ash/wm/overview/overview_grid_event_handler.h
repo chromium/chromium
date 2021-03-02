@@ -65,6 +65,8 @@ class OverviewGridEventHandler : public ui::EventHandler,
 
   // Gesture curve of the current active fling. nullptr while a fling is not
   // active.
+  // TODO(chinsenj|sammiequon): Extract common logic between window cycle list's
+  // and overview grid's fling logic into common class.
   std::unique_ptr<ui::FlingCurve> fling_curve_;
 
   // Velocity of the fling that will gradually decrease during a fling.
