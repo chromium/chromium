@@ -4856,10 +4856,7 @@ crbug.com/1030258 http/tests/devtools/network/network-cookies-pane.js [ Pass Fai
 crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js [ Pass Failure ]
 
 # Enable scroll-snap tests on impl thread
-# These are currently failing on Mac which needs more investigation, snap-scrolls-visual-viewport seems flaky
-
 crbug.com/878878 virtual/threaded/fast/scroll-snap/animate-fling-to-snap-points.html [ Failure Pass Timeout ]
-crbug.com/878878 virtual/threaded/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
 
 # Sheriff 2019-12-13
 crbug.com/1032451 [ Win7 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/idlharness.https.window.html [ Failure Pass ]

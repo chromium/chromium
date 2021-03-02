@@ -55,16 +55,17 @@ async function set_and_scroll_and_snap(
 
   const x = 200;
   const y = 200;
+  const scrollPromise = waitForScrollEvent(document);
   await smoothScroll(scale_factor * scroll_delta,
                      x,
                      y,
                      SOURCE_TYPE,
                      scroll_direction,
                      SPEED_INSTANT);
-
+  await scrollPromise;
   await waitForAnimationEndTimeBased(() => {
-      return window.scrollY + window.visualViewport.offsetTop;
-    });
+    return window.scrollY + window.visualViewport.offsetTop;
+  });
 
   assert_approx_equals(window.scrollY, layout_viewport_y, 1);
   assert_approx_equals(window.visualViewport.offsetTop, visual_viewport_y, 1);
