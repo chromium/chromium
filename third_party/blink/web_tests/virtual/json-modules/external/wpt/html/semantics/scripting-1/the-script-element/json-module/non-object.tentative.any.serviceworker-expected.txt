@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-FAIL Non-object: null promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on ServiceWorkerGlobalScope yet (see https://crbug.com/824647)."
-FAIL Non-object: true promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on ServiceWorkerGlobalScope yet (see https://crbug.com/824647)."
-FAIL Non-object: false promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on ServiceWorkerGlobalScope yet (see https://crbug.com/824647)."
-FAIL Non-object: string promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on ServiceWorkerGlobalScope yet (see https://crbug.com/824647)."
-FAIL Non-object: array promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on ServiceWorkerGlobalScope yet (see https://crbug.com/824647)."
+FAIL Non-object: null promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
+FAIL Non-object: true promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
+FAIL Non-object: false promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
+FAIL Non-object: string promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
+FAIL Non-object: array promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
 Harness: the test ran to completion.
 
