@@ -1623,6 +1623,80 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true" +
+            "/exclude_mv_tiles/true/omnibox_focused_on_new_tab/true"})
+    public void testOmnibox_FocusedOnNewTabInSingleSurfaceV2() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+        CriteriaHelper.pollUiThread(this::isOverviewVisible);
+        waitForTabModel();
+        assertThat(
+                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
+                equalTo(1));
+
+        // Launches a new Tab from the Start surface, and verifies the omnibox is focused.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getTabCreator(false).launchNTP());
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 2, 0);
+        waitForView(withId(R.id.search_box_text));
+        TextView urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        CriteriaHelper.pollUiThread(() -> isKeyboardShown() && urlBar.isFocused(),
+                MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        waitForView(withId(R.id.voice_search_button));
+        Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
+        assertEquals(
+                mActivityTestRule.getActivity().findViewById(R.id.toolbar_buttons).getVisibility(),
+                View.INVISIBLE);
+        ToolbarDataProvider toolbarDataProvider =
+                mActivityTestRule.getActivity().getToolbarManager().getLocationBarModelForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
+        });
+
+        // Navigates the new created Tab.
+        TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.setText("about:blank"));
+        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+
+        // Launches a new Tab from the newly navigated tab, and verifies the omnibox is focused.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getTabCreator(false).launchNTP());
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 3, 0);
+        waitForView(withId(R.id.search_box_text));
+        CriteriaHelper.pollUiThread(() -> isKeyboardShown() && urlBar.isFocused(),
+                MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        waitForView(withId(R.id.voice_search_button));
+        Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
+        });
+
+        // Navigates the Tab to show home button.
+        TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.setText("about:blank"));
+        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+
+        // Goes to the Start surface from tapping home button, and navigate from the Omnibox. The
+        // new created Tab shouldn't get focus.
+        pressHomePageButton();
+        CriteriaHelper.pollUiThread(this::isOverviewVisible);
+
+        onView(allOf(withId(R.id.search_box_text), isDisplayed()))
+                .perform(replaceText("about:blank"));
+        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        waitForView(withId(R.id.primary_tasks_surface_view), VIEW_GONE);
+
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 4, 0);
+        waitForView(withId(R.id.search_box_text));
+        waitForView(withId(R.id.toolbar_buttons));
+        Assert.assertFalse(urlBar.isFocused());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
+    @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
     @DisableIf.Build(sdk_is_greater_than = M, supported_abis_includes = "x86",
             message = "https://crbug.com/1170553")
     // clang-format off
@@ -1765,7 +1839,7 @@ public class StartSurfaceTest {
                 .perform(pressKey(KeyEvent.KEYCODE_ENTER));
         hideWatcher.waitForBehavior();
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 2, 0);
-        onView(withId(R.id.home_button)).perform(click());
+        pressHomePageButton();
 
         // MV tiles should shown and carousel tab switcher should not show anymore.
         onViewWaiting(withId(R.id.feed_stream_recycler_view));
