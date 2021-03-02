@@ -42,9 +42,6 @@ int GetDefaultCacheSize() {
   else if (mem_size_mb >= 512)  // With 512 MB, set a slightly larger default.
     default_cache_size *= 2;
 
-  UMA_HISTOGRAM_MEMORY_MB("Cache.MaxCacheSizeMB",
-                          default_cache_size / 1024 / 1024);
-
   return default_cache_size;
 }
 
@@ -339,16 +336,6 @@ void WebCacheManager::ReviseAllocationStrategy() {
   uint64_t active_capacity, active_size, inactive_capacity, inactive_size;
   GatherStats(active_renderers_, &active_capacity, &active_size);
   GatherStats(inactive_renderers_, &inactive_capacity, &inactive_size);
-
-  UMA_HISTOGRAM_COUNTS_100("Cache.ActiveTabs", active_renderers_.size());
-  UMA_HISTOGRAM_COUNTS_100("Cache.InactiveTabs", inactive_renderers_.size());
-  UMA_HISTOGRAM_MEMORY_MB("Cache.ActiveCapacityMB",
-                          active_capacity / 1024 / 1024);
-  UMA_HISTOGRAM_MEMORY_MB("Cache.ActiveLiveSizeMB", active_size / 1024 / 1024);
-  UMA_HISTOGRAM_MEMORY_MB("Cache.InactiveCapacityMB",
-                          inactive_capacity / 1024 / 1024);
-  UMA_HISTOGRAM_MEMORY_MB("Cache.InactiveLiveSizeMB",
-                          inactive_size / 1024 / 1024);
 
   // Compute an allocation strategy.
   //
