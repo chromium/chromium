@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // Helper class to use AuthPolicyClient. For Active Directory domain join and
 // authenticate users this class should be used instead of AuthPolicyClient.
@@ -20,9 +20,10 @@ namespace chromeos {
 // for enrollment and login UI to proper cancel the flows.
 class AuthPolicyHelper {
  public:
-  using AuthCallback = AuthPolicyClient::AuthCallback;
-  using JoinCallback = AuthPolicyClient::JoinCallback;
-  using RefreshPolicyCallback = AuthPolicyClient::RefreshPolicyCallback;
+  using AuthCallback = chromeos::AuthPolicyClient::AuthCallback;
+  using JoinCallback = chromeos::AuthPolicyClient::JoinCallback;
+  using RefreshPolicyCallback =
+      chromeos::AuthPolicyClient::RefreshPolicyCallback;
   using OnDecryptedCallback =
       base::OnceCallback<void(std::string decrypted_data)>;
 
@@ -118,6 +119,12 @@ class AuthPolicyHelper {
   DISALLOW_COPY_AND_ASSIGN(AuthPolicyHelper);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::AuthPolicyHelper;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_AUTHPOLICY_AUTHPOLICY_HELPER_H_

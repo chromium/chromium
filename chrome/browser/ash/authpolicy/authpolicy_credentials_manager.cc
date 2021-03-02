@@ -40,11 +40,11 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
-using ::ash::AccountManager;
+using ::chromeos::AuthPolicyClient;
 
 constexpr base::TimeDelta kGetUserStatusCallsInterval =
     base::TimeDelta::FromHours(1);
@@ -355,4 +355,4 @@ KeyedService* AuthPolicyCredentialsManagerFactory::BuildServiceInstanceFor(
   return new AuthPolicyCredentialsManager(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

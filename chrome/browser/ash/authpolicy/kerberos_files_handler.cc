@@ -23,7 +23,7 @@
 #include "content/public/common/network_service_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -174,4 +174,4 @@ void KerberosFilesHandler::OnFilesChanged() {
     std::move(files_changed_for_testing_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

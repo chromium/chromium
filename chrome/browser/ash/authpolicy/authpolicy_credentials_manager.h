@@ -29,11 +29,17 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
+// TODO(https://crbug.com/1164001): remove when
+// ExistingUserControllerActiveDirectoryTest is moved to ash.
+namespace chromeos {
+class ExistingUserControllerActiveDirectoryTest;
+}  // namespace chromeos
+
 namespace dbus {
 class Signal;
 }
 
-namespace chromeos {
+namespace ash {
 
 // A service responsible for tracking user credential status. Created for each
 // Active Directory user profile.
@@ -130,7 +136,7 @@ class AuthPolicyCredentialsManagerFactory
   friend struct base::DefaultSingletonTraits<
       AuthPolicyCredentialsManagerFactory>;
   friend class AuthPolicyCredentialsManagerTest;
-  friend class ExistingUserControllerActiveDirectoryTest;
+  friend class ::chromeos::ExistingUserControllerActiveDirectoryTest;
 
   AuthPolicyCredentialsManagerFactory();
   ~AuthPolicyCredentialsManagerFactory() override;
@@ -145,6 +151,13 @@ class AuthPolicyCredentialsManagerFactory
   DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManagerFactory);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::AuthPolicyCredentialsManager;
+using ::ash::AuthPolicyCredentialsManagerFactory;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_AUTHPOLICY_AUTHPOLICY_CREDENTIALS_MANAGER_H_

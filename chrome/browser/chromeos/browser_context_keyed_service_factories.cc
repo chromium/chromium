@@ -55,6 +55,7 @@
 namespace chromeos {
 
 using ::ash::AccountManagerMigratorFactory;
+using ::ash::AuthPolicyCredentialsManagerFactory;
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AccountManagerMigratorFactory::GetInstance();

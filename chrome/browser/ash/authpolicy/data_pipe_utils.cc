@@ -7,7 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace data_pipe_utils {
 
 base::ScopedFD GetDataReadPipe(const std::string& data) {
@@ -28,4 +28,4 @@ base::ScopedFD GetDataReadPipe(const std::string& data) {
 }
 
 }  // namespace data_pipe_utils
-}  // namespace chromeos
+}  // namespace ash

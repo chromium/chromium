@@ -25,9 +25,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::AuthPolicyClient;
 
 constexpr char kProfileSigninNotificationId[] = "chrome://settings/signin/";
 constexpr char kProfileEmail[] = "user@example.com";
@@ -213,4 +215,4 @@ TEST_F(AuthPolicyCredentialsManagerTest, Success_NoNotifications) {
   EXPECT_EQ(0, GetNumberOfNotifications());
 }
 
-}  // namespace chromeos
+}  // namespace ash

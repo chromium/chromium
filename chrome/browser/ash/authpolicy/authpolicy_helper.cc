@@ -21,9 +21,12 @@
 #include "crypto/hmac.h"
 #include "crypto/symmetric_key.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::AuthPolicyClient;
+using ::chromeos::InstallAttributes;
 
 constexpr char kDCPrefix[] = "DC=";
 constexpr char kOUPrefix[] = "OU=";
@@ -270,4 +273,4 @@ void AuthPolicyHelper::OnAuthCallback(
 
 AuthPolicyHelper::~AuthPolicyHelper() = default;
 
-}  // namespace chromeos
+}  // namespace ash
