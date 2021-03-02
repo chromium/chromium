@@ -90,7 +90,8 @@ void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data,
   wl_buffer* cursor_buffer = wl_cursor_image_get_buffer(cursor_image);
 
   wl_pointer_set_cursor(pointer_->wl_object(), serial, pointer_surface_.get(),
-                        cursor_image->hotspot_x, cursor_image->hotspot_y);
+                        cursor_image->hotspot_x / buffer_scale,
+                        cursor_image->hotspot_y / buffer_scale);
   wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale);
   wl_surface_damage(pointer_surface_.get(), 0, 0, cursor_image->width,
                     cursor_image->height);
