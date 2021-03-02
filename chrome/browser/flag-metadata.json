@@ -350,7 +350,7 @@
   {
     "name": "autofill-keyboard-accessory-view",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "autofill-off-no-server-data",
@@ -1412,7 +1412,7 @@
   {
     "name": "enable-autofill-manual-fallback",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-autofill-password-account-indicator-footer",
@@ -2893,7 +2893,7 @@
   {
     "name": "filling-passwords-from-any-origin",
     "owners": [ "fhorschig", "redatawfik" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "focus-mode",
@@ -4369,7 +4369,7 @@
   {
     "name": "recover-from-never-save-android",
     "owners": [ "ioanap" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "reduce-display-notifications",
