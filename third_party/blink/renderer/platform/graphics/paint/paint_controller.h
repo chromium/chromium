@@ -380,7 +380,7 @@ class PLATFORM_EXPORT PaintController {
 
   SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient&);
 
-  void CheckDuplicatePaintChunkId(const PaintChunk::Id&);
+  void ValidateNewChunkId(const PaintChunk::Id&);
 
 #if DCHECK_IS_ON()
   void ShowDebugDataInternal(DisplayItemList::JsonFlags) const;

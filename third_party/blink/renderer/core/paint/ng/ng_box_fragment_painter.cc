@@ -1512,6 +1512,13 @@ void NGBoxFragmentPainter::PaintBoxItem(
 
   if (child_fragment.IsAtomicInline() || child_fragment.IsListMarker()) {
     if (FragmentRequiresLegacyFallback(child_fragment)) {
+      // The legacy painter may be confused when painting fragmented descendant
+      // PaintLayers (which should not be fragmented but legacy layout does) and
+      // will produce duplicated PaintChunk ids for the fragments. Skip display
+      // item cache to tolerate that.
+      base::Optional<DisplayItemCacheSkipper> skipper;
+      if (paint_info.context.GetPaintController().CurrentFragment())
+        skipper.emplace(paint_info.context);
       PaintInlineChildBoxUsingLegacyFallback(child_fragment, paint_info);
       return;
     }

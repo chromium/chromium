@@ -62,7 +62,7 @@ void PaintController::RecordHitTestData(const DisplayItemClient& client,
     return;
 
   PaintChunk::Id id(client, DisplayItem::kHitTest, current_fragment_);
-  CheckDuplicatePaintChunkId(id);
+  ValidateNewChunkId(id);
   if (paint_chunker_.AddHitTestDataToCurrentChunk(id, rect, touch_action,
                                                   blocking_wheel))
     CheckNewChunk();
@@ -74,7 +74,7 @@ void PaintController::RecordScrollHitTestData(
     const TransformPaintPropertyNode* scroll_translation,
     const IntRect& rect) {
   PaintChunk::Id id(client, type, current_fragment_);
-  CheckDuplicatePaintChunkId(id);
+  ValidateNewChunkId(id);
   paint_chunker_.CreateScrollHitTestChunk(id, scroll_translation, rect);
   CheckNewChunk();
 }
@@ -93,7 +93,7 @@ void PaintController::SetPossibleBackgroundColor(
     uint64_t area) {
   PaintChunk::Id id(client, DisplayItem::kBoxDecorationBackground,
                     current_fragment_);
-  CheckDuplicatePaintChunkId(id);
+  ValidateNewChunkId(id);
   if (paint_chunker_.ProcessBackgroundColorCandidate(id, color, area))
     CheckNewChunk();
 }
@@ -364,16 +364,16 @@ void PaintController::UpdateCurrentPaintChunkProperties(
     const PropertyTreeStateOrAlias& properties) {
   if (id) {
     PaintChunk::Id id_with_fragment(*id, current_fragment_);
+    ValidateNewChunkId(id_with_fragment);
     paint_chunker_.UpdateCurrentPaintChunkProperties(&id_with_fragment,
                                                      properties);
-    CheckDuplicatePaintChunkId(id_with_fragment);
   } else {
     paint_chunker_.UpdateCurrentPaintChunkProperties(nullptr, properties);
   }
 }
 
 void PaintController::AppendChunkByMoving(PaintChunk&& chunk) {
-  CheckDuplicatePaintChunkId(chunk.id);
+  ValidateNewChunkId(chunk.id);
   paint_chunker_.AppendByMoving(std::move(chunk));
   CheckNewChunk();
 }
@@ -597,7 +597,7 @@ void PaintController::FinishCycle() {
       // items that are moved from a cached subsequence, because they should be
       // already valid. See http://crbug.com/1050090 for more details.
 #if DCHECK_IS_ON()
-      DCHECK(ClientCacheIsValid(client));
+      DCHECK(!chunk.is_cacheable || ClientCacheIsValid(client));
       for (const auto& item : current_paint_artifact_->DisplayItemsInChunk(i))
         DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
 #endif
@@ -768,11 +768,14 @@ FrameFirstPaint PaintController::EndFrame(const void* frame) {
   return result;
 }
 
-void PaintController::CheckDuplicatePaintChunkId(const PaintChunk::Id& id) {
-#if DCHECK_IS_ON()
-  if (IsSkippingCache())
+void PaintController::ValidateNewChunkId(const PaintChunk::Id& id) {
+  if (IsSkippingCache()) {
+    if (usage_ == kMultiplePaints)
+      id.client.Invalidate(PaintInvalidationReason::kUncacheable);
     return;
+  }
 
+#if DCHECK_IS_ON()
   if (DisplayItem::IsForeignLayerType(id.type))
     return;
 
