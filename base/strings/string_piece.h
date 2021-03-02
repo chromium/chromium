@@ -79,8 +79,6 @@ BASE_EXPORT size_t find_last_not_of(StringPiece16 self,
                                     StringPiece16 s,
                                     size_t pos);
 
-// Overloads for WStringPiece in case it is not the same type as StringPiece16.
-#if !defined(WCHAR_T_IS_UTF16)
 BASE_EXPORT size_t find(WStringPiece self, WStringPiece s, size_t pos);
 BASE_EXPORT size_t rfind(WStringPiece self, WStringPiece s, size_t pos);
 BASE_EXPORT size_t find_first_of(WStringPiece self, WStringPiece s, size_t pos);
@@ -91,7 +89,6 @@ BASE_EXPORT size_t find_last_of(WStringPiece self, WStringPiece s, size_t pos);
 BASE_EXPORT size_t find_last_not_of(WStringPiece self,
                                     WStringPiece s,
                                     size_t pos);
-#endif
 
 }  // namespace internal
 
@@ -565,10 +562,7 @@ constexpr bool operator>=(std::common_type_t<BasicStringPiece<StringT>> lhs,
 
 BASE_EXPORT std::ostream& operator<<(std::ostream& o, StringPiece piece);
 BASE_EXPORT std::ostream& operator<<(std::ostream& o, StringPiece16 piece);
-
-#if !defined(WCHAR_T_IS_UTF16)
 BASE_EXPORT std::ostream& operator<<(std::ostream& o, WStringPiece piece);
-#endif
 
 // Hashing ---------------------------------------------------------------------
 
