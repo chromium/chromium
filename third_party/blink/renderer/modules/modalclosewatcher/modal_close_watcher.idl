@@ -5,7 +5,7 @@
 [
   Exposed=Window,
   RuntimeEnabled=ModalCloseWatcher
-] interface ModalCloseWatcher {
+] interface ModalCloseWatcher : EventTarget {
   [CallWith=ScriptState, RaisesException] constructor();
 
   void signalClosed();

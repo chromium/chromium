@@ -16,11 +16,12 @@ ModalCloseListenerHost::~ModalCloseListenerHost() = default;
 
 void ModalCloseListenerHost::SetListener(
     mojo::PendingRemote<blink::mojom::ModalCloseListener> listener) {
+  if (modal_close_listener_.is_bound())
+    modal_close_listener_.reset();
   modal_close_listener_.Bind(std::move(listener));
   // The renderer resets the message pipe when no ModalCloseWatchers are
   // waiting for a Signal().
-  modal_close_listener_.set_disconnect_handler(base::BindOnce(
-      &ModalCloseListenerHost::Disconnect, base::Unretained(this)));
+  modal_close_listener_.reset_on_disconnect();
 }
 
 bool ModalCloseListenerHost::SignalIfActive() {
@@ -28,10 +29,6 @@ bool ModalCloseListenerHost::SignalIfActive() {
     return false;
   modal_close_listener_->Signal();
   return true;
-}
-
-void ModalCloseListenerHost::Disconnect() {
-  modal_close_listener_.reset();
 }
 
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ModalCloseListenerHost)

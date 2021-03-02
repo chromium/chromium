@@ -198,4 +198,17 @@ test(t => {
   watcher.onclose = () => { watcher.signalClosed(); }
   watcher.signalClosed();
 }, "signalClose inside onclose should not trigger an infinite loop");
+
+test(() => {
+  let watcher = new ModalCloseWatcher();
+  let onbeforeclose_called = false;
+  let onclose_called = false;
+  watcher.addEventListener("beforeclose", () => onbeforeclose_called = true);
+  watcher.addEventListener("close", () => onclose_called = true);
+
+  watcher.signalClosed();
+
+  assert_true(onbeforeclose_called);
+  assert_true(onclose_called);
+}, "signalClose with events added via addEventListener");
 </script>

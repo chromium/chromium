@@ -5348,7 +5348,7 @@ interface MimeTypeArray
     method constructor
     method item
     method namedItem
-interface ModalCloseWatcher
+interface ModalCloseWatcher : EventTarget
     attribute @@toStringTag
     getter onbeforeclose
     getter onclose

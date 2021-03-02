@@ -27,8 +27,6 @@ class CONTENT_EXPORT ModalCloseListenerHost
   explicit ModalCloseListenerHost(RenderFrameHost* render_frame_host);
   friend class RenderDocumentHostUserData<ModalCloseListenerHost>;
 
-  void Disconnect();
-
   mojo::Remote<blink::mojom::ModalCloseListener> modal_close_listener_;
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
   DISALLOW_COPY_AND_ASSIGN(ModalCloseListenerHost);
