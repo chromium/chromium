@@ -121,6 +121,7 @@ static_library("devtools") {
       "//chrome:strings",
       "//chrome/app/theme:theme_resources",
       "//chrome/browser:browser_process",
+      "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
       "//chrome/common",
       "//components/guest_view/browser",

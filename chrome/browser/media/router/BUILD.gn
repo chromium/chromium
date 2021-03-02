@@ -18,9 +18,30 @@ source_set("data_decoder_util") {
   ]
 }
 
+static_library("media_router_feature") {
+  sources = [
+    "media_router_feature.cc",
+    "media_router_feature.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/prefs:prefs",
+    "//components/user_prefs:user_prefs",
+    "//content/public/browser",
+    "//content/public/common",
+    "//crypto",
+    "//extensions/buildflags:buildflags",
+    "//media",
+    "//ui/base:buildflags",
+  ]
+}
+
 static_library("router") {
   deps = [
     ":data_decoder_util",
+    ":media_router_feature",
     "//base",
     "//chrome:strings",
     "//chrome/common:constants",
@@ -212,6 +233,7 @@ source_set("unittests") {
   ]
 
   deps = [
+    ":media_router_feature",
     ":router",
     "//base",
     "//base/test:test_support",

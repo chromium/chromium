@@ -788,6 +788,7 @@ static_library("extensions") {
     "//chrome/browser/devtools",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media/router",
+    "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:intervention_policy_database_proto",

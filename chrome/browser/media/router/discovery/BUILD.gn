@@ -13,6 +13,7 @@ static_library("discovery") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/media/router:data_decoder_util",
+    "//chrome/browser/media/router:media_router_feature",
     "//chrome/common:constants",
     "//components/cast_channel",
     "//components/media_router/browser",
