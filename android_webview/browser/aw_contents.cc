@@ -576,9 +576,8 @@ void ShowGeolocationPromptHelper(const JavaObjectWeakGlobalRef& java_ref,
 
 }  // anonymous namespace
 
-void AwContents::ShowGeolocationPrompt(
-    const GURL& requesting_frame,
-    base::OnceCallback<void(bool)> callback) {
+void AwContents::ShowGeolocationPrompt(const GURL& requesting_frame,
+                                       PermissionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GURL origin = requesting_frame.GetOrigin();
@@ -678,7 +677,7 @@ void AwContents::PreauthorizePermission(JNIEnv* env,
 
 void AwContents::RequestProtectedMediaIdentifierPermission(
     const GURL& origin,
-    base::OnceCallback<void(bool)> callback) {
+    PermissionCallback callback) {
   permission_request_handler_->SendRequest(
       std::make_unique<SimplePermissionRequest>(
           origin, AwPermissionRequest::ProtectedMediaId, std::move(callback)));
@@ -690,9 +689,8 @@ void AwContents::CancelProtectedMediaIdentifierPermissionRequests(
       origin, AwPermissionRequest::ProtectedMediaId);
 }
 
-void AwContents::RequestGeolocationPermission(
-    const GURL& origin,
-    base::OnceCallback<void(bool)> callback) {
+void AwContents::RequestGeolocationPermission(const GURL& origin,
+                                              PermissionCallback callback) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj)
@@ -721,9 +719,8 @@ void AwContents::CancelGeolocationPermissionRequests(const GURL& origin) {
                                              AwPermissionRequest::Geolocation);
 }
 
-void AwContents::RequestMIDISysexPermission(
-    const GURL& origin,
-    base::OnceCallback<void(bool)> callback) {
+void AwContents::RequestMIDISysexPermission(const GURL& origin,
+                                            PermissionCallback callback) {
   permission_request_handler_->SendRequest(
       std::make_unique<SimplePermissionRequest>(
           origin, AwPermissionRequest::MIDISysex, std::move(callback)));

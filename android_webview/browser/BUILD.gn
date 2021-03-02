@@ -138,6 +138,7 @@ source_set("browser") {
     "permission/aw_permission_request_delegate.h",
     "permission/media_access_permission_request.cc",
     "permission/media_access_permission_request.h",
+    "permission/permission_callback.h",
     "permission/permission_request_handler.cc",
     "permission/permission_request_handler.h",
     "permission/permission_request_handler_client.cc",
