@@ -185,6 +185,7 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="2239812875700136898">Haberlerinizi, Keşfet için Seçenekler düğmesinden kontrol edin</translation>
 <translation id="2259659629660284697">Şifreleri dışa aktar…</translation>
 <translation id="2276696007612801991">Şifrelerinizi kontrol etmek için Google hesabınızda oturum açın</translation>
+<translation id="2278052315791335171">Bu şifre silindiğinde <ph name="SITE" /> üzerindeki hesabınız silinmez</translation>
 <translation id="2286841657746966508">Fatura adresi</translation>
 <translation id="230115972905494466">Uyumlu cihaz bulunamadı</translation>
 <translation id="230155349749732438">Bu ayarın kullanılabilmesi için <ph name="BEGIN_LINK" />Aramaları ve göz atmayı daha iyi yap<ph name="END_LINK" /> seçeneğinin etkinleştirilmesi gerekir</translation>
@@ -355,6 +356,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3398320232533725830">Yer işareti yöneticisini açar</translation>
 <translation id="3414952576877147120">Boyut:</translation>
 <translation id="3429160811076349561">Deneme özellikleri kapalı</translation>
+<translation id="3440975416244667276">Daha fazla alakalı bilgi için dokunun ve basılı tutun</translation>
 <translation id="3443221991560634068">Geçerli sayfayı yeniden yükler</translation>
 <translation id="3451542610083122179">Privacy Sandbox, izleme mekanizmalarına karşı sizi teminat altına almaya yardımcı olacak açık web'i korumaya yönelik devam etmekte olan bir girişimdir.
 
@@ -946,6 +948,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="7475688122056506577">SD kart bulunamadı. Bazı dosyalarınız eksik olabilir.</translation>
 <translation id="7479104141328977413">Sekme yönetimi</translation>
 <translation id="7481312909269577407">İleri</translation>
+<translation id="7481864133709957613">Bu sayfadan arama yapmak için kelimelere yalnızca dokunmak yerine dokunup basılı tutun</translation>
 <translation id="7482656565088326534">Önizleme sekmesi</translation>
 <translation id="7484997419527351112">Keşfet - kapalı</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> güncellendi)</translation>
@@ -955,6 +958,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="7514365320538308">İndir</translation>
 <translation id="751961395872307827">Siteye bağlanılamıyor</translation>
 <translation id="752220631458524187">İşiniz bittiğinde bağlantıyı kesin</translation>
+<translation id="7523960634226602883">Google Lens'i kullanarak kameranızla arama yapın</translation>
 <translation id="753225086557513863">Daha sonrası için programlandı.</translation>
 <translation id="7559975015014302720">Basit mod kapalı</translation>
 <translation id="7562080006725997899">Göz atma verileri temizleniyor</translation>

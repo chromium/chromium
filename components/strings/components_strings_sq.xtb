@@ -298,6 +298,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2053111141626950936">Faqet në <ph name="LANGUAGE" /> nuk do të përkthehen.</translation>
 <translation id="2053553514270667976">Kodi postar</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugjerim}other{# sugjerime}}</translation>
+<translation id="2071692954027939183">Njoftimet bllokohen automatikisht sepse ti zakonisht nuk i lejon ato</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="20817612488360358">Cilësimet e përfaqësuesit të sistemit janë caktuar që të përdoren, por është specifikuar po ashtu një konfigurim i qartë i përfaqësuesit.</translation>
 <translation id="2082238445998314030">Rezultati <ph name="RESULT_NUMBER" /> nga <ph name="TOTAL_RESULTS" /></translation>
@@ -788,6 +789,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4058922952496707368">Çelësi "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Zarf)</translation>
 <translation id="4067947977115446013">Shto adresë të vlefshme</translation>
+<translation id="4072193657607981494">Po ngarkohen politikat</translation>
 <translation id="4072486802667267160">Ndodhi një gabim gjatë përpunimit të porosisë. Provo përsëri.</translation>
 <translation id="4075732493274867456">Klienti dhe serveri nuk mbështesin një version të zakonshëm të protokollit SSL ose një paketë të shifrimit.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -924,6 +926,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4510487217173779431">Chou4 (Zarf)</translation>
 <translation id="4515275063822566619">Kartat dhe adresat janë nga Chrome dhe llogaria jote e Google (<ph name="ACCOUNT_EMAIL" />). Ato mund t'i menaxhosh te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (Zarf)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Detajet</translation>
 <translation id="4524138615196389145">Konfirmo kartat e tua më shpejt duke përdorur WebAuthn nga tani e tutje</translation>
 <translation id="4524805452350978254">Menaxho kartat</translation>
@@ -1345,6 +1348,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="614940544461990577">Provo:</translation>
 <translation id="6150036310511284407">Tri shpime majtas</translation>
 <translation id="6151417162996330722">Certifikata e serverit ka një periudhë vlefshmërie që është tepër e gjatë.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> inç (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Për të parë mënyrat dhe kërkesat e dërgimit, zgjidh një adresë</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6169916984152623906">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do të shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
@@ -1893,6 +1897,7 @@ Detaje shtesë:
 <translation id="8364627913115013041">Nuk është caktuar.</translation>
 <translation id="8368476060205742148">Shërbimet e Google Play</translation>
 <translation id="8371889962595521444">Certifikatat rrënjë të personalizuara</translation>
+<translation id="8374636051559112948">Ndryshon</translation>
 <translation id="8380941800586852976">I rrezikshëm</translation>
 <translation id="8381674639488873545">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë. <ph name="BEGIN_LINK" />Shfaqi gjithsesi<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Ndarja nga <ph name="ORIGIN_NAME" /> te <ph name="VM_NAME" /> është bllokuar nga politika e administratorit</translation>
@@ -2074,6 +2079,7 @@ Detaje shtesë:
 <translation id="9114524666733003316">Karta po konfirmohet…</translation>
 <translation id="9114581008513152754">Ky shfletues nuk menaxhohet nga një kompani ose organizatë tjetër. Aktiviteti në këtë pajisje mund të menaxhohet jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Ngarkuar</translation>
+<translation id="9128016270925453879">Politikat janë ngarkuar</translation>
 <translation id="9128870381267983090">Lidhu me rrjetin</translation>
 <translation id="9137013805542155359">Shfaq origjinalin</translation>
 <translation id="9141013498910525015">Menaxho adresat</translation>

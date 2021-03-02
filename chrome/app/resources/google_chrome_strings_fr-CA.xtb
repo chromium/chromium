@@ -22,6 +22,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="147727933880789532">Chrome recommande de désactiver cette extension parce qu'elle ne respecte pas présentement les normes de navigation sécurisée améliorée.</translation>
 <translation id="1516530951338665275">Google Chrome nécessite l'accès au Bluetooth pour continuer l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Cette action créera un profil Chrome associé au compte <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome se sert de votre caméra Web.</translation>
 <translation id="1587325591171447154">Chrome a bloqué le fichier <ph name="FILE_NAME" />, car il est dangereux.</translation>
 <translation id="1597911401261118146">Pour vérifier si vos mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chrome<ph name="END_LINK" />.</translation>
@@ -116,6 +117,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3735758079232443276">L'extension « <ph name="EXTENSION_NAME" /> » a modifié la page qui s'affiche au démarrage de Chrome.</translation>
 <translation id="3779473566290487688">Vous devez disposer de macOS X 10.11 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Or, c'est la version macOS X 10.10 qui est installée sur cet ordinateur.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">Cette action créera un profil Chrome associé au compte <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
 <translation id="3865754807470779944">La version <ph name="PRODUCT_VERSION" /> de Chrome est installée</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chrome</translation>
@@ -186,6 +188,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome redémarrera dans 1 seconde}one{Google Chrome redémarrera dans # seconde}other{Google Chrome redémarrera dans # secondes}}</translation>
 <translation id="573759479754913123">À propos de Chrome OS</translation>
+<translation id="5756509061973259733">Il existe déjà un profil Chrome associé à ce compte sur cet appareil</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossible de lancer Chrome. Réessayez.</translation>
 <translation id="5867197326698922595">Google Chrome essaie de modifier des mots de passe.</translation>

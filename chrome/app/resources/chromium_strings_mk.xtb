@@ -51,6 +51,7 @@
 <translation id="2770231113462710648">Променете го стандардниот прелистувач во:</translation>
 <translation id="2799223571221894425">Рестартирај</translation>
 <translation id="2816712596130903444">Сакате одделен профил на Chromium?</translation>
+<translation id="2837693172913560447">Ова ќе создаде нов профил на Chromium за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Отстрани од Chromium</translation>
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2910007522516064972">За &amp;Chromium</translation>
@@ -125,6 +126,7 @@
 <translation id="4987820182225656817">Гостите може да го користат Chromium без оставање никакви траги зад нив.</translation>
 <translation id="4994636714258228724">Додај се себеси на Chromium</translation>
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
+<translation id="5252179775517634216">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chromium. Ова ќе создаде нов профил на Chromium за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">За да се применат измените, рестартирајте го Chromium</translation>
 <translation id="5358375970380395591">Се пријавувате со управувана сметка и му давате контрола на администраторот над вашиот профил на Chromium. Вашите податоци на Chromium, како на пример ваши апликации, обележувачи, историја, лозинки и други поставки ќе бидат трајно поврзани со <ph name="USER_NAME" />. Може да ги бришете овие податоци преку информациската табла со сметки на Google, но нема да може да ги поврзувате овие податоци со друга сметка. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -235,6 +237,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7773960292263897147">Предупредување: Chromium не може да ги спречи екстензиите да ја снимаат вашата историја на прелистување. За да ја оневозможите оваа екстензија во режим инкогнито, поништете го изборот на оваа опција.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">Избришете ги колачињата и податоците за сајтовите кога ќе го напуштите Chromium</translation>
+<translation id="7828947555739565424">На уредов веќе постои профил на Chromium со оваа сметка</translation>
 <translation id="7857220146454061152">За да добивате идни ажурирања на Chromium, потребен ви е OS X 10.11 или понова верзија. Компјутеров користи OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium не може да се ажурира на најновата верзија и поради тоа ги пропуштате новите функции и безбедносни поправки.</translation>
 <translation id="7898472181347242998">За да видите дали уредот ви е ажуриран, одете на <ph name="LINK_BEGIN" />Поставки за Chromium OS<ph name="LINK_END" /></translation>

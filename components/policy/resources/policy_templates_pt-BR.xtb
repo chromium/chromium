@@ -273,6 +273,7 @@
 <translation id="1393485621820363363">Impressoras empresariais ativadas</translation>
 <translation id="1397855852561539316">URL sugerido do provedor de pesquisa padrão</translation>
 <translation id="1413936351612032792">Enviar informações sobre o uso de apps Linux</translation>
+<translation id="1417888712677507140">Bloquear caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
 <translation id="1418387035898607074">Pular as verificações do "Navegação segura" para arquivos transferidos por download de fontes confiáveis</translation>
 <translation id="142346659686073702">Permitir que usuários sem afiliação utilizem o Crostini</translation>
 <translation id="1425551776320718592">Impede que os usuários deste dispositivo usem sideload com adb, sem forçar um Powerwash, o que pode deixar o dispositivo em um estado questionável de segurança</translation>
@@ -373,6 +374,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1514888685242892912">Ativar <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">Ativa o menu de acessibilidade flutuante</translation>
 <translation id="1515824657887788963">Permite que uma página execute solicitações XHR síncronas durante a dispensa de páginas.</translation>
+<translation id="1516486219683984217">Não permitir o uso de notificações do sistema</translation>
 <translation id="1522425503138261032">Permitir que os sites rastreiem a localização física dos usuários</translation>
 <translation id="1523774894176285446">Navegador alternativo que será iniciado com sites configurados.</translation>
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
@@ -2317,6 +2319,13 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="4121350739760194865">Evitar que promoções de aplicativos apareçam na página nova guia</translation>
 <translation id="4122473079291425973">A página Nova guia exibirá cards se houver conteúdo disponível, mas os usuários poderão mudar essa configuração</translation>
+<translation id="4122565688998751716">O uso desta política foi suspenso. Use a <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />.
+
+Configura se o <ph name="PRODUCT_NAME" /> usará notificações nativas no Linux.
+
+Se esta política for definida como "Verdadeira" ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> terá permissão para usar notificações nativas.
+
+Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não usará notificações nativas. A Central de mensagens do <ph name="PRODUCT_NAME" /> será usada como substituta.</translation>
 <translation id="412697421478384751">Permitir que os usuários definam PINs fracos para a tela de bloqueio</translation>
 <translation id="4138655880188755661">Limite de tempo</translation>
 <translation id="4147818922357566987">Ativar variações relativas apenas a correções críticas</translation>
@@ -2822,6 +2831,12 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o áudio mono ficará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="4933301190614090397">Controla a duração (em segundos) permitida para solicitações de sinal de atividade no encerramento do navegador.
+
+      Quando especificada, o encerramento do navegador pode ser bloqueado pelo número de segundos especificado
+      para processar as solicitações de sinal de atividade (https://fetch.spec.whatwg.org/#request-keepalive-flag, link em inglês).
+
+      O valor padrão (0) significa que esse recurso está desativado.</translation>
 <translation id="4942681160308347946">Se esta política for definida como verdadeira, o feedback falado será ativado na tela de login. Se esta política for definida como falsa, o feedback falado será desativado na tela.
 
       Se você definir a política, os usuários poderão ativar ou desativar o feedback falado temporariamente. Quando a tela de login for atualizada ou ficar inativa por um minuto, o feedback falado retornará ao estado original.
@@ -2993,6 +3008,11 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="519247340330463721">Configura as políticas relacionadas ao Safe Browsing.</translation>
 <translation id="5196520640744454600">Ativar as teclas de aderência na tela de login</translation>
 <translation id="5206454085187851382">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para o usuário. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="5207543664699568887">Configura se o <ph name="PRODUCT_NAME" /> no Linux usará notificações do sistema.
+
+Se esta política for definida como "Verdadeira" ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> terá permissão para usar as notificações do sistema.
+
+Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não usará as notificações do sistema. A Central de mensagens do <ph name="PRODUCT_NAME" /> será usada como substituta.</translation>
 <translation id="5208675398826212411">Esta política configura o comportamento de redirecionamento à intranet por verificações de interceptação de DNS. As verificações tentam descobrir se o navegador está por trás de um proxy que redireciona nomes de host desconhecidos.
 
       Se a política não for definida, o navegador usará o comportamento padrão de verificações de interceptação de DNS e sugestões de redirecionamento à intranet. Na versão M88, esses comportamentos estão ativados por padrão, mas serão desativados em uma versão futura.
@@ -3240,6 +3260,15 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
       Se esta política for ativada ou não for definida, o recurso <ph name="PRODUCT_NAME" /> será ativado. Se ela for desativada, o recurso ficará indisponível.
 
       Esta política é uma solução para fins de adaptação a curto prazo e estará disponível pelo menos até a versão 93 do Chrome.</translation>
+<translation id="5494322570831642650">Especifica se o usuário pode abrir páginas no modo de navegação anônima no <ph name="PRODUCT_NAME" />.
+
+      Se a política for definida como "Ativada" ou deixada sem definição, as páginas poderão ser abertas no modo de navegação anônima.
+
+      Se ela for definida como "Desativada", as páginas não poderão ser abertas no modo de navegação anônima.
+
+      Se a opção "Forçada" for selecionada, as páginas poderão ser abertas SOMENTE no modo de navegação anônima. A opção "Forçada" não funciona para o Android no Chrome
+
+      Observação: no iOS, se a política for alterada durante a sessão, ela só terá efeito após a reinicialização.</translation>
 <translation id="5497565614013170656">Expressão regular para correspondência do ID da impressora.</translation>
 <translation id="5499375345075963939">Esta política só fica ativada em modo de varejo.
 
@@ -3326,6 +3355,15 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="5620392548325769024">Ativar a exibição da página de recepção na primeira inicialização do navegador após o upgrade do sistema operacional</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
+<translation id="5636088574608432506">Esta política controla o comportamento de login do navegador. Ela permite especificar se o usuário pode fazer login no <ph name="PRODUCT_NAME" /> com a conta dele e usar serviços relacionados à conta, como a Sincronização do <ph name="PRODUCT_NAME" />.
+
+      Se a política for definida como "Desativar login no navegador", o usuário não poderá fazer login no navegador e usar os serviços da conta. Nesse caso, os recursos do navegador, como a Sincronização do <ph name="PRODUCT_NAME" /> não poderão ser usados e não estarão disponíveis. No <ph name="IOS_NAME" />, se o usuário fizer login e a política estiver definida como "Desativada", a conta será desconectada imediatamente. Em outras plataformas, a conta será desconectada na próxima vez que o <ph name="PRODUCT_NAME" /> for executado. Em todas as outras plataformas, os dados locais do perfil, como favoritos, senhas etc., serão mantidos e poderão ser usados. O usuário ainda poderá fazer login e usar serviços da Web do Google, como o Gmail.
+
+      Se a política for definida como "Ativar login no navegador", o usuário poderá fazer login no navegador. Em todas as plataformas, exceto no <ph name="IOS_NAME" />, a conta do usuário será conectada automaticamente no navegador quando ele fizer login nos serviços da Web do Google, como o Gmail. Estar conectado significa que as informações da conta do usuário serão mantidas pelo navegador. Entretanto, isso não significa que a Sincronização do <ph name="PRODUCT_NAME" /> será ativada por padrão. O usuário precisará ativar esse recurso separadamente. A ativação desta política impedirá que o usuário desative a configuração que permite o login no navegador. Para controlar a disponibilidade da Sincronização do <ph name="PRODUCT_NAME" />, use a política <ph name="SYNC_POLICY_NAME" />.
+
+      Se ela estiver definida como "Forçar o login no navegador", o usuário verá uma caixa de diálogo de seleção de contas. Ele precisará escolher uma e fazer login para usar o navegador. Isso garante que, para as contas gerenciadas, as políticas associadas à conta sejam aplicadas. Por padrão, isso ativará a Sincronização do <ph name="PRODUCT_NAME" /> na conta, exceto quando esse recurso do <ph name="PRODUCT_NAME" /> for desativado pelo administrador do domínio ou pela política <ph name="SYNC_POLICY_NAME" />. O valor padrão da <ph name="GUEST_MODE_POLICY_NAME" /> será definido como "Desativado". Os perfis existentes não conectados serão bloqueados e ficarão inacessíveis após a ativação dessa política. Para mais informações, consulte o artigo da Central de Ajuda: https://support.google.com/chrome/a/answer/7572556. Essa opção não é compatível com <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> ou <ph name="IOS_NAME" />. Se for usada, ela será substituída por "Ativar login no navegador".
+
+      Se a política não for definida, o usuário poderá decidir se quer ativar o login no navegador nas configurações do <ph name="PRODUCT_NAME" /> e usar esse recurso da maneira que achar melhor.</translation>
 <translation id="5641279111657132737">Esta política está obsoleta. Use a <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />.
 
       Definir a política especifica quais servidores devem ter permissão para a autenticação integrada, que só é ativada quando o <ph name="PRODUCT_NAME" /> recebe um desafio de autenticação de um proxy ou de um servidor nessa lista permitida.
@@ -4577,6 +4615,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Esta política só pode ser definida pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Permitir a ativação das notificações do "Seu smartphone".</translation>
 <translation id="7249828445670652637">Ativar certificados de CA (Autoridade de certificação) do <ph name="PRODUCT_OS_NAME" /> para apps ARC</translation>
+<translation id="7251825257294351251">Permitir notificações do sistema</translation>
 <translation id="7252681704926980614">Envia o nome de usuário e de arquivo para o servidor de impressoras nativas com cada trabalho de impressão. O padrão é não enviar.
 
       Se esta política for definida como verdadeira, ela também desativará impressoras que usam protocolos diferentes de IPPS, USB ou IPP-over-USB, uma vez que o nome de usuário e o nome de arquivo não podem ser enviados pela rede abertamente.</translation>
@@ -4831,6 +4870,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Se a política for definida como "Desativada", sempre que alguma ação do usuário gerar uma caixa de diálogo para seleção de arquivos, como a importação de favoritos, o upload de arquivos ou o salvamento de links, uma mensagem aparecerá no lugar da caixa de diálogo. O navegador responde como se o usuário tivesse clicado em "Cancelar" na caixa de diálogo de seleção de arquivos.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
+<translation id="7638764766629234761">Permitir o uso de notificações do sistema</translation>
 <translation id="7643883929273267746">Contas restritas que estão visíveis no <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Use o comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para cookies em todos os sites</translation>
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
@@ -4927,6 +4967,10 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7763614521440615342">Mostrar sugestões de conteúdo na página "Nova guia"</translation>
 <translation id="7765879851993224640">Permitir que o login do Smart Lock seja usado.</translation>
+<translation id="7774451488719504808">Como descrito em https://www.chromestatus.com/feature/5148698084376576, as caixas de diálogo modais de JavaScript, acionadas por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" />, e <ph name="JS_PROMPT" />, serão bloqueadas no <ph name="PRODUCT_NAME" /> se forem acionadas por um subframe com a origem diferente do frame de origem principal.
+       Esta política permite substituir essa mudança.
+       Se a política for definida como "Ativada" ou deixada sem definição, as caixas de diálogo de JavaScript acionadas por um subframe de origem diferente serão bloqueadas.
+       Se ela for definida como "Desativada", as caixas de diálogo de JavaScript acionadas por um subframe de origem diferente não serão bloqueadas.</translation>
 <translation id="7774768074957326919">Usar configurações de proxy do sistema</translation>
 <translation id="777734450201217641">Ative atalhos de recursos de acessibilidade na tela de login.
 
@@ -5044,6 +5088,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7904177352786629708">Definir a política como "Ativada" faz com que a pesquisa CNAME seja ignorada. O nome do servidor é usado conforme inserido ao gerar o SPN do Kerberos.
 
       Definir a política como "Desativada" ou deixá-la sem definição faz com que a pesquisa CNAME determine o nome canônico do servidor ao gerar o SPN do Kerberos.</translation>
+<translation id="7906983682927840536">Buscar duração do sinal de atividade durante o encerramento</translation>
 <translation id="7908384265697653397">Tempo, em dias, após o qual o usuário será desconectado se a versão do <ph name="PRODUCT_OS_NAME" /> for anterior à especificada por <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="7912255076272890813">Configurar tipos permitidos de aplicativo/extensão</translation>
 <translation id="791267408364877739">Exibir avisos de segurança quando sinalizações de linha de comando potencialmente perigosas forem usadas</translation>
@@ -5291,6 +5336,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Ativar IUs relacionadas à conexão no computador host quando uma conexão estiver ativa</translation>
 <translation id="8274603902181597201">Faz a limpeza do diretório inicial do ecryptfs do usuário e começa com um novo diretório inicial ext4-encrypted.</translation>
+<translation id="8278133379873210419">Suprimir caixas de diálogo de JavaScript acionadas por subframes de origem diferentes</translation>
 <translation id="8284296539558710573">Prompts de autenticação HTTP de origem cruzada</translation>
 <translation id="8284527236880877730">Se <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> for definida como "Desativada", a definição de <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> especificará a porcentagem para o cálculo do intervalo de escurecimento da tela quando o dispositivo estiver no modo de apresentação. Quando o intervalo de escurecimento for calculado, os intervalos de desligamento, bloqueio e inatividade da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 
@@ -5573,6 +5619,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8705895771006864851">Se esta política for definida como verdadeira, funcionalidades de tradução serão fornecidas quando for adequado para os usuários, mostrando uma barra de ferramentas de tradução integrada no <ph name="PRODUCT_NAME" /> e uma opção de tradução no menu de contexto que aparece ao clicar com o botão direito do mouse. Se esta política for definida como falsa, todos os recursos de tradução integrados serão desativados.
 
       Se você definir a política, os usuários não poderão mudar essa função. Se ela não for definida, os usuários poderão mudar a configuração.</translation>
+<translation id="8715885991031124968">Permitir caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
 <translation id="8720547069538712402">Permitir que o usuário ative ou desative a verificação ortográfica</translation>
 <translation id="8736538322216687231">Aplicar o Modo restrito mínimo do YouTube</translation>
 <translation id="8745669971728319820">Esta política controla a permissão de fornecimento de informações sobre extensões e plug-ins.
