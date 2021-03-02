@@ -2,7 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
+assert(!is_android && !is_ios)
+
 js_library("lottie_worker") {
+}
+
+node("minify") {
+  script = "minify_lottie.py"
+  inputs = [ "lottie_worker.js" ]
+  outputs = [ "$target_gen_dir/lottie_worker.min.js" ]
+  args = [
+    "--out_folder",
+    rebase_path(target_gen_dir, root_build_dir),
+  ]
 }

@@ -25,9 +25,10 @@ without changes to the corresponding grd file. -->
       </if>
       <if expr="not is_android and not is_ios">
         <include name="IDR_LOTTIE_LOTTIE_WORKER_MIN_JS"
-                   file="../../../third_party/lottie/lottie_worker.min.js"
-                   resource_path="lottie/lottie_worker.min.js"
-                   type="BINDATA" />
+                 file="${root_gen_dir}/third_party/lottie/lottie_worker.min.js"
+                 resource_path="lottie/lottie_worker.min.js"
+                 use_base_dir="false"
+                 type="BINDATA"/>
       </if>
     </includes>
     <structures>

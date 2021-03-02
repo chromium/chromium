@@ -44,6 +44,9 @@ grit("webui_resources_grd") {
   if (is_chromeos_ash) {
     deps += [ "//ui/chromeos/colors:cros_colors_css" ]
   }
+  if (!is_android && !is_ios) {
+    deps += [ "//third_party/lottie:minify" ]
+  }
 
   outputs = [
     "grit/webui_resources.h",
