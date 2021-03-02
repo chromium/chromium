@@ -35,7 +35,8 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
     "index.html",
-    "app_icon_128.png",
+    "app_icon_192.png",
+    "app_icon_256.png",
   ]
   grd_prefix = "connectivity_diagnostics"
   out_grd = "$target_gen_dir/connectivity_diagnostics_resources.grd"
