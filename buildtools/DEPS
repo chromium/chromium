@@ -20,7 +20,6 @@ vars = {
   # TODO(crbug.com/1166332) rename to clang_format_revision.
   'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
   'libcxx_revision':       '8fa87946779682841e21e2da977eccfb6cb3bded',
-  'libcxxabi_revision':    '6918862bfc2bff22b45058fac22b1596c49982fb',
 }
 
 deps = {
@@ -52,10 +51,6 @@ deps = {
     Var('chromium_url') +
     '/external/github.com/llvm/llvm-project/libcxx.git' + '@' +
     Var('libcxx_revision'),
-  'third_party/libc++abi/trunk':
-    Var('chromium_url') +
-    '/external/github.com/llvm/llvm-project/libcxxabi.git' + '@' +
-    Var('libcxxabi_revision'),
   'win': {
     'packages': [
       {

@@ -4140,7 +4140,7 @@ def CheckBuildtoolsRevisionsAreInSync(input_api, output_api):
 
   # Update this regexp if new revisions are added to the files.
   rev_regexp = input_api.re.compile(
-      ("'((clang_format|libcxx|libcxxabi)_revision|gn_version)':"))
+      ("'((clang_format|libcxx)_revision|gn_version)':"))
 
   # If a user is changing one revision, they need to change the same
   # line in both files. This means that any given change should contain
