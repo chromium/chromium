@@ -724,17 +724,10 @@
     "extension_types": ["extension", "platform_app"],
     "platforms": ["chromeos"]
   },
-  "webview": [{
+  "webview": {
     "channel": "stable",
     "extension_types": ["platform_app"]
-  }, {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // http://crbug.com/500075
-      "226CF815E39A363090A1E547D53063472B8279FA"   // http://crbug.com/500075
-    ]
-  }],
+  },
   "webRequest": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
