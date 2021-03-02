@@ -2672,8 +2672,10 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Set up a PDF page.
+  InnerWebContentsAttachedWaiter waiter(web_contents);
   GURL url = embedded_test_server()->GetURL("foo.com", "/pdf/test.pdf");
   ui_test_utils::NavigateToURL(browser(), url);
+  waiter.Wait();
 
   std::vector<content::WebContents*> inner_web_contents_vector =
       web_contents->GetInnerWebContents();
