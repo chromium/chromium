@@ -52,7 +52,8 @@ void RegexSplitImpl(absl::string_view input,
 
     if (should_include_delim) {
       // If desired, include the deliminator as a token.
-      tokens->push_back(extracted_delim_token.as_string());
+      tokens->push_back(absl::string_view(extracted_delim_token.data(),
+                                          extracted_delim_token.size()));
       // Mark the end of the token at the end of the beginning of the delimiter.
       begin_offsets->push_back(extracted_delim_token.data() - input.begin());
       end_offsets->push_back(extracted_delim_token.data() +
@@ -62,7 +63,7 @@ void RegexSplitImpl(absl::string_view input,
 
   // Close the last token.
   if (!leftover.empty()) {
-    tokens->push_back(leftover.as_string());
+    tokens->push_back(absl::string_view(leftover.data(), leftover.size()));
     begin_offsets->push_back(leftover.data() - input.begin());
     end_offsets->push_back(leftover.data() + leftover.length() - input.begin());
   }
