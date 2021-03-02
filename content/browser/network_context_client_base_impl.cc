@@ -103,16 +103,6 @@ void NetworkContextClientBase::OnCanSendDomainReliabilityUpload(
   std::move(callback).Run(false);
 }
 
-void NetworkContextClientBase::OnClearSiteData(
-    int32_t process_id,
-    int32_t routing_id,
-    const GURL& url,
-    const std::string& header_value,
-    int load_flags,
-    OnClearSiteDataCallback callback) {
-  std::move(callback).Run();
-}
-
 #if defined(OS_ANDROID)
 void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
     const std::string& server_auth_token,

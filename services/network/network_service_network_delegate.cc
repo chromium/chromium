@@ -321,11 +321,15 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
     net::CompletionOnceCallback callback,
     const net::HttpResponseHeaders* original_response_headers) {
   DCHECK(request);
-  if (!original_response_headers || !network_context_->client())
+  if (!original_response_headers)
     return net::OK;
 
   URLLoader* url_loader = URLLoader::ForRequest(*request);
   if (!url_loader)
+    return net::OK;
+
+  auto* auth_cert_observer = url_loader->GetAuthCertObserver();
+  if (!auth_cert_observer)
     return net::OK;
 
   std::string header_value;
@@ -334,8 +338,7 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
     return net::OK;
   }
 
-  network_context_->client()->OnClearSiteData(
-      url_loader->GetProcessId(), url_loader->GetRenderFrameId(),
+  auth_cert_observer->OnClearSiteData(
       request->url(), header_value, request->load_flags(),
       base::BindOnce(&NetworkServiceNetworkDelegate::FinishedClearSiteData,
                      weak_ptr_factory_.GetWeakPtr(), request->GetWeakPtr(),

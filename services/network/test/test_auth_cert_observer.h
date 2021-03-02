@@ -46,6 +46,10 @@ class TestAuthCertObserver
       const scoped_refptr<net::HttpResponseHeaders>& head_headers,
       mojo::PendingRemote<mojom::AuthChallengeResponder>
           auth_challenge_responder) override;
+  void OnClearSiteData(const GURL& url,
+                       const std::string& header_value,
+                       int32_t load_flags,
+                       OnClearSiteDataCallback callback) override;
   void Clone(mojo::PendingReceiver<AuthenticationAndCertificateObserver>
                  observer) override;
 

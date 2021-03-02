@@ -43,6 +43,13 @@ void TestAuthCertObserver::OnAuthRequired(
     mojo::PendingRemote<mojom::AuthChallengeResponder>
         auth_challenge_responder) {}
 
+void TestAuthCertObserver::OnClearSiteData(const GURL& url,
+                                           const std::string& header_value,
+                                           int32_t load_flags,
+                                           OnClearSiteDataCallback callback) {
+  std::move(callback).Run();
+}
+
 void TestAuthCertObserver::Clone(
     mojo::PendingReceiver<AuthenticationAndCertificateObserver> observer) {
   receivers_.Add(this, std::move(observer));

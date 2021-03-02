@@ -109,6 +109,14 @@ void WilcoDtcSupportdNetworkContextImpl::OnAuthRequired(
   auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
 }
 
+void WilcoDtcSupportdNetworkContextImpl::OnClearSiteData(
+    const GURL& url,
+    const std::string& header_value,
+    int32_t load_flags,
+    OnClearSiteDataCallback callback) {
+  std::move(callback).Run();
+}
+
 void WilcoDtcSupportdNetworkContextImpl::Clone(
     mojo::PendingReceiver<network::mojom::AuthenticationAndCertificateObserver>
         observer) {

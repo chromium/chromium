@@ -1836,13 +1836,13 @@ void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
       blink::mojom::PermissionStatus::GRANTED);
 }
 
-void StoragePartitionImpl::OnClearSiteData(int32_t process_id,
-                                           int32_t routing_id,
-                                           const GURL& url,
+void StoragePartitionImpl::OnClearSiteData(const GURL& url,
                                            const std::string& header_value,
                                            int load_flags,
                                            OnClearSiteDataCallback callback) {
   DCHECK(initialized_);
+  int process_id = auth_cert_observers_.current_context().process_id;
+  int routing_id = auth_cert_observers_.current_context().routing_id;
   auto browser_context_getter = base::BindRepeating(
       GetBrowserContextFromStoragePartition, weak_factory_.GetWeakPtr());
   auto web_contents_getter = base::BindRepeating(
@@ -2551,6 +2551,7 @@ StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessInternal(
   // Corb requests are likely made on behalf of untrusted renderers.
   if (!corb_enabled)
     params->is_trusted = true;
+  params->auth_cert_observer = CreateAuthCertObserverForServiceWorker();
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);

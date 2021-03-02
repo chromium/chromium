@@ -1645,6 +1645,12 @@ int URLLoader::OnHeadersReceived(
   return net::OK;
 }
 
+mojom::AuthenticationAndCertificateObserver* URLLoader::GetAuthCertObserver() {
+  if (!auth_cert_observer_)
+    return nullptr;
+  return auth_cert_observer_.get();
+}
+
 net::LoadState URLLoader::GetLoadStateForTesting() const {
   return url_request_->GetLoadState().state;
 }
