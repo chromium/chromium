@@ -860,6 +860,7 @@ void V4L2VideoEncodeAccelerator::MaybeFlushImageProcessor() {
               << "|image_processor_|. Move the flush request to the encoder";
     image_processor_input_queue_.pop();
     encoder_input_queue_.emplace(nullptr, false);
+    Enqueue();
   }
 }
 
