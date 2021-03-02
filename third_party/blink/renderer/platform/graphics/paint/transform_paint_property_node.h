@@ -430,6 +430,14 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
            CompositingReason::kWillChangeTransform;
   }
 
+  // Cull rect expansion is required if the compositing reasons hint requirement
+  // of high-performance movement, to avoid frequent change of cull rect.
+  bool RequiresCullRectExpansion() const {
+    return state_.direct_compositing_reasons &
+           (CompositingReason::kDirectReasonsForTransformProperty |
+            CompositingReason::kDirectReasonsForScrollTranslationProperty);
+  }
+
   const CompositorElementId& GetCompositorElementId() const {
     return state_.compositor_element_id;
   }

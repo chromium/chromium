@@ -346,7 +346,7 @@ TEST_P(CompositedLayerMappingTest, LargeScaleInterestRect) {
 }
 
 TEST_P(CompositedLayerMappingTest, PerspectiveInterestRect) {
-  SetBodyInnerHTML(R"HTML(<div style='left: 400px; position: absolute;'>
+  SetBodyInnerHTML(R"HTML(
     <div id=target style='transform: perspective(1000px) rotateX(-100deg);'>
       <div style='width: 1200px; height: 835px; background: lightblue;
           border: 1px solid black'></div>
@@ -457,6 +457,10 @@ TEST_P(CompositedLayerMappingTest, RotatedTallInterestRect) {
   PaintLayer* paint_layer = GetPaintLayerByElementId("target");
   ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    // The vertical expansion is 4000 * max_dimension(1x1 rect projected from
+    // screen to local).
+    EXPECT_EQ(gfx::Rect(0, 0, 200, 4788),
+              PaintableRegion(paint_layer->GraphicsLayerBacking()));
   } else {
     EXPECT_EQ(gfx::Rect(0, 0, 200, 4000),
               PaintableRegion(paint_layer->GraphicsLayerBacking()));
@@ -483,9 +487,10 @@ TEST_P(CompositedLayerMappingTest, WideLayerInterestRect) {
 TEST_P(CompositedLayerMappingTest, FixedPositionInterestRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target'
-         style='width: 300px; height: 400px; will-change: transform;
-                position: fixed; top: 100px; left: 200px; background: blue'>
+         style='width: 300px; height: 400px; top: 100px; left: 200px;
+                position: fixed; background: blue'>
     </div>
+    <div style="height: 3000px"></div>
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
@@ -493,6 +498,26 @@ TEST_P(CompositedLayerMappingTest, FixedPositionInterestRect) {
   ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 400),
             PaintableRegion(paint_layer->GraphicsLayerBacking()));
+}
+
+TEST_P(CompositedLayerMappingTest, OutOfViewFixedPositionInterestRect) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='target'
+         style='width: 300px; height: 400px; top: 2000px; left: 200px;
+                position: fixed; background: blue'>
+    </div>
+    <div style="height: 3000px"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  PaintLayer* paint_layer = GetPaintLayerByElementId("target");
+  ASSERT_TRUE(paint_layer->GraphicsLayerBacking());
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    EXPECT_TRUE(PaintableRegion(paint_layer->GraphicsLayerBacking()).IsEmpty());
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 300, 400),
+              PaintableRegion(paint_layer->GraphicsLayerBacking()));
+  }
 }
 
 TEST_P(CompositedLayerMappingTest, LayerFarOffscreenInterestRect) {
@@ -1014,16 +1039,25 @@ TEST_P(CompositedLayerMappingTest, InterestRectOfIframeWithFixedContents) {
   auto* fixed = ChildDocument().getElementById("fixed")->GetLayoutObject();
   auto* graphics_layer = fixed->EnclosingLayer()->GraphicsLayerBacking(fixed);
 
-  // The graphics layer has dimensions 5400x300 but the interest rect clamps
-  // this to the right-most 4000x4000 area.
-  EXPECT_EQ(gfx::Rect(1000, 0, 4400, 300), PaintableRegion(graphics_layer));
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    // We don't expand the cull rect because the layer doesn't have an explicit
+    // will-change-visual-location compositing reason.
+    EXPECT_EQ(gfx::Rect(5000, 0, 400, 300), PaintableRegion(graphics_layer));
+  } else {
+    // The graphics layer has dimensions 5400x300 but the interest rect clamps
+    // this to the right-most 4000x4000 area.
+    EXPECT_EQ(gfx::Rect(1000, 0, 4400, 300), PaintableRegion(graphics_layer));
+  }
 
   ChildDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0.0, 3000.0), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
   // Because the fixed element does not scroll, the interest rect is unchanged.
-  EXPECT_EQ(gfx::Rect(1000, 0, 4400, 300), PaintableRegion(graphics_layer));
+  EXPECT_EQ(RuntimeEnabledFeatures::CullRectUpdateEnabled()
+                ? gfx::Rect(5000, 0, 400, 300)
+                : gfx::Rect(1000, 0, 4400, 300),
+            PaintableRegion(graphics_layer));
 }
 
 TEST_P(CompositedLayerMappingTest, ScrolledFixedPositionInterestRect) {
@@ -1041,14 +1075,23 @@ TEST_P(CompositedLayerMappingTest, ScrolledFixedPositionInterestRect) {
 
   auto* fixed = GetDocument().getElementById("fixed")->GetLayoutObject();
   auto* graphics_layer = fixed->EnclosingLayer()->GraphicsLayerBacking(fixed);
-  EXPECT_EQ(gfx::Rect(0, 500, 100, 4030), PaintableRegion(graphics_layer));
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    // We don't expand the cull rect because the layer doesn't have an explicit
+    // will-change-visual-location compositing reason.
+    EXPECT_EQ(gfx::Rect(0, 4500, 100, 30), PaintableRegion(graphics_layer));
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 500, 100, 4030), PaintableRegion(graphics_layer));
+  }
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0.0, 200.0), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
   // Because the fixed element does not scroll, the interest rect is unchanged.
-  EXPECT_EQ(gfx::Rect(0, 500, 100, 4030), PaintableRegion(graphics_layer));
+  EXPECT_EQ(RuntimeEnabledFeatures::CullRectUpdateEnabled()
+                ? gfx::Rect(0, 4500, 100, 30)
+                : gfx::Rect(0, 500, 100, 4030),
+            PaintableRegion(graphics_layer));
 }
 
 TEST_P(CompositedLayerMappingTest,

@@ -2026,7 +2026,7 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
   EXPECT_EQ(IntRect(0, 0, 630, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
-  EXPECT_EQ(IntRect(-4000, -4000, 8630, 8100),
+  EXPECT_EQ(IntRect(0, 0, 630, 100),
             child_layout_view->FirstFragment().GetCullRect().Rect());
   EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
 }

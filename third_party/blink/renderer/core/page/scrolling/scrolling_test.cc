@@ -1338,7 +1338,7 @@ TEST_P(ScrollingTest, NonFastScrollableRegionsForPlugins) {
       }
       #fixed {
         position: fixed;
-        top: 500px;
+        left: 300px;
       }
     </style>
     <div id="fixed">
