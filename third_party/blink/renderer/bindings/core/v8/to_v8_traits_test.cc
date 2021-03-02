@@ -55,6 +55,11 @@ TEST(ToV8TraitsTest, Any) {
   EXPECT_FALSE(actual1.IsEmpty());
   double actual_as_number1 = actual1.As<v8::Number>()->Value();
   EXPECT_EQ(1234.0, actual_as_number1);
+
+  v8::Local<v8::Value> actual2;
+  ASSERT_TRUE(ToV8Traits<IDLAny>::ToV8(scope.GetScriptState(), actual1)
+                  .ToLocal(&actual2));
+  EXPECT_EQ(actual1, actual2);
 }
 
 TEST(ToV8TraitsTest, Boolean) {

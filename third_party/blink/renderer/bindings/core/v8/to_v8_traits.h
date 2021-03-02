@@ -36,8 +36,22 @@ struct ToV8Traits<IDLAny> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                         const ScriptValue& script_value)
       WARN_UNUSED_RESULT {
-    DCHECK(!script_value.IsEmpty());
+    // It is not correct to take empty |script_value|.
+    // However, some call sites expect to get v8::Undefined
+    // when ToV8 takes empty |script_value|.
+    // TODO(crbug.com/1183637): Remove this if-branch.
+    if (script_value.IsEmpty())
+      return v8::Undefined(script_state->GetIsolate());
     return script_value.V8Value();
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const v8::Local<v8::Value>& value)
+      WARN_UNUSED_RESULT {
+    // TODO(crbug.com/1183637): Remove this if-branch.
+    if (value.IsEmpty())
+      return v8::Undefined(script_state->GetIsolate());
+    return value;
   }
 };
 
@@ -326,7 +340,25 @@ template <typename T>
 struct ToV8Traits<NotShared<T>> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                         NotShared<T> value) WARN_UNUSED_RESULT {
+    DCHECK(!value.IsNull());
     return ToV8Traits<T>::ToV8(script_state, value.Get());
+  }
+
+  // TODO(crbug.com/1183647): Remove this overload. It is used in generated
+  // code, but it might cause bugs because T* cannot tell whether it's NotShared
+  // or MaybeShared.
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        T* value) WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return ToV8Traits<T>::ToV8(script_state, value);
+  }
+
+  // TODO(canonmukai): Remove this overload.
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const ScriptValue& script_value)
+      WARN_UNUSED_RESULT {
+    DCHECK(!script_value.IsEmpty());
+    return ToV8Traits<IDLAny>::ToV8(script_state, script_value);
   }
 };
 
