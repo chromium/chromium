@@ -803,4 +803,27 @@ base::FilePath GetElevationServicePath(const base::FilePath& target_path,
       .Append(kElevationServiceExe);
 }
 
+void AddUpdateDowngradeVersionItem(HKEY root,
+                                   const base::Version& current_version,
+                                   const base::Version& new_version,
+                                   WorkItemList* list) {
+  DCHECK(list);
+  DCHECK(new_version.IsValid());
+  const auto downgrade_version = InstallUtil::GetDowngradeVersion();
+  const std::wstring client_state_key = install_static::GetClientStateKeyPath();
+  if (current_version.IsValid() && new_version < current_version) {
+    // This is a downgrade. Write the value if this is the first one (i.e., no
+    // previous value exists). Otherwise, leave any existing value in place.
+    if (!downgrade_version) {
+      list->AddSetRegValueWorkItem(
+          root, client_state_key, KEY_WOW64_32KEY, kRegDowngradeVersion,
+          base::ASCIIToWide(current_version.GetString()), true);
+    }
+  } else if (!current_version.IsValid() || new_version >= downgrade_version) {
+    // This is a new install or an upgrade to/past a previous DowngradeVersion.
+    list->AddDeleteRegValueWorkItem(root, client_state_key, KEY_WOW64_32KEY,
+                                    kRegDowngradeVersion);
+  }
+}
+
 }  // namespace installer

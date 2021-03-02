@@ -49,12 +49,6 @@ using installer::ProductState;
 
 namespace {
 
-// DowngradeVersion holds the version from which Chrome was downgraded. In case
-// of multiple downgrades (e.g., 75->74->73), it retains the highest version
-// installed prior to any downgrades. DowngradeVersion is deleted on upgrade
-// once Chrome reaches the version from which it was downgraded.
-const wchar_t kRegDowngradeVersion[] = L"DowngradeVersion";
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class StartMenuShortcutStatus {
@@ -536,7 +530,7 @@ base::Optional<base::Version> InstallUtil::GetDowngradeVersion() {
                                                  : HKEY_CURRENT_USER,
                install_static::GetClientStateKeyPath().c_str(),
                KEY_QUERY_VALUE | KEY_WOW64_32KEY) != ERROR_SUCCESS ||
-      key.ReadValue(kRegDowngradeVersion, &downgrade_version) !=
+      key.ReadValue(installer::kRegDowngradeVersion, &downgrade_version) !=
           ERROR_SUCCESS ||
       downgrade_version.empty()) {
     return base::nullopt;
@@ -545,31 +539,6 @@ base::Optional<base::Version> InstallUtil::GetDowngradeVersion() {
   if (!version.IsValid())
     return base::nullopt;
   return version;
-}
-
-// static
-void InstallUtil::AddUpdateDowngradeVersionItem(
-    HKEY root,
-    const base::Version& current_version,
-    const base::Version& new_version,
-    WorkItemList* list) {
-  DCHECK(list);
-  const auto downgrade_version = GetDowngradeVersion();
-  if (current_version.IsValid() && new_version < current_version) {
-    // This is a downgrade. Write the value if this is the first one (i.e., no
-    // previous value exists). Otherwise, leave any existing value in place.
-    if (!downgrade_version) {
-      list->AddSetRegValueWorkItem(
-          root, install_static::GetClientStateKeyPath(), KEY_WOW64_32KEY,
-          kRegDowngradeVersion, base::ASCIIToWide(current_version.GetString()),
-          true);
-    }
-  } else if (!current_version.IsValid() || new_version >= downgrade_version) {
-    // This is a new install or an upgrade to/past a previous DowngradeVersion.
-    list->AddDeleteRegValueWorkItem(root,
-                                    install_static::GetClientStateKeyPath(),
-                                    KEY_WOW64_32KEY, kRegDowngradeVersion);
-  }
 }
 
 // static

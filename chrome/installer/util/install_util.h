@@ -173,14 +173,6 @@ class InstallUtil {
   // or no value if Chrome was not previously downgraded from a newer version.
   static base::Optional<base::Version> GetDowngradeVersion();
 
-  // Adds or removes downgrade version registry value. This function should only
-  // be used for Chrome install.
-  static void AddUpdateDowngradeVersionItem(
-      HKEY root,
-      const base::Version& current_version,
-      const base::Version& new_version,
-      WorkItemList* list);
-
   // Returns pairs of registry key paths and value names where the enrollment
   // token is stored for machine level user cloud policies. The locations are
   // returned in order of preference.

@@ -20,6 +20,8 @@
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
 
+class WorkItemList;
+
 namespace base {
 class CommandLine;
 class FilePath;
@@ -153,6 +155,12 @@ base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,
 // Returns the file path to elevation_service.exe (in |version| directory).
 base::FilePath GetElevationServicePath(const base::FilePath& target_path,
                                        const base::Version& version);
+
+// Adds or removes downgrade version registry value.
+void AddUpdateDowngradeVersionItem(HKEY root,
+                                   const base::Version& current_version,
+                                   const base::Version& new_version,
+                                   WorkItemList* list);
 
 }  // namespace installer
 
