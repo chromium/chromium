@@ -2328,7 +2328,7 @@
     Double tap to start editing
   </message>
   <message desc="Describes Learn Mode when the mode is initially entered with text-to-speech." name="IDS_CHROMEVOX_LEARN_MODE_INTRO" is_accessibility_with_no_ui="true">
-    Press a qwerty key, refreshable braille key, or touch gesture to learn its function. Press control with w or escape to exit.
+    Press a qwerty key, refreshable braille key, or touch gesture to learn its function. Press control with w, space with Z, swipe left with two fingers, or escape to exit.
   </message>
   <message desc="Output when leaving Learn Mode." name="IDS_CHROMEVOX_LEARN_MODE_OUTTRO">
     Stopping Learn Mode

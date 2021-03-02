@@ -119,6 +119,7 @@ KbExplorer = class {
     let msgid;
     const msgArgs = [];
     let text;
+    let callback;
     switch (evt.command) {
       case BrailleKeyCommand.PAN_LEFT:
         msgid = 'braille_pan_left';
@@ -152,6 +153,10 @@ KbExplorer = class {
         // First, check for the dots mapping to a key code.
         const keyCode = BrailleKeyEvent.brailleChordsToStandardKeyCode[dots];
         if (keyCode) {
+          if (keyCode === 'Escape') {
+            callback = KbExplorer.close_;
+          }
+
           text = keyCode;
           break;
         }
@@ -200,7 +205,7 @@ KbExplorer = class {
     if (msgid) {
       text = Msgs.getMsg(msgid, msgArgs);
     }
-    KbExplorer.output(text || evt.command);
+    KbExplorer.output(text || evt.command, callback);
     KbExplorer.clearRange();
   }
 
@@ -213,14 +218,16 @@ KbExplorer = class {
     KbExplorer.shouldFlushSpeech_ = true;
     KbExplorer.maybeClose_();
 
-    if (gesture === 'touchExplore') {
+    let callback;
+    if (gesture === chrome.accessibilityPrivate.Gesture.TOUCH_EXPLORE) {
       if ((new Date() - KbExplorer.lastTouchExplore_) <
           KbExplorer.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_) {
         return;
       }
       KbExplorer.lastTouchExplore_ = new Date();
+    } else if (gesture === chrome.accessibilityPrivate.Gesture.SWIPE_LEFT2) {
+      callback = KbExplorer.close_;
     }
-
 
     const gestureData = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
     if (gestureData) {
@@ -231,7 +238,8 @@ KbExplorer = class {
         KbExplorer.onCommand(gestureData.command);
       }
       if (gestureData.commandDescriptionMsgId) {
-        KbExplorer.output(Msgs.getMsg(gestureData.commandDescriptionMsgId));
+        KbExplorer.output(
+            Msgs.getMsg(gestureData.commandDescriptionMsgId), callback);
       }
     }
   }
@@ -253,16 +261,17 @@ KbExplorer = class {
 
   /**
    * @param {string} text
-   * @param {string=} opt_braille If different from text.
+   * @param {function()=} opt_speakCallback A callback to run when speech
+   *     finishes.
    */
-  static output(text, opt_braille) {
+  static output(text, opt_speakCallback) {
     ChromeVox.tts.speak(
         text,
         KbExplorer.shouldFlushSpeech_ ?
             window.backgroundWindow.QueueMode.FLUSH :
-            window.backgroundWindow.QueueMode.QUEUE);
-    ChromeVox.braille.write(
-        new NavBraille({text: new Spannable(opt_braille || text)}));
+            window.backgroundWindow.QueueMode.QUEUE,
+        {endCallback: opt_speakCallback});
+    ChromeVox.braille.write(new NavBraille({text: new Spannable(text)}));
     KbExplorer.shouldFlushSpeech_ = false;
   }
 

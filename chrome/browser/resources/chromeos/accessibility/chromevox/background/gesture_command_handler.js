@@ -46,7 +46,7 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   EventSourceState.set(EventSourceType.TOUCH_GESTURE);
 
-  if (gesture === 'touchExplore') {
+  if (gesture === chrome.accessibilityPrivate.Gesture.TOUCH_EXPLORE) {
     GestureCommandHandler.pointerHandler_.onTouchMove(x, y);
     return;
   }
