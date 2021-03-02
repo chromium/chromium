@@ -34,7 +34,6 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/ozone/buildflags.h"
 
 namespace ui {
 
@@ -360,15 +359,6 @@ class ClipboardDataBuilder {
 };
 
 ClipboardData* ClipboardDataBuilder::current_data_ = nullptr;
-
-// linux-chromeos uses non-backed clipboard by default, but supports ozone x11
-// with flag --use-system-clipbboard.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(OZONE_PLATFORM_X11)
-// Clipboard factory method.
-Clipboard* Clipboard::Create() {
-  return new ClipboardNonBacked;
-}
-#endif
 
 // static
 ClipboardNonBacked* ClipboardNonBacked::GetForCurrentThread() {

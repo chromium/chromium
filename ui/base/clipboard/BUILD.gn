@@ -4,7 +4,6 @@
 
 import("///build/config/ozone.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
 component("clipboard_types") {
@@ -130,33 +129,7 @@ component("clipboard") {
   ]
 
   if (use_aura) {
-    # Linux clipboard implementations.
-    if ((is_linux || is_chromeos_lacros) && !is_chromecast) {
-      sources += [ "clipboard_linux.cc" ]
-      if (use_ozone) {
-        sources += [
-          "clipboard_ozone.cc",
-          "clipboard_ozone.h",
-        ]
-        deps += [ "//ui/base" ]
-      }
-      if (use_x11) {
-        sources += [
-          "clipboard_x11.cc",
-          "clipboard_x11.h",
-        ]
-        deps += [
-          "//ui/base",
-          "//ui/base/x",
-          "//ui/events/platform",
-          "//ui/events/platform/x11",
-          "//ui/events/x",
-          "//ui/gfx/x",
-        ]
-      }
-    } else if (is_chromeos_ash && ozone_platform_x11) {
-      # linux-chromeos uses non-backed clipboard by default, but supports ozone
-      # x11 with flag --use-system-clipbboard.
+    if (use_ozone) {
       sources += [
         "clipboard_data.cc",
         "clipboard_data.h",
@@ -165,15 +138,28 @@ component("clipboard") {
         "clipboard_ozone.cc",
         "clipboard_ozone.h",
       ]
-      deps += [ "//ui/base" ]
-    } else if (!is_win) {
-      # This file is used for all builds not backed by an underlying platform.
+      deps += [ "//ui/ozone" ]
+    }
+
+    if (use_x11) {
       sources += [
-        "clipboard_data.cc",
-        "clipboard_data.h",
-        "clipboard_non_backed.cc",
-        "clipboard_non_backed.h",
+        "clipboard_x11.cc",
+        "clipboard_x11.h",
       ]
+      deps += [
+        "//ui/base",
+        "//ui/base/x",
+        "//ui/events/platform",
+        "//ui/events/platform/x11",
+        "//ui/events/x",
+        "//ui/gfx/x",
+      ]
+    }
+
+    # TODO(crbug.com/1096425): Cleanup when non-Ozone path gets dropped.
+    if (use_ozone || use_x11) {
+      sources += [ "clipboard_factory_ozone.cc" ]
+      deps += [ "//ui/base" ]
     }
   }
 
@@ -187,10 +173,6 @@ component("clipboard") {
       "AppKit.framework",
       "CoreFoundation.framework",
     ]
-  }
-
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
   }
 }
 
