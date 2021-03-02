@@ -30,16 +30,16 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
       new ModuleDescriptor('baz', 'bla', 300, () => bazModuleResolver.promise),
       new ModuleDescriptor('buz', 'blo', 400, () => Promise.resolve(fooModule)),
     ]);
-    testProxy.handler.setResultFor(
-        'getDisabledModules', Promise.resolve({moduleIds: ['buz']}));
 
     // Act.
     const modulesPromise = ModuleRegistry.getInstance().initializeModules(0);
+    testProxy.callbackRouterRemote.setDisabledModules(false, ['buz']);
     // Delayed promise resolution to test async module instantiation.
     bazModuleResolver.resolve(bazModule);
     const modules = await modulesPromise;
 
     // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('updateDisabledModules'));
     assertEquals(2, modules.length);
     assertEquals('foo', modules[0].id);
     assertEquals(100, modules[0].heightPx);

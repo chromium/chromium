@@ -203,17 +203,7 @@ class AppElement extends PolymerElement {
       },
 
       /** @private */
-      modulesEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesEnabled'),
-        reflectToAttribute: true,
-      },
-
-      /** @private */
-      modulesVisible_: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
+      modulesVisibilityDetermined_: Boolean,
 
       /** @private */
       middleSlotPromoLoaded_: Boolean,
@@ -235,11 +225,12 @@ class AppElement extends PolymerElement {
       },
 
       /** @private */
-      modulesLoadedAndVisible_: {
+      modulesLoadedAndVisibilityDetermined_: {
         type: Boolean,
-        computed: `computeModulesLoadedAndVisible_(promoAndModulesLoaded_,
-            modulesVisible_)`,
-        observer: 'onModulesLoadedAndVisibleChange_',
+        computed: `computeModulesLoadedAndVisibilityDetermined_(
+          promoAndModulesLoaded_,
+          modulesVisibilityDetermined_)`,
+        observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
       },
 
       /**
@@ -252,9 +243,21 @@ class AppElement extends PolymerElement {
       /** @private {!Array<!ModuleDescriptor>} */
       moduleDescriptors_: Object,
 
+      /** @private {!Array<string>} */
+      dismissedModules_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /** @private {!{all: boolean, ids: !Array<string>}} */
+      disabledModules_: {
+        type: Object,
+        value: () => ({all: true, ids: []}),
+      },
+
       /**
        * Data about the most recently removed module.
-       * @type {?{element: !Element, message: string, undo: function()}}
+       * @type {?{message: string, undo: function()}}
        * @private
        */
       removedModuleData_: {
@@ -276,7 +279,7 @@ class AppElement extends PolymerElement {
     /** @private {?number} */
     this.setThemeListenerId_ = null;
     /** @private {?number} */
-    this.setModulesVisibleListenerId_ = null;
+    this.setDisabledModulesListenerId_ = null;
     /** @private {!EventTracker} */
     this.eventTracker_ = new EventTracker();
     this.loadOneGoogleBar_();
@@ -301,11 +304,12 @@ class AppElement extends PolymerElement {
           performance.measure('theme-set');
           this.theme_ = theme;
         });
-    this.setModulesVisibleListenerId_ =
-        this.callbackRouter_.setModulesVisible.addListener(visible => {
-          this.modulesVisible_ = visible;
+    this.setDisabledModulesListenerId_ =
+        this.callbackRouter_.setDisabledModules.addListener((all, ids) => {
+          this.disabledModules_ = {all, ids};
+          this.modulesVisibilityDetermined_ = true;
         });
-    this.pageHandler_.updateModulesVisible();
+    this.pageHandler_.updateDisabledModules();
     this.eventTracker_.add(window, 'message', (event) => {
       /** @type {!Object} */
       const data = event.data;
@@ -344,6 +348,8 @@ class AppElement extends PolymerElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(assert(this.setThemeListenerId_));
+    this.callbackRouter_.removeListener(
+        assert(this.setDisabledModulesListenerId_));
     this.eventTracker_.removeAll();
   }
 
@@ -531,8 +537,8 @@ class AppElement extends PolymerElement {
    * @return {boolean}
    * @private
    */
-  computeModulesLoadedAndVisible_() {
-    return this.promoAndModulesLoaded_ && this.modulesVisible_;
+  computeModulesLoadedAndVisibilityDetermined_() {
+    return this.promoAndModulesLoaded_ && this.modulesVisibilityDetermined_;
   }
 
   /** @private */
@@ -628,9 +634,15 @@ class AppElement extends PolymerElement {
   }
 
   /** @private */
-  onModulesLoadedAndVisibleChange_() {
-    if (this.modulesLoadedAndVisible_) {
+  onModulesLoadedAndVisibilityDeterminedChange_() {
+    if (this.modulesLoadedAndVisibilityDetermined_) {
       this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
+      this.moduleDescriptors_.forEach(({id}) => {
+        chrome.metricsPrivate.recordBoolean(
+            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
+            !this.disabledModules_.all &&
+                !this.disabledModules_.ids.includes(id));
+      });
     }
   }
 
@@ -871,14 +883,16 @@ class AppElement extends PolymerElement {
     const id = $$(this, '#modules').itemForElement(e.target).id;
     const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
-      element: /** @type {!Element} */ (e.target),
       message: e.detail.message,
       undo: () => {
+        this.splice('dismissedModules_', this.dismissedModules_.indexOf(id), 1);
         restoreCallback();
         this.pageHandler_.onRestoreModule(id);
       },
     };
-    this.removedModuleData_.element.hidden = true;
+    if (!this.dismissedModules_.includes(id)) {
+      this.push('dismissedModules_', id);
+    }
 
     // Notify the user.
     $$(this, '#removeModuleToast').show();
@@ -894,7 +908,6 @@ class AppElement extends PolymerElement {
     const descriptor = /** @type {!ModuleDescriptor} */ (
         $$(this, '#modules').itemForElement(e.target));
     this.removedModuleData_ = {
-      element: /** @type {!Element} */ (e.target),
       message:
           loadTimeData.getStringF('disableModuleToastMessage', descriptor.name),
       undo: () => {
@@ -906,7 +919,6 @@ class AppElement extends PolymerElement {
       },
     };
 
-    this.removedModuleData_.element.hidden = true;
     this.pageHandler_.setModuleDisabled(descriptor.id, true);
     $$(this, '#removeModuleToast').show();
     chrome.metricsPrivate.recordSparseHashable(
@@ -916,12 +928,21 @@ class AppElement extends PolymerElement {
   }
 
   /**
+   * @param {string} id
+   * @return {boolean}
+   * @private
+   */
+  moduleDisabled_(id) {
+    return this.disabledModules_.all || this.dismissedModules_.includes(id) ||
+        this.disabledModules_.ids.includes(id);
+  }
+
+  /**
    * @private
    */
   onUndoRemoveModuleButtonClick_() {
     // Restore the module.
     this.removedModuleData_.undo();
-    this.removedModuleData_.element.hidden = false;
 
     // Notify the user.
     $$(this, '#removeModuleToast').hide();

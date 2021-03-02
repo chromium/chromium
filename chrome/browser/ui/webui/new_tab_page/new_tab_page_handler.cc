@@ -631,12 +631,7 @@ void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
 
 void NewTabPageHandler::SetModulesVisible(bool visible) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, visible);
-  UpdateModulesVisible();
-}
-
-void NewTabPageHandler::UpdateModulesVisible() {
-  page_->SetModulesVisible(
-      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
+  UpdateDisabledModules();
 }
 
 void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
@@ -647,17 +642,23 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
   } else {
     update->EraseListValue(base::Value(module_id));
   }
+  UpdateDisabledModules();
 }
 
-void NewTabPageHandler::GetDisabledModules(
-    GetDisabledModulesCallback callback) {
-  const auto* module_ids_value =
-      profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
+void NewTabPageHandler::UpdateDisabledModules() {
   std::vector<std::string> module_ids;
-  for (const auto& id : *module_ids_value) {
-    module_ids.push_back(id.GetString());
+  // If the module visibility is managed by policy we either disable all modules
+  // (if invisible) or no modules (if visible).
+  if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
+    const auto* module_ids_value =
+        profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
+    for (const auto& id : *module_ids_value) {
+      module_ids.push_back(id.GetString());
+    }
   }
-  std::move(callback).Run(std::move(module_ids));
+  page_->SetDisabledModules(
+      !profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible),
+      std::move(module_ids));
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

@@ -17,6 +17,11 @@ export class ModuleRegistry {
     this.descriptors_ = [];
   }
 
+  /** @return {!Array<!ModuleDescriptor>} */
+  getDescriptors() {
+    return this.descriptors_;
+  }
+
   /**
    * Registers modules via their descriptors.
    * @param {!Array<!ModuleDescriptor>} descriptors
@@ -34,9 +39,17 @@ export class ModuleRegistry {
    * @return {!Promise<!Array<!ModuleDescriptor>>}
    */
   async initializeModules(timeout) {
-    const disabledIds =
-        (await BrowserProxy.getInstance().handler.getDisabledModules())
-            .moduleIds;
+    // Capture updateDisabledModules -> setDisabledModules round trip in a
+    // promise for convenience.
+    const disabledIds = await new Promise((resolve, _) => {
+      const callbackRouter = BrowserProxy.getInstance().callbackRouter;
+      const listenerId =
+          callbackRouter.setDisabledModules.addListener((all, ids) => {
+            callbackRouter.removeListener(listenerId);
+            resolve(all ? this.descriptors_.map(({id}) => id) : ids);
+          });
+      BrowserProxy.getInstance().handler.updateDisabledModules();
+    });
     await Promise.all(
         this.descriptors_.filter(d => disabledIds.indexOf(d.id) < 0)
             .map(d => d.initialize(timeout)));

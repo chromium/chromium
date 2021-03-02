@@ -102,8 +102,7 @@
   }
 
   :host(:not([promo-and-modules-loaded_])) ntp-middle-slot-promo,
-  :host(:not([promo-and-modules-loaded_])) ntp-module-wrapper,
-  :host(:not([modules-visible_])) ntp-module-wrapper {
+  :host(:not([promo-and-modules-loaded_])) ntp-module-wrapper {
     display: none;
   }
 
@@ -287,7 +286,10 @@
           on-dom-change="onModulesLoaded_">
         <ntp-module-wrapper descriptor="[[item]]"
             on-dismiss-module="onDismissModule_"
-            on-disable-module="onDisableModule_">
+            on-disable-module="onDisableModule_"
+            hidden="[[moduleDisabled_(item.id,
+                                      dismissedModules_.*,
+                                      disabledModules_)]]">
         </ntp-module-wrapper>
       </template>
       <a id="backgroundImageAttribution"

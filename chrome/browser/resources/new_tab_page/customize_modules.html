@@ -5,31 +5,51 @@
 
   #show {
     align-items: center;
+    display: flex;
+    margin-bottom: 24px;
+    margin-inline-start: 14px;
+    margin-top: 14px;
+  }
+
+  cr-radio-button {
+    height: 20px;
+    padding: 0;
+  }
+
+  cr-radio-button + cr-radio-button {
+    margin-top: 31px;
+  }
+
+  #show cr-policy-indicator {
+    --cr-icon-size: 48px;
+    margin-inline-start: 48px;
+  }
+
+  #toggles {
     border: 1px solid var(--ntp-border-color);
     border-radius: 4px;
     box-sizing: border-box;
-    display: flex;
-    height: 64px;
+    margin-inline-end: 51px;
+    margin-inline-start: 50px;
     max-width: 544px;
-    width: 100%;
   }
 
-  :host([selected_]) #show {
-    background-color: var(--ntp-selected-background-color);
-    border-color: var(--ntp-selected-border-color);
-    color: var(--ntp-selected-border-color);
+  .toggle-row {
+    align-items: center;
+    display: flex;
+    height: 52px;
   }
 
-  #showTitleContainer {
+  .toggle-row + .toggle-row {
+    border-top: 1px solid var(--ntp-border-color);
+  }
+
+  .toggle-name {
     flex-grow: 1;
     margin-inline-start: 24px;
   }
 
-  #showTitle {
-    font-weight: bold;
-  }
-
-  cr-policy-indicator {
+  .toggle-row cr-policy-indicator {
     margin-inline-end: 24px;
   }
 
@@ -37,15 +57,31 @@
     margin-inline-end: 20px;
   }
 </style>
-
 <div id="show">
-  <div id="showTitleContainer">
-    <div id="showTitle">$i18n{showModules}</div>
-  </div>
+  <cr-radio-group selected="[[radioSelection_(show_)]]"
+      disabled="[[showManagedByPolicy_]]"
+      on-selected-changed="onShowRadioSelectionChanged_">
+    <cr-radio-button id="hideButton" name="hide">
+      $i18n{hideAllCards}
+    </cr-radio-button>
+    <cr-radio-button id="customizeButton" name="customize">
+      $i18n{customizeCards}
+    </cr-radio-button>
+  </cr-radio-group>
   <cr-policy-indicator indicator-type="devicePolicy"
       hidden="[[!showManagedByPolicy_]]">
   </cr-policy-indicator>
-  <cr-toggle id="showToggle" title="$i18n{showModules}" checked="{{show_}}"
-      disabled="[[showManagedByPolicy_]]">
-  </cr-toggle>
+</div>
+<div id="toggles">
+  <template is="dom-repeat" items="[[modules_]]">
+    <div class="toggle-row">
+      <div class="toggle-name">[[item.name]]</div>
+      <cr-policy-indicator indicator-type="devicePolicy"
+          hidden="[[!showManagedByPolicy_]]">
+      </cr-policy-indicator>
+      <cr-toggle checked="{{item.checked}}"
+          disabled="[[moduleToggleDisabled_(show_, showManagedByPolicy_)]]">
+      </cr-toggle>
+    </div>
+  </template>
 </div>

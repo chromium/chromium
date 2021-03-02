@@ -5563,8 +5563,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_DESC" desc="The description for the option to show most visited sites in the customization menu on the New Tab Page">
         Shortcuts are curated by you
       </message>
-      <message name="IDS_NTP_CUSTOMIZE_SHOW_MODULES_LABEL" desc="The label for the option to show modules in the customization menu on the New Tab Page">
-        Show cards
+      <message name="IDS_NTP_CUSTOMIZE_HIDE_ALL_CARDS_LABEL" desc="The label for the option to hide all cards in the customization menu on the New Tab Page">
+        Hide all cards
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_CUSTOMIZE_CARDS_LABEL" desc="The label for the option to customize cards in the customization menu on the New Tab Page">
+        Customize cards
       </message>
       <message name="IDS_NTP_CUSTOMIZE_3PT_THEME_DESC" desc="The description for the installed third-party themes in the customization menu on the New Tab Page">
         Current theme you have installed
