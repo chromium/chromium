@@ -4832,6 +4832,10 @@ ci.linux_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    experiments = {
+        # TODO(crbug.com/1143122): remove this.
+        "luci.swarming.use_rbe_cas": 20,
+    },
 )
 
 ci.linux_builder(
@@ -5086,6 +5090,10 @@ ci.mac_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     os = os.MAC_10_15,
+    experiments = {
+        # TODO(crbug.com/1143122): remove this.
+        "luci.swarming.use_rbe_cas": 20,
+    },
 )
 
 ci.mac_builder(
@@ -5802,6 +5810,10 @@ ci.win_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     os = os.WINDOWS_ANY,
+    experiments = {
+        # TODO(crbug.com/1143122): remove this.
+        "luci.swarming.use_rbe_cas": 20,
+    },
 )
 
 ci.win_builder(
