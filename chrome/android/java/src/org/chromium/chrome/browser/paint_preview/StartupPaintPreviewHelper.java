@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.SystemClock;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
@@ -29,9 +26,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Glue code for the Paint Preview show-on-startup feature.
  */
@@ -47,20 +41,12 @@ public class StartupPaintPreviewHelper {
     private static boolean sShouldShowOnRestore;
 
     /**
-     * A map for keeping Activity-specific variables and classes. New entries are added on calls to
-     * {@link #initialize}. Entries are automatically removed when their respective Activity is
-     * destroyed.
+     * Tracks the activity creation time in ms from {@link SystemClock#elapsedRealtime}.
      */
-    private static final Map<WindowAndroid, PaintPreviewWindowAndroidHelper>
-            sWindowAndroidHelperMap = new HashMap<>();
-
-    /**
-     * Sets whether a Paint Preview should attempt to be shown on restoration of a tab. If the
-     * feature is not enabled this is effectively a no-op.
-     */
-    public static void setShouldShowOnRestore(boolean shouldShowOnRestore) {
-        sShouldShowOnRestore = shouldShowOnRestore;
-    }
+    private final long mActivityCreationTime;
+    private final BrowserControlsManager mBrowserControlsManager;
+    private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
+    private final Callback<Long> mVisibleContentCallback;
 
     /**
      * Initializes the logic required for the Paint Preview on startup feature. Mainly, observes a
@@ -74,22 +60,21 @@ public class StartupPaintPreviewHelper {
      * @param willShowStartSurface Whether the start surface will be shown.
      * @param progressBarCoordinatorSupplier Supplier for the progress bar.
      */
-    public static void initialize(WindowAndroid windowAndroid, long activityCreationTime,
+    public StartupPaintPreviewHelper(WindowAndroid windowAndroid, long activityCreationTime,
             BrowserControlsManager browserControlsManager, TabModelSelector tabModelSelector,
             boolean willShowStartSurface,
             Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier,
             Callback<Long> visibleContentCallback) {
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP)) return;
+        mActivityCreationTime = activityCreationTime;
+        mBrowserControlsManager = browserControlsManager;
+        mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
+        mVisibleContentCallback = visibleContentCallback;
 
         if (MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(
                     windowAndroid.getContext().get())
                 || willShowStartSurface) {
             sShouldShowOnRestore = false;
         }
-        sWindowAndroidHelperMap.put(windowAndroid,
-                new PaintPreviewWindowAndroidHelper(windowAndroid, activityCreationTime,
-                        browserControlsManager, progressBarCoordinatorSupplier,
-                        visibleContentCallback));
 
         // TODO(crbug/1074428): verify this doesn't cause a memory leak if the user exits Chrome
         // prior to onTabStateInitialized being called.
@@ -126,11 +111,28 @@ public class StartupPaintPreviewHelper {
     }
 
     /**
+     * Checks whether the paint preview feature is enabled
+     * @return the feature availability
+     */
+    public static boolean isEnabled() {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
+    }
+
+    /**
+     * Sets whether a Paint Preview should attempt to be shown on restoration of a tab. If the
+     * feature is not enabled this is effectively a no-op.
+     */
+    public static void setShouldShowOnRestore(boolean shouldShowOnRestore) {
+        sShouldShowOnRestore = shouldShowOnRestore;
+    }
+
+    /**
      * Attempts to display the Paint Preview representation for the given Tab.
      */
     public static void showPaintPreviewOnRestore(Tab tab) {
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP)
-                || !sShouldShowOnRestore) {
+        StartupPaintPreviewHelper paintPreviewHelper =
+                StartupPaintPreviewHelperSupplier.from(tab.getWindowAndroid()).get();
+        if (paintPreviewHelper == null || !sShouldShowOnRestore) {
             return;
         }
 
@@ -139,26 +141,24 @@ public class StartupPaintPreviewHelper {
             return;
         }
 
-        PaintPreviewWindowAndroidHelper windowAndroidHelper =
-                sWindowAndroidHelperMap.get(tab.getWindowAndroid());
-        if (windowAndroidHelper == null) return;
-
         sShouldShowOnRestore = false;
+        LoadProgressCoordinator loadProgressCoordinator =
+                paintPreviewHelper.mProgressBarCoordinatorSupplier.get();
         Runnable progressSimulatorCallback = () -> {
-            if (windowAndroidHelper.getLoadProgressCoordinator() == null) return;
-            windowAndroidHelper.getLoadProgressCoordinator().simulateLoadProgressCompletion();
+            if (loadProgressCoordinator == null) return;
+            loadProgressCoordinator.simulateLoadProgressCompletion();
         };
         Callback<Boolean> progressPreventionCallback = (preventProgressbar) -> {
-            if (windowAndroidHelper.getLoadProgressCoordinator() == null) return;
-            windowAndroidHelper.getLoadProgressCoordinator().setPreventUpdates(preventProgressbar);
+            if (loadProgressCoordinator == null) return;
+            loadProgressCoordinator.setPreventUpdates(preventProgressbar);
         };
 
         StartupPaintPreview startupPaintPreview = new StartupPaintPreview(tab,
-                windowAndroidHelper.getBrowserControlsManager().getBrowserVisibilityDelegate(),
+                paintPreviewHelper.mBrowserControlsManager.getBrowserVisibilityDelegate(),
                 progressSimulatorCallback, progressPreventionCallback,
-                windowAndroidHelper.getVisibleContentCallback());
+                paintPreviewHelper.mVisibleContentCallback);
         startupPaintPreview.setActivityCreationTimestampMs(
-                windowAndroidHelper.getActivityCreationTime());
+                paintPreviewHelper.mActivityCreationTime);
         startupPaintPreview.setShouldRecordFirstPaint(
                 () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground());
         startupPaintPreview.setIsOfflinePage(() -> OfflinePageUtils.isOfflinePage(tab));
@@ -172,58 +172,4 @@ public class StartupPaintPreviewHelper {
         PageLoadMetrics.addObserver(observer);
         startupPaintPreview.show(() -> PageLoadMetrics.removeObserver(observer));
     }
-
-    /**
-     * A helper class for keeping activity-specific variables and classes.
-     */
-    private static class PaintPreviewWindowAndroidHelper
-            implements ApplicationStatus.ActivityStateListener {
-        /**
-         * Tracks the activity creation time in ms from {@link SystemClock#elapsedRealtime}.
-         */
-        private final long mActivityCreationTime;
-        private final WindowAndroid mWindowAndroid;
-        private final BrowserControlsManager mBrowserControlsManager;
-        private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
-        private final Callback<Long> mVisibleContentCallback;
-
-        PaintPreviewWindowAndroidHelper(WindowAndroid windowAndroid, long activityCreationTime,
-                BrowserControlsManager browserControlsManager,
-                Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier,
-                Callback<Long> visibleContentCallback) {
-            mWindowAndroid = windowAndroid;
-            mActivityCreationTime = activityCreationTime;
-            mBrowserControlsManager = browserControlsManager;
-            mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
-            mVisibleContentCallback = visibleContentCallback;
-            ApplicationStatus.registerStateListenerForActivity(
-                    this, mWindowAndroid.getActivity().get());
-        }
-
-        long getActivityCreationTime() {
-            return mActivityCreationTime;
-        }
-
-        LoadProgressCoordinator getLoadProgressCoordinator() {
-            return mProgressBarCoordinatorSupplier.get();
-        }
-
-        BrowserControlsManager getBrowserControlsManager() {
-            return mBrowserControlsManager;
-        }
-
-        Callback<Long> getVisibleContentCallback() {
-            return mVisibleContentCallback;
-        }
-
-        @Override
-        public void onActivityStateChange(Activity activity, @ActivityState int newState) {
-            if (newState == ActivityState.DESTROYED) {
-                sWindowAndroidHelperMap.remove(mWindowAndroid);
-                ApplicationStatus.unregisterActivityStateListener(this);
-            }
-        }
-    }
-
-    private StartupPaintPreviewHelper() {}
 }

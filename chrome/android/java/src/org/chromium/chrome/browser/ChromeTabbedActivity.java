@@ -51,6 +51,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -115,6 +116,7 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSupplier;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -298,6 +300,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private boolean mOverviewShownOnStart;
 
     private NextTabPolicySupplier mNextTabPolicySupplier;
+
+    private final UnownedUserDataSupplier<StartupPaintPreviewHelper>
+            mStartupPaintPreviewHelperSupplier = new StartupPaintPreviewHelperSupplier();
 
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -1512,6 +1517,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
+
+        mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
     }
 
     @Override
@@ -1586,14 +1593,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
+
         assert getActivityTabStartupMetricsTracker() != null;
-        StartupPaintPreviewHelper.initialize(getWindowAndroid(), getOnCreateTimestampMs(),
-                getBrowserControlsManager(), getTabModelSelector(),
-                shouldShowTabSwitcherOnStart(), () -> {
-                    return getToolbarManager() == null
-                            ? null
-                            : getToolbarManager().getProgressBarCoordinator();
-                }, getActivityTabStartupMetricsTracker()::pagePreviewRendered);
+        if (StartupPaintPreviewHelper.isEnabled()) {
+            mStartupPaintPreviewHelperSupplier.set(new StartupPaintPreviewHelper(getWindowAndroid(),
+                    getOnCreateTimestampMs(), getBrowserControlsManager(), getTabModelSelector(),
+                    shouldShowTabSwitcherOnStart(), () -> {
+                        return getToolbarManager() == null
+                                ? null
+                                : getToolbarManager().getProgressBarCoordinator();
+                    }, getActivityTabStartupMetricsTracker()::pagePreviewRendered));
+        }
     }
 
     @Override
@@ -2237,6 +2247,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (mStartSurfaceSupplier.get() != null) {
             mStartSurfaceSupplier.get().destroy();
+        }
+
+        if (mStartupPaintPreviewHelperSupplier != null) {
+            mStartupPaintPreviewHelperSupplier.destroy();
         }
 
         IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
