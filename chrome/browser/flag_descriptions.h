@@ -564,9 +564,6 @@ extern const char kMemlogStackModeNative[];
 extern const char kMemlogStackModeNativeWithThreadNames[];
 extern const char kMemlogStackModePseudo[];
 
-extern const char kDisablePeripheralDataAccessProtectionName[];
-extern const char kDisablePeripheralDataAccessProtectionDescription[];
-
 extern const char kDownloadAutoResumptionNativeName[];
 extern const char kDownloadAutoResumptionNativeDescription[];
 

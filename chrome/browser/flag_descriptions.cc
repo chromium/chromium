@@ -997,14 +997,6 @@ const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 const char kMemlogStackModePseudo[] = "Trace events";
 
-const char kDisablePeripheralDataAccessProtectionName[] =
-    "Turn off peripheral data access protection";
-const char kDisablePeripheralDataAccessProtectionDescription[] =
-    "Disables data access protection for external PCI devices (including some "
-    "thunderbolt and SD Express devices that use PCI tunneling). By default "
-    "this feature is disabled, which blocks data access from external PCI "
-    "devices.";
-
 const char kEnableLoginDetectionName[] = "Enable login detection";
 const char kEnableLoginDetectionDescription[] =
     "Allow user sign-in to be detected based on heuristics.";
