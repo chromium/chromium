@@ -944,6 +944,7 @@ void PipelineImpl::RendererWrapper::SetState(State next_state) {
 
 void PipelineImpl::RendererWrapper::CompleteSeek(base::TimeDelta seek_time,
                                                  PipelineStatus status) {
+  DVLOG(1) << __func__ << ": seek_time=" << seek_time << ", status=" << status;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(state_ == kStarting || state_ == kSeeking || state_ == kResuming);
 
@@ -1047,6 +1048,7 @@ void PipelineImpl::RendererWrapper::OnRendererCreated(
 
 void PipelineImpl::RendererWrapper::InitializeRenderer(
     PipelineStatusCallback done_cb) {
+  DVLOG(1) << __func__;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   switch (demuxer_->GetType()) {
@@ -1655,7 +1657,7 @@ void PipelineImpl::OnVideoDecoderChange(const VideoDecoderInfo& info) {
 }
 
 void PipelineImpl::OnSeekDone(bool is_suspended) {
-  DVLOG(3) << __func__;
+  DVLOG(3) << __func__ << ": is_suspended=" << is_suspended;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsRunning());
 
