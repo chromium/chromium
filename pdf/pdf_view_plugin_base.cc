@@ -567,8 +567,9 @@ void PdfViewPluginBase::HandleUpdateScrollMessage(const base::Value& message) {
   if (stop_scrolling_)
     return;
 
-  scroll_position_ = gfx::Point(message.FindIntKey("x").value(),
-                                message.FindIntKey("y").value());
+  scroll_position_ =
+      gfx::Point(base::checked_cast<int>(message.FindDoubleKey("x").value()),
+                 base::checked_cast<int>(message.FindDoubleKey("y").value()));
   UpdateScroll();
 }
 
