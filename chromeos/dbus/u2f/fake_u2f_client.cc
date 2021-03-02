@@ -62,7 +62,9 @@ void FakeU2FClient::HasCredentials(
 void FakeU2FClient::HasLegacyU2FCredentials(
     const u2f::HasCredentialsRequest& request,
     DBusMethodCallback<u2f::HasCredentialsResponse> callback) {
-  NOTREACHED();
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), u2f::HasCredentialsResponse()));
 }
 
 void FakeU2FClient::CancelWebAuthnFlow(
