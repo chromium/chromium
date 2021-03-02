@@ -18,8 +18,6 @@
 
 namespace proximity_auth {
 
-// ScreenlockBridge brings together the screenLockPrivate API and underlying
-// support. It delegates calls to the ScreenLocker.
 // TODO(tbarzic): Rename ScreenlockBridge to SignInScreenBridge, as this is not
 // used solely for the lock screen anymore.
 // TODO(jhawkins): Rationalize this class now that it is CrOS only and most of
