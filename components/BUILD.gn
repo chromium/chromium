@@ -125,6 +125,7 @@ test("components_unittests") {
     "//components/policy/core/common:unit_tests",
     "//components/power_scheduler:unit_tests",
     "//components/prefs:unit_tests",
+    "//components/previews/core:unit_tests",
     "//components/proxy_config:unit_tests",
     "//components/qr_code_generator:unit_tests",
     "//components/query_parser:unit_tests",
@@ -292,6 +293,7 @@ test("components_unittests") {
       "//components/permissions:unit_tests",
       "//components/permissions/prediction_service:unit_tests",
       "//components/policy/content:unit_tests",
+      "//components/previews/content:unit_tests",
       "//components/query_tiles:unit_tests",
 
       # TODO(chromium:1169835) components/reporting/storage/resources:unit_tests

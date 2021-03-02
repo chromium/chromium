@@ -29,6 +29,8 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
+#include "components/previews/core/previews_experiments.h"
+#include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 

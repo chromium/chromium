@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/previews/core/previews_switches.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
@@ -613,6 +614,8 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
     OptimizationGuideKeyedServiceBrowserTest::SetUpCommandLine(cmd);
 
     cmd->AppendSwitch("enable-spdy-proxy-auth");
+    // Add switch to avoid having to see the infobar in the test.
+    cmd->AppendSwitch(previews::switches::kDoNotRequireLitePageRedirectInfoBar);
     // Add switch to avoid racing navigations in the test.
     cmd->AppendSwitch(optimization_guide::switches::
                           kDisableFetchingHintsAtNavigationStartForTesting);

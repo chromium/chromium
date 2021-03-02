@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUBRESOURCE_REDIRECT_ANDROID_PREVIEWS_ANDROID_BRIDGE_H_
-#define CHROME_BROWSER_SUBRESOURCE_REDIRECT_ANDROID_PREVIEWS_ANDROID_BRIDGE_H_
+#ifndef CHROME_BROWSER_PREVIEWS_ANDROID_PREVIEWS_ANDROID_BRIDGE_H_
+#define CHROME_BROWSER_PREVIEWS_ANDROID_PREVIEWS_ANDROID_BRIDGE_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -38,4 +38,4 @@ class PreviewsAndroidBridge {
   DISALLOW_COPY_AND_ASSIGN(PreviewsAndroidBridge);
 };
 
-#endif  // CHROME_BROWSER_SUBRESOURCE_REDIRECT_ANDROID_PREVIEWS_ANDROID_BRIDGE_H_
+#endif  // CHROME_BROWSER_PREVIEWS_ANDROID_PREVIEWS_ANDROID_BRIDGE_H_

@@ -39251,7 +39251,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="85"
       label="SUPERVISED_USERS_DEPRECATED_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="86" label="NEAR_OOM_REDUCTION_INFOBAR_ANDROID"/>
-  <int value="87" label="LITE_PAGE_PREVIEWS_INFOBAR (Obsolete M91)"/>
+  <int value="87" label="LITE_PAGE_PREVIEWS_INFOBAR"/>
   <int value="88" label="MODULE_INSTALL_FAILURE_INFOBAR_ANDROID"/>
   <int value="89" label="INLINE_UPDATE_READY_INFOBAR_ANDROID"/>
   <int value="90" label="INLINE_UPDATE_FAILED_INFOBAR_ANDROID"/>

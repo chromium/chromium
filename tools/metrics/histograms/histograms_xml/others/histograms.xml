@@ -11410,9 +11410,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Previews.CacheControlNoTransform.BlockedPreview"
     enum="PreviewsType" expires_after="2021-08-09">
-  <obsolete>
-    Obsoleted 02/2021.
-  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <owner>src/components/previews/OWNERS</owner>
@@ -11481,9 +11478,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Previews.DeferAllScript.DenyListMatch" enum="BooleanDetected"
     expires_after="2020-10-18">
-  <obsolete>
-    Obsoleted 02/2021.
-  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>dougarnett@chromium.org</owner>
   <summary>
@@ -11494,9 +11488,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Previews.DeferAllScript.RedirectLoopDetectedUsingCache"
     enum="BooleanDetected" expires_after="2020-09-27">
-  <obsolete>
-    Obsoleted 02/2021.
-  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>dougarnett@chromium.org</owner>
   <summary>
@@ -11507,9 +11498,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Previews.EligibilityReason" enum="PreviewsEligibilityReason"
     expires_after="2021-07-11">
-  <obsolete>
-    Obsoleted 02/2021.
-  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <summary>
     When evaluating whether to show a user a preview, the preview might be
@@ -11525,9 +11513,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Previews.LitePageNotificationInfoBar"
     enum="PreviewsLitePageInfoBarAction" expires_after="2021-08-09">
-  <obsolete>
-    Obsoleted 02/2021.
-  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>src/components/data_reduction_proxy/OWNERS</owner>
   <summary>
@@ -11537,18 +11522,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Previews.OmniboxAction" enum="PreviewsUserOmniboxAction"
     expires_after="2021-08-09">
-  <obsolete>
-    Obsoleted 02/2021.
-  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <summary>User interactions with the Previews Android Omnibox UI.</summary>
 </histogram>
 
 <histogram name="Previews.OptOut.UserOptedOut" enum="PreviewsUserOptedOut"
     expires_after="2021-03-31">
-  <obsolete>
-    Obsoleted 02/2021.
-  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -11568,9 +11547,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Previews.PageEndReason" enum="PageEndReason"
     expires_after="2021-08-09">
-  <obsolete>
-    Obsoleted 02/2021.
-  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <summary>Records why the page load ended on a given preview type.</summary>
 </histogram>

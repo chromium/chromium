@@ -1,0 +1,8 @@
+include_rules = [
+  # Previews is a layered component; subdirectories must introduce
+  # allowances of //content dependencies as appropriate.
+  "-components",
+  "-components/data_reduction_proxy",
+  "+components/data_reduction_proxy/core/browser",
+  "-components/previews/content",
+]

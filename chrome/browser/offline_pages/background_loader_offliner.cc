@@ -19,6 +19,7 @@
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 #include "chrome/browser/offline_pages/offliner_helper.h"
 #include "chrome/browser/offline_pages/offliner_user_data.h"
+#include "chrome/browser/previews/previews_ui_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -29,6 +30,7 @@
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
+#include "components/previews/content/previews_user_data.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/mhtml_extra_parts.h"
@@ -314,6 +316,17 @@ void BackgroundLoaderOffliner::DidFinishNavigation(
       page_load_state_ = RETRIABLE_HTTP_ERROR;
     }
   }
+
+  PreviewsUITabHelper* previews_tab_helper =
+      PreviewsUITabHelper::FromWebContents(navigation_handle->GetWebContents());
+  blink::PreviewsState previews_state = blink::PreviewsTypes::PREVIEWS_OFF;
+  if (previews_tab_helper) {
+    previews::PreviewsUserData* previews_user_data =
+        previews_tab_helper->GetPreviewsUserData(navigation_handle);
+    if (previews_user_data)
+      previews_state = previews_user_data->CommittedPreviewsState();
+  }
+
 }
 
 void BackgroundLoaderOffliner::SetBackgroundSnapshotControllerForTest(

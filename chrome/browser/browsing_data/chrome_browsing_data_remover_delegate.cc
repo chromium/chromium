@@ -67,6 +67,8 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/previews/previews_service.h"
+#include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -111,6 +113,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
+#include "components/previews/content/previews_ui_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
@@ -559,6 +562,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             ->DeleteBrowsingHistory(delete_begin_, delete_end_);
       }
     }
+
+    // |previews_service| is null if |profile_| is off the record.
+    PreviewsService* previews_service =
+        PreviewsServiceFactory::GetForProfile(profile_);
+    if (previews_service)
+      previews_service->ClearBlockList(delete_begin_, delete_end_);
 
     HeavyAdService* heavy_ad_service =
         HeavyAdServiceFactory::GetForBrowserContext(profile_);

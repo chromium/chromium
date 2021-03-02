@@ -522,6 +522,10 @@ const char kDarkenWebsitesCheckboxInThemesSettingDescription[] =
     "dark is selected. The checkbox can toggle the auto-darkening web contents "
     "feature";
 
+const char kDataSaverServerPreviewsName[] = "Data Saver Server Previews";
+const char kDataSaverServerPreviewsDescription[] =
+    "Allow the Data Reduction Proxy to serve previews.";
+
 const char kDebugPackedAppName[] = "Debugging for packed apps";
 const char kDebugPackedAppDescription[] =
     "Enables debugging context menu options such as Inspect Element for packed "
@@ -629,6 +633,17 @@ const char kEnableExperimentalCookieFeaturesName[] =
 const char kEnableExperimentalCookieFeaturesDescription[] =
     "Enable new features that affect setting, sending, and managing cookies. "
     "The enabled features are subject to change at any time.";
+
+const char kEnableDeferAllScriptName[] = "DeferAllScript previews";
+const char kEnableDeferAllScriptDescription[] =
+    "Enable deferring synchronous script on slow pages.";
+
+const char kEnableDeferAllScriptWithoutOptimizationHintsName[] =
+    "Skip checking optimization hints for Defer Script previews";
+const char kEnableDeferAllScriptWithoutOptimizationHintsDescription[] =
+    "Skips checking optimization hints for Defer Script previews and assumes "
+    "that the ECT trigger threshold is set to 4G (which is otherwise provided "
+    "by the optimization hints). Rest of the checks are still executed.";
 
 const char kEnableSaveDataName[] = "Enables save data feature";
 const char kEnableSaveDataDescription[] =
@@ -816,6 +831,10 @@ const char kEnableGenericSensorExtraClassesDescription[] =
 const char kEnableGpuServiceLoggingName[] = "Enable gpu service logging";
 const char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";
+
+const char kEnablePreviewsCoinFlipName[] = "Enable Previews Coin Flip";
+const char kEnablePreviewsCoinFlipDescription[] =
+    "Enable coin flip experimentation of Previews.";
 
 const char kEnableSRPIsolatedPrerendersName[] =
     "Enable Navigation Predictor Isolated Prerenders";
@@ -1176,7 +1195,8 @@ const char kForceEffectiveConnectionTypeDescription[] =
     "Overrides the effective connection type of the current connection "
     "returned by the network quality estimator. Slow 2G on Cellular returns "
     "Slow 2G when connected to a cellular network, and the actual estimate "
-    "effective connection type when not on a cellular network.";
+    "effective connection type when not on a cellular network. Previews are "
+    "usually served on 2G networks.";
 const char kEffectiveConnectionTypeUnknownDescription[] = "Unknown";
 const char kEffectiveConnectionTypeOfflineDescription[] = "Offline";
 const char kEffectiveConnectionTypeSlow2GDescription[] = "Slow 2G";
@@ -1324,6 +1344,10 @@ const char kIgnoreGpuBlocklistName[] = "Override software rendering list";
 const char kIgnoreGpuBlocklistDescription[] =
     "Overrides the built-in software rendering list and enables "
     "GPU-acceleration on unsupported system configurations.";
+
+const char kIgnorePreviewsBlocklistName[] = "Ignore Previews Blocklist";
+const char kIgnorePreviewsBlocklistDescription[] =
+    "Ignore decisions made by the PreviewsBlockList";
 
 const char kImprovedCookieControlsName[] =
     "Enable improved cookie controls UI in incognito mode";
@@ -1945,6 +1969,12 @@ const char kPrerender2Name[] = "Prerender2";
 const char kPrerender2Description[] =
     "Enables the new prerenderer implementation for <link rel=prerender> "
     "instead of NoStatePrefetch.";
+
+const char kPreviewsAllowedName[] = "Previews Allowed";
+const char kPreviewsAllowedDescription[] =
+    "Allows previews to be shown subject to specific preview types being "
+    "enabled and the client experiencing specific triggering conditions. "
+    "May be used as a kill-switch to turn off all potential preview types.";
 
 const char kPrintSaveToDriveName[] = "Print Save to Drive locally";
 const char kPrintSaveToDriveDescription[] =

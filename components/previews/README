@@ -1,0 +1,29 @@
+The Lite pages component contains code for changing the format and content of
+web pages to improve data savings and/or performance.
+
+## Manual Testing
+
+To manually evaluate the effect of Lite Pages on a webpage, start Chrome on
+Android with version equal to or greater than 77.0.3830.0, with the following
+command line flags:
+
+```
+chrome \
+  --force-enable-lite-pages \
+  --force-effective-connection-type=Slow-2G
+```
+
+And then enable "Lite Mode" from the Chrome Settings Menu (Android only).
+
+## Explanation
+
+The above flags will put Chrome into a state matching that of the target user
+population of lite pages.
+
+When a lite page is shown, the "Lite Badge" will be displayed in the Omnibox.
+
+Please note that since the lite pages component is still in active development
+and relies heavily on server interactions, the transformation(s) applied to any
+single page may change over time. However, the transformation(s) applied to a
+page are very like to be the same for all clients requesting that page at the
+same time from the same geography.
