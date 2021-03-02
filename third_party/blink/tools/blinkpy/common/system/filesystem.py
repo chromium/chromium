@@ -282,6 +282,9 @@ class FileSystem(object):
     def open_text_file_for_writing(self, path):
         return codecs.open(self._path_for_access(path), 'w', 'utf8')
 
+    def open_text_file_for_appending(self, path):
+        return codecs.open(self._path_for_access(path), 'a', 'utf8')
+
     def read_text_file(self, path):
         """Returns the contents of the file as a Unicode string.
 

@@ -156,7 +156,6 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             "--checked-in-metadata-dir",
             WPT_CHECKED_IN_METADATA_DIR,
             "--no-process-baselines",
-            "--no-handle-annotations"
         ])
 
 
