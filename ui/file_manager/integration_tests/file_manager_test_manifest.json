@@ -13,6 +13,7 @@
       "test_util.js",
       "remote_call.js",
       "file_manager/background.js",
+      "file_manager/android_photos.js",
       "file_manager/breadcrumbs.js",
       "file_manager/context_menu.js",
       "file_manager/copy_between_windows.js",

@@ -8,6 +8,7 @@ js_type_check("closure_compile") {
   uses_legacy_modules = true
   testonly = true
   deps = [
+    ":android_photos",
     ":background",
     ":breadcrumbs",
     ":context_menu",
@@ -58,6 +59,13 @@ js_library("background") {
     "//ui/file_manager/base/js:volume_manager_types",
     "//ui/file_manager/integration_tests:remote_call",
     "//ui/file_manager/integration_tests:test_util",
+  ]
+}
+
+js_library("android_photos") {
+  testonly = true
+  deps = [
+    ":background",
   ]
 }
 

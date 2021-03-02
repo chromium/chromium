@@ -423,6 +423,12 @@ void AddStringsForHoldingSpace(base::DictionaryValue* dict) {
              IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE);
 }
 
+void AddStringsForPhotos(base::DictionaryValue* dict) {
+  SET_STRING("PHOTOS_WELCOME_DISMISS", IDS_FILE_BROWSER_PHOTOS_WELCOME_DISMISS);
+  SET_STRING("PHOTOS_WELCOME_TEXT", IDS_FILE_BROWSER_PHOTOS_WELCOME_TEXT);
+  SET_STRING("PHOTOS_WELCOME_TITLE", IDS_FILE_BROWSER_PHOTOS_WELCOME_TITLE);
+}
+
 }  // namespace
 
 std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
@@ -441,6 +447,7 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
   AddStringsForZipArchiver(dict.get());
   AddStringsForSharesheet(dict.get());
   AddStringsForHoldingSpace(dict.get());
+  AddStringsForPhotos(dict.get());
 
   SET_STRING("ALL_FILES_FILTER", IDS_FILE_BROWSER_ALL_FILES_FILTER);
   SET_STRING("ARCHIVE_MOUNT_FAILED", IDS_FILE_BROWSER_ARCHIVE_MOUNT_FAILED);

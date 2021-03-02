@@ -51,6 +51,13 @@ const HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY =
 const OFFLINE_INFO_BANNER_COUNTER_KEY = 'driveOfflineInfoBannerCounter';
 
 /**
+ * Key in localStorage to keep number of times the Photos Welcome banner was
+ * shown.
+ * @const {string}
+ */
+const PHOTOS_WELCOME_COUNTER_KEY = 'photosWelcomeCounter';
+
+/**
  * Maximum times the holding space welcome banner could have shown.
  * @type {number}
  */
@@ -87,6 +94,12 @@ const DOWNLOADS_SPACE_WARNING_DISMISS_DURATION = 36 * 60 * 60 * 1000;
 const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
 
 /**
+ * Maximum times Google Photos welcome banner could have shown.
+ * @const {number}
+ */
+const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
+
+/**
  * Responsible for showing following banners in the file list.
  *  - WelcomeBanner
  *  - AuthFailBanner
@@ -115,6 +128,7 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
     const handler = () => {
       this.maybeShowDriveBanners_();
       this.maybeShowHoldingSpaceWelcomeBanner_();
+      this.maybeShowPhotosWelcomeBanner_();
     };
 
     this.directoryModel_.addEventListener('scan-completed', handler);
@@ -150,14 +164,22 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
      */
     this.hasShownOfflineInfoBanner_ = false;
 
+    /**
+     * How many times Google Photos welcome banner has been shown.
+     * @private {number}
+     */
+    this.photosWelcomeCounter_ = PHOTOS_WELCOME_COUNTER_LIMIT;
+
     this.ready_ = new Promise((resolve, reject) => {
       chrome.storage.local.get(
+
           [
             HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY,
             WELCOME_HEADER_COUNTER_KEY,
             DRIVE_WARNING_DISMISSED_KEY,
             DOWNLOADS_WARNING_DISMISSED_KEY,
             OFFLINE_INFO_BANNER_COUNTER_KEY,
+            PHOTOS_WELCOME_COUNTER_KEY,
           ],
           values => {
             if (chrome.runtime.lastError) {
@@ -178,6 +200,8 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
                 parseInt(values[DOWNLOADS_WARNING_DISMISSED_KEY], 10) || 0;
             this.offlineInfoBannerCounter_ =
                 parseInt(values[OFFLINE_INFO_BANNER_COUNTER_KEY], 10) || 0;
+            this.photosWelcomeCounter_ =
+                parseInt(values[PHOTOS_WELCOME_COUNTER_KEY], 10) || 0;
 
             // If it's in test, override the counter to show the header by
             // force.
@@ -267,6 +291,18 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
   }
 
   /**
+   * @param {number} value How many times the Photos Welcome header banner was
+   * shown.
+   * @private
+   */
+  setPhotosWelcomeCounter_(value) {
+    this.photosWelcomeCounter_ = value;
+    chrome.storage.local.set({
+      PHOTOS_WELCOME_COUNTER_KEY: value,
+    });
+  }
+
+  /**
    * chrome.storage.onChanged event handler.
    * @param {Object<Object>} changes Changes values.
    * @param {string} areaName "local" or "sync".
@@ -304,6 +340,27 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
   }
 
   /**
+   * Adds a stylesheet to the page if it does not exist already.
+   * @param {string} attrKey Attribute used to uniquely identify the stylesheet
+   *     to check if it has been added.
+   * @param {string} cssUrl Path to the CSS file.
+   * @return {Object} The link element identified by |attrKey|.
+   * @private
+   */
+  maybeAddStylesheet(attrKey, cssUrl) {
+    let style = this.document_.querySelector(`link[${attrKey}]`);
+    if (style) {
+      return style;
+    }
+    style = this.document_.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = cssUrl;
+    style.setAttribute(attrKey, '');
+    this.document_.head.appendChild(style);
+    return style;
+  }
+
+  /**
    * Shows the holding space welcome banner, creating the banner if necessary.
    * @private
    */
@@ -317,14 +374,9 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
     }
 
     // Add banner styles to document head.
-    if (!this.document_.head.querySelector(
-            'link[holding-space-welcome-style]')) {
-      const style = this.document_.createElement('link');
-      style.rel = 'stylesheet';
-      style.href = constants.HOLDING_SPACE_WELCOME_CSS;
-      style.setAttribute('holding-space-welcome-style', '');
-      this.document_.head.appendChild(style);
-
+    const style = this.maybeAddStylesheet(
+        'holding-space-welcome-style', constants.HOLDING_SPACE_WELCOME_CSS);
+    if (!style.onload) {
       // The holding space welcome banner has inline styles to prevent it from
       // being made visible to the user before its dynamically added styles have
       // fully loaded. Once dynamically added styles have loaded, inline styles
@@ -384,13 +436,7 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
       return;
     }  // Do not re-create.
 
-    if (!this.document_.querySelector('link[drive-welcome-style]')) {
-      const style = this.document_.createElement('link');
-      style.rel = 'stylesheet';
-      style.href = constants.DRIVE_WELCOME_CSS;
-      style.setAttribute('drive-welcome-style', '');
-      this.document_.head.appendChild(style);
-    }
+    this.maybeAddStylesheet('drive-welcome-style', constants.DRIVE_WELCOME_CSS);
 
     const wrapper = util.createChild(container, 'drive-welcome-wrapper');
     util.createChild(wrapper, 'drive-welcome-icon');
@@ -731,6 +777,97 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
   }
 
   /**
+   * Loads and displays Google Photos welcome banner if it should be shown.
+   * @private
+   */
+  async maybeShowPhotosWelcomeBanner_() {
+    await this.ready_;
+
+    if (!this.photosWelcomeBannerShouldBeVisible_()) {
+      return;
+    }
+
+    const container = queryRequiredElement('#photos-welcome', this.document_);
+    const isVisible = container.className == '';
+    if (!isVisible) {
+      this.setPhotosWelcomeCounter_(this.photosWelcomeCounter_ + 1);
+    }
+
+    if (container.firstElementChild) {
+      // Banner already loaded in DOM.
+      container.className = '';
+      return;
+    }
+
+    const style = this.maybeAddStylesheet(
+        'photos-welcome-style', constants.PHOTOS_WELCOME_CSS);
+    style.onload = () => {
+      // Unhide the element when the style is loaded so that unstyled elements
+      // don't appear before that.
+      container.hidden = false;
+      // Switch styles asynchronously so that the initial CSS transition
+      // animation works after unhiding the element.
+      setTimeout(() => container.className = '', 1);
+    };
+
+    const wrapper = util.createChild(container, 'photos-welcome-wrapper');
+    util.createChild(wrapper, 'photos-welcome-icon');
+
+    const message = util.createChild(wrapper, 'photos-welcome-message');
+    util.setClampLine(message, '2');
+
+    const title = util.createChild(message, 'photos-welcome-title headline2');
+    title.textContent = str('PHOTOS_WELCOME_TITLE');
+
+    const body = util.createChild(message, 'body2-primary');
+
+    const text = util.createChild(body, 'photos-welcome-text');
+    text.innerHTML = str('PHOTOS_WELCOME_TEXT');
+
+    const buttonGroup = util.createChild(wrapper, 'button-group', 'div');
+
+    const close =
+        util.createChild(buttonGroup, 'banner-close text-button', 'cr-button');
+    close.innerHTML = str('PHOTOS_WELCOME_DISMISS');
+
+    close.setAttribute('aria-label', str('PHOTOS_WELCOME_DISMISS'));
+    close.id = 'photos-welcome-dismiss';
+    close.tabIndex = 0;
+    close.addEventListener('click', () => this.closePhotosWelcomeBanner_());
+  }
+
+  /**
+   * Hides Google Photos welcome banner if it should not be shown.
+   * @private
+   */
+  maybeHidePhotosWelcomeBanner_() {
+    if (this.photosWelcomeBannerShouldBeVisible_()) {
+      return;
+    }
+    const container = queryRequiredElement('#photos-welcome', this.document_);
+    container.className = 'photos-welcome-hidden';
+  }
+
+  /**
+   * Closes Google Photos welcome banner and make sure it does not reopen.
+   * @private
+   */
+  closePhotosWelcomeBanner_() {
+    this.setPhotosWelcomeCounter_(PHOTOS_WELCOME_COUNTER_LIMIT);
+    this.maybeHidePhotosWelcomeBanner_();
+  }
+
+  /**
+   * @return {boolean} True if Google Photos welcome banner should be displayed
+   *     for the current directory.
+   * @private
+   */
+  photosWelcomeBannerShouldBeVisible_() {
+    return this.isOnDocumentsProviderGooglePhotos() &&
+        this.photosWelcomeCounter_ < PHOTOS_WELCOME_COUNTER_LIMIT;
+  }
+
+  /**
    * @return {boolean} True if current directory is on Drive root of current
    * profile.
    */
@@ -745,6 +882,26 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
     }
     return locationInfo.rootType === VolumeManagerCommon.RootType.DRIVE &&
         locationInfo.volumeInfo.profile.isCurrentProfile;
+  }
+
+  /**
+   * @return {boolean} True if current directory is on Google Photos
+   *     DocumentsProvider.
+   * @private
+   */
+  isOnDocumentsProviderGooglePhotos() {
+    const entry = this.directoryModel_.getCurrentDirEntry();
+    if (!entry || util.isFakeEntry(entry)) {
+      return false;
+    }
+    const locationInfo = this.volumeManager_.getLocationInfo(entry);
+    if (!locationInfo) {
+      return false;
+    }
+    return locationInfo.rootType ===
+        VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER &&
+        locationInfo.volumeInfo.volumeId ===
+        VolumeManagerCommon.PHOTOS_DOCUMENTS_PROVIDER_VOLUME_ID;
   }
 
   /**
@@ -790,6 +947,8 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
    * @private
    */
   onDirectoryChanged_(event) {
+    this.maybeHidePhotosWelcomeBanner_();
+
     const rootVolume = this.volumeManager_.getVolumeInfo(event.newDirEntry);
     if (!rootVolume) {
       return;

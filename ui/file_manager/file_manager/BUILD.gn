@@ -74,6 +74,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/delete.svg",
     "foreground/images/files/ui/delete_ng.svg",
     "foreground/images/files/ui/drive_logo.svg",
+    "foreground/images/files/ui/photos_logo.svg",
     "foreground/images/files/ui/external_link.svg",
     "foreground/images/files/ui/filetype_placeholder_audio.png",
     "foreground/images/files/ui/2x/filetype_placeholder_audio.png",

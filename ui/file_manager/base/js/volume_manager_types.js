@@ -433,6 +433,14 @@ VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH =
 VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE = 'archive_opened';
 
 /**
+ * ID of the Google Photos DocumentsProvider volume.
+ * @const {string}
+ */
+VolumeManagerCommon.PHOTOS_DOCUMENTS_PROVIDER_VOLUME_ID =
+    'documents_provider:com.google.android.apps.photos.photoprovider/com.google.android.apps.photos';
+
+
+/**
  * Creates an CustomEvent object for changing current directory when an archive
  * file is newly mounted, or when opened a one already mounted.
  * @param {!DirectoryEntry} mountPoint The root directory of the mounted

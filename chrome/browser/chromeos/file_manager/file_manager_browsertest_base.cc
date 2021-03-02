@@ -189,7 +189,8 @@ struct AddEntriesMessage {
     CROSTINI_VOLUME,
     USB_VOLUME,
     ANDROID_FILES_VOLUME,
-    DOCUMENTS_PROVIDER_VOLUME,
+    GENERIC_DOCUMENTS_PROVIDER_VOLUME,
+    PHOTOS_DOCUMENTS_PROVIDER_VOLUME,
     MEDIA_VIEW_AUDIO,
     MEDIA_VIEW_IMAGES,
     MEDIA_VIEW_VIDEOS,
@@ -240,7 +241,9 @@ struct AddEntriesMessage {
     else if (value == "android_files")
       *volume = ANDROID_FILES_VOLUME;
     else if (value == "documents_provider")
-      *volume = DOCUMENTS_PROVIDER_VOLUME;
+      *volume = GENERIC_DOCUMENTS_PROVIDER_VOLUME;
+    else if (value == "photos_documents_provider")
+      *volume = PHOTOS_DOCUMENTS_PROVIDER_VOLUME;
     else if (value == "media_view_audio")
       *volume = MEDIA_VIEW_AUDIO;
     else if (value == "media_view_images")
@@ -728,13 +731,14 @@ std::ostream& operator<<(std::ostream& out,
 
   PRINT_IF_NOT_DEFAULT(arc)
   PRINT_IF_NOT_DEFAULT(browser)
-  PRINT_IF_NOT_DEFAULT(documents_provider)
   PRINT_IF_NOT_DEFAULT(drive_dss_pin)
   PRINT_IF_NOT_DEFAULT(files_swa)
+  PRINT_IF_NOT_DEFAULT(generic_documents_provider)
   PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
   PRINT_IF_NOT_DEFAULT(native_smb)
   PRINT_IF_NOT_DEFAULT(offline)
+  PRINT_IF_NOT_DEFAULT(photos_documents_provider)
   PRINT_IF_NOT_DEFAULT(single_partition_format)
   PRINT_IF_NOT_DEFAULT(smbfs)
   PRINT_IF_NOT_DEFAULT(tablet_mode)
@@ -1682,7 +1686,7 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 
-  if (options.documents_provider) {
+  if (options.generic_documents_provider || options.photos_documents_provider) {
     enabled_features.push_back(arc::kEnableDocumentsProviderInFilesAppFeature);
   } else {
     disabled_features.push_back(arc::kEnableDocumentsProviderInFilesAppFeature);
@@ -1849,15 +1853,23 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
           arc::ArcServiceManager::Get()->arc_bridge_service()->file_system());
       ASSERT_TRUE(arc_file_system_instance_->InitCalled());
 
-      if (options.documents_provider) {
-        // Though we can have multiple DocumentsProvider volumes, only one
-        // volume is created and mounted for now.
-        documents_provider_volume_ =
+      if (options.generic_documents_provider) {
+        generic_documents_provider_volume_ =
             std::make_unique<DocumentsProviderTestVolume>(
                 arc_file_system_instance_.get(), "com.example.documents",
                 "root", false /* read_only */);
         if (options.mount_volumes) {
-          documents_provider_volume_->Mount(profile());
+          generic_documents_provider_volume_->Mount(profile());
+        }
+      }
+      if (options.photos_documents_provider) {
+        photos_documents_provider_volume_ =
+            std::make_unique<DocumentsProviderTestVolume>(
+                "Google Photos", arc_file_system_instance_.get(),
+                "com.google.android.apps.photos.photoprovider",
+                "com.google.android.apps.photos", false /* read_only */);
+        if (options.mount_volumes) {
+          photos_documents_provider_volume_->Mount(profile());
         }
       }
     } else {
@@ -2187,11 +2199,19 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
             LOG(FATAL) << "Add entry: but no Android files volume.";
           }
           break;
-        case AddEntriesMessage::DOCUMENTS_PROVIDER_VOLUME:
-          if (documents_provider_volume_) {
-            documents_provider_volume_->CreateEntry(*message.entries[i]);
+        case AddEntriesMessage::GENERIC_DOCUMENTS_PROVIDER_VOLUME:
+          if (generic_documents_provider_volume_) {
+            generic_documents_provider_volume_->CreateEntry(
+                *message.entries[i]);
           } else {
             LOG(FATAL) << "Add entry: but no DocumentsProvider volume.";
+          }
+          break;
+        case AddEntriesMessage::PHOTOS_DOCUMENTS_PROVIDER_VOLUME:
+          if (photos_documents_provider_volume_) {
+            photos_documents_provider_volume_->CreateEntry(*message.entries[i]);
+          } else {
+            LOG(FATAL) << "Add entry: but no Photos DocumentsProvider volume.";
           }
           break;
         case AddEntriesMessage::MEDIA_VIEW_AUDIO:
