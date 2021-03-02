@@ -62,8 +62,11 @@ void OverlayProcessorWin::ProcessForOverlays(
   TRACE_EVENT0("viz", "OverlayProcessorWin::ProcessForOverlays");
 
   auto* root_render_pass = render_passes->back().get();
-  // Skip overlay processing if we have copy request.
-  if (!root_render_pass->copy_requests.empty()) {
+
+  // Skip overlay processing if we have copy request or video capture is
+  // enabled. When video capture is enabled, some frames might not have copy
+  // request.
+  if (!root_render_pass->copy_requests.empty() || is_video_capture_enabled_) {
     damage_rect->Union(dc_layer_overlay_processor_
                            ->previous_frame_overlay_damage_contribution());
     // Update damage rect before calling ClearOverlayState, otherwise
@@ -111,6 +114,10 @@ void OverlayProcessorWin::ProcessForOverlays(
 
 bool OverlayProcessorWin::NeedsSurfaceDamageRectList() const {
   return true;
+}
+
+void OverlayProcessorWin::SetIsVideoCaptureEnabled(bool enabled) {
+  is_video_capture_enabled_ = enabled;
 }
 
 }  // namespace viz

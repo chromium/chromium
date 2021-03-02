@@ -248,6 +248,8 @@ void FrameSinkVideoCapturerImpl::Start(
   DCHECK(consumer);
 
   Stop();
+  video_capture_started_ = true;
+
   consumer_.Bind(std::move(consumer));
   // In the future, if the connection to the consumer is lost before a call to
   // Stop(), make that call on its behalf.
@@ -273,6 +275,8 @@ void FrameSinkVideoCapturerImpl::Stop() {
     consumer_->OnStopped();
     consumer_.reset();
   }
+
+  video_capture_started_ = false;
 }
 
 void FrameSinkVideoCapturerImpl::RequestRefreshFrame() {
@@ -384,6 +388,10 @@ void FrameSinkVideoCapturerImpl::OnFrameDamaged(
 
   MaybeCaptureFrame(VideoCaptureOracle::kCompositorUpdate, damage_rect,
                     expected_display_time, frame_metadata);
+}
+
+bool FrameSinkVideoCapturerImpl::IsVideoCaptureStarted() {
+  return video_capture_started_;
 }
 
 gfx::Size FrameSinkVideoCapturerImpl::GetSourceSize() {

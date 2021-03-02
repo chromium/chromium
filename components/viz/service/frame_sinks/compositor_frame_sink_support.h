@@ -144,6 +144,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
                           base::TimeTicks draw_start_timestamp,
                           const gfx::SwapTimings& swap_timings,
                           const gfx::PresentationFeedback& feedback) override;
+  bool IsVideoCaptureStarted() override;
 
   // mojom::CompositorFrameSink helpers.
   void SetNeedsBeginFrame(bool needs_begin_frame);

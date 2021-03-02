@@ -1669,6 +1669,8 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   // If any CopyOutputRequests were made at FrameSink level, make sure we grab
   // them too.
   surface->TakeCopyOutputRequestsFromClient();
+  if (surface->IsVideoCaptureOnFromClient())
+    video_capture_enabled_ = true;
 
   if (de_jelly_enabled_ && surface->HasUndrawnActiveFrame())
     new_surfaces_.insert(surface->surface_id());
@@ -1872,6 +1874,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   PropagateCopyRequestPasses();
   has_copy_requests_ = !copy_request_passes_.empty();
   frame.has_copy_requests = has_copy_requests_;
+  frame.video_capture_enabled = video_capture_enabled_;
   frame.may_contain_video = prewalk_result.may_contain_video;
   frame.content_color_usage = prewalk_result.content_color_usage;
 
@@ -1956,6 +1959,7 @@ void SurfaceAggregator::ResetAfterAggregate() {
   contained_surfaces_.clear();
   contained_frame_sinks_.clear();
   display_trace_id_ = -1;
+  video_capture_enabled_ = false;
 }
 
 void SurfaceAggregator::ReleaseResources(const SurfaceId& surface_id) {

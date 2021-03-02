@@ -43,6 +43,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // processor.
   bool NeedsSurfaceDamageRectList() const override;
 
+  // Set |is_video_capture_enabled_|.
+  void SetIsVideoCaptureEnabled(bool enabled) override;
+
   void AdjustOutputSurfaceOverlay(base::Optional<OutputSurfaceOverlayPlane>*
                                       output_surface_plane) override {}
 
@@ -77,6 +80,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   // TODO(weiliangc): Eventually fold DCLayerOverlayProcessor into this class.
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
+
+  bool is_video_capture_enabled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(OverlayProcessorWin);
 };

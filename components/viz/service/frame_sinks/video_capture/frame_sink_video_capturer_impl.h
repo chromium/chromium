@@ -178,6 +178,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                       const gfx::Rect& damage_rect,
                       base::TimeTicks target_display_time,
                       const CompositorFrameMetadata& frame_metadata) final;
+  bool IsVideoCaptureStarted() final;
 
   // VideoCaptureOverlay::FrameSource implementation:
   gfx::Size GetSourceSize() final;
@@ -283,6 +284,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // Allows determining whether or not the frame size has changed since the last
   // captured frame.
   gfx::Rect last_frame_visible_rect_;
+
+  // True after Start() and false after Stop().
+  bool video_capture_started_ = false;
 
   // These are sequence counters used to ensure that the frames are being
   // delivered in the same order they are captured.

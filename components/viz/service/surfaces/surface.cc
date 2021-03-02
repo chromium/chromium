@@ -698,6 +698,13 @@ void Surface::NotifyAggregatedDamage(const gfx::Rect& damage_rect,
       damage_rect, expected_display_time);
 }
 
+bool Surface::IsVideoCaptureOnFromClient() {
+  if (!surface_client_)
+    return false;
+
+  return surface_client_->IsVideoCaptureStarted();
+}
+
 void Surface::UnrefFrameResourcesAndRunCallbacks(
     base::Optional<FrameData> frame_data) {
   if (!frame_data || !surface_client_)

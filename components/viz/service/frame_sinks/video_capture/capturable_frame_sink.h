@@ -41,6 +41,10 @@ class CapturableFrameSink {
         const gfx::Rect& damage_rect,
         base::TimeTicks expected_display_time,
         const CompositorFrameMetadata& frame_metadata) = 0;
+
+    // Called from SurfaceAggregator to get the video capture status on the
+    // surface which is going to be drawn to.
+    virtual bool IsVideoCaptureStarted() = 0;
   };
 
   virtual ~CapturableFrameSink() = default;

@@ -196,6 +196,13 @@ class VIZ_SERVICE_EXPORT Surface final {
   void NotifyAggregatedDamage(const gfx::Rect& damage_rect,
                               base::TimeTicks expected_display_time);
 
+  // True if video capture has been started. False if it has been stopped.
+  // This information is used by direct composition overlays to decide whether
+  // overlay should be used. Not all frames have copy requests after video
+  // capture. We don't want to constantly switch between overlay and non-overlay
+  // during video playback.
+  bool IsVideoCaptureOnFromClient();
+
   const base::flat_set<SurfaceId>& active_referenced_surfaces() const {
     return active_referenced_surfaces_;
   }

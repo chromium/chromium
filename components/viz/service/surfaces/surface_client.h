@@ -90,6 +90,8 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
       const gfx::Rect& damage_rect,
       base::TimeTicks expected_display_time) = 0;
 
+  virtual bool IsVideoCaptureStarted() = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(SurfaceClient);
 };

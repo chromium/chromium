@@ -41,6 +41,9 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   // Indicates whether any render passes have a copy output request.
   bool has_copy_requests = false;
 
+  // Indicates whether video capture has been enabled for this frame.
+  bool video_capture_enabled = false;
+
   // Indicates whether this frame may contain video.
   bool may_contain_video = false;
 

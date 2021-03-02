@@ -482,6 +482,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // by FindQuadWithOverlayDamage().
   bool current_zero_damage_rect_is_not_recorded_ = false;
 
+  // Indicates whether video capture has been enabled for this frame.
+  bool video_capture_enabled_ = false;
+
   // A helper class used to remap render pass IDs from the surface namespace to
   // a common space, to avoid collisions.
   RenderPassIdRemapper pass_id_remapper_;

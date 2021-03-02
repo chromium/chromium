@@ -247,6 +247,14 @@ void CompositorFrameSinkSupport::OnSurfaceAggregatedDamage(
   }
 }
 
+bool CompositorFrameSinkSupport::IsVideoCaptureStarted() {
+  for (auto* client : capture_clients_) {
+    if (client->IsVideoCaptureStarted())
+      return true;
+  }
+  return false;
+}
+
 void CompositorFrameSinkSupport::OnSurfaceDestroyed(Surface* surface) {
   pending_surfaces_.erase(surface);
 
