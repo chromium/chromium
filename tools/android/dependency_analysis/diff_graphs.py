@@ -6,29 +6,61 @@
 
 import argparse
 
-from typing import List, Set
+from typing import List, Set, Tuple
 
 import graph
 import serialization
 
 
-def diff_num_graph_nodes(graph1: graph.Graph, graph2: graph.Graph, label: str):
+def _print_diff_num_nodes(graph1: graph.Graph, graph2: graph.Graph,
+                          label: str):
     before: int = graph1.num_nodes
     after: int = graph2.num_nodes
+    _print_diff_metric(before, after, label)
+
+
+def _print_diff_num_edges(graph1: graph.Graph, graph2: graph.Graph,
+                          label: str):
+    before: int = graph1.num_edges
+    after: int = graph2.num_edges
+    _print_diff_metric(before, after, label)
+
+
+def _print_diff_metric(before: int, after: int, label: str):
     diff: int = after - before
     print(f'{label}: {diff:+} ({before} -> {after})')
 
 
-def diff_node_list(graph1: graph.Graph, graph2: graph.Graph, label: str):
-    print(f'{label} added (+) and removed (-):')
+def _print_diff_node_list(graph1: graph.Graph, graph2: graph.Graph,
+                          label: str):
     before_nodes: Set[str] = set(node.name for node in graph1.nodes)
     after_nodes: Set[str] = set(node.name for node in graph2.nodes)
-    added_nodes: List[str] = sorted(after_nodes - before_nodes)
-    removed_nodes: List[str] = sorted(before_nodes - after_nodes)
-    for i, added_node in enumerate(added_nodes, start=1):
-        print(f'+ [{i:4}] {added_node}')
-    for i, removed_node in enumerate(removed_nodes, start=1):
-        print(f'- [{i:4}] {removed_node}')
+    _print_set_diff(before_nodes, after_nodes, label)
+
+
+def _print_diff_edge_list(graph1: graph.Graph, graph2: graph.Graph,
+                          label: str):
+    before_edges: Set[str] = set(_edge_str(edge) for edge in graph1.edges)
+    after_edges: Set[str] = set(_edge_str(edge) for edge in graph2.edges)
+    _print_set_diff(before_edges, after_edges, label)
+
+
+def _edge_str(edge: Tuple[graph.Node, graph.Node]) -> str:
+    return f'{edge[0]} -> {edge[1]}'
+
+
+def _print_set_diff(before_set: Set[str], after_set: Set[str], label: str):
+    all_added: List[str] = sorted(after_set - before_set)
+    all_removed: List[str] = sorted(before_set - after_set)
+    if not all_added and not all_removed:
+        print(f'{label} - no changes')
+        return
+
+    print(f'{label} added (+) and removed (-):')
+    for i, added in enumerate(all_added, start=1):
+        print(f'+ [{i:4}] {added}')
+    for i, removed in enumerate(all_removed, start=1):
+        print(f'- [{i:4}] {removed}')
 
 
 def main():
@@ -47,21 +79,41 @@ def main():
         '--after',
         required=True,
         help='Path to the JSON file containing the "after" dependency graph.')
+    arg_parser.add_argument(
+        '-e',
+        '--edges',
+        action='store_true',
+        help='Diff the set of graph edges in addition to the set of nodes')
     arguments = arg_parser.parse_args()
 
     class_graph_before, package_graph_before, _ = \
         serialization.load_class_and_package_graphs_from_file(arguments.before)
     class_graph_after, package_graph_after, _ = \
         serialization.load_class_and_package_graphs_from_file(arguments.after)
-    diff_num_graph_nodes(class_graph_before, class_graph_after,
-                         'Total Java class count')
-    diff_num_graph_nodes(package_graph_before, package_graph_after,
-                         'Total Java package count')
+    _print_diff_num_nodes(class_graph_before, class_graph_after,
+                          'Total Java class count')
+    _print_diff_num_nodes(package_graph_before, package_graph_after,
+                          'Total Java package count')
 
     print()
-    diff_node_list(class_graph_before, class_graph_after, 'Java classes')
+    _print_diff_node_list(class_graph_before, class_graph_after,
+                          'Java classes')
     print()
-    diff_node_list(package_graph_before, package_graph_after, 'Java packages')
+    _print_diff_node_list(package_graph_before, package_graph_after,
+                          'Java packages')
+
+    if arguments.edges:
+        _print_diff_num_edges(class_graph_before, class_graph_after,
+                              'Total Java class edge count')
+        _print_diff_num_edges(package_graph_before, package_graph_after,
+                              'Total Java package edge count')
+
+        print()
+        _print_diff_edge_list(class_graph_before, class_graph_after,
+                              'Java class edges')
+        print()
+        _print_diff_edge_list(package_graph_before, package_graph_after,
+                              'Java package edges')
 
 
 if __name__ == '__main__':
