@@ -396,6 +396,21 @@ class TestRunner(object):
     """
     return os.environ.copy()
 
+  def get_launch_test_app(self):
+    """Returns the proper test_app for the run.
+
+    Returns:
+      An implementation of GTestsApp for the current run to execute.
+    """
+    if self.xctest:
+      raise XCTestConfigError('Wrong config. TestRunner.launch() called from'
+                              ' an unexpected class.')
+    return test_apps.GTestsApp(
+        self.app_path,
+        included_tests=self.test_cases,
+        env_vars=self.env_vars,
+        test_args=self.test_args)
+
   def start_proc(self, cmd):
     """Starts a process with cmd command and os.environ.
 
@@ -567,36 +582,7 @@ class TestRunner(object):
     """Launches the test app."""
     self.set_up()
     destination = 'id=%s' % self.udid
-    # When current |launch| method is invoked, this is running a unit test
-    # target. For simulators, '--xctest' is passed to test runner scripts to
-    # make it run XCTest based unit test.
-    # TODO(crbug.com/1183541): Implement launch() in
-    # |WprProxySimulatorTestRunner|.
-    if (self.xctest and
-        not self.__class__.__name__ == 'WprProxySimulatorTestRunner'):
-      # TODO(crbug.com/1085603): Pass in test runner an arg to determine if it's
-      # device test or simulator test and test the arg here.
-      if self.__class__.__name__ == 'SimulatorTestRunner':
-        test_app = test_apps.SimulatorXCTestUnitTestsApp(
-            self.app_path,
-            included_tests=self.test_cases,
-            env_vars=self.env_vars,
-            test_args=self.test_args)
-      elif self.__class__.__name__ == 'DeviceTestRunner':
-        test_app = test_apps.DeviceXCTestUnitTestsApp(
-            self.app_path,
-            included_tests=self.test_cases,
-            env_vars=self.env_vars,
-            test_args=self.test_args)
-      else:
-        raise XCTestConfigError('Wrong config. TestRunner.launch() called from'
-                                ' an unexpected class.')
-    else:
-      test_app = test_apps.GTestsApp(
-          self.app_path,
-          included_tests=self.test_cases,
-          env_vars=self.env_vars,
-          test_args=self.test_args)
+    test_app = self.get_launch_test_app()
     out_dir = os.path.join(self.out_dir, 'TestResults')
     cmd = self.get_launch_command(test_app, out_dir, destination, self.shards)
     try:
@@ -944,6 +930,18 @@ class SimulatorTestRunner(TestRunner):
       env['NSUnbufferedIO'] = 'YES'
     return env
 
+  def get_launch_test_app(self):
+    """Returns the proper test_app for the run.
+
+    Returns:
+      A SimulatorXCTestUnitTestsApp for the current run to execute.
+    """
+    return test_apps.SimulatorXCTestUnitTestsApp(
+        self.app_path,
+        included_tests=self.test_cases,
+        env_vars=self.env_vars,
+        test_args=self.test_args)
+
 
 class DeviceTestRunner(TestRunner):
   """Class for running tests on devices."""
@@ -1140,3 +1138,15 @@ class DeviceTestRunner(TestRunner):
       # e.g. ios_web_shell_egtests_module
       env['TEST_TARGET_NAME'] = env['APP_TARGET_NAME'] + '_module'
     return env
+
+  def get_launch_test_app(self):
+    """Returns the proper test_app for the run.
+
+    Returns:
+      A DeviceXCTestUnitTestsApp  for the current run to execute.
+    """
+    return test_apps.DeviceXCTestUnitTestsApp(
+        self.app_path,
+        included_tests=self.test_cases,
+        env_vars=self.env_vars,
+        test_args=self.test_args)

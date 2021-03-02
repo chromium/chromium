@@ -402,6 +402,18 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
         test_config['test_filter'] = test_app.excluded_tests
     return test_config
 
+  def get_launch_test_app(self, params):
+    """Returns the proper test_app for the run.
+
+    Returns:
+      This runner disregards xcode, and returns an implementation of GTestsApp
+    """
+    return test_apps.GTestsApp(
+        self.app_path,
+        included_tests=self.test_cases,
+        env_vars=self.env_vars,
+        test_args=self.test_args)
+
   def proxy_start(self):
     """Starts tsproxy and routes the machine's traffic through tsproxy."""
 
