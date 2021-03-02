@@ -502,9 +502,9 @@ enum DomainMetricType : DomainMetricBitmaskType {
   kEnableLast28DayMetric = 1 << 2
 };
 
-// HistoryLastVisitToHostResult encapsulates the result of a call to
-// HistoryBackend::GetLastVisitToHost().
-struct HistoryLastVisitToHostResult {
+// HistoryLastVisitResult encapsulates the result HistoryBackend calls to find
+// the last visit to a host or URL.
+struct HistoryLastVisitResult {
   // Indicates whether the call was successful or not. This can happen if there
   // are internal database errors or the query was called with invalid
   // arguments. |success| will be true and |last_visit| will be null if

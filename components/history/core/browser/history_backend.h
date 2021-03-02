@@ -320,9 +320,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // time range [|begin_time|, |end_time|). If the given host has not been
   // visited in the given time range, the result will have a null base::Time,
   // but still report success.
-  HistoryLastVisitToHostResult GetLastVisitToHost(const GURL& host,
-                                                  base::Time begin_time,
-                                                  base::Time end_time);
+  HistoryLastVisitResult GetLastVisitToHost(const GURL& host,
+                                            base::Time begin_time,
+                                            base::Time end_time);
+
+  // Gets the last time |url| was visited before |end_time|. If the given URL
+  // has not been visited in the past, the result will have a null base::Time,
+  // but still report success.
+  HistoryLastVisitResult GetLastVisitToURL(const GURL& url,
+                                           base::Time end_time);
 
   // Favicon -------------------------------------------------------------------
 

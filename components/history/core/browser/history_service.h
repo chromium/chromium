@@ -335,8 +335,7 @@ class HistoryService : public KeyedService {
                           DomainDiversityCallback callback,
                           base::CancelableTaskTracker* tracker);
 
-  using GetLastVisitToHostCallback =
-      base::OnceCallback<void(HistoryLastVisitToHostResult)>;
+  using GetLastVisitCallback = base::OnceCallback<void(HistoryLastVisitResult)>;
 
   // Gets the last time any webpage on the given host was visited within the
   // time range [|begin_time|, |end_time|). If the given host has not been
@@ -346,7 +345,16 @@ class HistoryService : public KeyedService {
       const GURL& host,
       base::Time begin_time,
       base::Time end_time,
-      GetLastVisitToHostCallback callback,
+      GetLastVisitCallback callback,
+      base::CancelableTaskTracker* tracker);
+
+  // Gets the last time |url| was visited before |end_time|. If the given host
+  // has not been visited in the past, the result will have a null base::Time,
+  // but still report success.
+  base::CancelableTaskTracker::TaskId GetLastVisitToURL(
+      const GURL& url,
+      base::Time end_time,
+      GetLastVisitCallback callback,
       base::CancelableTaskTracker* tracker);
 
   // Database management operations --------------------------------------------

@@ -39,7 +39,7 @@ class PrefetchProxyPageLoadMetricsObserver
   // Used as a callback for history service query results. Protected for
   // testing.
   void OnOriginLastVisitResult(base::Time query_start_time,
-                               history::HistoryLastVisitToHostResult result);
+                               history::HistoryLastVisitResult result);
 
  private:
   void RecordMetrics();

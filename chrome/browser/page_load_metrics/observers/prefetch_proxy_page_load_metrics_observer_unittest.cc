@@ -38,8 +38,7 @@ page_load_metrics::mojom::ResourceDataUpdatePtr CreateBaseResource(
 class TestPrefetchProxyPageLoadMetricsObserver
     : public PrefetchProxyPageLoadMetricsObserver {
  public:
-  void CallOnOriginLastVisitResult(
-      history::HistoryLastVisitToHostResult result) {
+  void CallOnOriginLastVisitResult(history::HistoryLastVisitResult result) {
     OnOriginLastVisitResult(base::Time::Now(), result);
   }
 };

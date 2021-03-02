@@ -185,12 +185,20 @@ class VisitDatabase {
   // Gets the last time any webpage on the given host was visited within the
   // time range [|begin_time|, |end_time|). If the given host has not been
   // visited in the given time range, this will return true and |last_visit|
-  // will be set to null. False will be returned if the host is not a valid
-  // HTTP or HTTPS url or for other database errors.
+  // will be set to base::Time(). False will be returned if the host is not a
+  // valid HTTP or HTTPS url or for other database errors.
   bool GetLastVisitToHost(const GURL& host,
                           base::Time begin_time,
                           base::Time end_time,
                           base::Time* last_visit);
+
+  // Gets the last time |url| was visited before |end_time|. If the given |url|
+  // has no past visits, this will return true and |last_visit| will be set to
+  // base::Time(). False will be returned if |url| is not a valid HTTP or HTTPS
+  // url or for other database errors.
+  bool GetLastVisitToURL(const GURL& url,
+                         base::Time end_time,
+                         base::Time* last_visit);
 
   // Get the time of the first item in our database.
   bool GetStartDate(base::Time* first_visit);

@@ -164,7 +164,7 @@ void PrefetchProxyPageLoadMetricsObserver::GetPrefetchMetrics() {
 
 void PrefetchProxyPageLoadMetricsObserver::OnOriginLastVisitResult(
     base::Time query_start_time,
-    history::HistoryLastVisitToHostResult result) {
+    history::HistoryLastVisitResult result) {
   if (!result.success)
     return;
 
