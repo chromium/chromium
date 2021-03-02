@@ -48,15 +48,15 @@ class AppLaunchSplashScreenView {
     virtual bool IsNetworkRequired() = 0;
   };
 
-  enum AppLaunchState {
-    APP_LAUNCH_STATE_PREPARING_PROFILE,
-    APP_LAUNCH_STATE_PREPARING_NETWORK,
-    APP_LAUNCH_STATE_INSTALLING_APPLICATION,
-    APP_LAUNCH_STATE_INSTALLING_EXTENSION,
-    APP_LAUNCH_STATE_WAITING_APP_WINDOW,
-    APP_LAUNCH_STATE_WAITING_APP_WINDOW_INSTALL_FAILED,
-    APP_LAUNCH_STATE_NETWORK_WAIT_TIMEOUT,
-    APP_LAUNCH_STATE_SHOWING_NETWORK_CONFIGURE_UI,
+  enum class AppLaunchState {
+    kPreparingProfile,
+    kPreparingNetwork,
+    kInstallingApplication,
+    kInstallingExtension,
+    kWaitingAppWindow,
+    kWaitingAppWindowInstallFailed,
+    kNetworkWaitTimeout,
+    kShowingNetworkConfigureUI,
   };
 
   constexpr static StaticOobeScreenId kScreenId{"app-launch-splash"};
@@ -135,7 +135,7 @@ class AppLaunchSplashScreenHandler
 
   Delegate* delegate_ = nullptr;
   bool show_on_init_ = false;
-  AppLaunchState state_ = APP_LAUNCH_STATE_PREPARING_PROFILE;
+  AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
   ErrorScreen* error_screen_;

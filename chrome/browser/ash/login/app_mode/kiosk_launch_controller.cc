@@ -336,8 +336,7 @@ void KioskLaunchController::OnAppInstalling() {
   if (!splash_screen_view_)
     return;
   splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::
-          APP_LAUNCH_STATE_INSTALLING_APPLICATION);
+      AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication);
 
   splash_screen_view_->Show();
 }
@@ -371,8 +370,7 @@ void KioskLaunchController::OnAppPrepared() {
     tracker->AddObserver(this);
 
     splash_screen_view_->UpdateAppLaunchState(
-        AppLaunchSplashScreenView::AppLaunchState::
-            APP_LAUNCH_STATE_INSTALLING_EXTENSION);
+        AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
     splash_screen_view_->Show();
   } else {
     OnForceInstalledExtensionsReady();
@@ -391,7 +389,7 @@ void KioskLaunchController::InitializeNetwork() {
   network_required_ = true;
 
   splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::APP_LAUNCH_STATE_PREPARING_NETWORK);
+      AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork);
 
   app_state_ = AppState::kInitNetwork;
 
@@ -476,7 +474,7 @@ void KioskLaunchController::HandleWebAppInstallFailed() {
     return;
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::
-          APP_LAUNCH_STATE_WAITING_APP_WINDOW_INSTALL_FAILED);
+          kWaitingAppWindowInstallFailed);
   splash_screen_view_->Show();
   if (launch_on_install_ || g_skip_splash_wait_for_testing)
     LaunchApp();
@@ -487,7 +485,7 @@ void KioskLaunchController::OnAppLaunched() {
   app_state_ = AppState::kLaunched;
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
-        AppLaunchSplashScreenView::APP_LAUNCH_STATE_WAITING_APP_WINDOW);
+        AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
     splash_screen_view_->Show();
   }
   session_manager::SessionManager::Get()->SessionStarted();
@@ -536,8 +534,7 @@ void KioskLaunchController::OnForceInstalledExtensionsReady() {
     tracker->RemoveObserver(this);
 
   splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::
-          APP_LAUNCH_STATE_WAITING_APP_WINDOW);
+      AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
   splash_screen_view_->Show();
 
   if (launch_on_install_ || g_skip_splash_wait_for_testing)
@@ -589,7 +586,7 @@ void KioskLaunchController::MaybeShowNetworkConfigureUI() {
     }
   } else {
     splash_screen_view_->UpdateAppLaunchState(
-        AppLaunchSplashScreenView::APP_LAUNCH_STATE_NETWORK_WAIT_TIMEOUT);
+        AppLaunchSplashScreenView::AppLaunchState::kNetworkWaitTimeout);
   }
 }
 
@@ -597,8 +594,7 @@ void KioskLaunchController::ShowNetworkConfigureUI() {
   if (!profile_) {
     SYSLOG(INFO) << "Postponing network dialog till profile is loaded.";
     splash_screen_view_->UpdateAppLaunchState(
-        AppLaunchSplashScreenView::
-            APP_LAUNCH_STATE_SHOWING_NETWORK_CONFIGURE_UI);
+        AppLaunchSplashScreenView::AppLaunchState::kShowingNetworkConfigureUI);
     return;
   }
   // We should stop timers since they may fire during network
@@ -643,7 +639,7 @@ void KioskLaunchController::OnNetworkConfigRequested() {
 void KioskLaunchController::OnNetworkConfigFinished() {
   network_ui_state_ = NetworkUIState::kNotShowing;
   splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::APP_LAUNCH_STATE_PREPARING_PROFILE);
+      AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile);
   app_state_ = AppState::kInitNetwork;
   app_launcher_->RestartLauncher();
 }

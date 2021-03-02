@@ -241,24 +241,23 @@ void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {
 int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
     AppLaunchState state) {
   switch (state) {
-    case APP_LAUNCH_STATE_PREPARING_PROFILE:
+    case AppLaunchState::kPreparingProfile:
       return IDS_APP_START_PREPARING_PROFILE_MESSAGE;
-    case APP_LAUNCH_STATE_PREPARING_NETWORK:
+    case AppLaunchState::kPreparingNetwork:
       return IDS_APP_START_NETWORK_WAIT_MESSAGE;
-    case APP_LAUNCH_STATE_INSTALLING_APPLICATION:
+    case AppLaunchState::kInstallingApplication:
       return IDS_APP_START_APP_WAIT_MESSAGE;
-    case APP_LAUNCH_STATE_INSTALLING_EXTENSION:
+    case AppLaunchState::kInstallingExtension:
       return IDS_APP_START_EXTENSION_WAIT_MESSAGE;
-    case APP_LAUNCH_STATE_WAITING_APP_WINDOW:
+    case AppLaunchState::kWaitingAppWindow:
       return IDS_APP_START_WAIT_FOR_APP_WINDOW_MESSAGE;
-    case APP_LAUNCH_STATE_WAITING_APP_WINDOW_INSTALL_FAILED:
+    case AppLaunchState::kWaitingAppWindowInstallFailed:
       return IDS_APP_START_WAIT_FOR_APP_WINDOW_INSTALL_FAILED_MESSAGE;
-    case APP_LAUNCH_STATE_NETWORK_WAIT_TIMEOUT:
+    case AppLaunchState::kNetworkWaitTimeout:
       return IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE;
-    case APP_LAUNCH_STATE_SHOWING_NETWORK_CONFIGURE_UI:
+    case AppLaunchState::kShowingNetworkConfigureUI:
       return IDS_APP_START_SHOWING_NETWORK_CONFIGURE_UI_MESSAGE;
   }
-  return IDS_APP_START_NETWORK_WAIT_MESSAGE;
 }
 
 void AppLaunchSplashScreenHandler::HandleConfigureNetwork() {
