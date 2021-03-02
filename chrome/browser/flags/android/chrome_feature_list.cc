@@ -97,7 +97,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kAdaptiveButtonInTopToolbar,
     &features::kClearOldBrowsingData,
     &features::kContinuousSearch,
-    &features::kDexFixer,
     &features::kDownloadsLocationChange,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
