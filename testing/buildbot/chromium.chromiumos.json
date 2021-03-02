@@ -1231,6 +1231,7 @@
           "--remote=variable_chromeos_device_hostname",
           "--xvfb"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
           "args": [],

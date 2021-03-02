@@ -2538,6 +2538,10 @@
         },
         'experiment_percentage': 100,
       },
+      'chromeos-kevin-rel': {
+        # TODO(crbug.com/1182948): Remove the experiment.
+        'experiment_percentage': 100,
+      },
       'linux-chromium-tests-staging-tests': {
         'args': [
           '--xvfb',
