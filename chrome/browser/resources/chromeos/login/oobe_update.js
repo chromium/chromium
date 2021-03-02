@@ -23,40 +23,34 @@ const PERCENT_THRESHOLDS = [
 
 /**
  * Enum for the UI states corresponding to sub steps inside update screen.
- * These values must be kept in sync with UpdateView::UIState in C++ code.
- * @enum {number}
+ * These values must be kept in sync with string constants in
+ * update_screen_handler.cc.
+ * @enum {string}
  */
-var UpdateUIState = {
-  CHECKING_FOR_UPDATE: 0,
-  UPDATE_IN_PROGRESS: 1,
-  RESTART_IN_PROGRESS: 2,
-  MANUAL_REBOOT: 3,
+const UIState = {
+  CHECKING: 'checking',
+  UPDATE: 'update',
+  RESTART: 'restart',
+  REBOOT: 'reboot',
+  CELLULAR: 'cellular',
 };
 
 
 Polymer({
   is: 'oobe-update-element',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  behaviors: [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
 
   EXTERNAL_API: [
+    'setCancelUpdateShortcutEnabled',
     'setRequiresPermissionForCellular',
     'showLowBatteryWarningMessage',
-    'setUIState',
+    'setUpdateState',
     'setUpdateStatus',
     'setAutoTransition',
   ],
 
   properties: {
-    /**
-     * Shows a warning to the user the update is about to proceed over a
-     * cellular network, and asks the user to confirm.
-     */
-    requiresPermissionForCellular: {
-      type: Boolean,
-      value: false,
-    },
-
     /**
      * True if update is fully completed and manual action is required.
      */
@@ -88,11 +82,6 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
-    /**
-     * Current UI state which corresponds to a sub step in update process.
-     */
-    uiState: {type: Number, value: 0},
 
     /**
      * Message like "3% complete".
@@ -132,6 +121,12 @@ Polymer({
       value: 0,
     }
   },
+
+  defaultUIStep() {
+    return UIState.CHECKING;
+  },
+
+  UI_STEPS: UIState,
 
   ready() {
     this.initializeLoginScreen('UpdateScreen', {
@@ -178,10 +173,10 @@ Polymer({
 
   /**
    * Sets which dialog should be shown.
-   * @param {UpdateUIState} value Current UI state.
+   * @param {UIState} value Current update state.
    */
-  setUIState(value) {
-    this.uiState = value;
+  setUpdateState(value) {
+    this.setUIStep(value);
   },
 
   /**
@@ -219,51 +214,11 @@ Polymer({
   /**
    * Gets whether carousel should auto transit slides.
    * @private
-   * @param {UpdateUIState} state Which UIState now.
+   * @param {UIState} step Which UIState is shown now.
    * @param {boolean} autoTransition Is auto transition allowed.
    */
-  getAutoTransition_(state, autoTransition) {
-    return state == UpdateUIState.UPDATE_IN_PROGRESS && autoTransition;
-  },
-
-  /**
-   * Sets whether checking for update dialog is shown.
-   * @private
-   * @param {UpdateUIState} state Which UIState now.
-   * @param {boolean} requiresPermission Is permission update dialog shown?
-   */
-  isCheckingForUpdate_(state, requiresPermission) {
-    return state == UpdateUIState.CHECKING_FOR_UPDATE && !requiresPermission;
-  },
-
-  /**
-   * Sets whether update in progress dialog is shown.
-   * @private
-   * @param {UpdateUIState} state Which UIState now.
-   * @param {boolean} requiresPermission Is permission update dialog shown?
-   */
-  isUpdateInProgress_(state, requiresPermission) {
-    return state == UpdateUIState.UPDATE_IN_PROGRESS && !requiresPermission;
-  },
-
-  /**
-   * Sets whether restart in progress dialog is shown.
-   * @private
-   * @param {UpdateUIState} state Which UIState now.
-   * @param {boolean} requiresPermission Is permission update dialog shown?
-   */
-  isRestartInProgress_(state, requiresPermission) {
-    return state == UpdateUIState.RESTART_IN_PROGRESS && !requiresPermission;
-  },
-
-  /**
-   * Sets whether manual reboot dialog is shown.
-   * @private
-   * @param {UpdateUIState} state Which UIState now.
-   * @param {boolean} requiresPermission Is permission update dialog shown?
-   */
-  isManualReboot_(state, requiresPermission) {
-    return state == UpdateUIState.MANUAL_REBOOT && !requiresPermission;
+  getAutoTransition_(step, autoTransition) {
+    return step == UIState.UPDATE && autoTransition;
   },
 
 });

@@ -37,7 +37,7 @@ class MockUpdateView : public UpdateView {
   MOCK_METHOD(void, MockBind, (UpdateScreen * screen));
   MOCK_METHOD(void, MockUnbind, ());
 
-  MOCK_METHOD(void, SetUIState, (UpdateView::UIState value));
+  MOCK_METHOD(void, SetUpdateState, (UpdateView::UIState value));
   MOCK_METHOD(void,
               SetUpdateStatus,
               (int percent,
@@ -49,7 +49,6 @@ class MockUpdateView : public UpdateView {
   MOCK_METHOD(void, SetShowCurtain, (bool value));
   MOCK_METHOD(void, SetProgressMessage, (const base::string16& value));
   MOCK_METHOD(void, SetProgress, (int value));
-  MOCK_METHOD(void, SetRequiresPermissionForCellular, (bool value));
   MOCK_METHOD(void, SetCancelUpdateShortcutEnabled, (bool value));
   MOCK_METHOD(void, ShowLowBatteryWarningMessage, (bool value));
   MOCK_METHOD(void, SetAutoTransition, (bool value));

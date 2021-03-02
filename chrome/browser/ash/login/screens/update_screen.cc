@@ -172,7 +172,10 @@ void UpdateScreen::ShowImpl() {
     view_->SetCancelUpdateShortcutEnabled(true);
   }
 #endif
-  RefreshView(version_updater_->update_info());
+  if (version_updater_->update_info().requires_permission_for_cellular &&
+      view_) {
+    view_->SetUpdateState(UpdateView::UIState::kCellularPermission);
+  }
   show_timer_.Start(FROM_HERE, kShowDelay,
                     base::BindOnce(&UpdateScreen::MakeSureScreenIsShown,
                                    weak_factory_.GetWeakPtr()));
@@ -231,7 +234,7 @@ void UpdateScreen::OnWaitForRebootTimeElapsed() {
   MakeSureScreenIsShown();
   if (!view_)
     return;
-  view_->SetUIState(UpdateView::UIState::kManualReboot);
+  view_->SetUpdateState(UpdateView::UIState::kManualReboot);
 }
 
 void UpdateScreen::PrepareForUpdateCheck() {
@@ -288,25 +291,27 @@ void UpdateScreen::UpdateInfoChanged(
     const VersionUpdater::UpdateInfo& update_info) {
   const update_engine::StatusResult& status = update_info.status;
   hide_progress_on_exit_ = false;
-  bool need_refresh_view = true;
+  if (update_info.requires_permission_for_cellular && view_) {
+    view_->SetUpdateState(UpdateView::UIState::kCellularPermission);
+    MakeSureScreenIsShown();
+    return;
+  }
   switch (status.current_operation()) {
     case update_engine::Operation::CHECKING_FOR_UPDATE:
       if (view_)
-        view_->SetUIState(UpdateView::UIState::kCheckingForUpdate);
+        view_->SetUpdateState(UpdateView::UIState::kCheckingForUpdate);
       if (start_update_stage_.is_null())
         start_update_stage_ = tick_clock_->NowTicks();
-      need_refresh_view = false;
       break;
       // Do nothing in these cases, we don't want to notify the user of the
       // check unless there is an update.
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
     case update_engine::Operation::DISABLED:
     case update_engine::Operation::IDLE:
-      need_refresh_view = false;
       break;
     case update_engine::Operation::UPDATE_AVAILABLE:
       if (view_)
-        view_->SetUIState(UpdateView::UIState::kCheckingForUpdate);
+        view_->SetUpdateState(UpdateView::UIState::kCheckingForUpdate);
       if (start_update_stage_.is_null())
         start_update_stage_ = tick_clock_->NowTicks();
       MakeSureScreenIsShown();
@@ -318,7 +323,7 @@ void UpdateScreen::UpdateInfoChanged(
       break;
     case update_engine::Operation::DOWNLOADING:
       if (view_)
-        view_->SetUIState(UpdateView::UIState::KUpdateInProgress);
+        view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
       SetUpdateStatusMessage(update_info.better_update_progress,
                              update_info.total_time_left);
       MakeSureScreenIsShown();
@@ -341,7 +346,7 @@ void UpdateScreen::UpdateInfoChanged(
       break;
     case update_engine::Operation::VERIFYING:
       if (view_)
-        view_->SetUIState(UpdateView::UIState::KUpdateInProgress);
+        view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
       SetUpdateStatusMessage(update_info.better_update_progress,
                              update_info.total_time_left);
       // Make sure that VERIFYING and DOWNLOADING stages are recorded correctly.
@@ -353,7 +358,7 @@ void UpdateScreen::UpdateInfoChanged(
       break;
     case update_engine::Operation::FINALIZING:
       if (view_)
-        view_->SetUIState(UpdateView::UIState::KUpdateInProgress);
+        view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
       SetUpdateStatusMessage(update_info.better_update_progress,
                              update_info.total_time_left);
       // Make sure that VERIFYING and FINALIZING stages are recorded correctly.
@@ -393,14 +398,11 @@ void UpdateScreen::UpdateInfoChanged(
       } else {
         ExitUpdate(Result::UPDATE_ERROR);
       }
-      need_refresh_view = false;
       break;
     default:
       NOTREACHED();
   }
   UpdateBatteryWarningVisibility();
-  if (need_refresh_view)
-    RefreshView(update_info);
 }
 
 void UpdateScreen::FinishExitUpdate(Result result) {
@@ -422,7 +424,7 @@ void UpdateScreen::PowerChanged(
 void UpdateScreen::ShowRebootInProgress() {
   MakeSureScreenIsShown();
   if (view_)
-    view_->SetUIState(UpdateView::UIState::kRestartInProgress);
+    view_->SetUpdateState(UpdateView::UIState::kRestartInProgress);
 }
 
 void UpdateScreen::SetUpdateStatusMessage(int percent,
@@ -460,13 +462,6 @@ void UpdateScreen::UpdateBatteryWarningVisibility() {
       proto->battery_state() ==
           power_manager::PowerSupplyProperties_BatteryState_DISCHARGING &&
       proto->battery_percent() < kInsufficientBatteryPercent);
-}
-
-void UpdateScreen::RefreshView(const VersionUpdater::UpdateInfo& update_info) {
-  if (view_) {
-    view_->SetRequiresPermissionForCellular(
-        update_info.requires_permission_for_cellular);
-  }
 }
 
 bool UpdateScreen::HasCriticalUpdate() {
