@@ -10,6 +10,8 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/resize_shadow.h"
+#include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace_controller_test_api.h"
@@ -44,9 +46,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
-
-#include "ash/wm/resize_shadow.h"
-#include "ash/wm/resize_shadow_controller.h"
 
 namespace exo {
 

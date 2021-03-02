@@ -56,21 +56,6 @@ constexpr char kForceRemoteShellScale[] = "force-remote-shell-scale";
 
 }  // namespace switches
 
-Surface* FindRootSurface(aura::Window* window) {
-  if (!window)
-    return nullptr;
-  Surface* root = GetShellRootSurface(window);
-  if (root)
-    return root;
-  root = Surface::AsSurface(window);
-  for (aura::Window* parent = window->parent();
-       root && parent && Surface::AsSurface(parent);
-       parent = parent->parent()) {
-    root = Surface::AsSurface(parent);
-  }
-  return root;
-}
-
 using chromeos::WindowStateType;
 
 // We don't send configure immediately after tablet mode switch
@@ -900,7 +885,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     }
 
     SendDisplayMetrics();
-    SendActivated(helper->GetActiveWindow(), nullptr);
+    SendFocused(helper->GetActiveWindow(), nullptr);
   }
   ~WaylandRemoteShell() override {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
@@ -1000,7 +985,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   // Overridden from wm::ActivationChangeObserver:
   void OnWindowFocused(aura::Window* gained_active,
                        aura::Window* lost_active) override {
-    SendActivated(gained_active, lost_active);
+    SendFocused(gained_active, lost_active);
   }
 
  private:
@@ -1172,9 +1157,11 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       wl_client_flush(client);
   }
 
-  void SendActivated(aura::Window* gained_active, aura::Window* lost_active) {
-    Surface* gained_active_surface = FindRootSurface(gained_active);
-    Surface* lost_active_surface = FindRootSurface(lost_active);
+  void SendFocused(aura::Window* gained_active, aura::Window* lost_active) {
+    Surface* gained_active_surface =
+        GetTargetSurfaceForKeyboardFocus(gained_active);
+    Surface* lost_active_surface =
+        GetTargetSurfaceForKeyboardFocus(lost_active);
     if (gained_active_surface == lost_active_surface)
       return;
 

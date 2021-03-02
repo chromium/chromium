@@ -16,6 +16,7 @@
 namespace exo {
 class ShellSurface;
 class ShellSurfaceBase;
+class Surface;
 
 namespace test {
 
@@ -45,6 +46,8 @@ class ShellSurfaceBuilder {
 
   // Destroy's the root surface of the given 'shell_surface'.
   static void DestroyRootSurface(ShellSurfaceBase* shell_surface);
+  static Surface* AddChildSurface(Surface* parent_surface,
+                                  const gfx::Rect& bounds);
 
  private:
   gfx::Size root_buffer_size_;
