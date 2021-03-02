@@ -26,6 +26,7 @@
 
 using testing::_;
 using testing::AtLeast;
+using testing::DoAll;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
