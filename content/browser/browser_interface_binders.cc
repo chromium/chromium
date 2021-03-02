@@ -38,6 +38,7 @@
 #include "content/browser/renderer_host/media/media_devices_dispatcher_host.h"
 #include "content/browser/renderer_host/media/media_stream_dispatcher_host.h"
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
+#include "content/browser/renderer_host/media/video_capture_host.h"
 #include "content/browser/renderer_host/raw_clipboard_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -69,6 +70,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "media/capture/mojom/image_capture.mojom.h"
+#include "media/capture/mojom/video_capture.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
@@ -751,6 +753,12 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
     map->Add<blink::mojom::MediaStreamDispatcherHost>(
         base::BindRepeating(&MediaStreamDispatcherHost::Create,
                             host->GetProcess()->GetID(), host->GetRoutingID(),
+                            base::Unretained(media_stream_manager)),
+        GetIOThreadTaskRunner({}));
+
+    map->Add<media::mojom::VideoCaptureHost>(
+        base::BindRepeating(&VideoCaptureHost::Create,
+                            host->GetProcess()->GetID(),
                             base::Unretained(media_stream_manager)),
         GetIOThreadTaskRunner({}));
   }

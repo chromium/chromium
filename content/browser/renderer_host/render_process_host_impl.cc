@@ -117,9 +117,7 @@
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/file_utilities_host_impl.h"
-#include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
-#include "content/browser/renderer_host/media/video_capture_host.h"
 #include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
 #include "content/browser/renderer_host/plugin_registry_impl.h"
 #include "content/browser/renderer_host/render_message_filter.h"
@@ -2403,12 +2401,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   registry->AddInterface(
       base::BindRepeating(&GpuDataManagerImpl::BindReceiver));
-
-  MediaStreamManager* media_stream_manager =
-      BrowserMainLoop::GetInstance()->media_stream_manager();
-
-  registry->AddInterface(base::BindRepeating(&VideoCaptureHost::Create, GetID(),
-                                             media_stream_manager));
 
   registry->AddInterface(
       base::BindRepeating(&FileUtilitiesHostImpl::Create, GetID()),

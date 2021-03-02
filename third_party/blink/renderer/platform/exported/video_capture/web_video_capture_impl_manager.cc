@@ -23,6 +23,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -87,7 +88,8 @@ WebVideoCaptureImplManager::~WebVideoCaptureImplManager() {
 }
 
 base::OnceClosure WebVideoCaptureImplManager::UseDevice(
-    const media::VideoCaptureSessionId& id) {
+    const media::VideoCaptureSessionId& id,
+    BrowserInterfaceBrokerProxy* browser_interface_broker) {
   DVLOG(1) << __func__ << " session id: " << id;
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
   auto it = std::find_if(
@@ -99,8 +101,8 @@ base::OnceClosure WebVideoCaptureImplManager::UseDevice(
     it->session_id = id;
     it->impl = CreateVideoCaptureImplForTesting(id);
     if (!it->impl) {
-      it->impl =
-          std::make_unique<VideoCaptureImpl>(id, render_main_task_runner_);
+      it->impl = std::make_unique<VideoCaptureImpl>(
+          id, render_main_task_runner_, browser_interface_broker);
     }
   }
   ++it->client_count;
@@ -127,7 +129,8 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return base::OnceClosure();
 
   // This ID is used to identify a client of VideoCaptureImpl.
   const int client_id = ++next_client_id_;
@@ -146,7 +149,8 @@ void WebVideoCaptureImplManager::RequestRefreshFrame(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureImpl::RequestRefreshFrame,
                                 it->impl->GetWeakPtr()));
@@ -158,7 +162,8 @@ void WebVideoCaptureImplManager::Suspend(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return;
   if (it->is_individually_suspended)
     return;  // Device has already been individually suspended.
   if (it->client_count > 1)
@@ -177,7 +182,8 @@ void WebVideoCaptureImplManager::Resume(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return;
   if (!it->is_individually_suspended)
     return;  // Device was not individually suspended.
   it->is_individually_suspended = false;
@@ -195,7 +201,8 @@ void WebVideoCaptureImplManager::GetDeviceSupportedFormats(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -210,7 +217,8 @@ void WebVideoCaptureImplManager::GetDeviceFormatsInUse(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -231,7 +239,8 @@ void WebVideoCaptureImplManager::StopCapture(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureImpl::StopCapture,
                                 it->impl->GetWeakPtr(), client_id));
@@ -243,7 +252,9 @@ void WebVideoCaptureImplManager::UnrefDevice(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  // Unlike other methods, this is where the device is deleted, so it must still
+  // exist.
+  CHECK(it != devices_.end());
   DCHECK_GT(it->client_count, 0);
   --it->client_count;
   if (it->client_count > 0)
@@ -267,7 +278,8 @@ void WebVideoCaptureImplManager::SuspendDevices(
     const auto it = std::find_if(
         devices_.begin(), devices_.end(),
         [id](const DeviceEntry& entry) { return entry.session_id == id; });
-    DCHECK(it != devices_.end());
+    if (it == devices_.end())
+      return;
     if (it->is_individually_suspended)
       continue;  // Either: 1) Already suspended; or 2) Should not be resumed.
     Platform::Current()->GetIOTaskRunner()->PostTask(
@@ -283,7 +295,8 @@ void WebVideoCaptureImplManager::OnFrameDropped(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return;
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureImpl::OnFrameDropped,
                                 it->impl->GetWeakPtr(), reason));
@@ -295,7 +308,9 @@ void WebVideoCaptureImplManager::OnLog(const media::VideoCaptureSessionId& id,
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  DCHECK(it != devices_.end());
+  if (it == devices_.end())
+    return;
+
   PostCrossThreadTask(
       *Platform::Current()->GetIOTaskRunner().get(), FROM_HERE,
       CrossThreadBindOnce(&VideoCaptureImpl::OnLog, it->impl->GetWeakPtr(),
@@ -327,12 +342,11 @@ void WebVideoCaptureImplManager::ProcessFeedbackInternal(
   const auto it = std::find_if(
       devices_.begin(), devices_.end(),
       [id](const DeviceEntry& entry) { return entry.session_id == id; });
-  if (it != devices_.end()) {
-    PostCrossThreadTask(*Platform::Current()->GetIOTaskRunner().get(),
-                        FROM_HERE,
-                        CrossThreadBindOnce(&VideoCaptureImpl::ProcessFeedback,
-                                            it->impl->GetWeakPtr(), feedback));
-  }
+  if (it == devices_.end())
+    return;
+  PostCrossThreadTask(*Platform::Current()->GetIOTaskRunner().get(), FROM_HERE,
+                      CrossThreadBindOnce(&VideoCaptureImpl::ProcessFeedback,
+                                          it->impl->GetWeakPtr(), feedback));
 }
 
 }  // namespace blink
