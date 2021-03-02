@@ -29,7 +29,7 @@ class EasyUnlockAuthAttempt {
   ~EasyUnlockAuthAttempt();
 
   // Ensures the device is currently locked and the unlock process is being
-  // initiated by AuthType::USER_CLOCK.
+  // initiated by AuthType::USER_CLICK.
   bool Start();
 
   // Finalizes an unlock attempt. It unlocks the screen if `success` is true.
