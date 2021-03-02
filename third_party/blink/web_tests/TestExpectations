@@ -2485,7 +2485,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac11.0 ] external/wpt/preload/download-resources.html [ Timeout ]
-crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-grid/abspos/grid-item-absolute-positioning-dynamic-001.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-flexbox/table-as-item-stretch-cross-size-3.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/table-as-item-inflexible-in-column-2.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webcodecs/video-encoder.any.html [ Timeout ]

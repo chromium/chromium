@@ -724,40 +724,51 @@ void LayoutBox::UpdateShapeOutsideInfoAfterStyleChange(
     MarkShapeOutsideDependentsForLayout();
 }
 
+namespace {
+
+bool GridStyleChanged(const ComputedStyle* old_style,
+                      const ComputedStyle& current_style) {
+  return old_style->GridColumnStart() != current_style.GridColumnStart() ||
+         old_style->GridColumnEnd() != current_style.GridColumnEnd() ||
+         old_style->GridRowStart() != current_style.GridRowStart() ||
+         old_style->GridRowEnd() != current_style.GridRowEnd() ||
+         old_style->Order() != current_style.Order() ||
+         old_style->HasOutOfFlowPosition() !=
+             current_style.HasOutOfFlowPosition();
+}
+
+}  // namespace
+
 void LayoutBox::UpdateGridPositionAfterStyleChange(
     const ComputedStyle* old_style) {
   NOT_DESTROYED();
+
+  if (!old_style)
+    return;
+
+  if (Parent() && Parent()->IsLayoutGrid() &&
+      GridStyleChanged(old_style, StyleRef())) {
+    // Positioned items don't participate on the layout of the grid,
+    // so we don't need to mark the grid as dirty if they change positions.
+    if (old_style->HasOutOfFlowPosition() && StyleRef().HasOutOfFlowPosition())
+      return;
+
+    // It should be possible to not dirty the grid in some cases (like moving an
+    // explicitly placed grid item).
+    // For now, it's more simple to just always recompute the grid.
+    To<LayoutGrid>(Parent())->DirtyGrid();
+    return;
+  }
+
   LayoutBlock* containing_block = ContainingBlock();
-  if (!old_style || !containing_block ||
-      !containing_block->IsLayoutGridIncludingNG()) {
-    return;
-  }
-
-  if (old_style->GridColumnStart() == StyleRef().GridColumnStart() &&
-      old_style->GridColumnEnd() == StyleRef().GridColumnEnd() &&
-      old_style->GridRowStart() == StyleRef().GridRowStart() &&
-      old_style->GridRowEnd() == StyleRef().GridRowEnd() &&
-      old_style->Order() == StyleRef().Order() &&
-      old_style->HasOutOfFlowPosition() == StyleRef().HasOutOfFlowPosition()) {
-    return;
-  }
-
-  if (containing_block->IsLayoutNGGrid()) {
-    // Trigger a full layout for GridNG.
+  if (containing_block && containing_block->IsLayoutNGGrid() &&
+      GridStyleChanged(old_style, StyleRef())) {
+    // For out-of-flow elements with grid container as containing block, we need
+    // to run the entire algorithm to place and size them correctly. As a
+    // result, we trigger a full layout for GridNG.
     containing_block->SetNeedsLayout(layout_invalidation_reason::kGridChanged,
                                      kMarkContainerChain);
-    return;
   }
-
-  // Positioned items don't participate on the layout of the grid,
-  // so we don't need to mark the grid as dirty if they change positions.
-  if (old_style->HasOutOfFlowPosition() && StyleRef().HasOutOfFlowPosition())
-    return;
-
-  // It should be possible to not dirty the grid in some cases (like moving an
-  // explicitly placed grid item).
-  // For now, it's more simple to just always recompute the grid.
-  To<LayoutGrid>(containing_block)->DirtyGrid();
 }
 
 void LayoutBox::UpdateScrollSnapMappingAfterStyleChange(
