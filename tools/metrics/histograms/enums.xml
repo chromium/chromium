@@ -35034,6 +35034,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="1774994865" label="day_date_time"/>
   <int value="1777827929" label="heart_rate_measurement"/>
   <int value="1778752264" label="magnetic_flux_density_2D"/>
+  <int value="1786548534"
+      label="Parrot Flypad; 9e35fa00-4344-44d4-a2e2-0c7f6046878b"/>
   <int value="1794935269"
       label="Sphero Robot; 22bb746f-2bb2-7554-2d6f-726568705327"/>
   <int value="1807818076" label="rainfall"/>
