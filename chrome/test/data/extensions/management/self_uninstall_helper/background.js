@@ -17,3 +17,5 @@ chrome.management.onUninstalled.addListener(function(id) {
     chrome.test.sendMessage("success");
   });
 });
+
+chrome.test.sendMessage('ready');

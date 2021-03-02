@@ -163,25 +163,34 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-// TODO(crbug.com/1181677): Test disabled due to many failures.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
-                       DISABLED_SelfUninstall) {
-  ExtensionTestMessageListener listener1("success", false);
-  ASSERT_TRUE(LoadExtension(
+                       SelfUninstall) {
+  // Wait for the helper script to finish before loading the primary
+  // extension. This ensures that the onUninstall event listener is
+  // added before we proceed to the uninstall step.
+  ExtensionTestMessageListener listener1("ready", false);
+  ASSERT_TRUE(LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("management/self_uninstall")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
+  ExtensionTestMessageListener listener2("success", false);
+  ASSERT_TRUE(LoadExtensionWithParamOptions(
+      test_data_dir_.AppendASCII("management/self_uninstall")));
+  ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        SelfUninstallNoPermissions) {
-  ExtensionTestMessageListener listener1("success", false);
-  ASSERT_TRUE(LoadExtension(
+  // Wait for the helper script to finish before loading the primary
+  // extension. This ensures that the onUninstall event listener is
+  // added before we proceed to the uninstall step.
+  ExtensionTestMessageListener listener1("ready", false);
+  ASSERT_TRUE(LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("management/self_uninstall_noperm")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
+  ExtensionTestMessageListener listener2("success", false);
+  ASSERT_TRUE(LoadExtensionWithParamOptions(
+      test_data_dir_.AppendASCII("management/self_uninstall_noperm")));
+  ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType, Get) {
