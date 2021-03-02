@@ -201,7 +201,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
   current_request_uses_header_client_ =
       factory_->url_loader_header_client_receiver_.is_bound() &&
-      request_.url.SchemeIsHTTPOrHTTPS() &&
+      (request_.url.SchemeIsHTTPOrHTTPS() ||
+       request_.url.SchemeIs(url::kUrnScheme)) &&
       (for_cors_preflight_ || network_service_request_id_ != 0) &&
       ExtensionWebRequestEventRouter::GetInstance()
           ->HasExtraHeadersListenerForRequest(factory_->browser_context_,
@@ -571,10 +572,11 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   if (proxied_client_receiver_.is_bound())
     proxied_client_receiver_.Resume();
 
-  if (request_.url.SchemeIsHTTPOrHTTPS()) {
+  if (request_.url.SchemeIsHTTPOrHTTPS() ||
+      request_.url.SchemeIs(url::kUrnScheme)) {
     // NOTE: While it does not appear to be documented (and in fact it may be
     // intuitive), |onBeforeSendHeaders| is only dispatched for HTTP and HTTPS
-    // requests.
+    // and urn: requests.
 
     const auto state_on_error = State::kRejectedByOnBeforeSendHeaders;
     auto continuation =
@@ -716,10 +718,11 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   if (proxied_client_receiver_.is_bound())
     proxied_client_receiver_.Resume();
 
-  if (request_.url.SchemeIsHTTPOrHTTPS()) {
+  if (request_.url.SchemeIsHTTPOrHTTPS() ||
+      request_.url.SchemeIs(url::kUrnScheme)) {
     // NOTE: While it does not appear to be documented (and in fact it may be
     // intuitive), |onSendHeaders| is only dispatched for HTTP and HTTPS
-    // requests.
+    // and urn: requests.
     ExtensionWebRequestEventRouter::GetInstance()->OnSendHeaders(
         factory_->browser_context_, &info_.value(), request_.headers);
   }
@@ -961,7 +964,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
   net::CompletionRepeatingCallback copyable_callback =
       base::AdaptCallbackForRepeating(std::move(continuation));
-  if (request_.url.SchemeIsHTTPOrHTTPS()) {
+  if (request_.url.SchemeIsHTTPOrHTTPS() ||
+      request_.url.SchemeIs(url::kUrnScheme)) {
     DCHECK(info_.has_value());
     int result =
         ExtensionWebRequestEventRouter::GetInstance()->OnHeadersReceived(

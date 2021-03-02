@@ -4945,7 +4945,7 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
   }
 
  protected:
-  bool TryLoadScript(const char* script_src) {
+  bool TryLoadScript(const std::string& script_src) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     bool success = false;
@@ -4962,7 +4962,7 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
         document.body.appendChild(script);
       })();
                                           )",
-                                            script_src);
+                                            script_src.c_str());
     EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetMainFrame(),
                                             script, &success));
     return success;
@@ -5089,6 +5089,79 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   EXPECT_FALSE(TryLoadScript("cancel.js"));
+}
+
+// Ensure DeclarativeNetRequest API can block the requests for the subresources
+// inside the web bundle which URL is urn uuid.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
+                       RequestCanceledUrnUUIDUrl) {
+  TestRule rule = CreateGenericRule();
+  std::string pass_js_url = "urn:uuid:fc80c15b-69e9-4a45-ab41-9c90d2b55976";
+  std::string cancel_js_url = "urn:uuid:15d749ad-7d9f-49d9-94f7-83a866e7fef8";
+  std::vector<TestRule> rules;
+  rule.id = kMinValidID;
+  rule.condition->url_filter = cancel_js_url + "|";
+  rule.condition->resource_types = std::vector<std::string>({"script"});
+  rule.priority = 1;
+  rules.push_back(rule);
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  const std::string page_html =
+      base::StringPrintf(R"(
+        <title>Loaded</title>
+        <body>
+        <script>
+        (() => {
+          const wbn_url =
+              new URL('./web_bundle.wbn', location.href).toString();
+          const pass_js_url = '%s';
+          const cancel_js_url = '%s';
+          const link = document.createElement('link');
+          link.rel = 'webbundle';
+          link.href = wbn_url;
+          link.resources = pass_js_url + ' ' + cancel_js_url;
+          document.body.appendChild(link);
+        })();
+        </script>
+        </body>
+      )",
+                         pass_js_url.c_str(), cancel_js_url.c_str());
+
+  std::string web_bundle;
+  RegisterWebBundleRequestHandler("/web_bundle.wbn", &web_bundle);
+  RegisterRequestHandler("/test.html", "text/html", page_html);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a web bundle.
+  // Currently the web bundle format requires a valid GURL for the fallback URL
+  // of a web bundle. So we use |pass_js_url_str| for the fallback URL.
+  // TODO(crbug.com/966753): Stop using |pass_js_url_str| when
+  // https://github.com/WICG/webpackage/issues/590 is resolved.
+  web_package::test::WebBundleBuilder builder(pass_js_url, "");
+  auto pass_js_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'script loaded';");
+  auto cancel_js_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}}, "");
+  builder.AddIndexEntry(pass_js_url, "", {pass_js_location});
+  builder.AddIndexEntry(cancel_js_url, "", {cancel_js_location});
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  web_bundle = std::string(bundle.begin(), bundle.end());
+
+  GURL page_url = embedded_test_server()->GetURL("/test.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::NavigateToURL(browser(), page_url);
+  EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
+
+  base::string16 expected_title = base::ASCIIToUTF16("script loaded");
+  content::TitleWatcher title_watcher(web_contents, expected_title);
+  EXPECT_TRUE(TryLoadScript(pass_js_url));
+  // Check that the pass_js_url script in the web bundle is correctly loaded
+  // even when the extension with blocking handler intercepted the request.
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  EXPECT_FALSE(TryLoadScript(cancel_js_url));
 }
 
 // Ensure DeclarativeNetRequest API can redirect the requests for the

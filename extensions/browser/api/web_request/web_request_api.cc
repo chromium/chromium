@@ -935,7 +935,8 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
         URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
                            URLPattern::SCHEME_FTP | URLPattern::SCHEME_FILE |
                            URLPattern::SCHEME_EXTENSION |
-                           URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS);
+                           URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS |
+                           URLPattern::SCHEME_URN);
         if (!urls_value->GetString(i, &url) ||
             pattern.Parse(url) != URLPattern::ParseResult::kSuccess) {
           *error = ErrorUtils::FormatErrorMessage(
