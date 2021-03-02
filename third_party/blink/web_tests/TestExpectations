@@ -5750,6 +5750,9 @@ crbug.com/614958 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection
 # Sheriff 2021-03-01
 crbug.com/1183243 [ Linux ] http/tests/devtools/console/console-external-array.js [ Pass Failure ]
 
+# Sheriff 2021-03-01
+crbug.com/183974 [ Linux ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Pass Failure ]
+
 # Webrtc-in-Chrome 2021-03-01
 crbug.com/webrtc/12507 external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
 
