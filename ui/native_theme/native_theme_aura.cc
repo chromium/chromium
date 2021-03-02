@@ -241,47 +241,33 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
 
   TRACE_EVENT0("blink", "NativeThemeAura::PaintScrollbarThumb");
 
-  SkAlpha thumb_alpha = SK_AlphaTRANSPARENT;
   gfx::Rect thumb_rect(rect);
   SkColor thumb_color;
 
   if (use_overlay_scrollbars_) {
-    // Indexed by ScrollbarOverlayColorTheme.
-    constexpr SkColor kOverlayScrollbarThumbColor[] = {SK_ColorBLACK,
-                                                       SK_ColorWHITE};
-    constexpr SkColor kOverlayScrollbarStrokeColor[] = {SK_ColorWHITE,
-                                                        SK_ColorBLACK};
+    if (state == NativeTheme::kDisabled)
+      return;
 
-    thumb_color = kOverlayScrollbarThumbColor[theme];
-
-    SkAlpha stroke_alpha = SK_AlphaTRANSPARENT;
-    switch (state) {
-      case NativeTheme::kDisabled:
-        thumb_alpha = SK_AlphaTRANSPARENT;
-        stroke_alpha = SK_AlphaTRANSPARENT;
-        break;
-      case NativeTheme::kHovered:
-        thumb_alpha = SK_AlphaOPAQUE * kOverlayScrollbarThumbHoverAlpha;
-        stroke_alpha = SK_AlphaOPAQUE * kOverlayScrollbarStrokeHoverAlpha;
-        break;
-      case NativeTheme::kNormal:
-        thumb_alpha = SK_AlphaOPAQUE * kOverlayScrollbarThumbNormalAlpha;
-        stroke_alpha = SK_AlphaOPAQUE * kOverlayScrollbarStrokeNormalAlpha;
-        break;
-      case NativeTheme::kPressed:
-        thumb_alpha = SK_AlphaOPAQUE * kOverlayScrollbarThumbHoverAlpha;
-        stroke_alpha = SK_AlphaOPAQUE * kOverlayScrollbarStrokeHoverAlpha;
-        break;
-      case NativeTheme::kNumStates:
-        NOTREACHED();
-        break;
+    const bool hovered = state != kNormal;
+    if (color_scheme != ColorScheme::kPlatformHighContrast) {
+      // A light system theme uses a dark overlay scrollbar, and vice versa.
+      color_scheme = (theme == ScrollbarOverlayColorThemeLight)
+                         ? ColorScheme::kDark
+                         : ColorScheme::kLight;
     }
+    thumb_color =
+        GetSystemColor(hovered ? kColorId_OverlayScrollbarThumbHoveredFill
+                               : kColorId_OverlayScrollbarThumbFill,
+                       color_scheme);
+    SkColor stroke_color =
+        GetSystemColor(hovered ? kColorId_OverlayScrollbarThumbHoveredStroke
+                               : kColorId_OverlayScrollbarThumbStroke,
+                       color_scheme);
 
     // In overlay mode, draw a stroke (border).
     constexpr int kStrokeWidth = kOverlayScrollbarStrokeWidth;
     cc::PaintFlags flags;
-    flags.setColor(
-        SkColorSetA(kOverlayScrollbarStrokeColor[theme], stroke_alpha));
+    flags.setColor(stroke_color);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(kStrokeWidth);
 
@@ -303,9 +289,9 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
     thumb_rect.Inset(fill_insets + edge_adjust_insets);
   } else {
     ControlColorId color_id = kScrollbarThumb;
+    SkAlpha thumb_alpha = SK_AlphaTRANSPARENT;
     switch (state) {
       case NativeTheme::kDisabled:
-        thumb_alpha = SK_AlphaTRANSPARENT;
         break;
       case NativeTheme::kHovered:
         color_id = kScrollbarThumbHovered;
@@ -332,16 +318,15 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
     else
       thumb_rect.Inset(extra_padding, kThumbPadding);
 
-    if (InForcedColorsMode() && features::IsForcedColorsEnabled()) {
-      thumb_alpha = 0xFF;
-      thumb_color = GetControlColor(color_id, color_scheme);
-    } else {
-      thumb_color = GetControlColor(kScrollbarThumb, color_scheme);
-    }
+    thumb_color =
+        (InForcedColorsMode() && features::IsForcedColorsEnabled())
+            ? GetControlColor(color_id, color_scheme)
+            : SkColorSetA(GetControlColor(kScrollbarThumb, color_scheme),
+                          thumb_alpha);
   }
 
   cc::PaintFlags flags;
-  flags.setColor(SkColorSetA(thumb_color, thumb_alpha));
+  flags.setColor(thumb_color);
   canvas->drawIRect(gfx::RectToSkIRect(thumb_rect), flags);
 }
 

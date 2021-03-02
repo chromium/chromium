@@ -204,10 +204,14 @@ base::Optional<SkColor> SkColorFromColorId(
     }
 
     // Scrollbar
-    case ui::NativeTheme::kColorId_OverlayScrollbarThumbBackground:
+    case ui::NativeTheme::kColorId_OverlayScrollbarThumbStroke:
       return GetBgColor("#GtkScrollbar#scrollbar #trough");
-    case ui::NativeTheme::kColorId_OverlayScrollbarThumbForeground:
+    case ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke:
+      return GetBgColor("#GtkScrollbar#scrollbar #trough:hover");
+    case ui::NativeTheme::kColorId_OverlayScrollbarThumbFill:
       return GetBgColor("#GtkScrollbar#scrollbar #slider");
+    case ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill:
+      return GetBgColor("#GtkScrollbar#scrollbar #slider:hover");
 
     // Slider
     case ui::NativeTheme::kColorId_SliderThumbDefault:

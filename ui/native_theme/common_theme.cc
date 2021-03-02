@@ -364,12 +364,24 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       return gfx::kGoogleBlue600;
 
     // Scrollbar
-    case NativeTheme::kColorId_OverlayScrollbarThumbForeground:
-      return SkColorSetA(SK_ColorWHITE, (kOverlayScrollbarStrokeNormalAlpha /
-                                         kOverlayScrollbarThumbNormalAlpha) *
-                                            SK_AlphaOPAQUE);
-    case NativeTheme::kColorId_OverlayScrollbarThumbBackground:
-      return SK_ColorBLACK;
+    case NativeTheme::kColorId_OverlayScrollbarThumbFill:
+    case NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill: {
+      SkColor fill = base_theme->GetSystemColor(
+          NativeTheme::kColorId_CustomTabBarForegroundColor, color_scheme);
+      fill = color_utils::IsDark(fill) ? SK_ColorBLACK : SK_ColorWHITE;
+      const bool hovered =
+          color_id == NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill;
+      return SkColorSetA(fill, (hovered ? 0.7 : 0.5) * SK_AlphaOPAQUE);
+    }
+    case NativeTheme::kColorId_OverlayScrollbarThumbStroke:
+    case NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke: {
+      SkColor stroke = base_theme->GetSystemColor(
+          NativeTheme::kColorId_CustomTabBarBackgroundColor, color_scheme);
+      stroke = color_utils::IsDark(stroke) ? SK_ColorBLACK : SK_ColorWHITE;
+      const bool hovered =
+          color_id == NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke;
+      return SkColorSetA(stroke, (hovered ? 0.5 : 0.3) * SK_AlphaOPAQUE);
+    }
 
     // Separator
     case NativeTheme::kColorId_SeparatorColor:

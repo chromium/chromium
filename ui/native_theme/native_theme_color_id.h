@@ -82,8 +82,11 @@
   OP(kColorId_LinkDisabled),                                                   \
   OP(kColorId_LinkEnabled),                                                    \
   OP(kColorId_LinkPressed),                                                    \
-  OP(kColorId_OverlayScrollbarThumbBackground),                                \
-  OP(kColorId_OverlayScrollbarThumbForeground),                                \
+  /* Overlay scrollbar */                                                      \
+  OP(kColorId_OverlayScrollbarThumbFill),                                      \
+  OP(kColorId_OverlayScrollbarThumbHoveredFill),                               \
+  OP(kColorId_OverlayScrollbarThumbHoveredStroke),                             \
+  OP(kColorId_OverlayScrollbarThumbStroke),                                    \
   /* Notification view */                                                      \
   OP(kColorId_NotificationDefaultBackground),                                  \
   OP(kColorId_NotificationActionsRowBackground),                               \

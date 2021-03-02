@@ -13,11 +13,6 @@ namespace ui {
 constexpr int kOverlayScrollbarStrokeWidth = 1;
 constexpr int kOverlayScrollbarThumbWidthPressed = 10;
 
-constexpr float kOverlayScrollbarThumbNormalAlpha = 0.5f;
-constexpr float kOverlayScrollbarThumbHoverAlpha = 0.7f;
-constexpr float kOverlayScrollbarStrokeNormalAlpha = 0.3f;
-constexpr float kOverlayScrollbarStrokeHoverAlpha = 0.5f;
-
 constexpr base::TimeDelta kOverlayScrollbarFadeDelay =
     base::TimeDelta::FromMilliseconds(500);
 constexpr base::TimeDelta kOverlayScrollbarFadeDuration =
