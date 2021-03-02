@@ -2465,7 +2465,7 @@ bool Document::NeedsLayoutTreeUpdateForNode(const Node& node,
 bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     const Node& node,
     bool ignore_adjacent_style) const {
-  if (!node.CanParticipateInFlatTree())
+  if (node.IsShadowRoot())
     return false;
   if (GetDisplayLockDocumentState().LockedDisplayLockCount() == 0 &&
       !NeedsLayoutTreeUpdate())

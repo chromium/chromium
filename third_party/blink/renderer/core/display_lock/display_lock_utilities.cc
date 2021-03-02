@@ -241,7 +241,7 @@ const Element* DisplayLockUtilities::NearestLockedInclusiveAncestor(
       node.GetDocument()
               .GetDisplayLockDocumentState()
               .LockedDisplayLockCount() == 0 ||
-      !node.CanParticipateInFlatTree()) {
+      node.IsShadowRoot()) {
     return nullptr;
   }
   if (auto* context = element->GetDisplayLockContext()) {
@@ -263,7 +263,7 @@ Element* DisplayLockUtilities::NearestHiddenMatchableInclusiveAncestor(
       element.GetDocument()
               .GetDisplayLockDocumentState()
               .LockedDisplayLockCount() == 0 ||
-      !element.CanParticipateInFlatTree()) {
+      element.IsShadowRoot()) {
     return nullptr;
   }
 
@@ -295,7 +295,7 @@ Element* DisplayLockUtilities::NearestLockedExclusiveAncestor(
       node.GetDocument()
               .GetDisplayLockDocumentState()
               .LockedDisplayLockCount() == 0 ||
-      !node.CanParticipateInFlatTree()) {
+      node.IsShadowRoot()) {
     return nullptr;
   }
   // TODO(crbug.com/924550): Once we figure out a more efficient way to
@@ -315,7 +315,7 @@ Element* DisplayLockUtilities::NearestLockedExclusiveAncestor(
 Element* DisplayLockUtilities::HighestLockedInclusiveAncestor(
     const Node& node) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
-      !node.CanParticipateInFlatTree()) {
+      node.IsShadowRoot()) {
     return nullptr;
   }
   auto* node_ptr = const_cast<Node*>(&node);
@@ -337,7 +337,7 @@ Element* DisplayLockUtilities::HighestLockedInclusiveAncestor(
 Element* DisplayLockUtilities::HighestLockedExclusiveAncestor(
     const Node& node) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
-      !node.CanParticipateInFlatTree()) {
+      node.IsShadowRoot()) {
     return nullptr;
   }
 
@@ -388,7 +388,7 @@ bool DisplayLockUtilities::IsInUnlockedOrActivatableSubtree(
       node.GetDocument()
               .GetDisplayLockDocumentState()
               .LockedDisplayLockCount() == 0 ||
-      !node.CanParticipateInFlatTree()) {
+      node.IsShadowRoot()) {
     return true;
   }
 
