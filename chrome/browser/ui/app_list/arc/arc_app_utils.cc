@@ -218,7 +218,7 @@ std::string ConstructArcAppShortcutUrl(const std::string& app_id,
 }  // namespace
 
 // Package names, kept in sorted order.
-const char kInitialStartParam[] = "S.org.chromium.arc.start_type=initialStart";
+const char kInitialStartParam[] = "initialStart";
 const char kRequestStartTimeParamTemplate[] =
     "S.org.chromium.arc.request.start=%" PRId64;
 const char kPlayStoreActivity[] = "com.android.vending.AssetBrowserActivity";

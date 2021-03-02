@@ -76,8 +76,10 @@
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/test/fake_app_instance.h"
+#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync/driver/profile_sync_service.h"
@@ -441,6 +443,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
     OnBeforeArcTestSetup();
     arc_test_.SetUp(profile_.get());
+    arc_test_.SetUpIntentHelper();
 
     web_app::TestWebAppProvider::Get(profile_.get())->Start();
     CreateBuilder();
@@ -805,6 +808,10 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   }
 
   arc::FakeAppInstance* app_instance() { return arc_test_.app_instance(); }
+
+  arc::FakeIntentHelperInstance* intent_helper_instance() {
+    return arc_test_.intent_helper_instance();
+  }
 
   FakeAppListModelUpdater* model_updater() { return model_updater_.get(); }
 
@@ -2988,43 +2995,63 @@ TEST_P(ArcAppModelBuilderTest, AppLauncher) {
   const std::string id2 = ArcAppTest::GetAppId(app2);
   const std::string id3 = ArcAppTest::GetAppId(app3);
 
-  ArcAppLauncher launcher1(profile(), id1, base::Optional<std::string>(), false,
-                           display::kInvalidDisplayId,
-                           arc::UserInteractionType::NOT_USER_INITIATED);
-  EXPECT_FALSE(launcher1.app_launched());
-  EXPECT_TRUE(prefs->HasObserver(&launcher1));
+  {
+    ArcAppLauncher launcher1(profile(), id1, nullptr, false,
+                             display::kInvalidDisplayId,
+                             apps::mojom::LaunchSource::kFromChromeInternal);
+    EXPECT_FALSE(launcher1.app_launched());
+    EXPECT_TRUE(prefs->HasObserver(&launcher1));
 
-  ArcAppLauncher launcher3(profile(), id3, base::Optional<std::string>(), false,
-                           display::kInvalidDisplayId,
-                           arc::UserInteractionType::NOT_USER_INITIATED);
-  EXPECT_FALSE(launcher1.app_launched());
-  EXPECT_TRUE(prefs->HasObserver(&launcher1));
-  EXPECT_FALSE(launcher3.app_launched());
-  EXPECT_TRUE(prefs->HasObserver(&launcher3));
+    ArcAppLauncher launcher3(profile(), id3, nullptr, false,
+                             display::kInvalidDisplayId,
+                             apps::mojom::LaunchSource::kFromChromeInternal);
+    EXPECT_FALSE(launcher1.app_launched());
+    EXPECT_TRUE(prefs->HasObserver(&launcher1));
+    EXPECT_FALSE(launcher3.app_launched());
+    EXPECT_TRUE(prefs->HasObserver(&launcher3));
 
-  EXPECT_EQ(0u, app_instance()->launch_requests().size());
+    EXPECT_EQ(0u, intent_helper_instance()->handled_intents().size());
 
-  std::vector<arc::mojom::AppInfo> apps(fake_apps().begin(),
-                                        fake_apps().begin() + 2);
-  SendRefreshAppList(apps);
+    std::vector<arc::mojom::AppInfo> apps(fake_apps().begin(),
+                                          fake_apps().begin() + 2);
+    SendRefreshAppList(apps);
 
-  EXPECT_TRUE(launcher1.app_launched());
+    EXPECT_TRUE(launcher1.app_launched());
+    EXPECT_FALSE(prefs->HasObserver(&launcher1));
+    EXPECT_TRUE(prefs->HasObserver(&launcher3));
+    EXPECT_FALSE(launcher3.app_launched());
+  }
+
   ASSERT_EQ(1u, app_instance()->launch_requests().size());
   EXPECT_TRUE(app_instance()->launch_requests()[0]->IsForApp(app1));
-  EXPECT_FALSE(launcher3.app_launched());
-  EXPECT_FALSE(prefs->HasObserver(&launcher1));
-  EXPECT_TRUE(prefs->HasObserver(&launcher3));
 
-  const std::string launch_intent2 = arc::GetLaunchIntent(
-      app2.package_name, app2.activity, std::vector<std::string>());
-  ArcAppLauncher launcher2(profile(), id2, launch_intent2, false,
-                           display::kInvalidDisplayId,
-                           arc::UserInteractionType::NOT_USER_INITIATED);
-  EXPECT_TRUE(launcher2.app_launched());
-  EXPECT_FALSE(prefs->HasObserver(&launcher2));
-  EXPECT_EQ(1u, app_instance()->launch_requests().size());
-  ASSERT_EQ(1u, app_instance()->launch_intents().size());
-  EXPECT_EQ(app_instance()->launch_intents()[0], launch_intent2);
+  {
+    auto launch_intent2 = apps_util::CreateIntentForActivity(
+        app2.activity, arc::kInitialStartParam);
+    ArcAppLauncher launcher2(profile(), id2, std::move(launch_intent2), false,
+                             display::kInvalidDisplayId,
+                             apps::mojom::LaunchSource::kFromChromeInternal);
+    EXPECT_TRUE(launcher2.app_launched());
+    EXPECT_FALSE(prefs->HasObserver(&launcher2));
+  }
+
+  FlushMojoCallsForAppService();
+  ASSERT_EQ(1u, intent_helper_instance()->handled_intents().size());
+
+  auto& intent = intent_helper_instance()->handled_intents()[0].intent;
+  ASSERT_TRUE(intent);
+  ASSERT_TRUE(intent->extras.has_value());
+  ASSERT_EQ(1u, intent->extras.value().size());
+  auto it = intent->extras.value().begin();
+  EXPECT_EQ(arc::kInitialStartParam, it->second);
+
+  ASSERT_TRUE(intent_helper_instance()->handled_intents()[0].activity);
+  ASSERT_TRUE(intent_helper_instance()
+                  ->handled_intents()[0]
+                  .activity->activity_name.has_value());
+  EXPECT_EQ(app2.activity, intent_helper_instance()
+                               ->handled_intents()[0]
+                               .activity->activity_name.value());
 }
 
 // Suspended app cannot be triggered from app launcher.
@@ -3036,9 +3063,9 @@ TEST_P(ArcAppModelBuilderTest, AppLauncherForSuspendedApp) {
   app.suspended = true;
   const std::string app_id = ArcAppTest::GetAppId(app);
 
-  ArcAppLauncher launcher(profile(), app_id, base::Optional<std::string>(),
-                          false, display::kInvalidDisplayId,
-                          arc::UserInteractionType::NOT_USER_INITIATED);
+  ArcAppLauncher launcher(profile(), app_id, nullptr, false,
+                          display::kInvalidDisplayId,
+                          apps::mojom::LaunchSource::kFromChromeInternal);
   EXPECT_FALSE(launcher.app_launched());
 
   // Register app, however it is suspended.
@@ -3434,23 +3461,26 @@ TEST_P(ArcAppLauncherForDefaultAppTest, AppLauncherForDefaultApps) {
   const std::string id2 = ArcAppTest::GetAppId(app2);
 
   // Launch when app is registered and ready.
-  ArcAppLauncher launcher1(profile(), id1, base::Optional<std::string>(), false,
+  ArcAppLauncher launcher1(profile(), id1, nullptr, false,
                            display::kInvalidDisplayId,
-                           arc::UserInteractionType::NOT_USER_INITIATED);
+                           apps::mojom::LaunchSource::kFromChromeInternal);
+
   // Launch when app is registered.
-  ArcAppLauncher launcher2(profile(), id2, base::Optional<std::string>(), true,
+  ArcAppLauncher launcher2(profile(), id2, nullptr, true,
                            display::kInvalidDisplayId,
-                           arc::UserInteractionType::NOT_USER_INITIATED);
+                           apps::mojom::LaunchSource::kFromChromeInternal);
 
   EXPECT_FALSE(launcher1.app_launched());
 
   arc_test()->WaitForDefaultApps();
+  FlushMojoCallsForAppService();
 
   // Only second app is expected to be launched.
   EXPECT_FALSE(launcher1.app_launched());
   EXPECT_TRUE(launcher2.app_launched());
 
   SendRefreshAppList(fake_default_apps());
+
   // Default apps are ready now and it is expected that first app was launched
   // now.
   EXPECT_TRUE(launcher1.app_launched());
