@@ -6630,8 +6630,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"client-storage-access-context-auditing",
      flag_descriptions::kClientStorageAccessContextAuditingName,
-     flag_descriptions::kClientStorageAccessContextAuditingDescription,
-     kOsDesktop,
+     flag_descriptions::kClientStorageAccessContextAuditingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kClientStorageAccessContextAuditing)},
 
     {"clipboard-filenames", flag_descriptions::kClipboardFilenamesName,

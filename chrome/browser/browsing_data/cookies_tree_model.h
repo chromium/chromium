@@ -13,15 +13,11 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
-#include "build/build_config.h"
+#include "chrome/browser/browsing_data/access_context_audit_database.h"
 #include "chrome/browser/browsing_data/local_data_container.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/models/tree_node_model.h"
-
-#if !defined(OS_ANDROID)
-#include "chrome/browser/browsing_data/access_context_audit_database.h"
-#endif  // !defined(OS_ANDROID)
 
 class AccessContextAuditService;
 class CookiesTreeModel;
@@ -174,13 +170,11 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
  protected:
   void AddChildSortedByTitle(std::unique_ptr<CookieTreeNode> new_child);
 
-#if !defined(OS_ANDROID)
   // TODO (crbug.com/1113602): Remove this when all storage deletions from
   // the browser process use the StoragePartition directly.
   void ReportDeletionToAuditService(
       const url::Origin& origin,
       AccessContextAuditDatabase::StorageAPIType type);
-#endif  // !defined(OS_ANDROID)
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CookieTreeNode);

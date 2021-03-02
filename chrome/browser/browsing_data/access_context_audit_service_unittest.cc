@@ -93,19 +93,6 @@ class AccessContextAuditServiceTest : public testing::Test {
  public:
   AccessContextAuditServiceTest() = default;
 
-  std::unique_ptr<KeyedService> BuildTestHistoryService(
-      content::BrowserContext* context) {
-    std::unique_ptr<history::HistoryService> service(
-        std::make_unique<history::HistoryService>());
-    service->Init(
-        history::TestHistoryDatabaseParamsForPath(temp_directory_.GetPath()));
-    // Store a pointer to the service before passing ownership, as it is needed
-    // during creation of the test context audit service. Its location cannot be
-    // derived from the testing profile as it is not built at that point.
-    history_service_ = service.get();
-    return service;
-  }
-
   std::unique_ptr<KeyedService> BuildTestContextAuditService(
       content::BrowserContext* context) {
     std::unique_ptr<AccessContextAuditService> service(
@@ -127,16 +114,15 @@ class AccessContextAuditServiceTest : public testing::Test {
 
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
 
+    history_service_ = std::make_unique<history::HistoryService>();
+    history_service_->Init(
+        history::TestHistoryDatabaseParamsForPath(temp_directory_.GetPath()));
+
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
         AccessContextAuditServiceFactory::GetInstance(),
         base::BindRepeating(
             &AccessContextAuditServiceTest::BuildTestContextAuditService,
-            base::Unretained(this)));
-    builder.AddTestingFactory(
-        HistoryServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AccessContextAuditServiceTest::BuildTestHistoryService,
             base::Unretained(this)));
     builder.SetPath(temp_directory_.GetPath());
     profile_ = builder.Build();
@@ -169,19 +155,19 @@ class AccessContextAuditServiceTest : public testing::Test {
   }
   base::SimpleTestClock* clock() { return &clock_; }
   TestingProfile* profile() { return profile_.get(); }
-  history::HistoryService* history_service() { return history_service_; }
+  history::HistoryService* history_service() { return history_service_.get(); }
   AccessContextAuditService* service() {
     return AccessContextAuditServiceFactory::GetForProfile(profile());
   }
 
  protected:
   content::BrowserTaskEnvironment browser_task_environment_;
+  std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<TestingProfile> profile_;
   base::SimpleTestClock clock_;
   base::ScopedTempDir temp_directory_;
   TestCookieManager cookie_manager_;
   content::TestStoragePartition storage_partition_;
-  history::HistoryService* history_service_;
   base::test::ScopedFeatureList feature_list_;
 
   scoped_refptr<base::UpdateableSequencedTaskRunner> task_runner_;
