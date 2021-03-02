@@ -7091,7 +7091,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
 
 // Trigger network reqeuests, then navigate from A to B, then go back.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
-                       DisableBFCacheForLowEndDevices_NetworkReqeuests) {
+                       DisableBFCacheForLowEndDevices_NetworkRequests) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -7199,7 +7199,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
 
 // Trigger network reqeuests, then navigate from A to B, then go back.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
-                       EnableBFCacheForHighMemoryDevices_NetworkReqeuests) {
+                       EnableBFCacheForHighMemoryDevices_NetworkRequests) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -7254,6 +7254,119 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(
           blink::features::kLoadingTasksUnfreezable)
+          ->trial_name()));
+}
+
+// Test scenarios where the "BackForwardCache" content flag is enabled but
+// the command line flag "DisableBackForwardCache" is turned on, resulting in
+// the feature being disabled.
+class BackForwardCacheDisabledThroughCommandLineBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableBackForwardCache);
+    EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
+                              "max_buffered_bytes", "1000");
+  }
+};
+
+// Ensures that the back-forward cache trial stays inactivated.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheDisabledThroughCommandLineBrowserTest,
+                       BFCacheDisabled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Ensure that the trial starts inactive.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+
+  EXPECT_FALSE(IsBackForwardCacheEnabled());
+
+  // Ensure that we do not activate the trial when querying bfcache status,
+  // which is protected by low-memory setting.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) A shouldn't be stored in back-forward cache because it's disabled.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Nothing is recorded when back-forward cache is disabled.
+  ExpectOutcomeDidNotChange(FROM_HERE);
+  ExpectNotRestoredDidNotChange(FROM_HERE);
+
+  // Ensure that the trial still hasn't been activated.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+}
+
+// Ensures that the back-forward cache trial stays inactivated even when
+// renderer code related to back-forward cache runs (in this case, network
+// request loading).
+IN_PROC_BROWSER_TEST_F(BackForwardCacheDisabledThroughCommandLineBrowserTest,
+                       BFCacheDisabled_NetworkRequests) {
+  net::test_server::ControllableHttpResponse image_response(
+      embedded_test_server(), "/image.png");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Ensure that the trials starts inactive.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+
+  EXPECT_FALSE(IsBackForwardCacheEnabled());
+
+  // Ensure that we do not activate the trials for kBackForwardCache and
+  // kLoadingTasksUnfreezable when querying bfcache or unfreezable loading tasks
+  // status.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // Request for an image and send a response to trigger loading code. This is
+  // to ensure kLoadingTasksUnfreezable won't trigger bfcache activation.
+  EXPECT_TRUE(ExecJs(rfh_a, R"(
+      var image = document.createElement("img");
+      image.src = "image.png";
+      document.body.appendChild(image);
+    )"));
+  image_response.WaitForRequest();
+  image_response.Send(net::HTTP_OK, "image/png");
+  image_response.Send("image_body");
+  image_response.Done();
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) A shouldn't be stored in back-forward cache because it's disabled.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Nothing is recorded when back-forward cache is disabled.
+  ExpectOutcomeDidNotChange(FROM_HERE);
+  ExpectNotRestoredDidNotChange(FROM_HERE);
+
+  // Ensure that the trials still haven't been activated.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
           ->trial_name()));
 }
 

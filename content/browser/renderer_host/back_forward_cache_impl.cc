@@ -73,7 +73,7 @@ const base::FeatureParam<ChildProcessImportance> kChildProcessImportanceParam{
 #endif
 
 bool IsGeolocationSupported() {
-  if (!DeviceHasEnoughMemoryForBackForwardCache())
+  if (!IsBackForwardCacheEnabled())
     return false;
   static constexpr base::FeatureParam<bool> geolocation_supported(
       &features::kBackForwardCache, "geolocation_supported",
@@ -89,7 +89,7 @@ bool IsGeolocationSupported() {
 }
 
 bool IsFileSystemSupported() {
-  if (!DeviceHasEnoughMemoryForBackForwardCache())
+  if (!IsBackForwardCacheEnabled())
     return false;
   static constexpr base::FeatureParam<bool> file_system_api_supported(
       &features::kBackForwardCache, "file_system_api_supported", false);
@@ -97,7 +97,7 @@ bool IsFileSystemSupported() {
 }
 
 uint64_t SupportedFeaturesBitmaskImpl() {
-  if (!DeviceHasEnoughMemoryForBackForwardCache())
+  if (!IsBackForwardCacheEnabled())
     return 0;
 
   static constexpr base::FeatureParam<std::string> supported_features(
@@ -122,7 +122,7 @@ uint64_t SupportedFeaturesBitmask() {
 }
 
 bool IgnoresOutstandingNetworkRequestForTesting() {
-  if (!DeviceHasEnoughMemoryForBackForwardCache())
+  if (!IsBackForwardCacheEnabled())
     return false;
   static constexpr base::FeatureParam<bool>
       outstanding_network_request_supported(
@@ -135,7 +135,7 @@ bool IgnoresOutstandingNetworkRequestForTesting() {
 // calls and force all pages to be cached. Should be used only for local testing
 // and debugging -- things will break when this param is used.
 bool ShouldIgnoreBlocklists() {
-  if (!DeviceHasEnoughMemoryForBackForwardCache())
+  if (!IsBackForwardCacheEnabled())
     return false;
   static constexpr base::FeatureParam<bool> should_ignore_blocklists(
       &features::kBackForwardCache, "should_ignore_blocklists", false);
@@ -219,17 +219,19 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
 // The BackForwardCache feature is controlled via an experiment. This function
 // returns the allowed URL list where it is enabled.
 std::string GetAllowedURLList() {
-  if (!DeviceHasEnoughMemoryForBackForwardCache())
-    return "";
   // Avoid activating BackForwardCache trial for checking the parameters
   // associated with it.
-  if (base::FeatureList::IsEnabled(features::kBackForwardCache)) {
-    return base::GetFieldTrialParamValueByFeature(features::kBackForwardCache,
-                                                  "allowed_websites");
+  if (!IsBackForwardCacheEnabled()) {
+    if (base::FeatureList::IsEnabled(
+            kRecordBackForwardCacheMetricsWithoutEnabling)) {
+      return base::GetFieldTrialParamValueByFeature(
+          kRecordBackForwardCacheMetricsWithoutEnabling, "allowed_websites");
+    }
+    return "";
   }
 
-  return base::GetFieldTrialParamValueByFeature(
-      kRecordBackForwardCacheMetricsWithoutEnabling, "allowed_websites");
+  return base::GetFieldTrialParamValueByFeature(features::kBackForwardCache,
+                                                "allowed_websites");
 }
 
 // To enter the BackForwardCache the URL of a document must have a host and a
