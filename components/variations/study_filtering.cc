@@ -139,12 +139,6 @@ bool CheckStudyLowEndDevice(const Study::Filter& filter,
          filter.is_low_end_device() == is_low_end_device;
 }
 
-bool CheckStudyEnterprise(const Study::Filter& filter,
-                          const ClientFilterableState& client_state) {
-  return !filter.has_is_enterprise() ||
-         filter.is_enterprise() == client_state.IsEnterprise();
-}
-
 bool CheckStudyPolicyRestriction(const Study::Filter& filter,
                                  RestrictionPolicy policy_restriction) {
   switch (policy_restriction) {
@@ -232,6 +226,12 @@ bool CheckStudyCountry(const Study::Filter& filter,
 
   // Omit if matches any of the exclude entries.
   return !base::Contains(filter.exclude_country(), country);
+}
+
+bool CheckStudyEnterprise(const Study::Filter& filter,
+                          const ClientFilterableState& client_state) {
+  return !filter.has_is_enterprise() ||
+         filter.is_enterprise() == client_state.IsEnterprise();
 }
 
 const std::string& GetClientCountryForStudy(
@@ -343,12 +343,6 @@ bool ShouldAddStudy(const Study& study,
       return false;
     }
 
-    if (!CheckStudyEnterprise(study.filter(), client_state)) {
-      DVLOG(1) << "Filtered out study " << study.name()
-               << " due to enterprise state.";
-      return false;
-    }
-
     if (!CheckStudyPolicyRestriction(study.filter(),
                                      client_state.policy_restriction)) {
       DVLOG(1) << "Filtered out study " << study.name()
@@ -365,6 +359,14 @@ bool ShouldAddStudy(const Study& study,
     const std::string& country = GetClientCountryForStudy(study, client_state);
     if (!CheckStudyCountry(study.filter(), country)) {
       DVLOG(1) << "Filtered out study " << study.name() << " due to country.";
+      return false;
+    }
+
+    // Check for enterprise status last as checking whether the client is
+    // enterprise can be slow.
+    if (!CheckStudyEnterprise(study.filter(), client_state)) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to enterprise state.";
       return false;
     }
   }
