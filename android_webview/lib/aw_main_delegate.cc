@@ -143,6 +143,12 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   // isn't much point in having the crash dumps there.
   cl->AppendSwitch(switches::kDisableOoprDebugCrashDump);
 
+  // Disable BackForwardCache for Android WebView as it is not supported.
+  // WebView-specific code hasn't been audited and fixed to ensure compliance
+  // with the changed API contracts around new navigation types and changes to
+  // the document lifecycle.
+  cl->AppendSwitch(switches::kDisableBackForwardCache);
+
   if (cl->GetSwitchValueASCII(switches::kProcessType).empty()) {
     // Browser process (no type specified).
 
