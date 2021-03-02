@@ -1628,6 +1628,16 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     bool premultiply_alpha,
     bool flip_y) {
   DCHECK(raster_context_provider);
+#if defined(OS_ANDROID)
+  // TODO(crbug.com/1181993): These formats don't work with the passthrough
+  // command decoder on Android for some reason.
+  const auto format_enum = static_cast<GLenum>(internal_format);
+  if (format_enum == GL_RGB10_A2 || format_enum == GL_RGB565 ||
+      format_enum == GL_RGB5_A1 || format_enum == GL_RGBA4) {
+    return false;
+  }
+#endif
+
   if (!video_frame->IsMappable()) {
     return false;
   }
