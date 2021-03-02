@@ -262,7 +262,7 @@ void AudioOpusEncoder::Flush(StatusCB done_cb) {
     return;
   }
 
-  current_done_cb_ = BindToCurrentLoop(std::move(done_cb));
+  current_done_cb_ = std::move(done_cb);
   FlushInternal();
   if (!current_done_cb_.is_null()) {
     // Is |current_done_cb_| is null, it means OnFifoOutput() has already
