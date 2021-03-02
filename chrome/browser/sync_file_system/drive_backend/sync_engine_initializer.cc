@@ -152,9 +152,8 @@ void SyncEngineInitializer::FindSyncRoot(std::unique_ptr<SyncTaskToken> token) {
   cancel_callback_ = sync_context_->GetDriveService()->SearchByTitle(
       kSyncRootFolderTitle,
       std::string(),  // parent_folder_id
-      base::Bind(&SyncEngineInitializer::DidFindSyncRoot,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Passed(&token)));
+      base::BindOnce(&SyncEngineInitializer::DidFindSyncRoot,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void SyncEngineInitializer::DidFindSyncRoot(
@@ -205,9 +204,8 @@ void SyncEngineInitializer::DidFindSyncRoot(
   if (!file_list->next_link().is_empty()) {
     cancel_callback_ = sync_context_->GetDriveService()->GetRemainingFileList(
         file_list->next_link(),
-        base::Bind(&SyncEngineInitializer::DidFindSyncRoot,
-                   weak_ptr_factory_.GetWeakPtr(),
-                   base::Passed(&token)));
+        base::BindOnce(&SyncEngineInitializer::DidFindSyncRoot,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(token)));
     return;
   }
 
@@ -260,11 +258,9 @@ void SyncEngineInitializer::DetachSyncRoot(
   set_used_network(true);
   cancel_callback_ =
       sync_context_->GetDriveService()->RemoveResourceFromDirectory(
-          root_folder_id_,
-          sync_root_folder_->file_id(),
-          base::Bind(&SyncEngineInitializer::DidDetachSyncRoot,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(&token)));
+          root_folder_id_, sync_root_folder_->file_id(),
+          base::BindOnce(&SyncEngineInitializer::DidDetachSyncRoot,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void SyncEngineInitializer::DidDetachSyncRoot(
@@ -287,12 +283,10 @@ void SyncEngineInitializer::ListAppRootFolders(
     std::unique_ptr<SyncTaskToken> token) {
   DCHECK(sync_root_folder_);
   set_used_network(true);
-  cancel_callback_ =
-      sync_context_->GetDriveService()->GetFileListInDirectory(
-          sync_root_folder_->file_id(),
-          base::Bind(&SyncEngineInitializer::DidListAppRootFolders,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(&token)));
+  cancel_callback_ = sync_context_->GetDriveService()->GetFileListInDirectory(
+      sync_root_folder_->file_id(),
+      base::BindOnce(&SyncEngineInitializer::DidListAppRootFolders,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void SyncEngineInitializer::DidListAppRootFolders(
@@ -326,11 +320,10 @@ void SyncEngineInitializer::DidListAppRootFolders(
 
   set_used_network(true);
   if (!file_list->next_link().is_empty()) {
-    cancel_callback_ =
-        sync_context_->GetDriveService()->GetRemainingFileList(
-            file_list->next_link(),
-            base::Bind(&SyncEngineInitializer::DidListAppRootFolders,
-                       weak_ptr_factory_.GetWeakPtr(), base::Passed(&token)));
+    cancel_callback_ = sync_context_->GetDriveService()->GetRemainingFileList(
+        file_list->next_link(),
+        base::BindOnce(&SyncEngineInitializer::DidListAppRootFolders,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(token)));
     return;
   }
 
