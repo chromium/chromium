@@ -58,6 +58,21 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     std::move(callback).Run(std::move(mojo_accounts));
   }
 
+  void GetPersistentErrorForAccount(
+      crosapi::mojom::AccountKeyPtr mojo_account_key,
+      GetPersistentErrorForAccountCallback callback) override {
+    base::Optional<AccountKey> account_key =
+        FromMojoAccountKey(mojo_account_key);
+    DCHECK(account_key.has_value());
+    auto it = persistent_errors_.find(account_key.value());
+    if (it != persistent_errors_.end()) {
+      std::move(callback).Run(ToMojoGoogleServiceAuthError(it->second));
+      return;
+    }
+    std::move(callback).Run(
+        ToMojoGoogleServiceAuthError(GoogleServiceAuthError::AuthErrorNone()));
+  }
+
   void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override {
     show_add_account_dialog_calls_++;
     std::move(callback).Run(
@@ -96,6 +111,11 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     accounts_ = accounts;
   }
 
+  void SetPersistentErrorForAccount(const AccountKey& account,
+                                    GoogleServiceAuthError error) {
+    persistent_errors_.emplace(account, error);
+  }
+
   void SetAccountAdditionResult(
       const account_manager::AccountAdditionResult& result) {
     add_account_result_ = result;
@@ -119,6 +139,7 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   int show_manage_accounts_settings_calls_ = 0;
   bool is_initialized_{false};
   std::vector<Account> accounts_;
+  std::map<AccountKey, GoogleServiceAuthError> persistent_errors_;
   AccountAdditionResult add_account_result_{
       AccountAdditionResult::Status::kUnexpectedResponse};
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
@@ -301,6 +322,40 @@ TEST_F(AccountManagerFacadeImplTest,
   EXPECT_CALL(callback, Run(testing::IsEmpty()))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   account_manager_facade->GetAccounts(callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest, GetPersistentErrorMarshalsAuthErrorNone) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  Account account = CreateTestGaiaAccount(kTestAccountEmail);
+
+  MockOnceCallback<void(const GoogleServiceAuthError&)> callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone()))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager_facade->GetPersistentErrorForAccount(account.key,
+                                                       callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       GetPersistentErrorMarshalsCredentialsRejectedByClient) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  Account account = CreateTestGaiaAccount(kTestAccountEmail);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_CLIENT);
+  account_manager().SetPersistentErrorForAccount(account.key, error);
+
+  MockOnceCallback<void(const GoogleServiceAuthError&)> callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(error))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager_facade->GetPersistentErrorForAccount(account.key,
+                                                       callback.Get());
   run_loop.Run();
 }
 

@@ -86,6 +86,15 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   virtual void GetAccounts(
       base::OnceCallback<void(const std::vector<Account>&)> callback) = 0;
 
+  // If `account` is in an error state (for example, if the refresh token is
+  // known to be invalid), `callback` will get the corresponding
+  // GoogleServiceAuthError.  If there's no known persistent error for
+  // `account`, `callback` will receive `GoogleServiceAuthError` with `NONE`
+  // state (Note: fetching an access token might still fail in this case).
+  virtual void GetPersistentErrorForAccount(
+      const AccountKey& account,
+      base::OnceCallback<void(const GoogleServiceAuthError&)> callback) = 0;
+
   // Launches account addition dialog.
   virtual void ShowAddAccountDialog(const AccountAdditionSource& source) = 0;
 

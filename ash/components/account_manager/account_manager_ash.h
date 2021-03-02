@@ -43,6 +43,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
   void IsInitialized(IsInitializedCallback callback) override;
   void AddObserver(AddObserverCallback callback) override;
   void GetAccounts(GetAccountsCallback callback) override;
+  void GetPersistentErrorForAccount(
+      mojom::AccountKeyPtr mojo_account_key,
+      GetPersistentErrorForAccountCallback callback) override;
   void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override;
   void ShowReauthAccountDialog(const std::string& email,
                                base::OnceClosure closure) override;

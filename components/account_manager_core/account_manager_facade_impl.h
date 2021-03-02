@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void RemoveObserver(Observer* observer) override;
   void GetAccounts(
       base::OnceCallback<void(const std::vector<Account>&)> callback) override;
+  void GetPersistentErrorForAccount(
+      const AccountKey& account,
+      base::OnceCallback<void(const GoogleServiceAuthError&)> callback)
+      override;
   void ShowAddAccountDialog(const AccountAdditionSource& source) override;
   void ShowAddAccountDialog(
       const AccountAdditionSource& source,
@@ -86,6 +90,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
 
   void GetAccountsInternal(
       base::OnceCallback<void(const std::vector<Account>&)> callback);
+
+  void GetPersistentErrorInternal(
+      const AccountKey& account,
+      base::OnceCallback<void(const GoogleServiceAuthError&)> callback);
 
   // Mojo API version on the remote (Ash) side.
   const uint32_t remote_version_;

@@ -31,6 +31,8 @@ constexpr uint32_t kMinVersionWithGetAccounts = 2;
 constexpr uint32_t kMinVersionWithShowAddAccountDialog = 3;
 // MinVersion of crosapi::mojom::AccountManager::ShowManageAccountsSettings.
 constexpr uint32_t kMinVersionWithManageAccountsSettings = 4;
+// MinVersion of crosapi::mojom::AccountManager::GetPersistentErrorForAccount.
+constexpr uint32_t kMinVersionWithGetPersistentErrorForAccount = 5;
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback,
@@ -46,6 +48,21 @@ void UnmarshalAccounts(
     accounts.emplace_back(std::move(maybe_account.value()));
   }
   std::move(callback).Run(std::move(accounts));
+}
+
+void UnmarshalPersistentError(
+    base::OnceCallback<void(const GoogleServiceAuthError&)> callback,
+    crosapi::mojom::GoogleServiceAuthErrorPtr mojo_error) {
+  base::Optional<GoogleServiceAuthError> maybe_error =
+      FromMojoGoogleServiceAuthError(mojo_error);
+  if (!maybe_error) {
+    // Couldn't unmarshal GoogleServiceAuthError, report the account as not
+    // having an error. This is safe to do, as GetPersistentErrorForAccount is
+    // best-effort (there's no way to know that the token was revoked on the
+    // server).
+    std::move(callback).Run(GoogleServiceAuthError::AuthErrorNone());
+  }
+  std::move(callback).Run(maybe_error.value());
 }
 
 }  // namespace
@@ -97,6 +114,20 @@ void AccountManagerFacadeImpl::GetAccounts(
   RunAfterInitializationSequence(
       base::BindOnce(&AccountManagerFacadeImpl::GetAccountsInternal,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AccountManagerFacadeImpl::GetPersistentErrorForAccount(
+    const AccountKey& account,
+    base::OnceCallback<void(const GoogleServiceAuthError&)> callback) {
+  if (!account_manager_remote_ ||
+      remote_version_ < kMinVersionWithGetPersistentErrorForAccount) {
+    // Remote side doesn't support GetPersistentErrorForAccount.
+    std::move(callback).Run(GoogleServiceAuthError::AuthErrorNone());
+    return;
+  }
+  RunAfterInitializationSequence(
+      base::BindOnce(&AccountManagerFacadeImpl::GetPersistentErrorInternal,
+                     weak_factory_.GetWeakPtr(), account, std::move(callback)));
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
@@ -238,6 +269,14 @@ void AccountManagerFacadeImpl::GetAccountsInternal(
     base::OnceCallback<void(const std::vector<Account>&)> callback) {
   account_manager_remote_->GetAccounts(
       base::BindOnce(&UnmarshalAccounts, std::move(callback)));
+}
+
+void AccountManagerFacadeImpl::GetPersistentErrorInternal(
+    const AccountKey& account,
+    base::OnceCallback<void(const GoogleServiceAuthError&)> callback) {
+  account_manager_remote_->GetPersistentErrorForAccount(
+      ToMojoAccountKey(account),
+      base::BindOnce(&UnmarshalPersistentError, std::move(callback)));
 }
 
 void AccountManagerFacadeImpl::FinishInitSequenceIfNotAlreadyFinished() {
