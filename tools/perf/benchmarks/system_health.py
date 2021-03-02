@@ -1,6 +1,7 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import logging
 
 from benchmarks import loading_metrics_category
 
@@ -37,6 +38,16 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
   https://goo.gl/Jek2NL.
   """
 
+  @classmethod
+  def AddBenchmarkCommandLineArgs(cls, parser):
+    parser.add_option('--allow-software-compositing', action='store_true',
+                      help='If set, allows the benchmark to run with software '
+                           'compositing.')
+
+  @classmethod
+  def ProcessCommandLineArgs(cls, parser, args):
+    cls.allow_software_compositing = args.allow_software_compositing
+
   def CreateCoreTimelineBasedMeasurementOptions(self):
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
         filter_string='rail,toplevel,uma')
@@ -71,8 +82,12 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
 
   def SetExtraBrowserOptions(self, options):
     # Using the software fallback can skew the rendering related metrics. So
-    # disable that.
-    options.AppendExtraBrowserArgs('--disable-software-compositing-fallback')
+    # disable that (unless explicitly run with --allow-software-compositing).
+    if self.allow_software_compositing:
+      logging.warning('Allowing software compositing. Some of the reported '
+                      'metrics will have unreliable values.')
+    else:
+      options.AppendExtraBrowserArgs('--disable-software-compositing-fallback')
 
   def CreateStorySet(self, options):
     return page_sets.SystemHealthStorySet(platform=self.PLATFORM)

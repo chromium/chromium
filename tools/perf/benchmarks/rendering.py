@@ -1,6 +1,7 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import logging
 import sys
 from core import perf_benchmark
 from core import platforms as core_platforms
@@ -58,6 +59,13 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
                       help='If set, continuously scroll up and down forever. '
                            'This is useful for analysing scrolling behaviour '
                            'with tools such as perf.')
+    parser.add_option('--allow-software-compositing', action='store_true',
+                      help='If set, allows the benchmark to run with software '
+                           'compositing.')
+
+  @classmethod
+  def ProcessCommandLineArgs(cls, parser, args):
+    cls.allow_software_compositing = args.allow_software_compositing
 
   def CreateStorySet(self, options):
     return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME)
@@ -65,7 +73,11 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-gpu-benchmarking')
     options.AppendExtraBrowserArgs('--touch-events=enabled')
-    options.AppendExtraBrowserArgs('--disable-software-compositing-fallback')
+    if self.allow_software_compositing:
+      logging.warning('Allowing software compositing. Some of the reported '
+                      'metrics will have unreliable values.')
+    else:
+      options.AppendExtraBrowserArgs('--disable-software-compositing-fallback')
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.CreateLowOverheadFilter()

@@ -53,7 +53,8 @@ class RenderingSharedState(shared_page_state.SharedPageState):
 
   def WillRunStory(self, page):
     super(RenderingSharedState, self).WillRunStory(page)
-    self._EnsureNotSwiftShader()
+    if not self._finder_options.allow_software_compositing:
+      self._EnsureNotSwiftShader()
     if page.TAGS and story_tags.KEY_IDLE_POWER in page.TAGS:
       self._EnsureScreenOn()
 
