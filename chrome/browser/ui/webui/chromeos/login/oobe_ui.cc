@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/ssh_configured_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
@@ -548,6 +549,9 @@ void OobeUI::ConfigureOobeDisplay() {
       core_handler_, GetHandler<GaiaScreenHandler>());
   signin_screen_handler_ = signin_screen_handler.get();
   AddWebUIHandler(std::move(signin_screen_handler));
+
+  AddWebUIHandler(
+      std::make_unique<SshConfiguredHandler>(js_calls_container_.get()));
 
   AddScreenHandler(std::make_unique<AppLaunchSplashScreenHandler>(
       js_calls_container_.get(), network_state_informer_, error_screen));

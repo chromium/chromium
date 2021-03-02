@@ -18,6 +18,7 @@
 -All/PublicSessionOobeTest.*
 -All/PublicSessionWithTermsOfServiceOobeTest.*
 -All/SAMLPasswordAttributesTest.*
+-All/SshWarningTest.*
 -All/SyncConsentPolicyDisabledTest.*
 -All/SyncConsentTestWithParams.*
 -All/WebviewLoginWithIframeTest.*

@@ -2641,6 +2641,9 @@
   <message name="IDS_LOGIN_CONNECTING_INDICATOR_TEXT" desc="A message to show telling the user that the device is attempting to re-connect to the network.">
     Connecting and verifying
   </message>
+  <message name="IDS_LOGIN_SSH_WARNING" desc="A message telling user that the device has SSH server configured. So they should be carefule with accounts they use to sign in.">
+    Device has SSH server configured. Do not sign in with sensitive accounts.
+  </message>
   <message name="IDS_DEVICE_DISABLED_HEADING" desc="Heading of the message shown to the user when the device has been disabled by its owner.">
     Your device is locked
   </message>

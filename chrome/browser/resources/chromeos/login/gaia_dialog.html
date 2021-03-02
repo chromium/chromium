@@ -109,6 +109,11 @@
       #signin-frame-container:not([hideshadows]) #signin-frame.is-scrolled.scrolled-to-bottom::before {
         @apply --scroll-shadow-top;
       }
+
+      #sshWarning {
+        color: var(--google-red-600);
+        text-align: center;
+      }
     </style>
     <link rel="stylesheet" href="oobe_popup_overlay.css">
     <!-- As this dialog have pre-loading logic that require access to elements,
@@ -134,6 +139,9 @@
               on-click="close_">
           </cr-icon-button>
         </div>
+        <h3 id="sshWarning" hidden>
+          [[i18nDynamic(locale, 'sshWarningLogin')]]
+        </h3>
         <webview id="signin-frame" class="flex" name="[[webviewName]]">
         </webview>
       </div>

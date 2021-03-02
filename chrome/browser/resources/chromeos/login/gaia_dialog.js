@@ -228,6 +228,13 @@ Polymer({
       this.authenticator_.addEventListener(
           eventName, authenticatorEventListeners[eventName].bind(this));
     }
+
+    cr.sendWithPromise('getIsSshConfigured')
+        .then(this.updateSshWarningVisibility.bind(this));
+  },
+
+  updateSshWarningVisibility(show) {
+    this.$.sshWarning.hidden = !show;
   },
 
   show() {

@@ -2379,6 +2379,8 @@ static_library("ui") {
       "webui/chromeos/login/signin_fatal_error_screen_handler.h",
       "webui/chromeos/login/signin_screen_handler.cc",
       "webui/chromeos/login/signin_screen_handler.h",
+      "webui/chromeos/login/ssh_configured_handler.cc",
+      "webui/chromeos/login/ssh_configured_handler.h",
       "webui/chromeos/login/supervision_transition_screen_handler.cc",
       "webui/chromeos/login/supervision_transition_screen_handler.h",
       "webui/chromeos/login/sync_consent_screen_handler.cc",
