@@ -62,8 +62,9 @@ class AdsPageLoadMetricsObserverBrowserTest : public WebLayerBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1183549): flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       ReceivedAdResources) {
+                       DISABLED_ReceivedAdResources) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreateAdsPageLoadMetricsTestWaiter();
