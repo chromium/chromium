@@ -41,13 +41,14 @@ class TaskDurationMetricReporter {
     DCHECK_LT(static_cast<int>(task_class),
               static_cast<int>(TaskClass::kCount));
 
-    // To get mircoseconds precision, duration is converted to microseconds
+    // To get microseconds precision, duration is converted to microseconds
     // since |value_per_type_histogram_| is constructed with a scale of
     // 1000*1000.
-    if (!duration.is_zero()) {
-      value_per_type_histogram_->AddScaledCount(
-          static_cast<int>(task_class),
-          base::saturated_cast<int>(duration.InMicroseconds()));
+    const int task_micros =
+        base::saturated_cast<int>(duration.InMicroseconds());
+    if (task_micros > 0) {
+      value_per_type_histogram_->AddScaledCount(static_cast<int>(task_class),
+                                                task_micros);
     }
   }
 
