@@ -63,9 +63,9 @@ class TabHoverCardController : public views::ViewObserver {
 
   void RecordTimeSinceLastSeenMetric(base::TimeDelta elapsed_time);
 
-  void UpdateAndShow(Tab* tab);
-  void FadeInToShow();
-  void FadeOutToHide();
+  void UpdateOrShowCard(Tab* tab);
+  void ShowHoverCard(bool is_immediate);
+  void HideHoverCard();
 
   bool ShouldShowImmediately(const Tab* tab) const;
 
@@ -94,8 +94,7 @@ class TabHoverCardController : public views::ViewObserver {
 
   base::OneShotTimer delayed_show_timer_;
 
-  // The view tracker is used to keep track of if the hover card has been
-  // destroyed by its widget.
+  Tab* target_tab_ = nullptr;
   TabStrip* const tab_strip_;
   TabHoverCardBubbleView* hover_card_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>

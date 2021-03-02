@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 
 #include "base/bind.h"
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -282,7 +283,7 @@ bool TabHoverCardController::AreHoverCardImagesEnabled() {
 }
 
 bool TabHoverCardController::IsHoverCardVisible() const {
-  return hover_card_ && hover_card_->GetWidget()->IsVisible();
+  return hover_card_ != nullptr;
 }
 
 bool TabHoverCardController::IsHoverCardShowingForTab(Tab* tab) const {
@@ -293,13 +294,14 @@ bool TabHoverCardController::IsHoverCardShowingForTab(Tab* tab) const {
 void TabHoverCardController::UpdateHoverCard(
     Tab* tab,
     TabController::HoverCardUpdateType update_type) {
-  if (!hover_card_) {
-    // If there's nothing to attach to then there's no point in creating a
-    // hover card.
-    if (!tab || !tab_strip_->GetWidget())
-      return;
-    CreateHoverCard(tab);
-  }
+  // Update this ASAP so that if we try to fade-in and we have the wrong target
+  // then when the fade timer elapses we won't incorrectly try to fade in or
+  // fade in on the wrong tab.
+  target_tab_ = tab;
+
+  // If there's nothing to attach to then there's no point in creating a card.
+  if (!hover_card_ && (!tab || !tab_strip_->GetWidget()))
+    return;
 
   switch (update_type) {
     case TabController::HoverCardUpdateType::kSelectionChanged:
@@ -324,9 +326,9 @@ void TabHoverCardController::UpdateHoverCard(
   }
 
   if (tab)
-    UpdateAndShow(tab);
+    UpdateOrShowCard(tab);
   else
-    FadeOutToHide();
+    HideHoverCard();
 }
 
 void TabHoverCardController::PreventImmediateReshow() {
@@ -337,12 +339,17 @@ void TabHoverCardController::TabSelectedViaMouse() {
   cards_seen_counter_->TabSelectedViaMouse();
 }
 
-void TabHoverCardController::UpdateAndShow(Tab* tab) {
+void TabHoverCardController::UpdateOrShowCard(Tab* tab) {
   RecordTimeSinceLastSeenMetric(base::TimeTicks::Now() -
                                 last_visible_timestamp_);
 
+  // Close is asynchronous, so make sure that if we're closing we clear out all
+  // of our data *now* rather than waiting for the deletion message.
+  if (hover_card_ && hover_card_->GetWidget()->IsClosed())
+    OnViewIsDeleting(hover_card_);
+
   // Cancel any pending fades.
-  if (fade_animator_->IsFadingOut()) {
+  if (hover_card_ && fade_animator_->IsFadingOut()) {
     fade_animator_->CancelFadeOut();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (throughput_tracker_.has_value())
@@ -350,59 +357,59 @@ void TabHoverCardController::UpdateAndShow(Tab* tab) {
 #endif
   }
 
-  // If we're not anchored, need to do this before updating card content.
-  if (!hover_card_->GetAnchorView())
-    hover_card_->SetAnchorView(tab);
+  if (hover_card_) {
+    // Card should never exist without an anchor.
+    DCHECK(hover_card_->GetAnchorView());
 
-  const bool card_was_visible = IsHoverCardVisible();
-  if (card_was_visible) {
     // We're showing a hover card for a new tab, so increment the count.
     cards_seen_counter_->CardShownForTab(tab, true);
+
     // If the card was visible we need to update the card now, before any slide
     // or snap occurs.
     UpdateCardContent(tab);
 
     // If widget is already visible and anchored to the correct tab we should
     // not try to reset the anchor view or reshow.
-    if (hover_card_->GetAnchorView() == tab &&
-        !slide_animator_->is_animating()) {
+    if (!UseAnimations() || (hover_card_->GetAnchorView() == tab &&
+                             !slide_animator_->is_animating())) {
       slide_animator_->SnapToAnchorView(tab);
-      return;
+    } else {
+      slide_animator_->AnimateToAnchorView(tab);
     }
+    return;
   }
 
-  const bool animations_enabled = UseAnimations();
-
-  // Maybe start slide animation.
-  if (animations_enabled && card_was_visible)
-    slide_animator_->AnimateToAnchorView(tab);
-  else
-    slide_animator_->SnapToAnchorView(tab);
-
-  // Maybe make hover card visible (if it isn't already).
-  if (!card_was_visible) {
-    const bool show_immediate = ShouldShowImmediately(tab);
-    if (!animations_enabled || show_immediate) {
-      cards_seen_counter_->CardShownForTab(tab, show_immediate);
-      // Card content needs to be updated before a show.
-      UpdateCardContent(tab);
-      hover_card_->GetWidget()->SetOpacity(1.0);
-      hover_card_->GetWidget()->Show();
-    } else {
-      delayed_show_timer_.Start(FROM_HERE, GetShowDelay(tab->width()), this,
-                                &TabHoverCardController::FadeInToShow);
-    }
+  // Maybe make hover card visible. Disabling animations for testing also
+  // eliminates the show timer, lest the tests have to be significantly more
+  // complex and time-consuming.
+  const bool show_immediate = ShouldShowImmediately(tab);
+  if (disable_animations_for_testing_ || show_immediate) {
+    DCHECK_EQ(target_tab_, tab);
+    ShowHoverCard(show_immediate);
+  } else {
+    delayed_show_timer_.Start(
+        FROM_HERE, GetShowDelay(tab->width()),
+        base::BindOnce(&TabHoverCardController::ShowHoverCard,
+                       base::Unretained(this), false));
   }
 }
 
-void TabHoverCardController::FadeInToShow() {
-  // Make sure the hover card isn't accidentally shown if the anchor is gone.
-  Tab* const target_tab = static_cast<Tab*>(hover_card_->GetAnchorView());
-  if (!target_tab || fade_animator_->IsFadingIn())
+void TabHoverCardController::ShowHoverCard(bool is_immediate) {
+  // Make sure the hover card isn't accidentally shown if it's already visible
+  // or if the anchor is gone.
+  if (hover_card_ || !target_tab_)
     return;
 
-  // Delay update of card content until it's about to fade in.
-  UpdateCardContent(target_tab);
+  // We're showing a hover card for a new tab, so increment the count.
+  cards_seen_counter_->CardShownForTab(target_tab_, is_immediate);
+
+  CreateHoverCard(target_tab_);
+  UpdateCardContent(target_tab_);
+
+  if (is_immediate || !UseAnimations()) {
+    hover_card_->GetWidget()->Show();
+    return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   throughput_tracker_.emplace(
@@ -410,14 +417,12 @@ void TabHoverCardController::FadeInToShow() {
   throughput_tracker_->Start(ash::metrics_util::ForSmoothness(
       base::BindRepeating(&RecordFadeInSmoothness)));
 #endif
-
-  cards_seen_counter_->CardShownForTab(hover_card_->GetAnchorView(), false);
   fade_animator_->FadeIn();
 }
 
-void TabHoverCardController::FadeOutToHide() {
+void TabHoverCardController::HideHoverCard() {
   delayed_show_timer_.Stop();
-  if (!IsHoverCardVisible())
+  if (!hover_card_ || hover_card_->GetWidget()->IsClosed())
     return;
 
   if (thumbnail_observer_)
@@ -425,7 +430,7 @@ void TabHoverCardController::FadeOutToHide() {
   slide_animator_->StopAnimation();
   last_visible_timestamp_ = base::TimeTicks::Now();
   if (!UseAnimations()) {
-    hover_card_->GetWidget()->Hide();
+    hover_card_->GetWidget()->Close();
     return;
   }
   if (fade_animator_->IsFadingOut())
@@ -450,6 +455,9 @@ void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   DCHECK_EQ(hover_card_, observed_view);
   hover_card_observation_.Reset();
   event_sniffer_.reset();
+  slide_progressed_subscription_ = base::CallbackListSubscription();
+  slide_complete_subscription_ = base::CallbackListSubscription();
+  fade_complete_subscription_ = base::CallbackListSubscription();
   slide_animator_.reset();
   fade_animator_.reset();
   hover_card_ = nullptr;
@@ -483,7 +491,7 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
 void TabHoverCardController::UpdateCardContent(Tab* tab) {
   // If the hover card is transitioning between tabs, we need to do a
   // cross-fade.
-  if (IsHoverCardVisible() && hover_card_->GetAnchorView() != tab)
+  if (hover_card_->GetAnchorView() != tab)
     hover_card_->SetTextFade(0.0);
 
   hover_card_->UpdateCardContent(tab);
@@ -513,7 +521,7 @@ void TabHoverCardController::MaybeStartThumbnailObservation(Tab* tab) {
 
 void TabHoverCardController::RecordTimeSinceLastSeenMetric(
     base::TimeDelta elapsed_time) {
-  if (IsHoverCardVisible() && !fade_animator_->IsFadingOut())
+  if (hover_card_ && !fade_animator_->IsFadingOut())
     return;
   constexpr base::TimeDelta kMaxHoverCardReshowTimeDelta =
       base::TimeDelta::FromSeconds(5);
@@ -564,6 +572,8 @@ void TabHoverCardController::OnFadeAnimationEnded(
   if (throughput_tracker_.has_value())
     throughput_tracker_->Stop();
 #endif
+  if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeOut)
+    hover_card_->GetWidget()->Close();
 }
 
 void TabHoverCardController::OnSlideAnimationProgressed(

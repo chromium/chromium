@@ -164,9 +164,10 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
 
   void OnViewBlurred(views::View* observed_view) override {
     // Only hide hover card if not keyboard navigating.
-    if (!controller_->IsFocusInTabs())
+    if (!controller_->IsFocusInTabs()) {
       controller_->UpdateHoverCard(nullptr,
                                    TabController::HoverCardUpdateType::kFocus);
+    }
   }
 
   base::ScopedObservation<views::View, views::ViewObserver>
@@ -703,8 +704,10 @@ void Tab::OnFocus() {
 
 void Tab::OnBlur() {
   View::OnBlur();
-  controller_->UpdateHoverCard(nullptr,
-                               TabController::HoverCardUpdateType::kFocus);
+  if (!controller_->IsFocusInTabs()) {
+    controller_->UpdateHoverCard(nullptr,
+                                 TabController::HoverCardUpdateType::kFocus);
+  }
 }
 
 void Tab::OnThemeChanged() {

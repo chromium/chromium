@@ -258,6 +258,10 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
         ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
             views::EMPHASIS_HIGH));
   }
+
+  // Start in the fully "faded-in" position so that whatever text we initially
+  // display is visible.
+  SetTextFade(1.0);
 }
 
 TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;

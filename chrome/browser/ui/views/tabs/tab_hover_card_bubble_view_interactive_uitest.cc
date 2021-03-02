@@ -59,6 +59,6 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInteractiveUiTest,
                                               false, false, false));
   // Note, fade in/out animations are disabled for testing so there is no need
   // to account for them here.
-  EXPECT_FALSE(widget->IsVisible());
+  EXPECT_EQ(nullptr, GetHoverCard(tab_strip));
 }
 #endif
