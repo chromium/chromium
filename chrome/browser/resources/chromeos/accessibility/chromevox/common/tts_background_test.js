@@ -57,6 +57,15 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Preprocess', function() {
 
   assertEquals('new line', preprocess('\n'));
   assertEquals('return', preprocess('\r'));
+
+  // Assert that ChromeVox reads the pound sterling (£) sign.
+  assertEquals('pound sterling', preprocess('£'));
+  assertEquals(
+      'This is the pound sterling symbol and this is the pound symbol.',
+      preprocess('This is the £ symbol and this is the # symbol.'));
+  // Repetitions for the pound sterling shouldn't be summarized.
+  assertEquals(
+      'pound sterling pound sterling pound sterling', preprocess('£££'));
 });
 
 TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {

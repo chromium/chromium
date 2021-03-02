@@ -538,7 +538,8 @@ AbstractTts.SUBSTITUTION_DICTIONARY = {
   '\u25c3': 'left triangle',
   '\u25c4': 'left pointer',
   '\u25c5': 'left pointer',
-  '\uf8ff': 'apple'
+  '\uf8ff': 'apple',
+  '£': 'pound sterling'
 };
 
 
