@@ -74,6 +74,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
  private:
+  using AppLaunchInfoPtr = std::unique_ptr<AppLaunchInfo>;
+
+  // Map from a profile path to AppLaunchInfos.
+  using AppLaunchInfos = std::map<base::FilePath, std::list<AppLaunchInfoPtr>>;
+
   // Starts the timer that invokes Save (if timer isn't already running).
   void MaybeStartSaveTimer();
 
@@ -90,7 +95,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   // Add |app_launch_info| to |app_id_to_launch_list_|.
   void AddAppLaunchInfo(const base::FilePath& profile_path,
-                        std::unique_ptr<AppLaunchInfo> app_launch_info);
+                        AppLaunchInfoPtr app_launch_info);
 
   // Removes AppRestoreData for |window_id|.
   void RemoveAppRestoreData(int window_id);
@@ -113,11 +118,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 
-  // The map from the app id to the full restore file path and the app launch
-  // info.
-  std::map<std::string,
-           std::pair<base::FilePath, std::unique_ptr<AppLaunchInfo>>>
-      app_id_to_app_launch_info_;
+  // The map from the app id to the app launch info for each full restore file
+  // path.
+  std::map<std::string, AppLaunchInfos> app_id_to_app_launch_infos_;
 
   // The current active user profile path.
   base::FilePath active_profile_path_;

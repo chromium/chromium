@@ -62,21 +62,27 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
   observed_windows_.AddObservation(window);
 
   std::string* app_id_str = window->GetProperty(::full_restore::kAppIdKey);
-  std::unique_ptr<AppLaunchInfo> app_launch_info;
+  AppLaunchInfoPtr app_launch_info;
 
   if (app_id_str) {
     // For Chrome apps, launched via event, get the app id from the window's
-    // property, then find the app launch info from |app_id_to_app_launch_info_|
-    // to save the app launch info for |app_id| and |window_id|.
-    auto it = app_id_to_app_launch_info_.find(*app_id_str);
-    if (it == app_id_to_app_launch_info_.end() ||
-        it->second.first != active_profile_path_) {
+    // property, then find the app launch info from
+    // |app_id_to_app_launch_infos_| to save the app launch info for |app_id|
+    // and |window_id|.
+    auto it = app_id_to_app_launch_infos_.find(*app_id_str);
+    if (it == app_id_to_app_launch_infos_.end())
       return;
-    }
 
-    it->second.second->window_id = window_id;
-    app_launch_info = std::move(it->second.second);
-    app_id_to_app_launch_info_.erase(it);
+    auto launch_it = it->second.find(active_profile_path_);
+    if (launch_it == it->second.end())
+      return;
+
+    DCHECK(!launch_it->second.empty());
+    app_launch_info = std::move(*launch_it->second.begin());
+    app_launch_info->window_id = window_id;
+    it->second.erase(active_profile_path_);
+    if (it->second.empty())
+      app_id_to_app_launch_infos_.erase(it);
   } else {
     app_launch_info = std::make_unique<AppLaunchInfo>(
         extension_misc::kChromeAppId, window_id);
@@ -101,20 +107,18 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
 
 void FullRestoreSaveHandler::SaveAppLaunchInfo(
     const base::FilePath& profile_path,
-    std::unique_ptr<AppLaunchInfo> app_launch_info) {
+    AppLaunchInfoPtr app_launch_info) {
   if (profile_path.empty() || !app_launch_info)
     return;
 
   const std::string app_id = app_launch_info->app_id;
 
   if (!app_launch_info->window_id.has_value()) {
-    // TODO(crbug.com/1146900): Handle ARC app windows.
-
-    // For Chrome apps, launched via event, save |app_launch_info| to
-    // |app_id_to_app_launch_info_|, and wait the window initialized to get the
-    // window id.
-    app_id_to_app_launch_info_[app_id] =
-        std::make_pair(profile_path, std::move(app_launch_info));
+    // For ARC apps and Chrome apps, save |app_launch_info| to
+    // |app_id_to_app_launch_infos_|, and wait for the task id or window
+    // initialized to get the window id.
+    app_id_to_app_launch_infos_[app_id][profile_path].emplace_back(
+        std::move(app_launch_info));
     return;
   }
 
@@ -243,7 +247,7 @@ base::SequencedTaskRunner* FullRestoreSaveHandler::BackendTaskRunner(
 
 void FullRestoreSaveHandler::AddAppLaunchInfo(
     const base::FilePath& profile_path,
-    std::unique_ptr<AppLaunchInfo> app_launch_info) {
+    AppLaunchInfoPtr app_launch_info) {
   if (profile_path.empty() || !app_launch_info ||
       !app_launch_info->window_id.has_value()) {
     return;
