@@ -1200,6 +1200,8 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
               res = CrostiniResult::OFFLINE_WHEN_UPGRADE_REQUIRED;
             } else if (result == TerminaInstaller::InstallResult::Failure) {
               res = CrostiniResult::LOAD_COMPONENT_FAILED;
+            } else if (result == TerminaInstaller::InstallResult::NeedReboot) {
+              res = CrostiniResult::NEED_REBOOT;
             } else {
               CHECK(false)
                   << "Got unexpected value of TerminaInstaller::InstallResult";

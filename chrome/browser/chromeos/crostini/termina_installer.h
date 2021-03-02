@@ -35,6 +35,8 @@ class TerminaInstaller {
     // The install failed because it needed to download an image and the device
     // is offline.
     Offline,
+    // The device must be rebooted before termina can be installed.
+    NeedReboot,
   };
 
   // This is really a bool, but std::vector<bool> has weird properties that stop

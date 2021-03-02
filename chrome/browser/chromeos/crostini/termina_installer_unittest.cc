@@ -73,6 +73,11 @@ class TerminaInstallTest : public testing::Test {
     run_loop_.Quit();
   }
 
+  void ExpectNeedReboot(TerminaInstaller::InstallResult result) {
+    EXPECT_EQ(result, TerminaInstaller::InstallResult::NeedReboot);
+    run_loop_.Quit();
+  }
+
   void ExpectNotCalled(TerminaInstaller::InstallResult result) {
     ASSERT_TRUE(false) << "Callback was run unexpectedly";
   }
@@ -298,6 +303,16 @@ TEST_F(TerminaDlcInstallTest, InstallDlcError) {
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectFailure,
                                             base::Unretained(this)),
                              /*is_initial_install=*/true);
+  run_loop_.Run();
+}
+
+TEST_F(TerminaDlcInstallTest, InstallDlcNeedsReboot) {
+  fake_dlc_client_->set_install_error(dlcservice::kErrorNeedReboot);
+
+  termina_installer_.Install(
+      base::BindOnce(&TerminaInstallTest::ExpectNeedReboot,
+                     base::Unretained(this)),
+      /*is_initial_install=*/true);
   run_loop_.Run();
 }
 

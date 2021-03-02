@@ -15340,6 +15340,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="59" label="FETCH_SSH_KEYS_TIMED_OUT"/>
   <int value="60" label="MOUNT_CONTAINER_TIMED_OUT"/>
   <int value="61" label="UNKNOWN_STATE_TIMED_OUT"/>
+  <int value="62" label="NEED_REBOOT"/>
 </enum>
 
 <enum name="CrostiniSettingsEvent">
@@ -15377,6 +15378,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="26" label="Bug - Failed without capturing error code"/>
   <int value="27" label="User Cancelled While Starting LXD"/>
   <int value="28" label="Error Starting LXD"/>
+  <int value="29" label="Need Reboot"/>
 </enum>
 
 <enum name="CrostiniTerminalSetting">

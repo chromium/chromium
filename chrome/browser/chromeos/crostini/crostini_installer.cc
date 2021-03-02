@@ -112,6 +112,8 @@ SetupResult ErrorToSetupResult(InstallerError error) {
       return SetupResult::kSuccess;
     case InstallerError::kErrorLoadingTermina:
       return SetupResult::kErrorLoadingTermina;
+    case InstallerError::kNeedReboot:
+      return SetupResult::kNeedReboot;
     case InstallerError::kErrorCreatingDiskImage:
       return SetupResult::kErrorCreatingDiskImage;
     case InstallerError::kErrorStartingTermina:
@@ -319,6 +321,9 @@ void CrostiniInstaller::OnComponentLoaded(CrostiniResult result) {
     if (content::GetNetworkConnectionTracker()->IsOffline()) {
       LOG(ERROR) << "Network connection dropped while downloading cros-termina";
       HandleError(InstallerError::kErrorOffline);
+    } else if (result == CrostiniResult::NEED_REBOOT) {
+      LOG(ERROR) << "Need to reboot device before installing termina-dlc";
+      HandleError(InstallerError::kNeedReboot);
     } else {
       LOG(ERROR) << "Failed to install the cros-termina component";
       HandleError(InstallerError::kErrorLoadingTermina);
