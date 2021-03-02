@@ -328,6 +328,7 @@ namespace http://www.w3.org/1999/xhtml
     property webkitRequestFullscreen
 html element a
     property charset
+    property conversionDestination
     property coords
     property download
     property hash
@@ -336,6 +337,8 @@ html element a
     property href
     property hrefTranslate
     property hreflang
+    property impressionData
+    property impressionExpiry
     property name
     property origin
     property password
@@ -346,6 +349,7 @@ html element a
     property referrerPolicy
     property rel
     property relList
+    property reportingOrigin
     property rev
     property search
     property shape

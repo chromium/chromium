@@ -173,18 +173,19 @@ TEST_F(PrivacySandboxSettingsTest, PrivacySandboxSettingsFunctional) {
   feature_list()->InitWithFeatures(
       {features::kPrivacySandboxSettings,
        blink::features::kInterestCohortAPIOriginTrial},
-      {});
+      {features::kConversionMeasurement});
   EXPECT_TRUE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
   feature_list()->Reset();
 
   feature_list()->InitWithFeatures(
       {features::kConversionMeasurement,
        blink::features::kInterestCohortAPIOriginTrial},
-      {});
+      {features::kConversionMeasurement});
   EXPECT_FALSE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
   feature_list()->Reset();
 
-  feature_list()->InitWithFeatures({features::kPrivacySandboxSettings}, {});
+  feature_list()->InitWithFeatures({features::kPrivacySandboxSettings},
+                                   {features::kConversionMeasurement});
   EXPECT_FALSE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
   feature_list()->Reset();
 }

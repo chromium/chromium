@@ -311,8 +311,16 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
 
   // Re-navigating should reset the counter.
   contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
-  histograms.ExpectUniqueSample("Conversions.RegisteredConversionsPerPage", 8,
-                                1);
+
+  // TODO(johnidel): This test creates a second conversion host which gets
+  // injected with a TestManager. However, the ConversionHost owned by the
+  // WebContents is still active for this test, and will record a zero sample in
+  // this histogram. Consider modifying this test suite so that we do not have
+  // metrics being recorded in multiple places.
+  histograms.ExpectBucketCount("Conversions.RegisteredConversionsPerPage", 8,
+                               1);
+  histograms.ExpectBucketCount("Conversions.RegisteredConversionsPerPage", 1,
+                               0);
 }
 
 TEST_F(ConversionHostTest, NoManager_NoPerPageConversionMetrics) {

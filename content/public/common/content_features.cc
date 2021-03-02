@@ -171,9 +171,9 @@ extern const base::Feature kCodeCacheDeletionWithoutFilter{
 const base::Feature kConsolidatedMovementXY{"ConsolidatedMovementXY",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether the Conversion Measurement API is enabled.
+// Controls whether the Conversion Measurement API infrastructure is enabled.
 const base::Feature kConversionMeasurement{"ConversionMeasurement",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Show messages in DevTools about upcoming deprecations that would affect
 // sent/received cookies.

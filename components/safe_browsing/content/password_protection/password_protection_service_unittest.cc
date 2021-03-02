@@ -1507,7 +1507,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestDomFeaturesTimeout) {
       web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
       PasswordType::SAVED_PASSWORD, {{"example.com", ASCIIToUTF16("username")}},
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment_.RunUntilIdle();
 
   password_protection_service_->WaitForResponse();
   ASSERT_NE(nullptr, password_protection_service_->GetLatestRequestProto());
@@ -1522,7 +1522,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestWebContentsDestroyed) {
                                            10000 /* timeout in ms */,
                                            web_contents.get());
   web_contents.reset();
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment_.RunUntilIdle();
 }
 
 INSTANTIATE_TEST_SUITE_P(Regular,

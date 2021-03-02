@@ -2750,6 +2750,7 @@ interface HTMLAllCollection
 interface HTMLAnchorElement : HTMLElement
     attribute @@toStringTag
     getter charset
+    getter conversionDestination
     getter coords
     getter download
     getter hash
@@ -2758,6 +2759,8 @@ interface HTMLAnchorElement : HTMLElement
     getter href
     getter hrefTranslate
     getter hreflang
+    getter impressionData
+    getter impressionExpiry
     getter name
     getter origin
     getter password
@@ -2768,6 +2771,7 @@ interface HTMLAnchorElement : HTMLElement
     getter referrerPolicy
     getter rel
     getter relList
+    getter reportingOrigin
     getter rev
     getter search
     getter shape
@@ -2778,6 +2782,7 @@ interface HTMLAnchorElement : HTMLElement
     method constructor
     method toString
     setter charset
+    setter conversionDestination
     setter coords
     setter download
     setter hash
@@ -2786,6 +2791,8 @@ interface HTMLAnchorElement : HTMLElement
     setter href
     setter hrefTranslate
     setter hreflang
+    setter impressionData
+    setter impressionExpiry
     setter name
     setter password
     setter pathname
@@ -2795,6 +2802,7 @@ interface HTMLAnchorElement : HTMLElement
     setter referrerPolicy
     setter rel
     setter relList
+    setter reportingOrigin
     setter rev
     setter search
     setter shape

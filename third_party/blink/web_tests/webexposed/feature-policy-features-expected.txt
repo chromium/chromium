@@ -22,6 +22,7 @@ ch-viewport-width
 ch-width
 clipboard-read
 clipboard-write
+conversion-measurement
 cross-origin-isolated
 display-capture
 document-domain
