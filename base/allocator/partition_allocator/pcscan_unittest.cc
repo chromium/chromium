@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if PA_ALLOW_PCSCAN
@@ -388,6 +389,15 @@ TEST_F(PCScanTest, DanglingReferenceFromNonScannablePartition) {
   // Check that the object is in the freelist now.
   EXPECT_TRUE(IsInFreeList(value_root.AdjustPointerForExtrasSubtract(value)));
 }
+
+// Death tests misbehave on Android, http://crbug.com/643760.
+#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+TEST_F(PCScanTest, DoubleFree) {
+  auto* list = List<1>::Create(root());
+  List<1>::Destroy(root(), list);
+  EXPECT_DEATH(List<1>::Destroy(root(), list), "");
+}
+#endif
 
 }  // namespace internal
 }  // namespace base

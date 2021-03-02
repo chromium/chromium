@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 
 #if defined(__has_attribute)
 #if __has_attribute(require_constant_initialization)
@@ -25,6 +26,8 @@
 namespace base {
 namespace internal {
 
+[[noreturn]] BASE_EXPORT NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt();
+
 // PCScan (Probabilistic Conservative Scanning) is the algorithm that eliminates
 // use-after-free bugs by verifying that there are no pointers in memory which
 // point to explicitly freed objects before actually releasing their memory. If
@@ -35,9 +38,7 @@ namespace internal {
 // quarantine entries). After scanning, the unvisited quarantine entries are
 // unreachable and therefore can be safely reclaimed.
 //
-// The driver class encapsulates the entire PCScan infrastructure. It provides
-// a single function MoveToQuarantine() that posts a concurrent task if the
-// limit is reached.
+// The driver class encapsulates the entire PCScan infrastructure.
 template <bool thread_safe>
 class BASE_EXPORT PCScan final {
  public:
@@ -168,10 +169,12 @@ template <bool thread_safe>
 ALWAYS_INLINE void PCScan<thread_safe>::MoveToQuarantine(void* ptr,
                                                          SlotSpan* slot_span) {
   PA_DCHECK(!slot_span->bucket->is_direct_mapped());
-
-  QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
-                              quarantine_data_.epoch(), ptr)
-      ->SetBit(reinterpret_cast<uintptr_t>(ptr));
+  auto* quarantine = QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
+                                                 quarantine_data_.epoch(), ptr);
+  const bool is_double_freed =
+      quarantine->SetBit(reinterpret_cast<uintptr_t>(ptr));
+  if (UNLIKELY(is_double_freed))
+    DoubleFreeAttempt();
 
   const bool is_limit_reached =
       quarantine_data_.Account(slot_span->bucket->slot_size);

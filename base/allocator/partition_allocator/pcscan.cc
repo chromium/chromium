@@ -25,6 +25,8 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
+#include "base/debug/alias.h"
+#include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
@@ -48,6 +50,11 @@
 
 namespace base {
 namespace internal {
+
+[[noreturn]] BASE_EXPORT NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt() {
+  NO_CODE_FOLDING();
+  IMMEDIATE_CRASH();
+}
 
 namespace {
 

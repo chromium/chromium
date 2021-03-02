@@ -51,10 +51,16 @@ class ObjectBitmap final {
 
   inline ObjectBitmap();
 
+  // Sets the bit corresponding to |address| and returns whether the bit was set
+  // before.
   template <AccessType = AccessType::kAtomic>
-  ALWAYS_INLINE void SetBit(uintptr_t address);
+  ALWAYS_INLINE bool SetBit(uintptr_t address);
+
+  // Clears the bit corresponding to |address|.
   template <AccessType = AccessType::kAtomic>
   ALWAYS_INLINE void ClearBit(uintptr_t address);
+
+  // Checks if the bit corresponding |address| is set.
   template <AccessType = AccessType::kAtomic>
   ALWAYS_INLINE bool CheckBit(uintptr_t address) const;
 
@@ -104,18 +110,21 @@ inline ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ObjectBitmap() =
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
 template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
               AccessType access_type>
-ALWAYS_INLINE void
+ALWAYS_INLINE bool
 ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::SetBit(
     uintptr_t address) {
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = ObjectIndexAndBit(address);
+  const CellType mask = static_cast<CellType>(1) << object_bit;
   if (access_type == AccessType::kNonAtomic) {
-    bitmap_[cell_index] |= (static_cast<CellType>(1) << object_bit);
-    return;
+    const bool was_set = bitmap_[cell_index] & mask;
+    bitmap_[cell_index] |= mask;
+    return was_set;
   }
   auto& cell = AsAtomicCell(cell_index);
-  cell.fetch_or(static_cast<CellType>(1) << object_bit,
-                std::memory_order_relaxed);
+  const CellType cell_before = cell.fetch_or(
+      static_cast<CellType>(1) << object_bit, std::memory_order_relaxed);
+  return static_cast<bool>(cell_before & mask);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
