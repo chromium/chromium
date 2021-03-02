@@ -432,6 +432,26 @@ TEST(ToV8TraitsTest, NullableString) {
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "", charptr_empty_string);
 }
 
+TEST(ToV8TraitsTest, NullableObject) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(
+      scope, IDLNullable<IDLObject>, "null",
+      ScriptValue(scope.GetIsolate(), v8::Null(scope.GetIsolate())));
+
+  Vector<uint8_t> uint8_vector;
+  uint8_vector.push_back(static_cast<uint8_t>(0));
+  uint8_vector.push_back(static_cast<uint8_t>(255));
+  ScriptValue value(scope.GetIsolate(),
+                    ToV8Traits<IDLNullable<IDLSequence<IDLOctet>>>::ToV8(
+                        scope.GetScriptState(), uint8_vector));
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLObject>, "0,255", value);
+  v8::Local<v8::Value> actual;
+  ASSERT_TRUE(
+      ToV8Traits<IDLNullable<IDLObject>>::ToV8(scope.GetScriptState(), value)
+          .ToLocal(&actual));
+  EXPECT_TRUE(actual->IsObject());
+}
+
 TEST(ToV8TraitsTest, NullableScriptWrappable) {
   const V8TestingScope scope;
   TEST_TOV8_TRAITS(scope, IDLNullable<EventTarget>, "null", nullptr);
@@ -505,6 +525,18 @@ TEST(ToV8TraitsTest, Union) {
       FileOrUSVStringOrFormData::FromUSVString("https://example.com/");
   TEST_TOV8_TRAITS(scope, IDLUnionNotINT<FileOrUSVStringOrFormData>,
                    "https://example.com/", usv_string);
+}
+
+TEST(ToV8TraitsTest, NullableUnion) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope,
+                   IDLNullable<IDLUnionNotINT<FileOrUSVStringOrFormData>>,
+                   "null", FileOrUSVStringOrFormData());
+  const FileOrUSVStringOrFormData usv_string =
+      FileOrUSVStringOrFormData::FromUSVString("http://example.com/");
+  TEST_TOV8_TRAITS(scope,
+                   IDLNullable<IDLUnionNotINT<FileOrUSVStringOrFormData>>,
+                   "http://example.com/", usv_string);
 }
 
 TEST(ToV8TraitsTest, Optional) {
