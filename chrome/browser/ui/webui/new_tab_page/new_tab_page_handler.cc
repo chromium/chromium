@@ -556,12 +556,12 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
   file_types.extensions[0].push_back(FILE_PATH_LITERAL("png"));
   file_types.extension_description_overrides.push_back(
       l10n_util::GetStringUTF16(IDS_UPLOAD_IMAGE_FORMAT));
+  choose_local_custom_background_callback_ = std::move(callback);
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
       profile_->last_selected_directory(), &file_types, 0,
       base::FilePath::StringType(), web_contents_->GetTopLevelNativeWindow(),
       nullptr);
-  choose_local_custom_background_callback_ = std::move(callback);
 }
 
 void NewTabPageHandler::GetOneGoogleBarParts(
@@ -1139,6 +1139,7 @@ void NewTabPageHandler::OnOneGoogleBarServiceShuttingDown() {
 void NewTabPageHandler::FileSelected(const base::FilePath& path,
                                      int index,
                                      void* params) {
+  DCHECK(choose_local_custom_background_callback_);
   if (instant_service_) {
     profile_->set_last_selected_directory(path.DirName());
     instant_service_->SelectLocalBackgroundImage(path);
@@ -1150,16 +1151,19 @@ void NewTabPageHandler::FileSelected(const base::FilePath& path,
   LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_DONE);
   LogEvent(NTP_BACKGROUND_UPLOAD_DONE);
 
-  std::move(choose_local_custom_background_callback_).Run(true);
+  if (choose_local_custom_background_callback_)
+    std::move(choose_local_custom_background_callback_).Run(true);
 }
 
 void NewTabPageHandler::FileSelectionCanceled(void* params) {
+  DCHECK(choose_local_custom_background_callback_);
   select_file_dialog_ = nullptr;
   // File selection can happen at any time after NTP load, and is not logged
   // with the event.
   LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_CANCEL);
   LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);
-  std::move(choose_local_custom_background_callback_).Run(false);
+  if (choose_local_custom_background_callback_)
+    std::move(choose_local_custom_background_callback_).Run(false);
 }
 
 void NewTabPageHandler::OnLogoAvailable(
