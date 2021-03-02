@@ -67,8 +67,9 @@ void WinHeapMemoryDumpImpl(WinHeapInfo* crt_heap_info) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void ReportPartitionAllocStats(ProcessMemoryDump* pmd, bool detailed) {
   SimplePartitionStatsDumper allocator_dumper;
-  internal::PartitionAllocMalloc::Allocator()->DumpStats(
-      "malloc", !detailed /* is_light_dump */, &allocator_dumper);
+  auto* allocator = internal::PartitionAllocMalloc::Allocator();
+  allocator->DumpStats("malloc", !detailed /* is_light_dump */,
+                       &allocator_dumper);
   // TODO(bartekn): Dump OriginalAllocator() into "malloc" as well.
 
   if (allocator_dumper.stats().has_thread_cache) {
@@ -84,11 +85,12 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd, bool detailed) {
   }
 
   // Not reported in UMA, detailed dumps only.
-  if (detailed) {
+  auto* aligned_allocator = internal::PartitionAllocMalloc::AlignedAllocator();
+  if (detailed && (aligned_allocator != allocator)) {
     SimplePartitionStatsDumper aligned_allocator_dumper;
-    internal::PartitionAllocMalloc::AlignedAllocator()->DumpStats(
-        "malloc/aligned", !detailed /* is_light_dump */,
-        &aligned_allocator_dumper);
+    aligned_allocator->DumpStats("malloc/aligned",
+                                 !detailed /* is_light_dump */,
+                                 &aligned_allocator_dumper);
     // These should be included in the overall figure, so using a child dump.
     auto* aligned_allocator_dump = pmd->CreateAllocatorDump("malloc/aligned");
     // See
