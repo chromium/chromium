@@ -9,8 +9,10 @@
 #include "base/optional.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/boringssl/src/include/openssl/ecdsa.h"
 
 namespace device {
 
@@ -49,6 +51,15 @@ AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
 
   auto signature =
       fido_parsing_utils::Materialize(u2f_data.subspan(kSignatureIndex));
+
+  bssl::UniquePtr<ECDSA_SIG> parsed_sig(
+      ECDSA_SIG_from_bytes(signature.data(), signature.size()));
+  if (!parsed_sig) {
+    FIDO_LOG(ERROR)
+        << "Rejecting U2F assertion response with invalid signature";
+    return base::nullopt;
+  }
+
   AuthenticatorGetAssertionResponse response(std::move(authenticator_data),
                                              std::move(signature));
   response.SetCredential(PublicKeyCredentialDescriptor(

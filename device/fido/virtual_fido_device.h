@@ -159,6 +159,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // zero, in violation of the rules for self-attestation.
     bool non_zero_aaguid_with_self_attestation = false;
 
+    // u2f_invalid_signature causes the signature in an assertion response to be
+    // invalid. (U2F only.)
+    bool u2f_invalid_signature = false;
+
+    // u2f_invalid_public_key causes the public key in a registration response
+    // to be invalid. (U2F only.)
+    bool u2f_invalid_public_key = false;
+
     // Number of PIN retries remaining.
     int pin_retries = kMaxPinRetries;
     // The number of failed PIN attempts since the token was "inserted".

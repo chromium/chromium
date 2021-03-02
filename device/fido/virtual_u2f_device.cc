@@ -144,7 +144,12 @@ base::Optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
   // Note: Non-deterministic, you need to mock this out if you rely on
   // deterministic behavior.
   std::unique_ptr<PrivateKey> private_key(PrivateKey::FreshP256Key());
-  const std::vector<uint8_t> x962 = private_key->GetX962PublicKey();
+  std::vector<uint8_t> x962 = private_key->GetX962PublicKey();
+
+  if (mutable_state()->u2f_invalid_public_key) {
+    // Flip a bit in the x-coordinate, which will push the point off the curve.
+    x962[10] ^= 1;
+  }
 
   // Our key handles are simple hashes of the public key.
   const auto key_handle = crypto::SHA256Hash(x962);
@@ -244,6 +249,12 @@ base::Optional<std::vector<uint8_t>> VirtualU2fDevice::DoSign(
 
   // Sign with credential key.
   std::vector<uint8_t> sig = registration->private_key->Sign(sign_buffer);
+
+  if (mutable_state()->u2f_invalid_signature) {
+    // Flip a bit in the ASN.1 header to make the signature structurally
+    // invalid.
+    sig[0] ^= 1;
+  }
 
   // Add signature for full response.
   Append(&response, sig);

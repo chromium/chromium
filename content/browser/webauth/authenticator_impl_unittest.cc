@@ -3759,6 +3759,33 @@ TEST_F(AuthenticatorImplTest, ResetDiscoveryFactoryOverride) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
+TEST_F(AuthenticatorImplTest, InvalidU2FPublicKey) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  virtual_device_factory_->SetSupportedProtocol(device::ProtocolVersion::kU2f);
+  virtual_device_factory_->mutable_state()->u2f_invalid_public_key = true;
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
+TEST_F(AuthenticatorImplTest, InvalidU2FSignature) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  virtual_device_factory_->SetSupportedProtocol(device::ProtocolVersion::kU2f);
+  virtual_device_factory_->mutable_state()->u2f_invalid_signature = true;
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id(), kTestOrigin1));
+  options->appid = kTestOrigin1;
+
+  EXPECT_EQ(
+      AuthenticatorGetAssertionAndWaitForTimeout(std::move(options)).status,
+      AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
 static constexpr char kTestPIN[] = "1234";
 
 class UVTestAuthenticatorClientDelegate
