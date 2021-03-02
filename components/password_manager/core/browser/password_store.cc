@@ -311,7 +311,7 @@ void PasswordStore::GetLogins(const FormDigest& form,
   }
 
   if (affiliated_match_helper_) {
-    affiliated_match_helper_->GetAffiliatedAndroidRealms(
+    affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
         form, base::BindOnce(
                   &PasswordStore::ScheduleGetFilteredLoginsWithAffiliations,
                   this, consumer->GetWeakPtr(), form, cutoff));
@@ -439,7 +439,7 @@ void PasswordStore::GetMatchingInsecureCredentials(
   if (affiliated_match_helper_) {
     FormDigest form(PasswordForm::Scheme::kHtml, signon_realm,
                     GURL(signon_realm));
-    affiliated_match_helper_->GetAffiliatedAndroidRealms(
+    affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
         form,
         base::BindOnce(
             &PasswordStore::ScheduleGetInsecureCredentialsWithAffiliations,
