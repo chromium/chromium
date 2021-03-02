@@ -196,15 +196,14 @@ bool DrawVideoFrameIntoResourceProvider(
   media_flags.setFilterQuality(kLow_SkFilterQuality);
   media_flags.setBlendMode(SkBlendMode::kSrc);
 
-  // PaintCanvasVideoRenderer can't handle GpuMemoryBuffer frames.
-  if (frame->HasGpuMemoryBuffer() && !frame->IsMappable())
-    frame = media::ConvertToMemoryMappedFrame(std::move(frame));
-
   std::unique_ptr<media::PaintCanvasVideoRenderer> local_video_renderer;
   if (!video_renderer) {
     local_video_renderer = std::make_unique<media::PaintCanvasVideoRenderer>();
     video_renderer = local_video_renderer.get();
   }
+
+  // TODO(crbug.com/1183572): It'd be nice to Map() GpuMemoryBuffer backed
+  // frames into CPU backed ones when we're using a non-accelerated provider.
 
   video_renderer->Paint(
       frame.get(), resource_provider->Canvas(), gfx::RectF(dest_rect),
