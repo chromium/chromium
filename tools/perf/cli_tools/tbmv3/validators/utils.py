@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
 def AssertHistogramStatsAlmostEqual(test_ctx, v2_hist, v3_hist, precision=1e-3):
   """Asserts major histogram statistics are close enough.
 
@@ -21,8 +20,9 @@ def AssertHistogramSamplesAlmostEqual(test_ctx,
                                       v2_hist,
                                       v3_hist,
                                       precision=1e-3):
-  v2_samples = v2_hist.sample_values
-  v3_samples = v3_hist.sample_values
+  v2_samples = [s for s in v2_hist.sample_values if s is not None]
+  v3_samples = [s for s in v3_hist.sample_values if s is not None]
+
   test_ctx.assertEqual(len(v2_samples), len(v3_samples))
   v2_samples.sort()
   v3_samples.sort()
