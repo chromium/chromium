@@ -29,7 +29,6 @@
 #include "components/data_reduction_proxy/proto/data_store.pb.h"
 #include "components/data_use_measurement/core/data_use_measurement.h"
 #include "components/prefs/pref_service.h"
-#include "components/previews/core/previews_experiments.h"
 
 namespace data_reduction_proxy {
 

@@ -33,7 +33,6 @@
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "components/previews/core/previews_features.h"
 #include "components/variations/hashing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -453,7 +452,7 @@ class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
         {optimization_guide::features::kOptimizationHints,
          optimization_guide::features::kRemoteOptimizationGuideFetching,
          optimization_guide::features::kOptimizationTargetPrediction},
-        {previews::features::kPreviews});
+        {});
   }
 };
 
@@ -882,7 +881,7 @@ class PredictionManagerNoUserPermissionsTest
                "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"
                "list_trial_for_OptimizationHintsFetching"}}},
         },
-        {previews::features::kPreviews});
+        {});
   }
 };
 
@@ -981,7 +980,7 @@ class PredictionManagerModelDownloadingBrowserTest
                "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"
                "list_trial_for_OptimizationHintsFetching"}}},
         },
-        {previews::features::kPreviews});
+        {});
     SetExpectedFieldTrialNames(base::flat_set<uint32_t>(
         {variations::HashName(
              "scoped_feature_list_trial_for_OptimizationHints"),

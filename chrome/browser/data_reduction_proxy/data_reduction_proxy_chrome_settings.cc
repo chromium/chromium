@@ -21,8 +21,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/previews/previews_service.h"
-#include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -30,6 +28,7 @@
 #include "chrome/browser/subresource_redirect/litepages_service_bypass_decider.h"
 #include "chrome/browser/subresource_redirect/origin_robots_rules_cache.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
@@ -42,7 +41,6 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/previews/content/previews_ui_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "components/version_info/version_info.h"
@@ -56,9 +54,17 @@
 #include "net/proxy_resolution/proxy_list.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "sql/database.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace {
+
+// Deletes Previews opt-out database file. Opt-out database is no longer needed
+// since Previews has been turned down.
+void DeletePreviewsOptOutDatabaseOnDBThread(
+    const base::FilePath& previews_optout_database_file) {
+  sql::Database::Delete(previews_optout_database_file);
+}
 
 // Assume that any proxy host ending with this suffix is a Data Reduction Proxy.
 const char kDataReductionProxyDefaultHostSuffix[] = ".googlezip.net";
@@ -211,6 +217,16 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner) {
   profile_ = profile;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Delete Previews OptOut database file.
+  // Deletion started in M-91, and should run for few milestones.
+  // TODO(https://crbug.com/1183505): Delete this logic.
+  const base::FilePath& profile_path = profile->GetPath();
+  db_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(DeletePreviewsOptOutDatabaseOnDBThread,
+                     profile_path.Append(chrome::kPreviewsOptOutDBFilename)));
+
 #if defined(OS_ANDROID)
   // On mobile we write Data Reduction Proxy prefs directly to the pref service.
   // On desktop we store Data Reduction Proxy prefs in memory, writing to disk
