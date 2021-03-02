@@ -28,7 +28,7 @@
         padding-inline-start: var(--cr-section-padding);
       }
 
-      .separator {
+      .cellular-network-list-separator {
         border-top: var(--cr-separator-line);
         padding: 0;
       }
@@ -77,7 +77,7 @@
       }
     </style>
     <template is="dom-if" if="[[!!euicc_]]" restamp>
-      <div class="separator"></div>
+      <div class="cellular-network-list-separator"></div>
       <div class="cellular-network-list-header esim-list-header flex">
         <div class="esim-list-title">$i18n{cellularNetworkEsimLabel}</div>
         <div class="flex-column">
@@ -117,7 +117,7 @@
         </div>
       </template>
     </template>
-    <div class="separator"></div>
+    <div class="cellular-network-list-separator"></div>
     <div class="cellular-network-list-header">
       $i18n{cellularNetworkPsimLabel}
     </div>
@@ -144,7 +144,7 @@
         </settings-localized-link>
       </div>
     </template>
-    <div class="separator"></div>
+    <div class="cellular-network-list-separator"></div>
     <div class="cellular-network-list-header">
       $i18n{cellularNetworkTetherLabel}
     </div>
