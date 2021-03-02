@@ -66,6 +66,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Translates the mirror container by |delta_x|.
   void Drag(float delta_x);
 
+  // Beings a fling with initial velocity of |velocity_x|.
+  void StartFling(float velocity_x);
+
   // Moves the focus ring to the respective preview for |window|. Does not
   // scroll the window cycle list.
   void SetFocusedWindow(aura::Window* window);

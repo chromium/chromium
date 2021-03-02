@@ -80,6 +80,9 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
   // Drags the cycle view's mirror container |delta_x|.
   void Drag(float delta_x);
 
+  // Starts a fling for the cycle view's mirror container base on |velocity_x|.
+  void StartFling(float velocity_x);
+
   // Returns true if we are in the middle of a window cycling gesture.
   bool IsCycling() const { return window_cycle_list_.get() != NULL; }
 

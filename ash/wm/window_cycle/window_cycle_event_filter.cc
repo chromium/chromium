@@ -241,7 +241,6 @@ void WindowCycleEventFilter::ProcessMouseEvent(ui::MouseEvent* event) {
 }
 
 bool WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
-  // TODO(chinsenj): Implement handling for ui::ET_SCROLL_FLING_START events.
   switch (event->type()) {
     case ui::ET_GESTURE_TAP:
     case ui::ET_GESTURE_TAP_DOWN:
@@ -261,8 +260,7 @@ bool WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
       return true;
     case ui::ET_GESTURE_SCROLL_BEGIN: {
       tapped_window_ = nullptr;
-      auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
-      if (!window_cycle_controller->IsEventInCycleView(event))
+      if (!Shell::Get()->window_cycle_controller()->IsEventInCycleView(event))
         return false;
 
       touch_scrolling_ = true;
@@ -274,6 +272,15 @@ bool WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
 
       Shell::Get()->window_cycle_controller()->Drag(
           event->details().scroll_x());
+      return true;
+    }
+    case ui::ET_SCROLL_FLING_START: {
+      tapped_window_ = nullptr;
+      auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+      if (!window_cycle_controller->IsEventInCycleView(event))
+        return false;
+
+      window_cycle_controller->StartFling(event->details().velocity_x());
       return true;
     }
     case ui::ET_GESTURE_END: {

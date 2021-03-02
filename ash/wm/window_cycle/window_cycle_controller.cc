@@ -214,6 +214,11 @@ void WindowCycleController::Drag(float delta_x) {
   window_cycle_list_->Drag(delta_x);
 }
 
+void WindowCycleController::StartFling(float velocity_x) {
+  DCHECK(window_cycle_list_);
+  window_cycle_list_->StartFling(velocity_x);
+}
+
 void WindowCycleController::StartCycling() {
   // Close the wallpaper preview if it is open to prevent visual glitches where
   // the window view item for the preview is transparent
