@@ -41,8 +41,8 @@ class FakeExternalConnector : public ExternalConnector {
                      mojo::ScopedMessagePipeHandle interface_pipe,
                      bool async = true) override;
   // Note: These methods are unimplemented.
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-  AddConnectionErrorCallback(base::RepeatingClosure callback) override;
+  base::CallbackListSubscription AddConnectionErrorCallback(
+      base::RepeatingClosure callback) override;
   void RegisterServices(
       std::vector<chromecast::external_mojo::mojom::ServiceInstanceInfoPtr>
           service_instances_info) override;

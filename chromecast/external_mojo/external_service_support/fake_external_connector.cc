@@ -18,11 +18,11 @@ FakeExternalConnector::FakeExternalConnector() {
 
 FakeExternalConnector::~FakeExternalConnector() = default;
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
+base::CallbackListSubscription
 FakeExternalConnector::AddConnectionErrorCallback(
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nullptr;
+  return base::CallbackListSubscription();
 }
 
 void FakeExternalConnector::RegisterService(const std::string& service_name,
