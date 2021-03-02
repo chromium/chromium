@@ -33,13 +33,13 @@ if (current_toolchain == default_toolchain &&
   #   __ThumbV7PILongThunk___cxa_atexit
   expected_static_initializer_count += 1
 
+  # From v8 I think:
+  # token.cc (initializer offset 0x27f024c size 0x11c)
+  expected_static_initializer_count += 1
+
   if (target_cpu == "arm") {
     # This one is from //third_party/gvr-android-sdk
     # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
-    expected_static_initializer_count += 1
-  } else {
-    # From v8 it seems.
-    # token.cc (initializer offset 0x27f024c size 0x11c)
     expected_static_initializer_count += 1
   }
 

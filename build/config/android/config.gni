@@ -49,17 +49,23 @@ if (is_android || is_chromeos) {
     # not explicitly set it.
     default_min_sdk_version = 21
 
-    # Android API level for 32 bits platforms
-    android32_ndk_api_level = 16
-
-    # Android API level for 64 bits platforms
-    android64_ndk_api_level = 21
-
     # [WIP] Allows devs to achieve much faster edit-build-install cycles.
     # Currently only works for ChromeModern apks due to incremental install.
     # This needs to be in a separate declare_args as it determines some of the
     # args in the main declare_args block below.
     android_fast_local_dev = false
+  }
+
+  declare_args() {
+    # Android API level for 32 bits platforms
+    android32_ndk_api_level = default_min_sdk_version
+
+    # Android API level for 64 bits platforms
+    if (default_min_sdk_version < 21) {
+      android64_ndk_api_level = 21
+    } else {
+      android64_ndk_api_level = default_min_sdk_version
+    }
   }
 
   if (enable_chrome_android_internal) {
