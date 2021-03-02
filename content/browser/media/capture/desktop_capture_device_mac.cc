@@ -70,7 +70,7 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
           kCGDisplayStreamColorSpace,
       };
       const void* values[kNumKeys] = {
-          kCFBooleanFalse,
+          kCFBooleanTrue,
           cf_max_frame_time.get(),
           cg_color_space.get(),
       };
