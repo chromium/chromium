@@ -241,7 +241,7 @@ const char kPrivacyLearnMoreURL[] =
     "https://support.google.com/chrome/?p=settings_privacy";
 #endif
 
-const char kPrivacySandboxURL[] = "http://google.com/chrome/privacy-sandbox";
+const char kPrivacySandboxURL[] = "http://google.com/chrome/privacysandbox";
 
 const char kRemoveNonCWSExtensionURL[] =
     "https://support.google.com/chrome/?p=ui_remove_non_cws_extensions";
