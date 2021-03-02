@@ -9,7 +9,7 @@ import("//build/util/version.gni")
 
 declare_args() {
   # Should ANGLE be linked statically?
-  use_static_angle = false
+  use_static_angle = is_android
 
   # Should EGL support be compiled?
   # Can be overriden to test during bring up of EGL support on other platforms.
