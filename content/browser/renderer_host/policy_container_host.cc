@@ -130,6 +130,15 @@ void PolicyContainerHost::SetReferrerPolicy(
   policies_->referrer_policy = referrer_policy;
 }
 
+void PolicyContainerHost::AddContentSecurityPolicies(
+    std::vector<network::mojom::ContentSecurityPolicyPtr>
+        content_security_policies) {
+  policies_->content_security_policies.insert(
+      policies_->content_security_policies.end(),
+      std::make_move_iterator(content_security_policies.begin()),
+      std::make_move_iterator(content_security_policies.end()));
+}
+
 blink::mojom::PolicyContainerPtr
 PolicyContainerHost::CreatePolicyContainerForBlink() {
   // This function might be called several times, for example if we need to
@@ -145,8 +154,9 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
       remote.InitWithNewEndpointAndPassReceiver()));
 
   return blink::mojom::PolicyContainer::New(
-      blink::mojom::PolicyContainerPolicies::New(policies_->referrer_policy,
-                                                 policies_->ip_address_space),
+      blink::mojom::PolicyContainerPolicies::New(
+          policies_->referrer_policy, policies_->ip_address_space,
+          mojo::Clone(policies_->content_security_policies)),
       std::move(remote));
 }
 

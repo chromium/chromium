@@ -2096,7 +2096,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
 
   // Inherit policy container from parent.
   mojom::blink::PolicyContainerPoliciesPtr policy_container_data =
-      mojo::Clone(GetFrame()->DomWindow()->GetPolicyContainer()->GetPolicies());
+      GetFrame()->DomWindow()->GetPolicyContainer()->GetPolicies().Clone();
   std::unique_ptr<PolicyContainer> policy_container =
       std::make_unique<PolicyContainer>(std::move(policy_container_remote),
                                         std::move(policy_container_data));

@@ -141,9 +141,10 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_EQ(mojom::blink::PolicyContainerPolicies::New(
+  EXPECT_EQ(*mojom::blink::PolicyContainerPolicies::New(
                 network::mojom::ReferrerPolicy::kAlways,
-                network::mojom::IPAddressSpace::kPublic),
+                network::mojom::IPAddressSpace::kPublic,
+                Vector<network::mojom::blink::ContentSecurityPolicyPtr>()),
             local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
 }
 
