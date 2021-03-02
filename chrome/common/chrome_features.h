@@ -211,11 +211,6 @@ extern const base::Feature kDesktopPWAsTabStripLinkCapturing;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsWithoutExtensions;
 
-#if defined(OS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kDexFixer;
-#endif
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDnsOverHttps;
 COMPONENT_EXPORT(CHROME_FEATURES)
