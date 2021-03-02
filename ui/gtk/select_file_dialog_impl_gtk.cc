@@ -79,14 +79,6 @@ void GtkFileChooserSetFilename(GtkFileChooser* dialog,
 #endif
 }
 
-void GtkWindowDestroy(GtkWidget* widget) {
-#if GTK_CHECK_VERSION(3, 90, 0)
-  gtk_window_destroy(GTK_WINDOW(widget));
-#else
-  gtk_widget_destroy(widget);
-#endif
-}
-
 int GtkDialogSelectedFilterIndex(GtkWidget* dialog) {
   GtkFileFilter* selected_filter =
       gtk_file_chooser_get_filter(GTK_FILE_CHOOSER(dialog));

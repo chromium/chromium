@@ -605,4 +605,12 @@ GtkIconTheme* GetDefaultIconTheme() {
 #endif
 }
 
+void GtkWindowDestroy(GtkWidget* widget) {
+#if GTK_CHECK_VERSION(3, 98, 4)
+  gtk_window_destroy(GTK_WINDOW(widget));
+#else
+  gtk_widget_destroy(widget);
+#endif
+}
+
 }  // namespace gtk

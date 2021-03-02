@@ -195,6 +195,8 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event);
 
 GtkIconTheme* GetDefaultIconTheme();
 
+void GtkWindowDestroy(GtkWidget* widget);
+
 }  // namespace gtk
 
 #endif  // UI_GTK_GTK_UTIL_H_
