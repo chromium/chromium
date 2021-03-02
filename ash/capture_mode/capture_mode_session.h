@@ -65,11 +65,23 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   static constexpr int kCaptureButtonDistanceFromRegionDp = 24;
 
   aura::Window* current_root() const { return current_root_; }
+  views::Widget* capture_mode_bar_widget() {
+    return capture_mode_bar_widget_.get();
+  }
   bool is_selecting_region() const { return is_selecting_region_; }
   bool is_drag_in_progress() const { return is_drag_in_progress_; }
   void set_a11y_alert_on_session_exit(bool value) {
     a11y_alert_on_session_exit_ = value;
   }
+  bool is_shutting_down() const { return is_shutting_down_; }
+
+  // Initializes the capture mode session. This should be called right after the
+  // object is created.
+  void Initialize();
+
+  // Shuts down the capture mode session. This should be called right before the
+  // object is destroyed.
+  void Shutdown();
 
   // Gets the current window selected for |kWindow| capture source. Returns
   // nullptr if no window is available for selection.
@@ -332,6 +344,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // False only when we end the session to start recording.
   bool a11y_alert_on_session_exit_ = true;
+
+  // True once Shutdown() is called.
+  bool is_shutting_down_ = false;
 
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
