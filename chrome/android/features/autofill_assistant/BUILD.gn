@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//build/config/zip.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -436,4 +437,35 @@ java_strings_grd("java_strings_grd") {
   outputs = [ "values/android_chrome_autofill_assistant_strings.xml" ] + process_file_template(
                 android_bundle_locales_as_resources,
                 [ "values-{{source_name_part}}/android_chrome_autofill_assistant_strings.xml" ])
+}
+
+if (!incremental_install){
+  zip("password_change_tests_runner") {
+    testonly = true
+    inputs = [
+      "$root_build_dir/test_runner/ChromePublicTest.apk",
+      "$root_build_dir/test_runner/ChromiumNetTestSupport.apk",
+      "$root_build_dir/test_runner/config_example.cfg",
+      "$root_build_dir/test_runner/parse_logs.py",
+      "$root_build_dir/test_runner/runner.py",
+    ]
+    output = "$root_build_dir/test_runner/password_change_tests_runner.zip"
+    deps = [ ":copy_password_change_tests_runner" ]
+  }
+
+  copy("copy_password_change_tests_runner") {
+    testonly = true
+    sources = [
+      "$root_build_dir/apks/ChromePublicTest.apk",
+      "$root_build_dir/apks/ChromiumNetTestSupport.apk",
+      "tools/password_change_tests_runner/config_example.cfg",
+      "tools/password_change_tests_runner/parse_logs.py",
+      "tools/password_change_tests_runner/runner.py",
+    ]
+    outputs = [ "$root_out_dir/test_runner/{{source_file_part}}" ]
+    deps = [
+      "//chrome/android:chrome_public_test_apk__test_apk__create",
+      "//net/android:net_test_support_apk__create",
+    ]
+  }
 }
