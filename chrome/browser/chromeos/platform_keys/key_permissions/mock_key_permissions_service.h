@@ -30,19 +30,19 @@ class MockKeyPermissionsService : public KeyPermissionsService {
               CanUserGrantPermissionForKey,
               (const std::string& public_key_spki_der,
                CanUserGrantPermissionForKeyCallback callback),
-              (const override));
+              (override));
 
   MOCK_METHOD(void,
               IsCorporateKey,
               (const std::string& public_key_spki_der_b64,
                IsCorporateKeyCallback callback),
-              (const override));
+              (override));
 
   MOCK_METHOD(void,
               SetCorporateKey,
               (const std::string& public_key_spki_der_b64,
                SetCorporateKeyCallback callback),
-              (const override));
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockKeyPermissionsService(

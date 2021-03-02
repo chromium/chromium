@@ -16,8 +16,6 @@
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 
-class PrefService;
-
 namespace chromeos {
 namespace platform_keys {
 
@@ -28,13 +26,11 @@ class PlatformKeysService;
 // classes.
 class KeyPermissionsServiceImpl : public KeyPermissionsService {
  public:
-  // |profile_prefs| must not be null and must outlive this object.
   // |profile_is_managed| determines the default usage and permissions for
   // keys without explicitly assigned usage.
   KeyPermissionsServiceImpl(
       bool is_regular_user_profile,
       bool profile_is_managed,
-      PrefService* profile_prefs,
       PlatformKeysService* platform_keys_service,
       KeyPermissionsManager* profile_key_permissions_manager);
 
@@ -46,13 +42,13 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
 
   void CanUserGrantPermissionForKey(
       const std::string& public_key_spki_der,
-      CanUserGrantPermissionForKeyCallback callback) const override;
+      CanUserGrantPermissionForKeyCallback callback) override;
 
   void IsCorporateKey(const std::string& public_key_spki_der,
-                      IsCorporateKeyCallback callback) const override;
+                      IsCorporateKeyCallback callback) override;
 
   void SetCorporateKey(const std::string& public_key_spki_der,
-                       SetCorporateKeyCallback callback) const override;
+                       SetCorporateKeyCallback callback) override;
 
   PlatformKeysService* platform_keys_service() {
     return platform_keys_service_;
@@ -67,7 +63,7 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
       const std::string& public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback,
       const std::vector<TokenId>& key_locations,
-      Status key_locations_retrieval_status) const;
+      Status key_locations_retrieval_status);
   void CanUserGrantPermissionForKeyWithLocationsAndFlag(
       const std::string& public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback,
@@ -78,7 +74,10 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   void IsCorporateKeyWithLocations(const std::string& public_key_spki_der,
                                    IsCorporateKeyCallback callback,
                                    const std::vector<TokenId>& key_locations,
-                                   Status key_locations_retrieval_status) const;
+                                   Status key_locations_retrieval_status);
+  void IsCorporateKeyWithKpmResponse(IsCorporateKeyCallback callback,
+                                     base::Optional<bool> allowed,
+                                     Status status);
 
   void SetCorporateKeyWithLocations(const std::string& public_key_spki_der,
                                     SetCorporateKeyCallback callback,
@@ -87,7 +86,6 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
 
   const bool is_regular_user_profile_;
   const bool profile_is_managed_;
-  PrefService* const profile_prefs_;
   PlatformKeysService* const platform_keys_service_;
   KeyPermissionsManager* const profile_key_permissions_manager_;
   base::WeakPtrFactory<KeyPermissionsServiceImpl> weak_factory_{this};

@@ -13,7 +13,6 @@
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -109,8 +108,12 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
 
     key_permissions_service_ = std::make_unique<KeyPermissionsServiceImpl>(
         /*is_regular_profile=*/true, /*profile_is_managed=*/true,
-        profile_->GetPrefs(), platform_keys_service_.get(),
-        key_permissions_manager_.get());
+        platform_keys_service_.get(), key_permissions_manager_.get());
+
+    // All test keys are not marked as corporate by default unless specified.
+    EXPECT_CALL(*key_permissions_manager_, IsKeyAllowedForUsage(_, _, _))
+        .WillRepeatedly(base::test::RunOnceCallback<0>(/*allowed=*/false,
+                                                       Status::kSuccess));
   }
 
  protected:
@@ -134,9 +137,14 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
   }
 
   void SetCorporateKey(const std::string& public_key) {
-    EXPECT_CALL(*key_permissions_manager_, AllowKeyForUsage(_, _, _))
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(_, KeyUsage::kCorporate, public_key))
         .Times(1)
         .WillOnce(base::test::RunOnceCallback<0>(Status::kSuccess));
+    EXPECT_CALL(*key_permissions_manager_,
+                IsKeyAllowedForUsage(_, KeyUsage::kCorporate, public_key))
+        .WillOnce(
+            base::test::RunOnceCallback<0>(/*allowed=*/true, Status::kSuccess));
     SetCorporateKeyExecutionWaiter set_corporate_key_waiter;
     key_permissions_service_->SetCorporateKey(
         public_key, set_corporate_key_waiter.GetCallback());

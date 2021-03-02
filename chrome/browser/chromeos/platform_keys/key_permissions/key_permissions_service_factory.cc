@@ -49,7 +49,7 @@ KeyedService* KeyPermissionsServiceFactory::BuildServiceInstanceFor(
 
   return new KeyPermissionsServiceImpl(
       ProfileHelper::IsRegularProfile(profile),
-      profile->GetProfilePolicyConnector()->IsManaged(), profile->GetPrefs(),
+      profile->GetProfilePolicyConnector()->IsManaged(),
       PlatformKeysServiceFactory::GetForBrowserContext(profile),
       KeyPermissionsManagerImpl::GetUserPrivateTokenKeyPermissionsManager(
           profile));

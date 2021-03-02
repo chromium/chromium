@@ -48,17 +48,17 @@ class KeyPermissionsService : public KeyedService {
   // to extensions. |callback| will be invoked with the result.
   virtual void CanUserGrantPermissionForKey(
       const std::string& public_key_spki_der,
-      CanUserGrantPermissionForKeyCallback callback) const = 0;
+      CanUserGrantPermissionForKeyCallback callback) = 0;
 
   // Determines if the key identified by |public_key_spki_der|is marked for
   // corporate usage. |callback| will be invoked with the result.
   virtual void IsCorporateKey(const std::string& public_key_spki_der,
-                              IsCorporateKeyCallback callback) const = 0;
+                              IsCorporateKeyCallback callback) = 0;
 
   // Marks the key identified by |public_key_spki_der| as corporate usage.
   // |callback| will be invoked with the resulting status.
   virtual void SetCorporateKey(const std::string& public_key_spki_der,
-                               SetCorporateKeyCallback callback) const = 0;
+                               SetCorporateKeyCallback callback) = 0;
 };
 
 }  // namespace platform_keys
