@@ -412,8 +412,7 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
   source->AddBoolean(
       "forceEnablePrivetPrinting",
-      profile->GetPrefs()->GetBoolean(prefs::kForceEnablePrivetPrinting) ||
-          base::FeatureList::IsEnabled(features::kForceEnablePrivetPrinting));
+      profile->GetPrefs()->GetBoolean(prefs::kForceEnablePrivetPrinting));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

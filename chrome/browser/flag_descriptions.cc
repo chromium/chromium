@@ -1962,11 +1962,6 @@ const char kPrivacySandboxSettingsDescription[] =
     "Enables privacy sandbox settings. Requires at least one of the Privacy "
     "Sandbox APIs to be enabled.";
 
-const char kForceEnablePrivetPrintingName[] = "Force enable Privet Printing";
-const char kForceEnablePrivetPrintingDescription[] =
-    "Override to force enabling printing to existing registered Privet "
-    "printers in Print Preview. Will be removed in M90.";
-
 const char kSafetyCheckAndroidName[] = "Safety Check on Android";
 const char kSafetyCheckAndroidDescription[] =
     "A settings component for checking multiple areas of browser safety. "

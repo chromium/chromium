@@ -3216,10 +3216,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeviceDiscoveryNotificationsName,
      flag_descriptions::kDeviceDiscoveryNotificationsDescription, kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kEnableDeviceDiscoveryNotifications)},
-    {"force-enable-privet-printing",
-     flag_descriptions::kForceEnablePrivetPrintingName,
-     flag_descriptions::kForceEnablePrivetPrintingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kForceEnablePrivetPrinting)},
 #endif  // BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
     {"enable-webgl-draft-extensions",
      flag_descriptions::kWebglDraftExtensionsName,

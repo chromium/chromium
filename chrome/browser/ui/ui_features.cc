@@ -39,11 +39,6 @@ const base::Feature kExtensionSettingsOverriddenDialogs{
 const base::Feature kExtensionsToolbarMenu{"ExtensionsToolbarMenu",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Force enables legacy privet printers that are already registered in Print
-// Preview. To be removed in M90.
-const base::Feature kForceEnablePrivetPrinting{
-    "ForceEnablePrivetPrinting", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the new profile picker.
 // https:://crbug.com/1063856
 const base::Feature kNewProfilePicker{"NewProfilePicker",
