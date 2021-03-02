@@ -19,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/threading/sequence_bound_internal.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
@@ -164,40 +163,62 @@ class SequenceBound {
   //
   //   helper.AsyncCall(&IOHelper::DoWork);
   //
-  // If `method` accepts arguments, use of `WithArgs()` to bind them is
-  // mandatory:
+  // If `method` accepts arguments, use `WithArgs()` to bind them:
   //
-  //   helper.AsyncCall(&IOHelper::DoWorkWithArgs).WithArgs(args);
+  //   helper.AsyncCall(&IOHelper::DoWorkWithArgs)
+  //       .WithArgs(args);
   //
-  // Optionally, use `Then()` to chain to a callback on the owner sequence after
-  // `method` completes. If `method` returns a non-void type, the return value
-  // will be passed to the chained callback.
+  // Use `Then()` to run a callback on the owner sequence after `method`
+  // completes:
   //
-  //   helper.AsyncCall(&IOHelper::GetValue).Then(std::move(process_result));
+  //   helper.AsyncCall(&IOHelper::GetValue)
+  //       .Then(std::move(process_result_callback));
+  //
+  // If a method returns a non-void type, use of `Then()` is required, and the
+  // method's return value will be passed to the `Then()` callback. To ignore
+  // the method's return value instead, wrap `method` in `base::IgnoreResult()`:
+  //
+  //   // Calling `GetPrefs` to force-initialize prefs.
+  //   helper.AsyncCall(base::IgnoreResult(&IOHelper::GetPrefs));
   //
   // `WithArgs()` and `Then()` may also be combined:
   //
-  //   helper.AsyncCall(&IOHelper::GetValueWithArgs).WithArgs(args)
-  //         .Then(std::move(process_result));
+  //   // Ordering is important: `Then()` must come last.
+  //   helper.AsyncCall(&IOHelper::GetValueWithArgs)
+  //       .WithArgs(args)
+  //       .Then(std::move(process_result_callback));
   //
-  // but note that ordering is strict: `Then()` must always be last.
-  //
-  // Note: internally, this is implemented using a series of templated builders.
-  // Destruction of the builder may trigger task posting; as a result, using the
-  // builder as anything other than a temporary is not allowed.
-  //
-  // Similarly, triggering lifetime extension of the temporary (e.g. by binding
-  // to a const lvalue reference) is not allowed.
+  // Note: internally, `AsyncCall()` is implemented using a series of helper
+  // classes that build the callback chain and post it on destruction. Capturing
+  // the return value and passing it elsewhere or triggering lifetime extension
+  // (e.g. by binding the return value to a reference) are both unsupported.
   template <typename R, typename... Args>
   auto AsyncCall(R (T::*method)(Args...),
                  const Location& location = Location::Current()) const {
-    return AsyncCallBuilder<R (T::*)(Args...)>(this, &location, method);
+    return AsyncCallBuilder<R (T::*)(Args...), R, std::tuple<Args...>>(
+        this, &location, method);
   }
 
   template <typename R, typename... Args>
   auto AsyncCall(R (T::*method)(Args...) const,
                  const Location& location = Location::Current()) const {
-    return AsyncCallBuilder<R (T::*)(Args...) const>(this, &location, method);
+    return AsyncCallBuilder<R (T::*)(Args...) const, R, std::tuple<Args...>>(
+        this, &location, method);
+  }
+
+  template <typename R, typename... Args>
+  auto AsyncCall(internal::IgnoreResultHelper<R (T::*)(Args...) const> method,
+                 const Location& location = Location::Current()) const {
+    return AsyncCallBuilder<
+        internal::IgnoreResultHelper<R (T::*)(Args...) const>, void,
+        std::tuple<Args...>>(this, &location, method);
+  }
+
+  template <typename R, typename... Args>
+  auto AsyncCall(internal::IgnoreResultHelper<R (T::*)(Args...)> method,
+                 const Location& location = Location::Current()) const {
+    return AsyncCallBuilder<internal::IgnoreResultHelper<R (T::*)(Args...)>,
+                            void, std::tuple<Args...>>(this, &location, method);
   }
 
   // Posts `task` to `impl_task_runner_`, passing it a reference to the wrapped
@@ -320,12 +341,12 @@ class SequenceBound {
   //
   // In theory, this might allow the elimination of magic destructors and
   // better static checking by the compiler.
-  template <typename MethodPtrType>
+  template <typename MethodRef>
   class AsyncCallBuilderBase {
    protected:
     AsyncCallBuilderBase(const SequenceBound* sequence_bound,
                          const Location* location,
-                         MethodPtrType method)
+                         MethodRef method)
         : sequence_bound_(sequence_bound),
           location_(location),
           method_(method) {
@@ -359,20 +380,20 @@ class SequenceBound {
     // the lifetime of the factory is incorrectly extended, dereferencing
     // `location_` will trigger a stack-use-after-scope when running with ASan.
     const Location* const location_;
-    MethodPtrType method_;
+    MethodRef method_;
   };
 
-  template <typename MethodPtrType, typename ReturnType, typename... Args>
+  template <typename MethodRef, typename ReturnType, typename ArgsTuple>
   class AsyncCallBuilderImpl;
 
   // Selected method has no arguments and returns void.
-  template <typename MethodPtrType>
-  class AsyncCallBuilderImpl<MethodPtrType, void, std::tuple<>>
-      : public AsyncCallBuilderBase<MethodPtrType> {
+  template <typename MethodRef>
+  class AsyncCallBuilderImpl<MethodRef, void, std::tuple<>>
+      : public AsyncCallBuilderBase<MethodRef> {
    public:
     // Note: despite being here, this is actually still protected, since it is
     // protected on the base class.
-    using AsyncCallBuilderBase<MethodPtrType>::AsyncCallBuilderBase;
+    using AsyncCallBuilderBase<MethodRef>::AsyncCallBuilderBase;
 
     ~AsyncCallBuilderImpl() {
       if (this->sequence_bound_) {
@@ -398,13 +419,13 @@ class SequenceBound {
   };
 
   // Selected method has no arguments and returns non-void.
-  template <typename MethodPtrType, typename ReturnType>
-  class AsyncCallBuilderImpl<MethodPtrType, ReturnType, std::tuple<>>
-      : public AsyncCallBuilderBase<MethodPtrType> {
+  template <typename MethodRef, typename ReturnType>
+  class AsyncCallBuilderImpl<MethodRef, ReturnType, std::tuple<>>
+      : public AsyncCallBuilderBase<MethodRef> {
    public:
     // Note: despite being here, this is actually still protected, since it is
     // protected on the base class.
-    using AsyncCallBuilderBase<MethodPtrType>::AsyncCallBuilderBase;
+    using AsyncCallBuilderBase<MethodRef>::AsyncCallBuilderBase;
 
     ~AsyncCallBuilderImpl() {
       // Must use Then() since the method's return type is not void.
@@ -433,13 +454,13 @@ class SequenceBound {
   };
 
   // Selected method has arguments. Return type can be void or non-void.
-  template <typename MethodPtrType, typename ReturnType, typename... Args>
-  class AsyncCallBuilderImpl<MethodPtrType, ReturnType, std::tuple<Args...>>
-      : public AsyncCallBuilderBase<MethodPtrType> {
+  template <typename MethodRef, typename ReturnType, typename... Args>
+  class AsyncCallBuilderImpl<MethodRef, ReturnType, std::tuple<Args...>>
+      : public AsyncCallBuilderBase<MethodRef> {
    public:
     // Note: despite being here, this is actually still protected, since it is
     // protected on the base class.
-    using AsyncCallBuilderBase<MethodPtrType>::AsyncCallBuilderBase;
+    using AsyncCallBuilderBase<MethodRef>::AsyncCallBuilderBase;
 
     ~AsyncCallBuilderImpl() {
       // Must use WithArgs() since the method takes arguments.
@@ -464,11 +485,14 @@ class SequenceBound {
     AsyncCallBuilderImpl& operator=(AsyncCallBuilderImpl&&) = default;
   };
 
-  template <typename MethodPtrType,
-            typename R = internal::ExtractMethodReturnType<MethodPtrType>,
-            typename ArgsTuple =
-                internal::ExtractMethodArgsTuple<MethodPtrType>>
-  using AsyncCallBuilder = AsyncCallBuilderImpl<MethodPtrType, R, ArgsTuple>;
+  // `MethodRef` is either a member function pointer type or a member function
+  //     pointer type wrapped with `internal::IgnoreResultHelper`.
+  // `R` is the return type of `MethodRef`. This is always `void` if
+  //     `MethodRef` is an `internal::IgnoreResultHelper` wrapper.
+  // `ArgsTuple` is a `std::tuple` with template type arguments corresponding to
+  //     the types of the method's parameters.
+  template <typename MethodRef, typename R, typename ArgsTuple>
+  using AsyncCallBuilder = AsyncCallBuilderImpl<MethodRef, R, ArgsTuple>;
 
   // Support factories when arguments are bound using `WithArgs()`. These
   // factories don't need to handle raw method pointers, since everything has
