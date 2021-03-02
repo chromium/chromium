@@ -602,7 +602,61 @@ void AccessibilityControllerImpl::CreateAccessibilityFeatures() {
 // static
 void AccessibilityControllerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+  //
+  // Non-syncable prefs.
+  //
+  // These prefs control whether an accessibility feature is enabled. They are
+  // not synced due to the impact they have on device interaction.
   registry->RegisterBooleanPref(prefs::kAccessibilityAutoclickEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityCursorColorEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityCaretHighlightEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityCursorHighlightEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityDictationEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityFloatingMenuEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityFocusHighlightEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityHighContrastEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityLargeCursorEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityMonoAudioEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityScreenMagnifierEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilitySpokenFeedbackEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilitySelectToSpeakEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityStickyKeysEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityShortcutsEnabled, true);
+  registry->RegisterBooleanPref(prefs::kAccessibilitySwitchAccessEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityVirtualKeyboardEnabled,
+                                false);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, false);
+
+  // A pref in this list is associated with accepting for the first time,
+  // enabling of some pref above. Non-syncable like all of the above prefs.
+  registry->RegisterBooleanPref(
+      prefs::kHighContrastAcceleratorDialogHasBeenAccepted, false);
+  registry->RegisterBooleanPref(
+      prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted, false);
+  registry->RegisterBooleanPref(
+      prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted, false);
+  registry->RegisterBooleanPref(
+      prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
+  registry->RegisterBooleanPref(
+      prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2, false);
+  registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,
+                                false);
+
+  //
+  // Syncable prefs.
+  //
+  // These prefs pertain to specific features. They are synced to preserve
+  // behaviors tied to user accounts once that user enables a feature.
   registry->RegisterIntegerPref(
       prefs::kAccessibilityAutoclickDelayMs, kDefaultAutoclickDelayMs,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -624,51 +678,32 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       prefs::kAccessibilityAutoclickMenuPosition,
       static_cast<int>(kDefaultAutoclickMenuPosition),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterIntegerPref(
-      prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
-      static_cast<int>(MagnifierMouseFollowingMode::kEdge),
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(prefs::kAccessibilityCaretHighlightEnabled,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityCursorHighlightEnabled,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityCursorColorEnabled, false);
+
   registry->RegisterIntegerPref(
       prefs::kAccessibilityCursorColor, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(prefs::kAccessibilityDictationEnabled, false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityFloatingMenuEnabled,
-                                false);
+
   registry->RegisterIntegerPref(
       prefs::kAccessibilityFloatingMenuPosition,
       static_cast<int>(kDefaultFloatingMenuPosition),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(prefs::kAccessibilityFocusHighlightEnabled,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityHighContrastEnabled,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityLargeCursorEnabled, false);
+
   registry->RegisterIntegerPref(prefs::kAccessibilityLargeCursorDipSize,
                                 kDefaultLargeCursorSize);
-  registry->RegisterBooleanPref(prefs::kAccessibilityMonoAudioEnabled, false);
+
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
+      static_cast<int>(MagnifierMouseFollowingMode::kEdge),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityScreenMagnifierCenterFocus, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(prefs::kAccessibilityScreenMagnifierEnabled,
-                                false);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDoublePref(prefs::kAccessibilityScreenMagnifierScale,
                                std::numeric_limits<double>::min());
-  registry->RegisterBooleanPref(prefs::kAccessibilitySpokenFeedbackEnabled,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAccessibilitySelectToSpeakEnabled,
-                                false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityStickyKeysEnabled, false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityShortcutsEnabled, true);
-  registry->RegisterBooleanPref(prefs::kAccessibilitySwitchAccessEnabled,
-                                false);
+
   registry->RegisterDictionaryPref(
       prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
       base::Value(base::Value::Type::DICTIONARY),
@@ -696,23 +731,6 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond,
       kDefaultSwitchAccessPointScanSpeedDipsPerSecond,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(prefs::kAccessibilityVirtualKeyboardEnabled,
-                                false);
-  registry->RegisterBooleanPref(
-      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, false);
-  registry->RegisterBooleanPref(
-      prefs::kHighContrastAcceleratorDialogHasBeenAccepted, false);
-  registry->RegisterBooleanPref(
-      prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted, false);
-  registry->RegisterBooleanPref(
-      prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted, false);
-  registry->RegisterBooleanPref(
-      prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
-  registry->RegisterBooleanPref(
-      prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2, false);
-
-  registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,
-                                false);
 }
 
 void AccessibilityControllerImpl::Shutdown() {
