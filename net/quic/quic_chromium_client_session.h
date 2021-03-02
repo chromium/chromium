@@ -282,6 +282,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // Returns true if the session's connection has sent or received any bytes.
     bool WasEverUsed() const;
 
+    // Retrieves any DNS aliases for the given session key from the map stored
+    // in `stream_factory_`. The alias chain order is preserved in reverse, from
+    // canonical name (i.e. address record name) through to query name.
+    const std::vector<std::string>& GetDnsAliasesForSessionKey(
+        const QuicSessionKey& key) const;
+
    private:
     friend class QuicChromiumClientSession;
     friend class QuicChromiumClientSession::StreamRequest;
@@ -844,6 +850,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                                             const QuicSessionKey& session_key);
 
   bool require_confirmation() const { return require_confirmation_; }
+
+  // Retrieves any DNS aliases for the given session key from the map stored
+  // in `stream_factory_`. The alias chain order is preserved in reverse, from
+  // canonical name (i.e. address record name) through to query name.
+  const std::vector<std::string>& GetDnsAliasesForSessionKey(
+      const QuicSessionKey& key) const;
 
  protected:
   // quic::QuicSession methods:

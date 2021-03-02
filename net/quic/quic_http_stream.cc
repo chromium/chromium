@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_endpoint.h"
@@ -57,7 +56,8 @@ void NetLogQuicPushStream(const NetLogWithSource& net_log1,
 }  // namespace
 
 QuicHttpStream::QuicHttpStream(
-    std::unique_ptr<QuicChromiumClientSession::Handle> session)
+    std::unique_ptr<QuicChromiumClientSession::Handle> session,
+    std::vector<std::string> dns_aliases)
     : MultiplexedHttpStream(std::move(session)),
       next_state_(STATE_NONE),
       stream_(nullptr),
@@ -78,7 +78,8 @@ QuicHttpStream::QuicHttpStream(
       user_buffer_len_(0),
       session_error_(ERR_UNEXPECTED),
       found_promise_(false),
-      in_loop_(false) {}
+      in_loop_(false),
+      dns_aliases_(std::move(dns_aliases)) {}
 
 QuicHttpStream::~QuicHttpStream() {
   CHECK(!in_loop_);
@@ -429,8 +430,7 @@ void QuicHttpStream::OnReadResponseHeadersComplete(int rv) {
 }
 
 const std::vector<std::string>& QuicHttpStream::GetDnsAliases() const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
-  return *emptyvector_result;
+  return dns_aliases_;
 }
 
 void QuicHttpStream::ReadTrailingHeaders() {

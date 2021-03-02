@@ -672,7 +672,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
       proxy_server, quic_version, ssl_params->privacy_mode(),
       kH2QuicTunnelPriority, socket_tag(), params_->network_isolation_key(),
       ssl_params->GetDirectConnectionParams()->disable_secure_dns(),
-      ssl_params->ssl_config().GetCertVerifyFlags(),
+      /*use_dns_aliases=*/false, ssl_params->ssl_config().GetCertVerifyFlags(),
       GURL("https://" + proxy_server.ToString()), net_log(),
       &quic_net_error_details_,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),

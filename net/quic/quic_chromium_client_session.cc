@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -548,6 +549,14 @@ bool QuicChromiumClientSession::Handle::WasEverUsed() const {
     return was_ever_used_;
 
   return session_->WasConnectionEverUsed();
+}
+
+const std::vector<std::string>&
+QuicChromiumClientSession::Handle::GetDnsAliasesForSessionKey(
+    const QuicSessionKey& key) const {
+  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  return session_ ? session_->GetDnsAliasesForSessionKey(key)
+                  : *emptyvector_result;
 }
 
 bool QuicChromiumClientSession::Handle::CheckVary(
@@ -3711,6 +3720,14 @@ quic::QuicClientPromisedInfo* QuicChromiumClientSession::GetPromised(
     return nullptr;
   }
   return push_promise_index_->GetPromised(url.spec());
+}
+
+const std::vector<std::string>&
+QuicChromiumClientSession::GetDnsAliasesForSessionKey(
+    const QuicSessionKey& key) const {
+  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  return stream_factory_ ? stream_factory_->GetDnsAliasesForSessionKey(key)
+                         : *emptyvector_result;
 }
 
 bool QuicChromiumClientSession::ValidateStatelessReset(

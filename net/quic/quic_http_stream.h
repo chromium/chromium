@@ -40,7 +40,8 @@ class QuicHttpStreamPeer;
 class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
  public:
   explicit QuicHttpStream(
-      std::unique_ptr<QuicChromiumClientSession::Handle> session);
+      std::unique_ptr<QuicChromiumClientSession::Handle> session,
+      std::vector<std::string> dns_aliases);
 
   ~QuicHttpStream() override;
 
@@ -220,6 +221,12 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
 
   // Session connect timing info.
   LoadTimingInfo::ConnectTiming connect_timing_;
+
+  // Stores any DNS aliases for the remote endpoint. The alias chain is
+  // preserved in reverse order, from canonical name (i.e. address record name)
+  // through to query name. These are stored in the stream instead of the
+  // session due to complications related to IP-pooling.
+  std::vector<std::string> dns_aliases_;
 
   base::WeakPtrFactory<QuicHttpStream> weak_factory_{this};
 

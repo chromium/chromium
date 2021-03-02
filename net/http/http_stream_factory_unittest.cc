@@ -1053,7 +1053,6 @@ int GetHandedOutSocketCount(ClientSocketPool* pool) {
   return dict.FindIntKey("handed_out_socket_count").value_or(-1);
 }
 
-#if defined(OS_ANDROID)
 // Return count of distinct QUIC sessions.
 int GetQuicSessionCount(HttpNetworkSession* session) {
   base::Value dict(session->QuicInfoToValue());
@@ -1062,7 +1061,6 @@ int GetQuicSessionCount(HttpNetworkSession* session) {
     return -1;
   return session_list->GetList().size();
 }
-#endif
 
 TEST_F(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
   SpdySessionDependencies session_deps(
@@ -2041,14 +2039,19 @@ class HttpStreamFactoryBidirectionalQuicTest
         ->set_is_quic_known_to_work_on_current_network(true);
   }
 
-  void AddQuicAlternativeService() {
-    const AlternativeService alternative_service(kProtoQUIC, "www.example.org",
-                                                 443);
+  void AddQuicAlternativeService(const url::SchemeHostPort& request_url,
+                                 const std::string& alternative_destination) {
+    const AlternativeService alternative_service(kProtoQUIC,
+                                                 alternative_destination, 443);
     base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
     http_server_properties_.SetQuicAlternativeService(
-        url::SchemeHostPort(default_url_), NetworkIsolationKey(),
-        alternative_service, expiration,
+        request_url, NetworkIsolationKey(), alternative_service, expiration,
         session_->context().quic_context->params()->supported_versions);
+  }
+
+  void AddQuicAlternativeService() {
+    AddQuicAlternativeService(url::SchemeHostPort(default_url_),
+                              "www.example.org");
   }
 
   test::QuicTestPacketMaker& client_packet_maker() {
@@ -2070,6 +2073,8 @@ class HttpStreamFactoryBidirectionalQuicTest
   }
 
   quic::ParsedQuicVersion version() const { return version_; }
+
+  MockHostResolver* host_resolver() { return &host_resolver_; }
 
  private:
   QuicFlagSaver saver_;
@@ -3314,6 +3319,185 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   EXPECT_EQ(
       1, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
+}
+
+TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
+  const GURL kUrlA("https://a.example.org");
+  const GURL kUrlB("https://b.example.org");
+  const GURL kUrlC("https://c.example.org");
+  const std::vector<std::string> kDnsAliasesA({"alias1", "alias2"});
+  const std::vector<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
+
+  host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
+      kUrlA.host(), "127.0.0.1", kDnsAliasesA);
+  host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
+      kUrlB.host(), "127.0.0.1", kDnsAliasesB);
+  host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(kUrlC.host(),
+                                                           "127.0.0.1", {});
+
+  // Prepare mock QUIC data for a first session establishment.
+  MockQuicData mock_quic_data(version());
+  spdy::SpdyPriority priority =
+      ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+  size_t spdy_headers_frame_length;
+  int packet_num = 1;
+  if (VersionUsesHttp3(version().transport_version)) {
+    mock_quic_data.AddWrite(
+        client_packet_maker().MakeInitialSettingsPacket(packet_num++));
+  }
+  mock_quic_data.AddWrite(client_packet_maker().MakeRequestHeadersPacket(
+      packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+      /*should_include_version=*/true,
+      /*fin=*/true, priority,
+      client_packet_maker().GetRequestHeaders("GET", "https", "/"),
+      /*parent_stream_id=*/0, &spdy_headers_frame_length));
+  size_t spdy_response_headers_frame_length;
+  mock_quic_data.AddRead(server_packet_maker().MakeResponseHeadersPacket(
+      1, GetNthClientInitiatedBidirectionalStreamId(0),
+      /*should_include_version=*/false,
+      /*fin=*/true, server_packet_maker().GetResponseHeaders("200"),
+      &spdy_response_headers_frame_length));
+  mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
+  mock_quic_data.AddSocketDataToFactory(&socket_factory());
+
+  // Add hanging data for http job.
+  auto hanging_data = std::make_unique<StaticSocketDataProvider>();
+  MockConnect hanging_connect(SYNCHRONOUS, ERR_IO_PENDING);
+  hanging_data->set_connect_data(hanging_connect);
+  socket_factory().AddSocketDataProvider(hanging_data.get());
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  socket_factory().AddSSLSocketDataProvider(&ssl_data);
+
+  // Set up QUIC as alternative_service.
+  Initialize();
+  AddQuicAlternativeService(url::SchemeHostPort(kUrlA), kUrlA.host());
+  AddQuicAlternativeService(url::SchemeHostPort(kUrlB), kUrlB.host());
+  AddQuicAlternativeService(url::SchemeHostPort(kUrlC), kUrlC.host());
+
+  // Create three HttpRequestInfos, differing only in host name.
+  // All three will resolve to 127.0.0.1 and hence be IP aliases.
+  HttpRequestInfo request_info_a;
+  request_info_a.method = "GET";
+  request_info_a.url = kUrlA;
+  request_info_a.privacy_mode = PRIVACY_MODE_DISABLED;
+  request_info_a.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  HttpRequestInfo request_info_b = request_info_a;
+  HttpRequestInfo request_info_c = request_info_a;
+  request_info_b.url = kUrlB;
+  request_info_c.url = kUrlC;
+
+  // Open one session.
+  SSLConfig ssl_config;
+  StreamRequestWaiter waiter1;
+  std::unique_ptr<HttpStreamRequest> request1(
+      session()->http_stream_factory()->RequestStream(
+          request_info_a, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter1.WaitForStream();
+  EXPECT_TRUE(waiter1.stream_done());
+  EXPECT_FALSE(waiter1.websocket_stream());
+  ASSERT_TRUE(waiter1.stream());
+  EXPECT_EQ(kDnsAliasesA, waiter1.stream()->GetDnsAliases());
+
+  // Verify just one session created.
+  EXPECT_EQ(1, GetQuicSessionCount(session()));
+  EXPECT_EQ(kProtoQUIC, request1->negotiated_protocol());
+
+  // Create a request that will alias and reuse the first session.
+  StreamRequestWaiter waiter2;
+  std::unique_ptr<HttpStreamRequest> request2(
+      session()->http_stream_factory()->RequestStream(
+          request_info_b, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter2.WaitForStream();
+  EXPECT_TRUE(waiter2.stream_done());
+  EXPECT_FALSE(waiter2.websocket_stream());
+  ASSERT_TRUE(waiter2.stream());
+  EXPECT_EQ(kDnsAliasesB, waiter2.stream()->GetDnsAliases());
+
+  // Verify the session pool reused the first session and no new session is
+  // created. This will fail unless the session pool supports multiple
+  // sessions aliasing a single IP.
+  EXPECT_EQ(1, GetQuicSessionCount(session()));
+  EXPECT_EQ(kProtoQUIC, request2->negotiated_protocol());
+
+  // Create another request that will alias and reuse the first session.
+  StreamRequestWaiter waiter3;
+  std::unique_ptr<HttpStreamRequest> request3(
+      session()->http_stream_factory()->RequestStream(
+          request_info_c, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter3.WaitForStream();
+  EXPECT_TRUE(waiter3.stream_done());
+  EXPECT_FALSE(waiter3.websocket_stream());
+  ASSERT_TRUE(waiter3.stream());
+  EXPECT_THAT(waiter3.stream()->GetDnsAliases(), ElementsAre(kUrlC.host()));
+
+  // Clear the host resolve rules to ensure that we are using cached info.
+  host_resolver()->rules()->ClearRules();
+
+  // Verify the session pool reused the first session and no new session is
+  // created. This will fail unless the session pool supports multiple
+  // sessions aliasing a single IP.
+  EXPECT_EQ(1, GetQuicSessionCount(session()));
+  EXPECT_EQ(kProtoQUIC, request3->negotiated_protocol());
+
+  // Create a request that will reuse the first session.
+  std::unique_ptr<HttpStreamRequest> request4(
+      session()->http_stream_factory()->RequestStream(
+          request_info_a, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter1.WaitForStream();
+  EXPECT_TRUE(waiter1.stream_done());
+  EXPECT_FALSE(waiter1.websocket_stream());
+  ASSERT_TRUE(waiter1.stream());
+  EXPECT_EQ(kDnsAliasesA, waiter1.stream()->GetDnsAliases());
+
+  // Verify the session pool reused the first session and no new session is
+  // created.
+  EXPECT_EQ(1, GetQuicSessionCount(session()));
+  EXPECT_EQ(kProtoQUIC, request4->negotiated_protocol());
+
+  // Create another request that will alias and reuse the first session.
+  std::unique_ptr<HttpStreamRequest> request5(
+      session()->http_stream_factory()->RequestStream(
+          request_info_b, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter2.WaitForStream();
+  EXPECT_TRUE(waiter2.stream_done());
+  EXPECT_FALSE(waiter2.websocket_stream());
+  ASSERT_TRUE(waiter2.stream());
+  EXPECT_EQ(kDnsAliasesB, waiter2.stream()->GetDnsAliases());
+
+  // Verify the session pool reused the first session and no new session is
+  // created. This will fail unless the session pool supports multiple
+  // sessions aliasing a single IP.
+  EXPECT_EQ(1, GetQuicSessionCount(session()));
+  EXPECT_EQ(kProtoQUIC, request5->negotiated_protocol());
+
+  // Create another request that will alias and reuse the first session.
+  std::unique_ptr<HttpStreamRequest> request6(
+      session()->http_stream_factory()->RequestStream(
+          request_info_c, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          /* enable_ip_based_pooling = */ true,
+          /* enable_alternative_services = */ true, NetLogWithSource()));
+  waiter3.WaitForStream();
+  EXPECT_TRUE(waiter3.stream_done());
+  EXPECT_FALSE(waiter3.websocket_stream());
+  ASSERT_TRUE(waiter3.stream());
+  EXPECT_THAT(waiter3.stream()->GetDnsAliases(), ElementsAre(kUrlC.host()));
+
+  // Verify the session pool reused the first session and no new session is
+  // created. This will fail unless the session pool supports multiple
+  // sessions aliasing a single IP.
+  EXPECT_EQ(1, GetQuicSessionCount(session()));
+  EXPECT_EQ(kProtoQUIC, request6->negotiated_protocol());
 }
 
 class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {

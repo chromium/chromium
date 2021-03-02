@@ -434,9 +434,11 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     TestCompletionCallback callback;
     session_->CryptoConnect(callback.callback());
     stream_ = std::make_unique<QuicHttpStream>(
-        session_->CreateHandle(HostPortPair("www.example.org", 443)));
+        session_->CreateHandle(HostPortPair("www.example.org", 443)),
+        std::vector<std::string>() /* dns_aliases */);
     promised_stream_ = std::make_unique<QuicHttpStream>(
-        session_->CreateHandle(HostPortPair("www.example.org", 443)));
+        session_->CreateHandle(HostPortPair("www.example.org", 443)),
+        std::vector<std::string>() /* dns_aliases */);
     push_promise_[":path"] = "/bar";
     push_promise_[":authority"] = "www.example.org";
     push_promise_[":version"] = "HTTP/1.1";
@@ -828,7 +830,8 @@ TEST_P(QuicHttpStreamTest, LoadTimingTwoRequests) {
 
   // Start a second request.
   QuicHttpStream stream2(
-      session_->CreateHandle(HostPortPair("www.example.org", 443)));
+      session_->CreateHandle(HostPortPair("www.example.org", 443)),
+      {} /* dns_aliases */);
   TestCompletionCallback callback2;
   EXPECT_EQ(OK,
             stream2.InitializeStream(&request_, true, DEFAULT_PRIORITY,
@@ -1039,7 +1042,8 @@ TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
       DEFAULT_PRIORITY, &spdy_request_header_frame_length));
 
   auto stream = std::make_unique<QuicHttpStream>(
-      session_->CreateHandle(HostPortPair("www.example.org/foo", 443)));
+      session_->CreateHandle(HostPortPair("www.example.org/foo", 443)),
+      std::vector<std::string>() /* dns_aliases */);
   EXPECT_THAT(stream->InitializeStream(&request_, true, DEFAULT_PRIORITY,
                                        net_log_.bound(), callback_.callback()),
               IsOk());

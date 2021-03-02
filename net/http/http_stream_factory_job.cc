@@ -871,8 +871,8 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   int rv = quic_request_.Request(
       destination, quic_version_, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_isolation_key,
-      request_info_.disable_secure_dns, ssl_config->GetCertVerifyFlags(), url,
-      net_log_, &net_error_details_,
+      request_info_.disable_secure_dns, proxy_info_.is_direct(),
+      ssl_config->GetCertVerifyFlags(), url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
@@ -998,7 +998,10 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
         // Quic session is closed before stream can be created.
         return ERR_CONNECTION_CLOSED;
       }
-      stream_ = std::make_unique<QuicHttpStream>(std::move(session));
+      auto dns_aliases =
+          session->GetDnsAliasesForSessionKey(quic_request_.session_key());
+      stream_ = std::make_unique<QuicHttpStream>(std::move(session),
+                                                 std::move(dns_aliases));
     }
     next_state_ = STATE_NONE;
     return OK;
