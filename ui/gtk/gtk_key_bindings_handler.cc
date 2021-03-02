@@ -18,29 +18,10 @@
 
 using ui::TextEditCommand;
 
-// TODO(erg): Rewrite the old gtk_key_bindings_handler_unittest.cc and get them
-// in a state that links. This code was adapted from the content layer GTK
-// code, which had some simple unit tests. However, the changes in the public
-// interface basically meant the tests need to be rewritten; this imposes weird
-// linking requirements regarding GTK+ as we don't have a gtk_unittests
-// yet. http://crbug.com/358297.
-
-namespace {
-
-GtkWidget* CreateInvisibleWindow() {
-#if GTK_CHECK_VERSION(3, 90, 0)
-  return gtk_invisible_new();
-#else
-  return gtk_offscreen_window_new();
-#endif
-}
-
-}  // namespace
-
 namespace gtk {
 
 GtkKeyBindingsHandler::GtkKeyBindingsHandler()
-    : fake_window_(CreateInvisibleWindow()), handler_(CreateNewHandler()) {
+    : fake_window_(gtk_offscreen_window_new()), handler_(CreateNewHandler()) {
   gtk_container_add(GTK_CONTAINER(fake_window_), handler_);
 }
 
@@ -87,9 +68,7 @@ GtkWidget* GtkKeyBindingsHandler::CreateNewHandler() {
 
   // Prevents it from handling any events by itself.
   gtk_widget_set_sensitive(GTK_WIDGET(handler), FALSE);
-#if !GTK_CHECK_VERSION(3, 90, 0)
   gtk_widget_set_events(GTK_WIDGET(handler), 0);
-#endif
   gtk_widget_set_can_focus(GTK_WIDGET(handler), TRUE);
 
   return GTK_WIDGET(handler);
@@ -97,7 +76,7 @@ GtkWidget* GtkKeyBindingsHandler::CreateNewHandler() {
 
 void GtkKeyBindingsHandler::EditCommandMatched(TextEditCommand command,
                                                const std::string& value) {
-  edit_commands_.push_back(ui::TextEditCommandAuraLinux(command, value));
+  edit_commands_.emplace_back(command, value);
 }
 
 void GtkKeyBindingsHandler::HandlerInit(Handler* self) {
@@ -117,10 +96,8 @@ void GtkKeyBindingsHandler::HandlerClassInit(HandlerClass* klass) {
   text_view_class->paste_clipboard = PasteClipboard;
   text_view_class->set_anchor = SetAnchor;
   text_view_class->toggle_overwrite = ToggleOverwrite;
-#if !GTK_CHECK_VERSION(3, 90, 0)
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS(klass);
   widget_class->show_help = ShowHelp;
-#endif
 
   // "move-focus", "move-viewport", "select-all" and "toggle-cursor-visible"
   // have no corresponding virtual methods. Since glib 2.18 (gtk 2.14),
@@ -231,9 +208,10 @@ void GtkKeyBindingsHandler::DeleteFromCursor(GtkTextView* text_view,
   if (count < 0)
     count = -count;
   for (; count > 0; --count) {
-    for (size_t i = 0; i < base::size(commands); ++i)
-      if (commands[i] != TextEditCommand::INVALID_COMMAND)
-        owner->EditCommandMatched(commands[i], std::string());
+    for (auto& command : commands) {
+      if (command != TextEditCommand::INVALID_COMMAND)
+        owner->EditCommandMatched(command, std::string());
+    }
   }
 }
 
@@ -382,13 +360,11 @@ void GtkKeyBindingsHandler::ToggleOverwrite(GtkTextView* text_view) {
   // Not supported by Blink.
 }
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
 gboolean GtkKeyBindingsHandler::ShowHelp(GtkWidget* widget,
                                          GtkWidgetHelpType arg1) {
   // Just for disabling the default handler.
   return FALSE;
 }
-#endif
 
 void GtkKeyBindingsHandler::MoveFocus(GtkWidget* widget,
                                       GtkDirectionType arg1) {

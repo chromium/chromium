@@ -192,7 +192,7 @@ PrintDialogGtk::~PrintDialogGtk() {
       parent->RemoveObserver(this);
       gtk::ClearAuraTransientParent(dialog_, parent);
     }
-    gtk_widget_destroy(dialog_);
+    gtk::GtkWindowDestroy(dialog_);
     dialog_ = nullptr;
   }
   if (gtk_settings_) {
@@ -371,8 +371,12 @@ void PrintDialogGtk::ShowDialog(
   gtk::SetGtkTransientForAura(dialog_, parent_view);
   if (parent_view)
     parent_view->AddObserver(this);
+#if GTK_CHECK_VERSION(3, 94, 0)
+  gtk_window_set_hide_on_close(GTK_WINDOW(dialog_), true);
+#else
   g_signal_connect(dialog_, "delete-event",
                    G_CALLBACK(gtk_widget_hide_on_delete), nullptr);
+#endif
 
   // Handle the case when the existing |gtk_settings_| has "selection" selected
   // as the page range, but |has_selection| is false.
