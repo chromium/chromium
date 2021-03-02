@@ -139,6 +139,10 @@ struct CdmContext {
 
   // The remote Decryptor if the CDM implementation provides one.
   pending_remote<Decryptor>? decryptor;
+
+  // Whether MediaFoundationRenderer is required by the CDM.
+  [EnableIf=is_win]
+  bool requires_media_foundation_renderer;
 };
 
 // Factory interface used for creating ContentDecryptionModule instances.

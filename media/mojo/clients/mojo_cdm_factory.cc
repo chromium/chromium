@@ -42,11 +42,10 @@ void OnCdmCreated(
   }
 
   std::move(cdm_created_cb)
-      .Run(base::MakeRefCounted<MojoCdm>(std::move(remote), cdm_context->cdm_id,
-                                         std::move(cdm_context->decryptor),
-                                         session_message_cb, session_closed_cb,
-                                         session_keys_change_cb,
-                                         session_expiration_update_cb),
+      .Run(base::MakeRefCounted<MojoCdm>(
+               std::move(remote), std::move(cdm_context), session_message_cb,
+               session_closed_cb, session_keys_change_cb,
+               session_expiration_update_cb),
            "");
 }
 

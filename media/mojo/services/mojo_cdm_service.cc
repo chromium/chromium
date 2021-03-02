@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "media/base/cdm_config.h"
 #include "media/base/cdm_context.h"
 #include "media/base/cdm_factory.h"
@@ -51,7 +52,7 @@ void MojoCdmService::Create(CdmFactory* cdm_factory,
       base::BindOnce(&MojoCdmService::OnCdmCreated, weak_this,
                      std::move(mojo_cdm_service),
                      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                         std::move(callback), nullptr, mojo::NullRemote(),
+                         std::move(callback), nullptr, nullptr,
                          "Mojo CDM Service creation failure")));
 }
 
@@ -147,15 +148,14 @@ void MojoCdmService::OnCdmCreated(
     CdmServiceCreatedCB callback,
     const scoped_refptr<::media::ContentDecryptionModule>& cdm,
     const std::string& error_message) {
-  DVLOG(2) << __func__ << ": error_message=" << error_message;
-
   // TODO(xhwang): This should not happen when KeySystemInfo is properly
   // populated. See http://crbug.com/469366
   if (!cdm) {
     // Make sure the error string is non-empty on failure.
-    std::move(callback).Run(
-        nullptr, mojo::NullRemote(),
-        error_message.empty() ? "CDM initialization failed" : error_message);
+    auto non_empty_error_message =
+        error_message.empty() ? "CDM creation failed" : error_message;
+    DVLOG(1) << __func__ << ": " << non_empty_error_message;
+    std::move(callback).Run(nullptr, nullptr, non_empty_error_message);
     return;
   }
 
@@ -164,27 +164,40 @@ void MojoCdmService::OnCdmCreated(
   DVLOG(1) << __func__ << ": CDM successfully registered with ID "
            << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
 
-  // If |cdm| has a decryptor, create the MojoDecryptorService
-  // and pass the connection back to the client.
-  mojo::PendingRemote<mojom::Decryptor> decryptor_remote;
+  auto mojo_cdm_context = mojom::CdmContext::New();
+  mojo_cdm_context->cdm_id = cdm_id();
+
   CdmContext* const cdm_context = cdm_->GetCdmContext();
-  if (cdm_context && cdm_context->GetDecryptor()) {
-    DVLOG(2) << __func__ << ": CDM supports Decryptor.";
-    // Both |cdm_| and |decryptor_| are owned by |this|, so we don't need to
-    // pass in a CdmContextRef.
-    decryptor_.reset(
-        new MojoDecryptorService(cdm_context->GetDecryptor(), nullptr));
-    decryptor_receiver_ = std::make_unique<mojo::Receiver<mojom::Decryptor>>(
-        decryptor_.get(), decryptor_remote.InitWithNewPipeAndPassReceiver());
-    // base::Unretained is safe because |decryptor_receiver_| is owned by
-    // |this|. If |this| is destructed, |decryptor_receiver_| will be destructed
-    // as well and the error handler should never be called.
-    decryptor_receiver_->set_disconnect_handler(base::BindOnce(
-        &MojoCdmService::OnDecryptorConnectionError, base::Unretained(this)));
+  if (cdm_context) {
+    // If |cdm| has a decryptor, create the MojoDecryptorService
+    // and pass the connection back to the client.
+    if (cdm_context->GetDecryptor()) {
+      DVLOG(2) << __func__ << ": CDM supports Decryptor.";
+      mojo::PendingRemote<mojom::Decryptor> decryptor_remote;
+      // Both |cdm_| and |decryptor_| are owned by |this|, so we don't need to
+      // pass in a CdmContextRef.
+      decryptor_ = std::make_unique<MojoDecryptorService>(
+          cdm_context->GetDecryptor(), /*cdm_context_ref=*/nullptr);
+      decryptor_receiver_ = std::make_unique<mojo::Receiver<mojom::Decryptor>>(
+          decryptor_.get(), decryptor_remote.InitWithNewPipeAndPassReceiver());
+      // base::Unretained is safe because |decryptor_receiver_| is owned by
+      // |this|. If |this| is destructed, |decryptor_receiver_| will be
+      // destructed as well and the error handler should never be called.
+      // The disconnection can happen due to race conditions during render
+      // process teardown or crash.
+      decryptor_receiver_->set_disconnect_handler(base::BindOnce(
+          &MojoCdmService::OnDecryptorConnectionError, base::Unretained(this)));
+      mojo_cdm_context->decryptor = std::move(decryptor_remote);
+    }
+
+#if defined(OS_WIN)
+    mojo_cdm_context->requires_media_foundation_renderer =
+        cdm_context->RequiresMediaFoundationRenderer();
+#endif  // defined(OS_WIN)
   }
 
   std::move(callback).Run(std::move(mojo_cdm_service),
-                          std::move(decryptor_remote), "");
+                          std::move(mojo_cdm_context), "");
 }
 
 void MojoCdmService::OnSessionMessage(const std::string& session_id,
@@ -227,7 +240,8 @@ void MojoCdmService::OnDecryptorConnectionError() {
   DVLOG(2) << __func__;
 
   // MojoDecryptorService has lost connectivity to it's client, so it can be
-  // freed.
+  // freed. This could happen due to render process teardown or crash. No need
+  // for recovery.
   decryptor_.reset();
 }
 

@@ -103,7 +103,7 @@ class InterfaceFactoryImpl final
   CdmFactory* GetCdmFactory();
   void OnCdmServiceCreated(CreateCdmCallback callback,
                            std::unique_ptr<MojoCdmService> cdm_service,
-                           mojo::PendingRemote<mojom::Decryptor> decryptor,
+                           mojom::CdmContextPtr cdm_context,
                            const std::string& error_message);
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 

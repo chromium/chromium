@@ -37,7 +37,7 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
  public:
   using CdmServiceCreatedCB =
       base::OnceCallback<void(std::unique_ptr<MojoCdmService> mojo_cdm_service,
-                              mojo::PendingRemote<mojom::Decryptor> decryptor,
+                              mojom::CdmContextPtr cdm_context,
                               const std::string& error_message)>;
 
   // Creates a MojoCdmService. Callback will have |mojo_cdm_service| be non-null

@@ -101,20 +101,19 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
 
   void OnCdmServiceCreated(CreateCdmCallback callback,
                            std::unique_ptr<MojoCdmService> cdm_service,
-                           mojo::PendingRemote<mojom::Decryptor> decryptor,
+                           mojom::CdmContextPtr cdm_context,
                            const std::string& error_message) {
     if (!cdm_service) {
       std::move(callback).Run(mojo::NullRemote(), nullptr, error_message);
       return;
     }
 
-    auto cdm_id = cdm_service->cdm_id();
+    DCHECK(cdm_context);
+
     mojo::PendingRemote<mojom::ContentDecryptionModule> remote;
     cdm_receivers_.Add(std::move(cdm_service),
                        remote.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(
-        std::move(remote), mojom::CdmContext::New(cdm_id, std::move(decryptor)),
-        "");
+    std::move(callback).Run(std::move(remote), std::move(cdm_context), "");
   }
 
   // Must be declared before the receivers below because the bound objects might

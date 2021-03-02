@@ -88,7 +88,7 @@ class MojoCdmTest : public ::testing::Test {
 
   void OnCdmServiceCreated(ExpectedResult expected_result,
                            std::unique_ptr<MojoCdmService> cdm_service,
-                           mojo::PendingRemote<mojom::Decryptor> decryptor,
+                           mojom::CdmContextPtr cdm_context,
                            const std::string& error_message) {
     mojo_cdm_service_ = std::move(cdm_service);
     cdm_receiver_ =
@@ -103,8 +103,7 @@ class MojoCdmTest : public ::testing::Test {
     mojo::Remote<mojom::ContentDecryptionModule> cdm_remote(
         cdm_receiver_->BindNewPipeAndPassRemote());
     mojo_cdm_ = base::MakeRefCounted<MojoCdm>(
-        std::move(cdm_remote), mojo_cdm_service_->cdm_id(),
-        std::move(decryptor),
+        std::move(cdm_remote), std::move(cdm_context),
         base::BindRepeating(&MockCdmClient::OnSessionMessage,
                             base::Unretained(&cdm_client_)),
         base::BindRepeating(&MockCdmClient::OnSessionClosed,

@@ -169,10 +169,10 @@ class MojoRendererTest : public ::testing::Test {
   }
 
   void OnCdmServiceCreated(std::unique_ptr<MojoCdmService> cdm_service,
-                           mojo::PendingRemote<mojom::Decryptor> decryptor,
+                           mojom::CdmContextPtr cdm_context,
                            const std::string& error_message) {
-    EXPECT_TRUE(!!cdm_service);
-    cdm_context_.set_cdm_id(cdm_service->cdm_id());
+    EXPECT_TRUE(cdm_service);
+    cdm_context_.set_cdm_id(cdm_context->cdm_id);
     mojo_cdm_service_ = std::move(cdm_service);
   }
 
