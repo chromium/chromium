@@ -112,4 +112,18 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
   run_loop.Run();
 }
 
+TEST_F(WebAppOriginAssociationFetcherTest, FileUrlIsInvalid) {
+  base::RunLoop run_loop;
+  auto handler = apps::UrlHandlerInfo();
+  handler.origin = url::Origin::Create(GURL("https://co.uk"));
+  fetcher_->FetchWebAppOriginAssociationFile(
+      std::move(handler), shared_url_loader_factory_.get(),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<std::string> file_content) {
+            ASSERT_TRUE(!file_content);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
 }  // namespace webapps

@@ -16,7 +16,7 @@ source_set("lib") {
     "//base",
     "//components/services/app_service/public/cpp:app_url_handling",
     "//mojo/public/cpp/bindings",
-    "//net/traffic_annotation:traffic_annotation",
+    "//net",
     "//services/network/public/cpp",
     "//skia",
     "//url",

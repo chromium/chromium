@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,6 +65,34 @@ std::unique_ptr<network::SimpleURLLoader> CreateRequester(const GURL& url) {
       network::mojom::kURLLoadOptionBlockAllCookies);
   return url_loader;
 }
+
+// Fetching association file from a TLD or an otherwise invalid domain is not
+// allowed.
+bool ShouldFetchAssociationFile(const GURL& resource_url) {
+  if (!resource_url.is_valid() || resource_url.is_empty())
+    return false;
+
+  if (resource_url.HostIsIPAddress())
+    return true;
+
+  const size_t registry_length =
+      net::registry_controlled_domains::GetRegistryLength(
+          resource_url,
+          // Reject unknown registries (registries that don't have any matches
+          // in effective TLD names).
+          net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+          // Skip matching private registries that allow external users to
+          // specify sub-domains, e.g. glitch.me, as this is allowed.
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+
+  // Host cannot be a TLD or invalid.
+  if (registry_length == 0 || registry_length == std::string::npos ||
+      registry_length >= resource_url.host().length()) {
+    return false;
+  }
+
+  return true;
+}
 }  // namespace
 
 namespace webapps {
@@ -85,7 +114,7 @@ void WebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
     FetchFileCallback callback) {
   const GURL resource_url =
       url_handler.origin.GetURL().Resolve(association_file_name);
-  if (!resource_url.is_valid() || resource_url.is_empty()) {
+  if (!ShouldFetchAssociationFile(resource_url)) {
     // Do not proceed if |resource_url| is not valid.
     OnResponse(std::move(callback), nullptr);
     return;
