@@ -13,6 +13,7 @@ Polymer({
   behaviors: [
     ESimManagerListenerBehavior,
     I18nBehavior,
+    WebUIListenerBehavior,
   ],
 
   properties: {
@@ -140,6 +141,17 @@ Polymer({
       type: Object,
       value: null,
     },
+
+    /**
+     * Multi-device page data used to determine if the tether section should be
+     * shown or not.
+     * @type {?settings.MultiDevicePageContentData}
+     * @private
+     */
+    multiDevicePageContentData_: {
+      type: Object,
+      value: null,
+    },
   },
 
   listeners: {
@@ -155,6 +167,17 @@ Polymer({
     this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
                               .getMojoServiceRemote();
     this.fetchESimPendingProfileList_();
+  },
+
+  /** @override */
+  ready() {
+    this.addWebUIListener(
+        'settings.updateMultidevicePageContentData',
+        this.onMultiDevicePageContentDataChanged_.bind(this));
+
+    const browserProxy = settings.MultiDeviceBrowserProxyImpl.getInstance();
+    browserProxy.getPageContentData().then(
+        this.onMultiDevicePageContentDataChanged_.bind(this));
   },
 
   /**
@@ -297,6 +320,27 @@ Polymer({
       return accumulator + currentList.length;
     }, 0);
     return totalListLength > 0;
+  },
+
+  /**
+   * @param {!settings.MultiDevicePageContentData} newData
+   * @private
+   */
+  onMultiDevicePageContentDataChanged_(newData) {
+    this.multiDevicePageContentData_ = newData;
+  },
+
+  /**
+   * @param {?settings.MultiDevicePageContentData} pageContentData
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowTetherSection_(pageContentData) {
+    if (!pageContentData) {
+      return false;
+    }
+    return pageContentData.instantTetheringState ===
+        settings.MultiDeviceFeatureState.ENABLED_BY_USER;
   },
 
   /**

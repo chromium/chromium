@@ -8,6 +8,8 @@
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+// #import {MultiDeviceFeatureState, MultiDeviceBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
@@ -15,7 +17,7 @@
 // #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // clang-format on
 
-suite('CellularNetworkList', function() {
+suite('CellularNetworksList', function() {
   let cellularNetworkList;
 
   let mojom;
@@ -24,6 +26,7 @@ suite('CellularNetworkList', function() {
   let mojoApi_;
 
   let eSimManagerRemote;
+  let browserProxy;
 
   setup(function() {
     mojom = chromeos.networkConfig.mojom;
@@ -32,6 +35,9 @@ suite('CellularNetworkList', function() {
 
     eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
     cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+
+    browserProxy = new multidevice.TestMultideviceBrowserProxy();
+    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
   });
 
   function init() {
@@ -60,6 +66,8 @@ suite('CellularNetworkList', function() {
 
   test('Tether, cellular and eSIM profiles', async () => {
     init();
+    browserProxy.setInstantTetheringStateForTest(
+        settings.MultiDeviceFeatureState.ENABLED_BY_USER);
 
     const eSimNetwork1 = OncMojo.getDefaultNetworkState(
         mojom.NetworkType.kCellular, 'cellular_esim1');
@@ -197,4 +205,18 @@ suite('CellularNetworkList', function() {
     assertFalse(!!esimNetworkList);
   });
 
+  test('Hide instant tethering section when not enabled', async () => {
+    init();
+    assertFalse(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
+
+    browserProxy.setInstantTetheringStateForTest(
+        settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+    await flushAsync();
+    assertTrue(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
+
+    browserProxy.setInstantTetheringStateForTest(
+        settings.MultiDeviceFeatureState.UNAVAILABLE_NO_VERIFIED_HOST);
+    await flushAsync();
+    assertFalse(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
+  });
 });

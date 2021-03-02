@@ -12,8 +12,11 @@
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="../multidevice_page/multidevice_browser_proxy.html">
+<link rel="import" href="../multidevice_page/multidevice_constants.html">
 <link rel="import" href="../../chromeos/os_settings_icons_css.html">
 <link rel="import" href="esim_install_error_dialog.html">
 
@@ -144,29 +147,33 @@
         </settings-localized-link>
       </div>
     </template>
-    <div class="cellular-network-list-separator"></div>
-    <div class="cellular-network-list-header">
-      $i18n{cellularNetworkTetherLabel}
-    </div>
     <template is="dom-if"
-        if="[[shouldShowNetworkSublist_(tetherNetworks_)]]" restamp>
-      <div class="cellular-network-content">
-        <network-list
-            id="tetherNetworkList" show-buttons
-            class="cellular-network-content"
-            show-technology-badge="[[showTechnologyBadge]]"
-            networks="[[tetherNetworks_]]"
-            device-state="[[deviceState]]">
-        </network-list>
+        if="[[shouldShowTetherSection_(multiDevicePageContentData_)]]" restamp>
+      <div class="cellular-network-list-separator"></div>
+      <div class="cellular-network-list-header">
+        $i18n{cellularNetworkTetherLabel}
       </div>
-    </template>
-    <template is="dom-if"
-        if="[[!shouldShowNetworkSublist_(tetherNetworks_)]]" restamp>
-      <div class="cellular-network-content cellular-not-setup">
-        <settings-localized-link
-            localized-string="[[i18nAdvanced('tetherNetworkNotSetup')]]">
-        </settings-localized-link>
-      </div>
+      <template is="dom-if"
+          if="[[shouldShowNetworkSublist_(tetherNetworks_)]]" restamp>
+        <div class="cellular-network-content">
+          <network-list
+              id="tetherNetworkList" show-buttons
+              class="cellular-network-content"
+              show-technology-badge="[[showTechnologyBadge]]"
+              networks="[[tetherNetworks_]]"
+              device-state="[[deviceState]]">
+          </network-list>
+        </div>
+      </template>
+      <template is="dom-if"
+          if="[[!shouldShowNetworkSublist_(tetherNetworks_)]]" restamp>
+        <div id="tetherNetworksNotSetup"
+            class="cellular-network-content cellular-not-setup">
+          <settings-localized-link
+              localized-string="[[i18nAdvanced('tetherNetworkNotSetup')]]">
+          </settings-localized-link>
+        </div>
+      </template>
     </template>
 
     <template is="dom-if" if="[[shouldShowInstallErrorDialog_]]" restamp>
