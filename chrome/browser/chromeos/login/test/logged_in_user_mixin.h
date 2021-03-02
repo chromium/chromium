@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
 
 #include "base/optional.h"
-#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -35,4 +35,4 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_

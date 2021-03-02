@@ -10,7 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"

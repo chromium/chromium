@@ -4,8 +4,8 @@
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"

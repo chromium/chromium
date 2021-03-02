@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

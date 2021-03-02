@@ -55,7 +55,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #endif

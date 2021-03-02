@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 
 #include <utility>
 #include <vector>

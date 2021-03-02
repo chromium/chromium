@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_auth_page_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"

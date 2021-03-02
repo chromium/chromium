@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"

@@ -9,7 +9,7 @@
 
 #include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/scoped_policy_update.h"

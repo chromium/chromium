@@ -11,8 +11,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 

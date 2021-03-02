@@ -11,7 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/users/test_users.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"

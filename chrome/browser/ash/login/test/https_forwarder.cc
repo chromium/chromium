@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/test/https_forwarder.h"
+#include "chrome/browser/ash/login/test/https_forwarder.h"
 
 #include <cstring>
 
@@ -73,7 +73,7 @@ bool ForwardingServer::GetTestServerPath(
 
   *testserver_path = source_root_dir.Append("chrome")
                          .Append("browser")
-                         .Append("chromeos")
+                         .Append("ash")
                          .Append("login")
                          .Append("test")
                          .Append("https_forwarder.py");

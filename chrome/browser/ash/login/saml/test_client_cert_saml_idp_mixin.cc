@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/chromeos/login/test/https_forwarder.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/ssl_config.h"

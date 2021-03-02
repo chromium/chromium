@@ -4,8 +4,8 @@
 
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"

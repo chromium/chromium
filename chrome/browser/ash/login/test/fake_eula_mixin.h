@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_FAKE_EULA_MIXIN_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_FAKE_EULA_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_EULA_MIXIN_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_EULA_MIXIN_H_
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
@@ -47,4 +47,4 @@ class FakeEulaMixin : public InProcessBrowserTestMixin {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_FAKE_EULA_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_EULA_MIXIN_H_

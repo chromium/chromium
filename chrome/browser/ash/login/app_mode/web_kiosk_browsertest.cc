@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/chromeos/login/test/network_portal_detector_mixin.h"

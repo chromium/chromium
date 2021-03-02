@@ -8,7 +8,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
 
 #include "base/macros.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -34,4 +34,4 @@ class GuestSessionMixin : public InProcessBrowserTestMixin {
 // source migration is finished.
 using chromeos::GuestSessionMixin;
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
