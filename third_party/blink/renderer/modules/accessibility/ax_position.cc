@@ -421,7 +421,7 @@ int AXPosition::MaxTextOffset() const {
   // TODO(nektar): Make AXObject::TextLength() public and use throughout this
   // method.
   if (container_object_->IsNativeTextControl())
-    return container_object_->StringValue().length();
+    return container_object_->GetValueForControl().length();
 
   const Node* container_node = container_object_->GetNode();
   if (container_object_->IsAXInlineTextBox() || !container_node) {

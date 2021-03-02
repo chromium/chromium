@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -2041,27 +2042,6 @@ AXNodeObject::FindAllRadioButtonsWithSameName(HTMLInputElement* radio_button) {
   return all_radio_buttons;
 }
 
-String AXNodeObject::GetText() const {
-  if (!IsTextControl())
-    return String();
-
-  Node* node = this->GetNode();
-  if (!node)
-    return String();
-
-  if (IsNativeTextControl() &&
-      (IsA<HTMLTextAreaElement>(*node) || IsA<HTMLInputElement>(*node))) {
-    // We should not simply return the "value" attribute because it might be
-    // sanitized in some input control types, e.g. email fields. If we do that,
-    // then "selectionStart" and "selectionEnd" indices will not match with the
-    // text in the sanitized value.
-    return ToTextControl(*node).InnerEditorValue();
-  }
-
-  auto* element = DynamicTo<Element>(node);
-  return element ? element->GetInnerTextWithoutUpdate() : String();
-}
-
 ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
   if (!GetLayoutObject())
     return AXObject::GetTextDirection();
@@ -2291,8 +2271,7 @@ const AtomicString& AXNodeObject::AccessKey() const {
 int AXNodeObject::TextLength() const {
   if (!IsTextControl())
     return -1;
-
-  return GetText().length();
+  return GetValueForControl().length();
 }
 
 RGBA32 AXNodeObject::ColorValue() const {
@@ -2494,14 +2473,6 @@ String AXNodeObject::AriaInvalidValue() const {
   return String();
 }
 
-String AXNodeObject::ValueDescription() const {
-  if (!IsRangeValueSupported())
-    return String();
-
-  return GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText)
-      .GetString();
-}
-
 bool AXNodeObject::ValueForRange(float* out_value) const {
   float value_now;
   if (HasAOMPropertyOrARIAAttribute(AOMFloatProperty::kValueNow, value_now)) {
@@ -2695,12 +2666,19 @@ AXObject* AXNodeObject::ChooserPopup() const {
   }
 }
 
-String AXNodeObject::StringValue() const {
-  Node* node = this->GetNode();
+String AXNodeObject::GetValueForControl() const {
+  // TODO(crbug.com/1165853): Remove this method completely and compute value on
+  // the browser side.
+  Node* node = GetNode();
   if (!node)
     return String();
 
-  if (auto* select_element = DynamicTo<HTMLSelectElement>(*node)) {
+  if (const auto* select_element = DynamicTo<HTMLSelectElement>(*node)) {
+    if (!select_element->UsesMenuList())
+      return String();
+
+    // In most cases, we want to return what's actually displayed inside the
+    // <select> element on screen, unless there is an ARIA label overriding it.
     int selected_index = select_element->SelectedListIndex();
     const HeapVector<Member<HTMLElement>>& list_items =
         select_element->GetListItems();
@@ -2712,13 +2690,73 @@ String AXNodeObject::StringValue() const {
       if (!overridden_description.IsNull())
         return overridden_description;
     }
-    if (!select_element->IsMultiple())
-      return select_element->value();
-    return String();
+
+    // We don't retrieve the element's value attribute on purpose. The value
+    // attribute might be sanitized and might be different from what is actually
+    // displayed inside the <select> element on screen.
+    return select_element->InnerElement().innerText();
   }
 
-  if (IsNativeTextControl())
-    return GetText();
+  if (IsTextControl()) {
+    if (!IsA<HTMLTextAreaElement>(*node) && !IsA<HTMLInputElement>(*node)) {
+      // The text control is a contenteditable.
+      auto* element = DynamicTo<Element>(node);
+      return element ? element->GetInnerTextWithoutUpdate() : String();
+    }
+
+    // For an Input or a textarea: We should not simply return the "value"
+    // attribute because it might be sanitized in some input control types, e.g.
+    // email fields. If we do that, then "selectionStart" and "selectionEnd"
+    // indices will not match with the text in the sanitized value.
+    String inner_text = ToTextControl(*node).InnerEditorValue();
+    if (!IsPasswordFieldAndShouldHideValue())
+      return inner_text;
+
+    if (!GetLayoutObject())
+      return inner_text;
+
+    const ComputedStyle* style = GetLayoutObject()->Style();
+    if (!style)
+      return inner_text;
+
+    unsigned int unmasked_text_length = inner_text.length();
+    if (!unmasked_text_length)
+      return String();
+
+    UChar mask_character = 0;
+    switch (style->TextSecurity()) {
+      case ETextSecurity::kNone:
+        break;  // Fall through to the non-password branch.
+      case ETextSecurity::kDisc:
+        mask_character = kBulletCharacter;
+        break;
+      case ETextSecurity::kCircle:
+        mask_character = kWhiteBulletCharacter;
+        break;
+      case ETextSecurity::kSquare:
+        mask_character = kBlackSquareCharacter;
+        break;
+    }
+    if (!mask_character)
+      return inner_text;
+
+    StringBuilder masked_text;
+    masked_text.ReserveCapacity(unmasked_text_length);
+    for (unsigned int i = 0; i < unmasked_text_length; ++i)
+      masked_text.Append(mask_character);
+    return masked_text.ToString();
+  }
+
+  if (IsRangeValueSupported()) {
+    String aria_value_text =
+        GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText)
+            .GetString();
+    if (!aria_value_text.IsEmpty())
+      return aria_value_text;
+  }
+
+  if (GetLayoutObject() && GetLayoutObject()->IsFileUploadControl())
+    return To<LayoutFileUploadControl>(GetLayoutObject())->FileTextValue();
 
   // Handle other HTML input elements that aren't text controls, like date and
   // time controls, by returning their value converted to text, with the
@@ -2726,6 +2764,9 @@ String AXNodeObject::StringValue() const {
   // buttons which will return their name.
   // https://html.spec.whatwg.org/C/#dom-input-value
   if (const auto* input = DynamicTo<HTMLInputElement>(node)) {
+    if (input->type() == input_type_names::kFile)
+      return input->FileStatusText();
+
     if (input->type() != input_type_names::kButton &&
         input->type() != input_type_names::kCheckbox &&
         input->type() != input_type_names::kImage &&
@@ -2736,7 +2777,7 @@ String AXNodeObject::StringValue() const {
     }
   }
 
-  // ARIA combobox can get value from inner contents.
+  // An ARIA combobox can get value from inner contents.
   if (AriaRoleAttribute() == ax::mojom::blink::Role::kComboBoxMenuButton) {
     AXObjectSet visited;
     return TextFromDescendants(visited, false);
@@ -4687,7 +4728,7 @@ String AXNodeObject::NativeTextAlternative(
   if (input_element && input_element->type() == input_type_names::kFile) {
     name_from = ax::mojom::blink::NameFrom::kValue;
 
-    String displayed_file_path = StringValue();
+    String displayed_file_path = GetValueForControl();
     String upload_button_text = input_element->UploadButton()->value();
     if (!displayed_file_path.IsEmpty()) {
       text_alternative = displayed_file_path + ", " + upload_button_text;
@@ -5321,7 +5362,7 @@ String AXNodeObject::PlaceholderFromNativeAttribute() const {
 String AXNodeObject::GetValueContributionToName() const {
   if (CanSetValueAttribute()) {
     if (IsTextControl())
-      return GetText();
+      return GetValueForControl();
 
     if (IsRangeValueSupported()) {
       const AtomicString& aria_valuetext =

@@ -88,13 +88,9 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   // Properties of static elements.
   ax::mojom::blink::ListStyle GetListStyle() const final;
-  String GetText() const override;
   // Inline text boxes.
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
-
-  // Properties of interactive elements.
-  String StringValue() const override;
 
   // AX name calc.
   String TextAlternative(bool recursive,

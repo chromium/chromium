@@ -756,7 +756,7 @@ WebString WebAXObject::StringValue() const {
   if (IsDetached())
     return WebString();
 
-  return private_->StringValue();
+  return private_->GetValueForControl();
 }
 
 ax::mojom::blink::WritingDirection WebAXObject::GetTextDirection() const {

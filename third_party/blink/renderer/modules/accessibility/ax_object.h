@@ -664,7 +664,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual ax::mojom::blink::ListStyle GetListStyle() const {
     return ax::mojom::blink::ListStyle::kNone;
   }
-  virtual String GetText() const { return String(); }
   virtual ax::mojom::blink::TextAlign GetTextAlign() const {
     return ax::mojom::blink::TextAlign::kNone;
   }
@@ -771,12 +770,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   }
   // Only used when invalidState() returns InvalidStateOther.
   virtual String AriaInvalidValue() const { return String(); }
-  virtual String ValueDescription() const { return String(); }
   virtual bool ValueForRange(float* out_value) const { return false; }
   virtual bool MaxValueForRange(float* out_value) const { return false; }
   virtual bool MinValueForRange(float* out_value) const { return false; }
   virtual bool StepValueForRange(float* out_value) const { return false; }
-  virtual String StringValue() const { return String(); }
+  virtual String GetValueForControl() const { return String(); }
   virtual AXRestriction Restriction() const;
 
   // ARIA attributes.

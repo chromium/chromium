@@ -1237,15 +1237,9 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     return;
   }
 
-  if (ValueDescription().length()) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kValue,
-                                  ValueDescription().Utf8());
-  } else {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kValue,
-                                  StringValue().Utf8());
-  }
+  TruncateAndAddStringAttribute(node_data,
+                                ax::mojom::blink::StringAttribute::kValue,
+                                GetValueForControl().Utf8());
 
   switch (Restriction()) {
     case AXRestriction::kRestrictionReadOnly:

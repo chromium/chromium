@@ -149,7 +149,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   static HeapVector<Member<HTMLInputElement>> FindAllRadioButtonsWithSameName(
       HTMLInputElement* radio_button);
 
-  String GetText() const override;
   ax::mojom::blink::WritingDirection GetTextDirection() const final;
   ax::mojom::blink::TextPosition GetTextPosition() const final;
   void GetTextStyleAndTextDecorationStyle(
@@ -171,14 +170,13 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ax::mojom::blink::InvalidState GetInvalidState() const final;
   // Only used when invalidState() returns InvalidStateOther.
   String AriaInvalidValue() const final;
-  String ValueDescription() const override;
   bool ValueForRange(float* out_value) const override;
   bool MaxValueForRange(float* out_value) const override;
   bool MinValueForRange(float* out_value) const override;
   bool StepValueForRange(float* out_value) const override;
   KURL Url() const override;
   AXObject* ChooserPopup() const override;
-  String StringValue() const override;
+  String GetValueForControl() const override;
   String TextFromDescendants(AXObjectSet& visited,
                              bool recursive) const override;
 
