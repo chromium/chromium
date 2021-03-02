@@ -3418,17 +3418,6 @@
           'gtest_tests': 'goma_gtests',
         },
       },
-      'Chromium Linux Goma Staging': {
-        'mixins': [
-          'linux-xenial',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
       # Due to disk shortage on Mac, we build 'chrome' instead of 'all'.
       # See crbug.com/899425
       'Chromium Mac Goma RBE Staging': {
@@ -3463,26 +3452,10 @@
           'gtest_tests': 'goma_gtests',
         },
       },
-      'Chromium Mac Goma Staging': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
-      },
       'Chromium iOS Goma RBE ToT': {
         'additional_compile_targets': [
           'all',
         ],
-      },
-      'CrWinGomaStaging': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'goma_gtests',
-        },
       },
       # ChromeOS (simple chrome) builders.
       # Note:

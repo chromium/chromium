@@ -398,9 +398,6 @@
     },
 
     'chromium.goma': {
-      'Chromium Linux Goma Staging': 'release_bot',
-      'Chromium Mac Goma Staging': 'release_bot',
-      'CrWinGomaStaging': 'release_bot_x86_minimal_symbols',
       'Chromium iOS Goma RBE ToT': 'ios_device_release_compile_only',
       'Chromium Linux Goma RBE ToT': 'release_bot',
       'Chromium Linux Goma RBE ToT (ATS)': 'release_bot',
@@ -413,7 +410,6 @@
       'Chromium Mac Goma RBE Staging': 'release_bot',
       'Chromium Mac Goma RBE Staging (dbg)': 'debug_bot',
 
-      # Same as CrWinGomaStaging.
       'Chromium Win Goma RBE ToT': 'release_bot_x86_minimal_symbols',
       'Chromium Win Goma RBE Staging': 'release_bot_x86_minimal_symbols',
       'Chromium Win Goma RBE Staging (clobber)': 'release_bot_x86_minimal_symbols',

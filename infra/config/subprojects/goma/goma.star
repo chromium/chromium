@@ -245,10 +245,6 @@ goma_builder(
 )
 
 goma_builder(
-    name = "Chromium Linux Goma Staging",
-)
-
-goma_builder(
     name = "Chromium Linux Goma RBE ToT",
     goma_backend = goma.backend.RBE_TOT,
     goma_enable_ats = False,
@@ -306,10 +302,6 @@ goma_mac_builder(
     goma_backend = goma.backend.RBE_TOT,
 )
 
-goma_mac_builder(
-    name = "Chromium Mac Goma Staging",
-)
-
 def goma_windows_builder(
         *,
         name,
@@ -337,10 +329,4 @@ goma_windows_builder(
 goma_windows_builder(
     name = "Chromium Win Goma RBE ToT",
     goma_backend = goma.backend.RBE_TOT,
-)
-
-goma_windows_builder(
-    name = "CrWinGomaStaging",
-    cores = 8,
-    goma_enable_ats = False,
 )

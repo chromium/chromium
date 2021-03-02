@@ -11,21 +11,6 @@ luci.console_view(
     repo = "https://chromium.googlesource.com/chromium/src",
     entries = [
         luci.console_view_entry(
-            builder = "goma/Chromium Linux Goma Staging",
-            category = "clients5",
-            short_name = "lnx",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Chromium Mac Goma Staging",
-            category = "clients5",
-            short_name = "mac",
-        ),
-        luci.console_view_entry(
-            builder = "goma/CrWinGomaStaging",
-            category = "clients5",
-            short_name = "win",
-        ),
-        luci.console_view_entry(
             builder = "goma/Chromium Linux Goma RBE Staging (clobber)",
             category = "rbe|rel",
             short_name = "clb",
