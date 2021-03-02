@@ -95,7 +95,7 @@ class LocalFileSyncService
   // Calling this method again while this already has another URL waiting
   // for sync will overwrite the previously registered URL.
   void RegisterURLForWaitingSync(const storage::FileSystemURL& url,
-                                 const base::Closure& on_syncable_callback);
+                                 base::OnceClosure on_syncable_callback);
 
   // Synchronize one (or a set of) local change(s) to the remote server
   // using local_change_processor given by SetLocalChangeProcessor().
@@ -140,7 +140,7 @@ class LocalFileSyncService
                          SyncStatusCallback callback) override;
   void FinalizeRemoteSync(const storage::FileSystemURL& url,
                           bool clear_local_changes,
-                          const base::Closure& completion_callback) override;
+                          base::OnceClosure completion_callback) override;
   void RecordFakeLocalChange(const storage::FileSystemURL& url,
                              const FileChange& change,
                              SyncStatusCallback callback) override;

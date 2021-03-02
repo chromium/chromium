@@ -70,7 +70,7 @@ class RemoteChangeProcessor {
   // processed the existing local changes while processing a remote change.
   virtual void FinalizeRemoteSync(const storage::FileSystemURL& url,
                                   bool clear_local_changes,
-                                  const base::Closure& completion_callback) = 0;
+                                  base::OnceClosure completion_callback) = 0;
 
   // Records a fake local change so that the change will be processed in the
   // next local sync.

@@ -103,8 +103,9 @@ void FakeRemoteChangeProcessor::ApplyRemoteChange(
 void FakeRemoteChangeProcessor::FinalizeRemoteSync(
     const storage::FileSystemURL& url,
     bool clear_local_changes,
-    const base::Closure& completion_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, completion_callback);
+    base::OnceClosure completion_callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(completion_callback));
 }
 
 void FakeRemoteChangeProcessor::RecordFakeLocalChange(
