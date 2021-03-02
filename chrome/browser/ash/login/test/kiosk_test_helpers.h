@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_KIOSK_TEST_HELPERS_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_KIOSK_TEST_HELPERS_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_TEST_HELPERS_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_TEST_HELPERS_H_
 
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
@@ -78,4 +78,4 @@ namespace ash {
 using chromeos::KioskSessionInitializedWaiter;
 }
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_KIOSK_TEST_HELPERS_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_TEST_HELPERS_H_

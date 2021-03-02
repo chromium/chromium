@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 
 #include "base/json/string_escape.h"
 #include "base/strings/utf_string_conversions.h"

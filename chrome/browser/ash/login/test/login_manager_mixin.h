@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_
 
 #include <memory>
 #include <vector>
 
 #include "base/macros.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/chromeos/login/test/local_state_mixin.h"
+#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/session_flags_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
@@ -165,4 +165,4 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 // source migration is finished.
 using chromeos::LoginManagerMixin;
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_

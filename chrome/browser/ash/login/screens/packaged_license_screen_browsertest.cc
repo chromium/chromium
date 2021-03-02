@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/screen_manager.h"
-#include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"

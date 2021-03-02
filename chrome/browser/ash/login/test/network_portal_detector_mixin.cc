@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/test/network_portal_detector_mixin.h"
+#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"

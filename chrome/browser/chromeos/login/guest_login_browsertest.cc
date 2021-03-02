@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"

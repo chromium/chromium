@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 
 #include <vector>
 

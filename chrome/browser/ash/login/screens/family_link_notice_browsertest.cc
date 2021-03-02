@@ -5,10 +5,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/test/js_checker.h"
-#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"

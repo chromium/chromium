@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
 
 #include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"

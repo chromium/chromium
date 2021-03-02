@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 
 namespace base {

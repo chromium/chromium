@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/test/local_state_mixin.h"
+#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/scoped_policy_update.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 

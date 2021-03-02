@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"

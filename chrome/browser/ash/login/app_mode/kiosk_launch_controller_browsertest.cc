@@ -7,7 +7,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/web_app/mock_web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
-#include "chrome/browser/chromeos/login/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/ui/browser.h"

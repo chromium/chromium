@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_JS_CHECKER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_JS_CHECKER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_JS_CHECKER_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_JS_CHECKER_H_
 
 #include <initializer_list>
 #include <memory>
@@ -273,4 +273,4 @@ using ::chromeos::test::CreateOobeScreenWaiter;
 }  // namespace test
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_JS_CHECKER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_JS_CHECKER_H_
