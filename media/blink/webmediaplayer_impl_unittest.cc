@@ -801,10 +801,8 @@ class WebMediaPlayerImplTest
 
   void SetCdm() {
     DCHECK(web_cdm_);
-    auto* mock_cdm = mock_cdm_factory_.GetCreatedCdm();
-    EXPECT_CALL(*mock_cdm, GetCdmContext())
+    EXPECT_CALL(*mock_cdm_, GetCdmContext())
         .WillRepeatedly(Return(&mock_cdm_context_));
-
     wmpi_->SetCdmInternal(web_cdm_.get());
   }
 
@@ -844,7 +842,8 @@ class WebMediaPlayerImplTest
   MockWebMediaPlayerEncryptedMediaClient encrypted_client_;
 
   // Used to create the MockCdm to test encrypted playback.
-  MockCdmFactory mock_cdm_factory_;
+  scoped_refptr<MockCdm> mock_cdm_{new MockCdm()};
+  MockCdmFactory mock_cdm_factory_{mock_cdm_};
   std::unique_ptr<blink::WebContentDecryptionModule> web_cdm_;
   MockCdmContext mock_cdm_context_;
 

@@ -241,18 +241,32 @@ MockCdmKeyStatusPromise::~MockCdmKeyStatusPromise() {
   MarkPromiseSettled();
 }
 
-MockCdm::MockCdm(const std::string& key_system,
-                 const SessionMessageCB& session_message_cb,
-                 const SessionClosedCB& session_closed_cb,
-                 const SessionKeysChangeCB& session_keys_change_cb,
-                 const SessionExpirationUpdateCB& session_expiration_update_cb)
-    : key_system_(key_system),
-      session_message_cb_(session_message_cb),
-      session_closed_cb_(session_closed_cb),
-      session_keys_change_cb_(session_keys_change_cb),
-      session_expiration_update_cb_(session_expiration_update_cb) {}
+MockCdm::MockCdm() = default;
+
+MockCdm::MockCdm(
+    const std::string& key_system,
+    const SessionMessageCB& session_message_cb,
+    const SessionClosedCB& session_closed_cb,
+    const SessionKeysChangeCB& session_keys_change_cb,
+    const SessionExpirationUpdateCB& session_expiration_update_cb) {
+  Initialize(key_system, session_message_cb, session_closed_cb,
+             session_keys_change_cb, session_expiration_update_cb);
+}
 
 MockCdm::~MockCdm() = default;
+
+void MockCdm::Initialize(
+    const std::string& key_system,
+    const SessionMessageCB& session_message_cb,
+    const SessionClosedCB& session_closed_cb,
+    const SessionKeysChangeCB& session_keys_change_cb,
+    const SessionExpirationUpdateCB& session_expiration_update_cb) {
+  key_system_ = key_system;
+  session_message_cb_ = session_message_cb;
+  session_closed_cb_ = session_closed_cb;
+  session_keys_change_cb_ = session_keys_change_cb;
+  session_expiration_update_cb_ = session_expiration_update_cb;
+}
 
 void MockCdm::CallSessionMessageCB(const std::string& session_id,
                                    CdmMessageType message_type,
@@ -276,7 +290,8 @@ void MockCdm::CallSessionExpirationUpdateCB(const std::string& session_id,
   session_expiration_update_cb_.Run(session_id, new_expiry_time);
 }
 
-MockCdmFactory::MockCdmFactory() = default;
+MockCdmFactory::MockCdmFactory(scoped_refptr<MockCdm> mock_cdm)
+    : mock_cdm_(mock_cdm) {}
 
 MockCdmFactory::~MockCdmFactory() = default;
 
@@ -298,19 +313,9 @@ void MockCdmFactory::Create(
   if (before_creation_cb_)
     before_creation_cb_.Run();
 
-  // Create and return a new MockCdm. Keep a pointer to the created CDM so
-  // that tests can access it. Test cases that expect calls on MockCdm should
-  // get the MockCdm via MockCdmFactory::GetCreatedCdm() and explicitly specify
-  // expectations using EXPECT_CALL.
-  scoped_refptr<MockCdm> cdm = new NiceMock<MockCdm>(
-      key_system, session_message_cb, session_closed_cb, session_keys_change_cb,
-      session_expiration_update_cb);
-  created_cdm_ = cdm.get();
-  std::move(cdm_created_cb).Run(std::move(cdm), "");
-}
-
-MockCdm* MockCdmFactory::GetCreatedCdm() {
-  return created_cdm_.get();
+  mock_cdm_->Initialize(key_system, session_message_cb, session_closed_cb,
+                        session_keys_change_cb, session_expiration_update_cb);
+  std::move(cdm_created_cb).Run(mock_cdm_, "");
 }
 
 void MockCdmFactory::SetBeforeCreationCB(

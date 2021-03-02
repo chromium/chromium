@@ -684,11 +684,19 @@ class MockCdmKeyStatusPromise : public KeyStatusCdmPromise {
 
 class MockCdm : public ContentDecryptionModule {
  public:
+  MockCdm();
   MockCdm(const std::string& key_system,
           const SessionMessageCB& session_message_cb,
           const SessionClosedCB& session_closed_cb,
           const SessionKeysChangeCB& session_keys_change_cb,
           const SessionExpirationUpdateCB& session_expiration_update_cb);
+
+  void Initialize(
+      const std::string& key_system,
+      const SessionMessageCB& session_message_cb,
+      const SessionClosedCB& session_closed_cb,
+      const SessionKeysChangeCB& session_keys_change_cb,
+      const SessionExpirationUpdateCB& session_expiration_update_cb);
 
   // ContentDecryptionModule implementation.
   MOCK_METHOD2(SetServerCertificate,
@@ -727,16 +735,12 @@ class MockCdm : public ContentDecryptionModule {
                                      base::Time new_expiry_time);
 
   const std::string& GetKeySystem() const { return key_system_; }
-  const url::Origin& GetSecurityOrigin() const { return security_origin_; }
 
  protected:
   ~MockCdm() override;
 
  private:
   std::string key_system_;
-  url::Origin security_origin_;
-
-  // Callbacks.
   SessionMessageCB session_message_cb_;
   SessionClosedCB session_closed_cb_;
   SessionKeysChangeCB session_keys_change_cb_;
@@ -747,7 +751,7 @@ class MockCdm : public ContentDecryptionModule {
 
 class MockCdmFactory : public CdmFactory {
  public:
-  MockCdmFactory();
+  explicit MockCdmFactory(scoped_refptr<MockCdm> cdm);
   ~MockCdmFactory() override;
 
   // CdmFactory implementation.
@@ -762,15 +766,12 @@ class MockCdmFactory : public CdmFactory {
               const SessionExpirationUpdateCB& session_expiration_update_cb,
               CdmCreatedCB cdm_created_cb) override;
 
-  // Return a pointer to the created CDM.
-  MockCdm* GetCreatedCdm();
-
   // Provide a callback to be called before the CDM is created and returned.
   void SetBeforeCreationCB(base::RepeatingClosure before_creation_cb);
 
  private:
   // Reference to the created CDM.
-  scoped_refptr<MockCdm> created_cdm_;
+  scoped_refptr<MockCdm> mock_cdm_;
 
   // Callback to be used before Create() successfully calls |cdm_created_cb|.
   base::RepeatingClosure before_creation_cb_;
