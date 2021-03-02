@@ -27,6 +27,7 @@
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
+#include "printing/sandbox/print_backend_sandbox_hook_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "services/audio/audio_sandbox_hook_linux.h"
 #include "services/network/network_sandbox_hook_linux.h"
@@ -99,11 +100,14 @@ int UtilityMain(const MainFunctionParams& parameters) {
       sandbox_type == sandbox::policy::SandboxType::kIme ||
       sandbox_type == sandbox::policy::SandboxType::kTts ||
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      sandbox_type == sandbox::policy::SandboxType::kPrintBackend ||
       sandbox_type == sandbox::policy::SandboxType::kAudio ||
       sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition) {
     sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
     if (sandbox_type == sandbox::policy::SandboxType::kNetwork)
       pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook);
+    else if (sandbox_type == sandbox::policy::SandboxType::kPrintBackend)
+      pre_sandbox_hook = base::BindOnce(&printing::PrintBackendPreSandboxHook);
     else if (sandbox_type == sandbox::policy::SandboxType::kAudio)
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
     else if (sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition)

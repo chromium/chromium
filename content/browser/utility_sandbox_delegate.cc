@@ -43,6 +43,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::policy::SandboxType::kUtility ||
       sandbox_type_ == sandbox::policy::SandboxType::kNetwork ||
       sandbox_type_ == sandbox::policy::SandboxType::kCdm ||
+      sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
       sandbox_type_ == sandbox::policy::SandboxType::kPrintCompositor ||
       sandbox_type_ == sandbox::policy::SandboxType::kPpapi ||
       sandbox_type_ == sandbox::policy::SandboxType::kVideoCapture ||
@@ -94,6 +95,7 @@ ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
       sandbox_type_ == sandbox::policy::SandboxType::kTts ||
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
+      sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
       sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition) {
     return GetUnsandboxedZygote();
   }

@@ -94,7 +94,11 @@ source_set("utility") {
   }
 
   if (is_linux || is_chromeos) {
-    deps += [ "//content/utility/speech:speech_recognition_sandbox_hook" ]
+    deps += [
+      "//content/utility/speech:speech_recognition_sandbox_hook",
+      "//printing:printing_sandbox_hook",
+      "//services/network:network_sandbox_hook",
+    ]
   }
 
   if (enable_vr && !is_android) {

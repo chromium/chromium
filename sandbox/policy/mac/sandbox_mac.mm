@@ -46,6 +46,7 @@
 #include "sandbox/policy/mac/nacl_loader.sb.h"
 #include "sandbox/policy/mac/network.sb.h"
 #include "sandbox/policy/mac/ppapi.sb.h"
+#include "sandbox/policy/mac/print_backend.sb.h"
 #include "sandbox/policy/mac/print_compositor.sb.h"
 #include "sandbox/policy/mac/renderer.sb.h"
 #include "sandbox/policy/mac/speech_recognition.sb.h"
@@ -251,6 +252,9 @@ std::string SandboxMac::GetSandboxProfile(SandboxType sandbox_type) {
       break;
     case SandboxType::kPpapi:
       profile += kSeatbeltPolicyString_ppapi;
+      break;
+    case SandboxType::kPrintBackend:
+      profile += kSeatbeltPolicyString_print_backend;
       break;
     case SandboxType::kPrintCompositor:
       profile += kSeatbeltPolicyString_print_compositor;

@@ -91,6 +91,7 @@ class SandboxMacTest : public base::MultiProcessTest {
         sandbox::policy::SandboxType::kGpu,
         sandbox::policy::SandboxType::kNaClLoader,
         sandbox::policy::SandboxType::kPpapi,
+        sandbox::policy::SandboxType::kPrintBackend,
         sandbox::policy::SandboxType::kPrintCompositor,
         sandbox::policy::SandboxType::kRenderer,
         sandbox::policy::SandboxType::kUtility,

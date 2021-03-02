@@ -15,6 +15,7 @@ action_foreach("package_sb_files") {
     "nacl_loader.sb",
     "network.sb",
     "ppapi.sb",
+    "print_backend.sb",
     "print_compositor.sb",
     "renderer.sb",
     "speech_recognition.sb",

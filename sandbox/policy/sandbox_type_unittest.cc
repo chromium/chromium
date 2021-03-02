@@ -112,10 +112,16 @@ TEST(SandboxTypeTest, Utility) {
 #endif
 
   base::CommandLine command_line13(command_line);
-  command_line13.AppendSwitchASCII(switches::kServiceSandboxType,
+  SetCommandLineFlagsForSandboxType(&command_line13,
+                                    SandboxType::kPrintBackend);
+  EXPECT_EQ(SandboxType::kPrintBackend,
+            SandboxTypeFromCommandLine(command_line13));
+
+  base::CommandLine command_line14(command_line);
+  command_line14.AppendSwitchASCII(switches::kServiceSandboxType,
                                    switches::kNoneSandbox);
   EXPECT_EQ(SandboxType::kNoSandbox,
-            SandboxTypeFromCommandLine(command_line13));
+            SandboxTypeFromCommandLine(command_line14));
 
   command_line.AppendSwitch(switches::kNoSandbox);
   EXPECT_EQ(SandboxType::kNoSandbox, SandboxTypeFromCommandLine(command_line));

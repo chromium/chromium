@@ -43,6 +43,7 @@
 #include "sandbox/policy/linux/bpf_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_network_policy_linux.h"
 #include "sandbox/policy/linux/bpf_ppapi_policy_linux.h"
+#include "sandbox/policy/linux/bpf_print_backend_policy_linux.h"
 #include "sandbox/policy/linux/bpf_print_compositor_policy_linux.h"
 #include "sandbox/policy/linux/bpf_renderer_policy_linux.h"
 #include "sandbox/policy/linux/bpf_sharing_service_policy_linux.h"
@@ -175,6 +176,8 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<CdmProcessPolicy>();
     case SandboxType::kPrintCompositor:
       return std::make_unique<PrintCompositorProcessPolicy>();
+    case SandboxType::kPrintBackend:
+      return std::make_unique<PrintBackendProcessPolicy>();
     case SandboxType::kNetwork:
       return std::make_unique<NetworkProcessPolicy>();
     case SandboxType::kAudio:
@@ -237,6 +240,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case SandboxType::kSharingService:
     case SandboxType::kSpeechRecognition:
     case SandboxType::kNetwork:
+    case SandboxType::kPrintBackend:
     case SandboxType::kUtility:
     case SandboxType::kNoSandbox:
     case SandboxType::kVideoCapture:

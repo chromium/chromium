@@ -1191,6 +1191,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(SandboxType sandbox_type) {
       return "CDM";
     case SandboxType::kPrintCompositor:
       return "Print Compositor";
+    case SandboxType::kPrintBackend:
+      return "Print Backend";
     case SandboxType::kAudio:
       return "Audio";
     case SandboxType::kSpeechRecognition:

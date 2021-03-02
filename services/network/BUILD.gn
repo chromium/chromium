@@ -219,13 +219,6 @@ component("network_service") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
-    sources += [
-      "network_sandbox_hook_linux.cc",
-      "network_sandbox_hook_linux.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
@@ -258,6 +251,10 @@ component("network_service") {
     "//url",
   ]
 
+  if (is_linux || is_chromeos) {
+    deps += [ ":network_sandbox_hook" ]
+  }
+
   public_deps = [ "//services/network/public/cpp:buildflags" ]
 
   if (is_ct_supported) {
@@ -273,13 +270,6 @@ component("network_service") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
-    deps += [
-      "//sandbox/linux:sandbox_services",
-      "//sandbox/policy",
-    ]
-  }
-
   if (is_android) {
     deps += [
       "//crypto",
@@ -292,6 +282,20 @@ component("network_service") {
   }
 
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+}
+
+if (is_linux || is_chromeos) {
+  source_set("network_sandbox_hook") {
+    sources = [
+      "network_sandbox_hook_linux.cc",
+      "network_sandbox_hook_linux.h",
+    ]
+    deps = [
+      "//base:base",
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/policy:policy",
+    ]
+  }
 }
 
 source_set("tests") {

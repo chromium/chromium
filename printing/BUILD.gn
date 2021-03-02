@@ -48,6 +48,22 @@ if (use_cups_ipp && is_chromeos_ash) {
   }
 }
 
+if (is_linux || is_chromeos) {
+  source_set("printing_sandbox_hook") {
+    sources = [
+      "sandbox/print_backend_sandbox_hook_linux.cc",
+      "sandbox/print_backend_sandbox_hook_linux.h",
+    ]
+    deps = [
+      ":printing_export",
+      "//base:base",
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/policy",
+      "//services/network:network_sandbox_hook",
+    ]
+  }
+}
+
 component("printing") {
   sources = [
     "backend/print_backend.cc",
@@ -279,6 +295,10 @@ component("printing") {
       "printer_status.cc",
       "printer_status.h",
     ]
+  }
+
+  if (is_linux || is_chromeos) {
+    deps += [ ":printing_sandbox_hook" ]
   }
 }
 

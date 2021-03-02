@@ -100,6 +100,17 @@ bool NetworkPreSpawnTarget(sandbox::TargetPolicy* policy) {
   }
   return true;
 }
+
+// Sets the sandbox policy for the print backend service process.
+bool PrintBackendPreSpawnTarget(sandbox::TargetPolicy* policy) {
+  // Print Backend policy lockdown level must be at least USER_LIMITED and
+  // delayed integrity level INTEGRITY_LEVEL_LOW, otherwise ::OpenPrinter()
+  // will fail with error code ERROR_ACCESS_DENIED (0x5).
+  policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                        sandbox::USER_LIMITED);
+  policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  return true;
+}
 }  // namespace
 
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
@@ -226,6 +237,11 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     delayed_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
     result = policy->SetDelayedProcessMitigations(delayed_flags);
     if (result != sandbox::SBOX_ALL_OK)
+      return false;
+  }
+
+  if (sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend) {
+    if (!PrintBackendPreSpawnTarget(policy))
       return false;
   }
 

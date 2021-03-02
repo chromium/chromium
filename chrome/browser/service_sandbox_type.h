@@ -109,6 +109,18 @@ content::GetServiceSandboxType<printing::mojom::PrintingService>() {
 }
 #endif  // defined(OS_WIN)
 
+namespace printing {
+namespace mojom {
+class PrintBackendService;
+}
+}  // namespace printing
+
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<printing::mojom::PrintBackendService>() {
+  return sandbox::policy::SandboxType::kPrintBackend;
+}
+
 // proxy_resolver::mojom::ProxyResolverFactory
 #if defined(OS_WIN)
 namespace proxy_resolver {

@@ -25,6 +25,7 @@ SANDBOX_POLICY_EXPORT extern const char kNetworkSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPpapiSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kUtilitySandbox[];
 SANDBOX_POLICY_EXPORT extern const char kCdmSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kPrintBackendSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPrintCompositorSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kAudioSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kSharingServiceSandbox[];

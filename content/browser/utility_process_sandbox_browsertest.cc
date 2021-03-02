@@ -126,6 +126,7 @@ class UtilityProcessSandboxBrowserTest
       case SandboxType::kTts:
 #endif
       case SandboxType::kNetwork:
+      case SandboxType::kPrintBackend:
       case SandboxType::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |
