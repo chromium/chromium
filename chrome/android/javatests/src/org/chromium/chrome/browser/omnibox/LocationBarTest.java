@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -95,6 +96,8 @@ public class LocationBarTest {
     private TemplateUrl mGoogleSearchEngine;
     @Mock
     private TemplateUrl mNonGoogleSearchEngine;
+    @Mock
+    private LensController mLensController;
     @Mock
     private LocaleManager mLocaleManager;
     @Mock
@@ -168,6 +171,7 @@ public class LocationBarTest {
         mLocationBarMediator = mLocationBarCoordinator.getMediatorForTesting();
         mSearchUrl = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL("/search");
         mLocationBarCoordinator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
+        mLocationBarCoordinator.setLensControllerForTesting(mLensController);
         mKeyboardDelegate = mActivity.getWindowAndroid().getKeyboardDelegate();
     }
 
@@ -368,6 +372,37 @@ public class LocationBarTest {
 
         ViewUtils.waitForView(allOf(withId(R.id.url_action_container),
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testFocusLogic_cameraAssistedSearchLenButtonVisibilityPhone() {
+        startActivityNormally();
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
+                HOSTNAME, "/");
+        mActivityTestRule.loadUrl(url);
+
+        onView(withId(R.id.url_action_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
+
+        ViewUtils.waitForView(allOf(withId(R.id.url_action_container), isDisplayed()));
+        onView(withId(R.id.lens_camera_button)).check((matches(isDisplayed())));
+        onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mLocationBarCoordinator.setOmniboxEditingText(url); });
+
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.delete_button)).check(matches(isDisplayed()));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
+
+        ViewUtils.waitForView(allOf(withId(R.id.url_action_container), not(isDisplayed())));
     }
 
     @Test

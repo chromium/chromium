@@ -14649,6 +14649,9 @@ should be able to be added at any place in this file.
 <action name="MobileOmniboxLens">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
   <description>Mobile Omnibox Lens button clicked.</description>
 </action>
 
@@ -16515,6 +16518,18 @@ should be able to be added at any place in this file.
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     The Safe Browsing Enhanced Protection promo is dismissed.
+  </description>
+</action>
+
+<action name="NewTabPage.SearchBox.Lens">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <description>
+    Recorded when the user taps the Lens button in the search box on the new tab
+    page.
   </description>
 </action>
 
@@ -26322,6 +26337,18 @@ should be able to be added at any place in this file.
 <action name="TaskManager">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="TasksSurface.FakeBox.Lens">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <description>
+    Recorded when the user taps the Lens button in the fake box on the tasks
+    surface on Android.
+  </description>
 </action>
 
 <action name="TasksSurface.FakeBox.LongPressed">

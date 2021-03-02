@@ -154,6 +154,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private boolean mShouldShowButtonsWhenUnfocused;
     private float mUrlFocusChangeFraction;
     private boolean mUrlHasFocus;
+    private LensController mLensController;
 
     /*package */ LocationBarMediator(@NonNull Context context,
             @NonNull LocationBarLayout locationBarLayout,
@@ -164,7 +165,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             @NonNull LocaleManager localeManager,
             @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             @NonNull BackKeyBehaviorDelegate backKeyBehavior, @NonNull WindowAndroid windowAndroid,
-            boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
+            boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
+            @NonNull LensController lensController) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -183,6 +185,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mIsTablet = isTablet;
         mSearchEngineLogoUtils = searchEngineLogoUtils;
         mShouldShowButtonsWhenUnfocused = isTablet;
+        mLensController = lensController;
     }
 
     /**
@@ -326,6 +329,10 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             AssistantVoiceSearchService assistantVoiceSearchService) {
         mAssistantVoiceSearchServiceSupplier.set(assistantVoiceSearchService);
         onAssistantVoiceSearchServiceChanged();
+    }
+
+    /* package */ void setLensControllerForTesting(LensController lensController) {
+        mLensController = lensController;
     }
 
     /* package */ OneshotSupplier<AssistantVoiceSearchService>
@@ -1362,7 +1369,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
-        return LensController.getInstance().isLensEnabled(
+        return mLensController.isLensEnabled(
                 new LensQueryParams.Builder(lensEntryPoint, mLocationBarDataProvider.isIncognito())
                         .build());
     }
@@ -1370,7 +1377,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     @Override
     public void startLens(@LensEntryPoint int lensEntryPoint) {
         // TODO(b/181067692): Report user action for this click.
-        LensController.getInstance().startLens(mWindowAndroid,
+        mLensController.startLens(mWindowAndroid,
                 new LensIntentParams.Builder(lensEntryPoint, mLocationBarDataProvider.isIncognito())
                         .build());
     }

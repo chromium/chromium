@@ -352,6 +352,8 @@ class StartSurfaceMediator
             // Note that isVoiceSearchEnabled will return false in incognito mode.
             mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE,
                     mFakeboxDelegate.getVoiceRecognitionHandler().isVoiceSearchEnabled());
+            mPropertyModel.set(IS_LENS_BUTTON_VISIBLE,
+                    mFakeboxDelegate.isLensEnabled(LensEntryPoint.TASKS_SURFACE));
 
             if (mController.overviewVisible()) {
                 mFakeboxDelegate.addUrlFocusChangeListener(mUrlFocusChangeListener);
@@ -397,6 +399,7 @@ class StartSurfaceMediator
         // tiles and voice recognition button should be invisible.
         mSecondaryTasksSurfacePropertyModel.set(MV_TILES_VISIBLE, false);
         mSecondaryTasksSurfacePropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false);
+        mSecondaryTasksSurfacePropertyModel.set(IS_LENS_BUTTON_VISIBLE, false);
     }
 
     void addStateChangeObserver(StartSurface.StateObserver observer) {
@@ -919,9 +922,11 @@ class StartSurfaceMediator
         // earlier than the VoiceRecognitionHandler, so isVoiceSearchEnabled returns
         // incorrect state if check synchronously.
         ThreadUtils.postOnUiThread(() -> {
-            if (mFakeboxDelegate != null && mFakeboxDelegate.getVoiceRecognitionHandler() != null) {
-                mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE,
-                        mFakeboxDelegate.getVoiceRecognitionHandler().isVoiceSearchEnabled());
+            if (mFakeboxDelegate != null) {
+                if (mFakeboxDelegate.getVoiceRecognitionHandler() != null) {
+                    mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE,
+                            mFakeboxDelegate.getVoiceRecognitionHandler().isVoiceSearchEnabled());
+                }
                 mPropertyModel.set(IS_LENS_BUTTON_VISIBLE,
                         mFakeboxDelegate.isLensEnabled(LensEntryPoint.TASKS_SURFACE));
             }

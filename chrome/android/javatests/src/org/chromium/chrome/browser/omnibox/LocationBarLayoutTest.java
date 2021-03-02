@@ -12,8 +12,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
@@ -46,11 +48,14 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.ViewUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
@@ -80,6 +85,8 @@ public class LocationBarLayoutTest {
     AndroidPermissionDelegate mAndroidPermissionDelegate;
     @Mock
     SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock
+    LensController mLensController;
 
     private TestLocationBarModel mTestLocationBarModel;
 
@@ -140,6 +147,7 @@ public class LocationBarLayoutTest {
 
     @Before
     public void setUp() throws InterruptedException {
+        LensController.setInstanceForTesting(mLensController);
         mActivityTestRule.startMainActivityOnBlankPage();
         setupModelsForCurrentTab();
 
@@ -190,6 +198,10 @@ public class LocationBarLayoutTest {
         return mActivityTestRule.getActivity().findViewById(R.id.mic_button);
     }
 
+    private ImageButton getLensButton() {
+        return mActivityTestRule.getActivity().findViewById(R.id.lens_camera_button);
+    }
+
     private View getStatusIconView() {
         return mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
     }
@@ -232,6 +244,65 @@ public class LocationBarLayoutTest {
 
         onView(withId(R.id.mic_button)).check(matches(isDisplayed()));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testLensButtonVisibilityOnStartNtp_enabled() throws ExecutionException {
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, false);
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testLensButtonVisibilityOnStartNtp_disabled() throws ExecutionException {
+        doReturn(false).when(mLensController).isLensEnabled(any());
+        loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, false);
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testNotShowingLensButtonIfUrlBarContainsText() throws ExecutionException {
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        loadUrlInNewTabAndUpdateModels("", false);
+        // When there is text, the delete button should be visible.
+        setUrlBarTextAndFocus("testing");
+        onView(withId(R.id.delete_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testShowingLensButtonIfUrlBarIsEmpty() throws ExecutionException {
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        loadUrlInNewTabAndUpdateModels("", false);
+        // When there's no text, the lens button should be visible.
+        setUrlBarTextAndFocus("");
+        onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testShowingLensButtonAfterTextDeleted() throws ExecutionException {
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        loadUrlInNewTabAndUpdateModels("", false);
+        // When there is text, the delete button should be visible.
+        setUrlBarTextAndFocus("testing");
+        onView(withId(R.id.delete_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
+        // When there's no text, the lens button should be visible.
+        ClickUtils.clickButton(getDeleteButton());
+        onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(isDisplayed()));
+        Assert.assertEquals("", getUrlText(getUrlBar()));
     }
 
     @Test

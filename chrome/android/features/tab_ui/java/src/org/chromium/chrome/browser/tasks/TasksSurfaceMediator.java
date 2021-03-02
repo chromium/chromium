@@ -110,8 +110,8 @@ class TasksSurfaceMediator implements OverviewModeObserver {
         mModel.set(LENS_BUTTON_CLICK_LISTENER, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO(b/181067692): Report user action for this click.
                 mFakeboxDelegate.startLens(LensEntryPoint.TASKS_SURFACE);
+                RecordUserAction.record("TasksSurface.FakeBox.Lens");
             }
         });
 
