@@ -13,9 +13,11 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
-ChromeLabsButton::ChromeLabsButton(const ChromeLabsBubbleViewModel* model)
+ChromeLabsButton::ChromeLabsButton(Browser* browser,
+                                   const ChromeLabsBubbleViewModel* model)
     : ToolbarButton(base::BindRepeating(&ChromeLabsButton::ButtonPressed,
                                         base::Unretained(this))),
+      browser_(browser),
       model_(model) {
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
@@ -40,7 +42,7 @@ void ChromeLabsButton::ButtonPressed() {
     ChromeLabsBubbleView::Hide();
     return;
   }
-  ChromeLabsBubbleView::Show(this, model_);
+  ChromeLabsBubbleView::Show(this, browser_, model_);
 }
 
 // static

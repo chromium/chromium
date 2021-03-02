@@ -112,7 +112,9 @@ void RequestFeedbackFlow(const GURL& page_url,
   api->RequestFeedbackForFlow(
       description_template, description_placeholder_text, category_tag,
       extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
-      include_bluetooth_logs, source == kFeedbackSourceKaleidoscope);
+      include_bluetooth_logs,
+      source == kFeedbackSourceChromeLabs ||
+          source == kFeedbackSourceKaleidoscope);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

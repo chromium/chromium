@@ -45,7 +45,7 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
                               api::feedback_private::FeedbackFlow flow,
                               bool from_assistant = false,
                               bool include_bluetooth_logs = false,
-                              bool from_kaleidoscope = false);
+                              bool from_chrome_labs_or_kaleidoscope = false);
 
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<FeedbackPrivateAPI>*

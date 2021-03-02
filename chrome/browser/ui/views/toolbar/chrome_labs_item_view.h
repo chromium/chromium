@@ -11,6 +11,8 @@
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+class Browser;
+
 struct LabInfo;
 
 class ChromeLabsItemView : public views::View {
@@ -21,7 +23,8 @@ class ChromeLabsItemView : public views::View {
       int default_index,
       const flags_ui::FeatureEntry* feature_entry,
       base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
-          combobox_callback);
+          combobox_callback,
+      Browser* browser);
 
   int GetSelectedIndex() const;
 

@@ -14,11 +14,14 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
+class Browser;
+
 // TODO(elainechien): Use composition instead of inheritance.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ChromeLabsBubbleView);
   static void Show(views::View* anchor_view,
+                   Browser* browser,
                    const ChromeLabsBubbleViewModel* model);
 
   static bool IsShowing();
@@ -36,12 +39,14 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   ChromeLabsBubbleView(views::View* anchor_view,
+                       Browser* browser,
                        const ChromeLabsBubbleViewModel* model);
 
   std::unique_ptr<ChromeLabsItemView> CreateLabItem(
       const LabInfo& lab,
       int default_index,
-      const flags_ui::FeatureEntry* entry);
+      const flags_ui::FeatureEntry* entry,
+      Browser* browser);
 
   int GetIndexOfEnabledLabState(const flags_ui::FeatureEntry* entry);
 

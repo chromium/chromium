@@ -128,8 +128,9 @@ END_METADATA
 
 // static
 void ChromeLabsBubbleView::Show(views::View* anchor_view,
+                                Browser* browser,
                                 const ChromeLabsBubbleViewModel* model) {
-  g_chrome_labs_bubble = new ChromeLabsBubbleView(anchor_view, model);
+  g_chrome_labs_bubble = new ChromeLabsBubbleView(anchor_view, browser, model);
   views::Widget* const widget =
       BubbleDialogDelegateView::CreateBubble(g_chrome_labs_bubble);
   widget->Show();
@@ -153,6 +154,7 @@ ChromeLabsBubbleView::~ChromeLabsBubbleView() {
 
 ChromeLabsBubbleView::ChromeLabsBubbleView(
     views::View* anchor_view,
+    Browser* browser,
     const ChromeLabsBubbleViewModel* model)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT),
@@ -196,7 +198,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
       DCHECK(valid_entry_type);
       int default_index = GetIndexOfEnabledLabState(entry);
       menu_item_container_->AddChildView(
-          CreateLabItem(lab, default_index, entry));
+          CreateLabItem(lab, default_index, entry, browser));
     }
   }
   // ChromeLabsButton should not appear in the toolbar if there are no
@@ -210,7 +212,8 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
 std::unique_ptr<ChromeLabsItemView> ChromeLabsBubbleView::CreateLabItem(
     const LabInfo& lab,
     int default_index,
-    const flags_ui::FeatureEntry* entry) {
+    const flags_ui::FeatureEntry* entry,
+    Browser* browser) {
   auto combobox_callback = [](ChromeLabsBubbleView* bubble_view,
                               std::string internal_name,
                               ChromeLabsItemView* item_view) {
@@ -229,7 +232,8 @@ std::unique_ptr<ChromeLabsItemView> ChromeLabsBubbleView::CreateLabItem(
   std::unique_ptr<ChromeLabsItemView> item_view =
       std::make_unique<ChromeLabsItemView>(
           lab, default_index, entry,
-          base::BindRepeating(combobox_callback, this, lab.internal_name));
+          base::BindRepeating(combobox_callback, this, lab.internal_name),
+          browser);
 
   item_view->SetProperty(
       views::kFlexBehaviorKey,

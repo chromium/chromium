@@ -3,15 +3,33 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/grit/generated_resources.h"
+#include "extensions/browser/api/feedback_private/feedback_private_api.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+
+namespace {
+void ShowFeedbackPage(Browser* browser, std::string feedback_category_name) {
+  chrome::ShowFeedbackPage(browser,
+                           chrome::FeedbackSource::kFeedbackSourceChromeLabs,
+                           std::string() /* description_template */,
+                           std::string() /* description_placeholder_text */,
+                           feedback_category_name /* category_tag */,
+                           std::string() /* extra_diagnostics */);
+}
+
+}  // namespace
 
 class LabsComboboxModel : public ui::ComboboxModel {
  public:
@@ -39,11 +57,11 @@ ChromeLabsItemView::ChromeLabsItemView(
     int default_index,
     const flags_ui::FeatureEntry* feature_entry,
     base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
-        combobox_callback)
+        combobox_callback,
+    Browser* browser)
     : feature_entry_(feature_entry) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+      ->SetOrientation(views::LayoutOrientation::kVertical);
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
                       DISTANCE_CONTROL_LIST_VERTICAL),
@@ -72,12 +90,41 @@ ChromeLabsItemView::ChromeLabsItemView(
                           0)))
           .Build());
 
-  AddChildView(views::Builder<views::Combobox>()
+  AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .AddChildren(
+              {views::Builder<views::Combobox>()
                    .CopyAddressTo(&lab_state_combobox_)
                    .SetOwnedModel(std::make_unique<LabsComboboxModel>(
                        feature_entry_, default_index))
                    .SetCallback(base::BindRepeating(combobox_callback, this))
-                   .Build());
+
+                   .SetProperty(views::kFlexBehaviorKey,
+                                views::FlexSpecification(
+                                    views::MinimumFlexSizeRule::kScaleToZero,
+                                    views::MaximumFlexSizeRule::kPreferred))
+
+                   .SetSizeToLargestLabel(false),
+               views::Builder<views::MdTextButton>()
+                   .SetCallback(base::BindRepeating(&ShowFeedbackPage, browser,
+                                                    lab.feedback_category_name))
+                   .SetText(
+                       l10n_util::GetStringUTF16(IDS_CHROMELABS_SEND_FEEDBACK))
+                   .SetProperty(
+                       views::kMarginsKey,
+                       gfx::Insets(
+                           0,
+                           views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_RELATED_CONTROL_HORIZONTAL),
+                           0, 0))
+                   .SetProperty(
+                       views::kFlexBehaviorKey,
+                       views::FlexSpecification(
+                           views::MinimumFlexSizeRule::kPreferred,
+                           views::MaximumFlexSizeRule::kUnbounded)
+                           .WithAlignment(views::LayoutAlignment::kEnd))})
+          .Build());
 }
 
 int ChromeLabsItemView::GetSelectedIndex() const {

@@ -66,7 +66,7 @@ constexpr base::FilePath::CharType kBluetoothLogsFilePathOld[] =
 constexpr char kBluetoothLogsAttachmentName[] = "bluetooth_logs.bz2";
 constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
 
-constexpr int kKaleidoscopeProductId = 5192933;
+constexpr int kChromeLabsAndKaleidoscopeProductId = 5192933;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
@@ -134,7 +134,7 @@ void FeedbackPrivateAPI::RequestFeedbackForFlow(
     api::feedback_private::FeedbackFlow flow,
     bool from_assistant,
     bool include_bluetooth_logs,
-    bool from_kaleidoscope) {
+    bool from_chrome_labs_or_kaleidoscope) {
   if (browser_context_ && EventRouter::Get(browser_context_)) {
     FeedbackInfo info;
     info.description = description_template;
@@ -170,10 +170,11 @@ void FeedbackPrivateAPI::RequestFeedbackForFlow(
     info.use_system_window_frame =
         std::make_unique<bool>(use_system_window_frame);
 
-    // If the feedback is from Kaleidoscope then this should use a custom
-    // product ID.
-    if (from_kaleidoscope) {
-      info.product_id = std::make_unique<int>(kKaleidoscopeProductId);
+    // If the feedback is from Chrome Labs or Kaleidoscope then this should use
+    // a custom product ID.
+    if (from_chrome_labs_or_kaleidoscope) {
+      info.product_id =
+          std::make_unique<int>(kChromeLabsAndKaleidoscopeProductId);
     }
 
     std::unique_ptr<base::ListValue> args =

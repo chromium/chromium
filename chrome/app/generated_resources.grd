@@ -11203,6 +11203,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
              desc="Window title for the Chrome Labs bubble">
       Experiments
     </message>
+    <if expr="use_titlecase">
+    <message name="IDS_CHROMELABS_SEND_FEEDBACK" desc="In Title Case: The label for the button that will allow users to submit feedback from Chrome Labs.">
+        Send Feedback
+    </message>
+    </if>
+    <if expr="not use_titlecase">
+      <message name="IDS_CHROMELABS_SEND_FEEDBACK" desc="The label for the button that will allow users to submit feedback from Chrome Labs.">
+        Send feedback
+    </message>
+    </if>
   </messages>
 </release>
 </grit>

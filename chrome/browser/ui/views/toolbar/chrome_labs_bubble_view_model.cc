@@ -40,7 +40,7 @@ const std::vector<LabInfo>& GetData() {
         base::ASCIIToUTF16("Right click on a tab or click the Bookmark icon to "
                            "add tabs to a reading "
                            "list. Access from the Bookmarks bar."),
-        version_info::Channel::BETA));
+        "chrome-labs-read-later", version_info::Channel::BETA));
 
     // Tab Scrolling.
     lab_info.emplace_back(
@@ -48,7 +48,7 @@ const std::vector<LabInfo>& GetData() {
                 base::ASCIIToUTF16("Tab Scrolling"),
                 base::ASCIIToUTF16(
                     "Enables tab strip to scroll left and right when full."),
-                version_info::Channel::BETA));
+                "chrome-labs-tab-scrolling", version_info::Channel::BETA));
 
     // Tab Search.
     lab_info.emplace_back(
@@ -56,7 +56,7 @@ const std::vector<LabInfo>& GetData() {
                 base::ASCIIToUTF16("Tab Search"),
                 base::ASCIIToUTF16("Enable a popup bubble in Top Chrome UI to "
                                    "search over currently open tabs."),
-                version_info::Channel::BETA));
+                "chrome-labs-tab-search", version_info::Channel::BETA));
 
     return lab_info;
   }());
@@ -68,10 +68,12 @@ const std::vector<LabInfo>& GetData() {
 LabInfo::LabInfo(const std::string& internal_name,
                  const base::string16& visible_name,
                  const base::string16& visible_description,
+                 const std::string& feedback_category_name,
                  version_info::Channel allowed_channel)
     : internal_name(internal_name),
       visible_name(visible_name),
       visible_description(visible_description),
+      feedback_category_name(feedback_category_name),
       allowed_channel(allowed_channel) {}
 
 LabInfo::LabInfo(const LabInfo& other) = default;

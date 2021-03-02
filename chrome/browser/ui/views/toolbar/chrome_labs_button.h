@@ -9,10 +9,13 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
+class Browser;
+
 class ChromeLabsButton : public ToolbarButton {
  public:
   METADATA_HEADER(ChromeLabsButton);
-  explicit ChromeLabsButton(const ChromeLabsBubbleViewModel* model);
+  explicit ChromeLabsButton(Browser* browser,
+                            const ChromeLabsBubbleViewModel* model);
   ChromeLabsButton(const ChromeLabsButton&) = delete;
   ChromeLabsButton& operator=(const ChromeLabsButton&) = delete;
   ~ChromeLabsButton() override;
@@ -24,6 +27,8 @@ class ChromeLabsButton : public ToolbarButton {
 
  private:
   void ButtonPressed();
+
+  Browser* browser_;
 
   const ChromeLabsBubbleViewModel* model_;
 };

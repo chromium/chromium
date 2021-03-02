@@ -67,7 +67,8 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
                                       true);
 
     ChromeLabsButton* button = chrome_labs_button();
-    ChromeLabsBubbleView::Show(button, chrome_labs_model());
+    ChromeLabsBubbleView::Show(button, browser_view()->browser(),
+                               chrome_labs_model());
   }
 
   void TearDown() override {
@@ -147,15 +148,15 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
     std::vector<LabInfo> test_feature_info;
     test_feature_info.emplace_back(
         LabInfo(kFirstTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), version_info::Channel::STABLE));
+                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE));
 
     test_feature_info.emplace_back(
         LabInfo(kSecondTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), version_info::Channel::STABLE));
+                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE));
 
     test_feature_info.emplace_back(
         LabInfo(kThirdTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), version_info::Channel::STABLE));
+                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE));
     return test_feature_info;
   }
 
@@ -243,7 +244,8 @@ TEST_F(ChromeLabsBubbleTest, RestartPromptShows) {
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_view->GetWidget());
   ChromeLabsBubbleView::Hide();
   destroyed_waiter.Wait();
-  ChromeLabsBubbleView::Show(chrome_labs_button(), chrome_labs_model());
+  ChromeLabsBubbleView::Show(chrome_labs_button(), browser_view()->browser(),
+                             chrome_labs_model());
   ChromeLabsBubbleView* bubble_view_after_restart = chrome_labs_bubble();
   EXPECT_TRUE(bubble_view_after_restart->IsRestartPromptVisibleForTesting());
 }
