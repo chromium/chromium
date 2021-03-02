@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/chromeos/ash/camera_hal_dispatcher_impl.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include <fcntl.h>
 #include <grp.h>
 #include <poll.h>

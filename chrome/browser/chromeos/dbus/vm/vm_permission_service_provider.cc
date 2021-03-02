@@ -21,7 +21,7 @@
 #include "chromeos/dbus/vm_permission_service/vm_permission_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/message.h"
-#include "media/capture/video/chromeos/ash/camera_hal_dispatcher_impl.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace {

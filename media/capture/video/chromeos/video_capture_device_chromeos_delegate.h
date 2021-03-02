@@ -19,10 +19,6 @@
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/capture/video/chromeos/ash/power_manager_client_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace display {
 
 class Display;
@@ -37,12 +33,7 @@ class CameraDeviceDelegate;
 
 // Implementation of delegate for ChromeOS with CrOS camera HALv3.
 class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    : public DisplayRotationObserver,
-      public PowerManagerClientProxy::Observer {
-#else
     : public DisplayRotationObserver {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
  public:
   VideoCaptureDeviceChromeOSDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
@@ -64,17 +55,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        VideoCaptureDevice::SetPhotoOptionsCallback callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Implementation of PowerManagerClientProxy::Observer.
-  void SuspendDone() final;
-  void SuspendImminent() final;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+ private:
+  // Helper to interact with PowerManagerClient on DBus original thread.
+  class PowerManagerClientProxy;
 
   void OpenDevice();
-  void CloseDevice();
-
- private:
   void ReconfigureStreams();
+  void CloseDevice(base::UnguessableToken unblock_suspend_token);
 
   // DisplayRotationDelegate implementation.
   void SetDisplayRotation(const display::Display& display) final;
@@ -122,12 +109,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
 
   base::WaitableEvent device_closed_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<PowerManagerClientProxy> power_manager_client_proxy_;
 
-  base::WeakPtrFactory<PowerManagerClientProxy::Observer> weak_ptr_factory_{
+  base::WeakPtrFactory<VideoCaptureDeviceChromeOSDelegate> weak_ptr_factory_{
       this};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceChromeOSDelegate);
 };

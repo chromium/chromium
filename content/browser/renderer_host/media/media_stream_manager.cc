@@ -84,7 +84,7 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
-#include "media/capture/video/chromeos/ash/camera_hal_dispatcher_impl.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #endif

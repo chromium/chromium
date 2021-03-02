@@ -9,10 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/capture/video/chromeos/ash/camera_hal_dispatcher_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace media {
 
@@ -79,15 +76,13 @@ bool VideoCaptureDeviceFactoryChromeOS::Init() {
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
     LOG(ERROR) << "CameraHalDispatcherImpl is not started";
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   camera_hal_delegate_ =
       new CameraHalDelegate(camera_hal_ipc_thread_.task_runner());
-
   if (!camera_hal_delegate_->RegisterCameraClient()) {
     LOG(ERROR) << "Failed to register camera client";
     return false;
@@ -107,10 +102,8 @@ bool VideoCaptureDeviceFactoryChromeOS::Init() {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool VideoCaptureDeviceFactoryChromeOS::IsSupportedCameraAppDeviceBridge() {
   return true;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace media

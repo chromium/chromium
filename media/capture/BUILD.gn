@@ -293,6 +293,8 @@ component("capture_lib") {
       "video/chromeos/camera_device_delegate.h",
       "video/chromeos/camera_hal_delegate.cc",
       "video/chromeos/camera_hal_delegate.h",
+      "video/chromeos/camera_hal_dispatcher_impl.cc",
+      "video/chromeos/camera_hal_dispatcher_impl.h",
       "video/chromeos/camera_metadata_utils.cc",
       "video/chromeos/camera_metadata_utils.h",
       "video/chromeos/capture_metadata_dispatcher.h",
@@ -334,6 +336,7 @@ component("capture_lib") {
     deps += [
       "//ash/constants",
       "//build/config/linux/libdrm",
+      "//chromeos/dbus/power",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//components/chromeos_camera/common",
       "//components/device_event_log",
@@ -341,17 +344,6 @@ component("capture_lib") {
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//third_party/libsync",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "video/chromeos/ash/camera_hal_dispatcher_impl.cc",
-      "video/chromeos/ash/camera_hal_dispatcher_impl.h",
-      "video/chromeos/ash/power_manager_client_proxy.cc",
-      "video/chromeos/ash/power_manager_client_proxy.h",
-    ]
-
-    deps += [ "//chromeos/dbus/power" ]
   }
 
   if (is_fuchsia) {
@@ -550,10 +542,10 @@ test("capture_unittests") {
 
   if (is_chromeos_ash) {
     sources += [
-      "video/chromeos/ash/camera_hal_dispatcher_impl_unittest.cc",
       "video/chromeos/camera_3a_controller_unittest.cc",
       "video/chromeos/camera_device_delegate_unittest.cc",
       "video/chromeos/camera_hal_delegate_unittest.cc",
+      "video/chromeos/camera_hal_dispatcher_impl_unittest.cc",
       "video/chromeos/request_manager_unittest.cc",
       "video/chromeos/token_manager_unittest.cc",
     ]
