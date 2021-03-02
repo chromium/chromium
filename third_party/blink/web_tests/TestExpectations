@@ -4859,7 +4859,6 @@ crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level
 
 # Enable scroll-snap tests on impl thread
 # These are currently failing on Mac which needs more investigation, snap-scrolls-visual-viewport seems flaky
-crbug.com/878878 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-after-keyboard-scrolling.html [ Pass Timeout Failure ]
 
 crbug.com/878878 virtual/threaded/fast/scroll-snap/animate-fling-to-snap-points.html [ Failure Pass Timeout ]
 crbug.com/878878 virtual/threaded/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
@@ -4951,7 +4950,6 @@ crbug.com/1046440 fast/loader/submit-form-while-parsing-2.html [ Pass Failure Ti
 crbug.com/995663 [ Linux ] http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-header.html [ Pass Failure Timeout ]
 
 # Sheriff 2020-01-30
-crbug.com/1047164 [ Mac ] fast/scroll-snap/snaps-after-keyboard-scrolling.html [ Pass Failure ]
 crbug.com/1047208 http/tests/serviceworker/update-served-from-cache.html [ Pass Failure ]
 crbug.com/1047293 [ Mac ] editing/pasteboard/pasteboard_with_unfocused_selection.html [ Pass Failure ]
 

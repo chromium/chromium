@@ -38,38 +38,6 @@ function keyPress(key) {
 }
 
 promise_test (async () => {
-  await mouseClickOn(10, 10);
-  scroller.scrollTo(0, 0);
-  await keyPress("ArrowDown");
-  await waitForAnimationEndTimeBased(scrollTop);
-  assert_equals(scroller.scrollTop, 400);
-}, "Snaps to bottom-left after pressing ArrowDown");
-
-promise_test (async () => {
-  await mouseClickOn(10, 10);
-  scroller.scrollTo(0, 400);
-  await keyPress("ArrowUp");
-  await waitForAnimationEndTimeBased(scrollTop);
-  assert_equals(scroller.scrollTop, 0);
-}, "Snaps to top-left after pressing ArrowUp");
-
-promise_test (async () => {
-  await mouseClickOn(10, 10);
-  scroller.scrollTo(0, 0);
-  await keyPress("ArrowRight");
-  await waitForAnimationEndTimeBased(scrollLeft);
-  assert_equals(scroller.scrollLeft, 400);
-}, "Snaps to top-right after pressing ArrowRight");
-
-promise_test (async () => {
-  await mouseClickOn(10, 10);
-  scroller.scrollTo(400, 0);
-  await keyPress("ArrowLeft");
-  await waitForAnimationEndTimeBased(scrollLeft);
-  assert_equals(scroller.scrollLeft, 0);
-}, "Snaps to top-left after pressing ArrowLeft");
-
-promise_test (async () => {
   // Make the snap area covers the snapport.
   topLeft.style.width = "800px";
   // Make the distance between the previous and the next snap position larger
@@ -77,7 +45,10 @@ promise_test (async () => {
   topRight.style.left = "500px";
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
+  const scrollEventPromise = waitForScrollEvent(scroller);
   await keyPress("ArrowRight");
+  await scrollEventPromise;
+  // Use time based wait since the scroll does not end at a fixed value.
   await waitForAnimationEndTimeBased(scrollLeft);
   assert_between_exclusive(scroller.scrollLeft, 0, 500);
   topLeft.style.width = "";
@@ -94,8 +65,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
   await keyPress("ArrowRight");
-  await waitForAnimationEndTimeBased(scrollLeft);
-  assert_equals(scroller.scrollLeft, 20);
+  await waitForScrollEnd(scroller, scrollLeft, 20);
   topLeft.style.width = "";
   topRight.style.left = "400px";
 }, "If the original intended offset is valid as making a snap area cover the "
@@ -105,7 +75,9 @@ promise_test (async () => {
 promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(400, 0);
+  const scrollEventPromise = waitForScrollEvent(scroller);
   await keyPress("ArrowRight");
+  // Use time based wait since returning to the start position.
   await waitForAnimationEndTimeBased(scrollLeft);
   assert_equals(scroller.scrollLeft, 400);
 }, "If there is no valid snap offset on the arrow key's direction other than "
@@ -116,7 +88,10 @@ promise_test (async () => {
   scroller.style.scrollSnapType = "both proximity";
   await mouseClickOn(10, 10);
   scroller.scrollTo(400, 0);
+  const scrollEventPromise = waitForScrollEvent(scroller);
   await keyPress("ArrowRight");
+  await scrollEventPromise;
+  // Use time based wait since the scroll does not end at a fixed value.
   await waitForAnimationEndTimeBased(scrollLeft);
   assert_greater_than(scroller.scrollLeft, 400);
   scroller.style.scrollSnapType = "both mandatory";
@@ -124,3 +99,4 @@ promise_test (async () => {
 + "the current offset, and the scroll-snap-type is proximity, go to the "
 + "original intended offset");
 </script>
+
