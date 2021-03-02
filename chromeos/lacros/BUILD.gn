@@ -42,12 +42,11 @@ template("lacros_tast_test_helper") {
   assert(defined(override_board), "override_board is required")
   lacros_tast_test(target_name) {
     # TODO(crbug.com/1158590): use --attr-expr instead of hard-coding the tests.
-    # TODO(crbug.com/1174896): Re-enable lacros.ShelfLaunch once it's fixed and
-    # becomes stable.
     tast_tests = [
       "lacros.AudioPlay",
       "lacros.AppLauncherLaunch",
       "lacros.Basic",
+      "lacros.ShelfLaunch",
     ]
   }
 }
