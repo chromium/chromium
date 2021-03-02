@@ -149,19 +149,23 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
       base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
 
       // Create standard items within the window submenu.
-      NSString* restore_title = l10n_util::GetNSString(
-          IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
-      base::scoped_nsobject<NSMenuItem> restore_item(
-          [[NSMenuItem alloc] initWithTitle:restore_title
-                                     action:@selector(openHistoryMenuItem:)
-                              keyEquivalent:@""]);
-      [restore_item setTarget:controller_.get()];
       // Duplicate the HistoryItem otherwise the different NSMenuItems will
       // point to the same HistoryItem, which would then be double-freed when
       // removing the items from the map or in the dtor.
-      auto dup_item = std::make_unique<HistoryItem>(*item);
-      menu_item_map_.emplace(restore_item.get(), std::move(dup_item));
-      [submenu addItem:restore_item.get()];
+      auto restore_item = std::make_unique<HistoryItem>(*item);
+      NSString* restore_title = l10n_util::GetNSString(
+          IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
+      restore_item->menu_item.reset(
+          [[NSMenuItem alloc] initWithTitle:restore_title
+                                     action:@selector(openHistoryMenuItem:)
+                              keyEquivalent:@""]);
+      NSMenuItem* restore_menu_item = restore_item->menu_item;
+      [restore_menu_item setTag:kRecentlyClosed + 1];  // +1 for submenu item.
+      [restore_menu_item setTarget:controller_.get()];
+      auto it =
+          menu_item_map_.emplace(restore_menu_item, std::move(restore_item));
+      CHECK(it.second);
+      [submenu addItem:restore_menu_item];
       [submenu addItem:[NSMenuItem separatorItem]];
 
       // Loop over the window's tabs and add them to the submenu.
@@ -209,6 +213,7 @@ void HistoryMenuBridge::ResetMenu() {
   NSMenu* menu = HistoryMenu();
   ClearMenuSection(menu, kVisited);
   ClearMenuSection(menu, kRecentlyClosed);
+  DCHECK(menu_item_map_.empty());
 }
 
 void HistoryMenuBridge::BuildMenu() {
@@ -307,7 +312,8 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
   [menu insertItem:item->menu_item.get() atIndex:index];
 
   NSMenuItem* menu_item = item->menu_item.get();
-  menu_item_map_.emplace(menu_item, std::move(item));
+  auto it = menu_item_map_.emplace(menu_item, std::move(item));
+  CHECK(it.second);
   return menu_item;
 }
 

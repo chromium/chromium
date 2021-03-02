@@ -155,6 +155,11 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     bridge_->CancelFaviconRequest(item);
   }
 
+  const std::map<NSMenuItem*, std::unique_ptr<HistoryMenuBridge::HistoryItem>>&
+  menu_item_map() {
+    return bridge_->menu_item_map_;
+  }
+
   CocoaTestHelper cocoa_test_helper_;
   std::unique_ptr<MockBridge> bridge_;
 };
@@ -273,6 +278,11 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabs) {
   EXPECT_TRUE(hist2);
   EXPECT_EQ(42, hist2->session_id.id());
   EXPECT_NSEQ(@"Apple", [item2 title]);
+
+  EXPECT_EQ(2u, menu_item_map().size());
+  ClearMenuSection(menu, HistoryMenuBridge::kRecentlyClosed);
+  EXPECT_EQ(0u, menu_item_map().size());
+  EXPECT_EQ(0u, [[menu itemArray] count]);
 }
 
 // Test that the menu is created for a mix of windows and tabs.
@@ -343,6 +353,13 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   EXPECT_EQ(51, hist4->tabs[0]->session_id.id());
   EXPECT_EQ(52, hist4->tabs[1]->session_id.id());
   EXPECT_EQ(53, hist4->tabs[2]->session_id.id());
+
+  // 9 items from |entries|, plus 2 "Restore All Tabs" items, one for each
+  // window entry.
+  EXPECT_EQ(11u, menu_item_map().size());
+  ClearMenuSection(menu, HistoryMenuBridge::kRecentlyClosed);
+  EXPECT_EQ(0u, menu_item_map().size());
+  EXPECT_EQ(0u, [[menu itemArray] count]);
 }
 
 // Tests that we properly request an icon from the FaviconService.
