@@ -148,7 +148,10 @@ Polymer({
     },
   },
 
-  observers: ['routineStatusChanged_(executionStatus_, currentTestName_)'],
+  observers: [
+    'routineStatusChanged_(executionStatus_, currentTestName_,' +
+        'additionalMessage)',
+  ],
 
   /** @private */
   getResultListElem_() {
@@ -258,7 +261,8 @@ Polymer({
 
   /** @protected */
   isStatusHidden_() {
-    return this.executionStatus_ === ExecutionProgress.kNotStarted;
+    return this.executionStatus_ === ExecutionProgress.kNotStarted ||
+        this.additionalMessage != '';
   },
 
   /**
@@ -301,6 +305,10 @@ Polymer({
 
   /** @protected */
   routineStatusChanged_() {
+    if (this.additionalMessage != '') {
+      this.executionStatus_ = ExecutionProgress.kNotStarted;
+    }
+
     switch (this.executionStatus_) {
       case ExecutionProgress.kNotStarted:
         // Do nothing since status is hidden when tests have not been started.

@@ -66,11 +66,11 @@
     <div class="routine-status-container">
       <text-badge id="testStatusBadge"
           badge-type="[[badgeType_]]"
-          hidden="[[isStatusHidden_(executionStatus_)]]"
+          hidden="[[isStatusHidden_(executionStatus_, additionalMessage)]]"
           value="[[badgeText_]]">
       </text-badge>
       <span id="testStatusText"
-          hidden$="[[isStatusHidden_(executionStatus_)]]">
+          hidden$="[[isStatusHidden_(executionStatus_, additionalMessage)]]">
         [[statusText_]]
         <span id="learnMoreText"
             hidden$="[[isLearnMoreHidden_(executionStatus_)]]"
