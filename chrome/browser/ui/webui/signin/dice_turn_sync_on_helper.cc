@@ -626,9 +626,6 @@ void DiceTurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
           ->Subscribe(base::AdaptCallbackForRepeating(base::BindOnce(
               &DiceTurnSyncOnHelper::AbortAndDelete, base::Unretained(this))));
   delegate_->SwitchToProfile(new_profile);
-  // Since this is a fresh profile, it's better to remove the token if the user
-  // aborts the signin.
-  signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
 }
 
 void DiceTurnSyncOnHelper::AttachToProfile() {

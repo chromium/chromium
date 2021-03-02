@@ -38,8 +38,10 @@ IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
 // static
 std::unique_ptr<TestingProfile>
 IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
-    TestingProfile::Builder& builder) {
-  for (auto& identity_factory : GetIdentityTestEnvironmentFactories()) {
+    TestingProfile::Builder& builder,
+    signin::AccountConsistencyMethod account_consistency) {
+  for (auto& identity_factory :
+       GetIdentityTestEnvironmentFactories(account_consistency)) {
     builder.AddTestingFactory(identity_factory.first, identity_factory.second);
   }
 
@@ -68,14 +70,17 @@ void IdentityTestEnvironmentProfileAdaptor::
 
 // static
 TestingProfile::TestingFactories
-IdentityTestEnvironmentProfileAdaptor::GetIdentityTestEnvironmentFactories() {
+IdentityTestEnvironmentProfileAdaptor::GetIdentityTestEnvironmentFactories(
+    signin::AccountConsistencyMethod account_consistency) {
   return {{IdentityManagerFactory::GetInstance(),
-           base::BindRepeating(&BuildIdentityManagerForTests)}};
+           base::BindRepeating(&BuildIdentityManagerForTests,
+                               account_consistency)}};
 }
 
 // static
 std::unique_ptr<KeyedService>
 IdentityTestEnvironmentProfileAdaptor::BuildIdentityManagerForTests(
+    signin::AccountConsistencyMethod account_consistency,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -86,7 +91,7 @@ IdentityTestEnvironmentProfileAdaptor::BuildIdentityManagerForTests(
 #else
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
       ChromeSigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
-      profile->GetPath());
+      profile->GetPath(), account_consistency);
 #endif
 }
 

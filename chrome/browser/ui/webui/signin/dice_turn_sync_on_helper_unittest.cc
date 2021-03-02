@@ -35,10 +35,12 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_user_settings_mock.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -220,8 +222,12 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
       base::BindRepeating(&FakeUserPolicySigninService::Build));
   profile_builder.SetDelegate(delegate);
   profile_builder.SetPath(path);
+  // Use |signin::AccountConsistencyMethod::kDice| to ensure that profiles are
+  // treated as they would when DICE is enabled and profiles are cleared when
+  // sync is revoked only is there is a refresh token error..
   return IdentityTestEnvironmentProfileAdaptor::
-      CreateProfileForIdentityTestEnvironment(profile_builder);
+      CreateProfileForIdentityTestEnvironment(
+          profile_builder, signin::AccountConsistencyMethod::kDice);
 }
 
 }  // namespace
@@ -273,6 +279,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 
   // Basic accessors.
   Profile* profile() { return profile_.get(); }
+  Profile* new_profile() { return new_profile_; }
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_profile_adaptor_->identity_test_env();
   }
@@ -462,6 +469,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
     EXPECT_NE(initial_device_id(),
               GetSigninScopedDeviceIdForProfile(new_profile));
 
+    new_profile_ = new_profile;
     switched_to_new_profile_ = true;
   }
 
@@ -530,6 +538,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   std::string merge_data_previous_email_;
   std::string merge_data_new_email_;
   bool switched_to_new_profile_ = false;
+  Profile* new_profile_ = nullptr;
   bool sync_confirmation_shown_ = false;
   SyncDisabledConfirmation sync_disabled_confirmation_ = kNotShown;
   bool sync_settings_shown_ = false;
@@ -841,6 +850,42 @@ TEST_F(DiceTurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+}
+
+// Test that the unconsented primary account is kept if the user creates a new
+// account and cancels sync activation.
+TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
+  // Set expectations.
+  expected_enterprise_confirmation_email_ = kEnterpriseEmail;
+  expected_switched_to_new_profile_ = true;
+  expected_sync_confirmation_shown_ = true;
+  sync_confirmation_result_ =
+      LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
+  SetExpectationsForSyncStartupCompletedForNextProfileCreated();
+  // Configure the test.
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+  enterprise_choice_ = DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE;
+  UseEnterpriseAccount();
+  identity_manager()->GetPrimaryAccountMutator()->SetUnconsentedPrimaryAccount(
+      account_id());
+
+  // Signin flow.
+  CreateDiceTurnOnSyncHelper(
+      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  // Check expectations.
+  base::RunLoop().RunUntilIdle();  // Profile creation is asynchronous.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+
+  DCHECK(new_profile());
+  auto* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile());
+  DCHECK_NE(new_identity_manager, identity_manager());
+  EXPECT_EQ(account_id(), new_identity_manager->GetPrimaryAccountId(
+                              signin::ConsentLevel::kNotRequired));
   CheckDelegateCalls();
 }
 
