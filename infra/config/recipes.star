@@ -60,6 +60,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:branch_configuration/tester",
+    use_bbagent = True,
+)
+
+build_recipe(
     name = "recipe:celab",
 )
 

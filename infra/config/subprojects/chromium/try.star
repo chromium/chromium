@@ -168,6 +168,12 @@ consoles.list_view(
 # Builders are sorted first lexicographically by the function used to define
 # them, then lexicographically by their name
 
+try_.builder(
+    name = "branch-config-verifier",
+    executable = "recipe:branch_configuration/tester",
+    main_list_view = "try",
+)
+
 try_.blink_builder(
     name = "linux-blink-optional-highdpi-rel",
     goma_backend = goma.backend.RBE_PROD,
