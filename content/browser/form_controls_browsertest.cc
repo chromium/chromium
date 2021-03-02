@@ -126,10 +126,10 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // This also applies to different versions of windows.
     cc::FuzzyPixelComparator comparator(
         /* discard_alpha */ true,
-        /* error_pixels_percentage_limit */ 6.f,
+        /* error_pixels_percentage_limit */ 11.f,
         /* small_error_pixels_percentage_limit */ 0.f,
-        /* avg_abs_error_limit */ 2.f,
-        /* max_abs_error_limit */ 3.f,
+        /* avg_abs_error_limit */ 3.f,
+        /* max_abs_error_limit */ 35.f,
         /* small_error_threshold */ 0);
 #else
     cc::ExactPixelComparator comparator(/* disard_alpha */ true);
