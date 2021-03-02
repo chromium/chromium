@@ -75,54 +75,42 @@ function keyPress(key) {
 promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
-  const scrollWatcher = waitForScrollEvent(scroller);
   await keyPress("ArrowDown");
-  await scrollWatcher;
-  assert_equals(scroller.scrollTop, 200);
+  await waitForScrollEnd(scroller, scrollTop, 200);
 }, "Snaps to page1-line1 after pressing ArrowDown at page1.");
 
 promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 1200);
-  const scrollWatcher = waitForScrollEvent(scroller);
   await keyPress("ArrowUp");
-  await scrollWatcher;
-  assert_equals(scroller.scrollTop, 1000);
+  await waitForScrollEnd(scroller, scrollTop, 1000);
 }, "Snaps to page2-line2 after pressing ArrowUp at page3.");
 
 promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
-  const scrollWatcher = waitForScrollEvent(scroller);
   await keyPress("PageDown");
-  await scrollWatcher;
-  assert_equals(scroller.scrollTop, 600);
+  await waitForScrollEnd(scroller, scrollTop, 600);
 }, "Snaps to page2 after pressing PageDown at page1.");
 
 promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 1200);
-  const scrollWatcher = waitForScrollEvent(scroller);
   await keyPress("PageUp");
-  await scrollWatcher;
-  assert_equals(scroller.scrollTop, 600);
+  await waitForScrollEnd(scroller, scrollTop, 600);
 }, "Snaps to page2 after pressing PageUp at page3.");
 
 promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
-  const scrollWatcher = waitForScrollEvent(scroller);
   await keyPress("End");
-  await scrollWatcher;
-  assert_equals(scroller.scrollTop, 1200);
+  await waitForScrollEnd(scroller, scrollTop, 1200);
 }, "Snaps to page3 after pressing End at page1.");
 
 promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 1200);
-  const scrollWatcher = waitForScrollEvent(scroller);
   await keyPress("Home");
-  await scrollWatcher;
-  assert_equals(scroller.scrollTop, 0);
+  await waitForScrollEnd(scroller, scrollTop, 0);
 }, "Snaps to page1 after pressing Home at page3.");
 </script>
