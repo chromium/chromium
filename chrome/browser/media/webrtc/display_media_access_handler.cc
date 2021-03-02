@@ -248,7 +248,12 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   picker_params.request_audio =
       pending_request.request.audio_type ==
       blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
-  picker_params.approve_audio_by_default = false;
+  // getDisplayMedia's checkbox state defaults to unchecked, but for
+  // getCurrentBrowsingContextMedia, we default to checked.
+  picker_params.approve_audio_by_default =
+      (picker_params.request_audio &&
+       pending_request.request.video_type ==
+           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
 }
