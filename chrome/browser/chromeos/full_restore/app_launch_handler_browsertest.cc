@@ -12,7 +12,9 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,6 +31,7 @@
 #include "components/full_restore/window_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -80,6 +83,17 @@ void SaveWindowInfo(aura::Window* window) {
   ::full_restore::SaveWindowInfo(window_info);
 }
 
+void WaitForAppLaunchInfoSaved() {
+  ::full_restore::FullRestoreSaveHandler* save_handler =
+      ::full_restore::FullRestoreSaveHandler::GetInstance();
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+  EXPECT_TRUE(timer->IsRunning());
+
+  // Simulate timeout, and the launch info is saved.
+  timer->FireNow();
+  content::RunAllTasksUntilIdle();
+}
+
 }  // namespace
 
 class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
@@ -88,17 +102,6 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
   }
   ~AppLaunchHandlerBrowserTest() override = default;
-
-  void WaitForAppLaunchInfoSaved() {
-    ::full_restore::FullRestoreSaveHandler* save_handler =
-        ::full_restore::FullRestoreSaveHandler::GetInstance();
-    base::OneShotTimer* timer = save_handler->GetTimerForTesting();
-    EXPECT_TRUE(timer->IsRunning());
-
-    // Simulate timeout, and the launch info is saved.
-    timer->FireNow();
-    content::RunAllTasksUntilIdle();
-  }
 
   void CreateWebApp() {
     auto web_application_info = std::make_unique<WebApplicationInfo>();
@@ -541,6 +544,75 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerNoBrowserBrowserTest,
                        NoBrowserOnLaunch) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
+
+class AppLaunchHandlerSystemWebAppsBrowserTest
+    : public SystemWebAppIntegrationTest {
+ public:
+  AppLaunchHandlerSystemWebAppsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
+  }
+  ~AppLaunchHandlerSystemWebAppsBrowserTest() override = default;
+
+  Browser* LaunchSystemWebApp() {
+    WaitForTestSystemAppInstall();
+
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    content::TestNavigationObserver navigation_observer(
+        GURL("chrome://help-app/"));
+    navigation_observer.StartWatchingNewWebContents();
+
+    proxy->Launch(
+        *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP),
+        ui::EventFlags::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal,
+        apps::MakeWindowInfo(display::kDefaultDisplayId));
+
+    navigation_observer.Wait();
+
+    return BrowserList::GetInstance()->GetLastActive();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest, LaunchSWA) {
+  Browser* app_browser = LaunchSystemWebApp();
+  ASSERT_TRUE(app_browser);
+  ASSERT_NE(browser(), app_browser);
+
+  // Get the window id.
+  aura::Window* window = app_browser->window()->GetNativeWindow();
+  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Create AppLaunchHandler.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+
+  // Close app_browser so that the SWA can be relaunched.
+  web_app::CloseAndWait(app_browser);
+
+  // Set should restore.
+  app_launch_handler->SetShouldRestore();
+
+  // Wait for the restoration.
+  content::RunAllTasksUntilIdle();
+
+  // Get the restored browser for the system web app.
+  Browser* restore_app_browser = BrowserList::GetInstance()->GetLastActive();
+  ASSERT_TRUE(restore_app_browser);
+  ASSERT_NE(browser(), restore_app_browser);
+
+  // Get the restore window id.
+  window = restore_app_browser->window()->GetNativeWindow();
+  int32_t restore_window_id =
+      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+
+  EXPECT_EQ(window_id, restore_window_id);
+}
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    AppLaunchHandlerSystemWebAppsBrowserTest);
 
 }  // namespace full_restore
 }  // namespace chromeos
