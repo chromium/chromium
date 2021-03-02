@@ -24,6 +24,7 @@ struct ShortcutInformation {
 
   base::FilePath lnk_path;
   std::wstring target_path;
+  std::wstring working_dir;
   std::wstring command_line_arguments;
   std::wstring icon_location;
   int32_t icon_index;
