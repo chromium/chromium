@@ -48,9 +48,7 @@
         var treeOutline = ElementsTestRunner.firstElementsTreeOutline();
         var treeElement = treeOutline.findTreeElement(node);
         treeOutline.toggleEditAsHTML(node);
-        TestRunner.deprecatedRunAfterPendingDispatches(() => {
-          self.runtime.extension(UI.TextEditorFactory).instance().then(step2);
-        });
+        TestRunner.deprecatedRunAfterPendingDispatches(step2);
 
         function step2() {
           var editor = treeElement._editing.editor;

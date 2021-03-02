@@ -5742,7 +5742,3 @@ crbug.com/1183243 [ Linux ] http/tests/devtools/console/console-external-array.j
 
 # Temporarily disabled for https://crrev.com/c/2713104
 crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass Failure ]
-
-# DevTools roll
-crbug.com/1134103 http/tests/devtools/editor/text-editor-accessibility.js [ Skip ]
-crbug.com/1134103 http/tests/devtools/elements/edit/edit-dom-actions-4.js [ Skip ]
