@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <UIKit/UIKit.h>
+
 #include <string>
 
 @class ElementSelector;
@@ -53,6 +55,12 @@ id<GREYAction> TapWebElementWithIdInFrame(const std::string& element_id,
 // downward swipe, for this reason we need to swipe up programmatically to
 // avoid dismissing the VC.
 id<GREYAction> ScrollToTop();
+
+// Action to tap an element at the given xOriginStartPercentage as a percentage
+// of the total width and yOriginStartPercentage as a percentage of the total
+// height. Percentages are between 0 and 1, where 1 is 100%.
+id<GREYAction> TapAtPointPercentage(CGFloat xOriginStartPercentage,
+                                    CGFloat yOriginStartPercentage);
 
 }  // namespace chrome_test_util
 
