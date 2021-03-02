@@ -4,11 +4,47 @@
 
 #include "ui/base/accelerators/accelerator_history.h"
 
+#include "ui/events/event.h"
+#include "ui/events/event_target.h"
+
 namespace ui {
 
-AcceleratorHistory::AcceleratorHistory() {}
+namespace {
 
-AcceleratorHistory::~AcceleratorHistory() {}
+bool ShouldFilter(ui::KeyEvent* event) {
+  const ui::EventType type = event->type();
+  if (!event->target() ||
+      (type != ui::ET_KEY_PRESSED && type != ui::ET_KEY_RELEASED) ||
+      event->is_char() || !event->target() ||
+      // Key events with key code of VKEY_PROCESSKEY, usually created by virtual
+      // keyboard (like handwriting input), have no effect on accelerator and
+      // they may disturb the accelerator history. So filter them out. (see
+      // https://crbug.com/918317)
+      event->key_code() == ui::VKEY_PROCESSKEY) {
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
+
+AcceleratorHistory::AcceleratorHistory() = default;
+
+AcceleratorHistory::~AcceleratorHistory() = default;
+
+void AcceleratorHistory::OnKeyEvent(ui::KeyEvent* event) {
+  DCHECK(event->target());
+  if (!ShouldFilter(event))
+    StoreCurrentAccelerator(ui::Accelerator(*event));
+}
+
+void AcceleratorHistory::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->type() == ui::ET_MOUSE_PRESSED ||
+      event->type() == ui::ET_MOUSE_RELEASED) {
+    InterruptCurrentAccelerator();
+  }
+}
 
 void AcceleratorHistory::StoreCurrentAccelerator(
     const Accelerator& accelerator) {
