@@ -863,52 +863,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   EXPECT_TRUE(base::Contains(client_urls, kPrerenderingUrl));
 }
 
-// Tests that same-origin prerendering pages have the access to Broadcast
-// Channel API.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, GrantBroadcastChannel) {
-  const GURL kInitialUrl =
-      GetUrl("/prerender/restriction_broadcast_channel.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/restriction_broadcast_channel.html?prerendering");
-  const std::string initial_message =
-      "This is a message sent from the initial page";
-  const std::string prerender_message =
-      "This is a message sent from the prerendering page.";
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Make a same-origin prerendering page.
-  AddPrerender(kPrerenderingUrl);
-
-  // Send a message to the channel from the initial page.
-  EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                     JsReplace("bc.postMessage($1);", initial_message)));
-
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHostForTesting();
-  ASSERT_TRUE(prerender_host);
-
-  // Check the prerendering page received the message sent by the initial page.
-  EXPECT_EQ(initial_message,
-            EvalJs(prerendered_render_frame_host, "messageReceived;"));
-
-  // Send a message to the channel from the prerendering page.
-  EXPECT_TRUE(ExecJs(prerendered_render_frame_host,
-                     JsReplace("bc.postMessage($1);", prerender_message)));
-
-  // Check the initial page received the message sent by the prerendering page.
-  EXPECT_EQ(prerender_message,
-            EvalJs(shell()->web_contents(), "messageReceived;"));
-
-  // Disconnect from the channel.
-  EXPECT_TRUE(ExecJs(shell()->web_contents(), "bc.close();"));
-  EXPECT_TRUE(ExecJs(prerendered_render_frame_host, "bc.close();"));
-}
-
 // - End: Tests for feature-specific code methodology restrictions =============
 
 // - Tests for Mojo capability control methodology restrictions ================
