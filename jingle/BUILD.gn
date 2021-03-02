@@ -33,6 +33,7 @@ static_library("jingle_glue") {
     "//base",
     "//net",
     "//third_party/libjingle_xmpp:rtc_task_runner",
+    "//third_party/libjingle_xmpp:rtc_xmpp",
   ]
 
   if (is_nacl) {
@@ -51,9 +52,10 @@ source_set("fake_ssl_socket") {
     "glue/fake_ssl_client_socket.cc",
     "glue/fake_ssl_client_socket.h",
   ]
-  deps = [
+  public_deps = [
     "//base",
     "//net",
+    "//net/traffic_annotation",
   ]
 }
 
@@ -118,6 +120,7 @@ static_library("notifier") {
     ":jingle_glue",
     "//base",
     "//net",
+    "//services/network/public/cpp:cpp",
     "//third_party/expat",
     "//third_party/libjingle_xmpp:rtc_task_runner",
     "//url",

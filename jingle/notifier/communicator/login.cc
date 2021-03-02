@@ -17,7 +17,6 @@
 #include "third_party/libjingle_xmpp/xmpp/xmppclient.h"
 #include "third_party/libjingle_xmpp/xmpp/xmppclientsettings.h"
 #include "third_party/libjingle_xmpp/xmpp/xmppengine.h"
-#include "third_party/webrtc/rtc_base/firewall_socket_server.h"
 #include "third_party/webrtc/rtc_base/physical_socket_server.h"
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
 
@@ -58,7 +57,8 @@ void Login::StartConnection() {
   single_attempt_.reset(new SingleLoginAttempt(login_settings_, this));
 }
 
-void Login::UpdateXmppSettings(const jingle_xmpp::XmppClientSettings& user_settings) {
+void Login::UpdateXmppSettings(
+    const jingle_xmpp::XmppClientSettings& user_settings) {
   DVLOG(1) << "XMPP settings updated";
   login_settings_.set_user_settings(user_settings);
 }
@@ -68,7 +68,8 @@ void Login::UpdateXmppSettings(const jingle_xmpp::XmppClientSettings& user_setti
 //
 // TODO(akalin): Add unit tests to enforce the behavior above.
 
-void Login::OnConnect(base::WeakPtr<jingle_xmpp::XmppTaskParentInterface> base_task) {
+void Login::OnConnect(
+    base::WeakPtr<jingle_xmpp::XmppTaskParentInterface> base_task) {
   DVLOG(1) << "Connected";
   ResetReconnectState();
   delegate_->OnConnect(base_task);
@@ -116,8 +117,7 @@ void Login::OnNetworkEvent() {
 }
 
 void Login::ResetReconnectState() {
-  reconnect_interval_ =
-      base::TimeDelta::FromSeconds(base::RandInt(5, 25));
+  reconnect_interval_ = base::TimeDelta::FromSeconds(base::RandInt(5, 25));
   reconnect_timer_.Stop();
 }
 
@@ -125,10 +125,10 @@ void Login::TryReconnect() {
   DCHECK_GT(reconnect_interval_.InSeconds(), 0);
   single_attempt_.reset();
   reconnect_timer_.Stop();
-  DVLOG(1) << "Reconnecting in "
-           << reconnect_interval_.InSeconds() << " seconds";
-  reconnect_timer_.Start(
-      FROM_HERE, reconnect_interval_, this, &Login::DoReconnect);
+  DVLOG(1) << "Reconnecting in " << reconnect_interval_.InSeconds()
+           << " seconds";
+  reconnect_timer_.Start(FROM_HERE, reconnect_interval_, this,
+                         &Login::DoReconnect);
 }
 
 void Login::DoReconnect() {
