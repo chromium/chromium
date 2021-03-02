@@ -51,8 +51,6 @@ class LiveTabCountPageLoadMetricsObserverTest
     timing.navigation_start = base::Time::FromDoubleT(1);
     timing.paint_timing->first_contentful_paint =
         base::TimeDelta::FromMilliseconds(300);
-    timing.paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromMilliseconds(700);
     timing.interactive_timing->first_input_delay =
         base::TimeDelta::FromMilliseconds(5);
     timing.interactive_timing->first_input_timestamp =
@@ -114,7 +112,6 @@ TEST_P(LiveTabCountPageLoadMetricsObserverTest, LoadTabs100) {
     if (tab_state == TabState::kForeground)
       ++counts[bucket];
     ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, counts);
-    ValidateHistograms(internal::kHistogramFirstMeaningfulPaintSuffix, counts);
     ValidateHistograms(internal::kHistogramFirstInputDelaySuffix, counts);
   }
   // Make sure we are testing each bucket.

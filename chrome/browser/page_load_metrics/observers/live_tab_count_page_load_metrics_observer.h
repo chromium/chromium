@@ -26,8 +26,6 @@ class LiveTabCountPageLoadMetricsObserver
   // page_load_metrics::PageLoadMetricsObserver:
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnFirstMeaningfulPaintInMainFrameDocument(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstInputInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 

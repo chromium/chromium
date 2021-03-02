@@ -8604,7 +8604,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="ByLiveTabCount.40OrMoreTabs"
       label="Recorded with 40 or more live tabs open in the browser."/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
+      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
+    <obsolete>
+      Deprecated 03/2021. FMP is being deprecated in favor of LCP.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay2"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay3">
