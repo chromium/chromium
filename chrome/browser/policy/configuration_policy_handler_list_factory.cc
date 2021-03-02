@@ -1842,7 +1842,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kNearbyShareAllowed, prefs::kNearbySharingEnabledPrefName));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kDataLeakPreventionRulesList, policy_prefs::kDlpRulesList,
-      chrome_schema, SCHEMA_ALLOW_UNKNOWN,
+      chrome_schema, SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #if defined(USE_CUPS)
