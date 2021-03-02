@@ -7789,7 +7789,7 @@ void Document::FlushAutofocusCandidates() {
         "document already has a focused element."));
     return;
   }
-  if (HasNonEmptyFragment()) {
+  if (CssTarget()) {
     autofocus_candidates_.clear();
     autofocus_processed_flag_ = true;
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -7847,11 +7847,10 @@ void Document::FlushAutofocusCandidates() {
     // is not empty, then continue.
     if (doc != this) {
       for (HTMLFrameOwnerElement* frameOwner = doc->LocalOwner();
-           !doc->HasNonEmptyFragment() && frameOwner;
-           frameOwner = doc->LocalOwner()) {
+           !doc->CssTarget() && frameOwner; frameOwner = doc->LocalOwner()) {
         doc = &frameOwner->GetDocument();
       }
-      if (doc->HasNonEmptyFragment()) {
+      if (doc->CssTarget()) {
         AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kRendering,
             mojom::ConsoleMessageLevel::kInfo,
@@ -7889,10 +7888,6 @@ void Document::FlushAutofocusCandidates() {
 void Document::FinalizeAutofocus() {
   autofocus_candidates_.clear();
   autofocus_processed_flag_ = true;
-}
-
-bool Document::HasNonEmptyFragment() const {
-  return !Url().FragmentIdentifier().IsEmpty();
 }
 
 Element* Document::ActiveElement() const {

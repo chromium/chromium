@@ -540,12 +540,12 @@ void EnqueueAutofocus(Element& element) {
     return;
   }
 
-  // 5. Let topDocument be the active document of target's browsing context's
-  // top-level browsing context.
-  // 6. If target's origin is not the same as the origin of topDocument,
-  // then return.
-  if (!doc.IsInMainFrame() &&
-      !doc.TopFrameOrigin()->CanAccess(window->GetSecurityOrigin())) {
+  // 5. For each ancestorBC of target's browsing context's ancestor browsing
+  // contexts: if ancestorBC's active document's origin is not same origin with
+  // target's origin, then return.
+  for (Frame* frame = doc.GetFrame(); frame; frame = frame->Parent()) {
+    if (!frame->IsCrossOriginToMainFrame())
+      continue;
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
@@ -555,7 +555,11 @@ void EnqueueAutofocus(Element& element) {
     return;
   }
 
-  element.GetDocument().TopDocument().EnqueueAutofocusCandidate(element);
+  // 6. Let topDocument be the active document of target's browsing context's
+  // top-level browsing context.
+  Document& top_document = element.GetDocument().TopDocument();
+
+  top_document.EnqueueAutofocusCandidate(element);
 }
 
 }  // namespace
