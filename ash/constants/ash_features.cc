@@ -291,7 +291,7 @@ const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
 
 // Enables toggling Pciguard settings through Settings UI.
 const base::Feature kEnablePciguardUi{"EnablePciguardUi",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables SAML re-authentication on the lock screen once the sign-in time
 // limit expires.
