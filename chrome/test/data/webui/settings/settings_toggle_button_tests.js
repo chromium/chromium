@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://settings/settings.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://settings/settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-toggle-button. */
@@ -198,7 +198,7 @@ suite('SettingsToggleButton', () => {
     };
 
     testElement.set('pref', pref);
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!testElement.$$('cr-policy-pref-indicator'));
   });
@@ -216,7 +216,7 @@ suite('SettingsToggleButton', () => {
     };
 
     testElement.set('pref', pref);
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(!!testElement.$$('cr-policy-pref-indicator'));
   });
@@ -231,7 +231,7 @@ suite('SettingsToggleButton', () => {
 
     assertFalse(testElement.$.control.disabled);
     testElement.set('pref', pref);
-    Polymer.dom.flush();
+    flush();
     assertTrue(testElement.$.control.disabled);
   });
 });
