@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/authpolicy/authpolicy_credentials_manager.h"
+#include "chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h"
 
 #include <memory>
 #include <utility>

@@ -9,7 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/authpolicy/kerberos_files_handler.h"
+#include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chrome/browser/chromeos/login/test/active_directory_login_mixin.h"
 #include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"

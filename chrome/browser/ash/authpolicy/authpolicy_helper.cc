@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/authpolicy/authpolicy_helper.h"
+#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -11,7 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/authpolicy/data_pipe_utils.h"
+#include "chrome/browser/ash/authpolicy/data_pipe_utils.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/upstart_client.h"

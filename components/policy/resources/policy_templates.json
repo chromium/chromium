@@ -8522,7 +8522,7 @@
     },
     {
       'name': 'DeviceKerberosEncryptionTypes',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'fsandrade@chromium.org'],
+      'owners': ['file://chrome/browser/ash/authpolicy/OWNERS', 'fsandrade@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -8569,7 +8569,7 @@
     },
     {
       'name': 'DeviceUserPolicyLoopbackProcessingMode',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'tomdobro@chromium.org'],
+      'owners': ['file://chrome/browser/ash/authpolicy/OWNERS', 'tomdobro@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -8612,7 +8612,7 @@
     },
     {
       'name': 'DeviceMachinePasswordChangeRate',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'fsandrade@chromium.org'],
+      'owners': ['file://chrome/browser/ash/authpolicy/OWNERS', 'fsandrade@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
       'supported_on': ['chrome_os:66-'],
@@ -8635,7 +8635,7 @@
     },
     {
       'name': 'DeviceGpoCacheLifetime',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'tomdobro@chromium.org'],
+      'owners': ['file://chrome/browser/ash/authpolicy/OWNERS', 'tomdobro@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
       'supported_on': ['chrome_os:73-'],
@@ -8658,7 +8658,7 @@
     },
     {
       'name': 'DeviceAuthDataCacheLifetime',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'fsandrade@chromium.org'],
+      'owners': ['file://chrome/browser/ash/authpolicy/OWNERS', 'fsandrade@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
       'supported_on': ['chrome_os:73-'],

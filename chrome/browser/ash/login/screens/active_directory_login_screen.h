@@ -10,9 +10,9 @@
 
 #include "base/callback.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
-#include "chrome/browser/chromeos/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 
 namespace chromeos {
