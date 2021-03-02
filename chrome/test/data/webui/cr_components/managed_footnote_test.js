@@ -5,14 +5,13 @@
 /** @fileoverview Suite of tests for managed-footnote. */
 
 // clang-format off
-// #import 'chrome://resources/cr_components/managed_footnote/managed_footnote.m.js';
-//
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import 'chrome://resources/cr_components/managed_footnote/managed_footnote.m.js';
+
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
-cr.define('managed_footnote_test', function() {
   /** @enum {string} */
   const TestNames = {
     Hidden: 'Hidden When isManaged Is False',
@@ -52,7 +51,7 @@ cr.define('managed_footnote_test', function() {
       });
       const footnote = document.createElement('managed-footnote');
       document.body.appendChild(footnote);
-      Polymer.dom.flush();
+      flush();
       return footnote;
     }
 
@@ -78,7 +77,7 @@ cr.define('managed_footnote_test', function() {
       assertNotEquals('none', getComputedStyle(footnote).display);
     });
 
-    if (cr.isChromeOS) {
+    if (isChromeOS) {
       test('Reads Attributes From loadTimeData device message', function() {
         const browserMessage = 'the quick brown fox jumps over the lazy dog';
         const deviceMessage = 'the lazy dog jumps over the quick brown fox';
@@ -94,9 +93,3 @@ cr.define('managed_footnote_test', function() {
     }
   });
 
-  // #cr_define_end
-  return {
-    suiteName: suiteName,
-    TestNames: TestNames,
-  };
-});

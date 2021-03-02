@@ -3,13 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
-import("../namespace_rewrites.gni")
-
-js_modulizer("modulize") {
-  input_files = [ "managed_footnote_test.js" ]
-  namespace_rewrites = test_namespace_rewrites
-}
 
 js_type_check("closure_compile") {
   is_polymer3 = true

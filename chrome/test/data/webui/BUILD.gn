@@ -42,7 +42,6 @@ if (include_js_tests) {
       "//chrome/browser/ui",
     ]
     data = [
-      "$root_gen_dir/chrome/test/data/webui/cr_focus_row_behavior_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/test_sync_browser_proxy.m.js",
@@ -171,12 +170,10 @@ if (include_js_tests) {
     }
 
     data = [
-      "$root_gen_dir/chrome/test/data/webui/cr_components/managed_footnote_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
       "$root_gen_dir/chrome/test/data/webui/js/load_time_data_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js",
-      "$root_gen_dir/chrome/test/data/webui/resources/list_property_update_behavior_tests.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_input_method_private.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_language_settings_private.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_settings_private.m.js",
@@ -481,10 +478,8 @@ if (include_js_tests) {
 group("modulize") {
   deps = [
     ":modulize_local",
-    "./cr_components:modulize",
     "./cr_components/chromeos:modulize",
     "./js:modulize",
-    "./resources:modulize",
     "./settings:modulize",
   ]
 
@@ -495,7 +490,6 @@ group("modulize") {
 
 js_modulizer("modulize_local") {
   input_files = [
-    "cr_focus_row_behavior_test.js",
     "fake_chrome_event.js",
     "mock_controller.js",
     "mock_timer.js",
