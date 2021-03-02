@@ -226,7 +226,10 @@ def RunTBMv2Metric(tbmv2_metric, json_trace, force_recompute=False):
 def RunTBMv3Metric(tp_path, tbmv3_metric, proto_trace):
   message = 'Running TBMv3 Metric...'
   PrintNoLn(message)
-  histograms = trace_processor.RunMetric(tp_path, proto_trace, tbmv3_metric)
+  histograms = trace_processor.RunMetric(tp_path,
+                                         proto_trace,
+                                         tbmv3_metric,
+                                         retain_all_samples=True)
   CursorErase(len(message))
   return histograms
 
