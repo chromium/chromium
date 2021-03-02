@@ -76,10 +76,6 @@
 // Returns the current height of the content suggestions content.
 - (CGFloat)contentSuggestionsContentHeight;
 
-// Handles device rotation logic.
-// TODO(crbug.com/1177953): Detect device rotation in NewTabPageViewController.
-- (void)handleDeviceRotation;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_VIEW_CONTROLLER_H_

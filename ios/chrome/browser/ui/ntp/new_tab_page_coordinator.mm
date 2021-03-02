@@ -391,10 +391,6 @@
   [self updateVisible];
 }
 
-- (void)handleDeviceRotation {
-  [self.ntpViewController handleDeviceRotation];
-}
-
 #pragma mark - NewTabPageCommands
 
 - (void)updateDiscoverFeedVisibility {

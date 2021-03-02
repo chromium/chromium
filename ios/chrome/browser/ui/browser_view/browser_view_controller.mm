@@ -1686,13 +1686,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             [strongSelf.legacyTabStripCoordinator tabStripSizeDidChange];
           }
         }
-        // TODO(crbug.com/1177953): Detect device rotation in
-        // NewTabPageViewController.
-        if (strongSelf.currentWebState &&
-            strongSelf.isNTPActiveForCurrentWebState) {
-          [_ntpCoordinatorsForWebStates[strongSelf.currentWebState]
-              handleDeviceRotation];
-        }
       }];
 
   if (self.thumbStripEnabled) {
