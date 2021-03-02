@@ -62,6 +62,10 @@ UsageScenarioDataStoreImpl::ResetIntervalData() {
     capturing_video_since_ = now;
   }
 
+  if (!playing_audio_since_.is_null()) {
+    playing_audio_since_ = now;
+  }
+
   if (!playing_video_in_active_tab_since_.is_null()) {
     playing_video_in_active_tab_since_ = now;
   }
@@ -126,7 +130,7 @@ void UsageScenarioDataStoreImpl::OnFullScreenVideoEndsOnSingleMonitor() {
 
 void UsageScenarioDataStoreImpl::OnWebRTCConnectionOpened() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Grab the current timestamp if there's no remaining WebRTC connection.
+  // Grab the current timestamp if there's no other WebRTC connection.
   if (webrtc_open_connection_count_ == 0) {
     DCHECK(has_opened_webrtc_connection_since_.is_null());
     has_opened_webrtc_connection_since_ = tick_clock_->NowTicks();
@@ -174,6 +178,33 @@ void UsageScenarioDataStoreImpl::OnIsCapturingVideoEnded() {
     interval_data_.time_capturing_video +=
         tick_clock_->NowTicks() - capturing_video_since_;
     capturing_video_since_ = base::TimeTicks();
+  }
+}
+
+void UsageScenarioDataStoreImpl::OnAudioStarts() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Grab the current timestamp if there's no other tabs playing audio.
+  if (tabs_playing_audio_ == 0) {
+    DCHECK(playing_audio_since_.is_null());
+    playing_audio_since_ = base::TimeTicks::Now();
+  }
+  ++tabs_playing_audio_;
+  DCHECK_GE(current_tab_count_, tabs_playing_audio_);
+}
+
+void UsageScenarioDataStoreImpl::OnAudioStops() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GT(tabs_playing_audio_, 0U);
+  --tabs_playing_audio_;
+  DCHECK_GE(current_tab_count_, tabs_playing_audio_);
+
+  // If this was the last tab playing audio then the interval data should be
+  // updated.
+  if (tabs_playing_audio_ == 0) {
+    DCHECK(!playing_audio_since_.is_null());
+    interval_data_.time_playing_audio +=
+        base::TimeTicks::Now() - playing_audio_since_;
+    playing_audio_since_ = base::TimeTicks();
   }
 }
 
@@ -247,6 +278,10 @@ void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
 
   if (!capturing_video_since_.is_null()) {
     interval_data_.time_capturing_video += now - capturing_video_since_;
+  }
+
+  if (!playing_audio_since_.is_null()) {
+    interval_data_.time_playing_audio += now - playing_audio_since_;
   }
 
   if (!playing_video_in_active_tab_since_.is_null()) {

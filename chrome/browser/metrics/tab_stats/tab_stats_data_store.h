@@ -93,7 +93,7 @@ class TabStatsDataStore : public TabStatsObserver {
   void OnTabReplaced(content::WebContents* old_contents,
                      content::WebContents* new_contents) override;
   void OnTabInteraction(content::WebContents* web_contents) override;
-  void OnTabAudible(content::WebContents* web_contents) override;
+  void OnTabIsAudibleChanged(content::WebContents* web_contents) override;
   void OnTabVisibilityChanged(content::WebContents* web_contents) override;
 
   // Update the maximum number of tabs in a single window if |value| exceeds

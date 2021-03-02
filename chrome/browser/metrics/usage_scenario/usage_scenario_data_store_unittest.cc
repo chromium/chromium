@@ -457,3 +457,30 @@ TEST_F(UsageScenarioDataStoreTest, PlayingVideoInVisibleTab) {
   data = ResetIntervalData();
   EXPECT_EQ(base::TimeDelta(), data.time_playing_video_in_visible_tab);
 }
+
+TEST_F(UsageScenarioDataStoreTest, PlayingAudio) {
+  data_store()->OnTabAdded();
+  data_store()->OnTabAdded();
+
+  task_environment_.FastForwardBy(kShortDelay);
+
+  data_store()->OnAudioStarts();
+  task_environment_.FastForwardBy(kShortDelay);
+
+  auto data = ResetIntervalData();
+  EXPECT_EQ(kShortDelay, data.time_playing_audio);
+
+  data_store()->OnAudioStarts();
+  task_environment_.FastForwardBy(kShortDelay);
+
+  data_store()->OnAudioStops();
+  data_store()->OnAudioStops();
+  task_environment_.FastForwardBy(kShortDelay);
+
+  data = ResetIntervalData();
+  EXPECT_EQ(kShortDelay, data.time_playing_audio);
+
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(base::TimeDelta(), data.time_playing_audio);
+}

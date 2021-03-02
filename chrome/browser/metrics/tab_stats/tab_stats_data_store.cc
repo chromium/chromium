@@ -114,8 +114,10 @@ void TabStatsDataStore::OnTabInteraction(content::WebContents* web_contents) {
   }
 }
 
-void TabStatsDataStore::OnTabAudible(content::WebContents* web_contents) {
-  OnTabAudibleOrVisible(web_contents);
+void TabStatsDataStore::OnTabIsAudibleChanged(
+    content::WebContents* web_contents) {
+  if (web_contents->IsCurrentlyAudible())
+    OnTabAudibleOrVisible(web_contents);
 }
 
 void TabStatsDataStore::RecordSamplingMetaData() {

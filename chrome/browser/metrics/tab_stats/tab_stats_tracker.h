@@ -150,9 +150,6 @@ class TabStatsTracker : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* web_contents,
-                    int index,
-                    TabChangeType change_type) override;
   // base::PowerObserver:
   void OnResume() override;
 

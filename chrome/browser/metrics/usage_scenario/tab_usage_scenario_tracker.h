@@ -40,6 +40,7 @@ class TabUsageScenarioTracker : public TabStatsObserver,
                      content::WebContents* new_contents) override;
   void OnTabVisibilityChanged(content::WebContents* web_contents) override;
   void OnTabInteraction(content::WebContents* web_contents) override;
+  void OnTabIsAudibleChanged(content::WebContents* web_contents) override;
   void OnMediaEffectivelyFullscreenChanged(content::WebContents* web_contents,
                                            bool is_fullscreen) override;
   void OnMainFrameNavigationCommitted(
