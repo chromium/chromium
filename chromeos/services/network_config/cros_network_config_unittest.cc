@@ -47,6 +47,7 @@ namespace {
 
 const int kSimRetriesLeft = 3;
 const char kCellularDevicePath[] = "/device/stub_cellular_device";
+const char kTestCellularIccid[] = "12345678901234567890";
 
 const char kCellularTestApn1[] = "TEST.APN1";
 const char kCellularTestApnName1[] = "Test Apn 1";
@@ -188,6 +189,16 @@ class CrosNetworkConfigTest : public testing::Test {
         kCellularDevicePath, shill::kSIMPresentProperty, base::Value(true),
         /*notify_changed=*/false);
 
+    // Setup SimSlotInfo
+    base::Value::ListStorage ordered_sim_slot_info_list;
+    AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"",
+                         kTestCellularIccid,
+                         /*primary=*/true);
+    helper().device_test()->SetDeviceProperty(
+        kCellularDevicePath, shill::kSIMSlotInfoProperty,
+        base::Value(ordered_sim_slot_info_list),
+        /*notify_changed=*/false);
+
     // Note: These are Shill dictionaries, not ONC.
     helper().ConfigureService(
         R"({"GUID": "eth_guid", "Type": "ethernet", "State": "online"})");
@@ -201,8 +212,9 @@ class CrosNetworkConfigTest : public testing::Test {
     helper().ConfigureService(base::StringPrintf(
         R"({"GUID": "cellular_guid", "Type": "cellular",  "State": "idle",
             "Strength": 0, "Cellular.NetworkTechnology": "LTE",
-            "Cellular.ActivationState": "activated",
+            "Cellular.ActivationState": "activated", "Cellular.ICCID": "%s",
             "Profile": "%s"})",
+        kTestCellularIccid,
         NetworkProfileHandler::GetSharedProfilePath().c_str()));
     helper().ConfigureService(
         R"({"GUID": "vpn_guid", "Type": "vpn", "State": "association",
