@@ -101,7 +101,9 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   };
 
   // mojom::MediaMetricsProvider implementation:
-  void Initialize(bool is_mse, mojom::MediaURLScheme url_scheme) override;
+  void Initialize(bool is_mse,
+                  mojom::MediaURLScheme url_scheme,
+                  mojom::MediaStreamType media_stream_type) override;
   void OnError(PipelineStatus status) override;
   void SetAudioPipelineInfo(const AudioDecoderInfo& info) override;
   void SetContainerName(
@@ -152,6 +154,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   bool initialized_ = false;
   bool is_mse_;
   mojom::MediaURLScheme url_scheme_;
+  mojom::MediaStreamType media_stream_type_;
 
   base::TimeDelta time_to_metadata_ = kNoTimestamp;
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;

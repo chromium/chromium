@@ -416,7 +416,8 @@ class WebMediaPlayerImplTest
     // Initialize provider since none of the tests below actually go through the
     // full loading/pipeline initialize phase. If this ever changes the provider
     // will start DCHECK failing.
-    provider->Initialize(false, mojom::MediaURLScheme::kHttp);
+    provider->Initialize(false, mojom::MediaURLScheme::kHttp,
+                         mojom::MediaStreamType::kNone);
 
     audio_sink_ = base::WrapRefCounted(new NiceMock<MockAudioRendererSink>());
 

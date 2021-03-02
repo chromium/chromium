@@ -22,8 +22,11 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_video_renderer.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -34,6 +37,7 @@
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_local_frame_wrapper.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_renderer_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/webmediaplayer_ms_compositor.h"
@@ -396,6 +400,9 @@ WebMediaPlayerMS::~WebMediaPlayerMS() {
 void WebMediaPlayerMS::OnAudioRenderErrorCallback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  if (watch_time_reporter_)
+    watch_time_reporter_->OnError(media::AUDIO_RENDERER_ERROR);
+
   if (ready_state_ == WebMediaPlayer::kReadyStateHaveNothing) {
     // Any error that occurs before reaching ReadyStateHaveMetadata should
     // be considered a format error.
@@ -420,6 +427,8 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   web_stream_ = source.GetAsMediaStream();
   if (!web_stream_.IsNull())
     web_stream_.AddObserver(this);
+
+  watch_time_reporter_.reset();
 
   compositor_ = base::MakeRefCounted<WebMediaPlayerMSCompositor>(
       compositor_task_runner_, io_task_runner_, web_stream_,
@@ -530,6 +539,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
     SendLogMessage(String::Format("%s => (audio only mode)", __func__));
     SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
     SetReadyState(WebMediaPlayer::kReadyStateHaveEnoughData);
+    MaybeCreateWatchTimeReporter();
   }
 
   return WebMediaPlayer::LoadTiming::kImmediate;
@@ -659,8 +669,11 @@ void WebMediaPlayerMS::ReloadVideo() {
   }
 
   DCHECK_NE(renderer_action, RendererReloadAction::KEEP_RENDERER);
-  if (!paused_)
+  if (!paused_) {
     client_->DidPlayerSizeChange(NaturalSize());
+    if (watch_time_reporter_)
+      UpdateWatchTimeReporterSecondaryProperties();
+  }
 
   // TODO(perkj, magjed): We use OneShot focus type here so that it takes
   // audio focus once it starts, and then will not respond to further audio
@@ -747,8 +760,16 @@ void WebMediaPlayerMS::Play() {
   if (audio_renderer_)
     audio_renderer_->Play();
 
-  if (HasVideo())
+  if (watch_time_reporter_) {
+    watch_time_reporter_->SetAutoplayInitiated(client_->WasAutoplayInitiated());
+    watch_time_reporter_->OnPlaying();
+  }
+
+  if (HasVideo()) {
     client_->DidPlayerSizeChange(NaturalSize());
+    if (watch_time_reporter_)
+      UpdateWatchTimeReporterSecondaryProperties();
+  }
 
   client_->DidPlayerStartPlaying();
   delegate_->DidPlay(delegate_id_);
@@ -776,6 +797,9 @@ void WebMediaPlayerMS::Pause() {
     audio_renderer_->Pause();
 
   client_->DidPlayerPaused(/* stream_ended = */ false);
+  if (watch_time_reporter_)
+    watch_time_reporter_->OnPaused();
+
   delegate_->DidPause(delegate_id_, /* reached_end_of_stream = */ false);
   delegate_->SetIdle(delegate_id_, true);
 
@@ -796,6 +820,8 @@ void WebMediaPlayerMS::SetVolume(double volume) {
   volume_ = volume;
   if (audio_renderer_.get())
     audio_renderer_->SetVolume(volume_ * volume_multiplier_);
+  if (watch_time_reporter_)
+    watch_time_reporter_->OnVolumeChange(volume);
   client_->DidPlayerMutedStatusChange(volume == 0.0);
 }
 
@@ -1014,6 +1040,10 @@ bool WebMediaPlayerMS::HasAvailableVideoFrame() const {
 
 void WebMediaPlayerMS::OnFrameHidden() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (watch_time_reporter_)
+    watch_time_reporter_->OnHidden();
+
   // This method is called when the RenderFrame is sent to background or
   // suspended. During undoable tab closures OnHidden() may be called back to
   // back, so we can't rely on |render_frame_suspended_| being false here.
@@ -1062,6 +1092,9 @@ void WebMediaPlayerMS::SuspendForFrameClosed() {
 
 void WebMediaPlayerMS::OnFrameShown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (watch_time_reporter_)
+    watch_time_reporter_->OnShown();
 
   if (frame_deliverer_) {
     PostCrossThreadTask(
@@ -1144,6 +1177,7 @@ void WebMediaPlayerMS::OnFirstFrameReceived(media::VideoRotation video_rotation,
   SetReadyState(WebMediaPlayer::kReadyStateHaveEnoughData);
   TriggerResize();
   ResetCanvasCache();
+  MaybeCreateWatchTimeReporter();
 }
 
 void WebMediaPlayerMS::OnOpacityChanged(bool is_opaque) {
@@ -1221,6 +1255,8 @@ void WebMediaPlayerMS::TriggerResize() {
     get_client()->SizeChanged();
 
   client_->DidPlayerSizeChange(NaturalSize());
+  if (watch_time_reporter_)
+    UpdateWatchTimeReporterSecondaryProperties();
 }
 
 void WebMediaPlayerMS::SetGpuMemoryBufferVideoForTesting(
@@ -1243,6 +1279,20 @@ void WebMediaPlayerMS::OnDisplayTypeChanged(DisplayType display_type) {
       CrossThreadBindOnce(&WebMediaPlayerMSCompositor::SetForceSubmit,
                           CrossThreadUnretained(compositor_.get()),
                           display_type == DisplayType::kPictureInPicture));
+
+  if (!watch_time_reporter_)
+    return;
+
+  switch (display_type) {
+    case DisplayType::kInline:
+      watch_time_reporter_->OnDisplayTypeInline();
+      break;
+    case DisplayType::kFullscreen:
+      watch_time_reporter_->OnDisplayTypeFullscreen();
+      break;
+    case DisplayType::kPictureInPicture:
+      watch_time_reporter_->OnDisplayTypePictureInPicture();
+  }
 }
 
 void WebMediaPlayerMS::OnNewFramePresentedCallback() {
@@ -1286,6 +1336,185 @@ void WebMediaPlayerMS::RequestVideoFrameCallback() {
 void WebMediaPlayerMS::StopForceBeginFrames(TimerBase* timer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   compositor_->SetForceBeginFrames(false);
+}
+
+void WebMediaPlayerMS::MaybeCreateWatchTimeReporter() {
+  if (!internal_frame_->web_frame())
+    return;
+
+  if (!HasAudio() && !HasVideo())
+    return;
+
+  base::Optional<media::mojom::MediaStreamType> media_stream_type =
+      GetMediaStreamType();
+  if (!media_stream_type)
+    return;
+
+  if (watch_time_reporter_)
+    return;
+
+  if (compositor_) {
+    compositor_initial_time_ = compositor_->GetCurrentTime();
+    compositor_last_time_ = compositor_initial_time_;
+  }
+  if (audio_renderer_) {
+    audio_initial_time_ = audio_renderer_->GetCurrentRenderTime();
+    audio_last_time_ = audio_initial_time_;
+  }
+
+  mojo::Remote<media::mojom::MediaMetricsProvider> media_metrics_provider;
+  auto* execution_context =
+      internal_frame_->frame()->DomWindow()->GetExecutionContext();
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(TaskType::kMediaElementEvent);
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
+      media_metrics_provider.BindNewPipeAndPassReceiver(task_runner));
+  media_metrics_provider->Initialize(false /* is_mse */,
+                                     media::mojom::MediaURLScheme::kMissing,
+                                     *media_stream_type);
+
+  // Create the watch time reporter and synchronize its initial state.
+  // WTF::Unretained() is safe because WebMediaPlayerMS owns the
+  // |watch_time_reporter_|, and therefore outlives it.
+  watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
+      media::mojom::PlaybackProperties::New(
+          HasAudio(), HasVideo(), false /*is_background*/, false /*is_muted*/,
+          false /*is_mse*/, false /*is_eme*/,
+          false /*is_embedded_media_experience*/, *media_stream_type),
+      NaturalSize(),
+      WTF::BindRepeating(&WebMediaPlayerMS::GetCurrentTimeInterval,
+                         WTF::Unretained(this)),
+      WTF::BindRepeating(&WebMediaPlayerMS::GetPipelineStatistics,
+                         WTF::Unretained(this)),
+      media_metrics_provider.get(),
+      internal_frame_->web_frame()->GetTaskRunner(
+          blink::TaskType::kInternalMedia));
+
+  watch_time_reporter_->OnVolumeChange(volume_);
+
+  if (delegate_->IsFrameHidden())
+    watch_time_reporter_->OnHidden();
+  else
+    watch_time_reporter_->OnShown();
+
+  if (client_) {
+    if (client_->HasNativeControls())
+      watch_time_reporter_->OnNativeControlsEnabled();
+    else
+      watch_time_reporter_->OnNativeControlsDisabled();
+
+    switch (client_->GetDisplayType()) {
+      case DisplayType::kInline:
+        watch_time_reporter_->OnDisplayTypeInline();
+        break;
+      case DisplayType::kFullscreen:
+        watch_time_reporter_->OnDisplayTypeFullscreen();
+        break;
+      case DisplayType::kPictureInPicture:
+        watch_time_reporter_->OnDisplayTypePictureInPicture();
+        break;
+    }
+  }
+
+  UpdateWatchTimeReporterSecondaryProperties();
+
+  // If the WatchTimeReporter was recreated in the middle of playback, we want
+  // to resume playback here too since we won't get another play() call.
+  if (!paused_)
+    watch_time_reporter_->OnPlaying();
+}
+
+void WebMediaPlayerMS::UpdateWatchTimeReporterSecondaryProperties() {
+  // Set only the natural size and use default values for the other secondary
+  // properties. MediaStreams generally operate with raw data, where there is no
+  // codec information. For the MediaStreams where coded information is
+  // available, the coded information is currently not accessible to the media
+  // player.
+  // TODO(https://crbug.com/1147813) Report codec information once accessible.
+  watch_time_reporter_->UpdateSecondaryProperties(
+      media::mojom::SecondaryPlaybackProperties::New(
+          media::kUnknownAudioCodec, media::kUnknownVideoCodec,
+          media::AudioCodecProfile::kUnknown,
+          media::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN,
+          media::AudioDecoderType::kUnknown, media::VideoDecoderType::kUnknown,
+          media::EncryptionScheme::kUnencrypted,
+          media::EncryptionScheme::kUnencrypted, NaturalSize()));
+}
+
+base::TimeDelta WebMediaPlayerMS::GetCurrentTimeInterval() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (compositor_) {
+    compositor_last_time_ =
+        std::max(compositor_last_time_, compositor_->GetCurrentTime());
+  }
+  if (audio_renderer_) {
+    audio_last_time_ =
+        std::max(audio_last_time_, audio_renderer_->GetCurrentRenderTime());
+  }
+
+  base::TimeDelta compositor_interval =
+      compositor_last_time_ - compositor_initial_time_;
+  base::TimeDelta audio_interval = audio_last_time_ - audio_initial_time_;
+  return std::max(compositor_interval, audio_interval);
+}
+
+media::PipelineStatistics WebMediaPlayerMS::GetPipelineStatistics() {
+  media::PipelineStatistics stats;
+  stats.video_frames_decoded = DecodedFrameCount();
+  stats.video_frames_dropped = DroppedFrameCount();
+  return stats;
+}
+
+base::Optional<media::mojom::MediaStreamType>
+WebMediaPlayerMS::GetMediaStreamType() {
+  if (web_stream_.IsNull())
+    return base::nullopt;
+
+  // If either the first video or audio source is remote, the media stream is
+  // of remote source.
+  MediaStreamDescriptor& descriptor = *web_stream_;
+  MediaStreamSource* media_source = nullptr;
+  if (HasVideo()) {
+    auto video_components = descriptor.VideoComponents();
+    DCHECK_GT(video_components.size(), 0U);
+    media_source = video_components[0]->Source();
+  } else if (HasAudio()) {
+    auto audio_components = descriptor.AudioComponents();
+    DCHECK_GT(audio_components.size(), 0U);
+    media_source = audio_components[0]->Source();
+  }
+  if (!media_source)
+    return base::nullopt;
+  if (media_source->Remote())
+    return media::mojom::MediaStreamType::kRemote;
+
+  auto* platform_source = media_source->GetPlatformSource();
+  if (!platform_source)
+    return base::nullopt;
+  switch (platform_source->device().type) {
+    case mojom::blink::MediaStreamType::NO_SERVICE:
+      // Element capture uses the default NO_SERVICE value since it does not set
+      // a device.
+      return media::mojom::MediaStreamType::kLocalElementCapture;
+    case mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE:
+    case mojom::blink::MediaStreamType::DEVICE_VIDEO_CAPTURE:
+      return media::mojom::MediaStreamType::kLocalDeviceCapture;
+    case mojom::blink::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+    case mojom::blink::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
+      return media::mojom::MediaStreamType::kLocalTabCapture;
+    case mojom::blink::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+    case mojom::blink::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
+      return media::mojom::MediaStreamType::kLocalDesktopCapture;
+    case mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+    case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+      return media::mojom::MediaStreamType::kLocalDisplayCapture;
+    case mojom::blink::MediaStreamType::NUM_MEDIA_TYPES:
+      NOTREACHED();
+      return base::nullopt;
+  }
+
+  return base::nullopt;
 }
 
 }  // namespace blink

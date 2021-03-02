@@ -780,7 +780,8 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   media_metrics_provider_->Initialize(
       load_type == kLoadTypeMediaSource,
       load_type == kLoadTypeURL ? blink::GetMediaURLScheme(loaded_url_)
-                                : mojom::MediaURLScheme::kUnknown);
+                                : mojom::MediaURLScheme::kUnknown,
+      mojom::MediaStreamType::kNone);
 
   if (demuxer_override_ || load_type == kLoadTypeMediaSource) {
     // If a demuxer override was specified or a Media Source pipeline will be
@@ -3303,7 +3304,8 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   watch_time_reporter_ = std::make_unique<blink::WatchTimeReporter>(
       mojom::PlaybackProperties::New(
           pipeline_metadata_.has_audio, has_video, false, false,
-          !!chunk_demuxer_, is_encrypted_, embedded_media_experience_enabled_),
+          !!chunk_demuxer_, is_encrypted_, embedded_media_experience_enabled_,
+          mojom::MediaStreamType::kNone),
       pipeline_metadata_.natural_size,
       base::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
                           base::Unretained(this)),
