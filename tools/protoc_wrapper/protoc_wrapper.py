@@ -180,7 +180,7 @@ def main(argv):
     protoc_cmd += ['--dependency_out', options.descriptor_set_dependency_file]
     ret = subprocess.call(protoc_cmd)
 
-    with open(options.descriptor_set_dependency_file, 'r') as f:
+    with open(options.descriptor_set_dependency_file, 'rb') as f:
       dependency_file_data = f.read().decode('utf-8')
 
   ret = subprocess.call(protoc_cmd)
