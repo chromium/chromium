@@ -1462,6 +1462,8 @@ message ShowCastProto {
   optional ElementAreaProto touchable_element_area = 6;
 
   // The padding that will be added between the focused element and the top.
+  // If |container| is specified, this will indicate the padding between the
+  // focused element and the top of the container instead.
   optional TopPadding top_padding = 7;
 
   // Configure whether the scrolling should wait for the element to be stable
@@ -1475,6 +1477,10 @@ message ShowCastProto {
 
   // Interval for stable check in ms.
   optional int32 stable_check_interval_ms = 11 [default = 200];
+
+  // Optional: the container to be scrolled to focus |element_to_present|. If
+  // not set, the window will be scrolled.
+  optional SelectorProto container = 12;
 
   reserved 3, 4, 8;
 }

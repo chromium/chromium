@@ -52,14 +52,23 @@ const char* const kGetVisualViewport =
 // Scrolls to the specified node with top padding. The top padding can
 // be specified through pixels or ratio. Pixels take precedence.
 const char* const kScrollIntoViewWithPaddingScript =
-    R"(function(node, topPaddingPixels, topPaddingRatio) {
+    R"(function(node, topPaddingPixels, topPaddingRatio, container = null) {
     node.scrollIntoViewIfNeeded();
+
+    let scrollable = window;
+    let containerTop = 0;
+    if (container){
+      scrollable = container;
+      containerTop = container.getBoundingClientRect().top;
+    }
+
     const rect = node.getBoundingClientRect();
     let topPadding = topPaddingPixels;
     if (!topPadding){
       topPadding = window.innerHeight * topPaddingRatio;
     }
-    window.scrollBy({top: rect.top - topPadding});
+
+    scrollable.scrollBy({top: rect.top - topPadding - containerTop});
   })";
 
 // Scroll the window or any scrollable container as needed for the element to
@@ -1009,6 +1018,7 @@ void WebController::HighlightElement(
 }
 
 void WebController::ScrollToElementPosition(
+    std::unique_ptr<ElementFinder::Result> container,
     const ElementFinder::Result& element,
     const TopPadding& top_padding,
     base::OnceCallback<void(const ClientStatus&)> callback) {
@@ -1016,6 +1026,10 @@ void WebController::ScrollToElementPosition(
   AddRuntimeCallArgumentObjectId(element.object_id(), &arguments);
   AddRuntimeCallArgument(top_padding.pixels(), &arguments);
   AddRuntimeCallArgument(top_padding.ratio(), &arguments);
+  if (container) {
+    AddRuntimeCallArgumentObjectId(container->object_id(), &arguments);
+  }
+
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())

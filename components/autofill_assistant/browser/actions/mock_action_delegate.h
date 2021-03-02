@@ -155,9 +155,10 @@ class MockActionDelegate : public ActionDelegate {
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  MOCK_METHOD4(ScrollToElementPosition,
+  MOCK_METHOD5(ScrollToElementPosition,
                void(const Selector& selector,
                     const TopPadding& top_padding,
+                    std::unique_ptr<ElementFinder::Result> scrollable_element,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 

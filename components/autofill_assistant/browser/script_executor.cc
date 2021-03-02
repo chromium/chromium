@@ -338,7 +338,6 @@ std::string ScriptExecutor::GetBubbleMessage() {
 
 void ScriptExecutor::FindElement(const Selector& selector,
                                  ElementFinder::Callback callback) const {
-  DCHECK(!selector.empty());
   VLOG(3) << __func__ << " " << selector;
   delegate_->GetWebController()->FindElement(selector, /* strict_mode= */ true,
                                              std::move(callback));
@@ -346,7 +345,6 @@ void ScriptExecutor::FindElement(const Selector& selector,
 
 void ScriptExecutor::FindAllElements(const Selector& selector,
                                      ElementFinder::Callback callback) const {
-  DCHECK(!selector.empty());
   VLOG(3) << __func__ << " " << selector;
   delegate_->GetWebController()->FindAllElements(selector, std::move(callback));
 }
@@ -560,12 +558,13 @@ void ScriptExecutor::SelectOption(
 void ScriptExecutor::ScrollToElementPosition(
     const Selector& selector,
     const TopPadding& top_padding,
+    std::unique_ptr<ElementFinder::Result> container,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   last_focused_element_selector_ = selector;
   last_focused_element_top_padding_ = top_padding;
-  delegate_->GetWebController()->ScrollToElementPosition(element, top_padding,
-                                                         std::move(callback));
+  delegate_->GetWebController()->ScrollToElementPosition(
+      std::move(container), element, top_padding, std::move(callback));
 }
 
 void ScriptExecutor::SetTouchableElementArea(
@@ -1436,7 +1435,7 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
     actions->emplace_back(base::BindOnce(
         &ActionDelegate::ScrollToElementPosition, main_script_->GetWeakPtr(),
         main_script_->last_focused_element_selector_,
-        main_script_->last_focused_element_top_padding_));
+        main_script_->last_focused_element_top_padding_, nullptr));
     action_delegate_util::FindElementAndPerform(
         main_script_, main_script_->last_focused_element_selector_,
         base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),

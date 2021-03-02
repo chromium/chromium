@@ -184,6 +184,7 @@ class ScriptExecutor : public ActionDelegate,
   void ScrollToElementPosition(
       const Selector& selector,
       const TopPadding& top_padding,
+      std::unique_ptr<ElementFinder::Result> container,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void SetTouchableElementArea(
