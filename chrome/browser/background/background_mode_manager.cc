@@ -133,8 +133,15 @@ void BackgroundModeManager::BackgroundModeData::UpdateProfileKeepAlive() {
     profile_keep_alive_.reset();
     return;
   }
+
   if (profile_keep_alive_)
     return;
+  if (!g_browser_process->profile_manager()->IsValidProfile(profile_)) {
+    // ScopedProfileKeepAlive will cause issues if we create it now. Wait for
+    // OnProfileAdded().
+    return;
+  }
+
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       profile_, ProfileKeepAliveOrigin::kBackgroundMode);
 }

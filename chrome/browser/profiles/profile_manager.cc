@@ -1321,6 +1321,11 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
   if (!info) {
     // Can be null in unit tests, when the Profile was not created via
     // ProfileManager.
+    VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
+            << ") called before the Profile was added to the ProfileManager. "
+            << "The keepalive was not added. This may cause a crash during "
+            << "teardown. (except in unit tests, where Profiles may not be "
+            << "registered with the ProfileManager)";
     return;
   }
 
@@ -1353,6 +1358,11 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
   if (!info) {
     // Can be null in unit tests, when the Profile was not created via
     // ProfileManager.
+    VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
+            << ") called before the Profile was added to the "
+            << "ProfileManager. The keepalive was not removed. (this is OK in "
+            << "unit tests, wheres Profile may not be registered with the "
+            << "ProfileManager)";
     return;
   }
 
