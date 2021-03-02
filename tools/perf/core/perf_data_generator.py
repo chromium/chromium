@@ -423,21 +423,81 @@ BUILDERS = {
     },
     'linux-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'tests': [{
+            'name': 'chrome_sizes',
+            'isolate': 'chrome_sizes',
+            'type': TEST_TYPES.GENERIC,
+        }],
+        'dimension': {
+            'cpu': 'x86-64',
+            'os': 'Ubuntu-16.04',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger':
+        False,
     },
     'linux-builder-perf-rel': {
         'additional_compile_targets': ['chromium_builder_perf'],
     },
     'mac-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'tests': [{
+            'name': 'chrome_sizes',
+            'isolate': 'chrome_sizes',
+            'type': TEST_TYPES.GENERIC,
+        }],
+        'dimension': {
+            'cpu': 'x86-64',
+            'os': 'Mac',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger':
+        False,
     },
     'mac-arm-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'tests': [{
+            'name': 'chrome_sizes',
+            'isolate': 'chrome_sizes',
+            'type': TEST_TYPES.GENERIC,
+        }],
+        'dimension': {
+            'cpu': 'x86',
+            'os': 'Mac',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger':
+        False,
     },
     'win32-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'tests': [{
+            'name': 'chrome_sizes',
+            'isolate': 'chrome_sizes',
+            'type': TEST_TYPES.GENERIC,
+        }],
+        'dimension': {
+            'cpu': 'x86',
+            'os': 'Windows',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger':
+        False,
     },
     'win64-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'tests': [{
+            'name': 'chrome_sizes',
+            'isolate': 'chrome_sizes',
+            'type': TEST_TYPES.GENERIC,
+        }],
+        'dimension': {
+            'cpu': 'x86-64',
+            'os': 'Windows',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger':
+        False,
     },
     'android-go-perf': {
         'tests': [{
@@ -969,6 +1029,17 @@ OTHER_BENCHMARKS = {
     'resource_sizes_system_webview_google_bundle': RESOURCE_SIZES_METADATA,
 }
 
+
+OTHER_BENCHMARKS.update({
+    'chrome_sizes':
+    BenchmarkMetadata(
+        emails='heiserya@chromium.org, johnchen@chromium.org',
+        component='Build',
+        documentation_url=(
+            'https://chromium.googlesource.com/chromium/'
+            'src/+/HEAD/tools/binary_size/README.md#resource_sizes_py'),
+    ),
+})
 
 OTHER_BENCHMARKS.update({
     'resource_sizes_lacros_chrome':

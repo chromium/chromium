@@ -1146,6 +1146,34 @@
     "additional_compile_targets": [
       "chromedriver",
       "chromium_builder_perf"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [],
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "override_compile_targets": [
+          "chrome_sizes"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        }
+      }
     ]
   },
   "linux-builder-perf-rel": {
@@ -1377,12 +1405,68 @@
     "additional_compile_targets": [
       "chromedriver",
       "chromium_builder_perf"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [],
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "override_compile_targets": [
+          "chrome_sizes"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86",
+              "os": "Mac",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        }
+      }
     ]
   },
   "mac-builder-perf": {
     "additional_compile_targets": [
       "chromedriver",
       "chromium_builder_perf"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [],
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "override_compile_targets": [
+          "chrome_sizes"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        }
+      }
     ]
   },
   "mac-m1_mini_2020-perf": {
@@ -1550,12 +1634,68 @@
     "additional_compile_targets": [
       "chromedriver",
       "chromium_builder_perf"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [],
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "override_compile_targets": [
+          "chrome_sizes"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86",
+              "os": "Windows",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        }
+      }
     ]
   },
   "win64-builder-perf": {
     "additional_compile_targets": [
       "chromedriver",
       "chromium_builder_perf"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [],
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "override_compile_targets": [
+          "chrome_sizes"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        }
+      }
     ]
   }
 }

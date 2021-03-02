@@ -28,7 +28,12 @@ _VALID_PERF_POOLS = {
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
     'fuchsia-perf-fyi': {'chrome.tests'},
-    'lacros-eve-perf': {'chrome.tests'}
+    'lacros-eve-perf': {'chrome.tests'},
+    'linux-builder-perf': {'chrome.tests'},
+    'mac-arm-builder-perf': {'chrome.tests'},
+    'mac-builder-perf': {'chrome.tests'},
+    'win32-builder-perf': {'chrome.tests'},
+    'win64-builder-perf': {'chrome.tests'},
 }
 _VALID_WEBVIEW_BROWSERS = {
     'android-webview',
