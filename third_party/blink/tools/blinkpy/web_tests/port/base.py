@@ -418,7 +418,7 @@ class Port(object):
 
     def default_max_locked_shards(self):
         """Returns the number of "locked" shards to run in parallel (like the http tests)."""
-        max_locked_shards = int(self.default_child_processes()) / 4
+        max_locked_shards = int(self.default_child_processes()) // 4
         if not max_locked_shards:
             return 1
         return max_locked_shards
@@ -437,7 +437,8 @@ class Port(object):
     def baseline_search_path(self):
         return (self.get_option('additional_platform_directory', []) +
                 self._flag_specific_baseline_search_path() +
-                self._compare_baseline() + self.default_baseline_search_path())
+                self._compare_baseline() +
+                list(self.default_baseline_search_path()))
 
     def default_baseline_search_path(self):
         """Returns a list of absolute paths to directories to search under for baselines.

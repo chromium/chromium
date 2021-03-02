@@ -31,6 +31,7 @@ import copy
 import itertools
 import logging
 import math
+import six
 import time
 
 from blinkpy.common import message_pool
@@ -511,7 +512,7 @@ class Sharder(object):
             tests_by_dir.setdefault(directory, [])
             tests_by_dir[directory].append(test_input)
 
-        for directory, test_inputs in tests_by_dir.iteritems():
+        for directory, test_inputs in six.iteritems(tests_by_dir):
             shard = TestShard(directory, test_inputs)
             if test_inputs[0].requires_lock:
                 locked_shards.append(shard)

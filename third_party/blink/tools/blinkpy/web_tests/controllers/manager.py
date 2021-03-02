@@ -43,6 +43,8 @@ import random
 import sys
 import time
 
+from six.moves import range
+
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.net.file_uploader import FileUploader
@@ -269,7 +271,7 @@ class Manager(object):
         tests_to_retry = self._tests_to_retry(initial_results)
         all_retry_results = []
         if should_retry_failures and tests_to_retry:
-            for retry_attempt in xrange(1, self._options.num_retries + 1):
+            for retry_attempt in range(1, self._options.num_retries + 1):
                 if not tests_to_retry:
                     break
 
@@ -450,9 +452,9 @@ class Manager(object):
                    retry_attempt=0):
 
         test_inputs = []
-        for _ in xrange(iterations):
+        for _ in range(iterations):
             for test in tests_to_run:
-                for _ in xrange(repeat_each):
+                for _ in range(repeat_each):
                     test_inputs.append(
                         self._test_input_for_file(test, retry_attempt))
         return self._runner.run_tests(self._expectations, test_inputs,

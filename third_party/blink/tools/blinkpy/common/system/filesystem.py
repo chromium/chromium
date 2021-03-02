@@ -247,10 +247,10 @@ class FileSystem(object):
         return f, temp_name
 
     def open_binary_file_for_reading(self, path):
-        return file(self._path_for_access(path), 'rb')
+        return open(self._path_for_access(path), 'rb')
 
     def open_binary_file_for_writing(self, path):
-        return file(self._path_for_access(path), 'wb')
+        return open(self._path_for_access(path), 'wb')
 
     def read_binary_file(self, path):
         """Returns the contents of the file as a byte string."""
