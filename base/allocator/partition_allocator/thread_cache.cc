@@ -50,6 +50,7 @@ static bool g_thread_cache_key_created = false;
 constexpr base::TimeDelta ThreadCacheRegistry::kMinPurgeInterval;
 constexpr base::TimeDelta ThreadCacheRegistry::kMaxPurgeInterval;
 constexpr base::TimeDelta ThreadCacheRegistry::kDefaultPurgeInterval;
+uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
 
 // static
 ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
@@ -158,6 +159,37 @@ void ThreadCacheRegistry::StartPeriodicPurge() {
   PostDelayedPurgeTask();
 }
 
+void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
+  // Two steps:
+  // - Set the global limits, which will affect newly created threads.
+  // - Enumerate all thread caches and set the limit to the global one.
+  {
+    PartitionAutoLock scoped_locker(GetLock());
+    ThreadCache* tcache = list_head_;
+
+    // If this is called before *any* thread cache has serviced *any*
+    // allocation, which can happen in tests, and in theory in non-test code as
+    // well.
+    if (!tcache)
+      return;
+
+    // Setting the global limit while locked, because we need |tcache->root_|.
+    ThreadCache::SetGlobalLimits(tcache->root_, multiplier);
+
+    while (tcache) {
+      PA_DCHECK(ThreadCache::IsValid(tcache));
+      for (int index = 0; index < ThreadCache::kBucketCount; index++) {
+        // This is racy, but we don't care if the limit is enforced later, and
+        // we really want to avoid atomic instructions on the fast path.
+        tcache->buckets_[index].limit.store(ThreadCache::global_limits_[index],
+                                            std::memory_order_relaxed);
+      }
+
+      tcache = tcache->next_;
+    }
+  }
+}
+
 void ThreadCacheRegistry::PostDelayedPurgeTask() {
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -249,6 +281,45 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
 #if defined(OS_WIN)
   PartitionTlsSetOnDllProcessDetach(OnDllProcessDetach);
 #endif
+
+  SetGlobalLimits(root, kDefaultMultiplier);
+}
+
+// static
+void ThreadCache::SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
+                                  float multiplier) {
+  size_t initial_value =
+      static_cast<size_t>(kSmallBucketBaseCount) * multiplier;
+
+  for (int index = 0; index < kBucketCount; index++) {
+    const auto& root_bucket = root->buckets[index];
+    // Invalid bucket.
+    if (!root_bucket.active_slot_spans_head) {
+      global_limits_[index] = 0;
+      continue;
+    }
+
+    // Smaller allocations are more frequent, and more performance-sensitive.
+    // Cache more small objects, and fewer larger ones, to save memory.
+    size_t slot_size = root_bucket.slot_size;
+    size_t value;
+    if (slot_size <= 128) {
+      value = initial_value;
+    } else if (slot_size <= 256) {
+      value = initial_value / 2;
+    } else {
+      value = initial_value / 4;
+    }
+
+    // Clamp the limit between two constraints:
+    // - Batch fill should fill at least 2 elements at a time.
+    // - |PutInBucket()| is called on a full bucket, which should not overflow.
+    constexpr uint8_t kMinLimit = 2 * kBatchFillRatio;
+    constexpr uint8_t kMaxLimit = std::numeric_limits<uint8_t>::max() - 1;
+    global_limits_[index] = std::max(kMinLimit, {std::min(value, {kMaxLimit})});
+    PA_DCHECK(global_limits_[index] >= kMinLimit);
+    PA_DCHECK(global_limits_[index] <= kMaxLimit);
+  }
 }
 
 // static
@@ -290,27 +361,18 @@ ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
   for (int index = 0; index < kBucketCount; index++) {
     const auto& root_bucket = root->buckets[index];
     Bucket* tcache_bucket = &buckets_[index];
+    tcache_bucket->freelist_head = nullptr;
+    tcache_bucket->count = 0;
+    tcache_bucket->limit.store(global_limits_[index],
+                               std::memory_order_relaxed);
+
     // Invalid bucket.
     if (!root_bucket.active_slot_spans_head) {
       // Explicitly set this, as size computations iterate over all buckets.
-      tcache_bucket->limit = 0;
-      tcache_bucket->count = 0;
+      tcache_bucket->limit.store(0, std::memory_order_relaxed);
       tcache_bucket->slot_size = 0;
-      continue;
-    }
-
-    // Smaller allocations are more frequent, and more performance-sensitive.
-    // Cache more small objects, and fewer larger ones, to save memory.
-    size_t slot_size = root_bucket.slot_size;
-    PA_CHECK(slot_size <= std::numeric_limits<uint16_t>::max());
-    tcache_bucket->slot_size = static_cast<uint16_t>(slot_size);
-
-    if (slot_size <= 128) {
-      tcache_bucket->limit = kMaxCountPerBucket;
-    } else if (slot_size <= 256) {
-      tcache_bucket->limit = kMaxCountPerBucket / 2;
     } else {
-      tcache_bucket->limit = kMaxCountPerBucket / 4;
+      tcache_bucket->slot_size = root_bucket.slot_size;
     }
   }
 }
@@ -334,6 +396,10 @@ void ThreadCache::Delete(void* tcache_ptr) {
   // TODO(lizeb): Investigate whether this is needed on POSIX as well.
   PartitionTlsSet(g_thread_cache_key, reinterpret_cast<void*>(kTombstone));
 #endif
+}
+
+ThreadCache::Bucket::Bucket() {
+  limit.store(0, std::memory_order_relaxed);
 }
 
 void ThreadCache::FillBucket(size_t bucket_index) {
@@ -367,7 +433,8 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   INCREMENT_COUNTER(stats_.batch_fill_count);
 
   Bucket& bucket = buckets_[bucket_index];
-  int count = bucket.limit / kBatchFillRatio;
+  int count = bucket.limit.load(std::memory_order_relaxed) / kBatchFillRatio;
+  PA_DCHECK(count > 1);
 
   size_t usable_size;
   bool is_already_zeroed;

@@ -69,6 +69,10 @@ class BASE_EXPORT ThreadCacheRegistry {
   // Starts a periodic timer on the current thread to purge all thread caches.
   void StartPeriodicPurge();
 
+  // Controls the thread cache size, by setting the multiplier to a value above
+  // or below |ThreadCache::kDefaultMultiplier|.
+  void SetThreadCacheMultiplier(float multiplier);
+
   static PartitionLock& GetLock() { return Instance().lock_; }
   // Purges all thread caches *now*. This is completely thread-unsafe, and
   // should only be called in a post-fork() handler.
@@ -221,19 +225,23 @@ class BASE_EXPORT ThreadCache {
 
   // TODO(lizeb): Once we have periodic purge, lower the ratio.
   static constexpr uint16_t kBatchFillRatio = 8;
-  static constexpr uint8_t kMaxCountPerBucket = 128;
+  static constexpr float kDefaultMultiplier = 2.;
+  static constexpr uint8_t kSmallBucketBaseCount = 64;
 
   // TODO(lizeb): Optimize the threshold.
   static constexpr size_t kSizeThreshold = 512;
 
  private:
   struct Bucket {
-    PartitionFreelistEntry* freelist_head;
+    PartitionFreelistEntry* freelist_head = nullptr;
     // Want to keep sizeof(Bucket) small, using small types.
-    uint8_t count;
-    uint8_t limit;
-    uint16_t slot_size;
+    uint8_t count = 0;
+    std::atomic<uint8_t> limit{};  // Can be changed from another thread.
+    uint16_t slot_size = 0;
+
+    Bucket();
   };
+  static_assert(sizeof(Bucket) <= 2 * sizeof(void*), "Keep Bucket small.");
   enum class Mode { kNormal, kPurge, kNotifyRegistry };
 
   explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
@@ -246,6 +254,8 @@ class BASE_EXPORT ThreadCache {
   ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* slot_start);
   void HandleNonNormalMode();
   void ResetForTesting();
+  static void SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
+                              float multiplier);
 
   static constexpr uint16_t kBucketCount =
       ((ConstexprLog2(kSizeThreshold) - kMinBucketedOrder + 1)
@@ -267,6 +277,8 @@ class BASE_EXPORT ThreadCache {
   // nullptr and kTombstone at the same time.
   static constexpr uintptr_t kTombstone = 0x1;
   static constexpr uintptr_t kTombstoneMask = ~kTombstone;
+
+  static uint8_t global_limits_[kBucketCount];
 
   Bucket buckets_[kBucketCount];
   std::atomic<bool> should_purge_;
@@ -290,6 +302,9 @@ class BASE_EXPORT ThreadCache {
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, RecordStats);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, ThreadCacheRegistry);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleThreadCachesAccounting);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicThreshold);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicThresholdClamping);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicThresholdMultipleThreads);
 };
 
 ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
@@ -309,9 +324,14 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
   PutInBucket(bucket, slot_start);
   INCREMENT_COUNTER(stats_.cache_fill_hits);
 
+  // Relaxed ordering: we don't care about having an up-to-date or consistent
+  // value, just want it to not change while we are using it, hence using
+  // relaxed ordering, and loading into a local variable. Without it, we are
+  // gambling that the compiler would not issue multiple loads.
+  uint8_t limit = bucket.limit.load(std::memory_order_relaxed);
   // Batched deallocation, amortizing lock acquisitions.
-  if (UNLIKELY(bucket.count >= bucket.limit)) {
-    ClearBucket(bucket, bucket.limit / 2);
+  if (UNLIKELY(bucket.count > limit)) {
+    ClearBucket(bucket, limit / 2);
   }
 
   if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))

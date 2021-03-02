@@ -36,14 +36,15 @@ namespace internal {
 namespace {
 
 constexpr size_t kSmallSize = 12;
-constexpr size_t kMaxCountForSmallBucket = 128;
+constexpr size_t kDefaultCountForSmallBucket =
+    ThreadCache::kSmallBucketBaseCount * ThreadCache::kDefaultMultiplier;
 constexpr size_t kFillCountForSmallBucket =
-    kMaxCountForSmallBucket / ThreadCache::kBatchFillRatio;
+    kDefaultCountForSmallBucket / ThreadCache::kBatchFillRatio;
 
 constexpr size_t kMediumSize = 200;
-constexpr size_t kMaxCountForMediumBucket = 64;
+constexpr size_t kDefaultCountForMediumBucket = kDefaultCountForSmallBucket / 2;
 constexpr size_t kFillCountForMediumBucket =
-    kMaxCountForMediumBucket / ThreadCache::kBatchFillRatio;
+    kDefaultCountForMediumBucket / ThreadCache::kBatchFillRatio;
 
 class LambdaThreadDelegate : public PlatformThread::Delegate {
  public:
@@ -96,6 +97,8 @@ size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
 class ThreadCacheTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+        ThreadCache::kDefaultMultiplier);
     // Make sure that enough slot spans have been touched, otherwise cache fill
     // becomes unpredictable (because it doesn't take slow paths in the
     // allocator), which is an issue for tests.
@@ -266,7 +269,7 @@ TEST_F(ThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   //
   // Allocate enough objects to force a cache fill at the next allocation.
   std::vector<void*> tmp;
-  for (size_t i = 0; i < kMaxCountForMediumBucket / 4; i++) {
+  for (size_t i = 0; i < kDefaultCountForMediumBucket / 4; i++) {
     tmp.push_back(g_root->Alloc(kMediumSize, ""));
   }
 
@@ -347,16 +350,19 @@ TEST_F(ThreadCacheTest, RecordStats) {
   // Buckets are never full, fill always succeeds.
   size_t allocations = 10;
   size_t bucket_index = FillThreadCacheAndReturnIndex(
-      kMediumSize, kMaxCountForMediumBucket + allocations);
-  EXPECT_EQ(kMaxCountForMediumBucket + allocations, cache_fill_counter.Delta());
+      kMediumSize, kDefaultCountForMediumBucket + allocations);
+  EXPECT_EQ(kDefaultCountForMediumBucket + allocations,
+            cache_fill_counter.Delta());
   EXPECT_EQ(0u, cache_fill_misses_counter.Delta());
 
   // Memory footprint.
   ThreadCacheStats stats;
   ThreadCacheRegistry::Instance().DumpStats(true, &stats);
-  // Bucket was cleared (count halved, then refilled).
+  // Bucket was cleared (set to kDefaultCountForMediumBucket / 2) after going
+  // above the limit (-1), then refilled by batches (1 + floor(allocations /
+  // kFillCountForSmallBucket) times).
   size_t expected_count =
-      kMaxCountForMediumBucket / 2 +
+      kDefaultCountForMediumBucket / 2 - 1 +
       (1 + allocations / kFillCountForMediumBucket) * kFillCountForMediumBucket;
   EXPECT_EQ(g_root->buckets[bucket_index].slot_size * expected_count,
             stats.bucket_total_memory);
@@ -499,6 +505,111 @@ TEST_F(ThreadCacheTest, PeriodicPurge) {
   task_env_.FastForwardBy(registry.purge_interval_for_testing());
   EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
+}
+
+TEST_F(ThreadCacheTest, DynamicThreshold) {
+  auto* tcache = g_root->thread_cache_for_testing();
+  size_t bucket_index =
+      FillThreadCacheAndReturnIndex(kMediumSize, kDefaultCountForMediumBucket);
+  EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
+
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier / 2);
+  // No immediate batch deallocation.
+  EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
+  void* data = g_root->Alloc(kMediumSize, "");
+  // Not triggered by allocations.
+  EXPECT_EQ(kDefaultCountForMediumBucket - 1,
+            tcache->buckets_[bucket_index].count);
+
+  // Free() triggers the purge within limits.
+  g_root->Free(data);
+  EXPECT_LE(tcache->buckets_[bucket_index].count,
+            kDefaultCountForMediumBucket / 2);
+
+  // Won't go above anymore.
+  FillThreadCacheAndReturnIndex(kMediumSize, 1000);
+  EXPECT_LE(tcache->buckets_[bucket_index].count,
+            kDefaultCountForMediumBucket / 2);
+
+  // Limit can be raised.
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier * 2);
+  FillThreadCacheAndReturnIndex(kMediumSize, 1000);
+  EXPECT_GT(tcache->buckets_[bucket_index].count,
+            kDefaultCountForMediumBucket / 2);
+}
+
+TEST_F(ThreadCacheTest, DynamicThresholdClamping) {
+  auto* tcache = g_root->thread_cache_for_testing();
+
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier / 1000.);
+  for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
+    // Invalid bucket.
+    if (!tcache->buckets_[i].limit.load(std::memory_order_relaxed)) {
+      EXPECT_EQ(g_root->buckets[i].active_slot_spans_head, nullptr);
+      continue;
+    }
+    EXPECT_GE(tcache->buckets_[i].limit.load(std::memory_order_relaxed),
+              2 * ThreadCache::kBatchFillRatio);
+  }
+
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier * 1000.);
+  for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
+    // Invalid bucket.
+    if (!tcache->buckets_[i].limit.load(std::memory_order_relaxed)) {
+      EXPECT_EQ(g_root->buckets[i].active_slot_spans_head, nullptr);
+      continue;
+    }
+    EXPECT_LT(tcache->buckets_[i].limit.load(std::memory_order_relaxed), 0xff);
+  }
+}
+
+TEST_F(ThreadCacheTest, DynamicThresholdMultipleThreads) {
+  std::atomic<bool> other_thread_started{false};
+  std::atomic<bool> threshold_changed{false};
+
+  auto* tcache = g_root->thread_cache_for_testing();
+  size_t bucket_index =
+      FillThreadCacheAndReturnIndex(kSmallSize, kDefaultCountForSmallBucket);
+  EXPECT_EQ(kDefaultCountForSmallBucket, tcache->buckets_[bucket_index].count);
+
+  // Change the ratio before starting the threads, checking that it will applied
+  // to newly-created threads.
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier + 1);
+
+  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
+    FillThreadCacheAndReturnIndex(kSmallSize, kDefaultCountForSmallBucket + 10);
+    auto* this_thread_tcache = g_root->thread_cache_for_testing();
+    // More than the default since the multiplier has changed.
+    EXPECT_GT(this_thread_tcache->buckets_[bucket_index].count,
+              kDefaultCountForSmallBucket + 10);
+
+    other_thread_started.store(true, std::memory_order_release);
+    while (!threshold_changed.load(std::memory_order_acquire)) {
+    }
+
+    void* data = g_root->Alloc(kSmallSize, "");
+    // Deallocations trigger limit enforcement.
+    g_root->Free(data);
+    // Since the bucket is too full, it gets halved by batched deallocation.
+    EXPECT_EQ(static_cast<uint8_t>(ThreadCache::kSmallBucketBaseCount / 2),
+              this_thread_tcache->bucket_count_for_testing(bucket_index));
+  })};
+
+  PlatformThreadHandle thread_handle;
+  PlatformThread::Create(0, &delegate, &thread_handle);
+
+  while (!other_thread_started.load(std::memory_order_acquire)) {
+  }
+
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(1.);
+  threshold_changed.store(true, std::memory_order_release);
+
+  PlatformThread::Join(thread_handle);
 }
 
 }  // namespace internal
