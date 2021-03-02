@@ -131,7 +131,7 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
   DCHECK(0 <= x && x <= 1);
   DCHECK(0 <= y && y <= 1);
 
-  id<GREYMatcher> constraints = grey_not(grey_nil());
+  id<GREYMatcher> constraints = grey_notNil();
   NSString* actionName =
       [NSString stringWithFormat:@"Tap at point at percentage"];
 

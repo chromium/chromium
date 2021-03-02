@@ -58,7 +58,7 @@ id<GREYAction> ScrollToTop();
 
 // Action to tap an element at the given xOriginStartPercentage as a percentage
 // of the total width and yOriginStartPercentage as a percentage of the total
-// height. Percentages are between 0 and 1.
+// height. Percentages are between 0 and 1, where 1 is 100%.
 id<GREYAction> TapAtPointPercentage(CGFloat xOriginStartPercentage,
                                     CGFloat yOriginStartPercentage);
 
