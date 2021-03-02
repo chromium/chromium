@@ -70,12 +70,17 @@ class FakeIncomingMessagesListener
     messages_received_.push_back(message);
   }
 
+  void OnComplete(bool success) override { on_complete_result_ = success; }
+
   const std::vector<std::string>& messages_received() {
     return messages_received_;
   }
 
+  base::Optional<bool> on_complete_result() { return on_complete_result_; }
+
  private:
   std::vector<std::string> messages_received_;
+  base::Optional<bool> on_complete_result_;
 };
 
 class ReceiveMessagesExpressTest : public testing::Test {
@@ -109,6 +114,10 @@ class ReceiveMessagesExpressTest : public testing::Test {
 
   const std::vector<std::string>& GetMessagesReceived() {
     return message_listener_.messages_received();
+  }
+
+  base::Optional<bool> OnCompleteResult() {
+    return message_listener_.on_complete_result();
   }
 
   std::string GetFastPathOnlyResponse() {
@@ -283,4 +292,35 @@ TEST_F(ReceiveMessagesExpressTest, PendingRemoteCleanupDisconnects) {
   // should disconnect.
   session_pending_remote_.reset();
   run_loop_2.Run();
+}
+
+TEST_F(ReceiveMessagesExpressTest, OnCompleteAfterSuccess) {
+  base::RunLoop run_loop;
+  StartReceivingMessages(&run_loop, /*token_success=*/true);
+
+  std::vector<std::string> messages = {"quick brown", "fox"};
+  std::string response = BuildResponseProto(messages).SerializeAsString();
+  GetTestUrlLoaderFactory().AddResponse(kInstantMessagingReceiveMessageAPI,
+                                        response, net::HTTP_OK);
+  run_loop.Run();
+
+  ASSERT_EQ(0, GetTestUrlLoaderFactory().NumPending());
+  ASSERT_TRUE(OnCompleteResult().has_value());
+  EXPECT_TRUE(OnCompleteResult().value());
+}
+
+TEST_F(ReceiveMessagesExpressTest, NoOnCompleteWithoutFastPathReady) {
+  base::RunLoop run_loop;
+  StartReceivingMessages(&run_loop, /*token_success=*/true);
+
+  std::vector<std::string> messages = {"quick brown", "fox"};
+  std::string response =
+      BuildResponseProto(messages, /*include_fast_path_ready=*/false)
+          .SerializeAsString();
+  GetTestUrlLoaderFactory().AddResponse(kInstantMessagingReceiveMessageAPI,
+                                        response, net::HTTP_FORBIDDEN);
+  run_loop.Run();
+
+  ASSERT_EQ(0, GetTestUrlLoaderFactory().NumPending());
+  ASSERT_FALSE(OnCompleteResult().has_value());
 }

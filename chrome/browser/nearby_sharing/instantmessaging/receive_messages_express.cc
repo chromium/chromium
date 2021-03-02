@@ -212,7 +212,8 @@ void ReceiveMessagesExpress::StopReceivingMessages() {
   // Cancel any pending calls into this object.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // This implicitly cancels the download stream.
+  // This implicitly cancels the download stream. We intentionally don't call
+  // OnComplete() when the other side calls StopReceivingMessages().
   url_loader_.reset();
 
   NS_LOG(VERBOSE) << __func__ << ": callback already invoked? "
@@ -241,7 +242,8 @@ void ReceiveMessagesExpress::OnComplete(bool success) {
 
   NS_LOG(VERBOSE) << __func__ << ": success? " << (success ? "yes" : "no")
                   << ", start calback invoked? "
-                  << (start_receiving_messages_callback_ ? "no" : "yes");
+                  << (start_receiving_messages_callback_ ? "no" : "yes")
+                  << ", net::Error " << url_loader_->NetError();
 
   if (start_receiving_messages_callback_) {
     LogReceiveResult(success, http_status);
@@ -251,6 +253,10 @@ void ReceiveMessagesExpress::OnComplete(bool success) {
     FailSessionAndDestruct("Download stream ended before fast path ready");
     // |this| will be destroyed here.
     return;
+  } else {
+    // Only call OnComplete() if the start callback has been invoked, meaning
+    // the stream has opened and we have received "fast path ready".
+    incoming_messages_listener_->OnComplete(success);
   }
 }
 

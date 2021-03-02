@@ -87,9 +87,13 @@ class IncomingMessageListener
  public:
   explicit IncomingMessageListener(
       api::WebRtcSignalingMessenger::OnSignalingMessageCallback
-          signaling_message_callback)
-      : signaling_message_callback_(std::move(signaling_message_callback)) {
+          signaling_message_callback,
+      api::WebRtcSignalingMessenger::OnSignalingCompleteCallback
+          signaling_complete_callback)
+      : signaling_message_callback_(std::move(signaling_message_callback)),
+        signaling_complete_callback_(std::move(signaling_complete_callback)) {
     DCHECK(signaling_message_callback_);
+    DCHECK(signaling_complete_callback_);
   }
 
   ~IncomingMessageListener() override = default;
@@ -99,9 +103,16 @@ class IncomingMessageListener
     signaling_message_callback_(ByteArray(message));
   }
 
+  // mojom::IncomingMessagesListener:
+  void OnComplete(bool success) override {
+    signaling_complete_callback_(success);
+  }
+
  private:
   api::WebRtcSignalingMessenger::OnSignalingMessageCallback
       signaling_message_callback_;
+  api::WebRtcSignalingMessenger::OnSignalingCompleteCallback
+      signaling_complete_callback_;
 };
 
 // Used as a messenger in sending and receiving WebRTC messages between devices.
@@ -169,14 +180,20 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   void BindIncomingReceiver(
       mojo::PendingReceiver<sharing::mojom::IncomingMessagesListener>
           pending_receiver,
-      api::WebRtcSignalingMessenger::OnSignalingMessageCallback callback) {
+      api::WebRtcSignalingMessenger::OnSignalingMessageCallback
+          message_callback,
+      api::WebRtcSignalingMessenger::OnSignalingCompleteCallback
+          complete_callback) {
     mojo::MakeSelfOwnedReceiver(
-        std::make_unique<IncomingMessageListener>(std::move(callback)),
+        std::make_unique<IncomingMessageListener>(std::move(message_callback),
+                                                  std::move(complete_callback)),
         std::move(pending_receiver), task_runner_);
   }
 
   // api::WebRtcSignalingMessenger:
-  bool StartReceivingMessages(OnSignalingMessageCallback callback) override {
+  bool StartReceivingMessages(
+      OnSignalingMessageCallback message_callback,
+      OnSignalingCompleteCallback complete_callback) override {
     bool success = false;
     mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
         pending_remote;
@@ -199,7 +216,8 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
         FROM_HERE,
         base::BindOnce(&WebRtcSignalingMessengerImpl::BindIncomingReceiver,
                        weak_ptr_factory_.GetWeakPtr(),
-                       std::move(pending_receiver), std::move(callback)));
+                       std::move(pending_receiver), std::move(message_callback),
+                       std::move(complete_callback)));
 
     receiving_messages_ = true;
     return true;
