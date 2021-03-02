@@ -184,6 +184,62 @@ static_assert(negation<False>::value, "");
 static_assert(negation<negation<TrueT>>::value, "");
 static_assert(!negation<negation<FalseT>>::value, "");
 
+// is_invocable
+TEST(TemplateUtil, IsInvocable) {
+  struct Base {};
+  struct Derived : Base {};
+
+  struct Implicit {
+    Implicit(int) {}
+  };
+
+  struct Explicit {
+    explicit Explicit(int) {}
+  };
+
+  struct CallableWithBaseButNotWithInt {
+    int operator()(int) = delete;
+    int operator()(Base) { return 42; }
+  };
+
+  {
+    using Fp = void (*)(Base&, int);
+    static_assert(is_invocable<Fp, Base&, int>::value, "");
+    static_assert(is_invocable<Fp, Derived&, int>::value, "");
+    static_assert(!is_invocable<Fp, const Base&, int>::value, "");
+    static_assert(!is_invocable<Fp>::value, "");
+    static_assert(!is_invocable<Fp, Base&>::value, "");
+  }
+  {
+    // Function reference
+    using Fp = void (&)(Base&, int);
+    static_assert(is_invocable<Fp, Base&, int>::value, "");
+    static_assert(is_invocable<Fp, Derived&, int>::value, "");
+    static_assert(!is_invocable<Fp, const Base&, int>::value, "");
+    static_assert(!is_invocable<Fp>::value, "");
+    static_assert(!is_invocable<Fp, Base&>::value, "");
+  }
+  {
+    // Function object
+    using Fn = CallableWithBaseButNotWithInt;
+    static_assert(is_invocable<Fn, Base>::value, "");
+    static_assert(!is_invocable<Fn, int>::value, "");
+  }
+  {
+    // Check that the conversion to the return type is properly checked
+    using Fn = int (*)(int);
+    static_assert(is_invocable_r<Implicit, Fn, int>::value, "");
+    static_assert(is_invocable_r<double, Fn, int>::value, "");
+    static_assert(is_invocable_r<const volatile void, Fn, int>::value, "");
+    static_assert(!is_invocable_r<Explicit, Fn, int>::value, "");
+
+    static_assert(is_invocable_r<Implicit, Fn, double>::value, "");
+    static_assert(!is_invocable_r<double, Fn, std::string>::value, "");
+    static_assert(is_invocable_r<const volatile void, Fn, double>::value, "");
+    static_assert(!is_invocable_r<Explicit, Fn, double>::value, "");
+  }
+}
+
 }  // namespace
 
 }  // namespace base

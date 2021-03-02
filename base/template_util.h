@@ -233,16 +233,57 @@ struct disjunction<B1, Bn...>
 template <typename B>
 struct negation : bool_constant<!static_cast<bool>(B::value)> {};
 
-// Implementation of C++17's std::invoke_result_t.
+// Implementation of C++17's invoke_result.
 //
 // This implementation adds references to `Functor` and `Args` to work around
-// some quirks of std::result_of_t. See the #Notes section of [1] for details.
+// some quirks of std::result_of. See the #Notes section of [1] for details.
 //
 // References:
 // [1] https://en.cppreference.com/w/cpp/types/result_of
-// [2] https://wg21.link/meta.type.synop#lib:invoke_result_t
+// [2] https://wg21.link/meta.trans.other#lib:invoke_result
 template <typename Functor, typename... Args>
-using invoke_result_t = std::result_of_t<Functor && (Args && ...)>;
+using invoke_result = std::result_of<Functor && (Args && ...)>;
+
+// Implementation of C++17's std::invoke_result_t.
+//
+// Reference: https://wg21.link/meta.type.synop#lib:invoke_result_t
+template <typename Functor, typename... Args>
+using invoke_result_t = typename invoke_result<Functor, Args...>::type;
+
+namespace internal {
+
+// Base case, `InvokeResult` does not have a nested type member. This means `F`
+// could not be invoked with `Args...` and thus is not invocable.
+template <typename InvokeResult, typename R, typename = void>
+struct IsInvocableImpl : std::false_type {};
+
+// Happy case, `InvokeResult` does have a nested type member. Now check whether
+// `InvokeResult::type` is convertible to `R`. Short circuit in case
+// `std::is_void<R>`.
+template <typename InvokeResult, typename R>
+struct IsInvocableImpl<InvokeResult, R, void_t<typename InvokeResult::type>>
+    : disjunction<std::is_void<R>,
+                  std::is_convertible<typename InvokeResult::type, R>> {};
+
+}  // namespace internal
+
+// Implementation of C++17's std::is_invocable_r.
+//
+// Returns whether `F` can be invoked with `Args...` and the result is
+// convertible to `R`.
+//
+// Reference: https://wg21.link/meta.rel#lib:is_invocable_r
+template <typename R, typename F, typename... Args>
+struct is_invocable_r
+    : internal::IsInvocableImpl<invoke_result<F, Args...>, R> {};
+
+// Implementation of C++17's std::is_invocable.
+//
+// Returns whether `F` can be invoked with `Args...`.
+//
+// Reference: https://wg21.link/meta.rel#lib:is_invocable
+template <typename F, typename... Args>
+struct is_invocable : is_invocable_r<void, F, Args...> {};
 
 // Simplified implementation of C++20's std::iter_value_t.
 // As opposed to std::iter_value_t, this implementation does not restrict
