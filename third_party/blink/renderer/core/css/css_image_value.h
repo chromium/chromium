@@ -52,6 +52,9 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
     DCHECK(!IsCachePending());
     return cached_image_.Get();
   }
+  FetchParameters PrepareFetch(const Document&,
+                               FetchParameters::ImageRequestBehavior,
+                               CrossOriginAttributeValue) const;
   StyleImage* CacheImage(
       const Document&,
       FetchParameters::ImageRequestBehavior,
@@ -59,10 +62,6 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   const String& Url() const { return absolute_url_; }
   const String& RelativeUrl() const { return relative_url_; }
-
-  const Referrer& GetReferrer() const { return referrer_; }
-  const AtomicString& GetInitiator() const { return initiator_name_; }
-  bool GetIsAdRelated() const { return is_ad_related_; }
 
   void ReResolveURL(const Document&) const;
 

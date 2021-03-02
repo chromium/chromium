@@ -34,24 +34,25 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-StyleFetchedImage::StyleFetchedImage(const Document& document,
-                                     FetchParameters& params,
-                                     bool is_lazyload_possibly_deferred)
-    : document_(&document),
-      url_(params.Url()),
-      origin_clean_(!params.IsFromOriginDirtyStyleSheet()),
-      is_ad_related_(params.GetResourceRequest().IsAdResource()) {
+StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
+                                     const Document& document,
+                                     bool is_lazyload_possibly_deferred,
+                                     bool origin_clean,
+                                     bool is_ad_related,
+                                     const KURL& url)
+    : document_(document),
+      url_(url),
+      origin_clean_(origin_clean),
+      is_ad_related_(is_ad_related) {
   is_image_resource_ = true;
   is_lazyload_possibly_deferred_ = is_lazyload_possibly_deferred;
 
-  image_ = ImageResourceContent::Fetch(params, document_->Fetcher());
+  image_ = image;
   image_->AddObserver(this);
   // ResourceFetcher is not determined from StyleFetchedImage and it is
   // impossible to send a request for refetching.
