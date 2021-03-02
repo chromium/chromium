@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/global_media_controls/cast_media_notification_provider.h"
+#include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/media_message_center/media_notification_controller.h"
@@ -31,17 +31,17 @@ bool ShouldHideNotification(const media_router::MediaRoute& route) {
 
 }  // namespace
 
-CastMediaNotificationProvider::CastMediaNotificationProvider(
+CastMediaNotificationProducer::CastMediaNotificationProducer(
     Profile* profile,
     media_message_center::MediaNotificationController* notification_controller,
     base::RepeatingClosure items_changed_callback)
-    : CastMediaNotificationProvider(
+    : CastMediaNotificationProducer(
           profile,
           media_router::MediaRouterFactory::GetApiForBrowserContext(profile),
           notification_controller,
           std::move(items_changed_callback)) {}
 
-CastMediaNotificationProvider::CastMediaNotificationProvider(
+CastMediaNotificationProducer::CastMediaNotificationProducer(
     Profile* profile,
     media_router::MediaRouter* router,
     media_message_center::MediaNotificationController* notification_controller,
@@ -52,10 +52,10 @@ CastMediaNotificationProvider::CastMediaNotificationProvider(
       notification_controller_(notification_controller),
       items_changed_callback_(std::move(items_changed_callback)) {}
 
-CastMediaNotificationProvider::~CastMediaNotificationProvider() = default;
+CastMediaNotificationProducer::~CastMediaNotificationProducer() = default;
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
-CastMediaNotificationProvider::GetNotificationItem(const std::string& id) {
+CastMediaNotificationProducer::GetNotificationItem(const std::string& id) {
   const auto item_it = items_.find(id);
   if (item_it == items_.end())
     return nullptr;
@@ -63,7 +63,7 @@ CastMediaNotificationProvider::GetNotificationItem(const std::string& id) {
 }
 
 std::set<std::string>
-CastMediaNotificationProvider::GetActiveControllableNotificationIds() const {
+CastMediaNotificationProducer::GetActiveControllableNotificationIds() const {
   std::set<std::string> ids;
   for (const auto& item : items_) {
     ids.insert(item.first);
@@ -71,7 +71,7 @@ CastMediaNotificationProvider::GetActiveControllableNotificationIds() const {
   return ids;
 }
 
-void CastMediaNotificationProvider::OnRoutesUpdated(
+void CastMediaNotificationProducer::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes,
     const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
   const bool had_items = HasItems();
@@ -113,10 +113,10 @@ void CastMediaNotificationProvider::OnRoutesUpdated(
     items_changed_callback_.Run();
 }
 
-bool CastMediaNotificationProvider::HasItems() const {
+bool CastMediaNotificationProducer::HasItems() const {
   return !items_.empty();
 }
 
-size_t CastMediaNotificationProvider::GetItemCount() const {
+size_t CastMediaNotificationProducer::GetItemCount() const {
   return items_.size();
 }

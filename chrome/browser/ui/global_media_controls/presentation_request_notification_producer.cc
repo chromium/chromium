@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/global_media_controls/presentation_request_notification_provider.h"
+#include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 
 #include <utility>
 
@@ -37,20 +37,20 @@ GetActiveWebContentsPresentationManager() {
 
 }  // namespace
 
-PresentationRequestNotificationProvider::
-    PresentationRequestNotificationProvider(
+PresentationRequestNotificationProducer::
+    PresentationRequestNotificationProducer(
         MediaNotificationService* notification_service)
     : notification_service_(notification_service) {
   notification_service_->AddObserver(this);
 }
 
-PresentationRequestNotificationProvider::
-    ~PresentationRequestNotificationProvider() {
+PresentationRequestNotificationProducer::
+    ~PresentationRequestNotificationProducer() {
   notification_service_->RemoveObserver(this);
 }
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
-PresentationRequestNotificationProvider::GetNotificationItem(
+PresentationRequestNotificationProducer::GetNotificationItem(
     const std::string& id) {
   if (item_) {
     DCHECK_EQ(item_->id(), id);
@@ -60,42 +60,42 @@ PresentationRequestNotificationProvider::GetNotificationItem(
 }
 
 std::set<std::string>
-PresentationRequestNotificationProvider::GetActiveControllableNotificationIds()
+PresentationRequestNotificationProducer::GetActiveControllableNotificationIds()
     const {
   return item_ ? std::set<std::string>({item_->id()}) : std::set<std::string>();
 }
 
-void PresentationRequestNotificationProvider::OnStartPresentationContextCreated(
+void PresentationRequestNotificationProducer::OnStartPresentationContextCreated(
     std::unique_ptr<media_router::StartPresentationContext> context) {
   DCHECK(context);
   const auto& request = context->presentation_request();
   CreateItemForPresentationRequest(request, std::move(context));
 }
 
-void PresentationRequestNotificationProvider::OnNotificationListChanged() {}
+void PresentationRequestNotificationProducer::OnNotificationListChanged() {}
 
-void PresentationRequestNotificationProvider::OnMediaDialogOpened() {
+void PresentationRequestNotificationProducer::OnMediaDialogOpened() {
   // At the point where this method is called, MediaNotificationService is
   // in a state where it can't accept new notifications.  As a workaround,
   // we simply defer the handling of the event.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &PresentationRequestNotificationProvider::AfterMediaDialogOpened,
+          &PresentationRequestNotificationProducer::AfterMediaDialogOpened,
           base::Unretained(this), GetActiveWebContentsPresentationManager()));
 }
 
-void PresentationRequestNotificationProvider::OnMediaDialogClosed() {
+void PresentationRequestNotificationProducer::OnMediaDialogClosed() {
   // This event needs to be handled asynchronously the be absolutely certain
   // it's handled later than a prior call to OnMediaDialogOpened().
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &PresentationRequestNotificationProvider::AfterMediaDialogClosed,
+          &PresentationRequestNotificationProducer::AfterMediaDialogClosed,
           base::Unretained(this), GetActiveWebContentsPresentationManager()));
 }
 
-void PresentationRequestNotificationProvider::AfterMediaDialogOpened(
+void PresentationRequestNotificationProducer::AfterMediaDialogOpened(
     base::WeakPtr<media_router::WebContentsPresentationManager>
         presentation_manager) {
   // It's possible the presentation manager was deleted since the call to
@@ -116,7 +116,7 @@ void PresentationRequestNotificationProvider::AfterMediaDialogOpened(
   }
 }
 
-void PresentationRequestNotificationProvider::AfterMediaDialogClosed(
+void PresentationRequestNotificationProducer::AfterMediaDialogClosed(
     base::WeakPtr<media_router::WebContentsPresentationManager>
         presentation_manager) {
   item_.reset();
@@ -124,7 +124,7 @@ void PresentationRequestNotificationProvider::AfterMediaDialogClosed(
     presentation_manager->RemoveObserver(this);
 }
 
-void PresentationRequestNotificationProvider::OnDefaultPresentationChanged(
+void PresentationRequestNotificationProducer::OnDefaultPresentationChanged(
     const content::PresentationRequest* presentation_request) {
   // NOTE: We only observe the presentation manager while the media control
   // dialog is open, so this method is only handling the unusual case where
@@ -141,7 +141,7 @@ void PresentationRequestNotificationProvider::OnDefaultPresentationChanged(
   }
 }
 
-void PresentationRequestNotificationProvider::CreateItemForPresentationRequest(
+void PresentationRequestNotificationProducer::CreateItemForPresentationRequest(
     const content::PresentationRequest& request,
     std::unique_ptr<media_router::StartPresentationContext> context) {
   // This may replace an existing item, which is the right thing to do if

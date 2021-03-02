@@ -13,7 +13,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
-#include "chrome/browser/ui/global_media_controls/cast_media_notification_provider.h"
+#include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
@@ -389,7 +389,7 @@ class MediaNotificationServiceTest : public testing::Test {
 
   void SimulateMediaRoutesUpdate(
       const std::vector<media_router::MediaRoute>& routes) {
-    service_->cast_notification_provider_->OnRoutesUpdated(routes, {});
+    service_->cast_notification_producer_->OnRoutesUpdated(routes, {});
   }
 
   MediaNotificationService::Session* GetSession(

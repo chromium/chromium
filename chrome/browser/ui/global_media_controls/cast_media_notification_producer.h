@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PROVIDER_H_
-#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PRODUCER_H_
+#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PRODUCER_H_
 
 #include <map>
 #include <string>
@@ -23,24 +23,24 @@ class MediaNotificationController;
 
 // Manages media notifications shown in the Global Media Controls dialog for
 // active Cast sessions.
-class CastMediaNotificationProvider : public MediaNotificationProducer,
+class CastMediaNotificationProducer : public MediaNotificationProducer,
                                       public media_router::MediaRoutesObserver {
  public:
-  CastMediaNotificationProvider(
+  CastMediaNotificationProducer(
       Profile* profile,
       media_message_center::MediaNotificationController*
           notification_controller,
       base::RepeatingClosure items_changed_callback);
-  CastMediaNotificationProvider(
+  CastMediaNotificationProducer(
       Profile* profile,
       media_router::MediaRouter* router,
       media_message_center::MediaNotificationController*
           notification_controller,
       base::RepeatingClosure items_changed_callback_);
-  CastMediaNotificationProvider(const CastMediaNotificationProvider&) = delete;
-  CastMediaNotificationProvider& operator=(
-      const CastMediaNotificationProvider&) = delete;
-  ~CastMediaNotificationProvider() override;
+  CastMediaNotificationProducer(const CastMediaNotificationProducer&) = delete;
+  CastMediaNotificationProducer& operator=(
+      const CastMediaNotificationProducer&) = delete;
+  ~CastMediaNotificationProducer() override;
 
   // MediaNotificationProducer:
   base::WeakPtr<media_message_center::MediaNotificationItem>
@@ -69,4 +69,4 @@ class CastMediaNotificationProvider : public MediaNotificationProducer,
   base::RepeatingClosure items_changed_callback_;
 };
 
-#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PRODUCER_H_

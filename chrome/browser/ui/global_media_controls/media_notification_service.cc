@@ -289,23 +289,23 @@ MediaNotificationService::MediaNotificationService(
   media_session_notification_producer_ =
       std::make_unique<MediaSessionNotificationProducer>(
           this, profile, show_from_all_profiles);
-  notification_providers_.insert(media_session_notification_producer_.get());
+  notification_producers_.insert(media_session_notification_producer_.get());
 
   if (media_router::MediaRouterEnabled(profile)) {
     if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast)) {
-      cast_notification_provider_ =
-          std::make_unique<CastMediaNotificationProvider>(
+      cast_notification_producer_ =
+          std::make_unique<CastMediaNotificationProducer>(
               profile, this,
               base::BindRepeating(
                   &MediaNotificationService::OnCastNotificationsChanged,
                   base::Unretained(this)));
-      notification_providers_.insert(cast_notification_provider_.get());
+      notification_producers_.insert(cast_notification_producer_.get());
     }
     if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
-      presentation_request_notification_provider_ =
-          std::make_unique<PresentationRequestNotificationProvider>(this);
-      notification_providers_.insert(
-          presentation_request_notification_provider_.get());
+      presentation_request_notification_producer_ =
+          std::make_unique<PresentationRequestNotificationProducer>(this);
+      notification_producers_.insert(
+          presentation_request_notification_producer_.get());
     }
   }
 }
@@ -363,11 +363,11 @@ void MediaNotificationService::LogMediaSessionActionButtonPressed(
 }
 
 void MediaNotificationService::Shutdown() {
-  // |cast_notification_provider_| and
-  // |presentation_request_notification_provider_| depend on MediaRouter,
+  // |cast_notification_producer_| and
+  // |presentation_request_notification_producer_| depend on MediaRouter,
   // which is another keyed service.
-  cast_notification_provider_.reset();
-  presentation_request_notification_provider_.reset();
+  cast_notification_producer_.reset();
+  presentation_request_notification_producer_.reset();
 }
 
 void MediaNotificationService::AddSupplementalNotification(
@@ -429,16 +429,16 @@ void MediaNotificationService::SetDialogDelegate(
   media_message_center::RecordConcurrentNotificationCount(
       notification_ids.size());
 
-  if (cast_notification_provider_) {
+  if (cast_notification_producer_) {
     media_message_center::RecordConcurrentCastNotificationCount(
-        cast_notification_provider_->GetItemCount());
+        cast_notification_producer_->GetItemCount());
   }
 }
 
 std::set<std::string>
 MediaNotificationService::GetActiveControllableNotificationIds() const {
   std::set<std::string> ids;
-  for (auto* notification_provider : notification_providers_) {
+  for (auto* notification_provider : notification_producers_) {
     const std::set<std::string>& provider_ids =
         notification_provider->GetActiveControllableNotificationIds();
     ids.insert(provider_ids.begin(), provider_ids.end());
@@ -488,8 +488,8 @@ MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
 
 void MediaNotificationService::OnStartPresentationContextCreated(
     std::unique_ptr<media_router::StartPresentationContext> context) {
-  if (presentation_request_notification_provider_) {
-    presentation_request_notification_provider_
+  if (presentation_request_notification_producer_) {
+    presentation_request_notification_producer_
         ->OnStartPresentationContextCreated(std::move(context));
   }
 }
@@ -516,7 +516,7 @@ void MediaNotificationService::ShowAndObserveContainer(const std::string& id) {
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
 MediaNotificationService::GetNotificationItem(const std::string& id) {
-  for (auto* notification_provider : notification_providers_) {
+  for (auto* notification_provider : notification_producers_) {
     auto item = notification_provider->GetNotificationItem(id);
     if (item) {
       return item;

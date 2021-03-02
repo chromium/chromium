@@ -4657,7 +4657,7 @@ test("unit_tests") {
       "../browser/ui/font_access/font_access_chooser_controller_unittest.cc",
       "../browser/ui/global_error/global_error_service_unittest.cc",
       "../browser/ui/global_media_controls/cast_media_notification_item_unittest.cc",
-      "../browser/ui/global_media_controls/cast_media_notification_provider_unittest.cc",
+      "../browser/ui/global_media_controls/cast_media_notification_producer_unittest.cc",
       "../browser/ui/global_media_controls/cast_media_session_controller_unittest.cc",
       "../browser/ui/global_media_controls/media_notification_device_provider_impl_unittest.cc",
       "../browser/ui/global_media_controls/media_notification_service_unittest.cc",

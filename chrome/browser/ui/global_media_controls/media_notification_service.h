@@ -15,12 +15,12 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/global_media_controls/cast_media_notification_provider.h"
+#include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notifications_manager_impl.h"
-#include "chrome/browser/ui/global_media_controls/presentation_request_notification_provider.h"
+#include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_message_center/media_notification_controller.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
@@ -86,7 +86,7 @@ class MediaNotificationService
   void SetDialogDelegate(MediaDialogDelegate* delegate);
 
   // Returns active controllable notifications gathered from all the
-  // notification providers. If empty, then there's nothing to show in the
+  // notification producers. If empty, then there's nothing to show in the
   // dialog and we can hide the toolbar icon.
   std::set<std::string> GetActiveControllableNotificationIds() const;
 
@@ -301,14 +301,14 @@ class MediaNotificationService
   base::flat_map<std::string, content::WebContents*>
       supplemental_notifications_;
 
-  std::unique_ptr<PresentationRequestNotificationProvider>
-      presentation_request_notification_provider_;
-  std::unique_ptr<CastMediaNotificationProvider> cast_notification_provider_;
+  std::unique_ptr<PresentationRequestNotificationProducer>
+      presentation_request_notification_producer_;
+  std::unique_ptr<CastMediaNotificationProducer> cast_notification_producer_;
   std::unique_ptr<MediaSessionNotificationProducer>
       media_session_notification_producer_;
 
-  // Pointers to all notification providers owned by |this|.
-  std::set<MediaNotificationProducer*> notification_providers_;
+  // Pointers to all notification producers owned by |this|.
+  std::set<MediaNotificationProducer*> notification_producers_;
 
   base::ObserverList<MediaNotificationServiceObserver> observers_;
 

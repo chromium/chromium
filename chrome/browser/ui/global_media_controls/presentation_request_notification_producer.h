@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_PRESENTATION_REQUEST_NOTIFICATION_PROVIDER_H_
-#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_PRESENTATION_REQUEST_NOTIFICATION_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_PRESENTATION_REQUEST_NOTIFICATION_PRODUCER_H_
+#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_PRESENTATION_REQUEST_NOTIFICATION_PRODUCER_H_
 
 #include <memory>
 #include <string>
@@ -37,20 +37,20 @@
 // media control button to become visible when it would otherwise be hidden.
 //
 // Once a Cast/Presentation session has been created, this class is no longer
-// involved; at that point CastMediaNotificationProvider become responsible for
+// involved; at that point CastMediaNotificationProducer become responsible for
 // managing the notification for an active session.
-class PresentationRequestNotificationProvider final
+class PresentationRequestNotificationProducer final
     : public MediaNotificationProducer,
       public media_router::WebContentsPresentationManager::Observer,
       public MediaNotificationServiceObserver {
  public:
-  explicit PresentationRequestNotificationProvider(
+  explicit PresentationRequestNotificationProducer(
       MediaNotificationService* notification_service);
-  PresentationRequestNotificationProvider(
-      const PresentationRequestNotificationProvider&) = delete;
-  PresentationRequestNotificationProvider& operator=(
-      const PresentationRequestNotificationProvider&) = delete;
-  ~PresentationRequestNotificationProvider() final;
+  PresentationRequestNotificationProducer(
+      const PresentationRequestNotificationProducer&) = delete;
+  PresentationRequestNotificationProducer& operator=(
+      const PresentationRequestNotificationProducer&) = delete;
+  ~PresentationRequestNotificationProducer() final;
 
   // MediaNotificationProducer:
   base::WeakPtr<media_message_center::MediaNotificationItem>
@@ -87,8 +87,8 @@ class PresentationRequestNotificationProvider final
 
   MediaNotificationService* const notification_service_;
 
-  // The notification managed by this provider, if there is one.
+  // The notification managed by this producer, if there is one.
   base::Optional<PresentationRequestNotificationItem> item_;
 };
 
-#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_PRESENTATION_REQUEST_NOTIFICATION_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_PRESENTATION_REQUEST_NOTIFICATION_PRODUCER_H_
