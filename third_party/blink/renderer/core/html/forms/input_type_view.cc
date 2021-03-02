@@ -120,8 +120,6 @@ void InputTypeView::HandleBlurEvent() {}
 
 void InputTypeView::HandleFocusInEvent(Element*, mojom::blink::FocusType) {}
 
-void InputTypeView::StartResourceLoading() {}
-
 void InputTypeView::ClosePopupView() {}
 
 bool InputTypeView::HasOpenedPopup() const {

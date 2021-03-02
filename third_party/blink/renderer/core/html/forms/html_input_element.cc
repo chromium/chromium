@@ -2064,12 +2064,6 @@ scoped_refptr<ComputedStyle> HTMLInputElement::CustomStyleForLayoutObject(
   return style;
 }
 
-void HTMLInputElement::DidRecalcStyle(const StyleRecalcChange change) {
-  TextControlElement::DidRecalcStyle(change);
-  if (NeedsReattachLayoutTree() && GetComputedStyle())
-    input_type_view_->StartResourceLoading();
-}
-
 void HTMLInputElement::DidNotifySubtreeInsertionsToDocument() {
   ListAttributeTargetChanged();
 }
