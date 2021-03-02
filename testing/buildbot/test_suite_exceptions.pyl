@@ -328,6 +328,9 @@
         'args': [
           '--additional-driver-flag=--disable-blink-features=LayoutNG',
         ],
+        'swarming': {
+          'shards': 20,
+        },
       },
       'Win10 Tests x64': {
         'args': [
