@@ -136,8 +136,6 @@ _INTEGRATION_NEGATIVE_FILTER = [
     # PerfTest takes a long time, requires extra setup, and adds little value
     # to integration testing.
     'PerfTest.*',
-    # Flaky: https://crbug.com/899919
-    'SessionHandlingTest.testGetSessions',
     # Flaky due to occasional timeout in starting Chrome
     'ZChromeStartRetryCountTest.testChromeStartRetryCount',
 ]
