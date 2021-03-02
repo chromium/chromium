@@ -1083,11 +1083,6 @@ if (enable_java_templates) {
       if (defined(invoker.r_text_file)) {
         r_text_in_path = invoker.r_text_file
       }
-
-      # Always generate R.onResourcesLoaded() method, it is required for
-      # compiling ResourceRewriter, there is no side effect because the
-      # generated R.class isn't used in final apk.
-      shared_resources = true
     }
   }
 

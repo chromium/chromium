@@ -39,12 +39,6 @@ def _ParseArgs(args):
       'in the generated R.txt when generating R.java.')
 
   parser.add_argument(
-      '--shared-resources',
-      action='store_true',
-      help='Make resources shareable by generating an onResourcesLoaded() '
-      'method in the R.java source file.')
-
-  parser.add_argument(
       '--resource-zip-out',
       help='Path to a zip archive containing all resources from '
       '--resource-dirs, merged into a single directory tree.')
@@ -188,7 +182,6 @@ def main(args):
   # Resource filenames matter to the output, so add them to strings as well.
   # This matters if a file is renamed but not changed (http://crbug.com/597126).
   input_strings = sorted(resource_names) + [
-      options.shared_resources,
       options.strip_drawables,
   ]
 
