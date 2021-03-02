@@ -26,7 +26,7 @@ mojom("mojom") {
     "//ash/public/mojom",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/network_config/public/mojom",
-    "//services/audio/public/mojom",
+    "//media/mojo/mojom",
     "//services/device/public/mojom",
     "//services/media_session/public/mojom",
     "//services/network/public/mojom",

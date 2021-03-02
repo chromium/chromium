@@ -46,7 +46,7 @@ AudioInputStream::~AudioInputStream() {
 }
 
 void AudioInputStream::Start() {
-  mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory;
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory;
   delegate_->BindAudioStreamFactory(
       audio_stream_factory.InitWithNewPipeAndPassReceiver());
 

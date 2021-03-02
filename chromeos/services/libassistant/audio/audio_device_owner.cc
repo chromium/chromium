@@ -92,7 +92,7 @@ AudioDeviceOwner::~AudioDeviceOwner() {
 void AudioDeviceOwner::Start(
     mojom::AudioOutputDelegate* audio_output_delegate,
     assistant_client::AudioOutput::Delegate* delegate,
-    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     const assistant_client::OutputStreamFormat& format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!output_device_);
@@ -147,7 +147,7 @@ void AudioDeviceOwner::MediaSessionInfoChanged(
 }
 
 void AudioDeviceOwner::StartDevice(
-    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     mojom::AudioOutputDelegate* audio_output_delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_.AssertAcquired();

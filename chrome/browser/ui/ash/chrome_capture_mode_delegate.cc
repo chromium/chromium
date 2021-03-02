@@ -161,7 +161,7 @@ ChromeCaptureModeDelegate::LaunchRecordingService() {
 }
 
 void ChromeCaptureModeDelegate::BindAudioStreamFactory(
-    mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+    mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   content::GetAudioService().BindStreamFactory(std::move(receiver));
 }
 

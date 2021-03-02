@@ -57,6 +57,7 @@ component("lib") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
+    "//media/mojo/mojom",
     "//services/media_session/public/cpp",
     "//ui/accessibility:ax_assistant",
   ]

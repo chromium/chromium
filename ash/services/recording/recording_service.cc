@@ -94,7 +94,7 @@ RecordingService::~RecordingService() = default;
 void RecordingService::RecordFullscreen(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
@@ -108,7 +108,7 @@ void RecordingService::RecordFullscreen(
 void RecordingService::RecordWindow(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size,
     const viz::SubtreeCaptureId& subtree_capture_id,
@@ -125,7 +125,7 @@ void RecordingService::RecordWindow(
 void RecordingService::RecordRegion(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::Size& frame_sink_size,
     const gfx::Rect& crop_region) {
@@ -305,7 +305,7 @@ void RecordingService::OnCaptureMuted(bool is_muted) {}
 void RecordingService::StartNewRecording(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     std::unique_ptr<VideoCaptureParams> capture_params) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 

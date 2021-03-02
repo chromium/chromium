@@ -71,6 +71,7 @@ source_set("audio") {
   public_deps = [
     "//base",
     "//media",
+    "//media/mojo/mojom",
     "//media/webrtc",
     "//services/audio/public/mojom",
   ]

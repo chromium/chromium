@@ -12,12 +12,12 @@
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
 #include "services/audio/public/mojom/log_factory_manager.mojom.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
 #include "services/audio/public/mojom/testing_api.mojom.h"
 #include "services/audio/stream_factory.h"
@@ -89,8 +89,8 @@ class Service final : public mojom::AudioService {
       mojo::PendingReceiver<mojom::SystemInfo> receiver) override;
   void BindDebugRecording(
       mojo::PendingReceiver<mojom::DebugRecording> receiver) override;
-  void BindStreamFactory(
-      mojo::PendingReceiver<mojom::StreamFactory> receiver) override;
+  void BindStreamFactory(mojo::PendingReceiver<media::mojom::AudioStreamFactory>
+                             receiver) override;
   void BindDeviceNotifier(
       mojo::PendingReceiver<mojom::DeviceNotifier> receiver) override;
   void BindLogFactoryManager(

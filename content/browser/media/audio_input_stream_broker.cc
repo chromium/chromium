@@ -130,7 +130,7 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
 }
 
 void AudioInputStreamBroker::CreateStream(
-    audio::mojom::StreamFactory* factory) {
+    media::mojom::AudioStreamFactory* factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!observer_receiver_.is_bound());
   DCHECK(!pending_client_receiver_);

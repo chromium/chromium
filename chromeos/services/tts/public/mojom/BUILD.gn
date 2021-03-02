@@ -7,5 +7,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "tts_service.mojom" ]
 
-  public_deps = [ "//services/audio/public/mojom" ]
+  public_deps = [ "//media/mojo/mojom" ]
 }

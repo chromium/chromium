@@ -20,9 +20,9 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 
 namespace media {
@@ -119,7 +119,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void RemoveInput(AudioStreamBroker* handle);
     void RemoveOutput(AudioStreamBroker* handle);
 
-    audio::mojom::StreamFactory* GetFactory();
+    media::mojom::AudioStreamFactory* GetFactory();
     void ResetRemoteFactoryPtrIfIdle();
     void ResetRemoteFactoryPtr();
 
@@ -141,7 +141,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     // since we want to clean up the service when not in use. If we have active
     // muting but nothing else, we should stop it and start it again when we
     // need to reacquire the factory for some other reason.
-    mojo::Remote<audio::mojom::StreamFactory> remote_factory_;
+    mojo::Remote<media::mojom::AudioStreamFactory> remote_factory_;
 
     // Running id used for tracking audible streams. We keep count here to avoid
     // collisions.
@@ -203,11 +203,12 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
 
   Core* core() { return core_.get(); }
 
-  // Allows tests to override how StreamFactory interface receivers are bound
-  // instead of sending them to the Audio Service.
-  using StreamFactoryBinder = base::RepeatingCallback<void(
-      mojo::PendingReceiver<audio::mojom::StreamFactory>)>;
-  static void OverrideStreamFactoryBinderForTesting(StreamFactoryBinder binder);
+  // Allows tests to override how AudioStreamFactory interface receivers are
+  // bound instead of sending them to the Audio Service.
+  using AudioStreamFactoryBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory>)>;
+  static void OverrideAudioStreamFactoryBinderForTesting(
+      AudioStreamFactoryBinder binder);
 
  private:
   std::unique_ptr<Core> core_;

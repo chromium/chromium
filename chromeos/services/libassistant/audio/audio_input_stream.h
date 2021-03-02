@@ -12,9 +12,9 @@
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_buffer.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/audio/public/cpp/device_factory.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace chromeos {
 namespace libassistant {

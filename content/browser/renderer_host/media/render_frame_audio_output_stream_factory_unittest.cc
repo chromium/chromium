@@ -28,12 +28,12 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,7 +63,7 @@ class RenderFrameAudioOutputStreamFactoryTest
     RenderFrameHostTester::For(main_rfh())->InitializeRenderFrameIfNeeded();
 
     // Set up the ForwardingAudioStreamFactory.
-    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
         base::BindRepeating(
             &RenderFrameAudioOutputStreamFactoryTest::BindFactory,
             base::Unretained(this)));
@@ -72,14 +72,14 @@ class RenderFrameAudioOutputStreamFactoryTest
   }
 
   void TearDown() override {
-    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
         base::NullCallback());
     audio_manager_.Shutdown();
     RenderViewHostTestHarness::TearDown();
   }
 
   void BindFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
     audio_service_stream_factory_.receiver_.Bind(std::move(receiver));
   }
 
@@ -211,7 +211,7 @@ TEST_F(RenderFrameAudioOutputStreamFactoryTest,
     provider_remote->Acquire(kParams, std::move(client));
   }
 
-  audio::mojom::StreamFactory::CreateOutputStreamCallback created_callback;
+  media::mojom::AudioStreamFactory::CreateOutputStreamCallback created_callback;
   EXPECT_CALL(mock_callback,
               Run(media::OUTPUT_DEVICE_STATUS_OK, _, std::string()));
 
@@ -236,7 +236,8 @@ TEST_F(RenderFrameAudioOutputStreamFactoryTest,
         provider_remote.BindNewPipeAndPassReceiver(), base::nullopt,
         kDefaultDeviceId, mock_callback.Get());
 
-    audio::mojom::StreamFactory::CreateOutputStreamCallback created_callback;
+    media::mojom::AudioStreamFactory::CreateOutputStreamCallback
+        created_callback;
     EXPECT_CALL(mock_callback,
                 Run(media::OUTPUT_DEVICE_STATUS_OK, _, std::string()));
     base::RunLoop().RunUntilIdle();

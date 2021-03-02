@@ -35,7 +35,7 @@ TtsService::~TtsService() = default;
 
 void TtsService::BindTtsStreamFactory(
     mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
-    mojo::PendingRemote<audio::mojom::StreamFactory> factory) {
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> factory) {
   pending_tts_stream_factory_receivers_.push(std::move(receiver));
   ProcessPendingTtsStreamFactories();
 

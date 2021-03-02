@@ -51,7 +51,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   mojo::Remote<recording::mojom::RecordingService> LaunchRecordingService()
       override;
   void BindAudioStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
+      override;
   void OnSessionStateChanged(bool started) override;
 
  private:

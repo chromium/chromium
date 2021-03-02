@@ -17,9 +17,9 @@
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/audio/public/cpp/output_device.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace chromeos {
@@ -34,7 +34,7 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
   void Start(
       chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
       assistant_client::AudioOutput::Delegate* delegate,
-      mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
       const assistant_client::OutputStreamFormat& format);
 
   void Stop();
@@ -68,7 +68,7 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
 
  private:
   void StartDevice(
-      mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
       mojom::AudioOutputDelegate* audio_output_delegate);
 
   // Requests assistant to fill buffer with more data.

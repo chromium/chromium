@@ -874,7 +874,7 @@ media::AudioSystem* SpeechRecognizerImpl::GetAudioSystem() {
 }
 
 void SpeechRecognizerImpl::CreateAudioCapturerSource() {
-  mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory;
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory;
   GetAudioServiceStreamFactoryBinder().Run(
       stream_factory.InitWithNewPipeAndPassReceiver());
   audio_capturer_source_ = audio::CreateInputDevice(

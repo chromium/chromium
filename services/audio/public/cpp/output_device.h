@@ -10,9 +10,9 @@
 
 #include "media/base/audio_renderer_sink.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace media {
 class AudioDeviceThread;
@@ -24,10 +24,11 @@ namespace audio {
 class OutputDevice {
  public:
   // media::AudioRendererSink::RenderCallback must outlive |this|.
-  OutputDevice(mojo::PendingRemote<mojom::StreamFactory> stream_factory,
-               const media::AudioParameters& params,
-               media::AudioRendererSink::RenderCallback* callback,
-               const std::string& device_id);
+  OutputDevice(
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+      const media::AudioParameters& params,
+      media::AudioRendererSink::RenderCallback* callback,
+      const std::string& device_id);
 
   // Blocking call; see base/threading/thread_restrictions.h.
   ~OutputDevice();
@@ -48,7 +49,7 @@ class OutputDevice {
   media::AudioParameters audio_parameters_;
   media::AudioRendererSink::RenderCallback* render_callback_;
   mojo::Remote<media::mojom::AudioOutputStream> stream_;
-  mojo::Remote<audio::mojom::StreamFactory> stream_factory_;
+  mojo::Remote<media::mojom::AudioStreamFactory> stream_factory_;
 
   base::WeakPtrFactory<OutputDevice> weak_factory_{this};
 

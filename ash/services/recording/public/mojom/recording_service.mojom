@@ -4,8 +4,8 @@
 
 module recording.mojom;
 
+import "media/mojo/mojom/audio_stream_factory.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
-import "services/audio/public/mojom/stream_factory.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
@@ -55,7 +55,7 @@ interface RecordingService {
   RecordFullscreen(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size);
 
@@ -81,7 +81,7 @@ interface RecordingService {
   RecordWindow(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size,
       viz.mojom.SubtreeCaptureId subtree_capture_id,
@@ -100,7 +100,7 @@ interface RecordingService {
   RecordRegion(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
       gfx.mojom.Size frame_sink_size,
       gfx.mojom.Rect crop_region);

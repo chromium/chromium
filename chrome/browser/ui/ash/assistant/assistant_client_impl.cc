@@ -130,7 +130,7 @@ void AssistantClientImpl::RequestWakeLockProvider(
 }
 
 void AssistantClientImpl::RequestAudioStreamFactory(
-    mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+    mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   content::GetAudioService().BindStreamFactory(std::move(receiver));
 }
 

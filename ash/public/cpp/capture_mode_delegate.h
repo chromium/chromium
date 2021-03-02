@@ -10,12 +10,6 @@
 #include "base/callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace audio {
-namespace mojom {
-class StreamFactory;
-}  // namespace mojom
-}  // namespace audio
-
 namespace aura {
 class Window;
 }  // namespace aura
@@ -27,6 +21,12 @@ class FilePath;
 namespace gfx {
 class Rect;
 }  // namespace gfx
+
+namespace media {
+namespace mojom {
+class AudioStreamFactory;
+}  // namespace mojom
+}  // namespace media
 
 namespace ash {
 
@@ -82,9 +82,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual mojo::Remote<recording::mojom::RecordingService>
   LaunchRecordingService() = 0;
 
-  // Binds the given audio StreamFactory |receiver| to the audio service.
+  // Binds the given AudioStreamFactory |receiver| to the audio service.
   virtual void BindAudioStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) = 0;
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) = 0;
 
   // Called when a capture mode session starts or stops.
   virtual void OnSessionStateChanged(bool started) = 0;

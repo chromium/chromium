@@ -726,7 +726,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
   // We bind the audio stream factory only if audio recording is enabled. This
   // is ok since the |audio_stream_factory| parameter in the recording service
   // APIs is optional, and can be not bound.
-  mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory;
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory;
   if (enable_audio_recording_) {
     delegate_->BindAudioStreamFactory(
         audio_stream_factory.InitWithNewPipeAndPassReceiver());
