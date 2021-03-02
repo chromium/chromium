@@ -22,6 +22,13 @@ GetSecurityChipColor(NativeTheme::SecurityChipColorId chip_color_id,
                      SkColor bg,
                      bool high_contrast = false);
 
+// Gets the appropriate alert severity color for light / dark mode.
+// TODO(tluk): Create unique color ids for each use of the alert severity colors
+// and update this function to take the background color over which the alert
+// color is to be used.
+SkColor NATIVE_THEME_EXPORT GetAlertSeverityColor(NativeTheme::ColorId color_id,
+                                                  bool dark);
+
 // Returns the color to use on Aura for |color_id|.  For a few colors that are
 // theme-specific, |base_theme| must be non-null; consult the code to see which
 // color IDs fall into this category.

@@ -73,11 +73,9 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id) {
   switch (color_id) {
     // Alert
     case NativeTheme::kColorId_AlertSeverityLow:
-      return gfx::kGoogleGreen300;
     case NativeTheme::kColorId_AlertSeverityHigh:
-      return gfx::kGoogleRed300;
     case NativeTheme::kColorId_AlertSeverityMedium:
-      return gfx::kGoogleYellow300;
+      return GetAlertSeverityColor(color_id, true);
 
     // Bubble
     case NativeTheme::kColorId_FootnoteContainerBorder:
@@ -140,11 +138,9 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
   switch (color_id) {
     // Alert
     case NativeTheme::kColorId_AlertSeverityLow:
-      return gfx::kGoogleGreen700;
     case NativeTheme::kColorId_AlertSeverityHigh:
-      return gfx::kGoogleRed600;
     case NativeTheme::kColorId_AlertSeverityMedium:
-      return gfx::kGoogleYellow700;
+      return GetAlertSeverityColor(color_id, false);
 
     // Avatar
     case NativeTheme::kColorId_AvatarHeaderArt:
@@ -563,6 +559,19 @@ SkColor GetSecurityChipColor(NativeTheme::SecurityChipColorId chip_color_id,
       NOTREACHED();
       return gfx::kPlaceholderColor;
   }
+}
+
+SkColor GetAlertSeverityColor(NativeTheme::ColorId color_id, bool dark) {
+  constexpr auto kColorIdMap =
+      base::MakeFixedFlatMap<NativeTheme::ColorId, std::array<SkColor, 2>>({
+          {NativeTheme::kColorId_AlertSeverityHigh,
+           {{gfx::kGoogleRed600, gfx::kGoogleRed300}}},
+          {NativeTheme::kColorId_AlertSeverityLow,
+           {{gfx::kGoogleGreen700, gfx::kGoogleGreen300}}},
+          {NativeTheme::kColorId_AlertSeverityMedium,
+           {{gfx::kGoogleYellow700, gfx::kGoogleYellow300}}},
+      });
+  return kColorIdMap.at(color_id)[dark];
 }
 
 SkColor GetAuraColor(NativeTheme::ColorId color_id,

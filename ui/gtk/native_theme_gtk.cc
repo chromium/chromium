@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gtk/gtk_util.h"
+#include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 
 namespace gtk {
@@ -372,11 +373,8 @@ base::Optional<SkColor> SkColorFromColorId(
       // Alert icons appear on the toolbar, so use the toolbar BG
       // color (the GTK window bg color) to determine if the dark
       // or light native theme should be used for the icons.
-      ui::NativeTheme* fallback_theme =
-          color_utils::IsDark(GetBgColor(""))
-              ? ui::NativeTheme::GetInstanceForDarkUI()
-              : ui::NativeTheme::GetInstanceForNativeUi();
-      return fallback_theme->GetSystemColor(color_id);
+      return ui::GetAlertSeverityColor(color_id,
+                                       color_utils::IsDark(GetBgColor("")));
     }
 
     case ui::NativeTheme::kColorId_MenuIconColor:
