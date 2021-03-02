@@ -360,7 +360,11 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
     ~PopupCreatedObserver() = default;
 
-    void Wait() {
+    void Wait(int wait_retry_left = 10) {
+      if (wait_retry_left <= 0) {
+        LOG(ERROR) << "Wait failed";
+        return;
+      }
       if (CountWidgets() == initial_widget_count_ + 1 &&
           last_render_widget_host_->GetView()->GetNativeView()) {
         gfx::Rect popup_bounds =
@@ -374,7 +378,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
       // If we haven't seen any new widget or we get 0 size widget, we need to
       // schedule waiting.
-      ScheduleWait();
+      ScheduleWait(wait_retry_left - 1);
 
       if (!message_loop_.get()) {
         message_loop_ = new content::MessageLoopRunner;
@@ -390,10 +394,11 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     }
 
    private:
-    void ScheduleWait() {
+    void ScheduleWait(int wait_retry_left) {
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&PopupCreatedObserver::Wait, base::Unretained(this)),
+          base::BindOnce(&PopupCreatedObserver::Wait, base::Unretained(this),
+                         wait_retry_left),
           base::TimeDelta::FromMilliseconds(200));
     }
 
