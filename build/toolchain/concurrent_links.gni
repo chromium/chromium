@@ -51,7 +51,7 @@ if (concurrent_links == -1) {
   } else if (is_win && symbol_level == 1 && !is_debug && is_component_build) {
     _args = [ "--mem_per_link_gb=3" ]
   } else if (is_win) {
-    _args = [ "--mem_per_link_gb=5" ]
+    _args = [ "--mem_per_link_gb=6" ]
   } else if (is_mac) {
     if (enable_dsyms) {
       _args = [ "--mem_per_link_gb=12" ]
