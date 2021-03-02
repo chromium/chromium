@@ -990,7 +990,7 @@
   {
     "name": "dice-web-signin-interception",
     "owners": [ "droger", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 92
   },
   {
     "name": "direct-actions",
