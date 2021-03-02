@@ -127,7 +127,6 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         // onProfileDataUpdated.
         mWaitingOnOwnerInfo = true;
         addProfileDataObserver();
-        mProfileDataCache.update(Collections.singletonList(getOwnerEmail()));
         contacts.add(0, constructOwnerInfo(getOwnerEmail()));
     }
 
