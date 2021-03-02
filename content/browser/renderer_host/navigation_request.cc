@@ -2708,8 +2708,7 @@ void NavigationRequest::OnResponseStarted(
               ? frame_entry->web_bundle_navigation_info()->Clone()
               : nullptr,
           frame_entry->policy_container_policies()
-              ? std::make_unique<PolicyContainerPolicies>(
-                    *frame_entry->policy_container_policies())
+              ? frame_entry->policy_container_policies()->Clone()
               : nullptr);
     }
   }

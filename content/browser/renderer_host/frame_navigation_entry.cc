@@ -65,8 +65,7 @@ scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
       initiator_origin_, redirect_chain_, page_state_, method_, post_id_,
       nullptr /* blob_url_loader_factory */,
       nullptr /* web_bundle_navigation_info */,
-      policy_container_policies_ ? std::make_unique<PolicyContainerPolicies>(
-                                       *policy_container_policies_)
+      policy_container_policies_ ? policy_container_policies_->Clone()
                                  : nullptr);
   // |bindings_| gets only updated through the SetBindings API, not through
   // UpdateEntry, so make a copy of it explicitly here as part of cloning.

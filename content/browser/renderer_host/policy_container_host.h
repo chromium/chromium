@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -19,7 +20,21 @@
 namespace content {
 
 // The contents of a PolicyContainerHost.
-struct PolicyContainerPolicies {
+struct CONTENT_EXPORT PolicyContainerPolicies {
+  PolicyContainerPolicies();
+  PolicyContainerPolicies(network::mojom::ReferrerPolicy referrer_policy,
+                          network::mojom::IPAddressSpace ip_address_space,
+                          bool is_web_secure_context,
+                          std::vector<network::mojom::ContentSecurityPolicyPtr>
+                              content_security_policies);
+  PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
+  PolicyContainerPolicies operator=(const PolicyContainerPolicies&) = delete;
+  ~PolicyContainerPolicies();
+
+  // Creates a clone of this PolicyContainerPolicies. Always returns a non-null
+  // pointer.
+  std::unique_ptr<PolicyContainerPolicies> Clone() const;
+
   // The referrer policy for the associated document. If not overwritten via a
   // call to SetReferrerPolicy (for example after parsing the Referrer-Policy
   // header or a meta tag), the default referrer policy will be applied to the
@@ -41,10 +56,16 @@ struct PolicyContainerPolicies {
   //  - |network::IsUrlPotentiallyTrustworthy()|
   //  - |network::IsOriginPotentiallyTrustworthy()|
   bool is_web_secure_context = false;
+
+  // The content security policies of the associated document.
+  std::vector<network::mojom::ContentSecurityPolicyPtr>
+      content_security_policies;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
 CONTENT_EXPORT bool operator==(const PolicyContainerPolicies& lhs,
+                               const PolicyContainerPolicies& rhs);
+CONTENT_EXPORT bool operator!=(const PolicyContainerPolicies& lhs,
                                const PolicyContainerPolicies& rhs);
 
 // Streams a human-readable string representation of |policies| to |out|.
@@ -82,9 +103,10 @@ class CONTENT_EXPORT PolicyContainerHost
   // mojo receiver.
   PolicyContainerHost();
 
-  // Constructs a PolicyContainerHost containing the given |policies| and an
-  // unbound mojo receiver.
-  explicit PolicyContainerHost(const PolicyContainerPolicies& policies);
+  // Constructs a PolicyContainerHost containing the given |policies|, which
+  // must not be null.
+  explicit PolicyContainerHost(
+      std::unique_ptr<PolicyContainerPolicies> policies);
 
   // PolicyContainerHost instances are neither copyable nor movable.
   PolicyContainerHost(const PolicyContainerHost&) = delete;
@@ -101,14 +123,14 @@ class CONTENT_EXPORT PolicyContainerHost
   // PolicyContainerHost::FromFrameToken. This function can be called only once.
   void AssociateWithFrameToken(const blink::LocalFrameToken& token);
 
-  const PolicyContainerPolicies& policies() const { return policies_; }
+  const PolicyContainerPolicies& policies() const { return *policies_; }
 
   network::mojom::ReferrerPolicy referrer_policy() const {
-    return policies_.referrer_policy;
+    return policies_->referrer_policy;
   }
 
   network::mojom::IPAddressSpace ip_address_space() const {
-    return policies_.ip_address_space;
+    return policies_->ip_address_space;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending
@@ -142,7 +164,8 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy) final;
 
-  PolicyContainerPolicies policies_;
+  // The policies of this PolicyContainerHost. This is never null.
+  std::unique_ptr<PolicyContainerPolicies> policies_;
 
   mojo::AssociatedReceiver<blink::mojom::PolicyContainerHost>
       policy_container_host_receiver_{this};

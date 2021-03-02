@@ -6,6 +6,7 @@
 
 #include "base/lazy_instance.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace content {
 
@@ -37,20 +38,67 @@ base::LazyInstance<TokenPolicyContainerMap>::Leaky
 bool operator==(const PolicyContainerPolicies& lhs,
                 const PolicyContainerPolicies& rhs) {
   return lhs.referrer_policy == rhs.referrer_policy &&
-         lhs.ip_address_space == rhs.ip_address_space;
+         lhs.ip_address_space == rhs.ip_address_space &&
+         lhs.is_web_secure_context == rhs.is_web_secure_context &&
+         std::equal(lhs.content_security_policies.begin(),
+                    lhs.content_security_policies.end(),
+                    rhs.content_security_policies.begin(),
+                    rhs.content_security_policies.end());
+}
+
+bool operator!=(const PolicyContainerPolicies& lhs,
+                const PolicyContainerPolicies& rhs) {
+  return !(lhs == rhs);
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const PolicyContainerPolicies& policies) {
-  return out << "{ referrer_policy: " << policies.referrer_policy
-             << ", ip_address_space: " << policies.ip_address_space << " }";
+  out << "{ referrer_policy: " << policies.referrer_policy
+      << ", ip_address_space: " << policies.ip_address_space
+      << ", is_web_secure_context: " << policies.is_web_secure_context
+      << ", content_security_policies: ";
+
+  if (policies.content_security_policies.empty())
+    return out << "[] }";
+
+  out << "[ ";
+  auto it = policies.content_security_policies.begin();
+  for (; it + 1 != policies.content_security_policies.end(); ++it) {
+    out << (*it)->header->header_value << ", ";
+  }
+  return out << (*it)->header->header_value << " ] }";
 }
 
-PolicyContainerHost::PolicyContainerHost() = default;
+PolicyContainerPolicies::PolicyContainerPolicies() = default;
+
+PolicyContainerPolicies::PolicyContainerPolicies(
+    network::mojom::ReferrerPolicy referrer_policy,
+    network::mojom::IPAddressSpace ip_address_space,
+    bool is_web_secure_context,
+    std::vector<network::mojom::ContentSecurityPolicyPtr>
+        content_security_policies)
+    : referrer_policy(referrer_policy),
+      ip_address_space(ip_address_space),
+      is_web_secure_context(is_web_secure_context),
+      content_security_policies(std::move(content_security_policies)) {}
+
+PolicyContainerPolicies::~PolicyContainerPolicies() = default;
+
+std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::Clone()
+    const {
+  return std::make_unique<PolicyContainerPolicies>(
+      referrer_policy, ip_address_space, is_web_secure_context,
+      mojo::Clone(content_security_policies));
+}
+
+PolicyContainerHost::PolicyContainerHost()
+    : PolicyContainerHost(std::make_unique<PolicyContainerPolicies>()) {}
 
 PolicyContainerHost::PolicyContainerHost(
-    const PolicyContainerPolicies& policies)
-    : policies_(policies) {}
+    std::unique_ptr<PolicyContainerPolicies> policies)
+    : policies_(std::move(policies)) {
+  DCHECK(policies_);
+}
 
 PolicyContainerHost::~PolicyContainerHost() {
   // The PolicyContainerHost associated with |frame_token_| might have
@@ -79,7 +127,7 @@ PolicyContainerHost* PolicyContainerHost::FromFrameToken(
 
 void PolicyContainerHost::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
-  policies_.referrer_policy = referrer_policy;
+  policies_->referrer_policy = referrer_policy;
 }
 
 blink::mojom::PolicyContainerPtr
@@ -97,13 +145,13 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
       remote.InitWithNewEndpointAndPassReceiver()));
 
   return blink::mojom::PolicyContainer::New(
-      blink::mojom::PolicyContainerPolicies::New(policies_.referrer_policy,
-                                                 policies_.ip_address_space),
+      blink::mojom::PolicyContainerPolicies::New(policies_->referrer_policy,
+                                                 policies_->ip_address_space),
       std::move(remote));
 }
 
 scoped_refptr<PolicyContainerHost> PolicyContainerHost::Clone() const {
-  return base::MakeRefCounted<PolicyContainerHost>(policies_);
+  return base::MakeRefCounted<PolicyContainerHost>(policies_->Clone());
 }
 
 void PolicyContainerHost::Bind(

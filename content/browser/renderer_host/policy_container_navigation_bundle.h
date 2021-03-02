@@ -145,31 +145,23 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // Helper for |FreezeFinalPolicies()|.
   void FinalizeIsWebSecureContext();
 
-  // Returns the policies to use instead of |delivered_policies_|, if any.
-  //
-  // For example, if |url| is `about:srcdoc`, returns |&*parent_policies_|.
-  //
-  // Helper for |FinalizePolicies()|.
-  const PolicyContainerPolicies* ComputeFinalPoliciesOverride(
-      const GURL& url) const;
-
   // Sets |host_|.
-  void SetFinalPolicies(const PolicyContainerPolicies& policies);
+  void SetFinalPolicies(std::unique_ptr<PolicyContainerPolicies> policies);
 
   // The policies of the parent document, if any.
-  const std::unique_ptr<const PolicyContainerPolicies> parent_policies_;
+  std::unique_ptr<PolicyContainerPolicies> parent_policies_;
 
   // The policies of the document that initiated the navigation, if any.
-  const std::unique_ptr<const PolicyContainerPolicies> initiator_policies_;
+  std::unique_ptr<PolicyContainerPolicies> initiator_policies_;
 
   // The policies restored from the history navigation entry, if any.
-  const std::unique_ptr<const PolicyContainerPolicies> history_policies_;
+  std::unique_ptr<PolicyContainerPolicies> history_policies_;
 
   // The policies extracted from the response as it is loaded.
   //
   // See the comment on |SetIsOriginPotentiallyTrustworthy()| regarding this
   // member's |is_web_secure_context| field.
-  PolicyContainerPolicies delivered_policies_;
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies_;
 
   // Nullptr until |FinalizePolicies()| or |FinalizePoliciesForError()| is
   // called, then moved from by |TakePolicyContainerHost()|.

@@ -3106,8 +3106,7 @@ void NavigationControllerImpl::NavigateWithoutEntry(
       if (previous_frame_entry &&
           previous_frame_entry->policy_container_policies()) {
         pending_entry_->GetFrameEntry(node)->set_policy_container_policies(
-            std::make_unique<PolicyContainerPolicies>(
-                *previous_frame_entry->policy_container_policies()));
+            previous_frame_entry->policy_container_policies()->Clone());
       }
     }
   }
@@ -3124,8 +3123,10 @@ void NavigationControllerImpl::NavigateWithoutEntry(
     if (node->current_frame_host() &&
         node->current_frame_host()->policy_container_host()) {
       pending_entry_->GetFrameEntry(node)->set_policy_container_policies(
-          std::make_unique<PolicyContainerPolicies>(
-              node->current_frame_host()->policy_container_host()->policies()));
+          node->current_frame_host()
+              ->policy_container_host()
+              ->policies()
+              .Clone());
     }
   }
 
@@ -3894,7 +3895,7 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
       return nullptr;
 
     // Make a copy of the policy container for the new FrameNavigationEntry.
-    return std::make_unique<PolicyContainerPolicies>(*previous_policies);
+    return previous_policies->Clone();
   }
 
   if (!request->IsWaitingToCommit()) {
@@ -3902,14 +3903,12 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
     // NavigationRequest contains a dummy policy container, while the
     // RenderFrameHost already inherited the policy container from the
     // creator, so let's take the policies from there.
-    return std::make_unique<PolicyContainerPolicies>(
-        rfh->policy_container_host()->policies());
+    return rfh->policy_container_host()->policies().Clone();
   }
 
   // Take the policy container from the request since we did not move it
   // into the RFH yet.
-  return std::make_unique<PolicyContainerPolicies>(
-      request->GetPolicyContainerPolicies());
+  return request->GetPolicyContainerPolicies().Clone();
 }
 
 void NavigationControllerImpl::SetHistoryOffsetAndLength(int history_offset,

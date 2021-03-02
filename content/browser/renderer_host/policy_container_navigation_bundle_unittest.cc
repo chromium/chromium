@@ -22,24 +22,25 @@
 namespace content {
 namespace {
 
+using ::testing::ByRef;
 using ::testing::Eq;
 using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Pointee;
 
 // Returns non-default policies for use in tests.
-PolicyContainerPolicies MakeTestPolicies() {
-  PolicyContainerPolicies policies;
-  policies.referrer_policy = network::mojom::ReferrerPolicy::kAlways;
-  policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
-  policies.is_web_secure_context = true;
-  return policies;
+std::unique_ptr<PolicyContainerPolicies> MakeTestPolicies() {
+  return std::make_unique<PolicyContainerPolicies>(
+      network::mojom::ReferrerPolicy::kAlways,
+      network::mojom::IPAddressSpace::kPublic,
+      /*is_web_secure_context=*/true,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>());
 }
 
 // Shorthand.
 scoped_refptr<PolicyContainerHost> NewHost(
-    const PolicyContainerPolicies& policies) {
-  return base::MakeRefCounted<PolicyContainerHost>(policies);
+    std::unique_ptr<PolicyContainerPolicies> policies) {
+  return base::MakeRefCounted<PolicyContainerHost>(std::move(policies));
 }
 
 GURL AboutBlankUrl() {
@@ -123,22 +124,22 @@ TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesNormalUrl) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
 
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies =
+      bundle.DeliveredPolicies().Clone();
   bundle.FinalizePolicies(GURL("https://foo.test"));
 
-  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+  EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
 
 // Verifies that when the URL of the document to commit is `about:blank` but
-// there is no initiator frame, the final policies are copied from the delivered
-// policies.
+// there is no initiator, the bundle's final policies contain default values.
 TEST_F(PolicyContainerNavigationBundleTest,
        FinalPoliciesAboutBlankWithoutInitiator) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
-
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
   bundle.FinalizePolicies(AboutBlankUrl());
 
-  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+  EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
 }
 
 // This test verifies the default final policies on error pages.
@@ -181,33 +182,36 @@ TEST_F(PolicyContainerNavigationBundleTest, InitiatorPoliciesWithoutInitiator) {
 // associated to the given frame token, or resets those policies when given
 // nullptr.
 TEST_F(PolicyContainerNavigationBundleTest, InitiatorPoliciesWithInitiator) {
-  PolicyContainerPolicies initiator_policies = MakeTestPolicies();
+  std::unique_ptr<PolicyContainerPolicies> initiator_policies =
+      MakeTestPolicies();
 
   TestRenderFrameHost* initiator = contents()->GetMainFrame();
-  initiator->SetPolicyContainerHost(NewHost(initiator_policies));
+  initiator->SetPolicyContainerHost(NewHost(initiator_policies->Clone()));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
 
-  EXPECT_THAT(bundle.InitiatorPolicies(), Pointee(Eq(initiator_policies)));
+  EXPECT_THAT(bundle.InitiatorPolicies(),
+              Pointee(Eq(ByRef(*initiator_policies))));
 }
 
 // Verifies that when the URL of the document to commit is `about:blank`, the
 // bundle's final policies are copied from the iniitator.
 TEST_F(PolicyContainerNavigationBundleTest,
        FinalPoliciesAboutBlankWithInitiator) {
-  PolicyContainerPolicies initiator_policies = MakeTestPolicies();
+  std::unique_ptr<PolicyContainerPolicies> initiator_policies =
+      MakeTestPolicies();
 
   TestRenderFrameHost* initiator = contents()->GetMainFrame();
-  initiator->SetPolicyContainerHost(NewHost(initiator_policies));
+  initiator->SetPolicyContainerHost(NewHost(initiator_policies->Clone()));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
   bundle.FinalizePolicies(AboutBlankUrl());
 
-  EXPECT_EQ(bundle.FinalPolicies(), initiator_policies);
+  EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
 }
 
 // Verifies that ParentPolicies returns nullptr in the absence of a parent.
@@ -220,29 +224,29 @@ TEST_F(PolicyContainerNavigationBundleTest, ParentPoliciesWithoutParent) {
 // Verifies that ParentPolicies returns a pointer to a copy of the parent's
 // policies.
 TEST_F(PolicyContainerNavigationBundleTest, ParentPoliciesWithParent) {
-  PolicyContainerPolicies parent_policies = MakeTestPolicies();
+  std::unique_ptr<PolicyContainerPolicies> parent_policies = MakeTestPolicies();
 
   TestRenderFrameHost* parent = contents()->GetMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies));
+  parent->SetPolicyContainerHost(NewHost(parent_policies->Clone()));
 
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
 
-  EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(parent_policies)));
+  EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
 }
 
 // Verifies that when the the URL of the document to commit is `about:srcdoc`,
 // the bundle's final policies are copied from the parent.
 TEST_F(PolicyContainerNavigationBundleTest,
        FinalPoliciesAboutSrcdocWithParent) {
-  PolicyContainerPolicies parent_policies = MakeTestPolicies();
+  std::unique_ptr<PolicyContainerPolicies> parent_policies = MakeTestPolicies();
 
   TestRenderFrameHost* parent = contents()->GetMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies));
+  parent->SetPolicyContainerHost(NewHost(parent_policies->Clone()));
 
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
   bundle.FinalizePolicies(AboutSrcdocUrl());
 
-  EXPECT_EQ(bundle.FinalPolicies(), parent_policies);
+  EXPECT_EQ(bundle.FinalPolicies(), *parent_policies);
 }
 
 // Verifies that when a document has a potentially-trustworthy origin and no
@@ -253,10 +257,13 @@ TEST_F(PolicyContainerNavigationBundleTest,
 
   bundle.SetIsOriginPotentiallyTrustworthy(true);
 
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies =
+      bundle.DeliveredPolicies().Clone();
+  EXPECT_TRUE(delivered_policies->is_web_secure_context);
+
   bundle.FinalizePolicies(GURL());
 
-  EXPECT_TRUE(bundle.DeliveredPolicies().is_web_secure_context);
-  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+  EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
 
 // Verifies that when a document has a non-potentially-trustworthy origin and no
@@ -267,21 +274,24 @@ TEST_F(PolicyContainerNavigationBundleTest,
 
   bundle.SetIsOriginPotentiallyTrustworthy(false);
 
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies =
+      bundle.DeliveredPolicies().Clone();
+  EXPECT_FALSE(delivered_policies->is_web_secure_context);
+
   bundle.FinalizePolicies(GURL());
 
-  EXPECT_FALSE(bundle.DeliveredPolicies().is_web_secure_context);
-  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+  EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
 
 // Verifies that when a document has a potentially-trustworthy origin and a
 // parent that is not a secure context, then it is not a secure context.
 TEST_F(PolicyContainerNavigationBundleTest,
        IsWebSecureContextTrustworthyOriginNonSecureParent) {
-  PolicyContainerPolicies parent_policies = MakeTestPolicies();
-  parent_policies.is_web_secure_context = false;
+  std::unique_ptr<PolicyContainerPolicies> parent_policies = MakeTestPolicies();
+  parent_policies->is_web_secure_context = false;
 
   TestRenderFrameHost* parent = contents()->GetMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies));
+  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
 
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
 
@@ -289,48 +299,53 @@ TEST_F(PolicyContainerNavigationBundleTest,
 
   bundle.FinalizePolicies(GURL("https://foo.test"));
 
-  EXPECT_FALSE(bundle.DeliveredPolicies().is_web_secure_context);
-  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+  EXPECT_FALSE(bundle.FinalPolicies().is_web_secure_context);
 }
 
 // Verifies that when a document has a non-potentially-trustworthy origin and a
 // parent that is a secure context, then it is not a secure context.
 TEST_F(PolicyContainerNavigationBundleTest,
        IsWebSecureContextNonTrustworthyOriginSecureParent) {
-  PolicyContainerPolicies parent_policies = MakeTestPolicies();
-  parent_policies.is_web_secure_context = true;
+  std::unique_ptr<PolicyContainerPolicies> parent_policies = MakeTestPolicies();
+  parent_policies->is_web_secure_context = true;
 
   TestRenderFrameHost* parent = contents()->GetMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies));
+  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
 
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
 
   bundle.SetIsOriginPotentiallyTrustworthy(false);
 
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies =
+      bundle.DeliveredPolicies().Clone();
+  EXPECT_FALSE(delivered_policies->is_web_secure_context);
+
   bundle.FinalizePolicies(GURL("http://foo.test"));
 
-  EXPECT_FALSE(bundle.DeliveredPolicies().is_web_secure_context);
-  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+  EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
 
 // Verifies that when a document has a potentially-trustworthy origin and a
 // parent that is a secure context, then it is a secure context.
 TEST_F(PolicyContainerNavigationBundleTest,
        IsWebSecureContextTrustworthyOriginSecureParent) {
-  PolicyContainerPolicies parent_policies = MakeTestPolicies();
-  parent_policies.is_web_secure_context = true;
+  std::unique_ptr<PolicyContainerPolicies> parent_policies = MakeTestPolicies();
+  parent_policies->is_web_secure_context = true;
 
   TestRenderFrameHost* parent = contents()->GetMainFrame();
-  parent->SetPolicyContainerHost(NewHost(parent_policies));
+  parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
 
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
 
   bundle.SetIsOriginPotentiallyTrustworthy(true);
 
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies =
+      bundle.DeliveredPolicies().Clone();
+  EXPECT_TRUE(delivered_policies->is_web_secure_context);
+
   bundle.FinalizePolicies(GURL("https://foo.test"));
 
-  EXPECT_TRUE(bundle.DeliveredPolicies().is_web_secure_context);
-  EXPECT_EQ(bundle.FinalPolicies(), bundle.DeliveredPolicies());
+  EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
 
 }  // namespace

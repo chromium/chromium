@@ -29,8 +29,7 @@ std::unique_ptr<PolicyContainerPolicies> GetParentPolicies(
     return nullptr;
   }
 
-  return std::make_unique<PolicyContainerPolicies>(
-      parent->policy_container_host()->policies());
+  return parent->policy_container_host()->policies().Clone();
 }
 
 // Returns a copy of the navigation initiator's policies, if any.
@@ -53,8 +52,7 @@ std::unique_ptr<PolicyContainerPolicies> GetInitiatorPolicies(
     return nullptr;
   }
 
-  return std::make_unique<PolicyContainerPolicies>(
-      initiator_policy_container_host->policies());
+  return initiator_policy_container_host->policies().Clone();
 }
 
 // Returns a copy of the given history |entry|'s policies, if any.
@@ -69,7 +67,7 @@ std::unique_ptr<PolicyContainerPolicies> GetHistoryPolicies(
     return nullptr;
   }
 
-  return std::make_unique<PolicyContainerPolicies>(*policies);
+  return policies->Clone();
 }
 
 }  // namespace
@@ -80,22 +78,29 @@ PolicyContainerNavigationBundle::PolicyContainerNavigationBundle(
     const FrameNavigationEntry* history_entry)
     : parent_policies_(GetParentPolicies(parent)),
       initiator_policies_(GetInitiatorPolicies(initiator_frame_token)),
-      history_policies_(GetHistoryPolicies(history_entry)) {}
+      history_policies_(GetHistoryPolicies(history_entry)),
+      delivered_policies_(std::make_unique<PolicyContainerPolicies>()) {}
 
 PolicyContainerNavigationBundle::~PolicyContainerNavigationBundle() = default;
 
 const PolicyContainerPolicies*
 PolicyContainerNavigationBundle::InitiatorPolicies() const {
+  DCHECK(!IsFinalized());
+
   return initiator_policies_.get();
 }
 
 const PolicyContainerPolicies* PolicyContainerNavigationBundle::ParentPolicies()
     const {
+  DCHECK(!IsFinalized());
+
   return parent_policies_.get();
 }
 
 const PolicyContainerPolicies*
 PolicyContainerNavigationBundle::HistoryPolicies() const {
+  DCHECK(!IsFinalized());
+
   return history_policies_.get();
 }
 
@@ -103,19 +108,21 @@ void PolicyContainerNavigationBundle::SetIPAddressSpace(
     network::mojom::IPAddressSpace address_space) {
   DCHECK(!IsFinalized());
 
-  delivered_policies_.ip_address_space = address_space;
+  delivered_policies_->ip_address_space = address_space;
 }
 
 void PolicyContainerNavigationBundle::SetIsOriginPotentiallyTrustworthy(
     bool value) {
   DCHECK(!IsFinalized());
 
-  delivered_policies_.is_web_secure_context = value;
+  delivered_policies_->is_web_secure_context = value;
 }
 
 const PolicyContainerPolicies&
 PolicyContainerNavigationBundle::DeliveredPolicies() const {
-  return delivered_policies_;
+  DCHECK(!IsFinalized());
+
+  return *delivered_policies_;
 }
 
 void PolicyContainerNavigationBundle::FinalizePoliciesForError() {
@@ -123,34 +130,15 @@ void PolicyContainerNavigationBundle::FinalizePoliciesForError() {
 
   // TODO(https://crbug.com/1175787): We should enforce strict policies on error
   // pages.
-  PolicyContainerPolicies policies;
+  auto policies = std::make_unique<PolicyContainerPolicies>();
 
   // We commit error pages with the same address space as the underlying page,
   // so that auto-reloading error pages does not show up as a private network
   // request (from the unknown/public address space to private). See also
   // crbug.com/1180140.
-  policies.ip_address_space = delivered_policies_.ip_address_space;
+  policies->ip_address_space = delivered_policies_->ip_address_space;
 
-  SetFinalPolicies(policies);
-}
-
-void PolicyContainerNavigationBundle::FinalizePolicies(const GURL& url) {
-  DCHECK(!IsFinalized());
-
-  FinalizeIsWebSecureContext();
-
-  const PolicyContainerPolicies* override_policies =
-      ComputeFinalPoliciesOverride(url);
-  if (override_policies) {
-    SetFinalPolicies(*override_policies);
-    return;
-  }
-
-  SetFinalPolicies(delivered_policies_);
-}
-
-bool PolicyContainerNavigationBundle::IsFinalized() const {
-  return host_ != nullptr;
+  SetFinalPolicies(std::move(policies));
 }
 
 void PolicyContainerNavigationBundle::FinalizeIsWebSecureContext() {
@@ -162,40 +150,42 @@ void PolicyContainerNavigationBundle::FinalizeIsWebSecureContext() {
   }
 
   // The child can only be a secure context if the parent is too.
-  delivered_policies_.is_web_secure_context &=
+  delivered_policies_->is_web_secure_context &=
       parent_policies_->is_web_secure_context;
 }
 
-const PolicyContainerPolicies*
-PolicyContainerNavigationBundle::ComputeFinalPoliciesOverride(
-    const GURL& url) const {
+void PolicyContainerNavigationBundle::FinalizePolicies(const GURL& url) {
   DCHECK(!IsFinalized());
+
+  FinalizeIsWebSecureContext();
 
   if (history_policies_) {
     DCHECK(HasLocalScheme(url))
         << "Document is restoring policies from history for non-local scheme: "
         << url;
-    return history_policies_.get();
-  }
-
-  if (url.IsAboutSrcdoc()) {
+    SetFinalPolicies(std::move(history_policies_));
+  } else if (url.IsAboutSrcdoc()) {
     DCHECK(parent_policies_)
         << "About:srcdoc documents should always have a parent frame.";
-    return ParentPolicies();
+    SetFinalPolicies(std::move(parent_policies_));
+  } else if (HasLocalScheme(url)) {
+    SetFinalPolicies(initiator_policies_
+                         ? std::move(initiator_policies_)
+                         : std::make_unique<PolicyContainerPolicies>());
+  } else {
+    SetFinalPolicies(std::move(delivered_policies_));
   }
+}
 
-  if (HasLocalScheme(url)) {
-    return InitiatorPolicies();
-  }
-
-  return nullptr;
+bool PolicyContainerNavigationBundle::IsFinalized() const {
+  return host_ != nullptr;
 }
 
 void PolicyContainerNavigationBundle::SetFinalPolicies(
-    const PolicyContainerPolicies& policies) {
+    std::unique_ptr<PolicyContainerPolicies> policies) {
   DCHECK(!IsFinalized());
 
-  host_ = base::MakeRefCounted<PolicyContainerHost>(policies);
+  host_ = base::MakeRefCounted<PolicyContainerHost>(std::move(policies));
 }
 
 const PolicyContainerPolicies& PolicyContainerNavigationBundle::FinalPolicies()
