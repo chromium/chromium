@@ -262,6 +262,40 @@ class CryptohomeClientImpl : public CryptohomeClient {
   }
 
   // CryptohomeClient override.
+  void StartAuthSession(
+      const cryptohome::AccountIdentifier& account,
+      const cryptohome::StartAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override {
+    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
+                                 cryptohome::kCryptohomeStartAuthSession);
+    dbus::MessageWriter writer(&method_call);
+
+    writer.AppendProtoAsArrayOfBytes(account);
+    writer.AppendProtoAsArrayOfBytes(request);
+
+    proxy_->CallMethod(
+        &method_call, kTpmDBusTimeoutMs,
+        base::BindOnce(&CryptohomeClientImpl::OnBaseReplyMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // CryptohomeClient override.
+  void AuthenticateAuthSessionRequest(
+      const cryptohome::AuthenticateAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override {
+    dbus::MethodCall method_call(
+        cryptohome::kCryptohomeInterface,
+        cryptohome::kCryptohomeAuthenticateAuthSession);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(request);
+
+    proxy_->CallMethod(
+        &method_call, kTpmDBusTimeoutMs,
+        base::BindOnce(&CryptohomeClientImpl::OnBaseReplyMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // CryptohomeClient override.
   void Pkcs11IsTpmTokenReady(DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
                                  cryptohome::kCryptohomePkcs11IsTpmTokenReady);

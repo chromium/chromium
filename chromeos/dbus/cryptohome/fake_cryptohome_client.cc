@@ -17,6 +17,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
@@ -41,6 +42,8 @@ constexpr size_t kInstallAttributesFileMaxSize = 16384;
 
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeCryptohomeClient* g_instance = nullptr;
+
+constexpr char kAuthSessionIdTemplate[] = "AuthSession-%d";
 
 }  // namespace
 
@@ -156,6 +159,45 @@ void FakeCryptohomeClient::MountGuestEx(
     const cryptohome::MountGuestRequest& request,
     DBusMethodCallback<cryptohome::BaseReply> callback) {
   ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
+}
+
+void FakeCryptohomeClient::StartAuthSession(
+    const cryptohome::AccountIdentifier& account,
+    const cryptohome::StartAuthSessionRequest& request,
+    DBusMethodCallback<cryptohome::BaseReply> callback) {
+  std::string auth_session_id =
+      base::StringPrintf(kAuthSessionIdTemplate, next_auth_session_id++);
+
+  DCHECK_EQ(auth_sessions_.count(auth_session_id), 0u);
+  AuthSessionData& session = auth_sessions_[auth_session_id];
+  session.id = auth_session_id;
+  session.account = account;
+
+  cryptohome::BaseReply reply;
+  cryptohome::StartAuthSessionReply* auth_session_reply =
+      reply.MutableExtension(cryptohome::StartAuthSessionReply::reply);
+  auth_session_reply->set_auth_session_id(auth_session_id);
+
+  ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
+void FakeCryptohomeClient::AuthenticateAuthSessionRequest(
+    const cryptohome::AuthenticateAuthSessionRequest& request,
+    DBusMethodCallback<cryptohome::BaseReply> callback) {
+  cryptohome::BaseReply reply;
+  cryptohome::AuthenticateAuthSessionReply* auth_session_reply =
+      reply.MutableExtension(cryptohome::AuthenticateAuthSessionReply::reply);
+
+  const std::string auth_session_id = request.auth_session_id();
+
+  const auto it = auth_sessions_.find(auth_session_id);
+  if (it == auth_sessions_.end()) {
+    reply.set_error(cryptohome::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+  } else {
+    it->second.authenticated = true;
+    auth_session_reply->set_authenticated(true);
+  }
+  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeCryptohomeClient::GetRsuDeviceId(

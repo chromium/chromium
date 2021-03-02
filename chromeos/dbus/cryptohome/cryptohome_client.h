@@ -21,6 +21,7 @@ namespace cryptohome {
 
 class AccountIdentifier;
 class AddKeyRequest;
+class AuthenticateAuthSessionRequest;
 class AuthorizationRequest;
 class BaseReply;
 class CheckHealthRequest;
@@ -39,6 +40,7 @@ class MountRequest;
 class RemoveFirmwareManagementParametersRequest;
 class RemoveKeyRequest;
 class SetFirmwareManagementParametersRequest;
+class StartAuthSessionRequest;
 class StartFingerprintAuthSessionRequest;
 class UnmountRequest;
 
@@ -184,6 +186,19 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // succeeds.
   virtual void MountGuestEx(
       const cryptohome::MountGuestRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
+
+  // Starts AuthSession for a user identified by |account|.
+  // |callback| is called after the method call succeeds.
+  virtual void StartAuthSession(
+      const cryptohome::AccountIdentifier& account,
+      const cryptohome::StartAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
+
+  // Attempts to authenticate AuthSession.
+  // |callback| is called after the method call succeeds.
+  virtual void AuthenticateAuthSessionRequest(
+      const cryptohome::AuthenticateAuthSessionRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
   // Calls GetRsuDeviceId method. |callback| is called after the method call

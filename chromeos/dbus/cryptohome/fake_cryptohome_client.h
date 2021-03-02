@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -27,6 +28,16 @@ namespace chromeos {
 class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
     : public CryptohomeClient {
  public:
+  // Represents the ongoing AuthSessions.
+  struct AuthSessionData {
+    // AuthSession id.
+    std::string id;
+    // Account associated with the session.
+    cryptohome::AccountIdentifier account;
+    // True if session is authenticated.
+    bool authenticated = false;
+  };
+
   // FakeCryptohomeClient can be embedded in unit tests, but the
   // InitializeFake/Shutdown pattern should be preferred. Constructing the
   // instance will set the global instance for the fake and for the base class,
@@ -67,6 +78,13 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
       const cryptohome::AccountIdentifier& cryptohome_id) override;
   void MountGuestEx(
       const cryptohome::MountGuestRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override;
+  void StartAuthSession(
+      const cryptohome::AccountIdentifier& account,
+      const cryptohome::StartAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override;
+  void AuthenticateAuthSessionRequest(
+      const cryptohome::AuthenticateAuthSessionRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) override;
   void GetRsuDeviceId(
       DBusMethodCallback<cryptohome::BaseReply> callback) override;
@@ -315,6 +333,9 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   std::map<cryptohome::AccountIdentifier,
            std::map<std::string, cryptohome::Key>>
       key_data_map_;
+
+  int next_auth_session_id = 0;
+  base::flat_map<std::string, AuthSessionData> auth_sessions_;
 
   // Set of account identifiers whose user homes use ecryptfs. User homes not
   // mentioned here use dircrypto.
