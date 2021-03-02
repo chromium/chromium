@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/chromecast_buildflags.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
@@ -108,9 +109,12 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   if (!features::IsUsingOzonePlatform())
     return std::make_unique<OverlayProcessorStub>();
 
+#if !BUILDFLAG(IS_CHROMECAST)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.
+  // For chromecast, we always need OverlayProcessorOzone.
   if (!capabilities.supports_surfaceless)
     return std::make_unique<OverlayProcessorStub>();
+#endif  // #if !BUILDFLAG(IS_CHROMECAST)
 
   std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates;
   if (!renderer_settings.overlay_strategies.empty()) {
