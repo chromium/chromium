@@ -1915,7 +1915,7 @@
   {
     "name": "enable-instant-start",
     "owners": [ "hanxi", "wychen" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 100
   },
   {
     "name": "enable-ios-managed-settings-ui",
@@ -2363,8 +2363,8 @@
   },
   {
     "name": "enable-start-surface",
-    "owners": [ "gogerald" ],
-    "expiry_milestone": 90
+    "owners": [ "hanxi", "wychen" ],
+    "expiry_milestone": 100
   },
   {
     "name": "enable-storage-pressure-event",
