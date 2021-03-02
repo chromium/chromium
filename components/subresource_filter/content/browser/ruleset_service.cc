@@ -472,12 +472,12 @@ void RulesetService::OpenAndPublishRuleset(
       base::BindOnce(&RulesetService::OnRulesetSet, AsWeakPtr()));
 }
 
-void RulesetService::OnRulesetSet(base::File file) {
+void RulesetService::OnRulesetSet(RulesetFilePtr file) {
   // The file has just been successfully written, so a failure here is unlikely
   // unless |indexed_ruleset_base_dir_| has been tampered with or there are disk
   // errors. Still, restore the invariant that a valid version in preferences
   // always points to an existing version of disk by invalidating the prefs.
-  if (!file.IsValid()) {
+  if (!file->IsValid()) {
     IndexedRulesetVersion().SaveToPrefs(local_state_);
     return;
   }

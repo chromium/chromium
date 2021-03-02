@@ -28,22 +28,6 @@
 
 namespace subresource_filter {
 
-namespace {
-
-// The file handle is closed when the argument goes out of scope.
-void CloseFile(base::File) {}
-
-// Posts the |file| handle to the file thread so it can be closed.
-void CloseFileOnFileThread(base::File* file) {
-  if (!file->IsValid())
-    return;
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&CloseFile, std::move(*file)));
-}
-
-}  // namespace
-
 RulesetPublisherImpl::RulesetPublisherImpl(
     RulesetService* ruleset_service,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
@@ -61,9 +45,7 @@ RulesetPublisherImpl::RulesetPublisherImpl(
       content::NotificationService::AllBrowserContextsAndSources());
 }
 
-RulesetPublisherImpl::~RulesetPublisherImpl() {
-  CloseFileOnFileThread(&ruleset_data_);
-}
+RulesetPublisherImpl::~RulesetPublisherImpl() = default;
 
 void RulesetPublisherImpl::SetRulesetPublishedCallbackForTesting(
     base::OnceClosure callback) {
@@ -73,14 +55,16 @@ void RulesetPublisherImpl::SetRulesetPublishedCallbackForTesting(
 void RulesetPublisherImpl::TryOpenAndSetRulesetFile(
     const base::FilePath& file_path,
     int expected_checksum,
-    base::OnceCallback<void(base::File)> callback) {
+    base::OnceCallback<void(RulesetFilePtr)> callback) {
   GetRulesetDealer()->TryOpenAndSetRulesetFile(file_path, expected_checksum,
                                                std::move(callback));
 }
 
-void RulesetPublisherImpl::PublishNewRulesetVersion(base::File ruleset_data) {
-  DCHECK(ruleset_data.IsValid());
-  CloseFileOnFileThread(&ruleset_data_);
+void RulesetPublisherImpl::PublishNewRulesetVersion(
+    RulesetFilePtr ruleset_data) {
+  DCHECK(ruleset_data);
+  DCHECK(ruleset_data->IsValid());
+  ruleset_data_.reset();
 
   // If Ad Tagging is running, then every request does a lookup and it's
   // important that we verify the ruleset early on.
@@ -93,7 +77,7 @@ void RulesetPublisherImpl::PublishNewRulesetVersion(base::File ruleset_data) {
   ruleset_data_ = std::move(ruleset_data);
   for (auto it = content::RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
        it.Advance()) {
-    SendRulesetToRenderProcess(&ruleset_data_, it.GetCurrentValue());
+    SendRulesetToRenderProcess(ruleset_data_.get(), it.GetCurrentValue());
   }
 
   if (!ruleset_published_callback_.is_null())
@@ -121,10 +105,10 @@ void RulesetPublisherImpl::Observe(
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
   DCHECK_EQ(type, content::NOTIFICATION_RENDERER_PROCESS_CREATED);
-  if (!ruleset_data_.IsValid())
+  if (!ruleset_data_ || !ruleset_data_->IsValid())
     return;
   SendRulesetToRenderProcess(
-      &ruleset_data_,
+      ruleset_data_.get(),
       content::Source<content::RenderProcessHost>(source).ptr());
 }
 

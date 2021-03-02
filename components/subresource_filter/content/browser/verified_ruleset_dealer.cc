@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task_runner_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
@@ -25,19 +26,21 @@ namespace subresource_filter {
 VerifiedRulesetDealer::VerifiedRulesetDealer() = default;
 VerifiedRulesetDealer::~VerifiedRulesetDealer() = default;
 
-base::File VerifiedRulesetDealer::OpenAndSetRulesetFile(
+RulesetFilePtr VerifiedRulesetDealer::OpenAndSetRulesetFile(
     int expected_checksum,
     const base::FilePath& file_path) {
   DCHECK(CalledOnValidSequence());
   // On Windows, open the file with FLAG_SHARE_DELETE to allow deletion while
   // there are handles to it still open.
-  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_SHARE_DELETE);
+  RulesetFilePtr file(
+      new base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_SHARE_DELETE),
+      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                "VerifiedRulesetDealer::OpenAndSetRulesetFile", "file_valid",
-               file.IsValid());
-  if (file.IsValid()) {
-    SetRulesetFile(file.Duplicate());
+               file->IsValid());
+  if (file->IsValid()) {
+    SetRulesetFile(file->Duplicate());
     expected_checksum_ = expected_checksum;
   }
   return file;
@@ -110,7 +113,7 @@ void VerifiedRulesetDealer::Handle::GetDealerAsync(
 void VerifiedRulesetDealer::Handle::TryOpenAndSetRulesetFile(
     const base::FilePath& path,
     int expected_checksum,
-    base::OnceCallback<void(base::File)> callback) {
+    base::OnceCallback<void(RulesetFilePtr)> callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // |base::Unretained| is safe here because the |OpenAndSetRulesetFile| task
   // will be posted before a task to delete the pointer upon destruction of

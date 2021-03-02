@@ -41,8 +41,8 @@ class RulesetPublisherImpl : public RulesetPublisher,
   void TryOpenAndSetRulesetFile(
       const base::FilePath& file_path,
       int expected_checksum,
-      base::OnceCallback<void(base::File)> callback) override;
-  void PublishNewRulesetVersion(base::File ruleset_data) override;
+      base::OnceCallback<void(RulesetFilePtr)> callback) override;
+  void PublishNewRulesetVersion(RulesetFilePtr ruleset_data) override;
   scoped_refptr<base::SingleThreadTaskRunner> BestEffortTaskRunner() override;
   VerifiedRulesetDealer::Handle* GetRulesetDealer() override;
   void SetRulesetPublishedCallbackForTesting(
@@ -63,7 +63,7 @@ class RulesetPublisherImpl : public RulesetPublisher,
                const content::NotificationDetails& details) override;
 
   content::NotificationRegistrar notification_registrar_;
-  base::File ruleset_data_;
+  RulesetFilePtr ruleset_data_{nullptr, base::OnTaskRunnerDeleter{nullptr}};
   base::OnceClosure ruleset_published_callback_;
 
   // The service owns the publisher, and therefore outlives it.

@@ -23,15 +23,16 @@ class RulesetPublisher {
   // Schedules file open and use it as ruleset file. In the case of success,
   // the new and valid |base::File| is passed to |callback|. In the case of
   // error an invalid |base::File| is passed to |callback|. The previous
-  // ruleset file will be used (if any).
+  // ruleset file will be used (if any). In either case, the supplied
+  // unique_ptr always contains a non-null |base::File|.
   virtual void TryOpenAndSetRulesetFile(
       const base::FilePath& file_path,
       int expected_checksum,
-      base::OnceCallback<void(base::File)> callback) = 0;
+      base::OnceCallback<void(RulesetFilePtr)> callback) = 0;
 
   // Redistributes the new version of the |ruleset| to all existing consumers,
   // and sets up |ruleset| to be distributed to all future consumers.
-  virtual void PublishNewRulesetVersion(base::File ruleset_data) = 0;
+  virtual void PublishNewRulesetVersion(RulesetFilePtr ruleset_data) = 0;
 
   // Task queue for best effort tasks in the thread the object was created in.
   // Used for tasks triggered on RulesetService instantiation so it doesn't
