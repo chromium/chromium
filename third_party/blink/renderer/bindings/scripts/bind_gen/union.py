@@ -148,9 +148,9 @@ class _UnionMemberAlias(_UnionMember):
 def create_union_members(union):
     assert isinstance(union, web_idl.NewUnion)
 
-    union_members = map(
+    union_members = list(map(
         lambda member_type: _UnionMemberImpl(union, member_type),
-        union.flattened_member_types)
+        union.flattened_member_types))
     if union.does_include_nullable_type:
         union_members.append(_UnionMemberImpl(union, idl_type=None))
     return tuple(union_members)
