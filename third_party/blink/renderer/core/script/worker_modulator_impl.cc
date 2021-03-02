@@ -36,13 +36,8 @@ ModuleScriptFetcher* WorkerModulatorImpl::CreateModuleScriptFetcher(
 }
 
 bool WorkerModulatorImpl::IsDynamicImportForbidden(String* reason) {
-  if (GetExecutionContext()->IsDedicatedWorkerGlobalScope())
-    return false;
-
-  // TODO(https://crbug.com/824646): Remove this flag check once module loading
-  // for SharedWorker is enabled by default.
-  if (GetExecutionContext()->IsSharedWorkerGlobalScope() &&
-      RuntimeEnabledFeatures::ModuleSharedWorkerEnabled()) {
+  if (GetExecutionContext()->IsDedicatedWorkerGlobalScope() ||
+      GetExecutionContext()->IsSharedWorkerGlobalScope()) {
     return false;
   }
 

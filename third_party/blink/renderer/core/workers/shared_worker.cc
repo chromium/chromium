@@ -114,13 +114,6 @@ SharedWorker* SharedWorker::Create(ExecutionContext* context,
     options->name = name_or_options.GetAsString();
   } else if (name_or_options.IsWorkerOptions()) {
     WorkerOptions* worker_options = name_or_options.GetAsWorkerOptions();
-    if (worker_options->type() == "module" &&
-        !RuntimeEnabledFeatures::ModuleSharedWorkerEnabled()) {
-      exception_state.ThrowTypeError(
-          "Module scripts are not supported on SharedWorker yet. "
-          "(see https://crbug.com/824646)");
-      return nullptr;
-    }
     options->name = worker_options->name();
     base::Optional<mojom::blink::ScriptType> type_result =
         Script::ParseScriptType(worker_options->type());
