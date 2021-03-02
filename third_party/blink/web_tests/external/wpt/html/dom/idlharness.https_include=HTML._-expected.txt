@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3732 tests; 3709 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3736 tests; 3713 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -834,6 +834,8 @@ PASS HTMLSourceElement interface: attribute type
 PASS HTMLSourceElement interface: attribute srcset
 PASS HTMLSourceElement interface: attribute sizes
 PASS HTMLSourceElement interface: attribute media
+PASS HTMLSourceElement interface: attribute width
+PASS HTMLSourceElement interface: attribute height
 PASS HTMLSourceElement must be primary interface of document.createElement("source")
 PASS Stringification of document.createElement("source")
 PASS HTMLSourceElement interface: document.createElement("source") must inherit property "src" with the proper type
@@ -841,6 +843,8 @@ PASS HTMLSourceElement interface: document.createElement("source") must inherit 
 PASS HTMLSourceElement interface: document.createElement("source") must inherit property "srcset" with the proper type
 PASS HTMLSourceElement interface: document.createElement("source") must inherit property "sizes" with the proper type
 PASS HTMLSourceElement interface: document.createElement("source") must inherit property "media" with the proper type
+PASS HTMLSourceElement interface: document.createElement("source") must inherit property "width" with the proper type
+PASS HTMLSourceElement interface: document.createElement("source") must inherit property "height" with the proper type
 PASS HTMLImageElement interface: existence and properties of interface object
 PASS HTMLImageElement interface object length
 PASS HTMLImageElement interface object name
