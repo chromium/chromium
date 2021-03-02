@@ -313,13 +313,32 @@ void BluetoothSocketBlueZ::AdapterPresentChanged(BluetoothAdapter* adapter,
                                                  bool present) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
+  // Some boards cut power to their Bluetooth chip during suspension, which
+  // leads to a AdapterPresentChanged(present=false) event on wake (quickly
+  // followed by an AdapterPresentChanged(present=true) event).
+  // This 'present=false' event can occur in the middle of
+  // BluetoothSocketBlueZ's asynchronous process of acquiring |profile_|. That
+  // means the following 2 surprising edge-cases can occur on a few select
+  // boards:
+  //   1) |profile_| may not be initialized when a 'present=false' event occurs.
+  //      We must check |profile_| before calling UnregisterProfile().
+  //   2) |profile_| may already be initialized when a 'present=true' event
+  //      occurs. We must check |profile_| before attempting to redundantly
+  //      initialize it via BluetoothAdapterBlueZ::UseProfile().
+
   if (!present) {
-    // Adapter removed, we can't use the profile anymore.
-    UnregisterProfile();
+    // Edge-case (1) described above.
+    if (profile_) {
+      // Adapter removed, we can't use the profile anymore.
+      UnregisterProfile();
+    }
     return;
   }
 
-  DCHECK(!profile_);
+  // Edge-case (2) described above.
+  if (profile_) {
+    return;
+  }
 
   DVLOG(1) << uuid_.canonical_value() << " on " << device_path_.value()
            << ": Acquiring profile.";

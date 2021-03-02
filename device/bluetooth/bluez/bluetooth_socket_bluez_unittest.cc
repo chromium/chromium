@@ -40,6 +40,31 @@ using device::BluetoothUUID;
 
 namespace bluez {
 
+class FakeInterceptableBluetoothProfileManagerClient
+    : public bluez::FakeBluetoothProfileManagerClient {
+ public:
+  FakeInterceptableBluetoothProfileManagerClient(
+      base::RepeatingCallback<void(base::RepeatingCallback<void()>)>
+          before_register_callback)
+      : before_register_callback_(before_register_callback) {}
+
+ private:
+  void RegisterProfile(const dbus::ObjectPath& profile_path,
+                       const std::string& uuid,
+                       const Options& options,
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) override {
+    before_register_callback_.Run(base::BindLambdaForTesting([&]() {
+      bluez::FakeBluetoothProfileManagerClient::RegisterProfile(
+          profile_path, uuid, options, std::move(callback),
+          std::move(error_callback));
+    }));
+  }
+
+  base::RepeatingCallback<void(base::RepeatingCallback<void()>)>
+      before_register_callback_;
+};
+
 class BluetoothSocketBlueZTest : public testing::Test {
  public:
   BluetoothSocketBlueZTest()
@@ -50,20 +75,19 @@ class BluetoothSocketBlueZTest : public testing::Test {
         last_reason_(BluetoothSocket::kSystemError) {}
 
   void SetUp() override {
-    std::unique_ptr<bluez::BluezDBusManagerSetter> dbus_setter =
-        bluez::BluezDBusManager::GetSetterForTesting();
+    dbus_setter_ = bluez::BluezDBusManager::GetSetterForTesting();
 
-    dbus_setter->SetBluetoothAdapterClient(
+    dbus_setter_->SetBluetoothAdapterClient(
         std::make_unique<bluez::FakeBluetoothAdapterClient>());
-    dbus_setter->SetBluetoothAgentManagerClient(
+    dbus_setter_->SetBluetoothAgentManagerClient(
         std::make_unique<bluez::FakeBluetoothAgentManagerClient>());
-    dbus_setter->SetBluetoothDeviceClient(
+    dbus_setter_->SetBluetoothDeviceClient(
         std::make_unique<bluez::FakeBluetoothDeviceClient>());
-    dbus_setter->SetBluetoothGattServiceClient(
+    dbus_setter_->SetBluetoothGattServiceClient(
         std::make_unique<bluez::FakeBluetoothGattServiceClient>());
-    dbus_setter->SetBluetoothInputClient(
+    dbus_setter_->SetBluetoothInputClient(
         std::make_unique<bluez::FakeBluetoothInputClient>());
-    dbus_setter->SetBluetoothProfileManagerClient(
+    dbus_setter_->SetBluetoothProfileManagerClient(
         std::make_unique<bluez::FakeBluetoothProfileManagerClient>());
 
     BluetoothSocketThread::Get();
@@ -158,6 +182,8 @@ class BluetoothSocketBlueZTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+
+  std::unique_ptr<bluez::BluezDBusManagerSetter> dbus_setter_;
 
   scoped_refptr<BluetoothAdapter> adapter_;
 
@@ -574,6 +600,94 @@ TEST_F(BluetoothSocketBlueZTest, ListenAcrossAdapterRestart) {
   }
 
   EXPECT_EQ(1U, success_callback_count_);
+}
+
+// Regression test for crbug.com/1136391.
+// Some Chrome OS devices' unique chipset design leads to an "adapter invisible"
+// and a subsequent "adapter visible" event shortly after wake. Some clients
+// begin listening on a Socket on wake as well, and that led to racy behavior
+// within BluetoothSocketBlueZ. This test ensures BluetoothSocketBlueZ behaves
+// robustly when adapter visibility changes are occurring during profile
+// registration.
+TEST_F(BluetoothSocketBlueZTest,
+       ListenAfterSuspensionDuringPowerRestorationToAdapter) {
+  // The fake adapter starts off visible by default.
+  bluez::FakeBluetoothAdapterClient* fake_bluetooth_adapter_client =
+      static_cast<bluez::FakeBluetoothAdapterClient*>(
+          bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient());
+
+  dbus_setter_->SetBluetoothProfileManagerClient(
+      std::make_unique<FakeInterceptableBluetoothProfileManagerClient>(
+          base::BindLambdaForTesting([&](base::RepeatingCallback<void()>
+                                             on_register_profile_callback) {
+            // Simulate crbug.com/1136391: a power cut to the Adapter on wake.
+            // Prior to addressing crbug.com/1136391, this event would cause a
+            // crash.
+            {
+              base::RunLoop run_loop;
+              fake_bluetooth_adapter_client->SetVisible(false);
+              run_loop.RunUntilIdle();
+            }
+
+            std::move(on_register_profile_callback).Run();
+          })));
+
+  {
+    base::RunLoop run_loop;
+    adapter_->CreateRfcommService(
+        BluetoothUUID(bluez::FakeBluetoothProfileManagerClient::kRfcommUuid),
+        BluetoothAdapter::ServiceOptions(),
+        base::BindOnce(&BluetoothSocketBlueZTest::CreateServiceSuccessCallback,
+                       base::Unretained(this), run_loop.QuitWhenIdleClosure()),
+        base::BindOnce(&BluetoothSocketBlueZTest::ErrorCallback,
+                       base::Unretained(this), run_loop.QuitWhenIdleClosure()));
+    run_loop.Run();
+  }
+
+  // Make sure the profile was registered with the daemon, even though an
+  // "adapter not visible" event occurred in the middle of registration.
+  EXPECT_EQ(1U, success_callback_count_);
+  EXPECT_EQ(0U, error_callback_count_);
+  EXPECT_TRUE(last_socket_);
+
+  bluez::FakeBluetoothProfileManagerClient*
+      fake_bluetooth_profile_manager_client =
+          static_cast<bluez::FakeBluetoothProfileManagerClient*>(
+              bluez::BluezDBusManager::Get()
+                  ->GetBluetoothProfileManagerClient());
+  bluez::FakeBluetoothProfileServiceProvider* profile_service_provider =
+      fake_bluetooth_profile_manager_client->GetProfileServiceProvider(
+          bluez::FakeBluetoothProfileManagerClient::kRfcommUuid);
+  EXPECT_TRUE(profile_service_provider != nullptr);
+
+  // Simulate crbug.com/1136391: power restoration to the Adapter on wake. Prior
+  // to addressing crbug.com/1136391, this event would cause a duplicate profile
+  // registration event. Ensure that this does *not* re-register the profile.
+  {
+    base::RunLoop run_loop;
+    fake_bluetooth_adapter_client->SetVisible(true);
+    run_loop.RunUntilIdle();
+  }
+
+  EXPECT_EQ(1U, success_callback_count_);
+  EXPECT_EQ(0U, error_callback_count_);
+
+  profile_service_provider =
+      fake_bluetooth_profile_manager_client->GetProfileServiceProvider(
+          bluez::FakeBluetoothProfileManagerClient::kRfcommUuid);
+  EXPECT_TRUE(profile_service_provider != nullptr);
+
+  // Cleanup the socket.
+  {
+    base::RunLoop run_loop;
+    last_socket_->Disconnect(
+        base::BindOnce(&BluetoothSocketBlueZTest::ImmediateSuccessCallback,
+                       base::Unretained(this)));
+    run_loop.RunUntilIdle();
+  }
+
+  EXPECT_EQ(2U, success_callback_count_);
+  EXPECT_EQ(0U, error_callback_count_);
 }
 
 TEST_F(BluetoothSocketBlueZTest, PairedConnectFails) {
