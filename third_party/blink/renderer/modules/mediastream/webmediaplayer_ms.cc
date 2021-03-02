@@ -1038,7 +1038,7 @@ void WebMediaPlayerMS::OnFrameHidden() {
 #endif  // defined(OS_ANDROID)
 }
 
-void WebMediaPlayerMS::OnFrameClosed() {
+void WebMediaPlayerMS::SuspendForFrameClosed() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
 // On Android, pause the video completely for this time period.

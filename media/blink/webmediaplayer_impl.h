@@ -192,6 +192,8 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   uint64_t AudioDecodedByteCount() const override;
   uint64_t VideoDecodedByteCount() const override;
 
+  void SuspendForFrameClosed() override;
+
   bool HasAvailableVideoFrame() const override;
 
   scoped_refptr<blink::WebAudioSourceProviderImpl> GetAudioSourceProvider()
@@ -211,7 +213,6 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   // blink::WebMediaPlayerDelegate::Observer implementation.
   void OnFrameHidden() override;
-  void OnFrameClosed() override;
   void OnFrameShown() override;
   void OnIdleTimeout() override;
   void OnVolumeMultiplierUpdate(double multiplier) override;
@@ -999,6 +1000,8 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   // Whether background video optimization is supported on current platform.
   bool is_background_video_track_optimization_supported_ = true;
+
+  bool was_suspended_for_frame_closed_ = false;
 
   base::CancelableOnceClosure have_enough_after_lazy_load_cb_;
 

@@ -39,14 +39,6 @@ AudibleMetrics* GetAudibleMetrics() {
   return metrics;
 }
 
-#if defined(OS_ANDROID)
-static void SuspendAllMediaPlayersInRenderFrame(
-    RenderFrameHost* render_frame_host) {
-  render_frame_host->Send(new MediaPlayerDelegateMsg_SuspendAllMediaPlayers(
-      render_frame_host->GetRoutingID()));
-}
-#endif  // defined(OS_ANDROID)
-
 static void OnAudioOutputDeviceIdTranslated(
     base::WeakPtr<MediaWebContentsObserver> observer,
     const MediaPlayerId& player_id,
@@ -638,12 +630,11 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
           ->BindMediaPlayerObserverReceiverAndPassRemote());
 }
 
-#if defined(OS_ANDROID)
 void MediaWebContentsObserver::SuspendAllMediaPlayers() {
-  web_contents()->ForEachFrame(
-      base::BindRepeating(&SuspendAllMediaPlayersInRenderFrame));
+  for (auto& media_player_remote : media_player_remotes_) {
+    media_player_remote.second->SuspendForFrameClosed();
+  }
 }
-#endif  // defined(OS_ANDROID)
 
 void MediaWebContentsObserver::OnExperimentStateChanged(MediaPlayerId id,
                                                         bool is_starting) {

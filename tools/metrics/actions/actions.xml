@@ -12718,11 +12718,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Session.BackgroundResume">
+  <obsolete>Removed as of 2021/02.</obsolete>
   <owner>avayvod@chromium.org</owner>
   <description>User resumed a backgrounded video. Android-only.</description>
 </action>
 
 <action name="Media.Session.BackgroundSuspend">
+  <obsolete>Removed as of 2021/02.</obsolete>
   <owner>avayvod@chromium.org</owner>
   <description>
     User paused a video playing in the background or brought it to the

@@ -85,6 +85,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   unsigned CorruptedFrameCount() const override { return 0; }
   uint64_t AudioDecodedByteCount() const override { return 0; }
   uint64_t VideoDecodedByteCount() const override { return 0; }
+  void SuspendForFrameClosed() override {}
 
   void SetWouldTaintOrigin(bool taint) { would_taint_origin_ = taint; }
 

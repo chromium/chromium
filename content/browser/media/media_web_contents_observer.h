@@ -130,13 +130,12 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
       mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
       MediaPlayerId player_id);
 
-#if defined(OS_ANDROID)
   // Called by the WebContents when a tab has been closed but may still be
   // available for "undo" -- indicates that all media players (even audio only
   // players typically allowed background audio) bound to this WebContents must
   // be suspended.
   void SuspendAllMediaPlayers();
-#endif  // defined(OS_ANDROID)
+
  protected:
   MediaSessionControllersManager* session_controllers_manager() {
     return session_controllers_manager_.get();

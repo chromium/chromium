@@ -37,6 +37,9 @@ interface MediaPlayer {
 
   // Set the media player sink id to |sink_id|.
   SetAudioSinkId(string sink_id);
+
+  // Suspends the media player when the host frame is closed.
+  SuspendForFrameClosed();
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the

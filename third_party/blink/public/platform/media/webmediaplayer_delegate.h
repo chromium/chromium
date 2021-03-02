@@ -32,15 +32,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
     // IsFrameHidden() will start returning true.
     virtual void OnFrameHidden() = 0;
 
-    // Called when the host frame is closed.
-    // Note: It is possible for a closed frame to be shown again. (Android only;
-    // other platforms tear down players when the host frame is closed.) There
-    // is no callback for frame opening, observers are expected to wait until
-    // OnFrameShown().
-    // TODO(sandersd): Experiment to verify exactly what gets called when
-    // restoring a closed tab on Android.
-    virtual void OnFrameClosed() = 0;
-
     // Called when the host frame is shown (usually by tab switching).
     virtual void OnFrameShown() = 0;
 
@@ -67,9 +58,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
 
   // Returns true if the host frame is hidden or closed.
   virtual bool IsFrameHidden() = 0;
-
-  // Returns true if the host frame is closed.
-  virtual bool IsFrameClosed() = 0;
 
   // Subscribe to observer callbacks. A player must use the returned |player_id|
   // for the rest of the calls below.

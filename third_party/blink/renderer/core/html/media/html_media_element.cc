@@ -4538,6 +4538,11 @@ void HTMLMediaElement::SetAudioSinkId(const String& sink_id) {
   audio_output_controller->SetSinkId(sink_id);
 }
 
+void HTMLMediaElement::SuspendForFrameClosed() {
+  if (web_media_player_)
+    web_media_player_->SuspendForFrameClosed();
+}
+
 bool HTMLMediaElement::MediaShouldBeOpaque() const {
   return !IsMediaDataCorsSameOrigin() && ready_state_ < kHaveMetadata &&
          EffectivePreloadType() != WebMediaPlayer::kPreloadNone;

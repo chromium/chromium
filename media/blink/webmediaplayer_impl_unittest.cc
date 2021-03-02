@@ -243,8 +243,6 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
 
   bool IsFrameHidden() override { return is_hidden_; }
 
-  bool IsFrameClosed() override { return is_closed_; }
-
   void SetIdleForTesting(bool is_idle) { is_idle_ = is_idle; }
 
   void SetStaleForTesting(bool is_stale) {
@@ -264,8 +262,6 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
 
   void SetFrameHiddenForTesting(bool is_hidden) { is_hidden_ = is_hidden; }
 
-  void SetFrameClosedForTesting(bool is_closed) { is_closed_ = is_closed; }
-
   int player_id() { return player_id_; }
 
  private:
@@ -274,7 +270,6 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
   bool is_idle_ = false;
   bool is_stale_ = false;
   bool is_hidden_ = false;
-  bool is_closed_ = false;
 };
 
 class MockSurfaceLayerBridge : public blink::WebSurfaceLayerBridge {
@@ -495,6 +490,9 @@ class WebMediaPlayerImplTest
   void SetTickClock(const base::TickClock* clock) {
     wmpi_->SetTickClockForTest(clock);
   }
+  void SetWasSuspendedForFrameClosed(bool is_suspended) {
+    wmpi_->was_suspended_for_frame_closed_ = is_suspended;
+  }
 
   void SetFullscreen(bool is_fullscreen) {
     wmpi_->overlay_enabled_ = is_fullscreen;
@@ -587,7 +585,7 @@ class WebMediaPlayerImplTest
         .WillOnce(RunClosure(loop.QuitClosure()));
 
     delegate_.SetFrameHiddenForTesting(true);
-    delegate_.SetFrameClosedForTesting(false);
+    SetWasSuspendedForFrameClosed(false);
 
     wmpi_->OnFrameHidden();
 
@@ -603,7 +601,7 @@ class WebMediaPlayerImplTest
         .WillOnce(RunClosure(loop.QuitClosure()));
 
     delegate_.SetFrameHiddenForTesting(false);
-    delegate_.SetFrameClosedForTesting(false);
+    SetWasSuspendedForFrameClosed(false);
 
     wmpi_->OnFrameShown();
 
@@ -1377,7 +1375,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameClosed) {
   SetMetadata(true, true);
   SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
   SetPaused(false);
-  delegate_.SetFrameClosedForTesting(true);
+  SetWasSuspendedForFrameClosed(true);
   WebMediaPlayerImpl::PlayState state = ComputePlayState();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::GONE, state.delegate_state);
   EXPECT_TRUE(state.is_idle);
@@ -1513,7 +1511,7 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Streaming) {
   EXPECT_FALSE(state.is_memory_reporting_enabled);
 
   // Streaming media should suspend when the tab is closed, regardless.
-  delegate_.SetFrameClosedForTesting(true);
+  SetWasSuspendedForFrameClosed(true);
   state = ComputePlayState_BackgroundedStreaming();
   EXPECT_EQ(WebMediaPlayerImpl::DelegateState::GONE, state.delegate_state);
   EXPECT_TRUE(state.is_idle);

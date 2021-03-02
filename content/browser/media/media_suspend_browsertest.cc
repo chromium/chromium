@@ -5,6 +5,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/media/media_browsertest.h"
+#include "content/browser/media/media_web_contents_observer.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -16,11 +18,6 @@
 #include "media/base/test_data_util.h"
 
 namespace content {
-
-static void SuspendAllMediaPlayersInRenderFrame(RenderFrameHost* rfh) {
-  rfh->Send(
-      new MediaPlayerDelegateMsg_SuspendAllMediaPlayers(rfh->GetRoutingID()));
-}
 
 // This browser test ensures the force suspend IPC messages are working properly
 // and that players suspended in this way can be resumed. Note: This does not
@@ -52,8 +49,9 @@ class MediaSuspendTest : public MediaBrowserTest {
       const base::string16 kSuspended = base::ASCIIToUTF16("SUSPENDED");
       TitleWatcher title_watcher(shell()->web_contents(), kSuspended);
       title_watcher.AlsoWaitForTitle(kError);
-      shell()->web_contents()->ForEachFrame(
-          base::BindRepeating(&SuspendAllMediaPlayersInRenderFrame));
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->media_web_contents_observer()
+          ->SuspendAllMediaPlayers();
       ASSERT_EQ(kSuspended, title_watcher.WaitAndGetTitle());
     }
 

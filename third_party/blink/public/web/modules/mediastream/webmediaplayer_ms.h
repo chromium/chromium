@@ -165,9 +165,10 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   bool HasAvailableVideoFrame() const override;
 
+  void SuspendForFrameClosed() override;
+
   // WebMediaPlayerDelegate::Observer implementation.
   void OnFrameHidden() override;
-  void OnFrameClosed() override;
   void OnFrameShown() override;
   void OnIdleTimeout() override;
   void OnVolumeMultiplierUpdate(double multiplier) override;

@@ -145,7 +145,6 @@ class FakeWebMediaPlayerDelegate
   }
 
   bool IsFrameHidden() override { return is_hidden_; }
-  bool IsFrameClosed() override { return false; }
 
   void set_hidden(bool is_hidden) { is_hidden_ = is_hidden; }
 
@@ -1344,7 +1343,7 @@ TEST_P(WebMediaPlayerMSTest, HiddenPlayerTests) {
   EXPECT_FALSE(player_->Paused());
 
   // An OnSuspendRequested() with forced suspension should pause playback.
-  player_->OnFrameClosed();
+  player_->SuspendForFrameClosed();
   EXPECT_TRUE(player_->Paused());
 
   // OnShown() should restart after a forced suspension.

@@ -29,6 +29,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Android.BackgroundVideoTime" units="ms"
     expires_after="2020-04-05">
+  <obsolete>
+    Removed as of 2021/02.
+  </obsolete>
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

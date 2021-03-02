@@ -22,10 +22,6 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 
-#if defined(OS_ANDROID)
-#include "base/time/time.h"
-#endif  // OS_ANDROID
-
 namespace blink {
 enum class WebFullscreenVideoStatus;
 }
@@ -49,7 +45,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
 
   // blink::WebMediaPlayerDelegate implementation.
   bool IsFrameHidden() override;
-  bool IsFrameClosed() override;
   int AddObserver(Observer* observer) override;
   void RemoveObserver(int player_id) override;
   void DidMediaMetadataChange(int player_id,
@@ -85,7 +80,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   friend class RendererWebMediaPlayerDelegateTest;
 
  private:
-  void OnMediaDelegateSuspendAllMediaPlayers();
   void OnMediaDelegateVolumeMultiplierUpdate(int player_id, double multiplier);
   void OnMediaDelegateBecamePersistentVideo(int player_id, bool value);
   void OnMediaDelegatePowerExperimentState(int player_id, bool state);
@@ -96,9 +90,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // Processes state changes, dispatches CleanupIdlePlayers().
   void UpdateTask();
 
-  // Records UMAs about background playback.
-  void RecordBackgroundVideoPlayback();
-
   // Runs periodically to notify stale players in |idle_player_map_| which
   // have been idle for longer than |timeout|.
   void CleanUpIdlePlayers(base::TimeDelta timeout);
@@ -107,7 +98,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // autoplay logic in RenderFrameImpl.
   bool has_played_media_ = false;
 
-  bool is_frame_closed_ = false;
   bool is_frame_hidden_for_testing_ = false;
 
   // State related to scheduling UpdateTask(). These are cleared each time
@@ -138,13 +128,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // Clock used for calculating when players have become stale. May be
   // overridden for testing.
   const base::TickClock* tick_clock_;
-
-#if defined(OS_ANDROID)
-  bool was_playing_background_video_ = false;
-
-  // Keeps track of when the background video playback started for metrics.
-  base::TimeTicks background_video_start_time_;
-#endif  // OS_ANDROID
 
   // Players with a video track.
   base::flat_set<int> players_with_video_;

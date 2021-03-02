@@ -2449,9 +2449,10 @@ void WebMediaPlayerImpl::OnFrameHidden() {
                      base::Unretained(compositor_.get()), !IsHidden()));
 }
 
-void WebMediaPlayerImpl::OnFrameClosed() {
+void WebMediaPlayerImpl::SuspendForFrameClosed() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
+  was_suspended_for_frame_closed_ = true;
   UpdatePlayState();
 }
 
@@ -2461,6 +2462,8 @@ void WebMediaPlayerImpl::OnFrameShown() {
 
   // Foreground videos don't require user gesture to continue playback.
   video_locked_when_paused_when_hidden_ = false;
+
+  was_suspended_for_frame_closed_ = false;
 
   if (watch_time_reporter_)
     watch_time_reporter_->OnShown();
@@ -3030,7 +3033,7 @@ WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(bool is_flinging,
                                                      bool is_backgrounded) {
   PlayState result;
 
-  bool must_suspend = delegate_->IsFrameClosed();
+  bool must_suspend = was_suspended_for_frame_closed_;
   bool is_stale = delegate_->IsStale(delegate_id_);
 
   if (stale_state_override_for_testing_.has_value() &&
@@ -3358,7 +3361,7 @@ void WebMediaPlayerImpl::UpdateSecondaryProperties() {
 bool WebMediaPlayerImpl::IsHidden() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  return delegate_->IsFrameHidden() && !delegate_->IsFrameClosed();
+  return delegate_->IsFrameHidden() && !was_suspended_for_frame_closed_;
 }
 
 bool WebMediaPlayerImpl::IsStreaming() const {

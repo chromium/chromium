@@ -40,7 +40,6 @@ class MockWebMediaPlayerDelegateObserver
 
   // WebMediaPlayerDelegate::Observer implementation.
   MOCK_METHOD0(OnFrameHidden, void());
-  MOCK_METHOD0(OnFrameClosed, void());
   MOCK_METHOD0(OnFrameShown, void());
   MOCK_METHOD0(OnIdleTimeout, void());
   MOCK_METHOD1(OnVolumeMultiplierUpdate, void(double));
@@ -111,10 +110,6 @@ TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {
   MediaPlayerDelegateMsg_UpdateVolumeMultiplier volume_msg(0, delegate_id,
                                                            kTestMultiplier);
   delegate_manager_->OnMessageReceived(volume_msg);
-
-  EXPECT_CALL(observer_1_, OnFrameClosed());
-  MediaPlayerDelegateMsg_SuspendAllMediaPlayers suspend_msg(0);
-  delegate_manager_->OnMessageReceived(suspend_msg);
 }
 
 TEST_F(RendererWebMediaPlayerDelegateTest, TheTimerIsInitiallyStopped) {
@@ -234,42 +229,5 @@ TEST_F(RendererWebMediaPlayerDelegateTest, PeakPlayerHistogram) {
   delegate_manager_.reset();
   histogram_tester.ExpectUniqueSample(kHistogramName, 2, 1);
 }
-
-#if defined(OS_ANDROID)
-
-TEST_F(RendererWebMediaPlayerDelegateTest, Histograms) {
-  NiceMock<MockWebMediaPlayerDelegateObserver> observer;
-  int delegate_id = delegate_manager_->AddObserver(&observer);
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("Media.Android.BackgroundVideoTime", 0);
-
-  delegate_manager_->DidMediaMetadataChange(
-      delegate_id, true, true, media::MediaContentType::Persistent);
-
-  // Play/pause while not hidden doesn't record anything.
-  delegate_manager_->DidPlay(delegate_id);
-  RunLoopOnce();
-  delegate_manager_->DidPause(delegate_id, false);
-  RunLoopOnce();
-  histogram_tester.ExpectTotalCount("Media.Android.BackgroundVideoTime", 0);
-
-  // Play/pause while hidden does.
-  delegate_manager_->SetFrameHiddenForTesting(true);
-  delegate_manager_->DidPlay(delegate_id);
-  RunLoopOnce();
-  delegate_manager_->DidPause(delegate_id, false);
-  RunLoopOnce();
-  histogram_tester.ExpectTotalCount("Media.Android.BackgroundVideoTime", 1);
-
-  // As does ending background playback by becoming visible.
-  delegate_manager_->SetFrameHiddenForTesting(true);
-  delegate_manager_->DidPlay(delegate_id);
-  RunLoopOnce();
-  delegate_manager_->SetFrameHiddenForTesting(false);
-  RunLoopOnce();
-  histogram_tester.ExpectTotalCount("Media.Android.BackgroundVideoTime", 2);
-}
-
-#endif  // OS_ANDROID
 
 }  // namespace media

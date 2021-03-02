@@ -115,6 +115,8 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
 
   void SetAudioSinkId(const std::string& sink_id) override {}
 
+  void SuspendForFrameClosed() override {}
+
   // Getters used from MediaSessionControllerTest.
   bool received_play() const { return received_play_; }
 

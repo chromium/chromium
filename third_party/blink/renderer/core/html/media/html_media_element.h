@@ -517,6 +517,7 @@ class CORE_EXPORT HTMLMediaElement
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
   void SetAudioSinkId(const String&) override;
+  void SuspendForFrameClosed() override;
 
   void LoadTimerFired(TimerBase*);
   void ProgressEventTimerFired(TimerBase*);

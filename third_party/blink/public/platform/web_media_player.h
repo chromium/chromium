@@ -239,6 +239,9 @@ class WebMediaPlayer {
   virtual uint64_t AudioDecodedByteCount() const = 0;
   virtual uint64_t VideoDecodedByteCount() const = 0;
 
+  // Suspends the player for the host frame closed.
+  virtual void SuspendForFrameClosed() = 0;
+
   // Returns true if the player has a frame available for presentation. Usually
   // this just means the first frame has been delivered.
   virtual bool HasAvailableVideoFrame() const = 0;
