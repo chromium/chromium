@@ -5740,5 +5740,8 @@ crbug.com/614958 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection
 # Sheriff 2021-03-01
 crbug.com/1183243 [ Linux ] http/tests/devtools/console/console-external-array.js [ Pass Failure ]
 
+# Webrtc-in-Chrome 2021-03-01
+crbug.com/webrtc/12507 external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+
 # Temporarily disabled for https://crrev.com/c/2713104
 crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass Failure ]
