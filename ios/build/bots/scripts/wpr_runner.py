@@ -427,6 +427,7 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
             'networksetup', '-setsocksfirewallproxy', service, '127.0.0.1',
             '1080'
         ])
+        LOGGER.info('Added SOCKS proxy for service: %s.', service)
 
     self.proxy_process = subprocess.Popen(
         [
@@ -456,6 +457,7 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
           service = service[1:]
         subprocess.check_call(
             ['networksetup', '-setsocksfirewallproxystate', service, 'off'])
+        LOGGER.info('Removed SOCKS proxy for service: %s.', service)
 
   def wprgo_start(self, replay_path):
     """Starts WprGo serving the specified replay file.
