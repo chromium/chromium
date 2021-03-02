@@ -535,10 +535,8 @@ suite('NewTabPageAppTest', () => {
 
     test('modules can be disabled and restored', async () => {
       // Arrange.
+      let restoreCalled = false;
       const moduleElement = document.createElement('div');
-      loadTimeData.overrideValues({
-        disableModuleToastMessage: 'hello "$1"',
-      });
 
       // Act.
       moduleResolver.resolve([{
@@ -554,21 +552,27 @@ suite('NewTabPageAppTest', () => {
       assertFalse($$(app, '#removeModuleToast').open);
 
       // Act.
-      moduleElement.dispatchEvent(new Event('disable-module', {
+      moduleElement.dispatchEvent(new CustomEvent('disable-module', {
         bubbles: true,
         composed: true,
+        detail: {
+          message: 'Foo',
+          restoreCallback: _ => {
+            restoreCalled = true;
+          },
+        },
       }));
       await flushTasks();
 
       // Assert.
       assertTrue($$(app, '#removeModuleToast').open);
       assertEquals(
-          'hello "bar"',
-          $$(app, '#removeModuleToastMessage').textContent.trim());
+          'Foo', $$(app, '#removeModuleToastMessage').textContent.trim());
       assertNotStyle($$(app, '#undoRemoveModuleButton'), 'display', 'none');
       assertEquals(1, metrics.count('NewTabPage.Modules.Disabled', 'foo'));
       assertEquals(
           1, metrics.count('NewTabPage.Modules.Disabled.ModuleRequest', 'foo'));
+      assertFalse(restoreCalled);
 
       // Act.
       $$(app, '#undoRemoveModuleButton').click();
@@ -576,6 +580,7 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertFalse($$(app, '#removeModuleToast').open);
+      assertTrue(restoreCalled);
       assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
       assertEquals(1, metrics.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
     });

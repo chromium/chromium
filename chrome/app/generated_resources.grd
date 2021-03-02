@@ -5647,23 +5647,56 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COLORS_DARK_PURPLE" desc="A color option in the customization menu on the New Tab Page.">
         Dark purple
       </message>
+
+      <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">
         Why am I seeing this?
       </message>
-      <message name="IDS_NTP_MODULES_DISMISS_BUTTON_TITLE" desc="Text shown in tooltip of dismiss button of an NTP module.">
-        Remove
-      </message>
       <message name="IDS_NTP_MODULES_DISMISS_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been dismissed.">
-        Removed <ph name="MODULE_TITLE">$1<ex>Office and Desk Chairs</ex></ph>
+        <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph> hidden
       </message>
       <message name="IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
-        You won't see "<ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>" again on this page
+        You won't see <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph> again on this page
       </message>
-      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_NAME" translateable="false" desc="Name of the shopping tasks module shown in various UIs.">
+      <message name="IDS_NTP_MODULES_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of an NTP module.">
+        Hide <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_DISABLE_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module.">
+        Don't show <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
+      </message>
+      
+      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_SENTENCE" desc="Name of the shopping tasks module in sentence case shown in various UIs.">
         Shopping suggestions
       </message>
-      <message name="IDS_NTP_MODULES_RECIPE_TASKS_NAME" translateable="false" desc="Name of the recipe tasks module shown in various UIs.">
+      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_LOWER" desc="Name of the shopping tasks module in lowercase shown in various UIs.">
+        shopping suggestions
+      </message>
+      <message name="IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE" desc="Name of the recipe tasks module in sentence case shown in various UIs.">
         Recipe ideas
+      </message>
+      <message name="IDS_NTP_MODULES_RECIPE_TASKS_LOWER" desc="Name of the recipe tasks module in lowercase shown in various UIs.">
+        recipe ideas
+      </message>
+      <message name="IDS_NTP_MODULES_RECIPE_TASKS_LOWER_THESE" desc="Name of the recipe tasks module in lowercase shown in various UIs.">
+        these recipe ideas
+      </message>
+      <message name="IDS_NTP_MODULES_CART_SENTENCE" desc="Name of the chrome cart module in sentence case shown in various UIs.">
+        Your carts
+      </message>
+      <message name="IDS_NTP_MODULES_CART_LOWER" desc="Name of the chrome cart module in lowercase shown in various UIs.">
+        carts
+      </message>
+      <message name="IDS_NTP_MODULES_CART_LOWER_THESE" desc="Name of the chrome cart module in lowercase shown in various UIs.">
+        these carts
+      </message>
+      <message name="IDS_NTP_MODULES_CART_LOWER_YOUR" desc="Name of the chrome cart module in lowercase shown in various UIs.">
+        your carts
+      </message>
+      <message name="IDS_NTP_MODULES_DRIVE_SENTENCE" desc="Name of the Drive module in sentence case shown in various UIs.">
+        Drive files
+      </message>
+      <message name="IDS_NTP_MODULES_DUMMY_LOWER" translateable="false" desc="Name of the dummy module in lowercase shown in various UIs.">
+        this module
       </message>
       <message name="IDS_NTP_MODULES_DUMMY_TITLE" translateable="false" desc="Title shown in the header of the dummy module and various other UIs.">
         Super Duper Module
@@ -5692,23 +5725,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_HEADER_CHIP_NEW" desc="Text shown on the header chip of chrome cart module.">
         New
       </message>
-      <message name="IDS_NTP_MODULES_CART_TITLE" desc="Title shown in the header of the chrome cart module and various other UIs.">
-        Your carts
-      </message>
       <message name="IDS_NTP_MODULES_CART_WARM_WELCOME" desc="Text shown in the module header when module shows for the first couple of times. This is served as welcome message and user education.">
         Find what you added to shopping carts and check out when you're ready
       </message>
-      <message name="IDS_NTP_MODULES_CART_MODULE_MENU_HIDE" desc="An option in the chrome cart module action menu to temporarily hide the module.">
-        Hide these carts
-      </message>
       <message name="IDS_NTP_MODULES_CART_MODULE_MENU_HIDE_TOAST_MESSAGE" desc="Text shown in the toast confirming the cart module has been temporarily hidden.">
         Carts hidden. They’ll reappear when you make changes.
-      </message>
-      <message name="IDS_NTP_MODULES_CART_MODULE_MENU_REMOVE" desc="An option in the chrome cart module action menu to permanently remove the module.">
-        Never show carts
-      </message>
-      <message name="IDS_NTP_MODULES_CART_MODULE_MENU_REMOVE_TOAST_MESSAGE" desc="Text shown in the toast confirming the cart module has been permanently removed.">
-        You won’t see your carts again on this page
       </message>
       <message name="IDS_NTP_MODULES_CART_CART_MENU_HIDE_MERCHANT" desc="An option in the action menu of one cart in the chrome cart module. When clicked, cart from that merchant will be temporarily hidden. Note that the MERCHANT field can be either merchant name (e.g. Amazon) or domain (e.g. amazon.com). ">
         Hide <ph name="MERCHANT">$1<ex>Amazon</ex></ph>

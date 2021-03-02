@@ -35,7 +35,11 @@
     color: var(--cr-secondary-text-color);
   }
 </style>
-<ntp-module-header>
+<ntp-module-header
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesDriveSentence')]]"
+    on-disable-button-click="onDisableButtonClick_">
   $i18n{modulesDriveTitle}
 </ntp-module-header>
 <div id="files">

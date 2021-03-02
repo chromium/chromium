@@ -24,10 +24,6 @@ interface CartHandler {
   HideCartModule();
   // Restores the cart module that has been temporarily hidden.
   RestoreHiddenCartModule();
-  // Permanently remove the cart module.
-  RemoveCartModule();
-  // Restore the cart module that has been permanently removed.
-  RestoreRemovedCartModule();
   // Hides the cart for certain domain
   // and returns if the operation is successful.
   HideCart(url.mojom.Url cart_url) => (bool success);

@@ -30,12 +30,18 @@
     flex-grow: 1;
   }
 
+  cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
+    margin-inline-end: -4px;
+    margin-inline-start: 0;
+  }
+
   #infoButton {
     --cr-icon-image: url(./icons/info.svg);
   }
 
-  #dismissButton {
-    --cr-icon-button-margin-start: 4px;
+  #menuButton {
+    margin-inline-end: -10px;
   }
 
   #description {
@@ -56,17 +62,22 @@
         on-click="onInfoButtonClick_">
     </cr-icon-button>
   </template>
-  <template is="dom-if" if="[[showDismissButton]]">
-    <cr-icon-button id="dismissButton" title="$i18n{moduleDismissButtonTitle}"
-        class="icon-clear" on-click="onDismissButtonClick_">
-    </cr-icon-button>
-  </template>
-  <template is="dom-if" if="[[showMenuButton]]">
-    <cr-icon-button id="menuButton" title="$i18n{moreActions}"
-        class="icon-more-vert" on-click="onMenuButtonClick_">
-    </cr-icon-button>
-  </template>
+  <cr-icon-button id="menuButton" title="$i18n{moreActions}"
+      class="icon-more-vert" on-click="onMenuButtonClick_">
+  </cr-icon-button>
 </div>
 <template is="dom-if" if="[[descriptionText]]">
   <span id="description">[[descriptionText]]</span>
 </template>
+<cr-action-menu id="actionMenu">
+  <template is="dom-if" if="[[showDismissButton]]">
+    <button id="dismissButton" class="dropdown-item"
+        on-click="onDismissButtonClick_">
+      [[dismissText]]
+    </button>
+  </template>
+  <button id="disableButton" class="dropdown-item"
+      on-click="onDisableButtonClick_">
+    [[disableText]]
+  </button>
+</cr-action-menu>

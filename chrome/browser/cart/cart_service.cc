@@ -75,7 +75,6 @@ CartService::~CartService() = default;
 
 void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kCartModuleHidden, false);
-  registry->RegisterBooleanPref(prefs::kCartModuleRemoved, false);
   registry->RegisterIntegerPref(prefs::kCartModuleWelcomeSurfaceShownTimes, 0);
 }
 
@@ -89,18 +88,6 @@ void CartService::RestoreHidden() {
 
 bool CartService::IsHidden() {
   return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
-}
-
-void CartService::Remove() {
-  profile_->GetPrefs()->SetBoolean(prefs::kCartModuleRemoved, true);
-}
-
-void CartService::RestoreRemoved() {
-  profile_->GetPrefs()->SetBoolean(prefs::kCartModuleRemoved, false);
-}
-
-bool CartService::IsRemoved() {
-  return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleRemoved);
 }
 
 void CartService::LoadCart(const std::string& domain,

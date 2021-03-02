@@ -197,7 +197,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     const restoreCallback = dismissEvent.detail.restoreCallback;
 
     // Assert.
-    assertEquals('Removed Hello world', toastMessage);
+    assertEquals('Hello world hidden', toastMessage);
     assertDeepEquals(
         [taskModule.mojom.TaskModuleType.kShopping, 'Hello world'],
         await testProxy.handler.whenCalled('dismissTask'));

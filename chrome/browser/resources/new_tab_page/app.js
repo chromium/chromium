@@ -901,30 +901,34 @@ class AppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Event} e
+   * @param {!CustomEvent<{message: string, restoreCallback: ?function()}>} e
+   *     Event notifying a module was disabled. Contains the message to show in
+   *     the toast.
    * @private
    */
   onDisableModule_(e) {
-    const descriptor = /** @type {!ModuleDescriptor} */ (
-        $$(this, '#modules').itemForElement(e.target));
+    const id = $$(this, '#modules').itemForElement(e.target).id;
+    const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
-      message:
-          loadTimeData.getStringF('disableModuleToastMessage', descriptor.name),
+      message: e.detail.message,
       undo: () => {
-        this.pageHandler_.setModuleDisabled(descriptor.id, false);
+        if (restoreCallback) {
+          restoreCallback();
+        }
+        this.pageHandler_.setModuleDisabled(id, false);
         chrome.metricsPrivate.recordSparseHashable(
-            'NewTabPage.Modules.Enabled', descriptor.id);
+            'NewTabPage.Modules.Enabled', id);
         chrome.metricsPrivate.recordSparseHashable(
-            'NewTabPage.Modules.Enabled.Toast', descriptor.id);
+            'NewTabPage.Modules.Enabled.Toast', id);
       },
     };
 
-    this.pageHandler_.setModuleDisabled(descriptor.id, true);
+    this.pageHandler_.setModuleDisabled(id, true);
     $$(this, '#removeModuleToast').show();
     chrome.metricsPrivate.recordSparseHashable(
-        'NewTabPage.Modules.Disabled', descriptor.id);
+        'NewTabPage.Modules.Disabled', id);
     chrome.metricsPrivate.recordSparseHashable(
-        'NewTabPage.Modules.Disabled.ModuleRequest', descriptor.id);
+        'NewTabPage.Modules.Disabled.ModuleRequest', id);
   }
 
   /**
