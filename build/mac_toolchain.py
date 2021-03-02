@@ -63,7 +63,7 @@ def _UseHermeticToolchain():
   current_dir = os.path.dirname(os.path.realpath(__file__))
   script_path = os.path.join(current_dir, 'mac/should_use_hermetic_xcode.py')
   proc = subprocess.Popen([script_path, 'mac'], stdout=subprocess.PIPE)
-  return '1' in proc.stdout.readline()
+  return '1' in proc.stdout.readline().decode()
 
 
 def RequestCipdAuthentication():
