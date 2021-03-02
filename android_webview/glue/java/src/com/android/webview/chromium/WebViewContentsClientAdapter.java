@@ -51,6 +51,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -1005,6 +1006,8 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 if (TRACE) Log.i(TAG, "getDefaultVideoPoster");
                 result = mWebChromeClient.getDefaultVideoPoster();
             }
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.CustomDefaultVideoPoster", result != null);
             if (result == null) {
                 // The ic_play_circle_outline_black_48dp icon is transparent so we need to draw it
                 // on a gray background.
