@@ -35,6 +35,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "content/common/url_schemes.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_delegate.h"
@@ -212,6 +213,25 @@ base::CommandLine WrapperTestLauncherDelegate::GetCommandLine(
   *output_file = output_file->AppendASCII("test_results.xml");
 
   new_cmd_line.AppendSwitchPath(switches::kTestLauncherOutput, *output_file);
+
+  // Selecting sample tests to enable switches::kEnableTracing.
+  if (switches.find(switches::kEnableTracingFraction) != switches.end()) {
+    double enable_tracing_fraction = 0;
+    if (!base::StringToDouble(switches[switches::kEnableTracingFraction],
+                              &enable_tracing_fraction) ||
+        enable_tracing_fraction > 1 || enable_tracing_fraction <= 0) {
+      LOG(ERROR) << switches::kEnableTracingFraction
+                 << " should have range (0,1].";
+    } else {
+      // Assuming the hash of all tests are uniformly distributed across the
+      // domain of the hash result.
+      if (base::PersistentHash(test_name) <=
+          UINT32_MAX * enable_tracing_fraction) {
+        new_cmd_line.AppendSwitch(switches::kEnableTracing);
+      }
+    }
+    switches.erase(switches::kEnableTracingFraction);
+  }
 
   for (base::CommandLine::SwitchMap::const_iterator iter = switches.begin();
        iter != switches.end(); ++iter) {

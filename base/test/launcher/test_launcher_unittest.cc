@@ -441,6 +441,27 @@ TEST_F(TestLauncherTest, RedirectStdio) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
+// Sharding should be stable and always selecting the same tests.
+TEST_F(TestLauncherTest, StableSharding) {
+  AddMockedTests("Test", {"firstTest", "secondTest", "thirdTest"});
+  SetUpExpectCalls();
+  command_line->AppendSwitchASCII("test-launcher-total-shards", "2");
+  command_line->AppendSwitchASCII("test-launcher-shard-index", "0");
+  command_line->AppendSwitch("test-launcher-stable-sharding");
+  std::vector<std::string> tests_names = {"Test.firstTest", "Test.secondTest"};
+  using ::testing::_;
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
+                                 _,
+                                 testing::ElementsAreArray(tests_names.cbegin(),
+                                                           tests_names.cend()),
+                                 _, _))
+      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
+                                              TestResult::TEST_SUCCESS),
+                                 OnTestResult(&test_launcher, "Test.secondTest",
+                                              TestResult::TEST_SUCCESS)));
+  EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
 // Validate |iteration_data| contains one test result matching |result|.
 bool ValidateTestResultObject(const Value* iteration_data,
                               TestResult& test_result) {

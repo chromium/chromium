@@ -1742,7 +1742,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
 
     // Tests with the name XYZ will cause tests with the name PRE_XYZ to run. We
     // should bucket all of these tests together.
-    if (Hash(prefix_stripped_name) % total_shards_ !=
+    if (PersistentHash(prefix_stripped_name) % total_shards_ !=
         static_cast<uint32_t>(shard_index_)) {
       continue;
     }

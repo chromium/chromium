@@ -811,7 +811,10 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 
     bool old_io_allowed_value = false;
     old_io_allowed_value = base::ThreadRestrictions::SetIOAllowed(false);
-    RunTestOnMainThread();
+    {
+      TRACE_EVENT0("test", "RunTestOnMainThread");
+      RunTestOnMainThread();
+    }
     base::ThreadRestrictions::SetIOAllowed(old_io_allowed_value);
     TearDownOnMainThread();
   }

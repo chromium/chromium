@@ -402,6 +402,16 @@ const char kEnableStrictPowerfulFeatureRestrictions[] =
 // Enabled threaded compositing for web tests.
 const char kEnableThreadedCompositing[]     = "enable-threaded-compositing";
 
+// When specified along with a value in the range (0,1] will --enable-tracing
+// for (roughly) that percentage of tests being run. This is done in a stable
+// manner such that the same tests are chosen each run, and under the assumption
+// that tests hash equally across the range of possible values.
+// The flag will enable all tracing categories for those tests, and none for the
+// rest. This flag could be used with other tracing switches like
+// --enable-tracing-format, but any other switches that will enable tracing will
+// turn tracing on for all tests.
+const char kEnableTracingFraction[] = "enable-tracing-fraction";
+
 // Enable screen capturing support for MediaStream API.
 const char kEnableUserMediaScreenCapturing[] =
     "enable-usermedia-screen-capturing";
