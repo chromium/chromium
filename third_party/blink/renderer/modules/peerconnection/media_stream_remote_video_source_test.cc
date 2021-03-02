@@ -353,8 +353,9 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
   track->RemoveSink(&sink);
 }
 
+// TODO(crbug/1183496): flaky test.
 TEST_F(MediaStreamRemoteVideoSourceTest,
-       PopulateRequestAnimationFrameMetadata) {
+       DISABLED_PopulateRequestAnimationFrameMetadata) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(), false);
