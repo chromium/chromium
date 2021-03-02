@@ -111,8 +111,6 @@
 #include "components/payments/core/features.h"
 #include "components/permissions/features.h"
 #include "components/policy/core/common/features.h"
-#include "components/previews/core/previews_features.h"
-#include "components/previews/core/previews_switches.h"
 #include "components/query_tiles/switches.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/features.h"
@@ -3436,13 +3434,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-use-zoom-for-dsf", flag_descriptions::kEnableUseZoomForDsfName,
      flag_descriptions::kEnableUseZoomForDsfDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableUseZoomForDSFChoices)},
-    {"allow-previews", flag_descriptions::kPreviewsAllowedName,
-     flag_descriptions::kPreviewsAllowedDescription, kOsAll,
-     FEATURE_VALUE_TYPE(previews::features::kPreviews)},
-    {"ignore-previews-blocklist",
-     flag_descriptions::kIgnorePreviewsBlocklistName,
-     flag_descriptions::kIgnorePreviewsBlocklistDescription, kOsAll,
-     SINGLE_VALUE_TYPE(previews::switches::kIgnorePreviewsBlocklist)},
     {"enable-data-reduction-proxy-server-experiment",
      flag_descriptions::kEnableDataReductionProxyServerExperimentName,
      flag_descriptions::kEnableDataReductionProxyServerExperimentDescription,
@@ -3475,10 +3466,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePreconnectToSearchName,
      flag_descriptions::kEnablePreconnectToSearchDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPreconnectToSearch)},
-    {"enable-previews-coin-flip",
-     flag_descriptions::kEnablePreviewsCoinFlipName,
-     flag_descriptions::kEnablePreviewsCoinFlipDescription, kOsAll,
-     FEATURE_VALUE_TYPE(previews::features::kCoinFlipHoldback)},
     {"enable-google-srp-isolated-prerender-probing",
      flag_descriptions::kEnableSRPIsolatedPrerenderProbingName,
      flag_descriptions::kEnableSRPIsolatedPrerenderProbingDescription, kOsAll,
@@ -6034,17 +6021,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCooperativeSchedulingName,
      flag_descriptions::kCooperativeSchedulingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kCooperativeScheduling)},
-
-    {"enable-defer-all-script", flag_descriptions::kEnableDeferAllScriptName,
-     flag_descriptions::kEnableDeferAllScriptDescription, kOsAll,
-     FEATURE_VALUE_TYPE(previews::features::kDeferAllScriptPreviews)},
-    {"enable-defer-all-script-without-optimization-hints",
-     flag_descriptions::kEnableDeferAllScriptWithoutOptimizationHintsName,
-     flag_descriptions::
-         kEnableDeferAllScriptWithoutOptimizationHintsDescription,
-     kOsAll,
-     SINGLE_VALUE_TYPE(
-         previews::switches::kEnableDeferAllScriptWithoutOptimizationHints)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-assistant-routines",

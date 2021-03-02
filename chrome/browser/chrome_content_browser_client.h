@@ -32,7 +32,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 
 class ChromeContentBrowserClientParts;
 class PrefRegistrySimple;
@@ -58,15 +57,6 @@ class BrowserContext;
 class FontAccessDelegate;
 class QuotaPermissionContext;
 }  // namespace content
-
-namespace data_reduction_proxy {
-class DataReductionProxyData;
-}  // namespace data_reduction_proxy
-
-namespace previews {
-class PreviewsDecider;
-class PreviewsUserData;
-}  // namespace previews
 
 namespace safe_browsing {
 class RealTimeUrlLookupServiceBase;
@@ -601,15 +591,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                      int64_t sent_bytes) override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   bool ShouldSandboxAudioService() override;
-  blink::PreviewsState DetermineAllowedPreviews(
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle,
-      const GURL& current_navigation_url) override;
-
-  blink::PreviewsState DetermineCommittedPreviews(
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle,
-      const net::HttpResponseHeaders* response_headers) override;
 
   void LogWebFeatureForCurrentPage(content::RenderFrameHost* render_frame_host,
                                    blink::mojom::WebFeature feature) override;
@@ -663,25 +644,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& scope,
       const GURL& site_for_cookies,
       const base::Optional<url::Origin>& top_frame_origin) override;
-
-  blink::PreviewsState DetermineAllowedPreviewsWithoutHoldback(
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle,
-      const GURL& current_navigation_url);
-
-  blink::PreviewsState DetermineCommittedPreviewsWithoutHoldback(
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle,
-      const net::HttpResponseHeaders* response_headers);
-
-  // Determines the committed previews state for the passed in params.
-  static blink::PreviewsState DetermineCommittedPreviewsForURL(
-      const GURL& url,
-      data_reduction_proxy::DataReductionProxyData* drp_data,
-      previews::PreviewsUserData* previews_user_data,
-      const previews::PreviewsDecider* previews_decider,
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle);
 
 #if !defined(OS_ANDROID)
   void FetchRemoteSms(

@@ -330,9 +330,6 @@ extern const char kCreditCardAssistDescription[];
 extern const char kDarkenWebsitesCheckboxInThemesSettingName[];
 extern const char kDarkenWebsitesCheckboxInThemesSettingDescription[];
 
-extern const char kDataSaverServerPreviewsName[];
-extern const char kDataSaverServerPreviewsDescription[];
-
 extern const char kDebugPackedAppName[];
 extern const char kDebugPackedAppDescription[];
 
@@ -600,9 +597,6 @@ extern const char kEnablePortalsCrossOriginDescription[];
 extern const char kEnablePixelCanvasRecordingName[];
 extern const char kEnablePixelCanvasRecordingDescription[];
 
-extern const char kEnablePreviewsCoinFlipName[];
-extern const char kEnablePreviewsCoinFlipDescription[];
-
 extern const char kEnableSRPIsolatedPrerendersName[];
 extern const char kEnableSRPIsolatedPrerendersDescription[];
 
@@ -791,9 +785,6 @@ extern const char kHostedAppShimCreationDescription[];
 
 extern const char kIgnoreGpuBlocklistName[];
 extern const char kIgnoreGpuBlocklistDescription[];
-
-extern const char kIgnorePreviewsBlocklistName[];
-extern const char kIgnorePreviewsBlocklistDescription[];
 
 extern const char kImprovedCookieControlsName[];
 extern const char kImprovedCookieControlsDescription[];
@@ -1145,9 +1136,6 @@ extern const char kPointerLockOptionsDescription[];
 
 extern const char kPrerender2Name[];
 extern const char kPrerender2Description[];
-
-extern const char kPreviewsAllowedName[];
-extern const char kPreviewsAllowedDescription[];
 
 extern const char kPrintSaveToDriveName[];
 extern const char kPrintSaveToDriveDescription[];

@@ -35,8 +35,6 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/prefs/pref_service.h"
-#include "components/previews/core/previews_experiments.h"
-#include "components/previews/core/previews_features.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/variations/variations_associated_data.h"

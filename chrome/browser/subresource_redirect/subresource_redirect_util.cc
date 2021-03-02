@@ -18,7 +18,7 @@
 #include "third_party/blink/public/common/features.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/previews/android/previews_android_bridge.h"
+#include "chrome/browser/subresource_redirect/android/previews_android_bridge.h"
 #endif
 
 namespace subresource_redirect {

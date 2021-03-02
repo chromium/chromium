@@ -26,7 +26,6 @@
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_observer.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
-#include "chrome/browser/previews/previews_lite_page_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -200,7 +199,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
       {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
       {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
-      {"previews_lite_page", IBD::LITE_PAGE_PREVIEWS_INFOBAR},
       {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
       {"rosetta_required", IBD::ROSETTA_REQUIRED_INFOBAR_DELEGATE},
   };
@@ -359,10 +357,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       AutomationInfoBarDelegate::Create();
       break;
 
-    case IBD::LITE_PAGE_PREVIEWS_INFOBAR:
-      PreviewsLitePageInfoBarDelegate::Create(GetWebContents());
-      break;
-
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
       TabSharingInfoBarDelegate::Create(
           GetInfoBarService(), base::ASCIIToUTF16("example.com"),
@@ -467,10 +461,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
 #endif
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_automation) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_previews_lite_page) {
   ShowAndVerifyUi();
 }
 
