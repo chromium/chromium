@@ -21,7 +21,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
@@ -31,6 +30,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "services/tracing/public/cpp/perfetto/trace_time.h"
@@ -62,18 +62,11 @@ constexpr const char kCategoryGroup[] = "foo";
 constexpr uint32_t kClockIdAbsolute = 64;
 constexpr uint32_t kClockIdIncremental = 65;
 
-// Resets trace event data source at destruction.
-class ScopedDataSourceReset {
- public:
-  ~ScopedDataSourceReset() {
-    PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
-    TraceEventDataSource::ResetForTesting();
-  }
-};
-
-class TraceEventDataSourceTest : public testing::Test {
+class TraceEventDataSourceTest : public TracingUnitTest {
  public:
   void SetUp() override {
+    TracingUnitTest::SetUp();
+
     TraceEventDataSource::GetInstance()->RegisterStartupHooks();
     // TODO(eseckler): Initialize the entire perfetto client library instead.
     perfetto::internal::TrackRegistry::InitializeInstance();
@@ -85,10 +78,9 @@ class TraceEventDataSourceTest : public testing::Test {
         base::trace_event::TraceLog::GetInstance()->process_name();
     base::trace_event::TraceLog::GetInstance()->set_process_name(kTestProcess);
 
-    PerfettoTracedProcess::ResetTaskRunnerForTesting();
     PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
     auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
-        task_environment_.GetMainThreadTaskRunner());
+        base::ThreadTaskRunnerHandle::Get());
     producer_client_ =
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper));
     TraceEventMetadataSource::GetInstance()->ResetForTesting();
@@ -97,13 +89,8 @@ class TraceEventDataSourceTest : public testing::Test {
   void TearDown() override {
     if (base::trace_event::TraceLog::GetInstance()->IsEnabled()) {
       base::RunLoop wait_for_tracelog_flush;
-
-      TraceEventDataSource::GetInstance()->StopTracing(base::BindOnce(
-          [](const base::RepeatingClosure& quit_closure) {
-            quit_closure.Run();
-          },
-          wait_for_tracelog_flush.QuitClosure()));
-
+      TraceEventDataSource::GetInstance()->StopTracing(
+          wait_for_tracelog_flush.QuitClosure());
       wait_for_tracelog_flush.Run();
     }
 
@@ -116,6 +103,12 @@ class TraceEventDataSourceTest : public testing::Test {
     base::ThreadIdNameManager::GetInstance()->SetName(old_thread_name_);
     base::trace_event::TraceLog::GetInstance()->set_process_name(
         old_process_name_);
+
+    TracingUnitTest::TearDown();
+
+    // Destroy after task environment shuts down so that no other threads try to
+    // add trace events.
+    TraceEventDataSource::ResetForTesting();
   }
 
   void StartTraceEventDataSource(bool privacy_filtering_enabled = false,
@@ -577,13 +570,6 @@ class TraceEventDataSourceTest : public testing::Test {
   }
 
  protected:
-  // Destroy after task environment shuts down so that no other threads try to
-  // add trace events.
-  ScopedDataSourceReset reset_trace_event_source_;
-
-  // Do not add any other members above this member.
-  base::test::TaskEnvironment task_environment_;
-
   std::unique_ptr<TestProducerClient> producer_client_;
   uint64_t last_timestamp_ = 0;
   int64_t last_thread_time_ = 0;
@@ -1556,6 +1542,7 @@ class TraceEventDataSourceNoInterningTest : public TraceEventDataSourceTest {
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kPerfettoDisableInterning);
+    // Reset the data source to pick it up the command line flag.
     PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
     TraceEventDataSource::ResetForTesting();
     TraceEventDataSourceTest::SetUp();
@@ -1625,7 +1612,7 @@ TEST_F(TraceEventDataSourceTest, StartupTracingTimeout) {
   // abort and flush as soon the current thread can run tasks.
   producer_client()->set_startup_tracing_timeout_for_testing(base::TimeDelta());
   producer_client()->SetupStartupTracing(
-      base::trace_event::TraceConfig("foo,cat1,cat2,cat3,-*", ""),
+      base::trace_event::TraceConfig("foo,-*", ""),
       /*privacy_filtering_enabled=*/true);
 
   // The trace event will be added to the SMB for the (soon to be aborted)
@@ -1647,9 +1634,13 @@ TEST_F(TraceEventDataSourceTest, StartupTracingTimeout) {
             TRACE_EVENT_BEGIN0(kCategoryGroup, "maybe_lost");
             base::ScopedAllowBaseSyncPrimitivesForTesting allow;
             wait_for_start_tracing->Wait();
-            // This event can be hit while flushing for startup registry or when
-            // tracing is started or when already stopped tracing.
+            // This event can be hit while flushing the startup tracing session,
+            // or when the subsequent tracing session is started or when even
+            // that one was already stopped.
             TRACE_EVENT_BEGIN0(kCategoryGroup, "maybe_lost");
+
+            // Make sure that this thread's the trace writer is cleared away.
+            TraceEventDataSource::FlushCurrentThread();
           },
           std::move(wait_for_start_tracing)));
 
@@ -1665,7 +1656,7 @@ TEST_F(TraceEventDataSourceTest, StartupTracingTimeout) {
   wait_ptr->Signal();
 
   // Verify that the trace buffer does not have the event added to startup
-  // registry.
+  // tracing session.
   producer_client()->FlushPacketIfPossible();
   std::set<std::string> event_names;
   for (const auto& packet : producer_client()->finalized_packets()) {
@@ -1685,6 +1676,10 @@ TEST_F(TraceEventDataSourceTest, StartupTracingTimeout) {
       wait_for_stop.QuitClosure()));
 
   wait_for_stop.Run();
+
+  // Make sure that the TraceWriter destruction task posted from the ThreadPool
+  // task's flush is executed.
+  RunUntilIdle();
 }
 
 TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOff) {

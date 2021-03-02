@@ -13,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -41,34 +40,17 @@
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
 namespace tracing {
-namespace {
 
-RebindableTaskRunner* GetPerfettoTaskRunner() {
-  static base::NoDestructor<RebindableTaskRunner> task_runner;
-  return task_runner.get();
-}
-
-}  // namespace
-
-class TracingServiceTest : public testing::Test {
+class TracingServiceTest : public TracingUnitTest {
  public:
-  TracingServiceTest() : service_(&perfetto_service_) {
-    // Since Perfetto's platform backend can only be initialized once in a
-    // process, we give it a task runner that can outlive the per-test task
-    // environment.
-    auto* perfetto_task_runner = GetPerfettoTaskRunner();
-    auto* perfetto_platform =
-        PerfettoTracedProcess::Get()->perfetto_platform_for_testing();
-    if (!perfetto_platform->did_start_task_runner())
-      perfetto_platform->StartTaskRunner(perfetto_task_runner);
-    perfetto_task_runner->set_task_runner(base::ThreadTaskRunnerHandle::Get());
+  TracingServiceTest() : service_(&perfetto_service_) {}
 
-    // Also tell PerfettoTracedProcess to use the current task environment.
-    PerfettoTracedProcess::ResetTaskRunnerForTesting(
-        base::ThreadTaskRunnerHandle::Get());
+  void SetUp() override {
+    TracingUnitTest::SetUp();
     perfetto_service()->SetActiveServicePidsInitialized();
   }
-  ~TracingServiceTest() override = default;
+
+  void TearDown() override { TracingUnitTest::TearDown(); }
 
  protected:
   PerfettoService* perfetto_service() { return &perfetto_service_; }
@@ -130,7 +112,6 @@ class TracingServiceTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   PerfettoService perfetto_service_;
   TracingService service_;
 

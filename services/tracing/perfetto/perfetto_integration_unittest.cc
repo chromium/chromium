@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/producer_host.h"
@@ -42,44 +41,26 @@ std::string GetPerfettoProducerName() {
   return base::StrCat({mojom::kPerfettoProducerNamePrefix, "123"});
 }
 
-RebindableTaskRunner* GetPerfettoTaskRunner() {
-  static base::NoDestructor<RebindableTaskRunner> task_runner;
-  return task_runner.get();
-}
-
-class PerfettoIntegrationTest : public testing::Test {
+class PerfettoIntegrationTest : public TracingUnitTest {
  public:
-  PerfettoIntegrationTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
-
   void SetUp() override {
-    // Run both the client library and the PerfettoTracedProcess on the same
-    // thread (current thread).
-    auto* perfetto_task_runner = GetPerfettoTaskRunner();
-    auto* perfetto_platform =
-        PerfettoTracedProcess::Get()->perfetto_platform_for_testing();
-    if (!perfetto_platform->did_start_task_runner())
-      perfetto_platform->StartTaskRunner(perfetto_task_runner);
-    perfetto_task_runner->set_task_runner(base::ThreadTaskRunnerHandle::Get());
-
-    PerfettoTracedProcess::ResetTaskRunnerForTesting(
-        base::ThreadTaskRunnerHandle::Get());
-    PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
+    TracingUnitTest::SetUp();
     data_source_ = TestDataSource::CreateAndRegisterDataSource(
         kPerfettoTestDataSourceName, 0);
     perfetto_service_ = std::make_unique<PerfettoService>();
     RunUntilIdle();
   }
 
-  void TearDown() override { perfetto_service_.reset(); }
+  void TearDown() override {
+    perfetto_service_.reset();
+    TracingUnitTest::TearDown();
+  }
 
   PerfettoService* perfetto_service() const { return perfetto_service_.get(); }
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  protected:
   std::unique_ptr<TestDataSource> data_source_;
   std::unique_ptr<PerfettoService> perfetto_service_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(PerfettoIntegrationTest, ProducerDatasourceInitialized) {

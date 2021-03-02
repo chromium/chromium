@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "services/tracing/perfetto/perfetto_service.h"
@@ -47,7 +46,7 @@ namespace {
 
 const char kPerfettoTestDataSourceName[] =
     "org.chromium.chrome_integration_unittest";
-  
+
 std::string GetPerfettoProducerName() {
   return base::StrCat({mojom::kPerfettoProducerNamePrefix, "123"});
 }
@@ -92,12 +91,10 @@ class ClearAndRestoreSystemProducerScope {
   std::unique_ptr<SystemProducer> saved_producer_;
 };
 
-class SystemPerfettoTest : public testing::Test {
+class SystemPerfettoTest : public TracingUnitTest {
  public:
-  SystemPerfettoTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    PerfettoTracedProcess::ResetTaskRunnerForTesting();
-    PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
+  void SetUp() override {
+    TracingUnitTest::SetUp();
 
     EXPECT_TRUE(tmp_dir_.CreateUniqueTempDir());
     // We need to set TMPDIR environment variable because when a new producer
@@ -129,6 +126,21 @@ class SystemPerfettoTest : public testing::Test {
     // Construct the service and wait for it to completely set up.
     perfetto_service_ = std::make_unique<PerfettoService>();
     RunUntilIdle();
+  }
+
+  void TearDown() override {
+    data_sources_.clear();
+    perfetto_service_.reset();
+
+    if (old_tmp_dir_) {
+      // Restore the old value back to its initial value.
+      setenv("TMPDIR", old_tmp_dir_, true);
+    } else {
+      // TMPDIR wasn't set originally so unset it.
+      unsetenv("TMPDIR");
+    }
+
+    TracingUnitTest::TearDown();
   }
 
   std::unique_ptr<MockPosixSystemProducer> CreateMockPosixSystemProducer(
@@ -173,24 +185,7 @@ class SystemPerfettoTest : public testing::Test {
                                                producer_socket_);
   }
 
-  ~SystemPerfettoTest() override {
-    RunUntilIdle();
-    // The producer client will be destroyed in the next iteration of the test,
-    // but the sequence it was used on disappears with the
-    // |task_environment_|. So we reset the sequence so it can be freely
-    // destroyed.
-    PerfettoTracedProcess::Get()->producer_client()->ResetSequenceForTesting();
-    if (old_tmp_dir_) {
-      // Restore the old value back to its initial value.
-      setenv("TMPDIR", old_tmp_dir_, true);
-    } else {
-      // TMPDIR wasn't set originally so unset it.
-      unsetenv("TMPDIR");
-    }
-  }
-
   PerfettoService* local_service() const { return perfetto_service_.get(); }
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   // Fork() + executes the perfetto cmdline client with the given args and
   // returns true if we exited with a success otherwise |stderr_| is populated
@@ -243,7 +238,6 @@ class SystemPerfettoTest : public testing::Test {
   std::string consumer_socket_;
   std::unique_ptr<PerfettoService> perfetto_service_;
   std::vector<std::unique_ptr<TestDataSource>> data_sources_;
-  base::test::TaskEnvironment task_environment_;
   std::string stderr_;
   const char* old_tmp_dir_ = nullptr;
 };

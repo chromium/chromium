@@ -64,6 +64,8 @@ source_set("test_utils") {
 
   deps = [
     ":lib",
+    "//base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//third_party/perfetto/protos/perfetto/common:lite",
     "//third_party/perfetto/protos/perfetto/trace:lite",
