@@ -421,8 +421,9 @@ TEST_F(
       runMochaSuite('PrivacyPageSound');
     });
 
+// TODO(crbug.com/1113912): flaky failure on multiple platforms
 TEST_F(
-    'CrSettingsPrivacyPageV3Test', 'HappinessTrackingSurveysTests', function() {
+    'CrSettingsPrivacyPageV3Test', 'DISABLED_HappinessTrackingSurveysTests', function() {
       runMochaSuite('HappinessTrackingSurveys');
     });
 
