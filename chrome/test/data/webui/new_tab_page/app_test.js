@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, BackgroundManager, BackgroundSelectionType, BrowserProxy, ModuleRegistry, PromoBrowserCommandProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, BackgroundSelectionType, BrowserProxy, CustomizeDialogPage, ModuleRegistry, PromoBrowserCommandProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -583,6 +583,27 @@ suite('NewTabPageAppTest', () => {
       assertTrue(restoreCalled);
       assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
       assertEquals(1, metrics.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
+    });
+
+    test('modules can open customize dialog', async () => {
+      // Arrange.
+      const moduleElement = document.createElement('div');
+      moduleResolver.resolve([{
+        id: 'foo',
+        element: moduleElement,
+      }]);
+      await flushTasks();  // Wait for module descriptor resolution.
+
+      // Act.
+      moduleElement.dispatchEvent(
+          new Event('customize-module', {bubbles: true, composed: true}));
+      await flushTasks();  // Wait for customize dialog to open.
+
+      // Assert.
+      assertTrue(!!$$(app, 'ntp-customize-dialog'));
+      assertEquals(
+          CustomizeDialogPage.MODULES,
+          $$(app, 'ntp-customize-dialog').selectedPage);
     });
   });
 });

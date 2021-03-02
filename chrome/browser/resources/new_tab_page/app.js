@@ -22,7 +22,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {BackgroundManager} from './background_manager.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog_types.js';
+import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
 import {ModuleDescriptor} from './modules/module_descriptor.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {oneGoogleBarApi} from './one_google_bar_api.js';
@@ -120,6 +120,9 @@ class AppElement extends PolymerElement {
 
       /** @private */
       showCustomizeDialog_: Boolean,
+
+      /** @private {?string} */
+      selectedCustomizeDialogPage_: String,
 
       /** @private */
       showVoiceSearchOverlay_: Boolean,
@@ -566,6 +569,8 @@ class AppElement extends PolymerElement {
   /** @private */
   onCustomizeDialogClose_() {
     this.showCustomizeDialog_ = false;
+    // Let customize dialog decide what page to show on next open.
+    this.selectedCustomizeDialogPage_ = null;
   }
 
   /** @private */
@@ -929,6 +934,12 @@ class AppElement extends PolymerElement {
         'NewTabPage.Modules.Disabled', id);
     chrome.metricsPrivate.recordSparseHashable(
         'NewTabPage.Modules.Disabled.ModuleRequest', id);
+  }
+
+  /** @private */
+  onCustomizeModule_() {
+    this.showCustomizeDialog_ = true;
+    this.selectedCustomizeDialogPage_ = CustomizeDialogPage.MODULES;
   }
 
   /**

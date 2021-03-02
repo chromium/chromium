@@ -5664,7 +5664,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DISABLE_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module.">
         Don't show <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
       </message>
-      
+      <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
+        Customize cards
+      </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_SENTENCE" desc="Name of the shopping tasks module in sentence case shown in various UIs.">
         Shopping suggestions
       </message>
