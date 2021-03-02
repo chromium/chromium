@@ -27,6 +27,22 @@ async function readValueFromServer(key) {
   return { status: true, value: value };
 }
 
+// Convenience wrapper around the above getter that will wait until a value is
+// available on the server.
+async function nextValueFromServer(key) {
+  while (true) {
+    // Fetches the test result from the server.
+    const { status, value } = await readValueFromServer(key);
+    if (!status) {
+      // The test result has not been stored yet. Retry after a while.
+      await new Promise(resolve => setTimeout(resolve, 100));
+      continue;
+    }
+
+    return value;
+  }
+}
+
 // Writes `value` for `key` in the key-value store on the server.
 async function writeValueToServer(key, value) {
   const serverUrl = `${STORE_URL}?key=${key}&value=${value}`;

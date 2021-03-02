@@ -14,19 +14,10 @@ promise_test(async t => {
   startPrerendering(`resources/window-open.html?key=${key}`);
 
   // Wait until the prerendered page stores the test result in the server.
-  while (true) {
-    // Fetches the test result from the server.
-    const { status, value } = await readValueFromServer(key);
-    if (!status) {
-      // The test result has not been stored yet. Retry after a while.
-      await new Promise(resolve => setTimeout(resolve, 100));
-      continue;
-    }
-    assert_equals(
-        value, 'failed to open',
-        'window.open() should fail in prerendered pages');
-    break;
-  };
+  const value = await nextValueFromServer(key);
+  assert_equals(
+      value, 'failed to open',
+      'window.open() should fail in prerendered pages');
 }, 'window.open() should fail in same-origin prerendering page');
 
 // TODO(https://crbug.com/1169032): Test window.open() in cross-origin

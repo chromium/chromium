@@ -228,6 +228,7 @@
     "pointerup",
     "popstate",
     "portalactivate",
+    "prerenderingchange",
     "prioritychange",
     "progress",
     "processorerror",

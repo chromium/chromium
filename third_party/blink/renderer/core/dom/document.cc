@@ -1783,6 +1783,10 @@ AtomicString Document::visibilityState() const {
   return PageHiddenStateString(hidden());
 }
 
+bool Document::prerendering() const {
+  return IsPrerendering();
+}
+
 bool Document::hidden() const {
   return !IsPageVisible();
 }
@@ -8417,6 +8421,17 @@ void Document::SetFindInPageActiveMatchNode(Node* node) {
 
 const Node* Document::GetFindInPageActiveMatchNode() const {
   return find_in_page_active_match_node_;
+}
+
+void Document::ActivateForPrerendering() {
+  DCHECK(RuntimeEnabledFeatures::Prerender2Enabled());
+
+  // TODO(bokan): Portals will change this assumption since they mean an active
+  // document can be "adopted" into a portal.
+  DCHECK(is_prerendering_);
+
+  is_prerendering_ = false;
+  DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
 }
 
 bool Document::InStyleRecalc() const {

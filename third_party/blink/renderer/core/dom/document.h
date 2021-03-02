@@ -357,6 +357,7 @@ class CORE_EXPORT Document : public ContainerNode,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(securitypolicyviolation,
                                   kSecuritypolicyviolation)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(visibilitychange, kVisibilitychange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(prerenderingchange, kPrerenderingchange)
 
   ViewportData& GetViewportData() const { return *viewport_data_; }
 
@@ -448,6 +449,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsPageVisible() const;
   bool hidden() const;
   void DidChangeVisibilityState();
+
+  bool prerendering() const;
 
   bool wasDiscarded() const;
   void SetWasDiscarded(bool);
@@ -1672,6 +1675,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetFindInPageActiveMatchNode(Node*);
   const Node* GetFindInPageActiveMatchNode() const;
 
+  void ActivateForPrerendering();
+
   class CORE_EXPORT PaintPreviewScope {
     STACK_ALLOCATED();
 
@@ -1842,7 +1847,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // Track the prerendering state.
   // TODO(crbug.com/1169032): Update the flag on the prerendering activation.
   // Also, we will merge the state into the lifecycle state eventually.
-  const bool is_prerendering_;
+  // TODO(bokan): This should eventually be based on the document loading-mode:
+  // https://github.com/jeremyroman/alternate-loading-modes/blob/main/prerendering-state.md#documentprerendering
+  bool is_prerendering_;
 
   bool evaluate_media_queries_on_style_recalc_;
 

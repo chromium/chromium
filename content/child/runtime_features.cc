@@ -281,6 +281,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnablePointerLockOptions, features::kPointerLockOptions,
      kSetOnlyIfOverridden},
     {wf::EnablePortals, blink::features::kPortals, kSetOnlyIfOverridden},
+    {wf::EnablePrerender2, blink::features::kPrerender2},
     {wf::EnablePushSubscriptionChangeEvent,
      features::kPushSubscriptionChangeEvent},
     {wf::EnableRestrictGamepadAccess, features::kRestrictGamepadAccess},
