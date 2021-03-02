@@ -36,6 +36,7 @@ class PerfPlatform(object):
                num_shards,
                platform_os,
                is_fyi=False,
+               is_calibration=False,
                run_reference_build=False,
                executables=None):
     benchmark_configs = benchmark_configs.Frozenset()
@@ -45,6 +46,7 @@ class PerfPlatform(object):
     # For sorting ignore case and "segments" in the bot name.
     self._sort_key = name.lower().replace('-', ' ')
     self._is_fyi = is_fyi
+    self._is_calibration = is_calibration
     self.run_reference_build = run_reference_build
     self.executables = executables or frozenset()
     assert num_shards
@@ -109,6 +111,14 @@ class PerfPlatform(object):
   @property
   def is_fyi(self):
     return self._is_fyi
+
+  @property
+  def is_calibration(self):
+    return self._is_calibration
+
+  @property
+  def is_official(self):
+    return not self._is_fyi and not self.is_calibration
 
   @property
   def builder_url(self):
@@ -450,6 +460,9 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('system_health.memory_desktop')])
+_LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('speedometer2'),
+])
 
 
 # Linux
@@ -599,6 +612,15 @@ FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
                                 'fuchsia',
                                 is_fyi=True)
 
+# Calibration bots
+LINUX_PERF_CALIBRATION = PerfPlatform(
+    'linux-perf-calibration',
+    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+    _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS,
+    31,
+    'linux',
+    is_calibration=True)
+
 ALL_PLATFORMS = {
     p for p in locals().values() if isinstance(p, PerfPlatform)
 }
@@ -606,9 +628,7 @@ PLATFORMS_BY_NAME = {p.name: p for p in ALL_PLATFORMS}
 FYI_PLATFORMS = {
     p for p in ALL_PLATFORMS if p.is_fyi
 }
-OFFICIAL_PLATFORMS = {
-    p for p in ALL_PLATFORMS if not p.is_fyi
-}
+OFFICIAL_PLATFORMS = {p for p in ALL_PLATFORMS if p.is_official}
 ALL_PLATFORM_NAMES = {
     p.name for p in ALL_PLATFORMS
 }

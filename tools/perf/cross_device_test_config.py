@@ -99,4 +99,9 @@ TARGET_DEVICES = {
             'load:search:google:2018': 10,
         }
     },
+    'linux-perf-calibration': {
+        'speedometer2': {
+            'Speedometer2': 31,
+        }
+    }
 }
