@@ -322,10 +322,6 @@ class ObserverList {
 
   bool empty() const { return !observers_count_; }
 
-  // Deprecated: use |has_observers()|.
-  // TODO(1155308): migrate all callers and make this test only.
-  bool might_have_observers() const { return !observers_.empty(); }
-
  private:
   friend class internal::WeakLinkNode<ObserverList>;
 
