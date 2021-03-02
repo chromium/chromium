@@ -127,6 +127,8 @@
     },
 
     'chromium.android.fyi': {
+      'Android ASAN (dbg) (reclient)': 'android_clang_asan_debug_bot_reclient',
+      'Android arm64 Builder (dbg) (reclient)': 'android_webview_google_debug_static_bot_arm64_reclient',
       'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-11-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
@@ -275,7 +277,7 @@
 
     'chromium.fyi': {
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot',
-
+      'ASAN Debug (reclient)': 'asan_lsan_debug_bot_reclient',
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
       'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot',
       'Libfuzzer Upload Linux ASan (reclient)': 'libfuzzer_asan_release_bot_reclient',
@@ -301,7 +303,9 @@
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64',
       'TSAN Debug (reclient)': 'tsan_disable_nacl_debug_bot_reclient',
       'TSAN Release (reclient)':  'tsan_disable_nacl_release_bot_reclient',
+      'UBSan Release (reclient)': 'ubsan_release_bot_reclient',
       'VR Linux': 'vr_release_bot',
+      'VR Linux (reclient)': 'vr_release_bot_reclient',
       'Win 10 Fast Ring': 'release_trybot',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage',
@@ -1205,6 +1209,10 @@
       'android', 'clang', 'asan', 'debug_bot', 'strip_debug_info',
     ],
 
+    'android_clang_asan_debug_bot_reclient': [
+      'android', 'clang', 'asan', 'debug_bot_reclient', 'strip_debug_info',
+    ],
+
     'android_clang_asan_debug_trybot_compile_only_fastbuild': [
       'android', 'clang', 'asan', 'debug_bot', 'compile_only',
       'android_fastbuild',
@@ -1452,6 +1460,10 @@
       'android', 'debug_static_bot', 'arm64', 'webview_google',
     ],
 
+    'android_webview_google_debug_static_bot_arm64_reclient': [
+      'android', 'debug_static_bot_reclient', 'arm64', 'webview_google',
+    ],
+
     'android_without_codecs_debug_bot': [
       'android_without_codecs', 'debug_bot',
     ],
@@ -1587,6 +1599,10 @@
 
     'asan_lsan_debug_bot': [
       'asan', 'lsan', 'debug_bot',
+    ],
+
+    'asan_lsan_debug_bot_reclient': [
+      'asan', 'lsan', 'debug_bot_reclient',
     ],
 
     'asan_lsan_fuzzer_v8_heap_chromeos_codecs_release_bot': [
@@ -2668,6 +2684,10 @@
       'ubsan', 'release_bot',
     ],
 
+    'ubsan_release_bot_reclient': [
+      'ubsan', 'release_bot_reclient',
+    ],
+
     'ubsan_vptr_release_bot': [
       'ubsan_vptr', 'release_bot',
     ],
@@ -2686,6 +2706,10 @@
 
     'vr_release_bot': [
       'vr', 'release_bot', 'ozone',
+    ],
+
+    'vr_release_bot_reclient': [
+      'vr', 'release_bot_reclient', 'ozone',
     ],
 
     'vr_release_trybot': [
@@ -2950,6 +2974,10 @@
 
     'debug_static_bot': {
       'mixins': ['debug', 'static', 'minimal_symbols', 'goma'],
+    },
+
+    'debug_static_bot_reclient': {
+      'mixins': ['debug', 'static', 'minimal_symbols', 'reclient'],
     },
 
     'disable_nacl': {

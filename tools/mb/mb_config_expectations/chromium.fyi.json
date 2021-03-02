@@ -1,4 +1,14 @@
 {
+  "ASAN Debug (reclient)": {
+    "gn_args": {
+      "is_asan": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "is_lsan": true,
+      "symbol_level": 1,
+      "use_rbe": true
+    }
+  },
   "Afl Upload Linux ASan": {
     "gn_args": {
       "archive_seed_corpus": false,
@@ -242,6 +252,14 @@
       "use_rbe": true
     }
   },
+  "UBSan Release (reclient)": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "is_ubsan": true,
+      "use_rbe": true
+    }
+  },
   "VR Linux": {
     "gn_args": {
       "enable_vr": true,
@@ -249,6 +267,15 @@
       "is_debug": false,
       "use_goma": true,
       "use_ozone": true
+    }
+  },
+  "VR Linux (reclient)": {
+    "gn_args": {
+      "enable_vr": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_ozone": true,
+      "use_rbe": true
     }
   },
   "Win 10 Fast Ring": {
