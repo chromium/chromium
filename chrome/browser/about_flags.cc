@@ -7271,8 +7271,10 @@ bool ShouldSkipNonDeprecatedFeatureEntry(const FeatureEntry& entry) {
   return ~entry.supported_platforms & kDeprecated;
 }
 
-bool SkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
-                                 const FeatureEntry& entry) {
+}  // namespace
+
+bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
+                                       const FeatureEntry& entry) {
   version_info::Channel channel = chrome::GetChannel();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // enable-ui-devtools is only available on for non Stable channels.
@@ -7352,8 +7354,6 @@ bool SkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   return false;
 }
 
-}  // namespace
-
 void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
                             base::CommandLine* command_line,
                             flags_ui::SentinelsMode sentinels) {
@@ -7396,7 +7396,7 @@ void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
                            base::ListValue* unsupported_entries) {
   FlagsStateSingleton::GetFlagsState()->GetFlagFeatureEntries(
       flags_storage, access, supported_entries, unsupported_entries,
-      base::BindRepeating(&SkipConditionalFeatureEntry,
+      base::BindRepeating(&ShouldSkipConditionalFeatureEntry,
                           // Unretained: this callback doesn't outlive this
                           // stack frame.
                           base::Unretained(flags_storage)));

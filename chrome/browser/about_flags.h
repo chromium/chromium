@@ -30,6 +30,10 @@ class FlagsStorage;
 
 namespace about_flags {
 
+// Returns true if the FeatureEntry should not be shown.
+bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
+                                       const flags_ui::FeatureEntry& entry);
+
 // Reads the state from |flags_storage| and adds the command line flags
 // belonging to the active feature entries to |command_line|.
 void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,

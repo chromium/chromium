@@ -191,7 +191,9 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
     const flags_ui::FeatureEntry* entry =
         flags_state_->FindFeatureEntryByName(lab.internal_name);
     if (IsFeatureSupportedOnChannel(lab) &&
-        IsFeatureSupportedOnPlatform(entry)) {
+        IsFeatureSupportedOnPlatform(entry) &&
+        !about_flags::ShouldSkipConditionalFeatureEntry(flags_storage_.get(),
+                                                        *entry)) {
       bool valid_entry_type =
           entry->type == flags_ui::FeatureEntry::FEATURE_VALUE ||
           entry->type == flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE;
