@@ -122,6 +122,9 @@ static CompositingReasons BackfaceInvisibility3DAncestorReason(
 
 CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     const LayoutObject& object) {
+  if (object.GetDocument().Printing())
+    return CompositingReason::kNone;
+
   // TODO(wangxianzhu): Don't depend on PaintLayer for CompositeAfterPaint.
   if (!object.HasLayer()) {
     if (object.IsSVGChild())

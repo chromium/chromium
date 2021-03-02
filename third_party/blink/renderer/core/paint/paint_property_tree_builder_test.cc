@@ -5849,7 +5849,19 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   EXPECT_EQ(3u, NumFragments(fixed));
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed, i);
-    EXPECT_EQ(PhysicalOffset(0, 0), fragment.PaintOffset());
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      // In CompositeAfterPaint, we don't composite and create
+      // PaintOffsetTranslation for the fixed-position element during printing.
+      EXPECT_EQ(PhysicalOffset(20, 400 * i - 180), fragment.PaintOffset());
+      EXPECT_FALSE(fragment.PaintProperties());
+    } else {
+      // In pre-CompositeAfterPaint, we create PaintOffsetTranslation because
+      // the fixed-position element is currently composited.
+      EXPECT_EQ(PhysicalOffset(0, 0), fragment.PaintOffset());
+      EXPECT_EQ(FloatSize(20, 400 * i - 180), fragment.PaintProperties()
+                                                  ->PaintOffsetTranslation()
+                                                  ->Translation2D());
+    }
     EXPECT_EQ(LayoutUnit(400 * i), fragment.LogicalTopInFlowThread());
   }
 
@@ -5857,7 +5869,8 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   EXPECT_EQ(3u, NumFragments(fixed_child));
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed_child, i);
-    EXPECT_EQ(PhysicalOffset(0, 10), fragment.PaintOffset());
+    EXPECT_EQ(FragmentAt(fixed, i).PaintOffset() + PhysicalOffset(0, 10),
+              fragment.PaintOffset());
     EXPECT_EQ(LayoutUnit(i * 400), fragment.LogicalTopInFlowThread());
   }
 
