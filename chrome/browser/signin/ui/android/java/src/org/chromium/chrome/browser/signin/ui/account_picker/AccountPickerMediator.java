@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin.ui.account_picker;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -19,7 +20,6 @@ import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerPropert
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ItemType;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -79,18 +79,16 @@ class AccountPickerMediator {
      * Implements {@link AccountsChangeObserver}.
      */
     private void updateAccounts() {
-        List<String> accountNames =
-                AccountUtils.toAccountNames(mAccountManagerFacade.tryGetGoogleAccounts());
-        mProfileDataCache.update(accountNames);
+        List<Account> accounts = mAccountManagerFacade.tryGetGoogleAccounts();
         mListModel.clear();
 
         // Add an "existing account" row for each account
-        if (accountNames.size() > 0) {
+        if (accounts.size() > 0) {
             DisplayableProfileData profileData =
-                    mProfileDataCache.getProfileDataOrDefault(accountNames.get(0));
+                    mProfileDataCache.getProfileDataOrDefault(accounts.get(0).name);
             mListModel.add(createExistingAccountRowItem(profileData, true));
-            for (int i = 1; i < accountNames.size(); ++i) {
-                profileData = mProfileDataCache.getProfileDataOrDefault(accountNames.get(i));
+            for (int i = 1; i < accounts.size(); ++i) {
+                profileData = mProfileDataCache.getProfileDataOrDefault(accounts.get(i).name);
                 mListModel.add(createExistingAccountRowItem(profileData, false));
             }
         }

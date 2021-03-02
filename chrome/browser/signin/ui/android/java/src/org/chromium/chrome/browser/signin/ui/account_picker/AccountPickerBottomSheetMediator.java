@@ -26,7 +26,6 @@ import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -176,7 +175,6 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
 
     private void setSelectedAccountName(String accountName) {
         mSelectedAccountName = accountName;
-        mProfileDataCache.update(Collections.singletonList(mSelectedAccountName));
         updateSelectedAccountData(mSelectedAccountName);
     }
 

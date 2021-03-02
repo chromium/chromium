@@ -164,7 +164,11 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
      * Initiate fetching the user accounts data (images and the full name). Fetched data will be
      * sent to observers of ProfileDownloader. The instance must have at least one observer (see
      * {@link #addObserver}) when this method is called.
+     *
+     * TODO(crbug/1183296): Don't call this method, the profile data is updated automatically even
+     * when there is no GmsProfileDataSource.
      */
+    @Deprecated
     public void update(List<String> accountEmails) {
         ThreadUtils.assertOnUiThread();
         assert !mObservers.isEmpty();
