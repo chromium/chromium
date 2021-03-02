@@ -528,6 +528,53 @@ TEST_F(NetworkStateNotifierTest, RemoveFutureObserverWhileNotifying) {
       kUnknownThroughputMbps, SaveData::kOff));
 }
 
+// It should be safe to remove multiple observers in one iteration.
+TEST_F(NetworkStateNotifierTest, RemoveMultipleObserversWhileNotifying) {
+  StateObserver observer1, observer2, observer3;
+  std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle> handle1 =
+      notifier_.AddConnectionObserver(&observer1, GetTaskRunner());
+  std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle> handle2 =
+      notifier_.AddConnectionObserver(&observer2, GetTaskRunner());
+  std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle> handle3 =
+      notifier_.AddConnectionObserver(&observer3, GetTaskRunner());
+  observer1.RemoveObserverOnNotification(std::move(handle1));
+  observer3.RemoveObserverOnNotification(std::move(handle3));
+
+  // Running the first time should delete observers 1 and 3.
+  SetConnection(kWebConnectionTypeBluetooth, kBluetoothMaxBandwidthMbps,
+                WebEffectiveConnectionType::kTypeUnknown, kUnknownRtt,
+                kUnknownRtt, kUnknownThroughputMbps, SaveData::kOff);
+  EXPECT_TRUE(VerifyObservations(
+      observer1, kWebConnectionTypeBluetooth, kBluetoothMaxBandwidthMbps,
+      WebEffectiveConnectionType::kTypeUnknown, kUnknownRtt, kUnknownRtt,
+      kUnknownThroughputMbps, SaveData::kOff));
+  EXPECT_TRUE(VerifyObservations(
+      observer2, kWebConnectionTypeBluetooth, kBluetoothMaxBandwidthMbps,
+      WebEffectiveConnectionType::kTypeUnknown, kUnknownRtt, kUnknownRtt,
+      kUnknownThroughputMbps, SaveData::kOff));
+  EXPECT_TRUE(VerifyObservations(
+      observer3, kWebConnectionTypeBluetooth, kBluetoothMaxBandwidthMbps,
+      WebEffectiveConnectionType::kTypeUnknown, kUnknownRtt, kUnknownRtt,
+      kUnknownThroughputMbps, SaveData::kOff));
+
+  // Run again and only observer 2 should have been updated.
+  SetConnection(kWebConnectionTypeEthernet, kEthernetMaxBandwidthMbps,
+                WebEffectiveConnectionType::kTypeUnknown, kUnknownRtt,
+                kUnknownRtt, kUnknownThroughputMbps, SaveData::kOff);
+  EXPECT_TRUE(VerifyObservations(
+      observer1, kWebConnectionTypeBluetooth, kBluetoothMaxBandwidthMbps,
+      WebEffectiveConnectionType::kTypeUnknown, kUnknownRtt, kUnknownRtt,
+      kUnknownThroughputMbps, SaveData::kOff));
+  EXPECT_TRUE(VerifyObservations(
+      observer2, kWebConnectionTypeEthernet, kEthernetMaxBandwidthMbps,
+      WebEffectiveConnectionType::kTypeUnknown, kUnknownRtt, kUnknownRtt,
+      kUnknownThroughputMbps, SaveData::kOff));
+  EXPECT_TRUE(VerifyObservations(
+      observer3, kWebConnectionTypeBluetooth, kBluetoothMaxBandwidthMbps,
+      WebEffectiveConnectionType::kTypeUnknown, kUnknownRtt, kUnknownRtt,
+      kUnknownThroughputMbps, SaveData::kOff));
+}
+
 TEST_F(NetworkStateNotifierTest, MultipleContextsAddObserver) {
   StateObserver observer1, observer2;
   std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle> handle1 =
