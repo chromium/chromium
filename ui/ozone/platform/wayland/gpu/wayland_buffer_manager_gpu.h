@@ -189,7 +189,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // cropping and scaling buffers.
   bool supports_viewporter_ = false;
 
-  mojo::Receiver<ozone::mojom::WaylandBufferManagerGpu> receiver_{this};
+  mojo::ReceiverSet<ozone::mojom::WaylandBufferManagerGpu> receiver_set_;
 
   // A pointer to a WaylandBufferManagerHost object, which always lives on a
   // browser process side. It's used for a multi-process mode.
