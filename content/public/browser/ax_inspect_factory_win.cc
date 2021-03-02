@@ -61,7 +61,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
   switch (type) {
     case kWinIA2:
       return std::make_unique<AccessibilityEventRecorderWin>(manager, pid,
-                                                             selector.pattern);
+                                                             selector);
     case kWinUIA:
       return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
                                                              selector.pattern);

@@ -15,10 +15,9 @@ namespace content {
 class CONTENT_EXPORT AccessibilityEventRecorderWin
     : public AccessibilityEventRecorder {
  public:
-  AccessibilityEventRecorderWin(
-      BrowserAccessibilityManager* manager,
-      base::ProcessId pid,
-      const base::StringPiece& application_name_match_pattern);
+  AccessibilityEventRecorderWin(BrowserAccessibilityManager* manager,
+                                base::ProcessId pid,
+                                const ui::AXTreeSelector& selector);
   ~AccessibilityEventRecorderWin() override;
 
   // Callback registered by SetWinEventHook. Just calls OnWinEventHook.
