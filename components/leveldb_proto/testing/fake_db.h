@@ -205,9 +205,6 @@ void FakeDB<P, T>::UpdateEntriesWithRemoveFilter(
     std::unique_ptr<typename Util::Internal<T>::KeyEntryVector> entries_to_save,
     const KeyFilter& delete_key_filter,
     Callbacks::UpdateCallback callback) {
-  for (auto& pair : *entries_to_save)
-    DataToProtoWrap(&pair.second, &(*db_)[pair.first]);
-
   auto it = db_->begin();
   while (it != db_->end()) {
     if (!delete_key_filter.is_null() && delete_key_filter.Run(it->first))
@@ -215,6 +212,9 @@ void FakeDB<P, T>::UpdateEntriesWithRemoveFilter(
     else
       ++it;
   }
+
+  for (auto& pair : *entries_to_save)
+    DataToProtoWrap(&pair.second, &(*db_)[pair.first]);
 
   update_callback_ = std::move(callback);
 }
