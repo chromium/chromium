@@ -28,13 +28,14 @@ struct StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice> {
     return input.device_id;
   }
 
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  static uint32_t revision(const gpu::GPUInfo::GPUDevice& input) {
+    return input.revision;
+  }
+#endif
 #if defined(OS_WIN)
   static uint32_t sub_sys_id(const gpu::GPUInfo::GPUDevice& input) {
     return input.sub_sys_id;
-  }
-
-  static uint32_t revision(const gpu::GPUInfo::GPUDevice& input) {
-    return input.revision;
   }
 
   static const LUID luid(const gpu::GPUInfo::GPUDevice& input) {

@@ -241,6 +241,9 @@ mojom("interfaces") {
   if (use_x11) {
     enabled_features += [ "use_x11" ]
   }
+  if (is_win || is_chromeos || is_chromeos_lacros) {
+    enabled_features += [ "has_gpu_revision_info" ]
+  }
 
   shared_cpp_typemaps = [
     {

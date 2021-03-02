@@ -20,7 +20,7 @@ struct GpuDevice {
   uint32 device_id;
   [EnableIf=is_win]
   uint32 sub_sys_id;
-  [EnableIf=is_win]
+  [EnableIf=has_gpu_revision_info]
   uint32 revision;
   bool active;
   string vendor_string;
