@@ -570,7 +570,10 @@ class TestRunner(object):
     # When current |launch| method is invoked, this is running a unit test
     # target. For simulators, '--xctest' is passed to test runner scripts to
     # make it run XCTest based unit test.
-    if self.xctest:
+    # TODO(crbug.com/1183541): Implement launch() in
+    # |WprProxySimulatorTestRunner|.
+    if (self.xctest and
+        not self.__class__.__name__ == 'WprProxySimulatorTestRunner'):
       # TODO(crbug.com/1085603): Pass in test runner an arg to determine if it's
       # device test or simulator test and test the arg here.
       if self.__class__.__name__ == 'SimulatorTestRunner':
