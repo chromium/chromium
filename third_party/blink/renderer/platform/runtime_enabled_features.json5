@@ -701,12 +701,6 @@
       name: "CustomElementDefaultStyle",
       status: "experimental",
     },
-    // TODO(937746): Web Components v0 is disabled by default, and will be
-    // removed after M87.
-    {
-      name: "CustomElementsV0",
-      status: "test",
-    },
     {
       name: "CustomStatePseudoClass",
       status: "stable",
@@ -1030,12 +1024,6 @@
       depends_on: ["TranslateService"],
       origin_trial_feature_name: "HrefTranslate",
       status: "stable",
-    },
-    // TODO(937746): Web Components v0 is disabled by default, and will be
-    // removed after M87.
-    {
-      name: "HTMLImports",
-      status: "test",
     },
     {
       name: "HTMLPopupElement",
@@ -1879,12 +1867,6 @@
     {
       name: "ServiceWorkerFetchEventWorkerTiming",
       status: "experimental",
-    },
-    // TODO(937746): Web Components v0 is disabled by default, and will be
-    // removed after M87.
-    {
-      name: "ShadowDOMV0",
-      status: "test",
     },
     {
       name: "SharedArrayBuffer",

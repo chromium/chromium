@@ -251,10 +251,6 @@ bool ContentRendererClient::IsSafeRedirectTarget(const GURL& url) {
 
 void ContentRendererClient::DidSetUserAgent(const std::string& user_agent) {}
 
-bool ContentRendererClient::RequiresHtmlImports(const GURL& url) {
-  return false;
-}
-
 base::Optional<::media::AudioRendererAlgorithmParameters>
 ContentRendererClient::GetAudioRendererAlgorithmParameters(
     media::AudioParameters audio_parameters) {

@@ -211,7 +211,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableGetDisplayMedia(bool);
   BLINK_PLATFORM_EXPORT static void EnableGetCurrentBrowsingContextMedia(bool);
   BLINK_PLATFORM_EXPORT static void EnableAllowSyncXHRInPageDismissal(bool);
-  BLINK_PLATFORM_EXPORT static void EnableHTMLImports(bool);
   BLINK_PLATFORM_EXPORT static void
   EnableSignedExchangePrefetchCacheForNavigations(bool);
   BLINK_PLATFORM_EXPORT static void EnableSignedExchangeSubresourcePrefetch(

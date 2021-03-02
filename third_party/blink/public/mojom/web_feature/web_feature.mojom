@@ -257,7 +257,7 @@ enum WebFeature {
   kDocumentFonts = 440,
   kMixedContentFormsSubmitted = 441,
   kFormsSubmitted = 442,
-  kHTMLImports = 455,
+  kOBSOLETE_HTMLImports = 455,
   kOBSOLETE_ElementCreateShadowRoot = 456,
   kDocumentRegisterElement = 457,
   kEditingAppleInterchangeNewline = 458,

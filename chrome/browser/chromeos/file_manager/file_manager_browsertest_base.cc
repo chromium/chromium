@@ -1660,13 +1660,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     command_line->AppendSwitchASCII(chromeos::switches::kShillStub, "clear=1");
   }
 
-  // TODO(crbug.com/937746): See crbug.com/1081581 for context, but
-  // the FilesApp does not work when custom elements v0 are enabled.
-  // Make sure they are disabled here. Remove this once WCv0 features
-  // are removed completely.
-  command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
-                                  "ShadowDOMV0,CustomElementsV0,HTMLImports");
-
   std::vector<base::Feature> enabled_features;
   std::vector<base::Feature> disabled_features;
 

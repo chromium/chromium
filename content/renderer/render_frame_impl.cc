@@ -3038,12 +3038,6 @@ void RenderFrameImpl::CommitNavigationWithParams(
         prefetch_loader_factory,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
-  // TODO(738611): This is temporary switch to have chrome WebUI use the old
-  // HTML Imports API. After completion of the migration, we should remove this.
-  if (GetContentClient()->renderer()->RequiresHtmlImports(common_params->url)) {
-    blink::WebRuntimeFeatures::EnableHTMLImports(true);
-  }
-
   // Here, creator means either the parent frame or the window opener.
   bool inherit_loaders_from_creator =
       // Iframe with the about:srcdoc URL inherits subresource loaders from

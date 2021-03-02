@@ -401,12 +401,6 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
           "https://www.chromestatus.com/feature/5735596811091968 for more "
           "details."};
 
-    case WebFeature::kHTMLImports:
-      return {"HTMLImports", kUnknown,
-              "The HTML Imports feature has been removed. See "
-              "https://www.chromestatus.com/feature/5144752345317376 for more "
-              "details."};
-
     case WebFeature::kLocalCSSFileExtensionRejected:
       return {"LocalCSSFileExtensionRejected", kM64,
               String("CSS cannot be loaded from `file:` URLs unless they end "
@@ -751,19 +745,7 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
     return;
   }
   deprecation->SetReported(feature);
-
-  // Don't count usage of WebComponentsV0 for chrome:// URLs, but still report
-  // the deprecation messages.
-  // Note that this only applies to HTML Imports, as Shadow DOM v0 and Custom
-  // Elements v0 have both now been removed.
-  bool count_usage = true;
-  if (context->Url().ProtocolIs("chrome") &&
-      feature == WebFeature::kHTMLImports) {
-    count_usage = false;
-  }
-  if (count_usage)
-    context->CountUse(feature);
-
+  context->CountUse(feature);
   const DeprecationInfo info = GetDeprecationInfo(feature);
 
   // Send the deprecation message to the console as a warning.

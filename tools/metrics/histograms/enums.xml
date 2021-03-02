@@ -28167,7 +28167,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="453"
       label="WebkitEditableContentChangedOnContentEditableObsolete"/>
   <int value="454" label="WebkitEditableContentChangedOnNotNodeObsolete"/>
-  <int value="455" label="HTMLImports"/>
+  <int value="455" label="OBSOLETE_HTMLImports"/>
   <int value="456" label="OBSOLETE_ElementCreateShadowRoot"/>
   <int value="457" label="DocumentRegisterElement"/>
   <int value="458" label="EditingAppleInterchangeNewline"/>

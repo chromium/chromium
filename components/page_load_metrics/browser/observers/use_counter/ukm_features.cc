@@ -46,7 +46,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kXMLHttpRequestSynchronousInWorker,
           WebFeature::kPaymentHandler,
           WebFeature::kPaymentRequestShowWithoutGesture,
-          WebFeature::kHTMLImports,
           WebFeature::kCredentialManagerCreatePublicKeyCredential,
           WebFeature::kCredentialManagerGetPublicKeyCredential,
           WebFeature::kCredentialManagerMakePublicKeyCredentialSuccess,

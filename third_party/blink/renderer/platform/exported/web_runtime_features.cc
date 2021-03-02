@@ -575,10 +575,6 @@ void WebRuntimeFeatures::EnableAllowSyncXHRInPageDismissal(bool enable) {
   RuntimeEnabledFeatures::SetAllowSyncXHRInPageDismissalEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableHTMLImports(bool enable) {
-  RuntimeEnabledFeatures::SetHTMLImportsEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableSignedExchangePrefetchCacheForNavigations(
     bool enable) {
   RuntimeEnabledFeatures::SetSignedExchangePrefetchCacheForNavigationsEnabled(

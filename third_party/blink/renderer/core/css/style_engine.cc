@@ -474,7 +474,9 @@ void StyleEngine::MediaQueryAffectingValueChanged(MediaValueChange change) {
 void StyleEngine::UpdateActiveStyleSheetsInImport(
     StyleEngine& root_engine,
     DocumentStyleSheetCollector& parent_collector) {
-  DCHECK(RuntimeEnabledFeatures::HTMLImportsEnabled());
+  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
+  // now-removed HTML Imports feature.
+  DCHECK(false) << "HTML Imports has been removed.";
   DCHECK(IsHTMLImport());
   HeapVector<Member<StyleSheet>> sheets_for_list;
   ImportedDocumentStyleSheetCollector subcollector(parent_collector,

@@ -96,23 +96,18 @@ void HTMLLinkElement::ParseAttribute(
   if (name == html_names::kRelAttr) {
     rel_attribute_ = LinkRelAttribute(value);
     if (rel_attribute_.IsImport()) {
-      if (RuntimeEnabledFeatures::HTMLImportsEnabled()) {
-        Deprecation::CountDeprecation(GetExecutionContext(),
-                                      WebFeature::kHTMLImports);
-      } else {
-        // Show a warning that HTML Imports (<link rel=import>) were detected,
-        // but HTML Imports have been disabled. Without this, the failure would
-        // be silent.
-        if (LocalDOMWindow* window = GetDocument().ExecutingWindow()) {
-          window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kRendering,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "HTML Imports is deprecated and has now been removed as of "
-              "M80. See "
-              "https://www.chromestatus.com/features/5144752345317376 "
-              "and https://developers.google.com/web/updates/2019/07/"
-              "web-components-time-to-upgrade for more details."));
-        }
+      // Show a warning that HTML Imports (<link rel=import>) were detected,
+      // but HTML Imports have been disabled. Without this, the failure would
+      // be silent.
+      if (LocalDOMWindow* window = GetDocument().ExecutingWindow()) {
+        window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kRendering,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "HTML Imports is deprecated and has now been removed as of "
+            "M80. See "
+            "https://www.chromestatus.com/features/5144752345317376 "
+            "and https://developers.google.com/web/updates/2019/07/"
+            "web-components-time-to-upgrade for more details."));
       }
     }
     if (rel_attribute_.IsMonetization() && !GetDocument().ParentDocument()) {
@@ -252,10 +247,9 @@ LinkResource* HTMLLinkElement::LinkResourceToProcess() {
 
   if (!link_) {
     if (rel_attribute_.IsImport()) {
-      // Only create an import link when HTML imports are enabled.
-      if (!RuntimeEnabledFeatures::HTMLImportsEnabled())
-        return nullptr;
-      link_ = MakeGarbageCollected<LinkImport>(this);
+      // TODO(crbug.com/937746): HTML Imports is removed, so just return here.
+      // This will be cleaned up once the removal has stabilized for a bit.
+      return nullptr;
     } else if (rel_attribute_.IsWebBundle()) {
       // Only create a webbundle link when SubresourceWebBundles are enabled.
       if (!LinkWebBundle::IsFeatureEnabled(GetExecutionContext())) {

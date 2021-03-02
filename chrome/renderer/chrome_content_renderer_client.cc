@@ -1621,8 +1621,3 @@ void ChromeContentRendererClient::DidSetUserAgent(
   printing::SetAgent(user_agent);
 #endif
 }
-
-// TODO(crbug.com/937746) Remove this function entirely.
-bool ChromeContentRendererClient::RequiresHtmlImports(const GURL& url) {
-  return false;
-}

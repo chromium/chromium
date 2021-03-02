@@ -400,12 +400,6 @@ class CONTENT_EXPORT ContentRendererClient {
   // most once.
   virtual void DidSetUserAgent(const std::string& user_agent);
 
-  // Returns true if |url| still requires the native HTML Imports feature.
-  // Used for Web UI pages.
-  // TODO(937747): Remove this function when all WebUIs can function without
-  // HTML Imports.
-  virtual bool RequiresHtmlImports(const GURL& url);
-
   // Optionally returns audio renderer algorithm parameters.
   virtual base::Optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
