@@ -49,7 +49,6 @@
 <translation id="1054048317165655285">スマートフォンの設定を完了する</translation>
 <translation id="1054153489933238809">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 週間以内に <ph name="DEVICE_TYPE" />を更新してください}other{{NUM_WEEKS} 週間以内に <ph name="DEVICE_TYPE" />を更新してください}}</translation>
-<translation id="1056466516655540509"><ph name="MINUTES" /> 分前に更新されました</translation>
 <translation id="1056775291175587022">なし</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -297,7 +296,6 @@
 <translation id="1327272175893960498">Kerberos チケット</translation>
 <translation id="1327495825214193325">ADB デバッグを有効にするには、この <ph name="DEVICE_TYPE" /> を再起動する必要があります。ADB デバッグを無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
 <translation id="1327794256477341646">位置情報を必要とする機能は動作しなくなります</translation>
-<translation id="1329584516321524826">たった今更新されました</translation>
 <translation id="1330145147221172764">画面キーボードを有効にする</translation>
 <translation id="1331977651797684645">これは私です。</translation>
 <translation id="1333489022424033687">容量不足のため、<ph name="ORIGIN" /> の一部の機能が動作しない可能性があります。デバイスに保存された他のサイトのデータを削除してください</translation>
@@ -2223,7 +2221,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> は次のファイルを表示できます</translation>
 <translation id="3484273680291419129">有害なソフトウェアを削除しています...</translation>
 <translation id="3484869148456018791">新しい証明書を取得</translation>
-<translation id="3484991308207164042">これらのカートを表示しない</translation>
 <translation id="3487007233252413104">無名関数</translation>
 <translation id="348780365869651045">AppCache を待機しています...</translation>
 <translation id="3490695139702884919">ダウンロードしています... <ph name="PERCENT" />%</translation>
@@ -2579,7 +2576,6 @@
 <translation id="3866249974567520381">説明</translation>
 <translation id="3867134342671430205">ディスプレイを移動するには、矢印キーをドラッグまたは使用します</translation>
 <translation id="3867944738977021751">証明書のフィールド</translation>
-<translation id="3868847547183917201">このページにカートは今後表示されません</translation>
 <translation id="3869917919960562512">インデックスが正しくありません。</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> 用に保存されているパスワードはありません</translation>
 <translation id="3871350334636688135">24 時間経過してからデバイスを再起動すると、管理者による 1 回限りの更新が行われ、ローカルデータが削除されます。必要なローカルデータは 24 時間以内にクラウド ストレージに保存してください。</translation>
@@ -2736,7 +2732,6 @@
 <translation id="4031527940632463547">センサーがブロックされました</translation>
 <translation id="4033471457476425443">新しいフォルダを追加</translation>
 <translation id="4034824040120875894">プリンタ</translation>
-<translation id="4035321506998192527">ChromeVox を有効にしますか？ChromeVox は Chrome OS 向けの組み込みのスクリーンリーダーです。有効にする場合は Space キーを押してください。</translation>
 <translation id="4035758313003622889">タスク マネージャ(&amp;T)</translation>
 <translation id="4036778507053569103">サーバーからダウンロードされたポリシーが無効です。</translation>
 <translation id="4037084878352560732">馬</translation>
@@ -2857,7 +2852,6 @@
 <translation id="4186763173530196927">アプリがカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> をセットアップしています...</translation>
 <translation id="4190828427319282529">キーボード フォーカスをハイライト表示する</translation>
-<translation id="4193575319002689239">カードを表示</translation>
 <translation id="4194570336751258953">タップによるクリックを有効にする</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
@@ -3373,7 +3367,6 @@
 <translation id="4808667324955055115">ポップアップがブロックされました:</translation>
 <translation id="4809079943450490359">デバイス管理者からの指示:</translation>
 <translation id="480990236307250886">ホームページを開く</translation>
-<translation id="4810383437107234249">カートを今後表示しない</translation>
 <translation id="4811212958317149293">スイッチ アクセスのキーボード自動スキャン</translation>
 <translation id="4811503964269049987">選択したタブをグループ化する</translation>
 <translation id="4813136279048157860">自分の画像</translation>
@@ -3540,7 +3533,6 @@
 <translation id="4998430619171209993">オン</translation>
 <translation id="5000922062037820727">ブロック（推奨）</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
-<translation id="5005970596776813007">ChromeVox を有効にしますか？ChromeVox は Chrome OS 向けの組み込みのスクリーンリーダーです。</translation>
 <translation id="5006218871145547804">Crostini Android アプリ ADB</translation>
 <translation id="5007392906805964215">内容を確認</translation>
 <translation id="5008936837313706385">アクティビティ名</translation>
@@ -3953,6 +3945,7 @@
 <translation id="549211519852037402">ベージュと白</translation>
 <translation id="5493792505296048976">画面オン</translation>
 <translation id="5494362494988149300">ダウンロードしたら開く(&amp;D)</translation>
+<translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5495466433285976480">すべてのローカル ユーザー、ファイル、データ、およびその他の設定が次回の再起動後に削除されます。すべてのユーザーは、もう一度ログインする必要があります。</translation>
 <translation id="5495597166260341369">画面をオンのままにする</translation>
 <translation id="5496587651328244253">管理</translation>
@@ -4039,7 +4032,6 @@
     <ph name="BEGIN_PARAGRAPH2" />この機能をオフにした場合でも、システム アップデートやセキュリティなどの重要なサービスで必要となる情報は、デバイスからこれまでどおり送信されます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />デバイスの所有者は、[設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] でこの機能を管理できます。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />これに加えて [ウェブとアプリのアクティビティ] の設定もオンにしている場合、このデータは Google アカウントにも保存される可能性があります。account.google.com でアカウント設定を閲覧、削除、変更することができます。<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">ChromeVox を有効にしますか？ChromeVox は Chrome OS 向けの組み込みのスクリーンリーダーです。有効にする場合は、両方の音量キーを 5 秒間長押ししてください。</translation>
 <translation id="5585019845078534178">カード</translation>
 <translation id="5585118885427931890">ブックマーク フォルダを作成できませんでした。</translation>
 <translation id="558563010977877295">特定のページまたはページセットを開く</translation>
@@ -5562,7 +5554,6 @@
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> ページを <ph name="PRINTER_NAME" /> に送信しました</translation>
 <translation id="7361297102842600584">右クリックして <ph name="PLUGIN_NAME" /> を実行します</translation>
-<translation id="7363117941401515667"><ph name="HOURS" /> 時間前に更新されました</translation>
 <translation id="7364591875953874521">アクセスを要求しました</translation>
 <translation id="7364796246159120393">ファイルを選択</translation>
 <translation id="7365076891350562061">モニターサイズ</translation>
@@ -6636,7 +6627,6 @@
 <translation id="8592141010104017453">通知を一切表示しない</translation>
 <translation id="859246725979739260">このサイトでは位置情報へのアクセスがブロックされています。</translation>
 <translation id="8593121833493516339">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
-<translation id="8593735906501637689"><ph name="MODULE_TITLE" /> を削除しました</translation>
 <translation id="8594908476761052472">動画を撮影</translation>
 <translation id="8596540852772265699">カスタム ファイル</translation>
 <translation id="8597845839771543242">プロパティの書式:</translation>
@@ -6710,7 +6700,6 @@
 <translation id="866611985033792019">メールユーザーの識別でこの証明書を信頼します</translation>
 <translation id="8666584013686199826">サイトから USB デバイスへのアクセス許可を求められたときに確認する</translation>
 <translation id="8667328578593601900">現在 <ph name="FULLSCREEN_ORIGIN" /> は全画面表示で、マウスカーソルは無効です。</translation>
-<translation id="866851964140184995">今後このページでは「<ph name="MODULE_NAME" />」を表示しません</translation>
 <translation id="8669284339312441707">暖色</translation>
 <translation id="8670537393737592796">このページにすぐにアクセスできるようにするには、インストール ボタンをクリックして <ph name="APP_NAME" /> をインストールしてください</translation>
 <translation id="867085395664725367">一時的なサーバーエラーが発生しました。</translation>
@@ -6780,10 +6769,8 @@
 <translation id="8742998548129056176">これは、お使いのデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは Android の改善に使用され、統計情報の一部は、Google アプリや、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、接続</translation>
 <translation id="8743390665131937741">全画面のズームレベル:</translation>
-<translation id="8743864605301774756">1 時間前に更新されました</translation>
 <translation id="8746654918629346731">「<ph name="EXTENSION_NAME" />」はリクエスト済みです</translation>
 <translation id="874689135111202667">{0,plural, =1{1 個のファイルをこのサイトにアップロードしますか？}other{# 個のファイルをこのサイトにアップロードしますか？}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{1 個の Google アカウントを追加済み}other{<ph name="EXTRA_ACCOUNTS" /> 個の Google アカウントを追加済み}}</translation>
 <translation id="8749556627204742888">このデバイスの他のユーザーとネットワークを共有しています。</translation>
 <translation id="8749805710397399240">画面をキャストできません。[システム環境設定] で画面収録が許可されているか確認してください。</translation>
 <translation id="8749863574775030885">不明なベンダーの USB デバイスへのアクセス</translation>

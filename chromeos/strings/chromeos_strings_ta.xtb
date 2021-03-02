@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">கேப்டிவ் போர்டல்</translation>
 <translation id="2008685064673031089">முதன்மைத் தேடல்</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ஜி.பை. உள்ளது</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">வரிசையிலுள்ளது</translation>
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
+<translation id="2217935453350629363">தற்போதைய வேகம்</translation>
 <translation id="2224337661447660594">இணைய இணைப்பு இல்லை</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">செயலாக்க நிலை</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
+<translation id="4431821876790500265">அறிக்கையைக் காட்டு</translation>
 <translation id="445059817448385655">தற்போதைய கடவுச்சொல்</translation>
 <translation id="4453205916657964690">சப்நெட் மாஸ்க்</translation>
 <translation id="4454245904991689773">இதில் சேமி</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
 <translation id="4773299976671772492">நிறுத்தப்பட்டது</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> அச்சுப் பணி ரத்துசெய்யப்பட்டது</translation>
+<translation id="4813345808229079766">இணைப்பு</translation>
 <translation id="4832079907277790330">Files ஆப்ஸில் கோப்புறையைத் தேர்ந்தெடு...</translation>
 <translation id="4835901797422965222">நெட்நொர்க்குகள் எதுவும் செயலில் இல்லை</translation>
 <translation id="4848429997038228357">நடைபெறுவது</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">தேதி</translation>
 <translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்த கோப்புகளைச் சேமிக்க போதுமான இடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
+<translation id="4999333166442584738">அறிக்கையை மறை</translation>
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">குழுப் பெயர்</translation>
@@ -302,6 +307,7 @@
 <translation id="7769672763586021400">மாடல் ஐடி</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7819857487979277519">PSK (WPA அல்லது RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">வழங்குநர் வகை</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="7960831585769876809">வெப்பநிலை</translation>
@@ -360,6 +366,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">பூட்டைத் திற</translation>
+<translation id="9137526406337347448">Google சேவைகள்</translation>
 <translation id="9149391708638971077">நினைவகச் சோதனையை இயக்கு</translation>
 <translation id="9173638680043580060">ஒரு நிமிடத்திற்கும் குறைவான நேரமே மீதமுள்ளது</translation>
 <translation id="9190063653747922532">L2TP/IPsec + முன்பே-பகிர்ந்து கொள்ளப்பட்ட விசை</translation>

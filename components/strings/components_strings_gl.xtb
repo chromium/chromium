@@ -298,6 +298,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2053111141626950936">Non se traducirán as páxinas en <ph name="LANGUAGE" />.</translation>
 <translation id="2053553514270667976">Código postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
+<translation id="2071692954027939183">As notificacións bloqueáronse automaticamente porque non adoitas permitilas</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="20817612488360358">Estableceuse a configuración do proxy do sistema que debe utilizarse, pero tamén se especificou unha configuración de proxy explícita.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -788,6 +789,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (sobre)</translation>
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
+<translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Produciuse un erro ao procesar a túa solicitude. Téntao de novo.</translation>
 <translation id="4075732493274867456">O cliente e o servidor non admiten unha versión do protocolo SSL ou o paquete de cifraxe comúns.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -926,6 +928,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4510487217173779431">Chou4 (sobre)</translation>
 <translation id="4515275063822566619">As tarxetas e enderezos proceden de Chrome e da túa conta de Google (<ph name="ACCOUNT_EMAIL" />). Podes xestionalos en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (sobre)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Detalles</translation>
 <translation id="4524138615196389145">A partir de agora, confirma as tarxetas máis rápido con WebAuthn</translation>
 <translation id="4524805452350978254">Xestionar tarxetas</translation>
@@ -1348,6 +1351,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="614940544461990577">Proba a facer o seguinte:</translation>
 <translation id="6150036310511284407">Tres perforacións na parte esquerda</translation>
 <translation id="6151417162996330722">O certificado do servidor ten un período de validez demasiado longo.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> polg. (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Para consultar os requisitos e métodos de envío, selecciona un enderezo</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6169916984152623906">Agora podes navegar de forma privada, sen que os demais usuarios deste dispositivo vexan a túa actividade. Non obstante, gardaranse as descargas e os marcadores.</translation>
@@ -1896,6 +1900,7 @@ Detalles adicionais:
 <translation id="8364627913115013041">Sen configurar.</translation>
 <translation id="8368476060205742148">Servizos de Google Play</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
+<translation id="8374636051559112948">Varía</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8381674639488873545">Estes cargos poden ser únicos ou periódicos e quizais non se indiquen de forma evidente. <ph name="BEGIN_LINK" />Mostrar de todas formas<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">A política do administrador bloqueou a función de compartir contido desde <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /></translation>
@@ -2077,6 +2082,7 @@ Detalles adicionais:
 <translation id="9114524666733003316">Confirmando tarxeta…</translation>
 <translation id="9114581008513152754">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Cargouse</translation>
+<translation id="9128016270925453879">Cargáronse as políticas</translation>
 <translation id="9128870381267983090">Conectarse á rede</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9141013498910525015">Xestionar enderezos</translation>

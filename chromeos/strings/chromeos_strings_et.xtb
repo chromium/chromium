@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="4773299976671772492">Peatatud</translation>
 <translation id="4808449224298348341">Prinditöö <ph name="DOCUMENT_TITLE" /> tühistati</translation>
+<translation id="4813345808229079766">Ühendus</translation>
 <translation id="4832079907277790330">Valige rakenduses Failid kaust …</translation>
 <translation id="4835901797422965222">Aktiivseid võrke pole</translation>
 <translation id="4848429997038228357">POOLELI</translation>
@@ -302,6 +303,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7819857487979277519">PSK (WPA või RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teenusepakkuja tüüp</translation>
 <translation id="7936303884198020182">Ei leitud ühtegi nimeserverit</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
@@ -360,6 +362,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>
 <translation id="9111102763498581341">Ava lukk</translation>
+<translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Käita mälutest</translation>
 <translation id="9173638680043580060">Jäänud on alla minuti</translation>
 <translation id="9190063653747922532">L2TP/IPSec + eeljagatud võti</translation>

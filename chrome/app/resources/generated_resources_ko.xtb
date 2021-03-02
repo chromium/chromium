@@ -49,7 +49,6 @@
 <translation id="1054048317165655285">휴대전화에서 설정 완료</translation>
 <translation id="1054153489933238809">새 탭에서 원본 이미지 열기</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1주일 이내에 <ph name="DEVICE_TYPE" /> 업데이트}other{{NUM_WEEKS}주일 이내에 <ph name="DEVICE_TYPE" /> 업데이트}}</translation>
-<translation id="1056466516655540509"><ph name="MINUTES" />분 전 업데이트됨</translation>
 <translation id="1056775291175587022">네트워크 없음</translation>
 <translation id="1056898198331236512">경고</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -297,7 +296,6 @@
 <translation id="1327272175893960498">Kerberos 티켓</translation>
 <translation id="1327495825214193325">ADB 디버깅을 사용 설정하려면 이 <ph name="DEVICE_TYPE" /> 기기를 다시 시작해야 합니다. ADB 디버깅을 사용 중지하려면 초기화해야 합니다.</translation>
 <translation id="1327794256477341646">위치가 필요한 기능이 작동하지 않음</translation>
-<translation id="1329584516321524826">조금 전 업데이트됨</translation>
 <translation id="1330145147221172764">터치 키보드 사용</translation>
 <translation id="1331977651797684645">본인이 맞습니다.</translation>
 <translation id="1333489022424033687">기기에 저장된 다른 사이트의 데이터를 삭제할 때까지 <ph name="ORIGIN" />의 일부 기능을 사용하지 못할 수 있습니다.</translation>
@@ -2223,7 +2221,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" />에서 다음 파일을 볼 수 있습니다.</translation>
 <translation id="3484273680291419129">유해한 소프트웨어 삭제 중...</translation>
 <translation id="3484869148456018791">새로운 인증서 받기</translation>
-<translation id="3484991308207164042">장바구니 숨기기</translation>
 <translation id="3487007233252413104">익명의 함수</translation>
 <translation id="348780365869651045">AppCache를 기다리는 중...</translation>
 <translation id="3490695139702884919">다운로드 중... <ph name="PERCENT" />%</translation>
@@ -2579,7 +2576,6 @@
 <translation id="3866249974567520381">설명</translation>
 <translation id="3867134342671430205">드래그하거나 화살표 키를 사용하여 디스플레이를 옮기세요.</translation>
 <translation id="3867944738977021751">인증서 필드</translation>
-<translation id="3868847547183917201">이 페이지에서 장바구니가 더 이상 표시되지 않습니다.</translation>
 <translation id="3869917919960562512">잘못된 색인입니다.</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" />에 저장된 비밀번호가 없습니다.</translation>
 <translation id="3871350334636688135">24시간 후 기기를 다시 시작하면 관리자가 일회성 업데이트를 실행하여 로컬 데이터가 삭제됩니다. 필요한 로컬 데이터가 있다면 24시간 이내에 클라우드 스토리지에 저장하세요.</translation>
@@ -2736,7 +2732,6 @@
 <translation id="4031527940632463547">센서 차단됨</translation>
 <translation id="4033471457476425443">새 폴더 추가</translation>
 <translation id="4034824040120875894">프린터</translation>
-<translation id="4035321506998192527">Chrome OS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="4035758313003622889">작업 관리자(&amp;T)</translation>
 <translation id="4036778507053569103">서버에서 다운로드한 정책이 올바르지 않습니다.</translation>
 <translation id="4037084878352560732">말</translation>
@@ -2855,7 +2850,6 @@
 <translation id="4186763173530196927">앱에서 카메라에 액세스하려고 합니다. 액세스를 허용하려면 카메라 개인정보 보호 스위치를 끄세요.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> 설정 중…</translation>
 <translation id="4190828427319282529">키보드 포커스 강조표시</translation>
-<translation id="4193575319002689239">카드 보기</translation>
 <translation id="4194570336751258953">탭하여 클릭 사용</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4195814663415092787">중단한 위치에서 계속하기</translation>
@@ -3371,7 +3365,6 @@
 <translation id="4808667324955055115">팝업 차단됨</translation>
 <translation id="4809079943450490359">기기 관리자가 제공하는 지침:</translation>
 <translation id="480990236307250886">홈페이지 열기</translation>
-<translation id="4810383437107234249">장바구니 표시 안함</translation>
 <translation id="4811212958317149293">스위치 제어 키보드 자동 스캔</translation>
 <translation id="4811503964269049987">선택한 탭 그룹화</translation>
 <translation id="4813136279048157860">내 이미지</translation>
@@ -3538,7 +3531,6 @@
 <translation id="4998430619171209993">사용</translation>
 <translation id="5000922062037820727">차단(권장)</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
-<translation id="5005970596776813007">Chrome OS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
 <translation id="5006218871145547804">Crostini Android 앱 ADB</translation>
 <translation id="5007392906805964215">검토</translation>
 <translation id="5008936837313706385">활동 이름</translation>
@@ -3951,6 +3943,7 @@
 <translation id="549211519852037402">베이지색 및 흰색</translation>
 <translation id="5493792505296048976">화면 켜짐</translation>
 <translation id="5494362494988149300">완료되면 열기(&amp;D)</translation>
+<translation id="5494920125229734069">모두 선택</translation>
 <translation id="5495466433285976480">다음에 다시 시작할 때 모든 로컬 사용자, 파일, 데이터 및 기타 설정이 삭제됩니다. 모든 사용자는 다시 로그인해야 합니다.</translation>
 <translation id="5495597166260341369">디스플레이를 켜진 상태로 유지</translation>
 <translation id="5496587651328244253">정리</translation>
@@ -4037,7 +4030,6 @@
     <ph name="BEGIN_PARAGRAPH2" />이 기능을 사용 중지해도 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />소유자는 설정 &gt; 고급 &gt; 진단 및 사용 데이터를 Google에 자동 전송에서 이 기능을 제어할 수 있습니다.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />추가 웹 및 앱 활동 설정이 사용 설정된 경우 이 데이터가 Google 계정에 저장됩니다. account.google.com에서 이 데이터를 확인 및 삭제하고, 계정 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Chrome OS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 볼륨 키 2개를 5초 동안 길게 누르세요.</translation>
 <translation id="5585019845078534178">카드</translation>
 <translation id="5585118885427931890">북마크 폴더를 만들지 못했습니다.</translation>
 <translation id="558563010977877295">특정 페이지 또는 페이지 모음 열기</translation>
@@ -5560,7 +5552,6 @@
 <translation id="735745346212279324">VPN 연결 끊김</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" />에서 <ph name="PAGE_NUMBER" />페이지 인쇄</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />을(를) 실행하려면 오른쪽 마우스 버튼을 클릭하세요.</translation>
-<translation id="7363117941401515667"><ph name="HOURS" />시간 전 업데이트됨</translation>
 <translation id="7364591875953874521">액세스가 요청됨</translation>
 <translation id="7364796246159120393">파일 선택</translation>
 <translation id="7365076891350562061">모니터 크기</translation>
@@ -6634,7 +6625,6 @@
 <translation id="8592141010104017453">알림 표시 안함</translation>
 <translation id="859246725979739260">이 사이트는 위치에 액세스할 수 없도록 차단되었습니다.</translation>
 <translation id="8593121833493516339">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
-<translation id="8593735906501637689"><ph name="MODULE_TITLE" />이 삭제됨</translation>
 <translation id="8594908476761052472">동영상 촬영</translation>
 <translation id="8596540852772265699">사용자 지정 파일</translation>
 <translation id="8597845839771543242">속성 형식:</translation>
@@ -6708,7 +6698,6 @@
 <translation id="866611985033792019">이메일 사용자를 식별하기 위해 이 인증서 신뢰</translation>
 <translation id="8666584013686199826">사이트에서 USB 기기에 액세스하려고 할 때 확인</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" />이(가) 현재 전체화면으로 전환되었으며 마우스 커서가 사용 중지되었습니다.</translation>
-<translation id="866851964140184995">이 페이지에 '<ph name="MODULE_NAME" />' 모듈이 다시 표시되지 않습니다.</translation>
 <translation id="8669284339312441707">따뜻함</translation>
 <translation id="8670537393737592796">이곳으로 빠르게 이동하려면 설치 버튼을 클릭하여 <ph name="APP_NAME" /> 앱을 설치하세요.</translation>
 <translation id="867085395664725367">일시적인 서버 오류가 발생했습니다.</translation>
@@ -6778,10 +6767,8 @@
 <translation id="8742998548129056176">기기 및 기기 사용 방식에 관한 일반적인 정보(배터리 수준, 시스템 및 앱 활동, 오류 등)입니다. 데이터는 Android를 개선하는 데 사용되며 일부 수집 정보는 Google 앱과 파트너(Android 개발자 등)가 앱 및 제품을 개선하는 데도 도움이 됩니다.</translation>
 <translation id="8743164338060742337">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 연결</translation>
 <translation id="8743390665131937741">전체화면 돋보기 확대/축소 수준:</translation>
-<translation id="8743864605301774756">1시간 전에 업데이트되었습니다.</translation>
 <translation id="8746654918629346731">이미 '<ph name="EXTENSION_NAME" />'을(를) 요청하셨습니다</translation>
 <translation id="874689135111202667">{0,plural, =1{파일 1개를 이 사이트에 업로드하시겠습니까?}other{파일 #개를 이 사이트에 업로드하시겠습니까?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{Google 계정 1개 추가됨}other{Google 계정 <ph name="EXTRA_ACCOUNTS" />개 추가됨}}</translation>
 <translation id="8749556627204742888">기기의 다른 사용자와 공유 중인 네트워크입니다.</translation>
 <translation id="8749805710397399240">화면을 전송할 수 없습니다. 시스템 환경설정에서 화면 녹화 권한을 확인하세요.</translation>
 <translation id="8749863574775030885">알 수 없는 공급업체의 USB 기기에 액세스</translation>

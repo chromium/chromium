@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Prestrezni portal</translation>
 <translation id="2008685064673031089">Začetno iskanje</translation>
 <translation id="2080070583977670716">Več nastavitev</translation>
+<translation id="2126937207024182736">Na voljo je <ph name="AVAILABLE_MEMORY" /> GB od skupno <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">NA ČAKANJU</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
+<translation id="2217935453350629363">Trenutna hitrost</translation>
 <translation id="2224337661447660594">Ni internetne povezave</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stanje aktiviranja</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kartonček za Kerberos kmalu poteče</translation>
+<translation id="4431821876790500265">Ogled poročila</translation>
 <translation id="445059817448385655">Staro geslo</translation>
 <translation id="4453205916657964690">Maska podomrežja</translation>
 <translation id="4454245904991689773">Skeniraj v</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="4773299976671772492">Ustavljeno</translation>
 <translation id="4808449224298348341">Preklicano tiskalno opravilo za dokument <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Povezava</translation>
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
 <translation id="4835901797422965222">Ni aktivnih omrežij</translation>
 <translation id="4848429997038228357">IZVAJANJE</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
 <translation id="4985509611418653372">Izvedi</translation>
+<translation id="4999333166442584738">Skrij poročilo</translation>
 <translation id="500920857929044050">Ustavi preizkus</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Ime skupine</translation>
@@ -302,6 +307,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7819857487979277519">PSK (WPA ali RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta ponudnika</translation>
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -360,6 +366,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
 <translation id="9111102763498581341">Odkleni</translation>
+<translation id="9137526406337347448">Googlove storitve</translation>
 <translation id="9149391708638971077">Zaženi preizkus pomnilnika</translation>
 <translation id="9173638680043580060">Še manj kot minuta</translation>
 <translation id="9190063653747922532">L2TP/IPsec + ključ v vnaprejšnji skupni rabi</translation>

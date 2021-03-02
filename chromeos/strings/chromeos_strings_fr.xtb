@@ -117,7 +117,7 @@
 <translation id="3820172043799983114">Code incorrect.</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3865414814144988605">Résolution</translation>
-<translation id="387301095347517405">Nombre de cycles de charge complets effectués par votre batterie</translation>
+<translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4773299976671772492">Interrompu</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée pour <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Connexion</translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
 <translation id="4848429997038228357">EN COURS</translation>
@@ -302,6 +303,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7769672763586021400">ID du modèle</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7936303884198020182">Aucun serveur de noms trouvé</translation>
 <translation id="7960831585769876809">Température</translation>
@@ -360,6 +362,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="910415269708673980">Actualiser le ticket associé à <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Lancer le test de mémoire</translation>
 <translation id="9173638680043580060">Moins d'une minute restante</translation>
 <translation id="9190063653747922532">L2TP/IPSec + Clé pré-partagée</translation>

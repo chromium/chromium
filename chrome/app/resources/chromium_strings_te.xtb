@@ -49,6 +49,7 @@
 <translation id="2770231113462710648">డిఫాల్ట్ బ్రౌజర్‌ను దీనికి మార్చు:</translation>
 <translation id="2799223571221894425">మళ్లీ ప్రారంభించు</translation>
 <translation id="2816712596130903444">Chromium ప్రొఫైల్‌ను వేరు చేయాలా?</translation>
+<translation id="2837693172913560447">ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chromium ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="2847479871509788944">Chromium నుండి తీసివేయి...</translation>
 <translation id="2885378588091291677">విధి సంచాలకులు</translation>
 <translation id="2910007522516064972">&amp;Chromium గురించి</translation>
@@ -121,6 +122,7 @@
 <translation id="4987820182225656817">అతిథులు ఎటువంటి చరిత్రను వదలకుండానే Chromiumను ఉపయోగించవచ్చు.</translation>
 <translation id="4994636714258228724">Chromiumకు మిమ్మల్ని జోడించుకోండి</translation>
 <translation id="5224391634244552924">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేవు. మీరు మీ పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chromium వాటిని చెక్ చేయగలదు.</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" /> ఇప్పటికే ఈ Chromium ప్రొఫైల్‌కు సైన్ ఇన్ చేశారు. ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chromium ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="5277894862589591112">మీ మార్పులను వర్తింపజేయడానికి, Chromiumని పునఃప్రారంభించండి</translation>
 <translation id="5358375970380395591">మీరు నిర్వహించబడే ఖాతాతో సైన్ ఇన్ చేస్తున్నారు. దీని నిర్వాహకునికి మీ Chromium ప్రొఫైల్‌పై నియంత్రణను అందిస్తున్నారు. మీ యాప్‌లు, బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల వంటి మీ Chromium డేటా శాశ్వతంగా <ph name="USER_NAME" />కు అనుబంధించబడుతుంది. మీరు Google ఖాతాల డ్యాష్‌బోర్డ్ ద్వారా ఈ డేటాను తొలగించవచ్చు. కానీ ఈ డేటాను మరో ఖాతాతో అనుబంధించలేరు. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium నవీకరించబడుతోంది (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -229,6 +231,7 @@
 <translation id="7773960292263897147">హెచ్చరిక: Chromium, మీ బ్రౌజింగ్ చరిత్రను రికార్డ్ చేయడం నుండి ఎక్స్‌టెన్ష‌న్‌ను నిరోధించలేదు. ఈ ఎక్స్‌టెన్ష‌న్‌ను అజ్ఞాత మోడ్‌లో నిలిపివేయడానికి, ఈ ఎంపికను రద్దు చేయండి.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">మీరు Chromium నుండి నిష్క్రమించినప్పుడు, కుక్కీలు, సైట్ డేటాను క్లియర్ చేయండి</translation>
+<translation id="7828947555739565424">ఈ పరికరంలో ఇప్పటికే ఈ ఖాతాతో ఒక Chromium ప్రొఫైల్ ఉంది</translation>
 <translation id="7857220146454061152">భవిష్యత్తు Chromium అప్‌డేట్‌లను పొందడానికి, మీకు OS X 10.11 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ OS X 10.10ను ఉపయోగిస్తోంది.</translation>
 <translation id="7867198900892795913">Chromiumను తాజా వెర్షన్‌కు అప్‌డేట్ చేయడం సాధ్యం కాలేదు, కాబట్టి మీరు కొత్త ఫీచర్‌లు మరియు భద్రతా పరిష్కారాలను పొందడం లేదు.</translation>
 <translation id="7898472181347242998">మీ పరికరం అప్‌డేట్ చేయబడి ఉందని చూడటానికి <ph name="LINK_BEGIN" />Chromium OS సెట్టింగ్‌లు<ph name="LINK_END" />కు వెళ్లండి</translation>

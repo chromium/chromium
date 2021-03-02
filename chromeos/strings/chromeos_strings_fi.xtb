@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2008685064673031089">Ensisijainen haku</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> Gt / <ph name="TOTAL_MEMORY" /> Gt saatavilla</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">JONOSSA</translation>
 <translation id="2161394479394250669">Peruuta tulostustyö</translation>
+<translation id="2217935453350629363">Nykyinen nopeus</translation>
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
+<translation id="4431821876790500265">Katso raportti</translation>
 <translation id="445059817448385655">Vanha salasana</translation>
 <translation id="4453205916657964690">Aliverkon maski</translation>
 <translation id="4454245904991689773">Skannauskohde</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
 <translation id="4808449224298348341">Peruutettu tulostustyö: <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Yhteys</translation>
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
 <translation id="4835901797422965222">Ei aktiivisia verkkoja</translation>
 <translation id="4848429997038228357">KÄYNNISSÄ</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
 <translation id="4985509611418653372">Suorita</translation>
+<translation id="4999333166442584738">Piilota raportti</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Ryhmän nimi</translation>
@@ -302,6 +307,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7819857487979277519">PSK (WPA tai RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Palveluntarjoajan tyyppi</translation>
 <translation id="7936303884198020182">Nimipalvelimia ei löydy</translation>
 <translation id="7960831585769876809">Lämpötila</translation>
@@ -360,6 +366,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannataan sivu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Poista lukitus</translation>
+<translation id="9137526406337347448">Googlen palvelut</translation>
 <translation id="9149391708638971077">Suorita muistitesti</translation>
 <translation id="9173638680043580060">Alle minuutti jäljellä</translation>
 <translation id="9190063653747922532">L2TP/IPsec + esijaettu avain</translation>

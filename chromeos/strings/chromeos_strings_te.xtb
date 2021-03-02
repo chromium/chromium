@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">క్యాప్టివ్ పోర్టల్</translation>
 <translation id="2008685064673031089">ప్రైమ్ సెర్చ్</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBలో <ph name="AVAILABLE_MEMORY" /> GB అందుబాటులో ఉంది</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">క్రమవరుసలో ఉంచబడింది</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయి</translation>
+<translation id="2217935453350629363">ప్రస్తుత వేగం</translation>
 <translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">నా డిస్క్</translation>
 <translation id="4429881212383817840">Kerberos టిక్కెట్ గడువు త్వరలో ముగుస్తుంది</translation>
+<translation id="4431821876790500265">రిపోర్ట్‌ను చూడండి</translation>
 <translation id="445059817448385655">పాత పాస్‌వర్డ్</translation>
 <translation id="4453205916657964690">సబ్‌నెట్ మాస్క్</translation>
 <translation id="4454245904991689773">స్కాన్ చేసి ఇక్కడ సేవ్ చేయండి</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="4773299976671772492">ఆపివేయబడింది</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ప్రింట్ టాస్క్ రద్దు చేయబడింది</translation>
+<translation id="4813345808229079766">కనెక్షన్</translation>
 <translation id="4832079907277790330">Files యాప్‌లో ఫోల్డర్‌ను ఎంచుకోండి...</translation>
 <translation id="4835901797422965222">యాక్టివ్‌గా ఉన్న నెట్‌వర్క్‌లు ఏవీ లేవు</translation>
 <translation id="4848429997038228357">రన్ అవుతోంది</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
+<translation id="4999333166442584738">రిపోర్ట్‌ను దాచు</translation>
 <translation id="500920857929044050">పరీక్షను ఆపండి</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">సమూహం పేరు</translation>
@@ -301,6 +306,7 @@
 <translation id="7769672763586021400">మోడల్ ID</translation>
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7819857487979277519">PSK (WPA లేదా RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ప్రదాత రకం</translation>
 <translation id="7936303884198020182">పేరుతో సర్వర్‌లు కనుగొనబడలేదు</translation>
 <translation id="7960831585769876809">ఉష్ణోగ్రత</translation>
@@ -359,6 +365,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> సంబంధిత టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="9106415115617144481">పేజీ <ph name="PAGE_NUMBER" />ని స్కాన్ చేస్తోంది</translation>
 <translation id="9111102763498581341">అన్‌లాక్ చేయి</translation>
+<translation id="9137526406337347448">Google సేవలు</translation>
 <translation id="9149391708638971077">మెమరీ పరీక్షను రన్ చేయండి</translation>
 <translation id="9173638680043580060">నిమిషం కంటే తక్కువ సమయం మిగిలి ఉంది</translation>
 <translation id="9190063653747922532">L2TP/IPsec + ముందుగా భాగస్వామ్యం చేసిన కీ</translation>

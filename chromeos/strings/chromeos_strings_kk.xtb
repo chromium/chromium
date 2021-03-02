@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4773299976671772492">Тоқтатылды</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>
+<translation id="4813345808229079766">Байланыс</translation>
 <translation id="4832079907277790330">Files қолданбасында қалта таңдау...</translation>
 <translation id="4835901797422965222">Ешқандай белсенді желі жоқ.</translation>
 <translation id="4848429997038228357">ТЕКСЕРІЛУДЕ</translation>
@@ -301,6 +302,7 @@
 <translation id="7769672763586021400">Үлгі идентификаторы</translation>
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7819857487979277519">PSK (WPA немесе RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Провайдер түрі</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -359,6 +361,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
+<translation id="9137526406337347448">Google қызметтері</translation>
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
 <translation id="9173638680043580060">Бір минутқа жетпейтін уақыт қалды.</translation>
 <translation id="9190063653747922532">L2TP/IPsec + алдын ала бөлісілген кілт</translation>

@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Iphothali yabathunjiweyo</translation>
 <translation id="2008685064673031089">Usesho oluphakeme</translation>
 <translation id="2080070583977670716">Ezinye izilungiselelo</translation>
+<translation id="2126937207024182736">Kuno-<ph name="AVAILABLE_MEMORY" /> GB kokungu-<ph name="TOTAL_MEMORY" /> GB otholakalayo</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">KUSEMUGQENI</translation>
 <translation id="2161394479394250669">Khansela umsebenzi wokuphrinta</translation>
+<translation id="2217935453350629363">Isivinini samanje</translation>
 <translation id="2224337661447660594">Ayikho i-inthanethi</translation>
 <translation id="2230051135190148440">I-CHAP</translation>
 <translation id="225692081236532131">Isimo sokwenza kusebenze</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">I-PDF</translation>
 <translation id="4425149324548788773">IDrayivu yami</translation>
 <translation id="4429881212383817840">Ithikithi le-Kerberos liphelelwa isikhathi maduze</translation>
+<translation id="4431821876790500265">Bona umbiko</translation>
 <translation id="445059817448385655">Iphasiwedi endala</translation>
 <translation id="4453205916657964690">Imaski ye-subnet</translation>
 <translation id="4454245904991689773">Skena ku-</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Ukufinyelela komzali</translation>
 <translation id="4773299976671772492">Imisiwe</translation>
 <translation id="4808449224298348341">Umsebenzi wokuphrinta i-<ph name="DOCUMENT_TITLE" /> ukhanseliwe</translation>
+<translation id="4813345808229079766">Uxhumano</translation>
 <translation id="4832079907277790330">Khetha ifolda kuhlelo lokusebenza Lamafayela...</translation>
 <translation id="4835901797422965222">Awekho amanethiwekhi atholakalayo</translation>
 <translation id="4848429997038228357">IYAQHUBEKA</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Idethi</translation>
 <translation id="498186245079027698">Hlola iskena bese uzame futhi. Qiniseka ukuthi kunesikhala esanele sensawo sokulondoloza amafayela askeniwe.</translation>
 <translation id="4985509611418653372">Ukugijima</translation>
+<translation id="4999333166442584738">Fihla umbiko</translation>
 <translation id="500920857929044050">Misa ukuhlola</translation>
 <translation id="5017508259293544172">I-LEAP</translation>
 <translation id="5050042263972837708">Igama leqembu</translation>
@@ -302,6 +307,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7769672763586021400">I-ID yemodeli</translation>
 <translation id="7805768142964895445">Isimo</translation>
 <translation id="7819857487979277519">I-PSK (i-WPA noma i-RSN)</translation>
+<translation id="7881066108824108340">I-DNS</translation>
 <translation id="7882358943899516840">Uhlobo lomhlinzeki</translation>
 <translation id="7936303884198020182">Awekho amaseva wegama atholakele</translation>
 <translation id="7960831585769876809">Izinga lokushisa</translation>
@@ -360,6 +366,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="910415269708673980">Vuselela ithikithi le-<ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Iskena ikhasi <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Vula</translation>
+<translation id="9137526406337347448">Amasevisi we-Google</translation>
 <translation id="9149391708638971077">Qalia ukuhlolwa Kwenkumbulo</translation>
 <translation id="9173638680043580060">Ngaphansi kweminithi okusele</translation>
 <translation id="9190063653747922532">L2TP/IPsec + ukhiye owabiwe ngaphambilini</translation>

@@ -62,6 +62,7 @@
 <translation id="1373696734384179344">चयन गरिएको सामग्री डाउनलोड गर्नको लागि मेमोरी अपर्याप्त।</translation>
 <translation id="1376578503827013741">हिसाब गर्दै…</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
+<translation id="1384704387250346179">Google लेन्स प्रयोग गरी फोटोमा भएका कुरा अनुवाद गर्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिनअघि सक्रिय</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
 <translation id="1406000523432664303">“ट्रयाक नगर्नुहोस्”</translation>
@@ -98,6 +99,7 @@
 <translation id="1692118695553449118">सिंक खुला छ</translation>
 <translation id="1697284962337958118">यहाँ राख्नुहोस्</translation>
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
+<translation id="1724977129262658800">आफ्नो पासवर्ड बदल्न अनलक गर्नुहोस्</translation>
 <translation id="173522743738009831">प्राइभेसी स्यान्डबक्सका बारेमा</translation>
 <translation id="1736419249208073774">अन्वेषण गर्नुहोस्</translation>
 <translation id="1749561566933687563">तपाईंका पुस्तक चिन्हहरू सिंक गर्नुहोस्</translation>
@@ -260,7 +262,7 @@
 <translation id="2779651927720337254">डाउनलोड गर्न सकिएन</translation>
 <translation id="2781151931089541271">१ सेकेन्ड बाँकी छ</translation>
 <translation id="2801022321632964776">Chrome को नवीनतम संस्करणमा आफ्नो भाषा प्राप्त गर्न अपडेट गर्नुहोस्</translation>
-<translation id="2810645512293415242">डेटा बचत गर्न र अझ छिटो लोड गर्नका लागि सरलीकृत पृष्ठ।</translation>
+<translation id="2805756323405976993">एप्स</translation>
 <translation id="281504910091592009">आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" /> मा सुरक्षित गरिएका पासवर्डहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2818669890320396765">आफ्ना सबै यन्त्रमा पुस्तक चिन्हहरू प्राप्त गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="2827278682606527653">फिड कार्ड मेनु आधा उचाइमा खुला छ</translation>
@@ -336,13 +338,11 @@
 <translation id="3290991969712132877">यही पेजमा अझ छिटो जान 'थप विकल्पहरू' बटनमा क्लिक गरी आफ्नो होम स्क्रिनमा सो पेज हाल्नुहोस्</translation>
 <translation id="3295530008794733555">अझ छिटो ब्राउज गर्नुहोस्। कम डेटा प्रयोग गर्नुहोस्।</translation>
 <translation id="3297344142967351106">आवाज सहायता</translation>
-<translation id="3298243779924642547">लाइट</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड गर्न अगाडि बढ्ने हो?</translation>
 <translation id="3315103659806849044">तपाईं हाल आफ्ना सिंक तथा Google का सेवासम्बन्धी सेटिङहरूलाई आफू अनुकूल पार्दै हुनुहुन्छ। सिंक सेवा सक्रिय पार्ने कार्य पूरा गर्न स्क्रिन बटनको छेवैमा रहेको सुनिश्चित गर्नुहोस् नामक बटनमा ट्याप गर्नुहोस्। माथि नेभिगेसन गर्नुहोस्</translation>
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
 <translation id="3341058695485821946">आफूले सुरक्षित गरेको डेटाको मात्रा हेर्नुहोस्</translation>
 <translation id="3350687908700087792">सबै इन्कग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
-<translation id="3353615205017136254">Google ले प्रदान गरेको मूल पृष्ठको लाइट संस्करण। मूल पृष्ठ लोड गर्न मूल पृष्ठ लोड गर्नुहोस् नामक बटन ट्याप गर्नुहोस्।</translation>
 <translation id="3359667936385849800">तपाईंको हालको सेवा प्रदायक प्रयोग गर्नुहोस्</translation>
 <translation id="3367813778245106622">सिंक सुरु गर्न फेरि साइन इन गर्नुहोस्</translation>
 <translation id="337236281855091893">कुनै शब्दबारे जानकारी खोज्न त्यसमा ट्याप गर्नुको साटो त्यसलाई टच एण्ड होल्ड गर्नुहोस्</translation>
@@ -482,7 +482,6 @@
 <translation id="4411535500181276704">लाइट मोड</translation>
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4427306783828095590">परिष्कृत सुरक्षा प्रयोग गरी फिसिङ तथा मालवेयरमाथि अझ राम्रोसँग रोक लगाउन सकिन्छ</translation>
-<translation id="4440958355523780886">Google ले उपलब्ध गराएको मूल पृष्ठको लाइट संस्करण। मूल पृष्ठ लोड गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ट्याब बन्द गर्नुहोस्‌</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> मा पुस्तक चिन्ह लगाइयो</translation>
 <translation id="4472118726404937099">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
@@ -689,6 +688,7 @@
 <translation id="5765780083710877561">विवरण:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> ट्याब रिस्टोर गरियो</translation>
 <translation id="5776970333778123608">अमहत्त्वपूर्ण डेटा</translation>
+<translation id="5780792035410621042">पासवर्ड कपी गर्न सर्वप्रथम आफ्नो यन्त्रमा स्क्रिन लक सेट गर्नुहोस्</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> मध्ये <ph name="SPACE_USED" /> प्रयोग गरिँदै</translation>
 <translation id="5795872532621730126">खोज्नुहोस् तथा ब्राउज गर्नुहोस्</translation>
 <translation id="5797070761912323120">Google ले खोज, विज्ञापन र Google का अन्य सेवाहरूलाई वैयक्तीकृत गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ</translation>
@@ -900,7 +900,6 @@
 <translation id="7121362699166175603">ठेगाना पट्टीका इतिहास र स्वतः पूर्णताहरूलाई खाली गर्छ। तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य किसिमका ब्राउजिङ इतिहास रहेका हुन सक्छन्।</translation>
 <translation id="7138678301420049075">अन्य</translation>
 <translation id="7146622961999026732">यी साइट र एपहरू तपाईंका लागि महत्त्वपूर्ण हुन सक्छन्:</translation>
-<translation id="7149158118503947153"><ph name="DOMAIN_NAME" /> को <ph name="BEGIN_LINK" />मूल पृष्ठ लोड गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
 <translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7177466738963138057">तपाईं सेटिङहरूमा पछि यो परिवर्तन गर्न सक्नुहुन्छ</translation>

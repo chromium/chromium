@@ -21,6 +21,7 @@
 <translation id="1516530951338665275">పెయిరింగ్‌ను కొనసాగించడానికి Google Chromeకు 
  బ్లూటూత్ యాక్సెస్ అవసరం. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chromeని నవీకరించు</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ఇప్పటికే ఈ Chrome ప్రొఫైల్‌కు సైన్ ఇన్ చేసి ఉన్నారు. ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chrome ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="1587223624401073077">Google Chrome మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> హానికరం, కావున Chrome దాన్ని బ్లాక్ చేసింది.</translation>
 <translation id="1597911401261118146">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromeకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
@@ -113,6 +114,7 @@
 <translation id="3735758079232443276"><ph name="EXTENSION_NAME" /> పొడిగింపు మీరు Chromeని ప్రారంభించినప్పుడు చూపబడే పేజీని మార్చింది.</translation>
 <translation id="3779473566290487688">భవిష్యత్తు Google Chrome అప్‌డేట్‌లను పొందడానికి, మీకు OS X 10.11 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ OS X 10.10ను ఉపయోగిస్తోంది.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chrome ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="386202838227397562">దయచేసి అన్ని Google Chrome విండోలను మూసివేసి, మళ్ళీ ప్రయత్నించండి.</translation>
 <translation id="3865754807470779944">Chrome వెర్షన్ <ph name="PRODUCT_VERSION" /> ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="3873044882194371212">Chrome అ&amp;జ్ఞాత విండోలో లింక్‌ను తెరువు</translation>
@@ -180,6 +182,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 సెకనులో పునఃప్రారంభమవుతుంది}other{Google Chrome # సెకన్లలో పునఃప్రారంభమవుతుంది}}</translation>
 <translation id="573759479754913123">Chrome OS గురించి</translation>
+<translation id="5756509061973259733">ఈ పరికరంలో ఇప్పటికే ఈ ఖాతాతో ఒక Chrome ప్రొఫైల్ ఉంది</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromeను ప్రారంభించడం సాధ్యపడలేదు. మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="5867197326698922595">పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి Google Chrome ప్రయత్నిస్తోంది.</translation>

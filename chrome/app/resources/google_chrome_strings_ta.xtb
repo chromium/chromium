@@ -21,6 +21,7 @@
 <translation id="1516530951338665275">இணைப்பதைத் தொடர Google Chromeமிற்கு புளூடூத் அணுகல் 
  தேவை. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chromeஐப் புதுப்பி</translation>
+<translation id="1583073672411044740">இந்த Chrome சுயவிவரத்தில் <ph name="EXISTING_USER" /> ஏற்கெனவே உள்நுழைந்துள்ளார். இது <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்குப் புதிய Chrome சுயவிவரத்தை உருவாக்கும்</translation>
 <translation id="1587223624401073077">Google Chrome உங்கள் கேமராவைப் பயன்படுத்துகிறது.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ஆபத்தானது என்பதால் Chrome அதைத் தடுத்துள்ளது.</translation>
 <translation id="1597911401261118146">தரவு மீறல்கள் மற்றும் பிற பாதுகாப்புச் சிக்கல்களிலிருந்து உங்கள் கடவுச்சொற்கள் பாதுகாப்பாக இருக்கின்றனவா என்பதைச் சரிபார்க்க <ph name="BEGIN_LINK" />Chromeமில் உள்நுழையுங்கள்<ph name="END_LINK" />.</translation>
@@ -113,6 +114,7 @@
 <translation id="3735758079232443276">Chromeஐத் தொடங்கும் போது காண்பிக்கப்படும் பக்கத்தை, "<ph name="EXTENSION_NAME" />" நீட்டிப்பு மாற்றியுள்ளது.</translation>
 <translation id="3779473566290487688">இனிவரும் Google Chrome புதுப்பிப்புகளைப் பெற OS X 10.11 அல்லது அதற்குப் பிந்தைய பதிப்பு தேவை. இந்தக் கம்ப்யூட்டர் OS X 10.10 பதிப்பைப் பயன்படுத்துகிறது.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">தொடர்ந்தால் <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்குப் புதிய Chrome சுயவிவரம் உருவாக்கப்படும்</translation>
 <translation id="386202838227397562">அனைத்து Google Chrome சாளரங்களையும் மூடி, பின்னர் முயற்சி செய்க.</translation>
 <translation id="3865754807470779944">Chromeமின் <ph name="PRODUCT_VERSION" /> பதிப்பு நிறுவப்பட்டுள்ளது</translation>
 <translation id="3873044882194371212">Chrome மறை&amp;நிலை சாளரத்தில் இணைப்பைத் திற</translation>
@@ -180,6 +182,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 வினாடியில் மீண்டும் தொடங்கும்}other{Google Chrome # வினாடிகளில் மீண்டும் தொடங்கும்}}</translation>
 <translation id="573759479754913123">Chrome OS அறிமுகம்</translation>
+<translation id="5756509061973259733">இந்தக் கணக்கின் மூலம் ஏற்கெனவே ஒரு Chrome சுயவிவரம் இந்தச் சாதனத்தில் உருவாக்கப்பட்டுள்ளது</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromeஐத் தொடங்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="5867197326698922595">Google Chrome கடவுச்சொற்களைத் திருத்த முயல்கிறது.</translation>

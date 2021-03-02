@@ -49,7 +49,6 @@
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{請在 1 星期內更新 <ph name="DEVICE_TYPE" />}other{請在 {NUM_WEEKS} 星期內更新 <ph name="DEVICE_TYPE" />}}</translation>
-<translation id="1056466516655540509">上次更新時間：<ph name="MINUTES" /> 分鐘前</translation>
 <translation id="1056775291175587022">沒有網絡</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -297,7 +296,6 @@
 <translation id="1327272175893960498">Kerberos 票證</translation>
 <translation id="1327495825214193325">必須重新啟動 <ph name="DEVICE_TYPE" /> 才能啟用 ADB 偵錯。如要停用 ADB 偵錯，則需要將裝置回復原廠設定。</translation>
 <translation id="1327794256477341646">需要所在位置的功能將無法運作</translation>
-<translation id="1329584516321524826">上次更新時間：剛才</translation>
 <translation id="1330145147221172764">啟用螢幕小鍵盤</translation>
 <translation id="1331977651797684645">這是我本人。</translation>
 <translation id="1333489022424033687">如不清除其他網站在裝置上儲存的資料，<ph name="ORIGIN" /> 的部分功能可能無法正常運作</translation>
@@ -2222,7 +2220,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可查看以下檔案</translation>
 <translation id="3484273680291419129">正在移除有害的軟件…</translation>
 <translation id="3484869148456018791">取得新憑證</translation>
-<translation id="3484991308207164042">隱藏這些購物車</translation>
 <translation id="3487007233252413104">匿名函數</translation>
 <translation id="348780365869651045">正在等待 AppCache…</translation>
 <translation id="3490695139702884919">正在下載… <ph name="PERCENT" />%</translation>
@@ -2578,7 +2575,6 @@
 <translation id="3866249974567520381">描述</translation>
 <translation id="3867134342671430205">透過拖曳方式或方向鍵移動螢幕</translation>
 <translation id="3867944738977021751">憑證欄位</translation>
-<translation id="3868847547183917201">您將不會再在此頁面看到購物車</translation>
 <translation id="3869917919960562512">錯誤的索引。</translation>
 <translation id="3870931306085184145">沒有儲存的 <ph name="DOMAIN" /> 密碼</translation>
 <translation id="3871350334636688135">24 小時後，管理員會在您重新啟動裝置時執行一次性更新，而此更新會刪除您的本機資料。請在 24 小時內將您需要的任何本機資料儲存至雲端儲存空間。</translation>
@@ -2735,7 +2731,6 @@
 <translation id="4031527940632463547">已封鎖感應器</translation>
 <translation id="4033471457476425443">新增資料夾</translation>
 <translation id="4034824040120875894">打印機</translation>
-<translation id="4035321506998192527">係咪要啟動 Chrome 作業系統內置嘅螢幕閱讀工具 ChromeVox？要嘅話請㩒空格鍵。</translation>
 <translation id="4035758313003622889">工作管理員(&amp;T)</translation>
 <translation id="4036778507053569103">從伺服器下載的政策無效。</translation>
 <translation id="4037084878352560732">馬</translation>
@@ -2856,7 +2851,6 @@
 <translation id="4186763173530196927">一個應用程式正在嘗試存取攝錄機。如要允許存取，請將攝錄機的私隱開關切換至關閉。</translation>
 <translation id="4187424053537113647">正在設定 <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">突顯鍵盤焦點</translation>
-<translation id="4193575319002689239">顯示資訊卡</translation>
 <translation id="4194570336751258953">啟用輕按點擊功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4195814663415092787">開啟上次瀏覽的內容</translation>
@@ -3372,7 +3366,6 @@
 <translation id="4808667324955055115">已封鎖彈出式視窗：</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="480990236307250886">開啟首頁</translation>
-<translation id="4810383437107234249">永不顯示購物車</translation>
 <translation id="4811212958317149293">「按鈕控制」鍵盤自動掃瞄</translation>
 <translation id="4811503964269049987">將所選分頁分組</translation>
 <translation id="4813136279048157860">我的圖片</translation>
@@ -3539,7 +3532,6 @@
 <translation id="4998430619171209993">開啟</translation>
 <translation id="5000922062037820727">封鎖 (建議)</translation>
 <translation id="5005498671520578047">複製密碼</translation>
-<translation id="5005970596776813007">您要啟用 Chrome 作業系統內置的螢幕閱讀工具 ChromeVox 嗎？</translation>
 <translation id="5006218871145547804">Crostini 的 Android 應用程式 ADB</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="5008936837313706385">活動名稱</translation>
@@ -3952,6 +3944,7 @@
 <translation id="549211519852037402">米色和白色</translation>
 <translation id="5493792505296048976">螢幕已開啟</translation>
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
+<translation id="5494920125229734069">全部選取</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、數據和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持螢幕開啟</translation>
 <translation id="5496587651328244253">管理</translation>
@@ -4038,7 +4031,6 @@
 <ph name="BEGIN_PARAGRAPH2" />即使關閉此功能，您的裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />擁有者可前往「設定」&gt;「進階」&gt;「自動將診斷和使用情況資料傳送給 Google」，以控制此功能。<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />如果您已開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在您的 Google 帳戶中。您可以前往 account.google.com 查看和刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">係咪要啟動 Chrome 作業系統內置嘅螢幕閱讀工具 ChromeVox？係嘅話就請同時㩒住校高同校低音量鍵五秒。</translation>
 <translation id="5585019845078534178">付款卡</translation>
 <translation id="5585118885427931890">無法建立書籤資料夾。</translation>
 <translation id="558563010977877295">開啟特定網頁或一組網頁</translation>
@@ -5561,7 +5553,6 @@
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7360233684753165754">將 <ph name="PAGE_NUMBER" /> 頁傳送至「<ph name="PRINTER_NAME" />」列印</translation>
 <translation id="7361297102842600584">按一下滑鼠右鍵即可執行 <ph name="PLUGIN_NAME" /></translation>
-<translation id="7363117941401515667">上次更新時間：<ph name="HOURS" /> 小時前</translation>
 <translation id="7364591875953874521">已要求存取權</translation>
 <translation id="7364796246159120393">選擇檔案</translation>
 <translation id="7365076891350562061">顯示器大小</translation>
@@ -6633,7 +6624,6 @@
 <translation id="8592141010104017453">完全不顯示通知</translation>
 <translation id="859246725979739260">此網站已被禁止存取您的位置。</translation>
 <translation id="8593121833493516339">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
-<translation id="8593735906501637689">已移除「<ph name="MODULE_TITLE" />」</translation>
 <translation id="8594908476761052472">拍攝影片</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">網絡屬性：</translation>
@@ -6707,7 +6697,6 @@
 <translation id="866611985033792019">信任這個用於識別電郵使用者的憑證</translation>
 <translation id="8666584013686199826">在網站要存取 USB 裝置時詢問您</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕，並且停用了滑鼠游標。</translation>
-<translation id="866851964140184995">您將不會再在此頁面看到「<ph name="MODULE_NAME" />」</translation>
 <translation id="8669284339312441707">暖色調</translation>
 <translation id="8670537393737592796">如要快速返回此處，請按一下安裝按鈕來安裝「<ph name="APP_NAME" />」</translation>
 <translation id="867085395664725367">伺服器暫時發生錯誤。</translation>
@@ -6777,10 +6766,8 @@
 <translation id="8742998548129056176">這個選項會提供裝置的一般資料和使用情况 (例如電量、系統及應用程式活動，以及發生的錯誤)。這些資料將會用來改善 Android。部分彙整資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改良應用程式和產品。</translation>
 <translation id="8743164338060742337">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /> 嘅訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，連接</translation>
 <translation id="8743390665131937741">全螢幕縮放等級：</translation>
-<translation id="8743864605301774756">上次更新時間：1 小時前</translation>
 <translation id="8746654918629346731">您已要求安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="874689135111202667">{0,plural, =1{要將一個檔案上載至此網站嗎？}other{要將 # 個檔案上載至此網站嗎？}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{已新增 1 個 Google 帳戶}other{已新增 <ph name="EXTRA_ACCOUNTS" /> 個 Google 帳戶}}</translation>
 <translation id="8749556627204742888">您正在與此裝置的其他使用者共用此網絡。</translation>
 <translation id="8749805710397399240">無法投放螢幕。請檢查「系統偏好設定」中的「螢幕錄影」權限。</translation>
 <translation id="8749863574775030885">存取來自未知供應商的 USB 裝置</translation>

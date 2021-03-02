@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée : <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Connexion</translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
 <translation id="4848429997038228357">EXÉCUTION EN COURS…</translation>
@@ -302,6 +303,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7769672763586021400">Identifiant de modèle</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
 <translation id="7960831585769876809">Température</translation>
@@ -360,6 +362,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9137526406337347448">Services Google</translation>
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
 <translation id="9173638680043580060">Il reste moins d'une minute</translation>
 <translation id="9190063653747922532">L2TP/IPSec + clé prépartagée</translation>

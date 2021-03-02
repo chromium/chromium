@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4808449224298348341">Отменено задание печати файла "<ph name="DOCUMENT_TITLE" />"</translation>
+<translation id="4813345808229079766">Соединение</translation>
 <translation id="4832079907277790330">Выбрать папку в приложении Files…</translation>
 <translation id="4835901797422965222">Нет активных сетей.</translation>
 <translation id="4848429997038228357">ВЫПОЛНЯЕТСЯ</translation>
@@ -302,6 +303,7 @@
 <translation id="7769672763586021400">Идентификатор модели</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип провайдера</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -360,6 +362,7 @@
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>
+<translation id="9137526406337347448">Сервисы Google</translation>
 <translation id="9149391708638971077">Запустить проверку памяти</translation>
 <translation id="9173638680043580060">Осталось меньше минуты…</translation>
 <translation id="9190063653747922532">L2TP/IPsec + общий ключ</translation>

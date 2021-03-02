@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4808449224298348341">Kinansela ang pag-print ng <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Pagkonekta</translation>
 <translation id="4832079907277790330">Pumili ng folder sa Files app...</translation>
 <translation id="4835901797422965222">Walang aktibong network</translation>
 <translation id="4848429997038228357">TUMATAKBO</translation>
@@ -302,6 +303,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Uri ng provider</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -360,6 +362,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="910415269708673980">I-refresh ang ticket para sa <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Sina-scan ang pahina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">I-unlock</translation>
+<translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9149391708638971077">Patakbuhin ang pagsusuri sa Memory</translation>
 <translation id="9173638680043580060">Wala nang isang minuto ang natitira</translation>
 <translation id="9190063653747922532">L2TP/IPsec + paunang nakabahaging key</translation>

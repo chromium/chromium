@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">कैप्टिव पोर्टल</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> जीबी में से <ph name="AVAILABLE_MEMORY" /> जीबी उपलब्ध है</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">कतार में है</translation>
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
+<translation id="2217935453350629363">मौजूदा स्पीड</translation>
 <translation id="2224337661447660594">इंटरनेट कनेक्शन नहीं है</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">पीडीएफ़</translation>
 <translation id="4425149324548788773">मेरी डिस्क</translation>
 <translation id="4429881212383817840">Kerberos टिकट की समयसीमा जल्द ही खत्म होने वाली है</translation>
+<translation id="4431821876790500265">रिपोर्ट देखें</translation>
 <translation id="445059817448385655">पुराना पासवर्ड</translation>
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">स्कैन की हुई फ़ाइल यहां सेव करें</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="4773299976671772492">रोक दिया गया</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
+<translation id="4813345808229079766">कनेक्शन</translation>
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
 <translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
 <translation id="4848429997038228357">चल रहा है</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="498186245079027698">स्कैनर की जांच करके फिर से कोशिश करें. पक्का करें कि स्कैन की गई फ़ाइलों को सेव करने के लिए, डिवाइस में खाली जगह हो.</translation>
 <translation id="4985509611418653372">चलाएं</translation>
+<translation id="4999333166442584738">रिपोर्ट छिपाएं</translation>
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">समूह नाम</translation>
@@ -302,6 +307,7 @@
 <translation id="7769672763586021400">मॉडल आईडी</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA या RSN)</translation>
+<translation id="7881066108824108340">डीएनएस</translation>
 <translation id="7882358943899516840">कंपनी का प्रकार</translation>
 <translation id="7936303884198020182">कोई भी नाम सर्वर नहीं मिला</translation>
 <translation id="7960831585769876809">तापमान</translation>
@@ -360,6 +366,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>
+<translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">मेमोरी टेस्ट चलाएं</translation>
 <translation id="9173638680043580060">एक मिनट से कम बचा है</translation>
 <translation id="9190063653747922532">L2TP/IPsec + पूर्व-शेयर कुंजी</translation>

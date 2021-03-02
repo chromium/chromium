@@ -117,7 +117,7 @@
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
-<translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել և լիցքաթափվել</translation>
+<translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել</translation>
 <translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
 <translation id="3942420633017001071">Դիագնոստիկա</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="4773299976671772492">Դադարեցված է</translation>
 <translation id="4808449224298348341">Տպման առաջադրանքը չեղարկվեց՝ <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Միացում</translation>
 <translation id="4832079907277790330">Ընտրել պանակ «Ֆայլեր» հավելվածում…</translation>
 <translation id="4835901797422965222">Ակտիվ ցանցեր չկան</translation>
 <translation id="4848429997038228357">ՓՈՐՁԱՐԿՎՈՒՄ Է</translation>
@@ -302,6 +303,7 @@
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Մատակարարի տեսակը</translation>
 <translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
 <translation id="7960831585769876809">Ջերմաստիճան</translation>
@@ -360,6 +362,7 @@
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
+<translation id="9137526406337347448">Google-ի ծառայություններ</translation>
 <translation id="9149391708638971077">Փորձարկել հիշողությունը</translation>
 <translation id="9173638680043580060">Մնացել է մեկ րոպեից քիչ</translation>
 <translation id="9190063653747922532">L2TP/IPsec + հանրային բանալի</translation>

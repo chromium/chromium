@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">接続</translation>
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
 <translation id="4835901797422965222">有効なネットワークがありません</translation>
 <translation id="4848429997038228357">実行中</translation>
@@ -302,6 +303,7 @@
 <translation id="7769672763586021400">モデル ID</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7819857487979277519">PSK（WPA または RSN）</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">プロバイダの種類</translation>
 <translation id="7936303884198020182">ネームサーバーが見つかりませんでした</translation>
 <translation id="7960831585769876809">温度</translation>
@@ -360,6 +362,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>
 <translation id="9111102763498581341">ロック解除</translation>
+<translation id="9137526406337347448">Google サービス</translation>
 <translation id="9149391708638971077">メモリテストを実行</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>
 <translation id="9190063653747922532">L2TP/IPSec + 事前共有鍵</translation>

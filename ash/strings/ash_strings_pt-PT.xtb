@@ -250,7 +250,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="309749186376891736">Mover o cursor</translation>
 <translation id="3098580329624789136">Obtenha a intenção <ph name="INTENT" /> de "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Ignorar modo de captura</translation>
-<translation id="3105917916468784889">Tirar captura de ecrã</translation>
+<translation id="3105917916468784889">Fazer captura de ecrã</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139942575505304791">Secretária 1</translation>
@@ -305,6 +305,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Reverter alteração para <ph name="FROM_LOCALE" /> (requer reinicio)</translation>
 <translation id="3576141592585647168">Altere o fuso horário</translation>
+<translation id="3593039967545720377">Aceda ao seu histórico da área de transferência ao premir <ph name="SHORTCUT_KEY_NAME" /> + V para ver a área de transferência. Para começar, copie um item.</translation>
 <translation id="3593646411856133110">Deslize rapidamente para cima sem soltar para ver as apps abertas.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="3604801046548457007">Foi criado o espaço de trabalho <ph name="DESK_TITILE" /></translation>

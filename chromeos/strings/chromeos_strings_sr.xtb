@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Улазни портал</translation>
 <translation id="2008685064673031089">Примарна претрага</translation>
 <translation id="2080070583977670716">Више подешавања</translation>
+<translation id="2126937207024182736">Доступно: <ph name="AVAILABLE_MEMORY" /> GB од <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">НА ЧЕКАЊУ</translation>
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
+<translation id="2217935453350629363">Тренутна брзина</translation>
 <translation id="2224337661447660594">Нема интернета</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус активације</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мој диск</translation>
 <translation id="4429881212383817840">Kerberos тикет ускоро истиче</translation>
+<translation id="4431821876790500265">Прикажи извештај</translation>
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4453205916657964690">Маска подмреже</translation>
 <translation id="4454245904991689773">Скенирај у:</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4773299976671772492">Заустављено је</translation>
 <translation id="4808449224298348341">Отказан је задатак штампања <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Веза</translation>
 <translation id="4832079907277790330">Изаберите фолдер у апликацији Фајлови...</translation>
 <translation id="4835901797422965222">Нема активних мрежа</translation>
 <translation id="4848429997038228357">У ТОКУ</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Датум</translation>
 <translation id="498186245079027698">Проверите скенер и пробајте поново. Уверите се да има довољно локалне меморије за чување скенираних фајлова.</translation>
 <translation id="4985509611418653372">Покрени</translation>
+<translation id="4999333166442584738">Сакриј извештај</translation>
 <translation id="500920857929044050">Заустави тест</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Назив групе</translation>
@@ -302,6 +307,7 @@
 <translation id="7769672763586021400">ИД модела</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип добављача</translation>
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -360,6 +366,7 @@
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Скенира се <ph name="PAGE_NUMBER" />. страница</translation>
 <translation id="9111102763498581341">Откључај</translation>
+<translation id="9137526406337347448">Google услуге</translation>
 <translation id="9149391708638971077">Покрени тест меморије</translation>
 <translation id="9173638680043580060">Преостало је мање од минута</translation>
 <translation id="9190063653747922532">L2TP/IPsec + тајни кључ</translation>

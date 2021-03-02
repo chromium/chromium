@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Fiksuotasis portalas</translation>
 <translation id="2008685064673031089">Pagrindinė paieška</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
+<translation id="2126937207024182736">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
+<translation id="2217935453350629363">Dabartinė sparta</translation>
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
+<translation id="4431821876790500265">Žr. ataskaitą</translation>
 <translation id="445059817448385655">Senas slaptažodis</translation>
 <translation id="4453205916657964690">Potinklio kaukė</translation>
 <translation id="4454245904991689773">Nuskaityti į</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4808449224298348341">Spausdinimo užduotis atšaukta: <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Ryšys</translation>
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
 <translation id="4835901797422965222">Nėra jokių aktyvių tinklų</translation>
 <translation id="4848429997038228357">VYKDOMA</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
+<translation id="4999333166442584738">Slėpti ataskaitą</translation>
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Grupės pavadinimas</translation>
@@ -302,6 +307,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7769672763586021400">Modelio ID</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7819857487979277519">PSK (WPA ar RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teikėjo tipas</translation>
 <translation id="7936303884198020182">Domenų pavadinimų serverių nerasta</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
@@ -360,6 +366,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>
 <translation id="9111102763498581341">Atrakinti</translation>
+<translation id="9137526406337347448">„Google“ paslaugos</translation>
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
 <translation id="9173638680043580060">Liko mažiau nei minutė</translation>
 <translation id="9190063653747922532">L2TP / „IPSec“ ir iš anksto bendrinamas raktas</translation>

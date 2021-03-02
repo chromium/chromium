@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Loginportal</translation>
 <translation id="2008685064673031089">Prime-søgning</translation>
 <translation id="2080070583977670716">Flere indstillinger</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB ledig hukommelse ud af <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
+<translation id="2217935453350629363">Nuværende hastighed</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
+<translation id="4431821876790500265">Se rapport</translation>
 <translation id="445059817448385655">Gammel adgangskode</translation>
 <translation id="4453205916657964690">Undernetmaske</translation>
 <translation id="4454245904991689773">Scan til</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Forældreadgang</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4808449224298348341">Udskriftsjobbet <ph name="DOCUMENT_TITLE" /> blev annulleret</translation>
+<translation id="4813345808229079766">Forbindelse</translation>
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4835901797422965222">Ingen aktive netværk</translation>
 <translation id="4848429997038228357">KØRER</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Dato</translation>
 <translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
 <translation id="4985509611418653372">Kør</translation>
+<translation id="4999333166442584738">Skjul rapport</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
@@ -301,6 +306,7 @@
 <translation id="7769672763586021400">Model-id</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Udbydertype</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -359,6 +365,7 @@
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås op</translation>
+<translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9149391708638971077">Kør hukommelsestest</translation>
 <translation id="9173638680043580060">Mindre end ét minut tilbage</translation>
 <translation id="9190063653747922532">L2TP/IPsec + forhåndsdelt nøgle</translation>

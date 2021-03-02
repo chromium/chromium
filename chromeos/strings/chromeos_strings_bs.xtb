@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Zaštitni portal</translation>
 <translation id="2008685064673031089">Primarno pretraživanje</translation>
 <translation id="2080070583977670716">Više postavki</translation>
+<translation id="2126937207024182736">Dostupno je <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
+<translation id="2217935453350629363">Trenutna brzina</translation>
 <translation id="2224337661447660594">Nema internetske veze</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status aktivacije</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
+<translation id="4431821876790500265">Prikaži izvještaj</translation>
 <translation id="445059817448385655">Stara lozinka</translation>
 <translation id="4453205916657964690">Maska podmreže</translation>
 <translation id="4454245904991689773">Skeniraj u:</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Pristup roditelja</translation>
 <translation id="4773299976671772492">Zaustavljeno</translation>
 <translation id="4808449224298348341">Zadatak za štampanje dokumenta <ph name="DOCUMENT_TITLE" /> je otkazan</translation>
+<translation id="4813345808229079766">Veza</translation>
 <translation id="4832079907277790330">Odaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
 <translation id="4848429997038228357">U TOKU</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Provjerite skener i pokušajte ponovo. Vodite računa da ima dovoljno prostora na uređaju da sačuvate skenirane fajlove.</translation>
 <translation id="4985509611418653372">Pokreni</translation>
+<translation id="4999333166442584738">Sakrij izvještaj</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
@@ -302,6 +307,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA ili RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta davatelja usluge</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server naziva</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -360,6 +366,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se stranica broj <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
+<translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>
 <translation id="9190063653747922532">L2TP/IPsec + unaprijed dijeljeni ključ</translation>

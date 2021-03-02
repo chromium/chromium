@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="4773299976671772492">Durmuş</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> çap işi ləğv edilib</translation>
+<translation id="4813345808229079766">Bağlantı</translation>
 <translation id="4832079907277790330">Fayllar tətbiqində qovluq seçin...</translation>
 <translation id="4835901797422965222">Aktiv şəbəkə yoxdur</translation>
 <translation id="4848429997038228357">İCRA EDİLİR</translation>
@@ -301,6 +302,7 @@
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA və ya RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provayder növü</translation>
 <translation id="7936303884198020182">Ad serveri tapılmadı</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -359,6 +361,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>
 <translation id="9111102763498581341">Kiliddən çıxarın</translation>
+<translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
 <translation id="9173638680043580060">Bir dəqiqədən az qalıb</translation>
 <translation id="9190063653747922532">L2TP/IPsec + öncədən paylaşılmış açar</translation>

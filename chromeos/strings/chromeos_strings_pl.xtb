@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Portal przechwytujący</translation>
 <translation id="2008685064673031089">Znajdowanie liczb pierwszych</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
+<translation id="2126937207024182736">Dostępne: <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
+<translation id="2217935453350629363">Obecna szybkość</translation>
 <translation id="2224337661447660594">Brak internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stan aktywacji</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
 <translation id="4429881212383817840">Zgłoszenie Kerberos wkrótce straci ważność</translation>
+<translation id="4431821876790500265">Wyświetl raport</translation>
 <translation id="445059817448385655">Stare hasło</translation>
 <translation id="4453205916657964690">Maska podsieci</translation>
 <translation id="4454245904991689773">Skanuj do</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4808449224298348341">Zadanie drukowania <ph name="DOCUMENT_TITLE" /> zostało anulowane</translation>
+<translation id="4813345808229079766">Połączenie</translation>
 <translation id="4832079907277790330">Wybierz Folder w aplikacji Pliki...</translation>
 <translation id="4835901797422965222">Brak aktywnych sieci</translation>
 <translation id="4848429997038228357">W TOKU</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Sprawdź skaner i spróbuj ponownie. Upewnij się, że na urządzeniu masz miejsce na zapisanie zeskanowanych plików.</translation>
 <translation id="4985509611418653372">Uruchom</translation>
+<translation id="4999333166442584738">Ukryj raport</translation>
 <translation id="500920857929044050">Zatrzymaj test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Nazwa grupy</translation>
@@ -302,6 +307,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7819857487979277519">Klucz wstępny (WPA lub RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -360,6 +366,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odblokuj</translation>
+<translation id="9137526406337347448">Usługi Google</translation>
 <translation id="9149391708638971077">Przeprowadź test pamięci</translation>
 <translation id="9173638680043580060">Jeszcze niecała minuta</translation>
 <translation id="9190063653747922532">L2TP/IPSec + klucz wstępny</translation>

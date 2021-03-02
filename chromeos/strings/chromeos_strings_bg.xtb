@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Портал за удостоверяване</translation>
 <translation id="2008685064673031089">Търсене на прости числа</translation>
 <translation id="2080070583977670716">Още настройки</translation>
+<translation id="2126937207024182736">Налице: <ph name="AVAILABLE_MEMORY" /> ГБ от <ph name="TOTAL_MEMORY" /> ГБ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
+<translation id="2217935453350629363">Текуща скорост</translation>
 <translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Моят диск</translation>
 <translation id="4429881212383817840">Пропускът за Kerberos изтича скоро</translation>
+<translation id="4431821876790500265">Преглед на отчета</translation>
 <translation id="445059817448385655">Стара парола</translation>
 <translation id="4453205916657964690">Подмрежова маска</translation>
 <translation id="4454245904991689773">Сканиране във</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4773299976671772492">Спряно</translation>
 <translation id="4808449224298348341">Заданието за отпечатване на <ph name="DOCUMENT_TITLE" /> е анулирано</translation>
+<translation id="4813345808229079766">Връзка</translation>
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4835901797422965222">Няма активни мрежи</translation>
 <translation id="4848429997038228357">ИЗПЪЛНЯВА СЕ</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Дата</translation>
 <translation id="498186245079027698">Проверете скенера и опитайте отново. Уверете се, че на устройството ви има достатъчно място за запазване на сканираните файлове.</translation>
 <translation id="4985509611418653372">Стартиране</translation>
+<translation id="4999333166442584738">Скриване на отчета</translation>
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Име на групата</translation>
@@ -302,6 +307,7 @@
 <translation id="7769672763586021400">Идент. № на модела</translation>
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип на доставчика</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="7960831585769876809">Температура</translation>
@@ -360,6 +366,7 @@
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Отключване</translation>
+<translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9149391708638971077">Тестване на паметта</translation>
 <translation id="9173638680043580060">Остава по-малко от минута</translation>
 <translation id="9190063653747922532">L2TP/IPSec с предварително споделен ключ</translation>

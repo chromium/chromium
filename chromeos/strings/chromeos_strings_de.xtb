@@ -117,6 +117,7 @@
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="3865414814144988605">Auflösung</translation>
+<translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
@@ -159,6 +160,7 @@
 <translation id="4731797938093519117">Elternfreigabe</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4808449224298348341">Druckauftrag für "<ph name="DOCUMENT_TITLE" />" wurde abgebrochen</translation>
+<translation id="4813345808229079766">Verbindung</translation>
 <translation id="4832079907277790330">Ordner in der Dateimanager-App auswählen...</translation>
 <translation id="4835901797422965222">Keine aktiven Netzwerke</translation>
 <translation id="4848429997038228357">LÄUFT</translation>
@@ -301,6 +303,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA oder RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Providertyp</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -359,6 +362,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>
+<translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
 <translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
 <translation id="9190063653747922532">L2TP/IPSec + vorinstallierter Schlüssel</translation>

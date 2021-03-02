@@ -163,6 +163,7 @@
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4808449224298348341">Cancelled print job <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Connection</translation>
 <translation id="4832079907277790330">Select folder in the Files app…</translation>
 <translation id="4835901797422965222">No active networks</translation>
 <translation id="4848429997038228357">RUNNING</translation>
@@ -306,6 +307,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provider type</translation>
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="7960831585769876809">Temperature</translation>
@@ -364,6 +366,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Unlock</translation>
+<translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Run memory test</translation>
 <translation id="9173638680043580060">Less than a minute remaining</translation>
 <translation id="9190063653747922532">L2TP/IPSec + Preshared key</translation>

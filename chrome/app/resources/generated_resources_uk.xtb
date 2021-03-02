@@ -49,7 +49,6 @@
 <translation id="1054048317165655285">Завершіть налаштування на телефоні</translation>
 <translation id="1054153489933238809">Відкрити оригінальне зображення в новій вкладці</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж 1 тижня}one{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_WEEKS} тижня}few{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_WEEKS} тижнів}many{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_WEEKS} тижнів}other{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_WEEKS} тижня}}</translation>
-<translation id="1056466516655540509">Оновлено <ph name="MINUTES" /> хв тому</translation>
 <translation id="1056775291175587022">Немає мереж</translation>
 <translation id="1056898198331236512">Застереження</translation>
 <translation id="1058262162121953039">PUK-код</translation>
@@ -300,7 +299,6 @@
 <translation id="1327272175893960498">Квитки Kerberos</translation>
 <translation id="1327495825214193325">Щоб увімкнути налагодження ADB, потрібно перезапустити пристрій <ph name="DEVICE_TYPE" />. Якщо вимкнути ADB, доведеться відновити заводські налаштування.</translation>
 <translation id="1327794256477341646">Функції, яким потрібен доступ до геоданих, не працюватимуть</translation>
-<translation id="1329584516321524826">Щойно оновлено</translation>
 <translation id="1330145147221172764">Увімкнути екранну клавіатуру</translation>
 <translation id="1331977651797684645">Це я.</translation>
 <translation id="1333489022424033687">Деякі функції на сайті <ph name="ORIGIN" /> можуть не працювати, доки ви не видалите дані, які інші сайти зберегли на вашому пристрої</translation>
@@ -2226,7 +2224,6 @@
 <translation id="3482719661246593752">Сайт <ph name="ORIGIN" /> може переглядати зазначені нижче файли</translation>
 <translation id="3484273680291419129">Вилучення зловмисного програмного забезпечення…</translation>
 <translation id="3484869148456018791">Отримати новий сертифікат</translation>
-<translation id="3484991308207164042">Сховати ці кошики</translation>
 <translation id="3487007233252413104">анонімна функція</translation>
 <translation id="348780365869651045">Очікування AppCache...</translation>
 <translation id="3490695139702884919">Завантаження… <ph name="PERCENT" />%</translation>
@@ -2582,7 +2579,6 @@
 <translation id="3866249974567520381">Опис</translation>
 <translation id="3867134342671430205">Потягніть або скористайтеся клавішами зі стрілками, щоб перемістити дисплей</translation>
 <translation id="3867944738977021751">Поля сертифіката</translation>
-<translation id="3868847547183917201">Кошики більше не відображатимуться на цій сторінці</translation>
 <translation id="3869917919960562512">Неправильний індекс.</translation>
 <translation id="3870931306085184145">Немає збережених паролів для <ph name="DOMAIN" /></translation>
 <translation id="3871350334636688135">Через 24 години адміністратор виконає одноразове оновлення, що призведе до видалення локальних даних під час наступного перезапуску пристрою. Збережіть потрібні локальні дані в хмарному сховищі впродовж 24 годин.</translation>
@@ -2739,7 +2735,6 @@
 <translation id="4031527940632463547">Датчики заблоковано</translation>
 <translation id="4033471457476425443">Додати нову папку</translation>
 <translation id="4034824040120875894">Принтер</translation>
-<translation id="4035321506998192527">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome? Щоб зробити це, натисніть пробіл.</translation>
 <translation id="4035758313003622889">&amp;Диспетчер завдань</translation>
 <translation id="4036778507053569103">Завантажене із сервера правило недійсне.</translation>
 <translation id="4037084878352560732">Кінь</translation>
@@ -2860,7 +2855,6 @@
 <translation id="4186763173530196927">Додаток намагається отримати доступ до камери. Щоб надати його, вимкніть перемикач конфіденційності камери.</translation>
 <translation id="4187424053537113647">Налаштування додатка <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Виділяти фокус клавіатури</translation>
-<translation id="4193575319002689239">Показати картки</translation>
 <translation id="4194570336751258953">Увімкнути функцію "торкнутися, щоб натиснути"</translation>
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4195814663415092787">Продовжити з місця зупинки</translation>
@@ -3376,7 +3370,6 @@
 <translation id="4808667324955055115">Спливаючі вікна заблоковано:</translation>
 <translation id="4809079943450490359">Вказівки адміністратора вашого пристрою:</translation>
 <translation id="480990236307250886">Відкрити домашню сторінку</translation>
-<translation id="4810383437107234249">Ніколи не показувати кошики</translation>
 <translation id="4811212958317149293">Автосканування клавіатури в режимі кнопкового доступу</translation>
 <translation id="4811503964269049987">Додати вибрану вкладку в групу</translation>
 <translation id="4813136279048157860">Мої зображення</translation>
@@ -3543,7 +3536,6 @@
 <translation id="4998430619171209993">Увімкнено</translation>
 <translation id="5000922062037820727">Заблоковано (рекомендується)</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
-<translation id="5005970596776813007">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome?</translation>
 <translation id="5006218871145547804">ADB в додатках для Android у Crostini</translation>
 <translation id="5007392906805964215">Переглянути</translation>
 <translation id="5008936837313706385">Назва дії</translation>
@@ -3956,6 +3948,7 @@
 <translation id="549211519852037402">Бежево-білий</translation>
 <translation id="5493792505296048976">екран увімкнено</translation>
 <translation id="5494362494988149300">Відкрити після &amp;завантаження</translation>
+<translation id="5494920125229734069">Вибрати все</translation>
 <translation id="5495466433285976480">Це вилучить усіх користувачів, файли, дані й інші налаштування після наступного перезапуску. Усім користувачам потрібно буде знову ввійти.</translation>
 <translation id="5495597166260341369">Залишати дисплей увімкненим</translation>
 <translation id="5496587651328244253">Упорядкувати</translation>
@@ -4042,7 +4035,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати дані, потрібні для отримання важливих послуг, зокрема оновлень системи та засобів безпеки.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Власник може керувати цією функцією в меню "Налаштування" &gt; "Розширені" &gt; "Автоматично надсилати в Google дані про діагностику та використання".<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Якщо ввімкнено Історію додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google. Ви можете переглядати й видаляти їх, а також змінювати налаштування на сторінці account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome? Щоб зробити це, утримуйте обидві клавіші гучності впродовж п'яти секунд.</translation>
 <translation id="5585019845078534178">Картки</translation>
 <translation id="5585118885427931890">Не вдалося створити папку закладок.</translation>
 <translation id="558563010977877295">Відкривати певну сторінку чи набір сторінок</translation>
@@ -5565,7 +5557,6 @@
 <translation id="735745346212279324">VPN від’єднано</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> с. на <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Натисніть праву кнопку миші, щоб запустити плагін <ph name="PLUGIN_NAME" /></translation>
-<translation id="7363117941401515667">Оновлено <ph name="HOURS" /> год тому</translation>
 <translation id="7364591875953874521">Запит на доступ надіслано</translation>
 <translation id="7364796246159120393">Вибрати файл</translation>
 <translation id="7365076891350562061">Розмір монітора</translation>
@@ -6639,7 +6630,6 @@
 <translation id="8592141010104017453">Узагалі не показувати сповіщення</translation>
 <translation id="859246725979739260">Цьому сайту заблоковано доступ до ваших геоданих.</translation>
 <translation id="8593121833493516339">Надсилати дані про використання й діагностику. Допоможіть покращити роботу Android для вашої дитини, автоматично надсилаючи в Google дані про діагностику та використання пристрою і додатків. Ця інформація не використовуватиметься для встановлення особи вашої дитини, а допоможе покращити стабільність системи, додатків тощо. Деякі зведені дані також корисні для додатків і партнерів Google, як-от розробників Android. Якщо ввімкнено додаткову Історію додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google дитини. <ph name="BEGIN_LINK1" />Докладніше<ph name="END_LINK1" /></translation>
-<translation id="8593735906501637689"><ph name="MODULE_TITLE" />: видалено</translation>
 <translation id="8594908476761052472">Зняти відео</translation>
 <translation id="8596540852772265699">Нетипові файли</translation>
 <translation id="8597845839771543242">Формат властивості:</translation>
@@ -6713,7 +6703,6 @@
 <translation id="866611985033792019">Довіряти цьому сертифікату для ідентифікації користувачів електронної пошти</translation>
 <translation id="8666584013686199826">Запитувати, коли сайт хоче отримати доступ до пристроїв USB</translation>
 <translation id="8667328578593601900">Сторінка <ph name="FULLSCREEN_ORIGIN" /> зараз відображається в повноекранному режимі та вимкнула курсор миші.</translation>
-<translation id="866851964140184995">Ви більше не бачитимете модуль "<ph name="MODULE_NAME" />" на цій сторінці</translation>
 <translation id="8669284339312441707">Тепло</translation>
 <translation id="8670537393737592796">Щоб швидко повертатися сюди, установіть додаток <ph name="APP_NAME" />, натиснувши цю кнопку</translation>
 <translation id="867085395664725367">Сталася тимчасова помилка сервера.</translation>
@@ -6783,10 +6772,8 @@
 <translation id="8742998548129056176">Це загальна інформація про пристрій і його використання (як-от дані про рівень заряду акумулятора, систему, історію додатків і помилки). Ці відомості використовуватимуться, щоб покращити Android, а деякі зведені дані корисні для додатків і партнерів Google, як-от розробників Android.</translation>
 <translation id="8743164338060742337">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, мережею керує адміністратор, підключитися</translation>
 <translation id="8743390665131937741">Рівень масштабування лупи для всього екрана:</translation>
-<translation id="8743864605301774756">Оновлено 1 год тому</translation>
 <translation id="8746654918629346731">Ви вже надіслали запит на розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Завантажити один файл на цей сайт?}one{Завантажити # файл на цей сайт?}few{Завантажити # файли на цей сайт?}many{Завантажити # файлів на цей сайт?}other{Завантажити # файлу на цей сайт?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{Додано 1 обліковий запис Google}one{Додано <ph name="EXTRA_ACCOUNTS" /> обліковий запис Google}few{Додано <ph name="EXTRA_ACCOUNTS" /> облікові записи Google}many{Додано <ph name="EXTRA_ACCOUNTS" /> облікових записів Google}other{Додано <ph name="EXTRA_ACCOUNTS" /> облікового запису Google}}</translation>
 <translation id="8749556627204742888">До цієї мережі мають доступ інші користувачі пристрою.</translation>
 <translation id="8749805710397399240">Не вдається транслювати ваш екран. Перевірте дозволи на запис екрана в параметрах системи.</translation>
 <translation id="8749863574775030885">Отримувати доступ до пристроїв USB від невідомого постачальника</translation>

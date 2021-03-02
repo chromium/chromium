@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4773299976671772492">Interrotta</translation>
 <translation id="4808449224298348341">Processo di stampa <ph name="DOCUMENT_TITLE" /> annullato</translation>
+<translation id="4813345808229079766">Connessione</translation>
 <translation id="4832079907277790330">Seleziona cartella nell'app File…</translation>
 <translation id="4835901797422965222">Nessuna rete attiva</translation>
 <translation id="4848429997038228357">IN ESECUZIONE</translation>
@@ -302,6 +303,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7769672763586021400">ID modello</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo di provider</translation>
 <translation id="7936303884198020182">nessun server dei nomi trovato</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -360,6 +362,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Sblocca</translation>
+<translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Esegui test memoria</translation>
 <translation id="9173638680043580060">Manca meno di un minuto</translation>
 <translation id="9190063653747922532">L2TP/IPSec + chiave precondivisa</translation>

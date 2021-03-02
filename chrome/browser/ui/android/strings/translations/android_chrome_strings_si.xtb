@@ -262,7 +262,7 @@
 <translation id="2779651927720337254">අසාර්ථකයි</translation>
 <translation id="2781151931089541271">තත්පර 1ක් ඉතිරියි</translation>
 <translation id="2801022321632964776">Chrome හි නවතම අනුවාදයේ ඔබේ භාෂාව ලබා ගැනීමට යාවත්කාලීන කරන්න</translation>
-<translation id="2810645512293415242">දත්ත සුරැකීමට සහ වේගවත්ව පූරණයට පිටුව සරල කෙරිණි.</translation>
+<translation id="2805756323405976993">යෙදුම්</translation>
 <translation id="281504910091592009">ඔබේ <ph name="BEGIN_LINK" />Google ගිණුම<ph name="END_LINK" /> තුළ සුරකින ලද මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="2818669890320396765">ඔබේ සියලු උපාංග මත ඇති ඔබේ පිටුසන් ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="2827278682606527653">සංග්‍රහ කාඩ්පත් මෙනුව අඩක් උස</translation>
@@ -338,13 +338,11 @@
 <translation id="3290991969712132877">ඉක්මණින් මෙහි පැමිණීමට, තවත් විකල්ප බොත්තමෙන් මෙම පිටුව ඔබගේ මුල් තිරයට එක් කරන්න</translation>
 <translation id="3295530008794733555">වේගයෙන් බ්‍රවුස් කරන්න. දත්ත අඩුවෙන් භාවිතා කරන්න.</translation>
 <translation id="3297344142967351106">හඬ සහාය</translation>
-<translation id="3298243779924642547">සැහැල්ලු</translation>
 <translation id="3303414029551471755">අන්තර්ගතය බාගැනීම අරඹන්නද?</translation>
 <translation id="3315103659806849044">ඔබ දැනට ඔබේ සමමුහූර්ත සහ Google සේවා සැකසීම් අභිරුචි කරයි. සමමුහූර්තය ක්‍රියාත්මක කිරීම අවසන් කිරීමට, තිරයේ යට කොටස ළඟ ඇති තහවුරු කිරීමේ බොත්තමට තට්ටු කරන්න. ඉහළට සංචලන කරන්න</translation>
 <translation id="3334729583274622784">ගොනු දිගුව වෙනස් කරන්නේද?</translation>
 <translation id="3341058695485821946">ඔබ කොපමණ දත්ත සුරැක ඇතිදැයි බලන්න</translation>
 <translation id="3350687908700087792">සියලු අප්‍රකට ටැබ වසන්න</translation>
-<translation id="3353615205017136254">Google විසින් දෙනු ලබන සැහැල්ලු පිටුව. මුල්ම පිටුව පූරණ කිරීමට මුල්ම පිටුව පූරණ කරන්න බොත්තමට තට්ටු කරන්න.</translation>
 <translation id="3359667936385849800">ඔබේ වත්මන් සේවා සැපයුම්කරු භාවිත කරන්න</translation>
 <translation id="3367813778245106622">සමමුහුර්ත කිරීම ආරම්භ කිරීමට නැවත පුරන්න</translation>
 <translation id="337236281855091893">සෙවීමට වචනයකට තට්ටු කිරීම වෙනුවට එය ස්පර්ශ කර අල්ලා ගන්න</translation>
@@ -484,7 +482,6 @@
 <translation id="4411535500181276704">සැහැල්ලු ප්‍රකාරය</translation>
 <translation id="4415276339145661267">ඔබේ Google ගිණුම කළමනාකරණය</translation>
 <translation id="4427306783828095590">තතුබෑම් සහ අනිෂ්ට මෘදුකාංග අවහිර කිරීමට වැඩි දියුණු කළ ආරක්ෂාව වැඩි දෙයක් කරයි</translation>
-<translation id="4440958355523780886">Google විසින් සපයනු ලබන සරල පිටුව. මුල්ම පිටුව පූරණ කිරීමට තට්ටු කරන්න.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> පටිත්ත වසන්න</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> වෙත පිටුසන් යොදන ලදී</translation>
 <translation id="4472118726404937099">උපාංග හරහා සමමුහුර්ත කිරීමට සහ පෞද්ගලීකරණය කිරීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
@@ -904,7 +901,6 @@
 <translation id="7121362699166175603">ලිපින තීරුව තුළ ඉතිහාසය හා ස්වයං සම්පූර්ණ කිරීම් හිස් කරයි. ඔබේ Google ගිණුමට <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> හිදී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාරයන් තිබිය හැක.</translation>
 <translation id="7138678301420049075">වෙනත්</translation>
 <translation id="7146622961999026732">මෙම අඩවි සහ යෙදුම් ඔබට වැදගත් යැයි පෙනේ:</translation>
-<translation id="7149158118503947153"><ph name="DOMAIN_NAME" /> වෙතින් <ph name="BEGIN_LINK" />මූලික පිටුව පූරණ කරන්න<ph name="END_LINK" /></translation>
 <translation id="7149893636342594995">පසුගිය පැය 24</translation>
 <translation id="7173114856073700355">සැකසීම් විවෘත කරන්න</translation>
 <translation id="7177466738963138057">ඔබට මෙය සැකසීම් තුළ පසුව වෙනස් කළ හැක.</translation>

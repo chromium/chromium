@@ -160,6 +160,7 @@
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4773299976671772492">Detenida</translation>
 <translation id="4808449224298348341">Se canceló el trabajo de impresión <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Conexión</translation>
 <translation id="4832079907277790330">Seleccionar carpeta en la app de Archivos…</translation>
 <translation id="4835901797422965222">No hay redes activas</translation>
 <translation id="4848429997038228357">EN EJECUCIÓN</translation>
@@ -302,6 +303,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7769672763586021400">ID del modelo</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7936303884198020182">no se encontraron servidores de nombres</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -360,6 +362,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="910415269708673980">Actualizar ticket para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9137526406337347448">Servicios de Google</translation>
 <translation id="9149391708638971077">Ejecutar prueba de memoria</translation>
 <translation id="9173638680043580060">Queda menos de un minuto</translation>
 <translation id="9190063653747922532">L2TP/IPsec + clave previamente compartida</translation>

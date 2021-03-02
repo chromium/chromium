@@ -119,7 +119,7 @@
 <translation id="3820172043799983114">PIN kod xato.</translation>
 <translation id="3838338534323494292">Yangi parol</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
-<translation id="387301095347517405">Batareya toʻliq quvvat olgan sikllari soni</translation>
+<translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
@@ -163,6 +163,7 @@
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="4773299976671772492">To‘xtatildi</translation>
 <translation id="4808449224298348341">Chop etilishi bekor qilindi: <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Ulanish</translation>
 <translation id="4832079907277790330">Fayllar ilovasida jild tanlang...</translation>
 <translation id="4835901797422965222">Faol tarmoq topilmadi</translation>
 <translation id="4848429997038228357">BAJARILMOQDA</translation>
@@ -306,6 +307,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7769672763586021400">Model identifikatori</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7819857487979277519">PSK (WPA yoki RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Ta’minot turi</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="7960831585769876809">Harorat</translation>
@@ -364,6 +366,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>
 <translation id="9111102763498581341">Qulfdan yechish</translation>
+<translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>
 <translation id="9190063653747922532">L2TP/IPsec + umumiy kalit</translation>

@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Portal cativo</translation>
 <translation id="2008685064673031089">Busca principal</translation>
 <translation id="2080070583977670716">Máis configuracións</translation>
+<translation id="2126937207024182736">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
+<translation id="2217935453350629363">Velocidade actual</translation>
 <translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Estado de activación</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4429881212383817840">O tícket de Kerberos caduca pronto</translation>
+<translation id="4431821876790500265">Ver informe</translation>
 <translation id="445059817448385655">Contrasinal antigo</translation>
 <translation id="4453205916657964690">Máscara de subrede</translation>
 <translation id="4454245904991689773">Gardar en</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4808449224298348341">Cancelouse o traballo de impresión <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">Conexión</translation>
 <translation id="4832079907277790330">Seleccionar cartafol na aplicación Ficheiros…</translation>
 <translation id="4835901797422965222">Non hai ningunha rede activa</translation>
 <translation id="4848429997038228357">EN CURSO</translation>
@@ -174,6 +178,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
 <translation id="4985509611418653372">Executar</translation>
+<translation id="4999333166442584738">Ocultar informe</translation>
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
@@ -302,6 +307,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -360,6 +366,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9137526406337347448">Servizos de Google</translation>
 <translation id="9149391708638971077">Realizar proba de memoria</translation>
 <translation id="9173638680043580060">Queda menos dun minuto</translation>
 <translation id="9190063653747922532">L2TP/IPsec + clave precompartida</translation>
