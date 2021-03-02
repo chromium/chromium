@@ -25,12 +25,11 @@ namespace {
 NearbyNotificationDelegate* GetNotificationDelegate(
     Profile* profile,
     const std::string& notification_id) {
-  NearbySharingService* nearby_service =
-      NearbySharingServiceFactory::GetForBrowserContext(profile);
-  if (!nearby_service)
-    return nullptr;
+  DCHECK(NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+      profile));
 
-  return nearby_service->GetNotificationDelegate(notification_id);
+  return NearbySharingServiceFactory::GetForBrowserContext(profile)
+      ->GetNotificationDelegate(notification_id);
 }
 
 void CloseNearbyNotification(Profile* profile,
@@ -87,6 +86,8 @@ void NearbyNotificationHandler::OnClose(Profile* profile,
 
 void NearbyNotificationHandler::OpenSettings(Profile* profile,
                                              const GURL& origin) {
+  DCHECK(NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+      profile));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile, chromeos::settings::mojom::kNearbyShareSubpagePath);
 }

@@ -11,6 +11,8 @@
 #include "base/strings/string16.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
+class Profile;
+
 namespace gfx {
 struct VectorIcon;
 }
@@ -23,7 +25,7 @@ class ShareAction;
 // and the SharesheetService.
 class SharesheetActionCache {
  public:
-  SharesheetActionCache();
+  explicit SharesheetActionCache(Profile* profile);
   ~SharesheetActionCache();
 
   SharesheetActionCache(const SharesheetActionCache&) = delete;

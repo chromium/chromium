@@ -70,14 +70,14 @@ Polymer({
     },
 
     /**
-     * The value of the Nearby Share feature flag which controls if the
-     * Nearby Share settings and subpage are accessible.
+     * Whether or not Nearby Share is supported which controls if the Nearby
+     * Share settings and subpage are accessible.
      * @private {boolean}
      */
-    nearbySharingFeatureEnabled_: {
+    isNearbyShareSupported_: {
       type: Boolean,
       value: function() {
-        return loadTimeData.getBoolean('nearbySharingFeatureFlag');
+        return loadTimeData.getBoolean('isNearbyShareSupported');
       }
     },
 

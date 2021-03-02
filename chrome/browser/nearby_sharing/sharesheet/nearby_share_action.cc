@@ -138,7 +138,7 @@ void NearbyShareAction::OnClose() {
 
 bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
                                          bool contains_hosted_document) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
     return false;
   }

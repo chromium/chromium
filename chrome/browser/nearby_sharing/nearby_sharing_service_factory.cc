@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -32,6 +32,11 @@ namespace {
 
 constexpr char kServiceName[] = "NearbySharingService";
 
+base::Optional<bool>& IsSupportedTesting() {
+  static base::NoDestructor<base::Optional<bool>> is_supported;
+  return *is_supported;
+}
+
 }  // namespace
 
 // static
@@ -40,10 +45,33 @@ NearbySharingServiceFactory* NearbySharingServiceFactory::GetInstance() {
 }
 
 // static
+bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+    content::BrowserContext* context) {
+  if (IsSupportedTesting().has_value())
+    return *IsSupportedTesting();
+
+  if (!base::FeatureList::IsEnabled(features::kNearbySharing))
+    return false;
+
+  if (!chromeos::nearby::NearbyProcessManagerFactory::CanBeLaunchedForProfile(
+          Profile::FromBrowserContext(context))) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
 NearbySharingService* NearbySharingServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<NearbySharingService*>(
       GetInstance()->GetServiceForBrowserContext(context, true /* create */));
+}
+
+// static
+void NearbySharingServiceFactory::
+    SetIsNearbyShareSupportedForBrowserContextForTesting(bool is_supported) {
+  IsSupportedTesting() = is_supported;
 }
 
 NearbySharingServiceFactory::NearbySharingServiceFactory()
@@ -59,21 +87,13 @@ NearbySharingServiceFactory::~NearbySharingServiceFactory() = default;
 
 KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kNearbySharing)) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Nearby Sharing feature flag is not enabled.";
+  if (!IsNearbyShareSupportedForBrowserContext(context)) {
+    NS_LOG(WARNING) << __func__
+                    << ": Nearby Share not supported for browser context.";
     return nullptr;
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-
-  if (!chromeos::nearby::NearbyProcessManagerFactory::CanBeLaunchedForProfile(
-          profile)) {
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Nearby Sharing service cannot be built for current profile";
-    return nullptr;
-  }
 
   chromeos::nearby::NearbyProcessManager* process_manager =
       chromeos::nearby::NearbyProcessManagerFactory::GetForProfile(profile);

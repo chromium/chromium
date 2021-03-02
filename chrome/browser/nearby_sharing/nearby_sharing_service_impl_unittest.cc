@@ -39,6 +39,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_default_device_name.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -439,6 +440,9 @@ class NearbySharingServiceImplTest : public testing::Test {
   }
 
   std::unique_ptr<NearbySharingServiceImpl> CreateService() {
+    NearbySharingServiceFactory::
+        SetIsNearbyShareSupportedForBrowserContextForTesting(true);
+
     profile_ = profile_manager_.CreateTestingProfile(kProfileName);
     prefs_.SetBoolean(prefs::kNearbySharingEnabledPrefName, true);
 

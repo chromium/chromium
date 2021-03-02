@@ -133,6 +133,9 @@ class NearbyNotificationManagerTest : public testing::Test {
   ~NearbyNotificationManagerTest() override = default;
 
   void SetUp() override {
+    NearbySharingServiceFactory::
+        SetIsNearbyShareSupportedForBrowserContextForTesting(true);
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     notification_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(&profile_);

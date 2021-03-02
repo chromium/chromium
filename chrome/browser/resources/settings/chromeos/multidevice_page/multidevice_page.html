@@ -112,7 +112,7 @@
             </settings-multidevice-feature-toggle>
           </template>
         </div>
-        <template is="dom-if" if="[[nearbySharingFeatureEnabled_]]" restamp>
+        <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
           <div id="nearbyshare-item" class="settings-box two-line no-padding">
             <div class="link-wrapper" actionable on-click="nearbyShareClick_">
               <iron-icon icon="os-settings:nearby-share">
@@ -186,7 +186,7 @@
           </settings-multidevice-smartlock-subpage>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[nearbySharingFeatureEnabled_]]" restamp>
+      <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
         <template is="dom-if" route-path="/multidevice/nearbyshare" restamp>
           <settings-subpage associated-control="[[$$('#nearbyshare-item')]]"
               page-title="$i18n{nearbyShareTitle}">
