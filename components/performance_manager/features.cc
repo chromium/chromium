@@ -47,8 +47,5 @@ TabLoadingFrameNavigationThrottlesParams::GetParams() {
   return params;
 }
 
-const base::Feature kServiceWorkerRelationshipsInGraph{
-    "ServiceWorkerRelationshipsInGraph", base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace features
 }  // namespace performance_manager

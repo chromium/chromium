@@ -394,10 +394,6 @@ void WorkerWatcher::OnControlleeAdded(
     int64_t version_id,
     const std::string& client_uuid,
     const content::ServiceWorkerClientInfo& client_info) {
-  if (!base::FeatureList::IsEnabled(
-          features::kServiceWorkerRelationshipsInGraph))
-    return;
-
   switch (client_info.type()) {
     case blink::mojom::ServiceWorkerClientType::kWindow: {
       // For window clients, it is necessary to wait until the navigation has
@@ -447,10 +443,6 @@ void WorkerWatcher::OnControlleeAdded(
 
 void WorkerWatcher::OnControlleeRemoved(int64_t version_id,
                                         const std::string& client_uuid) {
-  if (!base::FeatureList::IsEnabled(
-          features::kServiceWorkerRelationshipsInGraph))
-    return;
-
   // Nothing to do for a frame client whose navigation never committed.
   size_t removed = client_frames_awaiting_commit_.erase(
       AwaitingKey(version_id, client_uuid));
@@ -505,10 +497,6 @@ void WorkerWatcher::OnControlleeNavigationCommitted(
     int64_t version_id,
     const std::string& client_uuid,
     content::GlobalFrameRoutingId render_frame_host_id) {
-  if (!base::FeatureList::IsEnabled(
-          features::kServiceWorkerRelationshipsInGraph))
-    return;
-
   size_t removed = client_frames_awaiting_commit_.erase(
       AwaitingKey(version_id, client_uuid));
   DCHECK_EQ(removed, 1u);

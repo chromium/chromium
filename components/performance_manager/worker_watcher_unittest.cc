@@ -851,10 +851,6 @@ TEST_F(WorkerWatcherTest, SimpleSharedWorker) {
 
 // This test creates one service worker with one client frame.
 TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kServiceWorkerRelationshipsInGraph);
-
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create and start the service worker.
@@ -918,10 +914,6 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
 // bona-fide client of two service workers. Apparently this happens quite
 // rarely in the field.
 TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kServiceWorkerRelationshipsInGraph);
-
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create and start both service workers.
@@ -984,10 +976,6 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
 // This appears to be happening out in the real world, if quite rarely.
 // See https://crbug.com/1143281#c33.
 TEST_F(WorkerWatcherTest, ServiceWorkerTwoFrameClientRelationships) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kServiceWorkerRelationshipsInGraph);
-
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create and start a service worker.
@@ -1116,10 +1104,6 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientDestroyedBeforeCommit) {
 }
 
 TEST_F(WorkerWatcherTest, AllTypesOfServiceWorkerClients) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kServiceWorkerRelationshipsInGraph);
-
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create and start the service worker.
@@ -1192,10 +1176,6 @@ TEST_F(WorkerWatcherTest, AllTypesOfServiceWorkerClients) {
 // connected to the service worker until it starts. It also tests that when the
 // service worker stops, its existing clients are also disconnected.
 TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kServiceWorkerRelationshipsInGraph);
-
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create the worker.
@@ -1363,10 +1343,6 @@ TEST_F(WorkerWatcherTest, SharedWorkerCrossProcessClient) {
 // starts after it has been assigned a worker client, but the client has
 // already died by the time the service worker starts.
 TEST_F(WorkerWatcherTest, SharedWorkerStartsWithDeadWorkerClients) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kServiceWorkerRelationshipsInGraph);
-
   int render_process_id = process_node_source()->CreateProcessNode();
   content::GlobalFrameRoutingId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
@@ -1438,10 +1414,6 @@ TEST_F(WorkerWatcherTest, SharedWorkerStartsWithDeadWorkerClients) {
 }
 
 TEST_F(WorkerWatcherTest, SharedWorkerDiesAsServiceWorkerClient) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kServiceWorkerRelationshipsInGraph);
-
   // Create the shared and service workers.
   int render_process_id = process_node_source()->CreateProcessNode();
   const blink::SharedWorkerToken& shared_worker_token =
@@ -1584,17 +1556,7 @@ TEST_F(WorkerWatcherTest, OneClientTwoSharedWorkers) {
   shared_worker_service()->DestroySharedWorker(shared_worker_token_2);
 }
 
-void WorkerWatcherTest::TestFrameDestroyed(
-    bool enable_service_worker_relationships) {
-  base::test::ScopedFeatureList feature_list;
-  if (enable_service_worker_relationships) {
-    feature_list.InitAndEnableFeature(
-        features::kServiceWorkerRelationshipsInGraph);
-  } else {
-    feature_list.InitAndDisableFeature(
-        features::kServiceWorkerRelationshipsInGraph);
-  }
-
+TEST_F(WorkerWatcherTest, FrameDestroyed) {
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create the frame node.
@@ -1627,8 +1589,7 @@ void WorkerWatcherTest::TestFrameDestroyed(
 
   // Check that everything is wired up correctly.
   CallOnGraphAndWait(base::BindLambdaForTesting(
-      [&enable_service_worker_relationships,
-       dedicated_worker_node = GetDedicatedWorkerNode(dedicated_worker_token),
+      [dedicated_worker_node = GetDedicatedWorkerNode(dedicated_worker_token),
        shared_worker_node = GetSharedWorkerNode(shared_worker_token),
        service_worker_node = GetServiceWorkerNode(service_worker_version_id),
        client_frame_node = frame_node_source()->GetFrameNode(
@@ -1638,9 +1599,7 @@ void WorkerWatcherTest::TestFrameDestroyed(
         EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
         EXPECT_TRUE(IsWorkerClient(dedicated_worker_node, client_frame_node));
         EXPECT_TRUE(IsWorkerClient(shared_worker_node, client_frame_node));
-
-        EXPECT_EQ(enable_service_worker_relationships,
-                  IsWorkerClient(service_worker_node, client_frame_node));
+        EXPECT_TRUE(IsWorkerClient(service_worker_node, client_frame_node));
       }));
 
   frame_node_source()->DeleteFrameNode(render_frame_host_id);
@@ -1668,14 +1627,6 @@ void WorkerWatcherTest::TestFrameDestroyed(
                                         render_frame_host_id);
   shared_worker_service()->DestroySharedWorker(shared_worker_token);
   dedicated_worker_service()->DestroyDedicatedWorker(dedicated_worker_token);
-}
-
-TEST_F(WorkerWatcherTest, FrameDestroyed) {
-  TestFrameDestroyed(false);
-}
-
-TEST_F(WorkerWatcherTest, FrameDestroyedWithServiceWorkerRelationships) {
-  TestFrameDestroyed(true);
 }
 
 }  // namespace performance_manager
