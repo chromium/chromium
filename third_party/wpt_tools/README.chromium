@@ -14,3 +14,5 @@ Local Modifications:
 - Removed all files except for those listed in wpt/WPTIncludeList.
 - Cherry-picked df9dc69c2340d79fbd56ee2adfa85ac8d4af0b93 temporarily to fix a
   lint error blocking the importer.
+- Cherry-picked 9b5f845370d7c6fe83b51ceef3f91e42aa85bbc2 temporatily to resolve
+  https://crbug.com/1182579
