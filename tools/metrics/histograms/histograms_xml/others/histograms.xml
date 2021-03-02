@@ -8198,9 +8198,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    Source page language from UrlLanguageHistogram recorded one per profile
-    during initialization. Each language with a frequency over 5% is recorded
-    once. Incognito profiles are ignored and not recorded on ChromeOS.
+    Records the source page languages from the UrlLanguageHistogram service.
+
+    The UrlLanguageHistogram service saves a dict pref of the page language to
+    frequency for the last 1000 page loads. This histogram is emitted once for
+    all languages that appear in at least 5% of previous page loads. If a
+    profile has 10 or fewer page loads no languages are recorded.
+
+    This histogram is recorded once per profile per eligible language during
+    initialization. Incognito profiles are ignored and it is not recorded on
+    ChromeOS.
   </summary>
 </histogram>
 
