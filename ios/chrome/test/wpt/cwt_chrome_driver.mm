@@ -37,6 +37,17 @@ const int kDefaultPort = 8123;
 
 // Dummy test that keeps the test app alive.
 - (void)testRunCWTChromeDriver {
+  // xcodebuild_runner.LaunchCommand kills the app if it doesn't produce any
+  // output for 180 seconds. CWTChromeDriver doesn't naturally produce output,
+  // since all communication happens over http. To avoid getting killed, print a
+  // heartbeat message every 30 seconds.
+  [NSTimer scheduledTimerWithTimeInterval:30
+                                  repeats:YES
+                                    block:^(NSTimer* timer) {
+                                      LOG(INFO)
+                                          << "CWTChromeDriver is running.";
+                                    }];
+
   XCUIApplication* application = [[XCUIApplication alloc] init];
   [application launch];
 
