@@ -8,6 +8,7 @@ from .code_node import ListNode
 from .code_node import LiteralNode
 from .code_node import SymbolNode
 from .code_node import SymbolScopeNode
+from .code_node import SymbolSensitiveSelectionNode
 from .code_node import TextNode
 from .code_node import WeakDependencyNode
 from .code_node import render_code_node
@@ -151,6 +152,57 @@ f();
 int var3 = 3;
 (void)var3;
 (void)var1;
+""")
+
+    def test_symbol_sensitive_selection_node(self):
+        root = SymbolScopeNode(tail="\n")
+
+        root.register_code_symbols([
+            SymbolNode("var1", "int ${var1} = 1;"),
+            SymbolNode("var2", "int ${var2} = 2;"),
+            SymbolNode("var3", "int ${var3} = 3;"),
+        ])
+
+        choice1 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=["var1", "var2"],
+            code_node=TextNode("F(${var1}, ${var2});"))
+        choice2 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=["var3"], code_node=TextNode("F(${var3});"))
+        choice3 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=[], code_node=TextNode("F();"))
+        root.append(SymbolSensitiveSelectionNode([choice1, choice2, choice3]))
+
+        self.assertRenderResult(root, """\
+F();
+""")
+
+        root.insert(0, TextNode("(void)${var3};"))
+        self.assertRenderResult(root, """\
+int var3 = 3;
+(void)var3;
+F(var3);
+""")
+
+        root.insert(0, TextNode("(void)${var2};"))
+        self.assertRenderResult(
+            root, """\
+int var2 = 2;
+(void)var2;
+int var3 = 3;
+(void)var3;
+F(var3);
+""")
+
+        root.insert(0, TextNode("(void)${var1};"))
+        self.assertRenderResult(
+            root, """\
+int var1 = 1;
+(void)var1;
+int var2 = 2;
+(void)var2;
+int var3 = 3;
+(void)var3;
+F(var1, var2);
 """)
 
     def test_template_error_handling(self):

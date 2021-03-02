@@ -60,18 +60,25 @@ class Likeliness(object):
 
 class CodeNode(object):
     """
-    This is the base class of all code fragment nodes.
+    This is the base class of all code fragment nodes.  CodeNode represents
+    a tree of templated text.
 
-    - Graph structure
+    - Tree structure
     CodeNode can be nested and |outer| points to the nesting CodeNode.  Also
     CodeNode can make a sequence and |prev| points to the previous CodeNode.
     See also |ListNode|.
 
     - Template rendering
     CodeNode has template text and template variable bindings.  Either of
-    |__str__| or |render| returns a text of generated code.  However, these
-    methods have side effects on rendering states, and repeated calls may return
-    different results.
+    |__str__| or |render| produces a text of generated code, which is
+    accumulated into the |renderer| object.
+
+    - Code generation at rendering time
+    It's allowed by design that |__str__| and |render| have side effects on
+    rendering states, hence repeated calls may produce different texts.
+    However, the resulting text must converge when the rendering is done enough
+    times.
+    See also |SymbolScopeNode| and |SymbolNode|.
     """
 
     class _RenderState(object):
@@ -789,6 +796,22 @@ class SymbolScopeNode(SequenceNode):
             return False
         return outer.is_code_symbol_registered(symbol_node)
 
+    def find_code_symbol(self, name):
+        """
+        Returns a SymbolNode whose name is the given |name| and which is
+        available for use within this scope, or None if not found.
+        """
+        assert isinstance(name, str)
+
+        for symbol_node in self._registered_code_symbols:
+            if symbol_node.name == name:
+                return symbol_node
+
+        outer = self.outer_scope()
+        if outer is None:
+            return None
+        return outer.find_code_symbol(name)
+
     def register_code_symbol(self, symbol_node):
         """Registers a SymbolNode and makes it available in this scope."""
         assert isinstance(symbol_node, SymbolNode)
@@ -980,7 +1003,7 @@ class WeakDependencyNode(CodeNode):
         CodeNode.__init__(self)
 
         # Registered weak dependencies to symbols.
-        self._weak_dep_sym_names = list(dep_syms)
+        self._weak_dep_sym_names = tuple(dep_syms)
         # Symbol names that have not yet turned into strong references.
         self._weak_dep_sym_queue = list(self._weak_dep_sym_names)
         # SymbolNodes that already turned into strong references.
@@ -1011,3 +1034,95 @@ class WeakDependencyNode(CodeNode):
             else:
                 unprocessed_sym_names.append(weak_sym_name)
         self._weak_dep_sym_queue = unprocessed_sym_names
+
+
+class SymbolSensitiveSelectionNode(CodeNode):
+    """
+    Represents a code node sensitive to the symbol definitions available at
+    this point of rendering.
+
+    Given multiple choices of code nodes, this code node renders one of them
+    according to what code symbols are already defined at this point of
+    rendering.
+
+    Example:
+        choice1 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=["a", "b"], code_node=code_node1)
+        choice2 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=["x"], code_node=code_node2)
+        choice3 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=[], code_node=code_node3)
+        node = SymbolSensitiveSelectionNode([choice1, choice2, choice3])
+
+    If code symbols "a" and "b" are both already defined, |code_node1| is
+    rendered.  Otherwise if "x" is already defined, |code_node2| is rendered.
+    Otherwise, |code_node3| is rendered.
+    """
+
+    class Choice(object):
+        """Represents a choice in SymbolSensitiveSelectionNode."""
+
+        def __init__(self, symbol_names, code_node):
+            """
+            Args:
+                symbol_names: Names of the code symbols to be defined prior to
+                    the SymbolSensitiveSelectionNode in order to get selected.
+                    All code symbols need to be defined to get selected.  The
+                    empty list satisfies the condition, so behaves as the
+                    default choice.
+                code_node: The code node to be rendered when this Choice gets
+                    selected.
+            """
+            assert isinstance(symbol_names, (list, tuple))
+            assert all(isinstance(name, str) for name in symbol_names)
+            assert isinstance(code_node, CodeNode)
+
+            self._symbol_names = tuple(symbol_names)
+            self._code_node = code_node
+
+        @property
+        def symbol_names(self):
+            return self._symbol_names
+
+        @property
+        def code_node(self):
+            return self._code_node
+
+    def __init__(self, choices):
+        """
+        Args:
+            choices: A list of Choices of code nodes, in the order of priority.
+        """
+        assert isinstance(choices, (list, tuple))
+        assert all(isinstance(choice, self.Choice) for choice in choices)
+
+        CodeNode.__init__(self)
+
+        self._choices = tuple(choices)
+        for choice in self._choices:
+            choice.code_node.set_outer(self)
+
+    def _render(self, renderer, last_render_state):
+        renderer.push_caller(self)
+        try:
+            self._render_internal(renderer)
+        finally:
+            renderer.pop_caller()
+
+    def _render_internal(self, renderer):
+        scope = self.outer_scope()
+
+        for choice in self._choices:
+            for name in choice.symbol_names:
+                symbol_node = scope.find_code_symbol(name)
+                if not (symbol_node
+                        and scope.is_code_symbol_defined(symbol_node)):
+                    break
+            else:
+                return choice.code_node.render(renderer)
+
+        # Do not raise an error because it's possible that more
+        # SymbolDefinitionNodes will be added in the future rendering
+        # iterations and this error will be resolved in the end state despite
+        # that there is no guarantee to be resolved.
+        renderer.render_text("<<unresolved SymbolSensitiveSelectionNode>>")
