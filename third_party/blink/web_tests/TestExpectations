@@ -5701,8 +5701,6 @@ crbug.com/1179219 external/wpt/html/semantics/embedded-content/media-elements/lo
 crbug.com/1179772 [ Win7 ] http/tests/devtools/console/console-preserve-log-x-process-navigation.js [ Pass Failure ]
 crbug.com/1179857 [ Linux ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Pass Failure ]
 crbug.com/1179905 [ Linux ] fast/multicol/nested-very-tall-inside-short-crash.html [ Pass Failure ]
-crbug.com/1179969 [ Mac ] external/wpt/service-workers/service-worker/claim-fetch.https.html [ Failure ]
-crbug.com/1179969 [ Mac ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/claim-fetch.https.html [ Failure ]
 
 # Sheriff 2021-02-19
 crbug.com/1180227 [ Mac ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Pass Failure Crash ]
