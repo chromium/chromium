@@ -77,6 +77,13 @@ public class AutofillAssistantClient {
         return AutofillAssistantClientJni.get().fromWebContents(webContents);
     }
 
+    /**
+     * Notifies that an onboarding UI is shown or hidden.
+     */
+    public static void onOnboardingUiChange(WebContents webContents, boolean shown) {
+        AutofillAssistantClientJni.get().onOnboardingUiChange(webContents, shown);
+    }
+
     private AutofillAssistantClient(long nativeClientAndroid) {
         mNativeClientAndroid = nativeClientAndroid;
     }
@@ -397,6 +404,7 @@ public class AutofillAssistantClient {
     @NativeMethods
     interface Natives {
         AutofillAssistantClient fromWebContents(WebContents webContents);
+        void onOnboardingUiChange(WebContents webContents, boolean shown);
         boolean start(long nativeClientAndroid, AutofillAssistantClient caller, String initialUrl,
                 String experimentIds, String callerAccount, String[] parameterNames,
                 String[] parameterValues, boolean isChromeCustomTab,
