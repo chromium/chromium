@@ -64,33 +64,27 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
      * Encapsulates info necessary to overlay a circular badge (e.g., child account icon) on top of
      * a user avatar.
      */
-    public static class BadgeConfig {
+    private static class BadgeConfig {
         private final Drawable mBadge;
-        private final int mBadgeSize;
+        private final @Px int mBadgeSize;
         private final Point mPosition;
-        private final int mBorderSize;
+        private final @Px int mBorderSize;
 
-        /**
-         * @param badge Square badge drawable to overlay on user avatar. Will be cropped to a
-         *         circular one while overlaying.
-         * @param badgeSize Size of a side the square badge
-         * @param position Position of top left corner of a badge relative to top left corner of
-         *         avatar.
-         * @param borderSize Size of a transparent border around badge.
-         */
-        public BadgeConfig(Drawable badge, int badgeSize, Point position, int borderSize) {
-            assert position != null;
-
-            mBadge = badge;
-            mBadgeSize = badgeSize;
-            mPosition = position;
-            mBorderSize = borderSize;
+        private BadgeConfig(Context context, @DrawableRes int badgeResId) {
+            assert badgeResId != 0 : "badgeResId shouldn't be 0!";
+            Resources resources = context.getResources();
+            mBadge = AppCompatResources.getDrawable(context, badgeResId);
+            mBadgeSize = resources.getDimensionPixelSize(R.dimen.badge_size);
+            mPosition = new Point(resources.getDimensionPixelOffset(R.dimen.badge_position_x),
+                    resources.getDimensionPixelOffset(R.dimen.badge_position_y));
+            mBorderSize = resources.getDimensionPixelSize(R.dimen.badge_border_size);
         }
 
         Drawable getBadge() {
             return mBadge;
         }
 
+        @Px
         int getBadgeSize() {
             return mBadgeSize;
         }
@@ -99,6 +93,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
             return mPosition;
         }
 
+        @Px
         int getBorderSize() {
             return mBorderSize;
         }
@@ -146,7 +141,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
             Context context, @DrawableRes int badgeResId) {
         return new ProfileDataCache(context,
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
-                createBadgeConfig(context, badgeResId));
+                new BadgeConfig(context, badgeResId));
     }
 
     /**
@@ -287,18 +282,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
                     prepareAvatar(accountInfo.getAccountImage(), accountEmail),
                     accountInfo.getFullName(), accountInfo.getGivenName()));
         }
-    }
-
-    private static BadgeConfig createBadgeConfig(Context context, @DrawableRes int badgeResId) {
-        assert badgeResId != 0 : "badgeResId shouldn't be 0!";
-        Resources resources = context.getResources();
-        Drawable badge = AppCompatResources.getDrawable(context, badgeResId);
-        int badgePositionX = resources.getDimensionPixelOffset(R.dimen.badge_position_x);
-        int badgePositionY = resources.getDimensionPixelOffset(R.dimen.badge_position_y);
-        int badgeBorderSize = resources.getDimensionPixelSize(R.dimen.badge_border_size);
-        int badgeSize = resources.getDimensionPixelSize(R.dimen.badge_size);
-        return new BadgeConfig(
-                badge, badgeSize, new Point(badgePositionX, badgePositionY), badgeBorderSize);
     }
 
     private Drawable prepareAvatar(Bitmap bitmap, String accountEmail) {
