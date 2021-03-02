@@ -6,7 +6,6 @@ v8.compileModule Properties:
     data : {
         columnNumber : 1
         lineNumber : 1
-        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }
@@ -66,7 +65,6 @@ v8.compileModule Properties:
     data : {
         columnNumber : 1
         lineNumber : 1
-        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }
@@ -100,7 +98,7 @@ v8.compileModule Properties:
         columnNumber : 1
         consumedCacheSize : <number>
         lineNumber : 1
-        notStreamedReason : "script too small"
+        notStreamedReason : "script has code-cache available"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.cgi
     }

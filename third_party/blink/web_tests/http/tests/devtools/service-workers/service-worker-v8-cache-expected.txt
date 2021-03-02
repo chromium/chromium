@@ -40,7 +40,6 @@ v8.compile Properties:
         columnNumber : 0
         consumedCacheSize : <number>
         lineNumber : 0
-        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-script.js
     }

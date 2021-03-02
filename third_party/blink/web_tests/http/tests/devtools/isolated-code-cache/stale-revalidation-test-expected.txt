@@ -7,7 +7,6 @@ v8.compile Properties:
     data : {
         columnNumber : 0
         lineNumber : 0
-        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-revalidated-script.cgi
     }
@@ -71,7 +70,6 @@ v8.compile Properties:
     data : {
         columnNumber : 0
         lineNumber : 0
-        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/resources/v8-cache-revalidated-script.cgi
     }

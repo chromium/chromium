@@ -7482,6 +7482,13 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledOffThreadFinalizationAndSmallScripts",
+                    "enable_features": [
+                        "SmallScriptStreaming",
+                        "V8OffThreadFinalization"
+                    ]
+                },
+                {
                     "name": "EnabledOffThreadFinalization",
                     "enable_features": [
                         "V8OffThreadFinalization"
@@ -7500,8 +7507,8 @@
                     ]
                 },
                 {
-                    "name": "EnabledOffThreadFinalizationAndSmallScripts",
-                    "enable_features": [
+                    "name": "Disabled",
+                    "disable_features": [
                         "SmallScriptStreaming",
                         "V8OffThreadFinalization"
                     ]

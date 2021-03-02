@@ -19,7 +19,6 @@ v8.compile Properties:
     data : {
         columnNumber : 0
         lineNumber : 0
-        notStreamedReason : "script too small"
         streamed : <boolean>
         url : .../devtools/tracing/timeline-js/resources/timeline-script-tag-2.js
     }
