@@ -59,6 +59,9 @@ class PrefetchProxyTabHelper
 
   class Observer {
    public:
+    // Called when a decoy prefetch is completed with either success or failire.
+    virtual void OnDecoyPrefetchCompleted(const GURL& url) {}
+
     // Called when a prefetch for |url| is completed successfully.
     virtual void OnPrefetchCompletedSuccessfully(const GURL& url) {}
 
@@ -279,6 +282,9 @@ class PrefetchProxyTabHelper
     // An ordered list of the URLs to prefetch.
     std::vector<GURL> urls_to_prefetch_;
 
+    // A set of all urls that were decoy requests.
+    std::set<GURL> decoy_urls_;
+
     // The amount of time that the probe took to complete. Kept in this class
     // until commit in order to be plumbed into |AfterSRPMetrics|.
     base::Optional<base::TimeDelta> probe_latency_;
@@ -335,11 +341,17 @@ class PrefetchProxyTabHelper
   static bool IsProfileEligible(Profile* profile);
   bool IsProfileEligible() const;
 
+  // Returns whether the |url| is eligible, possibly with a status, without
+  // considering any user data like service workers or cookies. Used to
+  // determine eligibility and whether to send decoy requests.
+  static std::pair<bool, base::Optional<PrefetchProxyPrefetchStatus>>
+  CheckEligibilityOfURLSansUserData(Profile* profile, const GURL& url);
+
   // Computes the AfterSRPMetrics that would be returned for the next
-  // navigation, when it commits. This method exists to allow the PLM Observer
-  // to get the AfterSRPMetrics if the navigation fails to commit, so that
-  // metrics can be logged anyways. Returns nullptr if the after srp metrics
-  // wouldn't be set on the next commit.
+  // navigation, when it commits. This method exists to allow the PLM
+  // Observer to get the AfterSRPMetrics if the navigation fails to commit,
+  // so that metrics can be logged anyways. Returns nullptr if the after srp
+  // metrics wouldn't be set on the next commit.
   std::unique_ptr<PrefetchProxyTabHelper::AfterSRPMetrics>
   ComputeAfterSRPMetricsBeforeCommit(content::NavigationHandle* handle) const;
 

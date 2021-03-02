@@ -420,7 +420,9 @@ class PrefetchProxyTabHelperDataSaverDisabledTest
  public:
   PrefetchProxyTabHelperDataSaverDisabledTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"lite_mode_only", "true"}});
+        features::kIsolatePrerenders,
+        {{"lite_mode_only", "true"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -465,7 +467,9 @@ class PrefetchProxyTabHelperDataSaverDisabledNotRequiredTest
  public:
   PrefetchProxyTabHelperDataSaverDisabledNotRequiredTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"lite_mode_only", "false"}});
+        features::kIsolatePrerenders,
+        {{"lite_mode_only", "false"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -492,7 +496,9 @@ TEST_F(PrefetchProxyTabHelperDataSaverDisabledNotRequiredTest,
 class PrefetchProxyTabHelperTest : public PrefetchProxyTabHelperTestBase {
  public:
   PrefetchProxyTabHelperTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatePrerenders);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIsolatePrerenders,
+        {{"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -918,7 +924,6 @@ TEST_F(PrefetchProxyTabHelperTest, UserSettingDisabled) {
 // Verify that prefetch proxy is not triggered if the predictions for next
 // likely navigations are provided by external Android app.
 TEST_F(PrefetchProxyTabHelperTest, ExternalAndroidApp) {
-
   NavigateSomewhere();
   GURL doc_url("https://www.google.com/search?q=cats");
   GURL prediction_url("https://www.cat-food.com/");
@@ -1278,12 +1283,108 @@ TEST_F(PrefetchProxyTabHelperTest, ServiceWorkerNotRegistered) {
   EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 }
 
+class PrefetchProxyTabHelperWithDecoyTest
+    : public PrefetchProxyTabHelperTestBase {
+ public:
+  PrefetchProxyTabHelperWithDecoyTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIsolatePrerenders,
+        {{"ineligible_decoy_request_probability", "1"}});
+  }
+};
+
+TEST_F(PrefetchProxyTabHelperWithDecoyTest, Cookies) {
+  base::HistogramTester histogram_tester;
+
+  NavigateSomewhere();
+  GURL doc_url("https://www.google.com/search?q=cats");
+  GURL prediction_url("https://www.cat-food.com/");
+
+  ASSERT_TRUE(SetCookie(profile(), prediction_url, "testing"));
+
+  MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
+  base::RunLoop().RunUntilIdle();
+
+  // Expect a request to be put on the network, but not be used.
+  EXPECT_EQ(RequestCount(), 1);
+  VerifyCommonRequestState(prediction_url);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType, {}, kHTMLBody);
+
+  EXPECT_EQ(predicted_urls_count(), 1U);
+  EXPECT_EQ(prefetch_eligible_count(), 0U);
+  EXPECT_EQ(prefetch_attempted_count(), 0U);
+  EXPECT_EQ(prefetch_successful_count(), 0U);
+  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
+  EXPECT_TRUE(navigation_to_prefetch_start().has_value());
+
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
+
+  NavigateAndVerifyPrefetchStatus(
+      prediction_url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
+  EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
+  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
+}
+
+TEST_F(PrefetchProxyTabHelperWithDecoyTest, ServiceWorkerRegistered) {
+  base::HistogramTester histogram_tester;
+
+  NavigateSomewhere();
+  GURL doc_url("https://www.google.com/search?q=cats");
+  GURL prediction_url("https://www.cat-food.com/");
+
+  service_worker_context_.AddRegistrationToRegisteredOrigins(
+      url::Origin::Create(prediction_url));
+
+  MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
+
+  // Expect a request to be put on the network, but not be used.
+  EXPECT_EQ(RequestCount(), 1);
+  VerifyCommonRequestState(prediction_url);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType, {}, kHTMLBody);
+
+  EXPECT_EQ(predicted_urls_count(), 1U);
+  EXPECT_EQ(prefetch_eligible_count(), 0U);
+  EXPECT_EQ(prefetch_attempted_count(), 0U);
+  EXPECT_EQ(prefetch_successful_count(), 0U);
+  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
+  EXPECT_TRUE(navigation_to_prefetch_start().has_value());
+
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
+
+  NavigateAndVerifyPrefetchStatus(
+      prediction_url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
+  EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
+  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
+}
+
 class PrefetchProxyTabHelperBodyLimitTest
     : public PrefetchProxyTabHelperTestBase {
  public:
   PrefetchProxyTabHelperBodyLimitTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"max_mainframe_body_length_kb", "0"}});
+        features::kIsolatePrerenders,
+        {{"max_mainframe_body_length_kb", "0"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -1332,7 +1433,9 @@ class PrefetchProxyTabHelperPredictionPositionsTest
  public:
   PrefetchProxyTabHelperPredictionPositionsTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"prefetch_positions", "0"}});
+        features::kIsolatePrerenders,
+        {{"prefetch_positions", "0"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -1366,7 +1469,9 @@ class PrefetchProxyTabHelperNoPrefetchesTest
  public:
   PrefetchProxyTabHelperNoPrefetchesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"max_srp_prefetches", "0"}});
+        features::kIsolatePrerenders,
+        {{"max_srp_prefetches", "0"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -1410,7 +1515,9 @@ class PrefetchProxyTabHelperUnlimitedPrefetchesTest
  public:
   PrefetchProxyTabHelperUnlimitedPrefetchesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"max_srp_prefetches", "-1"}});
+        features::kIsolatePrerenders,
+        {{"max_srp_prefetches", "-1"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -1478,7 +1585,9 @@ class PrefetchProxyTabHelperConcurrentPrefetchesTest
   PrefetchProxyTabHelperConcurrentPrefetchesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"max_concurrent_prefetches", "2"}, {"max_srp_prefetches", "-1"}});
+        {{"max_concurrent_prefetches", "2"},
+         {"max_srp_prefetches", "-1"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -1535,7 +1644,9 @@ class PrefetchProxyTabHelperLimitedPrefetchesTest
  public:
   PrefetchProxyTabHelperLimitedPrefetchesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"max_srp_prefetches", "2"}});
+        features::kIsolatePrerenders,
+        {{"max_srp_prefetches", "2"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -1679,11 +1790,104 @@ class PrefetchProxyTabHelperRedirectTestBase
   }
 };
 
+class PrefetchProxyTabHelperRedirectWithDecoyTest
+    : public PrefetchProxyTabHelperRedirectTestBase {
+ public:
+  PrefetchProxyTabHelperRedirectWithDecoyTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIsolatePrerenders,
+        {{"ineligible_decoy_request_probability", "1"}});
+  }
+};
+
+TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest, ServiceWorkerRegistered) {
+  base::HistogramTester histogram_tester;
+
+  NavigateSomewhere();
+  GURL doc_url("https://www.google.com/search?q=cats");
+  GURL prediction_url("https://www.cat-food.com/");
+  GURL redirect_url("https://www.kitty-krunch.com/");
+
+  service_worker_context_.AddRegistrationToRegisteredOrigins(
+      url::Origin::Create(prediction_url));
+
+  MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
+
+  WalkRedirectChainUntilFinalRequest({prediction_url, redirect_url});
+  MakeFinalResponse(redirect_url, net::HTTP_OK, {}, kHTMLBody);
+
+  EXPECT_EQ(predicted_urls_count(), 1U);
+  EXPECT_EQ(prefetch_eligible_count(), 0U);
+  EXPECT_EQ(prefetch_attempted_count(), 0U);
+  EXPECT_EQ(prefetch_successful_count(), 0U);
+  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
+  EXPECT_TRUE(navigation_to_prefetch_start().has_value());
+
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
+
+  NavigateAndVerifyPrefetchStatus(
+      prediction_url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
+  EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
+  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
+}
+
+TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest,
+       ServiceWorkerRegistered_ToGoogle) {
+  base::HistogramTester histogram_tester;
+
+  NavigateSomewhere();
+  GURL doc_url("https://www.google.com/search?q=cats");
+  GURL prediction_url("https://www.cat-food.com/");
+
+  service_worker_context_.AddRegistrationToRegisteredOrigins(
+      url::Origin::Create(prediction_url));
+
+  MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
+
+  RunNoRedirectTest(GURL("https://www.google.com/"));
+
+  EXPECT_EQ(predicted_urls_count(), 2U);
+  EXPECT_EQ(prefetch_eligible_count(), 0U);
+  EXPECT_EQ(prefetch_attempted_count(), 0U);
+  EXPECT_EQ(prefetch_successful_count(), 0U);
+  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
+  EXPECT_TRUE(navigation_to_prefetch_start().has_value());
+
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
+
+  NavigateAndVerifyPrefetchStatus(
+      prediction_url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
+  EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
+  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
+}
+
 class PrefetchProxyTabHelperRedirectTest
     : public PrefetchProxyTabHelperRedirectTestBase {
  public:
   PrefetchProxyTabHelperRedirectTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatePrerenders);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIsolatePrerenders,
+        {{"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -1815,7 +2019,9 @@ class PrefetchProxyTabHelperRedirectUnlimitedPrefetchesTest
     // Enable unlimited prefetches so we can follow the redirect chain all the
     // way.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"max_srp_prefetches", "-1"}});
+        features::kIsolatePrerenders,
+        {{"max_srp_prefetches", "-1"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 

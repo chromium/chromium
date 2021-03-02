@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
@@ -221,4 +222,27 @@ base::TimeDelta PrefetchProxyMaxRetryAfterDelta() {
       features::kIsolatePrerenders, "max_retry_after_duration_secs",
       1 * 60 * 60 * 24 * 7 /* 1 week */);
   return base::TimeDelta::FromSeconds(max_seconds);
+}
+
+bool PrefetchProxySendDecoyRequestForIneligiblePrefetch() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "prefetch-proxy-never-send-decoy-requests-for-testing")) {
+    return false;
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "prefetch-proxy-always-send-decoy-requests-for-testing")) {
+    return true;
+  }
+
+  double probability = base::GetFieldTrialParamByFeatureAsDouble(
+      features::kIsolatePrerenders, "ineligible_decoy_request_probability",
+      1.0);
+
+  // Clamp to [0.0, 1.0].
+  probability = std::max(0.0, probability);
+  probability = std::min(1.0, probability);
+
+  // RandDouble returns [0.0, 1.0) so don't use <= here since that may return
+  // true when the probability is supposed to be 0 (i.e.: always false).
+  return base::RandDouble() < probability;
 }
