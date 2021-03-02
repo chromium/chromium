@@ -14,6 +14,10 @@ static_library("eche_app_ui") {
     "eche_app_manager.h",
     "eche_app_ui.cc",
     "eche_app_ui.h",
+    "eche_connector.cc",
+    "eche_connector.h",
+    "eche_feature_status_provider.cc",
+    "eche_feature_status_provider.h",
     "eche_notification_click_handler.cc",
     "eche_notification_click_handler.h",
     "feature_status.cc",
@@ -26,9 +30,14 @@ static_library("eche_app_ui") {
 
   deps = [
     "//ash/constants",
+    "//chromeos/components/multidevice:multidevice",
+    "//chromeos/components/multidevice/logging",
     "//chromeos/components/phonehub:phonehub",
     "//chromeos/resources:eche_app_resources",
     "//chromeos/resources:eche_bundle_resources",
+    "//chromeos/services/device_sync/public/cpp:cpp",
+    "//chromeos/services/multidevice_setup/public/cpp:cpp",
+    "//chromeos/services/secure_channel/public/cpp/client:client",
     "//content/public/browser",
     "//ui/webui",
   ]
