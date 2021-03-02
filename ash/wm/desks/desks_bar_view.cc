@@ -887,8 +887,10 @@ DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
 }
 
 int DesksBarView::GetFirstMiniViewXOffset() const {
+  // GetMirroredX is used here to make sure the removing and adding a desk
+  // transform is correct while in RTL layout.
   return mini_views_.empty() ? bounds().CenterPoint().x()
-                             : mini_views_[0]->bounds().x();
+                             : mini_views_[0]->GetMirroredX();
 }
 
 void DesksBarView::UpdateMinimumWidthToFitContents() {
