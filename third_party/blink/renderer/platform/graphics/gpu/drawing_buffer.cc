@@ -1150,9 +1150,12 @@ bool DrawingBuffer::ResizeDefaultFramebuffer(const IntSize& size) {
       premultiplied_alpha_false_mailbox_.SetZero();
       premultiplied_alpha_false_texture_ = 0;
     }
+    GrSurfaceOrigin origin = opengl_flip_y_extension_
+                                 ? kTopLeft_GrSurfaceOrigin
+                                 : kBottomLeft_GrSurfaceOrigin;
     premultiplied_alpha_false_mailbox_ = sii->CreateSharedImage(
         back_color_buffer_->format, static_cast<gfx::Size>(size),
-        storage_color_space_, kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
+        storage_color_space_, origin, kUnpremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 |
             gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
             gpu::SHARED_IMAGE_USAGE_RASTER,
@@ -1655,6 +1658,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_DISPLAY;
+  GrSurfaceOrigin origin = opengl_flip_y_extension_
+                               ? kTopLeft_GrSurfaceOrigin
+                               : kBottomLeft_GrSurfaceOrigin;
 
   viz::ResourceFormat format;
   if (allocate_alpha_channel_) {
@@ -1667,8 +1673,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   if (UsingSwapChain()) {
     gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
         sii->CreateSwapChain(format, static_cast<gfx::Size>(size),
-                             storage_color_space_, kTopLeft_GrSurfaceOrigin,
-                             kPremul_SkAlphaType,
+                             storage_color_space_, origin, kPremul_SkAlphaType,
                              usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
     back_buffer_mailbox = mailboxes.back_buffer;
     front_buffer_mailbox = mailboxes.front_buffer;
@@ -1698,7 +1703,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       if (gpu_memory_buffer) {
         back_buffer_mailbox = sii->CreateSharedImage(
             gpu_memory_buffer.get(), gpu_memory_buffer_manager,
-            storage_color_space_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+            storage_color_space_, origin, kPremul_SkAlphaType,
             usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
       }
     }
@@ -1715,8 +1720,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         alpha_type = kUnpremul_SkAlphaType;
 
       back_buffer_mailbox = sii->CreateSharedImage(
-          format, static_cast<gfx::Size>(size), storage_color_space_,
-          kTopLeft_GrSurfaceOrigin, alpha_type, usage, gpu::kNullSurfaceHandle);
+          format, static_cast<gfx::Size>(size), storage_color_space_, origin,
+          alpha_type, usage, gpu::kNullSurfaceHandle);
     }
   }
 
