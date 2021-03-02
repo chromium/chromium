@@ -11412,7 +11412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="PreviewsType" expires_after="2021-08-09">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
-  <owner>src/components/previews/OWNERS</owner>
+  <owner>tbansal@chromium.org</owner>
   <summary>
     Blocked previews due to Cache-Control:no-transform directive.
   </summary>
@@ -11558,7 +11558,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>dougarnett@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
-  <owner>src/components/previews/OWNERS</owner>
+  <owner>tbansal@chromium.org</owner>
   <summary>
     Records the effective connection type of a navigation that triggers a
     preview. This is captured at commit time but uses the effective connection
