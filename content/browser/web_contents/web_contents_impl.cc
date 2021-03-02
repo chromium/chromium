@@ -897,6 +897,9 @@ WebContentsImpl::~WebContentsImpl() {
   // since this will lead to a use-after-free as it continues to notify later
   // observers.
   CHECK(!observers_.is_notifying_observers());
+  // This is used to watch for one-off observers (i.e. non-WebContentsObservers)
+  // destroying WebContents, which they should not do.
+  CHECK(!prevent_destruction_);
 
   FullscreenContentsSet(GetBrowserContext())->erase(this);
 
@@ -7620,6 +7623,9 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
                "WebContentsImpl::CreateRenderViewForRenderManager",
                "render_view_host", static_cast<void*>(render_view_host));
   auto* rvh_impl = static_cast<RenderViewHostImpl*>(render_view_host);
+  // Observers should not destroy the WebContents here or we will crash as the
+  // stack unwinds. See crbug.com/1181043.
+  base::AutoReset<bool> scope(&prevent_destruction_, true);
 
   if (!proxy_host)
     CreateRenderWidgetHostViewForRenderManager(render_view_host);

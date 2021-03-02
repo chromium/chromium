@@ -1839,6 +1839,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Whether there has been a call to UpdateWebContentsVisibility(VISIBLE).
   bool did_first_set_visible_ = false;
 
+  // Set to true while calling out to notify one-off observers (ie non-
+  // WebContentsObservers). These observers should not destroy WebContentsImpl
+  // while it is on the call stack, as that leads to use-after-frees.
+  bool prevent_destruction_ = false;
+
   // See getter above.
   bool is_being_destroyed_;
 
