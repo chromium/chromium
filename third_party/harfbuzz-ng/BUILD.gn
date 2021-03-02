@@ -236,8 +236,6 @@ if (use_system_harfbuzz) {
       "HAVE_FREETYPE",
       "HAVE_ICU",
       "HAVE_ICU_BUILTIN",
-      "HAVE_INTEL_ATOMIC_PRIMITIVES",
-      "HAVE_ROUNDF",
       "HB_NO_MMAP",
       "HB_NO_RESOURCE_FORK",
 
@@ -266,6 +264,11 @@ if (use_system_harfbuzz) {
       # TODO(https://crbug.com/949962): Remove once this is fixed upstream.
       "U_DISABLE_VERSION_SUFFIX=0",
     ]
+
+    if (!is_win && !is_mac) {
+      # Needed for HarfBuzz mutex implementation, see hb-mutex.hh
+      defines += [ "HAVE_PTHREAD" ]
+    }
 
     if (enable_paint_preview) {
       # Paint Previews make use of CFF subsetting. However, enabling this is
