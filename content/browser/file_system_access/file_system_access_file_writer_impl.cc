@@ -120,11 +120,6 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   int64_t file_size_ = -1;
 };
 
-void RemoveSwapFile(const storage::FileSystemURL& swap_url,
-                    storage::FileSystemOperationRunner* runner) {
-  runner->Remove(swap_url, /*recursive=*/false, base::DoNothing());
-}
-
 }  // namespace
 
 struct FileSystemAccessFileWriterImpl::WriteState {
@@ -376,10 +371,8 @@ void FileSystemAccessFileWriterImpl::DoAfterWriteCheck(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (hash_result != base::File::FILE_OK) {
-    // Calculating the hash failed try deleting the swap file and invoke the
-    // callback.
-    manager()->operation_runner().PostTaskWithThisObject(
-        FROM_HERE, base::BindOnce(&RemoveSwapFile, swap_url()));
+    // Calculating the hash failed, the destructor will try to delete the swap
+    // file, so call the callback to report the error and delete `this`.
     CallCloseCallbackAndDeleteThis(file_system_access_error::FromStatus(
         FileSystemAccessStatus::kOperationAborted,
         "Failed to perform Safe Browsing check."));
@@ -404,10 +397,8 @@ void FileSystemAccessFileWriterImpl::DidAfterWriteCheck(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result !=
       FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow) {
-    // Safe browsing check failed. In this case we should try deleting the swap
-    // file and call the callback to report that close failed.
-    manager()->operation_runner().PostTaskWithThisObject(
-        FROM_HERE, base::BindOnce(&RemoveSwapFile, swap_url()));
+    // Safe browsing check failed. The destructor will try to delete the swap
+    // file, so report close failure and delete `this`.
     CallCloseCallbackAndDeleteThis(file_system_access_error::FromStatus(
         FileSystemAccessStatus::kOperationAborted,
         "Write operation blocked by Safe Browsing."));

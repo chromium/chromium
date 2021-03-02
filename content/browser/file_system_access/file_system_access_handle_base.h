@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/bind_post_task.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
@@ -115,30 +116,22 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Wrap the passed in callback in one that posts a task back to the current
     // sequence.
-    auto wrapped_callback = base::BindOnce(
-        [](scoped_refptr<base::SequencedTaskRunner> runner,
-           base::OnceCallback<void(CallbackArgs...)> callback,
-           CallbackArgs... args) {
-          runner->PostTask(FROM_HERE,
-                           base::BindOnce(std::move(callback),
-                                          std::forward<CallbackArgs>(args)...));
-        },
+    auto wrapped_callback = base::BindPostTask(
         base::SequencedTaskRunnerHandle::Get(), std::move(callback));
 
     // And then post a task to the sequence bound operation runner to run the
     // provided method with the provided arguments (and the wrapped callback).
-    manager()->operation_runner().PostTaskWithThisObject(
-        from_here,
-        base::BindOnce(
-            [](scoped_refptr<storage::FileSystemContext>,
-               storage::FileSystemOperationRunner::OperationID (
-                   storage::FileSystemOperationRunner::*method)(MethodArgs...),
-               MethodArgs... args, storage::FileSystemOperationRunner* runner) {
-              (runner->*method)(std::forward<MethodArgs>(args)...);
-            },
-            base::WrapRefCounted(file_system_context()), method,
-            std::forward<ArgsMinusCallback>(args)...,
-            std::move(wrapped_callback)));
+    //
+    // FileSystemOperationRunner assumes file_system_context() is kept alive, to
+    // make sure this happens it is bound to a DoNothing callback.
+    manager()
+        ->operation_runner()
+        .AsyncCall(base::IgnoreResult(method))
+        .WithArgs(std::forward<ArgsMinusCallback>(args)...,
+                  std::move(wrapped_callback))
+        .Then(base::BindOnce(
+            base::DoNothing::Once<scoped_refptr<storage::FileSystemContext>>(),
+            base::WrapRefCounted(file_system_context())));
   }
   // Same as the previous overload, but using RepeatingCallback and
   // BindRepeating instead.
@@ -166,18 +159,17 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
 
     // And then post a task to the sequence bound operation runner to run the
     // provided method with the provided arguments (and the wrapped callback).
-    manager()->operation_runner().PostTaskWithThisObject(
-        from_here,
-        base::BindOnce(
-            [](scoped_refptr<storage::FileSystemContext>,
-               storage::FileSystemOperationRunner::OperationID (
-                   storage::FileSystemOperationRunner::*method)(MethodArgs...),
-               MethodArgs... args, storage::FileSystemOperationRunner* runner) {
-              (runner->*method)(std::forward<MethodArgs>(args)...);
-            },
-            base::WrapRefCounted(file_system_context()), method,
-            std::forward<ArgsMinusCallback>(args)...,
-            std::move(wrapped_callback)));
+    //
+    // FileSystemOperationRunner assumes file_system_context() is kept alive, to
+    // make sure this happens it is bound to a DoNothing callback.
+    manager()
+        ->operation_runner()
+        .AsyncCall(base::IgnoreResult(method))
+        .WithArgs(std::forward<ArgsMinusCallback>(args)...,
+                  std::move(wrapped_callback))
+        .Then(base::BindOnce(
+            base::DoNothing::Once<scoped_refptr<storage::FileSystemContext>>(),
+            base::WrapRefCounted(file_system_context())));
   }
 
   SEQUENCE_CHECKER(sequence_checker_);

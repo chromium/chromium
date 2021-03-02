@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
@@ -161,47 +162,17 @@ bool IsValidTransferToken(FileSystemAccessTransferTokenImpl* token,
   return true;
 }
 
-void GetHandleTypeFromUrl(
-    storage::FileSystemURL url,
-    base::OnceCallback<void(HandleType)> callback,
-    scoped_refptr<base::SequencedTaskRunner> reply_runner,
-    storage::FileSystemOperationRunner* operation_runner) {
-  operation_runner->GetMetadata(
-      url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
-      base::BindOnce(
-          [](scoped_refptr<base::SequencedTaskRunner> reply_runner,
-             base::OnceCallback<void(HandleType)> callback,
-             base::File::Error result, const base::File::Info& file_info) {
-            // If we couldn't determine if the url is a directory, it is treated
-            // as a file. If the web-exposed API is ever changed to allow
-            // reporting errors when getting a dropped file as a
-            // FileSystemHandle, this would be one place such errors could be
-            // triggered.
-            HandleType type = HandleType::kFile;
-            if (result == base::File::FILE_OK && file_info.is_directory) {
-              type = HandleType::kDirectory;
-            }
-            reply_runner->PostTask(FROM_HERE,
-                                   base::BindOnce(std::move(callback), type));
-          },
-          std::move(reply_runner), std::move(callback)));
-}
-
-void GetDirectoryExistsFromUrl(
-    storage::FileSystemURL url,
-    base::OnceCallback<void(base::File::Error)> callback,
-    scoped_refptr<base::SequencedTaskRunner> reply_runner,
-    storage::FileSystemOperationRunner* operation_runner) {
-  operation_runner->DirectoryExists(
-      url, base::BindOnce(
-               [](scoped_refptr<base::SequencedTaskRunner> reply_runner,
-                  base::OnceCallback<void(base::File::Error)> callback,
-                  base::File::Error result) {
-                 // Post next task back on the UI thread.
-                 reply_runner->PostTask(
-                     FROM_HERE, base::BindOnce(std::move(callback), result));
-               },
-               std::move(reply_runner), std::move(callback)));
+HandleType HandleTypeFromFileInfo(base::File::Error result,
+                                  const base::File::Info& file_info) {
+  // If we couldn't determine if the url is a directory, it is treated
+  // as a file. If the web-exposed API is ever changed to allow
+  // reporting errors when getting a dropped file as a
+  // FileSystemHandle, this would be one place such errors could be
+  // triggered.
+  if (result == base::File::FILE_OK && file_info.is_directory) {
+    return HandleType::kDirectory;
+  }
+  return HandleType::kFile;
 }
 
 void HandleTransferTokenAsDefaultDirectory(
@@ -463,16 +434,18 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
   auto url = CreateFileSystemURLFromPath(context.origin, path_info.type,
                                          path_info.path);
   auto fs_url = url.url;
-  operation_runner().PostTaskWithThisObject(
-      FROM_HERE,
-      base::BindOnce(
-          &GetDirectoryExistsFromUrl, std::move(fs_url),
-          base::BindOnce(
-              &FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker,
-              weak_factory_.GetWeakPtr(), context, std::move(options),
-              std::move(common_options), std::move(url).url.path(),
-              std::move(callback)),
-          base::SequencedTaskRunnerHandle::Get()));
+  operation_runner()
+      .AsyncCall(base::IgnoreResult(
+          &storage::FileSystemOperationRunner::DirectoryExists))
+      .WithArgs(
+          std::move(fs_url),
+          base::BindPostTask(
+              base::SequencedTaskRunnerHandle::Get(),
+              base::BindOnce(
+                  &FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker,
+                  weak_factory_.GetWeakPtr(), context, std::move(options),
+                  std::move(common_options), std::move(url).url.path(),
+                  std::move(callback))));
 }
 
 void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
@@ -588,16 +561,20 @@ void FileSystemAccessManagerImpl::ResolveDataTransferToken(
       binding_context.origin, data_transfer_token_impl->second->path_type(),
       data_transfer_token_impl->second->file_path());
   auto fs_url = url.url;
-  operation_runner().PostTaskWithThisObject(
-      FROM_HERE,
-      base::BindOnce(
-          &GetHandleTypeFromUrl, fs_url,
-          base::BindOnce(&FileSystemAccessManagerImpl::
-                             ResolveDataTransferTokenWithFileType,
-                         weak_factory_.GetWeakPtr(), binding_context,
-                         data_transfer_token_impl->second->file_path(),
-                         std::move(url), std::move(token_resolved_callback)),
-          base::SequencedTaskRunnerHandle::Get()));
+  operation_runner()
+      .AsyncCall(
+          base::IgnoreResult(&storage::FileSystemOperationRunner::GetMetadata))
+      .WithArgs(
+          fs_url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+          base::BindPostTask(
+              base::SequencedTaskRunnerHandle::Get(),
+              base::BindOnce(&HandleTypeFromFileInfo)
+                  .Then(base::BindOnce(
+                      &FileSystemAccessManagerImpl::
+                          ResolveDataTransferTokenWithFileType,
+                      weak_factory_.GetWeakPtr(), binding_context,
+                      data_transfer_token_impl->second->file_path(),
+                      std::move(url), std::move(token_resolved_callback)))));
 }
 
 void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
