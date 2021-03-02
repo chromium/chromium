@@ -137,8 +137,6 @@ class MockRenderProcessHost : public RenderProcessHost {
       bool incoming,
       bool outgoing,
       WebRtcRtpPacketCallback packet_callback) override;
-  void EnableWebRtcEventLogOutput(int lid, int output_period_ms) override;
-  void DisableWebRtcEventLogOutput(int lid) override;
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;

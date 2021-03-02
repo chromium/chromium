@@ -4,23 +4,56 @@
 
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/post_task.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/webrtc/webrtc_internals.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/webrtc_event_logger.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {
 
-PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderProcessHost* rph)
-    : render_process_id_(rph->GetID()), peer_pid_(rph->GetProcess().Pid()) {
+namespace {
+
+std::set<PeerConnectionTrackerHost*>& AllHosts() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  static base::NoDestructor<std::set<PeerConnectionTrackerHost*>> all_hosts{};
+  return *all_hosts;
+}
+
+void RegisterHost(PeerConnectionTrackerHost* host) {
+  AllHosts().insert(host);
+}
+void RemoveHost(PeerConnectionTrackerHost* host) {
+  AllHosts().erase(host);
+}
+
+}  // namespace
+
+// static
+const std::set<PeerConnectionTrackerHost*>&
+PeerConnectionTrackerHost::GetAllHosts() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return AllHosts();
+}
+
+PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
+    : frame_id_(frame->GetGlobalFrameRoutingId()),
+      peer_pid_(frame->GetProcess()->GetProcess().Pid()) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RegisterHost(this);
   base::PowerMonitor::AddObserver(this);
-  rph->BindReceiver(tracker_.BindNewPipeAndPassReceiver());
+  frame->GetRemoteInterfaces()->GetInterface(
+      tracker_.BindNewPipeAndPassReceiver());
   // Ensure that the initial thermal state is known by the |tracker_|.
   base::PowerObserver::DeviceThermalState initial_thermal_state =
       base::PowerMonitor::GetCurrentThermalState();
@@ -32,6 +65,7 @@ PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderProcessHost* rph)
 
 PeerConnectionTrackerHost::~PeerConnectionTrackerHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RemoveHost(this);
   base::PowerMonitor::RemoveObserver(this);
 }
 
@@ -42,13 +76,13 @@ void PeerConnectionTrackerHost::AddPeerConnection(
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
     webrtc_internals->OnAddPeerConnection(
-        render_process_id_, peer_pid_, info->lid, info->url,
+        frame_id_.child_id, peer_pid_, info->lid, info->url,
         info->rtc_configuration, info->constraints);
   }
 
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
-    logger->PeerConnectionAdded(render_process_id_, info->lid,
+    logger->PeerConnectionAdded(frame_id_, info->lid,
                                 base::OnceCallback<void(bool)>());
   }
 }
@@ -62,7 +96,7 @@ void PeerConnectionTrackerHost::RemovePeerConnection(int lid) {
   }
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
-    logger->PeerConnectionRemoved(render_process_id_, lid,
+    logger->PeerConnectionRemoved(frame_id_, lid,
                                   base::OnceCallback<void(bool)>());
   }
 }
@@ -76,7 +110,7 @@ void PeerConnectionTrackerHost::UpdatePeerConnection(int lid,
   if (type == "stop") {
     WebRtcEventLogger* logger = WebRtcEventLogger::Get();
     if (logger) {
-      logger->PeerConnectionStopped(render_process_id_, lid,
+      logger->PeerConnectionStopped(frame_id_, lid,
                                     base::OnceCallback<void(bool)>());
     }
   }
@@ -94,7 +128,7 @@ void PeerConnectionTrackerHost::OnPeerConnectionSessionIdSet(
 
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
-    logger->PeerConnectionSessionIdSet(render_process_id_, lid, session_id,
+    logger->PeerConnectionSessionIdSet(frame_id_, lid, session_id,
                                        base::OnceCallback<void(bool)>());
   }
 }
@@ -125,7 +159,7 @@ void PeerConnectionTrackerHost::GetUserMedia(
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnGetUserMedia(render_process_id_, peer_pid_, origin,
+    webrtc_internals->OnGetUserMedia(frame_id_.child_id, peer_pid_, origin,
                                      audio, video, audio_constraints,
                                      video_constraints);
   }
@@ -140,7 +174,7 @@ void PeerConnectionTrackerHost::WebRtcEventLogWrite(
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
     logger->OnWebRtcEventLogWrite(
-        render_process_id_, lid, converted_output,
+        frame_id_, lid, converted_output,
         base::OnceCallback<void(std::pair<bool, bool>)>());
   }
 }

@@ -119,7 +119,6 @@
 #include "content/browser/renderer_host/file_utilities_host_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
-#include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/renderer_host/media/video_capture_host.h"
 #include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
 #include "content/browser/renderer_host/plugin_registry_impl.h"
@@ -2278,15 +2277,6 @@ void RenderProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
 }
 #endif
 
-PeerConnectionTrackerHost*
-RenderProcessHostImpl::GetPeerConnectionTrackerHost() {
-  if (!peer_connection_tracker_host_) {
-    peer_connection_tracker_host_ =
-        std::make_unique<PeerConnectionTrackerHost>(this);
-  }
-  return peer_connection_tracker_host_.get();
-}
-
 void RenderProcessHostImpl::RegisterMojoInterfaces() {
   auto registry = std::make_unique<service_manager::BinderRegistry>();
 
@@ -2436,11 +2426,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   registry->AddInterface(
       base::BindRepeating(&metrics::CreateSingleSampleMetricsProvider));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindPeerConnectionTrackerHost,
-                          weak_factory_.GetWeakPtr()));
 
   AddUIThreadInterface(
       registry.get(),
@@ -3905,15 +3890,6 @@ RenderProcessHostImpl::StartRtpDump(bool incoming,
                         p2p_socket_dispatcher_host_->GetWeakPtr());
 }
 
-void RenderProcessHostImpl::EnableWebRtcEventLogOutput(int lid,
-                                                       int output_period_ms) {
-  GetPeerConnectionTrackerHost()->StartEventLog(lid, output_period_ms);
-}
-
-void RenderProcessHostImpl::DisableWebRtcEventLogOutput(int lid) {
-  GetPeerConnectionTrackerHost()->StopEventLog(lid);
-}
-
 IPC::ChannelProxy* RenderProcessHostImpl::GetChannel() {
   return channel_.get();
 }
@@ -5011,11 +4987,6 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
   }
 
   return nullptr;
-}
-
-void RenderProcessHostImpl::BindPeerConnectionTrackerHost(
-    mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver) {
-  GetPeerConnectionTrackerHost()->BindReceiver(std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_MDNS)

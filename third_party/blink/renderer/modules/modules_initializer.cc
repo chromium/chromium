@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 #include "third_party/blink/renderer/modules/worklet/animation_and_paint_worklet_thread.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/impl/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -178,6 +179,10 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &RemoteObjectGatewayFactoryImpl::Create, WrapWeakPersistent(&frame)));
 #endif  // OS_ANDROID
+
+  frame.GetInterfaceRegistry()->AddInterface(
+      WTF::BindRepeating(&PeerConnectionTracker::BindToFrame,
+                         WrapCrossThreadWeakPersistent(&frame)));
 }
 
 void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
@@ -325,11 +330,6 @@ void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   binders.Add(ConvertToBaseRepeatingCallback(
                   CrossThreadBindRepeating(&WebDatabaseImpl::Create)),
               Platform::Current()->GetIOTaskRunner());
-  binders.Add(
-      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          &PeerConnectionTracker::Bind,
-          WTF::CrossThreadUnretained(PeerConnectionTracker::GetInstance()))),
-      Thread::MainThread()->GetTaskRunner());
 }
 
 }  // namespace blink

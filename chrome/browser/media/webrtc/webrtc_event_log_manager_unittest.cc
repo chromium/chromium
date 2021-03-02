@@ -50,6 +50,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -131,11 +132,12 @@ base::Time GetLastModificationTime(const base::FilePath& file_path) {
 // Common default/arbitrary values.
 constexpr int kLid = 478;
 constexpr size_t kWebAppId = 42;
+constexpr int kFrameId = 57;
 
 PeerConnectionKey GetPeerConnectionKey(RenderProcessHost* rph, int lid) {
   const BrowserContext* browser_context = rph->GetBrowserContext();
   const auto browser_context_id = GetBrowserContextId(browser_context);
-  return PeerConnectionKey(rph->GetID(), lid, browser_context_id);
+  return PeerConnectionKey(rph->GetID(), lid, browser_context_id, kFrameId);
 }
 
 bool CreateRemoteBoundLogFile(const base::FilePath& dir,
@@ -416,16 +418,20 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
   bool PeerConnectionAdded(const PeerConnectionKey& key) {
     bool result;
-    event_log_manager_->PeerConnectionAdded(key.render_process_id, key.lid,
-                                            ReplyClosure(&result));
+    event_log_manager_->PeerConnectionAdded(
+        content::GlobalFrameRoutingId(key.render_process_id,
+                                      key.render_frame_id),
+        key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
   }
 
   bool PeerConnectionRemoved(const PeerConnectionKey& key) {
     bool result;
-    event_log_manager_->PeerConnectionRemoved(key.render_process_id, key.lid,
-                                              ReplyClosure(&result));
+    event_log_manager_->PeerConnectionRemoved(
+        content::GlobalFrameRoutingId(key.render_process_id,
+                                      key.render_frame_id),
+        key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
   }
@@ -434,7 +440,9 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
                                   const std::string& session_id) {
     bool result;
     event_log_manager_->PeerConnectionSessionIdSet(
-        key.render_process_id, key.lid, session_id, ReplyClosure(&result));
+        content::GlobalFrameRoutingId(key.render_process_id,
+                                      key.render_frame_id),
+        key.lid, session_id, ReplyClosure(&result));
     WaitForReply();
     return result;
   }
@@ -445,8 +453,10 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
   bool PeerConnectionStopped(const PeerConnectionKey& key) {
     bool result;
-    event_log_manager_->PeerConnectionStopped(key.render_process_id, key.lid,
-                                              ReplyClosure(&result));
+    event_log_manager_->PeerConnectionStopped(
+        content::GlobalFrameRoutingId(key.render_process_id,
+                                      key.render_frame_id),
+        key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
   }
@@ -569,8 +579,10 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   std::pair<bool, bool> OnWebRtcEventLogWrite(const PeerConnectionKey& key,
                                               const std::string& message) {
     std::pair<bool, bool> result;
-    event_log_manager_->OnWebRtcEventLogWrite(key.render_process_id, key.lid,
-                                              message, ReplyClosure(&result));
+    event_log_manager_->OnWebRtcEventLogWrite(
+        content::GlobalFrameRoutingId(key.render_process_id,
+                                      key.render_frame_id),
+        key.lid, message, ReplyClosure(&result));
     WaitForReply();
     return result;
   }

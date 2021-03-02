@@ -726,6 +726,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // BeginDictionary() before calling this method.
   virtual void AsValueInto(base::trace_event::TracedValue* traced_value) = 0;
 
+  // Start/stop event log output from WebRTC on this RFH for the peer connection
+  // identified locally within the RFH using the ID `lid`.
+  virtual void EnableWebRtcEventLogOutput(int lid, int output_period_ms) = 0;
+  virtual void DisableWebRtcEventLogOutput(int lid) = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderFrameHostImpl;

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 
 #include "base/run_loop.h"
@@ -139,10 +142,11 @@ class MockPeerConnectionHandler : public RTCPeerConnectionHandler {
 class PeerConnectionTrackerTest : public ::testing::Test {
  public:
   void CreateTrackerWithMocks() {
-    mock_host_.reset(new MockPeerConnectionTrackerHost());
-    tracker_.reset(new PeerConnectionTracker(
+    mock_host_ = std::make_unique<MockPeerConnectionTrackerHost>();
+    tracker_ = MakeGarbageCollected<PeerConnectionTracker>(
         mock_host_->CreatePendingRemoteAndBind(),
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+        base::PassKey<PeerConnectionTrackerTest>());
   }
 
   void CreateAndRegisterPeerConnectionHandler() {
@@ -157,14 +161,9 @@ class PeerConnectionTrackerTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<MockPeerConnectionTrackerHost> mock_host_;
-  std::unique_ptr<PeerConnectionTracker> tracker_;
+  Persistent<PeerConnectionTracker> tracker_;
   std::unique_ptr<MockPeerConnectionHandler> mock_handler_;
 };
-
-TEST_F(PeerConnectionTrackerTest, CreatingObject) {
-  PeerConnectionTracker tracker(
-      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
-}
 
 TEST_F(PeerConnectionTrackerTest, TrackCreateOffer) {
   CreateTrackerWithMocks();

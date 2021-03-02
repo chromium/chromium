@@ -13,18 +13,24 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
+#include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_answer_options_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_offer_options_platform.h"
@@ -508,6 +514,11 @@ std::unique_ptr<base::DictionaryValue> GetDictValue(const StatsReport& report) {
   return result;
 }
 
+int GetNextProcessLocalID() {
+  static int next_local_id = 1;
+  return next_local_id++;
+}
+
 }  // namespace
 
 // chrome://webrtc-internals displays stats and stats graphs. The call path
@@ -673,25 +684,55 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
 };
 
 // static
-PeerConnectionTracker* PeerConnectionTracker::GetInstance() {
-  DEFINE_STATIC_LOCAL(PeerConnectionTracker, instance,
-                      (Thread::MainThread()->GetTaskRunner()));
-  return &instance;
+const char PeerConnectionTracker::kSupplementName[] = "PeerConnectionTracker";
+
+PeerConnectionTracker& PeerConnectionTracker::From(LocalDOMWindow& window) {
+  PeerConnectionTracker* tracker =
+      Supplement<LocalDOMWindow>::From<PeerConnectionTracker>(window);
+  if (!tracker) {
+    tracker = MakeGarbageCollected<PeerConnectionTracker>(
+        window, Thread::MainThread()->GetTaskRunner(),
+        base::PassKey<PeerConnectionTracker>());
+    ProvideTo(window, tracker);
+  }
+  return *tracker;
+}
+
+PeerConnectionTracker* PeerConnectionTracker::From(LocalFrame& frame) {
+  auto* window = frame.DomWindow();
+  return window ? &From(*window) : nullptr;
+}
+
+PeerConnectionTracker* PeerConnectionTracker::From(WebLocalFrame& frame) {
+  auto* local_frame = To<WebLocalFrameImpl>(frame).GetFrame();
+  return local_frame ? From(*local_frame) : nullptr;
+}
+
+void PeerConnectionTracker::BindToFrame(
+    LocalFrame* frame,
+    mojo::PendingReceiver<blink::mojom::blink::PeerConnectionManager>
+        receiver) {
+  if (!frame)
+    return;
+
+  if (auto* tracker = From(*frame))
+    tracker->Bind(std::move(receiver));
 }
 
 PeerConnectionTracker::PeerConnectionTracker(
-    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
-    : next_local_id_(1),
+    LocalDOMWindow& window,
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+    base::PassKey<PeerConnectionTracker>)
+    : Supplement<LocalDOMWindow>(window),
       main_thread_task_runner_(std::move(main_thread_task_runner)) {
-  blink::Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+  window.GetBrowserInterfaceBroker().GetInterface(
       peer_connection_tracker_host_.BindNewPipeAndPassReceiver());
 }
 
 PeerConnectionTracker::PeerConnectionTracker(
     mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost> host,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
-    : next_local_id_(1),
-      peer_connection_tracker_host_(std::move(host)),
+    : peer_connection_tracker_host_(std::move(host)),
       main_thread_task_runner_(std::move(main_thread_task_runner)) {}
 
 PeerConnectionTracker::~PeerConnectionTracker() {}
@@ -700,7 +741,8 @@ void PeerConnectionTracker::Bind(
     mojo::PendingReceiver<blink::mojom::blink::PeerConnectionManager>
         receiver) {
   DCHECK(!receiver_.is_bound());
-  receiver_.Bind(std::move(receiver));
+  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
+                                          TaskType::kMiscPlatformAPI));
 }
 
 void PeerConnectionTracker::OnSuspend() {
@@ -760,7 +802,7 @@ void PeerConnectionTracker::GetStandardStats() {
         new rtc::RefCountedObject<InternalStandardStatsObserver>(
             pair.value, main_thread_task_runner_,
             CrossThreadBindOnce(&PeerConnectionTracker::AddStandardStats,
-                                AsWeakPtr())));
+                                WrapCrossThreadWeakPersistent(this))));
     pair.key->GetStandardStatsForTracker(observer);
   }
 }
@@ -773,7 +815,7 @@ void PeerConnectionTracker::GetLegacyStats() {
         new rtc::RefCountedObject<InternalLegacyStatsObserver>(
             pair.value, main_thread_task_runner_,
             CrossThreadBindOnce(&PeerConnectionTracker::AddLegacyStats,
-                                AsWeakPtr())));
+                                WrapCrossThreadWeakPersistent(this))));
     pair.key->GetStats(observer,
                        webrtc::PeerConnectionInterface::kStatsOutputLevelDebug,
                        nullptr);
@@ -1204,9 +1246,7 @@ void PeerConnectionTracker::TrackRtcEventLogWrite(
 
 int PeerConnectionTracker::GetNextLocalID() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  if (next_local_id_ < 0)
-    next_local_id_ = 1;
-  return next_local_id_++;
+  return GetNextProcessLocalID();
 }
 
 int PeerConnectionTracker::GetLocalIDForHandler(

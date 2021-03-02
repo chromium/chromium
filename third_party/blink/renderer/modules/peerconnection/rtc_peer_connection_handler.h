@@ -175,7 +175,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       const MediaConstraints& options,
-      const base::WeakPtr<PeerConnectionTracker>& peer_connection_tracker,
+      PeerConnectionTracker* peer_connection_tracker,
       ExceptionState& exception_state);
 
   // RTCPeerConnectionHandlerPlatform implementation
@@ -492,7 +492,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // detect any removals during rollback.
   Vector<uintptr_t> previous_transceiver_ids_;
 
-  base::WeakPtr<PeerConnectionTracker> peer_connection_tracker_;
+  WeakPersistent<PeerConnectionTracker> peer_connection_tracker_;
 
   MediaStreamTrackMetrics track_metrics_;
 

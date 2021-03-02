@@ -84,7 +84,6 @@
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-forward.h"
-#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "third_party/blink/public/mojom/webdatabase/web_database.mojom.h"
@@ -120,7 +119,6 @@ class IsolationContext;
 class MediaStreamTrackMetricsHost;
 class P2PSocketDispatcherHost;
 class PermissionServiceContext;
-class PeerConnectionTrackerHost;
 class PluginRegistryImpl;
 class ProcessLock;
 class PushMessagingManager;
@@ -235,8 +233,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       bool incoming,
       bool outgoing,
       WebRtcRtpPacketCallback packet_callback) override;
-  void EnableWebRtcEventLogOutput(int lid, int output_period_ms) override;
-  void DisableWebRtcEventLogOutput(int lid) override;
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;
@@ -658,8 +654,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   size_t keep_alive_ref_count() const { return keep_alive_ref_count_; }
 
-  PeerConnectionTrackerHost* GetPeerConnectionTrackerHost();
-
   // Allows overriding the URLLoaderFactory creation via CreateURLLoaderFactory.
   // Passing a null callback will restore the default behavior.
   // This method must be called either on the UI thread or before threads start.
@@ -842,9 +836,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // that SiteInstance.
   static RenderProcessHost* FindReusableProcessHostForSiteInstance(
       SiteInstanceImpl* site_instance);
-
-  void BindPeerConnectionTrackerHost(
-      mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver);
 
 #if BUILDFLAG(ENABLE_MDNS)
   void CreateMdnsResponder(
@@ -1055,10 +1046,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       media_stream_track_metrics_host_;
 
   std::unique_ptr<FramelessMediaInterfaceProxy> media_interface_proxy_;
-
-  // Forwards messages between WebRTCInternals in the browser process
-  // and PeerConnectionTracker in the renderer process.
-  std::unique_ptr<PeerConnectionTrackerHost> peer_connection_tracker_host_;
 
   // Records the time when the process starts surviving for workers for UMA.
   base::TimeTicks keep_alive_start_time_;

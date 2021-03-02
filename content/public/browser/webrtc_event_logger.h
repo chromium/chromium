@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
@@ -34,7 +35,7 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // with true if and only if the operation was successful (failure is only
   // possible if a peer connection with this exact key was previously added,
   // but not removed).
-  virtual void PeerConnectionAdded(int render_process_id,
+  virtual void PeerConnectionAdded(const GlobalFrameRoutingId& frame_id,
                                    int lid,
                                    base::OnceCallback<void(bool)> reply) = 0;
 
@@ -43,7 +44,7 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // with true if and only if the operation was successful (failure is only
   // possible if a peer connection with this key was not previously added,
   // or if it has since already been removed).
-  virtual void PeerConnectionRemoved(int render_process_id,
+  virtual void PeerConnectionRemoved(const GlobalFrameRoutingId& frame_id,
                                      int lid,
                                      base::OnceCallback<void(bool)> reply) = 0;
 
@@ -51,7 +52,7 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // Closing of a peer connection is an irreversible action. Its distinction
   // from the removal event is that it may happen before the peer connection has
   // been garbage collected.
-  virtual void PeerConnectionStopped(int render_process_id,
+  virtual void PeerConnectionStopped(const GlobalFrameRoutingId& frame_id,
                                      int lid,
                                      base::OnceCallback<void(bool)> reply) = 0;
 
@@ -59,7 +60,7 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // description ID. By referring to this ID, remote-bound event logging
   // may later be initiated for the peer connection.
   virtual void PeerConnectionSessionIdSet(
-      int render_process_id,
+      const GlobalFrameRoutingId& frame_id,
       int lid,
       const std::string& session_id,
       base::OnceCallback<void(bool)> reply) = 0;
@@ -97,7 +98,7 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // value true if and only if the message was written in its entirety into
   // a local/remote-bound log file.
   virtual void OnWebRtcEventLogWrite(
-      int render_process_id,
+      const GlobalFrameRoutingId& frame_id,
       int lid,
       const std::string& message,
       base::OnceCallback<void(std::pair<bool, bool>)> reply) = 0;

@@ -22,6 +22,7 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_remote.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/upload_list/upload_list.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/webrtc_event_logger.h"
 
@@ -94,23 +95,23 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
   void DisableForBrowserContext(content::BrowserContext* browser_context,
                                 base::OnceClosure reply);
 
-  void PeerConnectionAdded(int render_process_id,
+  void PeerConnectionAdded(const content::GlobalFrameRoutingId& frame_id,
                            int lid,  // Renderer-local PeerConnection ID.
                            base::OnceCallback<void(bool)> reply) override;
 
-  void PeerConnectionRemoved(int render_process_id,
+  void PeerConnectionRemoved(const content::GlobalFrameRoutingId& frame_id,
                              int lid,  // Renderer-local PeerConnection ID.
                              base::OnceCallback<void(bool)> reply) override;
 
   // From the logger's perspective, we treat stopping a peer connection the
   // same as we do its removal. Should a stopped peer connection be later
   // removed, the removal callback will assume the value |false|.
-  void PeerConnectionStopped(int render_process_id,
+  void PeerConnectionStopped(const content::GlobalFrameRoutingId& frame_id,
                              int lid,  // Renderer-local PeerConnection ID.
                              base::OnceCallback<void(bool)> reply) override;
 
   void PeerConnectionSessionIdSet(
-      int render_process_id,
+      const content::GlobalFrameRoutingId& frame_id,
       int lid,
       const std::string& session_id,
       base::OnceCallback<void(bool)> reply) override;
@@ -126,7 +127,7 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
   void DisableLocalLogging(base::OnceCallback<void(bool)> reply) override;
 
   void OnWebRtcEventLogWrite(
-      int render_process_id,
+      const content::GlobalFrameRoutingId& frame_id,
       int lid,  // Renderer-local PeerConnection ID.
       const std::string& message,
       base::OnceCallback<void(std::pair<bool, bool>)> reply) override;

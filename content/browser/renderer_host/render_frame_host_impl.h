@@ -129,6 +129,7 @@
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
@@ -217,6 +218,7 @@ class GeolocationServiceImpl;
 class MediaInterfaceProxy;
 class NavigationEntryImpl;
 class NavigationRequest;
+class PeerConnectionTrackerHost;
 class PepperPluginInstanceHost;
 class PermissionServiceContext;
 class Portal;
@@ -1990,6 +1992,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnDidDisplayContentWithCertificateErrors();
   void OnDidRunContentWithCertificateErrors();
 
+  PeerConnectionTrackerHost& GetPeerConnectionTrackerHost();
+  void BindPeerConnectionTrackerHost(
+      mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver);
+  void EnableWebRtcEventLogOutput(int lid, int output_period_ms) override;
+  void DisableWebRtcEventLogOutput(int lid) override;
+
 #if BUILDFLAG(ENABLE_PLUGINS)
   void PepperInstanceClosed(int32_t instance_id);
   void PepperSetVolume(int32_t instance_id, double volume);
@@ -2986,6 +2994,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::list<std::unique_ptr<WebBluetoothServiceImpl>> web_bluetooth_services_;
 
   std::unique_ptr<ScreenEnumerationImpl> screen_enumeration_impl_;
+
+  // Forwards messages between WebRTCInternals in the browser process
+  // and PeerConnectionManager in the renderer process.
+  std::unique_ptr<PeerConnectionTrackerHost> peer_connection_tracker_host_;
 
   // The object managing the accessibility tree for this frame.
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;

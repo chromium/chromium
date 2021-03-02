@@ -340,11 +340,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       bool outgoing,
       WebRtcRtpPacketCallback packet_callback) = 0;
 
-  // Start/stop event log output from WebRTC on this RPH for the peer connection
-  // identified locally within the RPH using the ID |lid|.
-  virtual void EnableWebRtcEventLogOutput(int lid, int output_period_ms) = 0;
-  virtual void DisableWebRtcEventLogOutput(int lid) = 0;
-
   // Asks the renderer process to bind |receiver|. |receiver| arrives in the
   // renderer process and is carried through the following flow, stopping if any
   // step decides to bind it:

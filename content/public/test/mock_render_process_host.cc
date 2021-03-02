@@ -483,10 +483,6 @@ MockRenderProcessHost::StartRtpDump(bool incoming,
   return base::NullCallback();
 }
 
-void MockRenderProcessHost::EnableWebRtcEventLogOutput(int lid,
-                                                       int output_period_ms) {}
-void MockRenderProcessHost::DisableWebRtcEventLogOutput(int lid) {}
-
 bool MockRenderProcessHost::OnMessageReceived(const IPC::Message& msg) {
   IPC::Listener* listener = listeners_.Lookup(msg.routing_id());
   if (listener)

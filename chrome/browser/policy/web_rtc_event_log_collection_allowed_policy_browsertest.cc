@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "string"
+#include <string>
 
 #include "base/callback.h"
 #include "base/run_loop.h"
@@ -19,6 +19,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -99,7 +100,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcEventLogCollectionAllowedPolicyTest, RunTest) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  int render_process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
+  content::GlobalFrameRoutingId frame_id =
+      web_contents->GetMainFrame()->GetGlobalFrameRoutingId();
 
   constexpr int kLid = 123;
   const std::string kSessionId = "id";
@@ -107,14 +109,14 @@ IN_PROC_BROWSER_TEST_P(WebRtcEventLogCollectionAllowedPolicyTest, RunTest) {
   {
     base::RunLoop run_loop;
     webrtc_event_log_manager->PeerConnectionAdded(
-        render_process_id, kLid, BlockingBoolExpectingReply(&run_loop, true));
+        frame_id, kLid, BlockingBoolExpectingReply(&run_loop, true));
     run_loop.Run();
   }
 
   {
     base::RunLoop run_loop;
     webrtc_event_log_manager->PeerConnectionSessionIdSet(
-        render_process_id, kLid, kSessionId,
+        frame_id, kLid, kSessionId,
         BlockingBoolExpectingReply(&run_loop, true));
     run_loop.Run();
   }
@@ -128,7 +130,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcEventLogCollectionAllowedPolicyTest, RunTest) {
     // Test focus - remote-bound logging allowed if and only if the policy
     // is configured to allow it.
     webrtc_event_log_manager->StartRemoteLogging(
-        render_process_id, kSessionId, kMaxFileSizeBytes, kOutputPeriodMs,
+        frame_id.child_id, kSessionId, kMaxFileSizeBytes, kOutputPeriodMs,
         kWebAppId,
         BlockingBoolExpectingReplyWithExtras(&run_loop,
                                              remote_logging_allowed));

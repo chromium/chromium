@@ -96,6 +96,7 @@
 #include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/ipc_utils.h"
+#include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/renderer_host/modal_close_listener_host.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -10476,6 +10477,28 @@ RenderFrameHostImpl::CreateAuthAndCertObserver() {
   return static_cast<StoragePartitionImpl*>(GetStoragePartition())
       ->CreateAuthAndCertObserverForFrame(GetProcess()->GetID(),
                                           GetRoutingID());
+}
+
+PeerConnectionTrackerHost& RenderFrameHostImpl::GetPeerConnectionTrackerHost() {
+  if (!peer_connection_tracker_host_) {
+    peer_connection_tracker_host_ =
+        std::make_unique<PeerConnectionTrackerHost>(this);
+  }
+  return *peer_connection_tracker_host_.get();
+}
+
+void RenderFrameHostImpl::BindPeerConnectionTrackerHost(
+    mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver) {
+  GetPeerConnectionTrackerHost().BindReceiver(std::move(receiver));
+}
+
+void RenderFrameHostImpl::EnableWebRtcEventLogOutput(int lid,
+                                                     int output_period_ms) {
+  GetPeerConnectionTrackerHost().StartEventLog(lid, output_period_ms);
+}
+
+void RenderFrameHostImpl::DisableWebRtcEventLogOutput(int lid) {
+  GetPeerConnectionTrackerHost().StopEventLog(lid);
 }
 
 mojo::PendingRemote<network::mojom::CookieAccessObserver>

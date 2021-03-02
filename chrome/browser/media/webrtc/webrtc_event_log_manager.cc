@@ -21,15 +21,17 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace webrtc_event_logging {
 
 namespace {
 
-using BrowserContext = content::BrowserContext;
-using BrowserThread = content::BrowserThread;
-using RenderProcessHost = content::RenderProcessHost;
+using content::BrowserContext;
+using content::BrowserThread;
+using content::RenderFrameHost;
+using content::RenderProcessHost;
 
 using BrowserContextId = WebRtcEventLogManager::BrowserContextId;
 
@@ -61,7 +63,8 @@ class PeerConnectionTrackerProxyImpl
       WebRtcEventLogPeerConnectionKey key,
       int output_period_ms) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    RenderProcessHost* host = RenderProcessHost::FromID(key.render_process_id);
+    auto* host =
+        RenderFrameHost::FromID(key.render_process_id, key.render_frame_id);
     if (!host) {
       return;  // The host has been asynchronously removed; not a problem.
     }
@@ -71,7 +74,8 @@ class PeerConnectionTrackerProxyImpl
   static void DisableWebRtcEventLoggingInternal(
       WebRtcEventLogPeerConnectionKey key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    RenderProcessHost* host = RenderProcessHost::FromID(key.render_process_id);
+    auto* host =
+        RenderFrameHost::FromID(key.render_process_id, key.render_frame_id);
     if (!host) {
       return;  // The host has been asynchronously removed; not a problem.
     }
@@ -228,12 +232,13 @@ void WebRtcEventLogManager::DisableForBrowserContext(
 }
 
 void WebRtcEventLogManager::PeerConnectionAdded(
-    int render_process_id,
+    const content::GlobalFrameRoutingId& frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RenderProcessHost* rph = RenderProcessHost::FromID(render_process_id);
+  // TODO(crbug.com/1178670): Should this look at RFH shutdown instead of RPH?
+  RenderProcessHost* rph = RenderProcessHost::FromID(frame_id.child_id);
   if (!rph) {
     // RPH died before processing of this notification.
     MaybeReply(FROM_HERE, std::move(reply), false);
@@ -258,17 +263,18 @@ void WebRtcEventLogManager::PeerConnectionAdded(
       base::BindOnce(
           &WebRtcEventLogManager::PeerConnectionAddedInternal,
           base::Unretained(this),
-          PeerConnectionKey(render_process_id, lid, browser_context_id),
+          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
+                            frame_id.frame_routing_id),
           std::move(reply)));
 }
 
 void WebRtcEventLogManager::PeerConnectionRemoved(
-    int render_process_id,
+    const content::GlobalFrameRoutingId& frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const auto browser_context_id = GetBrowserContextId(render_process_id);
+  const auto browser_context_id = GetBrowserContextId(frame_id.child_id);
   if (browser_context_id == kNullBrowserContextId) {
     // RPH died before processing of this notification. This is handled by
     // RenderProcessExited() / RenderProcessHostDestroyed.
@@ -283,26 +289,27 @@ void WebRtcEventLogManager::PeerConnectionRemoved(
       base::BindOnce(
           &WebRtcEventLogManager::PeerConnectionRemovedInternal,
           base::Unretained(this),
-          PeerConnectionKey(render_process_id, lid, browser_context_id),
+          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
+                            frame_id.frame_routing_id),
           std::move(reply)));
 }
 
 void WebRtcEventLogManager::PeerConnectionStopped(
-    int render_process_id,
+    const content::GlobalFrameRoutingId& frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return PeerConnectionRemoved(render_process_id, lid, std::move(reply));
+  return PeerConnectionRemoved(frame_id, lid, std::move(reply));
 }
 
 void WebRtcEventLogManager::PeerConnectionSessionIdSet(
-    int render_process_id,
+    const content::GlobalFrameRoutingId& frame_id,
     int lid,
     const std::string& session_id,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const auto browser_context_id = GetBrowserContextId(render_process_id);
+  const auto browser_context_id = GetBrowserContextId(frame_id.child_id);
   if (browser_context_id == kNullBrowserContextId) {
     // RPH died before processing of this notification. This is handled by
     // RenderProcessExited() / RenderProcessHostDestroyed.
@@ -317,7 +324,8 @@ void WebRtcEventLogManager::PeerConnectionSessionIdSet(
       base::BindOnce(
           &WebRtcEventLogManager::PeerConnectionSessionIdSetInternal,
           base::Unretained(this),
-          PeerConnectionKey(render_process_id, lid, browser_context_id),
+          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
+                            frame_id.frame_routing_id),
           session_id, std::move(reply)));
 }
 
@@ -356,13 +364,13 @@ void WebRtcEventLogManager::DisableLocalLogging(
 }
 
 void WebRtcEventLogManager::OnWebRtcEventLogWrite(
-    int render_process_id,
+    const content::GlobalFrameRoutingId& frame_id,
     int lid,
     const std::string& message,
     base::OnceCallback<void(std::pair<bool, bool>)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const BrowserContext* browser_context = GetBrowserContext(render_process_id);
+  const BrowserContext* browser_context = GetBrowserContext(frame_id.child_id);
   if (!browser_context) {
     // RPH died before processing of this notification.
     MaybeReply(FROM_HERE, std::move(reply), std::make_pair(false, false));
@@ -379,7 +387,8 @@ void WebRtcEventLogManager::OnWebRtcEventLogWrite(
       base::BindOnce(
           &WebRtcEventLogManager::OnWebRtcEventLogWriteInternal,
           base::Unretained(this),
-          PeerConnectionKey(render_process_id, lid, browser_context_id),
+          PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
+                            frame_id.frame_routing_id),
           message, std::move(reply)));
 }
 
