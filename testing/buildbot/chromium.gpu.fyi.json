@@ -25233,7 +25233,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25258,7 +25258,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25286,7 +25286,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25312,7 +25312,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25337,7 +25337,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25360,7 +25360,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25383,7 +25383,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25403,7 +25403,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25427,7 +25427,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25447,7 +25447,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25483,7 +25483,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25517,7 +25517,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25551,7 +25551,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25585,7 +25585,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25619,7 +25619,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25653,7 +25653,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25687,7 +25687,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25730,7 +25730,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25773,7 +25773,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25808,7 +25808,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25842,7 +25842,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25876,7 +25876,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25914,7 +25914,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -25957,7 +25957,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26000,7 +26000,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26043,7 +26043,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26086,7 +26086,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26112,7 +26112,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26146,7 +26146,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26181,7 +26181,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26215,7 +26215,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26251,7 +26251,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26288,7 +26288,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26324,7 +26324,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26360,7 +26360,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26396,7 +26396,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
@@ -26431,7 +26431,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-11.0",
+              "os": "Mac-11",
               "pool": "chromium.tests.mac-arm64"
             }
           ],
