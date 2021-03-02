@@ -38,7 +38,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
-    units="ms" expires_after="2021-04-01">
+    units="ms" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
@@ -81,7 +81,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
-    enum="BooleanDirection" expires_after="2021-04-01">
+    enum="BooleanDirection" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
@@ -92,7 +92,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
-    units="pixels" expires_after="2021-04-01">
+    units="pixels" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
@@ -106,7 +106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Type}Jitter"
-    units="pixels" expires_after="2021-04-01">
+    units="pixels" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
