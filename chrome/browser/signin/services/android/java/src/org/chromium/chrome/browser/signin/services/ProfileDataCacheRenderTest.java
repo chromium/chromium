@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.signin.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -209,6 +212,9 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         // ProfileDataCache only populates the cache when an observer is added.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mProfileDataCache.addObserver(mObserverMock); });
+        // Certain classes like IdentityDiscController can trigger infinite loop if we populate
+        // the cache with an existing observer, details can be found in crbug/1183295.
+        verify(mObserverMock, never()).onProfileDataUpdated(any());
 
         final DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mAccountInfoWithAvatar.getEmail());
