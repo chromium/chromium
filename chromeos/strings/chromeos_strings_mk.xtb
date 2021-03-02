@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Портал за проверка</translation>
 <translation id="2008685064673031089">Примарно пребарување</translation>
 <translation id="2080070583977670716">Повеќе поставки</translation>
+<translation id="2126937207024182736">Достапно: <ph name="AVAILABLE_MEMORY" /> GB од <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">ЧЕКА НА РЕД</translation>
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
+<translation id="2217935453350629363">Моментална брзина</translation>
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус на активирање</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мојот Drive</translation>
 <translation id="4429881212383817840">Билетот на Kerberos истекува наскоро</translation>
+<translation id="4431821876790500265">Прикажи го извештајот</translation>
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4453205916657964690">Подмрежна маска</translation>
 <translation id="4454245904991689773">Скенирај во</translation>
@@ -174,6 +177,7 @@
 <translation id="4932733599132424254">Датум</translation>
 <translation id="498186245079027698">Проверете го скенерот и обидете се повторно. Уверете се дека има доволно простор на уредот за да се зачуваат скенираните датотеки.</translation>
 <translation id="4985509611418653372">Изврши</translation>
+<translation id="4999333166442584738">Сокриј го извештајот</translation>
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Име на групата</translation>

@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">Контролирајте ги сториите од копчето „Опции за Discover“</translation>
 <translation id="2259659629660284697">Извезување лозинки…</translation>
 <translation id="2276696007612801991">Најавете се на сметката на Google за да ги проверите лозинките</translation>
+<translation id="2278052315791335171">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адреса за наплата</translation>
 <translation id="230115972905494466">Не се најдени компатибилни уреди</translation>
 <translation id="230155349749732438">За користење на поставкава, мора да е вклучено <ph name="BEGIN_LINK" />Подобрете ги пребарувањата и прелистувањето<ph name="END_LINK" /></translation>
@@ -357,6 +358,7 @@
 <translation id="3398320232533725830">Отворете го управникот на обележувачи</translation>
 <translation id="3414952576877147120">Големина:</translation>
 <translation id="3429160811076349561">Пробните функции се исклучени</translation>
+<translation id="3440975416244667276">Допрете и задржете за порелевантни информации</translation>
 <translation id="3443221991560634068">Вчитајте ја тековната страница</translation>
 <translation id="3451542610083122179">„Sandbox за приватност“ е тековна иницијатива за зачувување на отворениот интернет што ќе помогне да ве заштитиме од механизмите за следење.
 
@@ -950,6 +952,7 @@
 <translation id="7475688122056506577">SD-картичката не е најдена. Дел од вашите датотеки може да недостасуваат.</translation>
 <translation id="7479104141328977413">Управување со картички</translation>
 <translation id="7481312909269577407">Напред</translation>
+<translation id="7481864133709957613">За да пребарувате од страницава, допрете и задржете зборови наместо само да ги допрете</translation>
 <translation id="7482656565088326534">Картичка за преглед</translation>
 <translation id="7484997419527351112">Discover е исклучена</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ажурирано <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -959,6 +962,7 @@
 <translation id="7514365320538308">Преземи</translation>
 <translation id="751961395872307827">Не може да се поврзе со сајтот</translation>
 <translation id="752220631458524187">Прекинете ја врската кога ќе завршите</translation>
+<translation id="7523960634226602883">Пребарувајте со камерата со Google Lens</translation>
 <translation id="753225086557513863">Закажано за подоцна</translation>
 <translation id="7559975015014302720">„Лесниот режим“ е исклучен</translation>
 <translation id="7562080006725997899">Чистење податоци од прелистување</translation>

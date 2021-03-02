@@ -23,6 +23,7 @@
 <translation id="1516530951338665275">Google Chrome бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
+<translation id="1583073672411044740">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ја користи вашата камера.</translation>
 <translation id="1587325591171447154">Датотеката <ph name="FILE_NAME" /> е опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="1597911401261118146">За да проверите дали вашите лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chrome<ph name="END_LINK" />.</translation>
@@ -117,6 +118,7 @@
 <translation id="3735758079232443276">Екстензијата „<ph name="EXTENSION_NAME" />“ ја смени страницата што се прикажува кога го стартувате Chrome.</translation>
 <translation id="3779473566290487688">За да добивате идни ажурирања на Google Chrome, потребен ви е OS X 10.11 или понова верзија. Компјутеров користи OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Затворете ги сите прозорци на Google Chrome и пробајте повторно.</translation>
 <translation id="3865754807470779944">Инсталирана е верзијата <ph name="PRODUCT_VERSION" /> на Chrome</translation>
 <translation id="3873044882194371212">Отвори го линкот во инко&amp;гнито прозорец на Chrome</translation>
@@ -188,6 +190,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ќе се рестартира за 1 секунда}one{Google Chrome ќе се рестартира за # секунда}other{Google Chrome ќе се рестартира за # секунди}}</translation>
 <translation id="573759479754913123">За Chrome OS</translation>
+<translation id="5756509061973259733">На уредов веќе постои профил на Chrome со оваа сметка</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не може да се стартува Chrome. Обидете се повторно.</translation>
 <translation id="5867197326698922595">Google Chrome се обидува да измени лозинки.</translation>

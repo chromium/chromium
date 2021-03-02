@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">පිවිසුම් දොරටුව</translation>
 <translation id="2008685064673031089">ප්‍රයිම් සෙවීම</translation>
 <translation id="2080070583977670716">තවත් සැකසුම්</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />කින් <ph name="AVAILABLE_MEMORY" /> GB ලබා ගත හැකිය</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">පෙළ ගස්වන ලදි</translation>
 <translation id="2161394479394250669">මුද්‍රණ කාර්යය අවලංගු කරන්න</translation>
+<translation id="2217935453350629363">වත්මන් වේගය</translation>
 <translation id="2224337661447660594">අන්තර්ජාලය නැත</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">සක්‍රිය කිරීමේ තත්ත්වය</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">මගේ Drive</translation>
 <translation id="4429881212383817840">Kerberos ප්‍රවේශපත්‍රය ඉක්මනින් කල් ඉකුත් වෙයි</translation>
+<translation id="4431821876790500265">වාර්තාව බලන්න</translation>
 <translation id="445059817448385655">පැරණි මුරපදය</translation>
 <translation id="4453205916657964690">අනුජාල ආවරණය</translation>
 <translation id="4454245904991689773">ස්කෑන් කරන්න</translation>
@@ -174,6 +177,7 @@
 <translation id="4932733599132424254">දිනය</translation>
 <translation id="498186245079027698">ස්කෑනරය පරීක්ෂා කර නැවත උත්සාහ කරන්න. ස්කෑන් කළ ගොනු සුරැකීමට ප්‍රමාණවත් ස්ථානීය ඉඩක් ඇති බවට සහතික කර ගන්න.</translation>
 <translation id="4985509611418653372">ධාවනය කරන්න</translation>
+<translation id="4999333166442584738">වාර්තාව සඟවන්න</translation>
 <translation id="500920857929044050">පරීක්ෂණය නවත්වන්න</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">සමූහ නම</translation>

@@ -966,6 +966,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2060375639911876205">Retirer le profil de la carte eSIM</translation>
 <translation id="2065405795449409761">Google Chrome est contrôlé par un logiciel de test automatisé.</translation>
 <translation id="2071393345806050157">Pas de journal local.</translation>
+<translation id="2071692954027939183">Les notifications ont été bloquées automatiquement par ce vous ne les autorisez généralement pas</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Cliquer pour installer l'extension}one{Cliquer pour installer cette extension}other{Cliquer pour installer ces extensions}}</translation>
 <translation id="2073505299004274893">Utilisez un maximum de <ph name="CHARACTER_LIMIT" /> caractères</translation>
 <translation id="2075474481720804517">Pile à <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -1131,6 +1132,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2242687258748107519">Information sur le fichier</translation>
 <translation id="2246549592927364792">Télécharger les descriptions d'image de Google?</translation>
+<translation id="2247738527273549923">Votre appareil est géré par votre organisation</translation>
 <translation id="2249111429176737533">Ouvrir en tant que fenêtre à onglets</translation>
 <translation id="2249605167705922988">par exemple : 1-5, 8 ou 11-13</translation>
 <translation id="2251218783371366160">Ouvrir avec le visualiseur du système</translation>
@@ -1239,6 +1241,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2359345697448000899">Pour gérer les extensions, cliquer sur « Extensions » dans le menu « Outils ».</translation>
 <translation id="2359556993567737338">Connecter un appareil Bluetooth</translation>
 <translation id="2359808026110333948">Continuer</translation>
+<translation id="2361100938102002520">Vous ajoutez un profil géré à ce navigateur. L'administrateur peut gérer ce profil et accéder à ses données.</translation>
 <translation id="236117173274098341">Optimiser</translation>
 <translation id="236141728043665931">Toujours bloquer l'accès au microphone</translation>
 <translation id="2364498172489649528">Vérification réussie</translation>
@@ -1488,6 +1491,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2641065435954454414">Préparation du téléchargement en cours…</translation>
 <translation id="2642111877055905627">Ballon de soccer</translation>
 <translation id="2643698698624765890">Pour gérer vos extensions, cliquez sur « Extensions » dans le menu « Fenêtre ».</translation>
+<translation id="2645047101481282803">Votre appareil est géré par <ph name="PROFILE_NAME" /></translation>
 <translation id="264810637653812429">Aucun appareil compatible trouvé.</translation>
 <translation id="2649045351178520408">Chaîne de certificats codés Base 64 ASCII</translation>
 <translation id="2653033005692233957">Échec de la recherche</translation>
@@ -1703,6 +1707,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2875698561019555027">(pages d'erreur Chrome)</translation>
 <translation id="2876336351874743617">Doigt 2</translation>
 <translation id="2876369937070532032">Envoie des URL de certaines pages que vous visitez à Google, lorsque votre sécurité pourrait être compromise</translation>
+<translation id="2877467134191447552">Vous pouvez ajouter vos comptes supplémentaires pour accéder à des sites Web et des applications.</translation>
 <translation id="2878782256107578644">Analyse en cours. Ouvrir maintenant?</translation>
 <translation id="2878889940310164513">Ajouter une connexion cellulaire…</translation>
 <translation id="288042212351694283">Accès à vos appareils Universal 2nd Factor</translation>
@@ -2279,6 +2284,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3550915441744863158">Chrome se met automatiquement à jour afin que vous ayez toujours la version la plus récente</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3552780134252864554">Effacé à la fin de la session</translation>
+<translation id="3554493885489666172">Votre appareil est géré par <ph name="PROFILE_NAME" />. Les administrateurs ont accès aux données de tous les profils enregistrés sur cet appareil.</translation>
 <translation id="3555812735919707620">Retirer l'extension</translation>
 <translation id="3556000484321257665">Votre moteur de recherche a été remplacé par <ph name="URL" />.</translation>
 <translation id="3556433843310711081">Votre gestionnaire peut le débloquer pour vous</translation>
@@ -2453,6 +2459,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3732530910372558017">La longueur maximale pour le NIP est de 63 caractères</translation>
 <translation id="3732857534841813090">Renseignements connexes, Assistant Google</translation>
 <translation id="3733127536501031542">Serveur SSL avec fonction d'optimisation</translation>
+<translation id="3733296813637058299">Nous allons installer ces applications pour vous Vous pouvez trouver d'autres applications pour votre <ph name="DEVICE_TYPE" /> dans la boutique Play Store.</translation>
 <translation id="3735740477244556633">Trier par</translation>
 <translation id="3738632186060045350">Les données du <ph name="DEVICE_TYPE" /> seront supprimées dans 24 heures</translation>
 <translation id="3738924763801731196"><ph name="OID" /> :</translation>
@@ -2951,6 +2958,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> ko (<ph name="NUM_KILOBYTES_LIVE" /> ko actuellement)</translation>
 <translation id="4310139701823742692">Le format du fichier est incorrect. Vérifiez le fichier PPD et réessayez.</translation>
+<translation id="43106757207292366">Vous pouvez gérer les comptes Google auxquels vous êtes connecté dans le menu <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" />. Les autorisations que vous avez accordées aux sites Web et aux applications peuvent s'appliquer à tous les comptes. Si vous ne souhaitez pas que les sites ou les applications accèdent aux données de votre compte, vous pouvez vous connecter à votre <ph name="DEVICE_TYPE" /> comme invité ou bien naviguer sur le Web dans une <ph name="LINK_2_BEGIN" />fenêtre de navigation privée<ph name="LINK_2_END" />.</translation>
 <translation id="431076611119798497">&amp;Détails</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
@@ -3498,6 +3506,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4936042273057045735">La synchronisation des notifications n'est pas prise en charge sur les téléphones avec un profil professionnel</translation>
 <translation id="4939805055470675027">Impossible de se connecter à <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Il y a <ph name="PRINTER_COUNT" /> imprimantes à enregistrer.</translation>
+<translation id="4940448324259979830">Ce compte est géré par <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Réserver l'espace de la taille du disque</translation>
 <translation id="4941074198479265146">Les sites se connectent généralement aux appareils MIDI pour proposer des fonctionnalités de création et d'édition de musique</translation>
 <translation id="4941246025622441835">Utiliser cette réquisition pour l'enregistrement de l'appareil dans le cadre de la gestion d'entreprise :</translation>
@@ -3778,6 +3787,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5288678174502918605">Rouvrir l'ongl&amp;et fermé</translation>
 <translation id="52895863590846877">La page n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="52912272896845572">Le fichier de clé privée est incorrect.</translation>
+<translation id="5291739252352359682">Crée automatiquement des sous-titres pour les éléments multimédias dans le navigateur Chrome (cette fonctionnalité est offerte en anglais pour le moment). L'audio et les sous-titres sont traités localement et ne quittent jamais l'appareil.</translation>
 <translation id="529175790091471945">Formater cet appareil</translation>
 <translation id="5293170712604732402">Rétablir les valeurs par défaut des paramètres</translation>
 <translation id="5294097441441645251">Doit commencer par un caractère minuscule ou un tiret de soulignement</translation>
@@ -5189,8 +5199,10 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6922128026973287222">Enregistrez les données et naviguez plus rapidement à l'aide de l'économiseur de données Google. Cliquez pour en savoir plus.</translation>
 <translation id="6922570474772078053">Désactivation en cours…</translation>
 <translation id="6922745772873733498">Entrez un NIP pour imprimer</translation>
+<translation id="6922763095098248079">Votre appareil est géré par votre organisation. Les administrateurs ont accès aux données de tous les profils enregistrés sur cet appareil.</translation>
 <translation id="6923132443355966645">Faire défiler/Cliquer</translation>
 <translation id="6923633482430812883">Erreur lors de la configuration du partage. Veuillez vérifier que le serveur de fichiers auquel vous tentez de vous connecter prend en charge SMBv2 ou une version ultérieure.</translation>
+<translation id="6925127338315966709">Vous ajoutez un profil géré à ce navigateur. L'administrateur peut gérer ce profil et accéder à ses données. Vos favoris, votre historique, vos mots de passe et vos autres paramètres peuvent être synchronisés avec votre compte et géré par votre administrateur.</translation>
 <translation id="6929126689972602640">Les contrôles parentaux ne sont pas pris en charge pour les comptes scolaires. Pour ajouter un compte scolaire afin d'accéder à Google Classroom et à d'autres sites Web permettant de faire des devoirs à la maison, connectez-vous d'abord avec le compte personnel de l'enfant. Vous pouvez ajouter le compte scolaire plus tard dans le menu de configuration.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930036377490597025">Clé de sécurité externe ou capteur intégré</translation>
@@ -6187,6 +6199,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8047242494569930800">Déplacer vers le compte Google</translation>
 <translation id="804786196054284061">Contrat de licence pour utilisateur final</translation>
 <translation id="8048977114738515028">Créez un raccourci sur le bureau de votre appareil pour accéder directement à ce profil</translation>
+<translation id="8049029041626250638">Connectez un clavier ou une souris. Si vous utilisez des appareils Bluetooth, assurez-vous que vos appareils sont prêts à être associés.</translation>
 <translation id="8049705080247101012">Google a signalé que l'extension « <ph name="EXTENSION_NAME" /> » est malveillante et son installation a donc été bloquée</translation>
 <translation id="8049948037269924837">Défilement inversé du pavé tactile</translation>
 <translation id="8050038245906040378">Signature du code commercial Microsoft</translation>
@@ -6750,6 +6763,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8716931980467311658">Supprimer toutes les applications et données Linux de votre dossier de fichiers Linux de cet appareil <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717145295869185525">Non autorisés à utiliser des appareils et des données de réalité virtuelle</translation>
 <translation id="8717864919010420084">Copier le lien</translation>
+<translation id="8718994464069323380">Écran tactile détecté</translation>
 <translation id="8719472795285728850">Écoute des activités des extensions en cours…</translation>
 <translation id="8719653885894320876">Échec du téléchargement du plugiciel <ph name="PLUGIN_NAME" /></translation>
 <translation id="8720200012906404956">Recherche de réseau cellulaire en cours… <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -7131,6 +7145,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9109283579179481106">Connexion au réseau cellulaire</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" /> : <ph name="STATUS" /></translation>
+<translation id="9111668656364922873">Bienvenue dans votre nouveau profil</translation>
 <translation id="9112748030372401671">Changer le fond d'écran</translation>
 <translation id="9112987648460918699">Rechercher...</translation>
 <translation id="9114663181201435112">Connectez-vous facilement</translation>
