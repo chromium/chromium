@@ -54085,6 +54085,7 @@
           "infrastructure/testdriver/actions/",
           "input-events/",
           "pointerevents/",
+          "touch-events/",
           "uievents/"
         ],
         "isolate_name": "wpt_tests_isolate",

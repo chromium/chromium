@@ -169,6 +169,14 @@ external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_after_pointercap
 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_supercedes_capture.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/pointerevents/pointerlock/pointerevent_pointermove_in_pointerlock.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/pointerevents/pointerlock/pointerevent_pointermove_on_chorded_mouse_button_when_locked.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/touch-events/historical.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/touch-events/idlharness.window.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/touch-events/multi-touch-interactions.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/touch-events/multi-touch-interfaces.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/touch-events/single-touch.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/touch-events/touch-globaleventhandler-interface.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/touch-events/touch-retargeting.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/touch-events/touch-touchevent-constructor.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/uievents/idlharness.window.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/uievents/click/auxclick_event.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/uievents/click/click_event_target_child_parent.html [ Pass ] # wpt_use_checked_in_metadata
