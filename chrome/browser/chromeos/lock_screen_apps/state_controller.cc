@@ -279,7 +279,7 @@ void StateController::RequestNewLockScreenNote(LockScreenNoteOrigin origin) {
   if (lock_screen_note_state_ != TrayActionState::kAvailable)
     return;
 
-  DCHECK(app_manager_->IsNoteTakingAppAvailable());
+  DCHECK(app_manager_->IsLockScreenAppAvailable());
 
   UMA_HISTOGRAM_ENUMERATION("Apps.LockScreen.NoteTakingApp.LaunchRequestReason",
                             origin);
@@ -288,7 +288,7 @@ void StateController::RequestNewLockScreenNote(LockScreenNoteOrigin origin) {
   // listeners that a lock screen note request was handled.
   UpdateLockScreenNoteState(TrayActionState::kLaunching);
 
-  if (!app_manager_->LaunchNoteTaking()) {
+  if (!app_manager_->LaunchLockScreenApp()) {
     UpdateLockScreenNoteState(TrayActionState::kAvailable);
     return;
   }
@@ -403,7 +403,7 @@ extensions::AppWindow* StateController::CreateAppWindowForLockScreenAction(
     return nullptr;
   }
 
-  if (!extension || app_manager_->GetNoteTakingAppId() != extension->id())
+  if (!extension || app_manager_->GetLockScreenAppId() != extension->id())
     return nullptr;
 
   // The ownership of the window is passed to the caller of this method.
@@ -427,9 +427,9 @@ bool StateController::HandleTakeFocus(content::WebContents* web_contents,
 }
 
 void StateController::OnNoteTakingAvailabilityChanged() {
-  if (!app_manager_->IsNoteTakingAppAvailable() ||
+  if (!app_manager_->IsLockScreenAppAvailable() ||
       (note_app_window_ && note_app_window_->GetExtension()->id() !=
-                               app_manager_->GetNoteTakingAppId())) {
+                               app_manager_->GetLockScreenAppId())) {
     ResetNoteTakingWindowAndMoveToNextState(
         true /*close_window*/,
         CloseLockScreenNoteReason::kAppLockScreenSupportDisabled);
@@ -487,7 +487,7 @@ void StateController::ResetNoteTakingWindowAndMoveToNextState(
   }
 
   UpdateLockScreenNoteState(app_manager_ &&
-                                    app_manager_->IsNoteTakingAppAvailable()
+                                    app_manager_->IsLockScreenAppAvailable()
                                 ? TrayActionState::kAvailable
                                 : TrayActionState::kNotAvailable);
 }

@@ -487,16 +487,16 @@ TEST_P(LockScreenAppManagerImplTest, StartAddsAppToTarget) {
   InitializeAndStartAppManager(profile(), true /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   EXPECT_TRUE(base::PathExists(note_taking_app->path()));
 
@@ -514,8 +514,8 @@ TEST_P(LockScreenAppManagerImplTest, StartAddsAppToTarget) {
   app_manager()->Stop();
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -539,8 +539,8 @@ TEST_P(LockScreenAppManagerImplTest, StartWhenLockScreenNotesNotEnabled) {
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -550,8 +550,8 @@ TEST_P(LockScreenAppManagerImplTest, StartWhenLockScreenNotesNotEnabled) {
 
   app_manager()->Stop();
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -574,16 +574,16 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingDisabledWhileStarted) {
   InitializeAndStartAppManager(profile(), true /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -603,8 +603,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingDisabledWhileStarted) {
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
   lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
           ->GetExtensionById(chromeos::NoteTakingHelper::kProdKeepExtensionId,
@@ -614,8 +614,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingDisabledWhileStarted) {
   app_manager()->Stop();
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
   RunExtensionServiceTaskRunner(profile());
@@ -633,8 +633,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingEnabledWhileStarted) {
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -647,16 +647,16 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingEnabledWhileStarted) {
 
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -673,8 +673,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingEnabledWhileStarted) {
   app_manager()->Stop();
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
   RunExtensionServiceTaskRunner(profile());
@@ -696,16 +696,16 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingChangedWhileStarted) {
   InitializeAndStartAppManager(profile(), true /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -724,16 +724,16 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingChangedWhileStarted) {
 
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kDevKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   // Verify prod app was unloaded from signin profile.
   lock_app =
@@ -756,8 +756,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingChangedWhileStarted) {
 
   app_manager()->Stop();
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
   RunExtensionServiceTaskRunner(profile());
@@ -787,7 +787,7 @@ TEST_P(LockScreenAppManagerImplTest, NoteTakingChangedToLockScreenSupported) {
   InitializeAndStartAppManager(profile(), true /*create_lock_screen_profile*/);
   RunExtensionServiceTaskRunner(LockScreenProfile());
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_EQ(false, app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(false, app_manager()->IsLockScreenAppAvailable());
 
   // Setting dev app, which is enabled on lock screen, as preferred will enable
   // lock screen note taking,
@@ -798,14 +798,14 @@ TEST_P(LockScreenAppManagerImplTest, NoteTakingChangedToLockScreenSupported) {
   ResetNoteTakingChangedCount();
   // If test app is installed asynchronously. the app won't be enabled on
   // lock screen until extension service task runner tasks are run.
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kDevKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   // Verify the dev app copy is installed in the lock screen app profile.
   const extensions::Extension* lock_app =
@@ -830,8 +830,8 @@ TEST_P(LockScreenAppManagerImplTest, NoteTakingChangedToLockScreenSupported) {
 
   // Stopping app manager will disable lock screen note taking.
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
   RunExtensionServiceTaskRunner(profile());
@@ -853,9 +853,9 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingReloadedWhileStarted) {
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -878,8 +878,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingReloadedWhileStarted) {
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   // Verify prod app was unloaded from signin profile.
   lock_app =
@@ -897,15 +897,15 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingReloadedWhileStarted) {
 
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -922,8 +922,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingReloadedWhileStarted) {
 
   app_manager()->Stop();
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
   RunExtensionServiceTaskRunner(profile());
@@ -949,14 +949,14 @@ TEST_P(LockScreenAppManagerImplTest,
   InitializeAndStartAppManager(profile(), true /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   chromeos::NoteTakingHelper::Get()->SetPreferredApp(
       profile(), chromeos::NoteTakingHelper::kDevKeepExtensionId);
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kDevKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
@@ -964,9 +964,9 @@ TEST_P(LockScreenAppManagerImplTest,
 
   EXPECT_EQ(0, note_taking_changed_count());
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kDevKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -1009,12 +1009,12 @@ TEST_P(LockScreenAppManagerImplTest,
   InitializeAndStartAppManager(profile(), true /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   chromeos::NoteTakingHelper::Get()->SetPreferredApp(
       profile(), chromeos::NoteTakingHelper::kDevKeepExtensionId);
 
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
@@ -1023,9 +1023,9 @@ TEST_P(LockScreenAppManagerImplTest,
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kDevKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -1078,9 +1078,9 @@ TEST_P(LockScreenAppManagerImplTest, LaunchAppWhenEnabled) {
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   ASSERT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
-  EXPECT_TRUE(app_manager()->LaunchNoteTaking());
+  EXPECT_TRUE(app_manager()->LaunchLockScreenApp());
 
   ASSERT_EQ(1u, event_observer()->launched_apps().size());
   EXPECT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
@@ -1089,7 +1089,7 @@ TEST_P(LockScreenAppManagerImplTest, LaunchAppWhenEnabled) {
 
   app_manager()->Stop();
 
-  EXPECT_FALSE(app_manager()->LaunchNoteTaking());
+  EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
   EXPECT_TRUE(event_observer()->launched_apps().empty());
 }
 
@@ -1107,10 +1107,10 @@ TEST_P(LockScreenAppManagerImplTest, LaunchAppWithFalseRestoreLastActionState) {
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   ASSERT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   event_observer()->set_expect_restore_action_state(false);
-  EXPECT_TRUE(app_manager()->LaunchNoteTaking());
+  EXPECT_TRUE(app_manager()->LaunchLockScreenApp());
 
   ASSERT_EQ(1u, event_observer()->launched_apps().size());
   EXPECT_EQ(chromeos::NoteTakingHelper::kProdKeepExtensionId,
@@ -1119,7 +1119,7 @@ TEST_P(LockScreenAppManagerImplTest, LaunchAppWithFalseRestoreLastActionState) {
 
   app_manager()->Stop();
 
-  EXPECT_FALSE(app_manager()->LaunchNoteTaking());
+  EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
   EXPECT_TRUE(event_observer()->launched_apps().empty());
 }
 
@@ -1134,11 +1134,11 @@ TEST_P(LockScreenAppManagerImplTest, LaunchAppWhenNoLockScreenApp) {
   InitializeAndStartAppManager(profile(), true /*create_lock_screen_profile*/);
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
-  EXPECT_FALSE(app_manager()->LaunchNoteTaking());
+  EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
   EXPECT_TRUE(event_observer()->launched_apps().empty());
 
   app_manager()->Stop();
-  EXPECT_FALSE(app_manager()->LaunchNoteTaking());
+  EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
   EXPECT_TRUE(event_observer()->launched_apps().empty());
 }
 
@@ -1153,16 +1153,16 @@ TEST_P(LockScreenAppManagerImplTest, InitializedAfterLockScreenProfileCreated) {
   InitializeAndStartAppManager(profile(), false /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kDevKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -1188,23 +1188,23 @@ TEST_P(LockScreenAppManagerImplTest, StartedBeforeLockScreenProfileCreated) {
   InitializeAndStartAppManager(profile(), false /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   CreateLockScreenProfile();
 
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(chromeos::NoteTakingHelper::kDevKeepExtensionId,
-            app_manager()->GetNoteTakingAppId());
+            app_manager()->GetLockScreenAppId());
 
   const extensions::Extension* lock_app =
       extensions::ExtensionRegistry::Get(LockScreenProfile())
@@ -1230,15 +1230,15 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenProfileCreatedNoSupportedApp) {
   InitializeAndStartAppManager(profile(), false /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   CreateLockScreenProfile();
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   app_manager()->Stop();
 }
@@ -1252,14 +1252,14 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenProfileCreationFailure) {
   InitializeAndStartAppManager(profile(), false /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   lock_screen_profile_creator()->SetProfileCreationFailed();
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 }
 
 TEST_P(LockScreenAppManagerImplTest,
@@ -1274,12 +1274,12 @@ TEST_P(LockScreenAppManagerImplTest,
   InitializeAndStartAppManager(profile(), false /*create_lock_screen_profile*/);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 }
 
 TEST_P(LockScreenAppManagerImplTest, ReloadLockScreenAppAfterAppCrash) {
@@ -1302,12 +1302,12 @@ TEST_P(LockScreenAppManagerImplTest, ReloadLockScreenAppAfterAppCrash) {
   // Even though the app was terminated, the observers should not see any state
   // change - the app should be reloaded when launch is requested next time.
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_EQ(note_taking_app->id(), app_manager()->GetNoteTakingAppId());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(note_taking_app->id(), app_manager()->GetLockScreenAppId());
 
   // App launch should be successful - this action should reload the
   // terminated app.
-  EXPECT_TRUE(app_manager()->LaunchNoteTaking());
+  EXPECT_TRUE(app_manager()->LaunchLockScreenApp());
 
   // Verify the lock screen note app is enabled.
   const extensions::Extension* lock_app =
@@ -1343,8 +1343,8 @@ TEST_P(LockScreenAppManagerImplTest, AppReloadFailure) {
   // Even though the app was terminated, the observers should not see any state
   // change - the app should be reloaded when launch is requested next time.
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_EQ(note_taking_app->id(), app_manager()->GetNoteTakingAppId());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(note_taking_app->id(), app_manager()->GetLockScreenAppId());
 
   // Disable the note taking app in the lock screen app profile - this should
   // prevent app reload.
@@ -1355,12 +1355,12 @@ TEST_P(LockScreenAppManagerImplTest, AppReloadFailure) {
 
   // App launch should fail - given that the app got disabled, it should not
   // be reloadable anymore.
-  EXPECT_FALSE(app_manager()->LaunchNoteTaking());
+  EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
 
   // Make sure that note taking is not reported as available any longer.
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
 }
 
 TEST_P(LockScreenAppManagerImplTest, LockScreenAppGetsUninstalled) {
@@ -1384,7 +1384,7 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenAppGetsUninstalled) {
   // Note taking should be reported to be unavailable if the app was uninstalled
   // from the lock screen profile.
   EXPECT_EQ(1, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
 }
 
 TEST_P(LockScreenAppManagerImplTest, TerminatedAppGetsUninstalled) {
@@ -1407,7 +1407,7 @@ TEST_P(LockScreenAppManagerImplTest, TerminatedAppGetsUninstalled) {
   // Even though the app was terminated, the observers should not see any state
   // change - the app should be reloaded when launch is requested next time.
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_EQ(note_taking_app->id(), app_manager()->GetNoteTakingAppId());
+  EXPECT_EQ(note_taking_app->id(), app_manager()->GetLockScreenAppId());
 
   // Disable the note taking app in the lock screen app profile - this should
   // prevent app reload.
@@ -1419,7 +1419,7 @@ TEST_P(LockScreenAppManagerImplTest, TerminatedAppGetsUninstalled) {
   // Note taking should be reported to be unavailable if the app was uninstalled
   // from the lock screen profile.
   EXPECT_EQ(1, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
 }
 
 TEST_P(LockScreenAppManagerImplTest, DoNotReloadLockScreenAppWhenDisabled) {
@@ -1441,9 +1441,9 @@ TEST_P(LockScreenAppManagerImplTest, DoNotReloadLockScreenAppWhenDisabled) {
                          extensions::disable_reason::DISABLE_USER_ACTION);
 
   EXPECT_EQ(1, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
-  EXPECT_FALSE(app_manager()->LaunchNoteTaking());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
+  EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
   EXPECT_FALSE(
       extensions::ExtensionRegistry::Get(LockScreenProfile())
           ->GetExtensionById(note_taking_app->id(),
@@ -1472,15 +1472,15 @@ TEST_P(LockScreenAppManagerImplTest,
                          extensions::disable_reason::DISABLE_USER_ACTION);
 
   EXPECT_EQ(1, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
 
   // Restarting the app manager should enable lock screen app again.
   RestartLockScreenAppManager();
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_EQ(note_taking_app->id(), app_manager()->GetNoteTakingAppId());
-  EXPECT_TRUE(app_manager()->LaunchNoteTaking());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(note_taking_app->id(), app_manager()->GetLockScreenAppId());
+  EXPECT_TRUE(app_manager()->LaunchLockScreenApp());
 
   // Verify the lock screen app was sent launch event.
   ASSERT_EQ(1u, event_observer()->launched_apps().size());
@@ -1504,7 +1504,7 @@ TEST_P(LockScreenAppManagerImplTest, AppNotReloadedAfterRepeatedCrashes) {
     extensions::ExtensionSystem::Get(LockScreenProfile())
         ->extension_service()
         ->TerminateExtension(note_taking_app->id());
-    EXPECT_TRUE(app_manager()->LaunchNoteTaking());
+    EXPECT_TRUE(app_manager()->LaunchLockScreenApp());
   }
 
   // If app is reloaded too many times, lock screen app should eventually
@@ -1514,9 +1514,9 @@ TEST_P(LockScreenAppManagerImplTest, AppNotReloadedAfterRepeatedCrashes) {
       ->TerminateExtension(note_taking_app->id());
 
   EXPECT_EQ(1, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_TRUE(app_manager()->GetNoteTakingAppId().empty());
-  EXPECT_FALSE(app_manager()->LaunchNoteTaking());
+  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
+  EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
   EXPECT_FALSE(extensions::ExtensionRegistry::Get(LockScreenProfile())
                    ->GetExtensionById(note_taking_app->id(),
                                       extensions::ExtensionRegistry::ENABLED));
@@ -1526,9 +1526,9 @@ TEST_P(LockScreenAppManagerImplTest, AppNotReloadedAfterRepeatedCrashes) {
   RestartLockScreenAppManager();
   RunExtensionServiceTaskRunner(LockScreenProfile());
 
-  EXPECT_TRUE(app_manager()->IsNoteTakingAppAvailable());
-  EXPECT_EQ(note_taking_app->id(), app_manager()->GetNoteTakingAppId());
-  EXPECT_TRUE(app_manager()->LaunchNoteTaking());
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(note_taking_app->id(), app_manager()->GetLockScreenAppId());
+  EXPECT_TRUE(app_manager()->LaunchLockScreenApp());
 
   // Verify the lock screen app was sent launch event.
   ASSERT_EQ(1u, event_observer()->launched_apps().size());

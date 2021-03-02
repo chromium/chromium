@@ -188,17 +188,17 @@ class TestAppManager : public lock_screen_apps::AppManager {
     state_ = State::kStopped;
   }
 
-  bool LaunchNoteTaking() override {
+  bool LaunchLockScreenApp() override {
     EXPECT_EQ(State::kStarted, state_);
     ++launch_count_;
     return app_launchable_;
   }
 
-  bool IsNoteTakingAppAvailable() const override {
+  bool IsLockScreenAppAvailable() const override {
     return state_ == State::kStarted && !app_id_.empty();
   }
 
-  std::string GetNoteTakingAppId() const override {
+  std::string GetLockScreenAppId() const override {
     if (state_ != State::kStarted)
       return std::string();
     return app_id_;

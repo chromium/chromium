@@ -42,12 +42,11 @@ class AppManagerImpl : public AppManager,
   // AppManager implementation:
   void Initialize(Profile* primary_profile,
                   LockScreenProfileCreator* profile_creator) override;
-  void Start(
-      const base::RepeatingClosure& note_taking_changed_callback) override;
+  void Start(const base::RepeatingClosure& app_changed_callback) override;
   void Stop() override;
-  bool LaunchNoteTaking() override;
-  bool IsNoteTakingAppAvailable() const override;
-  std::string GetNoteTakingAppId() const override;
+  bool LaunchLockScreenApp() override;
+  bool IsLockScreenAppAvailable() const override;
+  std::string GetLockScreenAppId() const override;
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -99,50 +98,55 @@ class AppManagerImpl : public AppManager,
   // cause app availability re-calculation.
   void OnLockScreenProfileLoaded();
 
-  // Called on UI thread when the lock screen app profile is initialized with
-  // lock screen app assets. It completes the app installation to the lock
-  // screen app profile.
-  // |app| - the installing app. Cann be nullptr in case the app assets
+  // Called on UI thread when the lock screen profile is initialized with
+  // lock screen extension assets. It completes the Chrome App installation to
+  // the lock screen profile.
+  // |app| - the installing Chrome App. Can be nullptr in case the app assets
   //     installation failed.
-  void CompleteLockScreenAppInstall(
+  void CompleteLockScreenChromeAppInstall(
       int install_id,
       base::TimeTicks install_start_time,
       const scoped_refptr<const extensions::Extension>& app);
 
-  // Installs app to the lock screen profile's extension service and enables
-  // the app.
-  void InstallAndEnableLockScreenAppInLockScreenProfile(
+  // Installs |app| to the lock screen profile's extension service and enables
+  // the Chrome App.
+  void InstallAndEnableLockScreenChromeAppInLockScreenProfile(
       const extensions::Extension* app);
 
-  // Called when note taking related prefs change.
-  void OnNoteTakingExtensionChanged();
+  // Updates internal state about the current lock screen app, replacing the app
+  // installed on the lock screen if needed. Notifies
+  // |note_taking_changed_callback| if there was a change.
+  // Should be called when note taking or lock screen related prefs change.
+  void UpdateLockScreenAppState();
 
-  // Gets the currently enabled lock screen note taking app, is one is selected.
+  // Gets the currently enabled lock screen app, if one is selected.
   // If no such app exists, returns an empty string.
-  std::string FindLockScreenNoteTakingApp() const;
+  std::string FindLockScreenAppId() const;
 
-  // Starts installing the lock screen note taking app to the lock screen
-  // profile.
+  // Starts installing the app to the lock screen profile if needed. Works for
+  // both Chrome apps and web apps.
   // Returns the state to which the app manager should move as a result of this
   // method.
   State AddAppToLockScreenProfile(const std::string& app_id);
 
   // Uninstalls lock screen note taking app from the lock screen profile.
-  void RemoveAppFromLockScreenProfile(const std::string& app_id);
+  void RemoveChromeAppFromLockScreenProfile(const std::string& app_id);
 
-  // Returns the lock screen app to which lock screen app launch event should be
+  // Returns the Chrome App to which lock screen app launch event should be
   // sent. If the app is disabled because it got terminated (e.g. due to an app
   // crash), this will attempt to reload the app.
-  // Returns null if the extension is not enabled, and cannot be enabled.
-  const extensions::Extension* GetAppForLockScreenAppLaunch();
+  // Returns null if the extension is not enabled, and cannot be enabled, or if
+  // a web app is the current lock screen app.
+  const extensions::Extension* GetChromeAppForLockScreenAppLaunch();
 
   // Reports UMA for the app status when lock screen note action launch is
   // attempted.
   void ReportAppStatusOnAppLaunch(AppStatus status);
 
-  // Updates internal state, and reports relevant metrics when the note taking
+  // Updates internal state, and reports relevant metrics when the lock screen
   // app gets unloaded from the lock screen profile.
-  void HandleLockScreenAppUnload(extensions::UnloadedExtensionReason reason);
+  void HandleLockScreenChromeAppUnload(
+      extensions::UnloadedExtensionReason reason);
 
   // Removes the lock screen app from the lock screen apps profile if the app
   // manager encountered an error - e.g. if the app unexpectedly got disabled in
@@ -154,6 +158,7 @@ class AppManagerImpl : public AppManager,
   LockScreenProfileCreator* lock_screen_profile_creator_ = nullptr;
 
   State state_ = State::kNotInitialized;
+  // ID may refer to a Chrome app or a web app.
   std::string lock_screen_app_id_;
 
   const base::TickClock* tick_clock_;
@@ -169,13 +174,14 @@ class AppManagerImpl : public AppManager,
                  chromeos::NoteTakingHelper::Observer>
       note_taking_helper_observer_;
 
-  base::RepeatingClosure note_taking_changed_callback_;
+  // To be called when the lock screen app availability changes.
+  base::RepeatingClosure app_changed_callback_;
 
-  // Counts app installs. Passed to app install callback as install request
-  // identifier to determine whether the completed install is stale.
+  // Counts Chrome app installs. Passed to app install callback as install
+  // request identifier to determine whether the completed install is stale.
   int install_count_ = 0;
 
-  // The number of times the lock screen app can be reloaded in the
+  // The number of times the lock screen Chrome app can be reloaded in the
   // lock screen apps profile in case it get terminated.
   // This counter is reset when the AppManager is restarted.
   int available_lock_screen_app_reloads_ = 0;

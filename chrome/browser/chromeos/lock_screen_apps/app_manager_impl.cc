@@ -9,7 +9,6 @@
 
 #include "apps/launcher.h"
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -32,7 +31,6 @@
 #include "extensions/browser/install_flag.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
@@ -202,9 +200,9 @@ void AppManagerImpl::OnLockScreenProfileLoaded() {
   DCHECK_NE(primary_profile_,
             lock_screen_profile_creator_->lock_screen_profile());
 
-  // Do not use OTR profile for lock screen apps. This is important for
-  // profile usage in |LaunchNoteTaking| - lock screen app background page runs
-  // in original, non off the record profile, so the launch event has to be
+  // Do not use OTR profile for lock screen Chrome apps. This is important for
+  // profile usage in |LaunchLockScreenApp| - lock screen app background page
+  // runs in original, non off the record profile, so the launch event has to be
   // dispatched to that profile. For other |lock_screen_profile_|, it makes no
   // difference - the profile is used to get browser context keyed services, all
   // of which redirect OTR profile to the original one.
@@ -214,14 +212,14 @@ void AppManagerImpl::OnLockScreenProfileLoaded() {
   CHECK(!chromeos::ProfileHelper::Get()->GetUserByProfile(lock_screen_profile_))
       << "Lock screen profile should not be associated with any users.";
 
-  OnNoteTakingExtensionChanged();
+  UpdateLockScreenAppState();
 }
 
 void AppManagerImpl::Start(
     const base::RepeatingClosure& note_taking_changed_callback) {
   DCHECK_NE(State::kNotInitialized, state_);
 
-  note_taking_changed_callback_ = note_taking_changed_callback;
+  app_changed_callback_ = note_taking_changed_callback;
 
   if (state_ == State::kActive || state_ == State::kActivating)
     return;
@@ -230,7 +228,7 @@ void AppManagerImpl::Start(
       extensions::ExtensionRegistry::Get(primary_profile_));
 
   lock_screen_app_id_.clear();
-  std::string app_id = FindLockScreenNoteTakingApp();
+  std::string app_id = FindLockScreenAppId();
   if (app_id.empty()) {
     state_ = State::kAppUnavailable;
     return;
@@ -244,33 +242,35 @@ void AppManagerImpl::Start(
 void AppManagerImpl::Stop() {
   DCHECK_NE(State::kNotInitialized, state_);
 
-  note_taking_changed_callback_.Reset();
+  app_changed_callback_.Reset();
   extensions_observer_.RemoveAll();
   available_lock_screen_app_reloads_ = 0;
 
   if (state_ == State::kInactive)
     return;
 
-  RemoveAppFromLockScreenProfile(lock_screen_app_id_);
+  RemoveChromeAppFromLockScreenProfile(lock_screen_app_id_);
   lock_screen_app_id_.clear();
   state_ = State::kInactive;
 }
 
-bool AppManagerImpl::IsNoteTakingAppAvailable() const {
+bool AppManagerImpl::IsLockScreenAppAvailable() const {
   return state_ == State::kActive && !lock_screen_app_id_.empty();
 }
 
-std::string AppManagerImpl::GetNoteTakingAppId() const {
-  if (!IsNoteTakingAppAvailable())
+std::string AppManagerImpl::GetLockScreenAppId() const {
+  if (!IsLockScreenAppAvailable())
     return std::string();
   return lock_screen_app_id_;
 }
 
-bool AppManagerImpl::LaunchNoteTaking() {
-  if (!IsNoteTakingAppAvailable())
+bool AppManagerImpl::LaunchLockScreenApp() {
+  if (!IsLockScreenAppAvailable())
     return false;
 
-  const extensions::Extension* app = GetAppForLockScreenAppLaunch();
+  // TODO(crbug.com/1047093): Handle web apps here.
+
+  const extensions::Extension* app = GetChromeAppForLockScreenAppLaunch();
   // If the app cannot be found at this point, it either got unexpectedly
   // disabled, or it failed to reload (in case it was previously terminated).
   // In either case, note taking should not be reported as available anymore.
@@ -297,7 +297,7 @@ void AppManagerImpl::OnExtensionLoaded(content::BrowserContext* browser_context,
   if (browser_context == primary_profile_ &&
       extension->id() ==
           primary_profile_->GetPrefs()->GetString(prefs::kNoteTakingAppId)) {
-    OnNoteTakingExtensionChanged();
+    UpdateLockScreenAppState();
   }
 }
 
@@ -309,9 +309,9 @@ void AppManagerImpl::OnExtensionUnloaded(
     return;
 
   if (browser_context == primary_profile_) {
-    OnNoteTakingExtensionChanged();
+    UpdateLockScreenAppState();
   } else if (browser_context == lock_screen_profile_) {
-    HandleLockScreenAppUnload(reason);
+    HandleLockScreenChromeAppUnload(reason);
   }
 }
 
@@ -333,29 +333,29 @@ void AppManagerImpl::OnPreferredNoteTakingAppUpdated(Profile* profile) {
   if (profile != primary_profile_)
     return;
 
-  OnNoteTakingExtensionChanged();
+  UpdateLockScreenAppState();
 }
 
-void AppManagerImpl::OnNoteTakingExtensionChanged() {
+void AppManagerImpl::UpdateLockScreenAppState() {
   if (state_ == State::kInactive)
     return;
 
-  std::string app_id = FindLockScreenNoteTakingApp();
+  std::string app_id = FindLockScreenAppId();
   if (app_id == lock_screen_app_id_)
     return;
 
-  RemoveAppFromLockScreenProfile(lock_screen_app_id_);
+  RemoveChromeAppFromLockScreenProfile(lock_screen_app_id_);
   lock_screen_app_id_.clear();
 
   state_ = AddAppToLockScreenProfile(app_id);
   if (state_ == State::kActive || state_ == State::kActivating)
     lock_screen_app_id_ = app_id;
 
-  if (!note_taking_changed_callback_.is_null())
-    note_taking_changed_callback_.Run();
+  if (!app_changed_callback_.is_null())
+    app_changed_callback_.Run();
 }
 
-std::string AppManagerImpl::FindLockScreenNoteTakingApp() const {
+std::string AppManagerImpl::FindLockScreenAppId() const {
   // Note that lock screen does not currently support Android apps, so
   // it's enough to only check the state of the preferred Chrome app.
   std::unique_ptr<chromeos::NoteTakingAppInfo> note_taking_app =
@@ -368,7 +368,7 @@ std::string AppManagerImpl::FindLockScreenNoteTakingApp() const {
   // on the lock screen. If an app is not available, the profile is expected to
   // be nullptr.
   // If the app is available and the lock_screen_profile is not set, the profile
-  // might still be loading, and |FindLockScreenNoteTakingApp| will be called
+  // might still be loading, and |FindLockScreenAppId| will be called
   // again when the profile is loaded - until then, report to UMA that lock
   // screen profile was not created at this point, and otherwise ignore the
   // available app.
@@ -387,6 +387,8 @@ std::string AppManagerImpl::FindLockScreenNoteTakingApp() const {
 
 AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
     const std::string& app_id) {
+  // TODO(crbug.com/1047093): First check if app_id is an installed web app.
+
   extensions::ExtensionRegistry* primary_registry =
       extensions::ExtensionRegistry::Get(primary_profile_);
   const extensions::Extension* app =
@@ -421,7 +423,8 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
   install_count_++;
 
   if (is_unpacked) {
-    InstallAndEnableLockScreenAppInLockScreenProfile(lock_profile_app.get());
+    InstallAndEnableLockScreenChromeAppInLockScreenProfile(
+        lock_profile_app.get());
     return State::kActive;
   }
 
@@ -444,14 +447,15 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
           updates_from_webstore_or_empty_update_url,
           base::BindOnce(
               &InvokeCallbackOnTaskRunner,
-              base::BindOnce(&AppManagerImpl::CompleteLockScreenAppInstall,
-                             weak_ptr_factory_.GetWeakPtr(), install_count_,
-                             tick_clock_->NowTicks()),
+              base::BindOnce(
+                  &AppManagerImpl::CompleteLockScreenChromeAppInstall,
+                  weak_ptr_factory_.GetWeakPtr(), install_count_,
+                  tick_clock_->NowTicks()),
               base::ThreadTaskRunnerHandle::Get())));
   return State::kActivating;
 }
 
-void AppManagerImpl::CompleteLockScreenAppInstall(
+void AppManagerImpl::CompleteLockScreenChromeAppInstall(
     int install_id,
     base::TimeTicks install_start_time,
     const scoped_refptr<const extensions::Extension>& app) {
@@ -467,17 +471,17 @@ void AppManagerImpl::CompleteLockScreenAppInstall(
 
   if (app) {
     DCHECK_EQ(lock_screen_app_id_, app->id());
-    InstallAndEnableLockScreenAppInLockScreenProfile(app.get());
+    InstallAndEnableLockScreenChromeAppInLockScreenProfile(app.get());
     state_ = State::kActive;
   } else {
     state_ = State::kAppUnavailable;
   }
 
-  if (!note_taking_changed_callback_.is_null())
-    note_taking_changed_callback_.Run();
+  if (!app_changed_callback_.is_null())
+    app_changed_callback_.Run();
 }
 
-void AppManagerImpl::InstallAndEnableLockScreenAppInLockScreenProfile(
+void AppManagerImpl::InstallAndEnableLockScreenChromeAppInLockScreenProfile(
     const extensions::Extension* app) {
   extensions::ExtensionService* lock_screen_service =
       extensions::ExtensionSystem::Get(lock_screen_profile_)
@@ -493,7 +497,8 @@ void AppManagerImpl::InstallAndEnableLockScreenAppInLockScreenProfile(
       extensions::ExtensionRegistry::Get(lock_screen_profile_));
 }
 
-void AppManagerImpl::RemoveAppFromLockScreenProfile(const std::string& app_id) {
+void AppManagerImpl::RemoveChromeAppFromLockScreenProfile(
+    const std::string& app_id) {
   if (app_id.empty())
     return;
 
@@ -513,7 +518,10 @@ void AppManagerImpl::RemoveAppFromLockScreenProfile(const std::string& app_id) {
           app_id, extensions::UNINSTALL_REASON_INTERNAL_MANAGEMENT, &error);
 }
 
-const extensions::Extension* AppManagerImpl::GetAppForLockScreenAppLaunch() {
+const extensions::Extension*
+AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
+  // TODO(crbug.com/1047093): First check if app_id is an installed web app.
+
   const extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(lock_screen_profile_);
 
@@ -568,7 +576,7 @@ void AppManagerImpl::ReportAppStatusOnAppLaunch(AppStatus status) {
       AppStatus::kCount);
 }
 
-void AppManagerImpl::HandleLockScreenAppUnload(
+void AppManagerImpl::HandleLockScreenChromeAppUnload(
     extensions::UnloadedExtensionReason reason) {
   if (state_ != State::kActive && state_ != State::kActivating)
     return;
@@ -603,12 +611,12 @@ void AppManagerImpl::RemoveLockScreenAppDueToError() {
   if (state_ != State::kActive && state_ != State::kActivating)
     return;
 
-  RemoveAppFromLockScreenProfile(lock_screen_app_id_);
+  RemoveChromeAppFromLockScreenProfile(lock_screen_app_id_);
   lock_screen_app_id_.clear();
   state_ = State::kInactive;
 
-  if (!note_taking_changed_callback_.is_null())
-    note_taking_changed_callback_.Run();
+  if (!app_changed_callback_.is_null())
+    app_changed_callback_.Run();
 }
 
 }  // namespace lock_screen_apps
