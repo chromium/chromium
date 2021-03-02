@@ -67,7 +67,10 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "privacy_budget_browsertest.cc" ]
+  sources = [
+    "canvas_input_key_browsertest.cc",
+    "privacy_budget_browsertest.cc",
+  ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
