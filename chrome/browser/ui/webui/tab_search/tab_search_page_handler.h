@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -87,9 +88,16 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
 
-  tab_search::mojom::TabPtr GetTabData(TabStripModel* tab_strip_model,
-                                       content::WebContents* contents,
-                                       int index);
+  void CreateRecentlyClosedTabs(
+      std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
+          recently_closed_tabs);
+
+  tab_search::mojom::TabPtr GetTab(TabStripModel* tab_strip_model,
+                                   content::WebContents* contents,
+                                   int index);
+  tab_search::mojom::RecentlyClosedTabPtr GetRecentlyClosedTab(
+      sessions::TabRestoreService::Tab* tab);
+
   // Returns tab details required to perform an action on the tab.
   base::Optional<TabDetails> GetTabDetails(int32_t tab_id);
 
