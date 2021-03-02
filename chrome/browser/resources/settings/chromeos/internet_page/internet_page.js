@@ -680,8 +680,9 @@ Polymer({
       return;
     }
 
-    const isMobile = OncMojo.networkTypeIsMobile(type);
-    if (!isMobile && (!networkState.connectable || !!networkState.errorState)) {
+    if (OncMojo.networkTypeHasConfigurationFlow(type) &&
+        (!OncMojo.isNetworkConnectable(networkState) ||
+         !!networkState.errorState)) {
       this.showConfig_(
           true /* configAndConnect */, type, networkState.guid, displayName);
       return;
@@ -697,7 +698,7 @@ Polymer({
           // TODO(stevenjb/khorimoto): Consider handling these cases.
           return;
         case mojom.StartConnectResult.kNotConfigured:
-          if (!isMobile) {
+          if (OncMojo.networkTypeHasConfigurationFlow(type)) {
             this.showConfig_(
                 true /* configAndConnect */, type, networkState.guid,
                 displayName);

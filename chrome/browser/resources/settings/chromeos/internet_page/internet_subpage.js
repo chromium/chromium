@@ -753,20 +753,20 @@ Polymer({
     if (state.connectionState !== mojom.ConnectionStateType.kNotConnected) {
       return false;
     }
+
     if (this.isBlockedByPolicy_(state)) {
       return false;
     }
+
+    // VPNs can only be connected if there is an existing network connection to
+    // use with the VPN.
     if (state.type === mojom.NetworkType.kVPN &&
         (!this.defaultNetwork ||
          !OncMojo.connectionStateIsConnected(
              this.defaultNetwork.connectionState))) {
       return false;
     }
-    // Cellular networks do not have a configuration flow, so it's not possible
-    // to attempt a connection if the network is not conncetable.
-    if (state.type === mojom.NetworkType.kCellular && !state.connectable) {
-      return false;
-    }
+
     return true;
   },
 
