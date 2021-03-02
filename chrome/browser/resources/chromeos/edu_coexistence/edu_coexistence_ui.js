@@ -129,11 +129,16 @@ Polymer({
   ready() {
     this.addWebUIListener(
         'load-auth-extension', data => this.loadAuthExtension_(data));
+    this.webview_ =
+        /** @type {!WebView} */ (this.$.signinFrame);
+
+    this.webview_.addEventListener('loadabort', () => {
+      this.loading_ = false;
+      this.fire('go-error');
+    });
 
     EduCoexistenceBrowserProxyImpl.getInstance().initializeEduArgs().then(
         (data) => {
-          this.webview_ =
-              /** @type {!WebView} */ (this.$.signinFrame);
           this.controller_ =
               new EduCoexistenceController(this, this.webview_, data);
 

@@ -25,6 +25,8 @@ edu_coexistence_app_tests.TestNames = {
   ShowOnline: 'Show online',
   ShowError: 'Show error',
   DontSwitchViewIfDisplayingError: 'No view switch after error',
+  ShowErrorScreenImmediatelyOnLoadAbort:
+      'Show error screen immediately on loadabort in webview',
 };
 
 suite(edu_coexistence_app_tests.suiteName, function() {
@@ -101,6 +103,18 @@ suite(edu_coexistence_app_tests.suiteName, function() {
 
         window.dispatchEvent(new Event('online'));
         // Should still show error screen.
+        assertEquals(appComponent.currentScreen_, Screens.ERROR);
+      });
+
+  test(
+      assert(edu_coexistence_app_tests.TestNames
+                 .ShowErrorScreenImmediatelyOnLoadAbort),
+      function() {
+        assertEquals(appComponent.currentScreen_, Screens.ONLINE_FLOW);
+        appComponent.$$('edu-coexistence-ui')
+            .webview_.dispatchEvent(new Event('loadabort'));
+
+        // Should show error screen.
         assertEquals(appComponent.currentScreen_, Screens.ERROR);
       });
 });

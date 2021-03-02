@@ -62,6 +62,14 @@ TEST_F('EduCoexistenceAppTest', 'DontSwitchViewIfDisplayingError', function() {
       edu_coexistence_app_tests.TestNames.DontSwitchViewIfDisplayingError);
 });
 
+TEST_F(
+    'EduCoexistenceAppTest', 'ShowErrorScreenImmediatelyOnLoadAbort',
+    function() {
+      this.runMochaTest(edu_coexistence_app_tests.TestNames
+                            .ShowErrorScreenImmediatelyOnLoadAbort);
+    });
+
+
 var EduCoexistenceControllerTest = class extends EduCoexistenceTest {
   /** @override */
   get browsePreload() {
