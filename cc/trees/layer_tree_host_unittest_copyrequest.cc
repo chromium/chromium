@@ -158,7 +158,8 @@ class LayerTreeHostCopyRequestTestMultipleRequests
                           std::unique_ptr<viz::CopyOutputResult> result) {
     EXPECT_TRUE(layer_tree_host()->GetTaskRunnerProvider()->IsMainThread());
     EXPECT_FALSE(result->IsEmpty());
-    const SkBitmap& bitmap = result->AsSkBitmap();
+    auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
+    const SkBitmap& bitmap = scoped_sk_bitmap.bitmap();
     EXPECT_TRUE(bitmap.readyToDraw());
     EXPECT_EQ(result->size(), gfx::Size(bitmap.width(), bitmap.height()));
     callbacks_[id] = result->size();

@@ -119,7 +119,8 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
     const gfx::Rect& output_rect,
     const gfx::ColorSpace& color_space,
     std::unique_ptr<CopyOutputResult> result) {
-  SkBitmap result_bitmap(result->AsSkBitmap());
+  auto scoped_bitmap = result->ScopedAccessSkBitmap();
+  auto result_bitmap = scoped_bitmap.bitmap();
   EXPECT_EQ(result_bitmap.width(), output_rect.width());
   EXPECT_EQ(result_bitmap.height(), output_rect.height());
 

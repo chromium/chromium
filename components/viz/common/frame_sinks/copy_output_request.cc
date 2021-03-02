@@ -4,6 +4,8 @@
 
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/task/task_traits.h"
@@ -27,7 +29,8 @@ CopyOutputRequest::CopyOutputRequest(ResultFormat result_format,
 CopyOutputRequest::~CopyOutputRequest() {
   if (!result_callback_.is_null()) {
     // Send an empty result to indicate the request was never satisfied.
-    SendResult(std::make_unique<CopyOutputResult>(result_format_, gfx::Rect()));
+    SendResult(
+        std::make_unique<CopyOutputResult>(result_format_, gfx::Rect(), false));
   }
 }
 

@@ -4,6 +4,9 @@
 
 #include "services/viz/public/cpp/compositing/copy_output_result_mojom_traits.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -90,17 +93,17 @@ const gfx::Rect& StructTraits<viz::mojom::CopyOutputResultDataView,
 }
 
 // static
-base::Optional<SkBitmap> StructTraits<viz::mojom::CopyOutputResultDataView,
-                                      std::unique_ptr<viz::CopyOutputResult>>::
+base::Optional<viz::CopyOutputResult::ScopedSkBitmap>
+StructTraits<viz::mojom::CopyOutputResultDataView,
+             std::unique_ptr<viz::CopyOutputResult>>::
     bitmap(const std::unique_ptr<viz::CopyOutputResult>& result) {
   if (result->format() != viz::CopyOutputResult::Format::RGBA_BITMAP)
     return base::nullopt;
-  return result->AsSkBitmap();
+  auto scoped_bitmap = result->ScopedAccessSkBitmap();
+  if (!scoped_bitmap.bitmap().readyToDraw())
+    return base::nullopt;
+  return scoped_bitmap;
 }
-
-// static
-viz::mojom::CopyOutputResultDataView bitmap(
-    const std::unique_ptr<viz::CopyOutputResult>& result);
 
 // static
 base::Optional<gpu::Mailbox>
@@ -168,7 +171,8 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
 
   if (rect.IsEmpty()) {
     // An empty rect implies an empty result.
-    *out_p = std::make_unique<viz::CopyOutputResult>(format, gfx::Rect());
+    *out_p =
+        std::make_unique<viz::CopyOutputResult>(format, gfx::Rect(), false);
     return true;
   }
 
@@ -201,7 +205,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
       if (mailbox->IsZero()) {
         // Returns an empty result.
         *out_p = std::make_unique<viz::CopyOutputResult>(
-            viz::CopyOutputResult::Format::RGBA_TEXTURE, gfx::Rect());
+            viz::CopyOutputResult::Format::RGBA_TEXTURE, gfx::Rect(), false);
         return true;
       }
 

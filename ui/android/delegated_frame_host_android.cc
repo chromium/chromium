@@ -123,7 +123,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
                  std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef>
                      readback_ref,
                  std::unique_ptr<viz::CopyOutputResult> result) {
-                std::move(callback).Run(result->AsSkBitmap());
+                auto scoped_bitmap = result->ScopedAccessSkBitmap();
+                std::move(callback).Run(scoped_bitmap.GetOutScopedBitmap());
               },
               std::move(callback), std::move(readback_ref)));
 

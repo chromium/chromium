@@ -300,7 +300,7 @@ void FakeSkiaOutputSurface::CopyOutput(
                  bitmap.rowBytes());
   bitmap.setPixelRef(std::move(pixels), origin.x(), origin.y());
   request->SendResult(std::make_unique<CopyOutputSkBitmapResult>(
-      geometry.result_bounds, bitmap));
+      geometry.result_bounds, std::move(bitmap)));
 }
 
 void FakeSkiaOutputSurface::AddContextLostObserver(

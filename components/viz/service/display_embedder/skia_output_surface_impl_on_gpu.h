@@ -201,6 +201,7 @@ class SkiaOutputSurfaceImplOnGpu
   }
 
   void ReadbackDone() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     DCHECK_GT(num_readbacks_pending_, 0);
     num_readbacks_pending_--;
   }
@@ -259,6 +260,8 @@ class SkiaOutputSurfaceImplOnGpu
   // pending readback requests after checking then it will reschedule itself
   // after a short delay.
   void CheckReadbackCompletion();
+
+  void ReleaseAsyncReadResultHelpers();
 
 #if defined(OS_APPLE)
   std::unique_ptr<gpu::SharedImageRepresentationSkia>

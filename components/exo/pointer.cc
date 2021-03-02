@@ -731,7 +731,8 @@ void Pointer::OnCursorCaptured(const gfx::Point& hotspot,
   if (result->IsEmpty())
     return;
 
-  cursor_bitmap_ = result->AsSkBitmap();
+  auto scoped_bitmap = result->ScopedAccessSkBitmap();
+  cursor_bitmap_ = scoped_bitmap.GetOutScopedBitmap();
   DCHECK(cursor_bitmap_.readyToDraw());
   cursor_hotspot_ = hotspot;
   UpdateCursor();

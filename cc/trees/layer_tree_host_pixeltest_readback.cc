@@ -105,7 +105,9 @@ class LayerTreeHostReadbackPixelTest
   void ReadbackResultAsBitmap(std::unique_ptr<viz::CopyOutputResult> result) {
     EXPECT_TRUE(task_runner_provider()->IsMainThread());
     EXPECT_FALSE(result->IsEmpty());
-    result_bitmap_ = std::make_unique<SkBitmap>(result->AsSkBitmap());
+    auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
+    result_bitmap_ =
+        std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
     EXPECT_TRUE(result_bitmap_->readyToDraw());
     EndTest();
   }
@@ -121,12 +123,12 @@ class LayerTreeHostReadbackPixelTest
     std::unique_ptr<viz::SingleReleaseCallback> release_callback =
         result->TakeTextureOwnership();
 
-    const SkBitmap bitmap =
+    SkBitmap bitmap =
         CopyMailboxToBitmap(result->size(), mailbox, sync_token, color_space);
     release_callback->Run(gpu::SyncToken(), false);
 
     ReadbackResultAsBitmap(std::make_unique<viz::CopyOutputSkBitmapResult>(
-        result->rect(), bitmap));
+        result->rect(), std::move(bitmap)));
   }
 
   gfx::Rect copy_subrect_;

@@ -4,6 +4,8 @@
 
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
 
+#include <memory>
+
 namespace {
 
 void DeleteSharedMemoryMapping(void* not_used, void* context) {
@@ -15,22 +17,27 @@ void DeleteSharedMemoryMapping(void* not_used, void* context) {
 namespace mojo {
 
 // static
-const SkImageInfo&
-StructTraits<viz::mojom::BitmapInSharedMemoryDataView, SkBitmap>::image_info(
-    const SkBitmap& sk_bitmap) {
+const SkImageInfo StructTraits<viz::mojom::BitmapInSharedMemoryDataView,
+                               viz::CopyOutputResult::ScopedSkBitmap>::
+    image_info(const viz::CopyOutputResult::ScopedSkBitmap& scoped_bitmap) {
+  auto sk_bitmap = scoped_bitmap.bitmap();
   return sk_bitmap.info();
 }
 
 // static
 uint64_t StructTraits<viz::mojom::BitmapInSharedMemoryDataView,
-                      SkBitmap>::row_bytes(const SkBitmap& sk_bitmap) {
+                      viz::CopyOutputResult::ScopedSkBitmap>::
+    row_bytes(const viz::CopyOutputResult::ScopedSkBitmap& scoped_bitmap) {
+  auto sk_bitmap = scoped_bitmap.bitmap();
   return sk_bitmap.rowBytes();
 }
 
 // static
 base::Optional<base::WritableSharedMemoryRegion>
-StructTraits<viz::mojom::BitmapInSharedMemoryDataView, SkBitmap>::pixels(
-    const SkBitmap& sk_bitmap) {
+StructTraits<viz::mojom::BitmapInSharedMemoryDataView,
+             viz::CopyOutputResult::ScopedSkBitmap>::
+    pixels(const viz::CopyOutputResult::ScopedSkBitmap& scoped_bitmap) {
+  auto sk_bitmap = scoped_bitmap.bitmap();
   if (!sk_bitmap.readyToDraw())
     return base::nullopt;
 

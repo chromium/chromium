@@ -358,7 +358,9 @@ class PictureInPicturePixelComparisonBrowserTest
                       std::unique_ptr<viz::CopyOutputResult> result) {
     ASSERT_FALSE(result->IsEmpty());
     EXPECT_EQ(viz::CopyOutputResult::Format::RGBA_BITMAP, result->format());
-    result_bitmap_ = std::make_unique<SkBitmap>(result->AsSkBitmap());
+    auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
+    result_bitmap_ =
+        std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
     EXPECT_TRUE(result_bitmap_->readyToDraw());
     quit_run_loop.Run();
   }

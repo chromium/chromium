@@ -214,7 +214,8 @@ TEST_F(GLRendererCopierTest, FallsBackToSRGBForInvalidSkColorSpaces) {
       0, gfx::Size(50, 50), false, hdr_color_space);
   loop.Run();
 
-  SkBitmap result_bitmap = result->AsSkBitmap();
+  auto scoped_bitmap = result->ScopedAccessSkBitmap();
+  SkBitmap result_bitmap = scoped_bitmap.bitmap();
   ASSERT_NE(nullptr, result_bitmap.colorSpace());
   EXPECT_TRUE(result_bitmap.colorSpace()->isSRGB());
 }

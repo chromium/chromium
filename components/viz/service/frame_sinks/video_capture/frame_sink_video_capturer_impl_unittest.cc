@@ -194,7 +194,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
 class SolidColorI420Result : public CopyOutputResult {
  public:
   SolidColorI420Result(const gfx::Rect rect, YUVColor color)
-      : CopyOutputResult(CopyOutputResult::Format::I420_PLANES, rect),
+      : CopyOutputResult(CopyOutputResult::Format::I420_PLANES, rect, false),
         color_(color) {}
 
   bool ReadI420Planes(uint8_t* y_out,

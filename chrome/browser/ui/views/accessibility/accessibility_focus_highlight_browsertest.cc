@@ -255,10 +255,14 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
   ReadbackHolder() : run_loop_(std::make_unique<base::RunLoop>()) {}
 
   void OutputRequestCallback(std::unique_ptr<viz::CopyOutputResult> result) {
-    if (result->IsEmpty())
+    if (result->IsEmpty()) {
       result_.reset();
-    else
-      result_ = std::make_unique<SkBitmap>(result->AsSkBitmap());
+    } else {
+      auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
+      result_ =
+          std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
+      EXPECT_TRUE(result_->readyToDraw());
+    }
     run_loop_->Quit();
   }
 

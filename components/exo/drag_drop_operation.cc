@@ -138,7 +138,8 @@ class DragDropOperation::IconSurface final : public SurfaceTreeHost,
       return;
     }
 
-    operation_->OnDragIconCaptured(icon_result->AsSkBitmap());
+    auto scoped_bitmap = icon_result->ScopedAccessSkBitmap();
+    operation_->OnDragIconCaptured(scoped_bitmap.GetOutScopedBitmap());
   }
 
   DragDropOperation* const operation_;

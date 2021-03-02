@@ -269,8 +269,8 @@ TEST_F(StructTraitsTest, CopyOutputRequest_BitmapRequest) {
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(
       result_rect.width(), result_rect.height(), SkColorSpace::MakeSRGB()));
-  output->SendResult(
-      std::make_unique<CopyOutputSkBitmapResult>(result_rect, bitmap));
+  output->SendResult(std::make_unique<CopyOutputSkBitmapResult>(
+      result_rect, std::move(bitmap)));
   // If the CopyOutputRequest callback is called, this ends. Otherwise, the test
   // will time out and fail.
   run_loop.Run();
@@ -373,7 +373,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_CallbackRunsOnce) {
       std::move(result_sender_pending_remote));
   for (int i = 0; i < 10; i++)
     result_sender_remote->SendResult(std::make_unique<CopyOutputResult>(
-        request->result_format(), gfx::Rect()));
+        request->result_format(), gfx::Rect(), false));
   EXPECT_EQ(0, n_called);
   result_sender_remote.FlushForTesting();
   EXPECT_EQ(1, n_called);
@@ -1180,14 +1180,16 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
 
 TEST_F(StructTraitsTest, CopyOutputResult_EmptyBitmap) {
   auto input = std::make_unique<CopyOutputResult>(
-      CopyOutputResult::Format::RGBA_BITMAP, gfx::Rect());
+      CopyOutputResult::Format::RGBA_BITMAP, gfx::Rect(), false);
   std::unique_ptr<CopyOutputResult> output;
   mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
 
   EXPECT_TRUE(output->IsEmpty());
   EXPECT_EQ(output->format(), CopyOutputResult::Format::RGBA_BITMAP);
   EXPECT_TRUE(output->rect().IsEmpty());
-  EXPECT_FALSE(output->AsSkBitmap().readyToDraw());
+  auto scoped_bitmap = output->ScopedAccessSkBitmap();
+  auto bitmap = scoped_bitmap.bitmap();
+  EXPECT_FALSE(bitmap.readyToDraw());
   EXPECT_EQ(output->GetTextureResult(), nullptr);
 }
 
@@ -1195,7 +1197,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
   base::test::TaskEnvironment task_environment;
 
   auto input = std::make_unique<CopyOutputResult>(
-      CopyOutputResult::Format::RGBA_TEXTURE, gfx::Rect());
+      CopyOutputResult::Format::RGBA_TEXTURE, gfx::Rect(), false);
   EXPECT_TRUE(input->IsEmpty());
 
   std::unique_ptr<CopyOutputResult> output;
@@ -1215,7 +1217,8 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(7, 8, adobe_rgb));
   bitmap.eraseARGB(123, 213, 77, 33);
   std::unique_ptr<CopyOutputResult> input =
-      std::make_unique<CopyOutputSkBitmapResult>(result_rect, bitmap);
+      std::make_unique<CopyOutputSkBitmapResult>(result_rect,
+                                                 std::move(bitmap));
 
   std::unique_ptr<CopyOutputResult> output;
   mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
@@ -1225,7 +1228,8 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
   EXPECT_EQ(output->rect(), result_rect);
   EXPECT_EQ(output->GetTextureResult(), nullptr);
 
-  const SkBitmap& out_bitmap = output->AsSkBitmap();
+  auto scoped_bitmap = output->ScopedAccessSkBitmap();
+  auto out_bitmap = scoped_bitmap.bitmap();
   EXPECT_TRUE(out_bitmap.readyToDraw());
   EXPECT_EQ(out_bitmap.width(), result_rect.width());
   EXPECT_EQ(out_bitmap.height(), result_rect.height());

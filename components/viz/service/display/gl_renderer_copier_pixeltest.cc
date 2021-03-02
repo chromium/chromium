@@ -291,12 +291,16 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequest) {
     ASSERT_EQ(kRequestArea, result->rect());
 
   // Examine the image in the |result|, and compare it to the baseline PNG file.
-  const SkBitmap actual =
-      (result_format_ == CopyOutputResult::Format::RGBA_BITMAP)
-          ? result->AsSkBitmap()
-          : ReadbackToSkBitmap(result->GetTextureResult()->mailbox,
-                               result->GetTextureResult()->sync_token,
-                               result->size());
+  base::Optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
+  SkBitmap actual;
+  if (result_format_ == CopyOutputResult::Format::RGBA_BITMAP) {
+    scoped_bitmap = result->ScopedAccessSkBitmap();
+    actual = scoped_bitmap->bitmap();
+  } else {
+    actual = ReadbackToSkBitmap(result->GetTextureResult()->mailbox,
+                                result->GetTextureResult()->sync_token,
+                                result->size());
+  }
   const auto png_file_path = GetTestFilePath(
       scale_by_half_ ? FILE_PATH_LITERAL("half_of_one_of_16_color_rects.png")
                      : FILE_PATH_LITERAL("one_of_16_color_rects.png"));
