@@ -271,12 +271,13 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
           DLOG_IF(ERROR,
                   !params.continue_url.empty() && !continue_url.is_valid())
               << "Invalid continuation URL: \"" << continue_url << "\"";
-          identity_manager_->GetAccountsCookieMutator()
-              ->ForceTriggerOnCookieChange();
-          account_consistency_service_->AddCookieRestoreCallback(
-              base::BindOnce(&AccountConsistencyHandler::NavigateToURL,
-                             weak_ptr_factory_.GetWeakPtr(), continue_url));
-          return;
+          if (account_consistency_service_->RestoreGaiaCookies(base::BindOnce(
+                  &AccountConsistencyHandler::NavigateToURL,
+                  weak_ptr_factory_.GetWeakPtr(), continue_url))) {
+            // Continue URL will be processed in a callback once Gaia cookies
+            // have been restored.
+            return;
+          }
         }
       }
       if (params.show_consistency_promo) {
@@ -386,6 +387,22 @@ AccountConsistencyService::AccountConsistencyService(
 
 AccountConsistencyService::~AccountConsistencyService() {}
 
+BOOL AccountConsistencyService::RestoreGaiaCookies(
+    base::OnceClosure cookies_restored_callback) {
+  // Only processes a single restoration attempt for a given amount of time to
+  // avoid redirect loops.
+  if (last_gaia_cookie_update_time_.is_null() ||
+      base::Time::Now() - last_gaia_cookie_update_time_ <
+          GetDelayThresholdToUpdateGaiaCookie()) {
+    gaia_cookies_restored_callbacks_.push_back(
+        std::move(cookies_restored_callback));
+    identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
+    last_gaia_cookie_update_time_ = base::Time::Now();
+    return YES;
+  }
+  return NO;
+}
+
 void AccountConsistencyService::SetWebStateHandler(
     web::WebState* web_state,
     id<ManageAccountsDelegate> delegate) {
@@ -407,12 +424,6 @@ void AccountConsistencyService::RemoveWebStateHandler(
   handlers_map_.erase(iter);
 
   web_state->RemoveObserver(handler.get());
-}
-
-void AccountConsistencyService::AddCookieRestoreCallback(
-    base::OnceClosure cookies_restored_callback) {
-  gaia_cookies_restored_callbacks_.push_back(
-      std::move(cookies_restored_callback));
 }
 
 void AccountConsistencyService::SetGaiaCookiesIfDeleted(
@@ -461,7 +472,8 @@ void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
 
   // Re-generate cookie to ensure that the user is properly signed in.
   identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
-  AddCookieRestoreCallback(std::move(cookies_restored_callback));
+  gaia_cookies_restored_callbacks_.push_back(
+      std::move(cookies_restored_callback));
 }
 
 void AccountConsistencyService::RemoveAllChromeConnectedCookies(
