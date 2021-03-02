@@ -39,13 +39,13 @@ public class KeyPrefixTest {
 
     @Test
     @SmallTest
-    public void testSuccess_validGrandfatheredPattern() {
-        KeyPrefix prefix = new KeyPrefix("grandfathered_pattern_*");
+    public void testSuccess_validLegacyPattern() {
+        KeyPrefix prefix = new KeyPrefix("legacy_pattern_*");
 
-        assertEquals(prefix.pattern(), "grandfathered_pattern_*");
-        assertEquals(prefix.createKey("DynamicKey"), "grandfathered_pattern_DynamicKey");
+        assertEquals(prefix.pattern(), "legacy_pattern_*");
+        assertEquals(prefix.createKey("DynamicKey"), "legacy_pattern_DynamicKey");
 
-        assertTrue(prefix.hasGenerated("grandfathered_pattern_DynamicKey"));
+        assertTrue(prefix.hasGenerated("legacy_pattern_DynamicKey"));
         assertFalse(prefix.hasGenerated("OtherKey"));
     }
 
