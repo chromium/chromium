@@ -94,7 +94,7 @@ namespace {
 // Horizontal padding on the edges of the in-menu buttons.
 const int kHorizontalPadding = 15;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Extra horizontal space to reserve for the fullscreen button.
 const int kFullscreenPadding = 74;
 // Padding to left and right of the XX% label.
