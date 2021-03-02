@@ -8,6 +8,10 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-message ChromeFulfillmentInfo {
-  optional bool notice_card_acknowledged = 1;
+message ServerExperimentData {
+  message NamespacedExperimentInfo {
+    optional string namespace = 1;
+    repeated int32 experiment_id = 2;
+  }
+  repeated NamespacedExperimentInfo namespaced_experiment_info = 1;
 }

@@ -8,6 +8,7 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-message ChromeFulfillmentInfo {
-  optional bool notice_card_acknowledged = 1;
+message Device {
+  optional string manufacturer = 1;
+  optional string model = 2;
 }

@@ -6,42 +6,28 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/content_id.proto";
 import "components/feed/core/proto/v2/wire/expiration_info.proto";
 import "components/feed/core/proto/v2/wire/stream_structure.proto";
+import "components/feed/core/proto/v2/wire/token.proto";
 
-// Features define both the structure and content found in the Stream.
+option optimize_for = LITE_RUNTIME;
+
 message Feature {
-  // The ContentId identifying the parent feature for this feature.
-  optional ContentId parent_id = 1;
-
-  // Enum denoting which extension containing the renderable data is associated
-  // with this Feature.
   enum RenderableUnit {
     UNKNOWN_RENDERABLE_UNIT = 0;
     STREAM = 1;
     CONTENT = 3;
     CLUSTER = 4;
-    REDACTED_10 = 10;
-    REDACTED_11 = 11;
-    reserved 2, 5, 6, 7, 8, 9;
+  }
+  oneof parent_info {
+    ContentId parent_id = 1;
+    bool is_root = 4;
   }
   optional RenderableUnit renderable_unit = 2;
-
-  // Indicates whether this feature should expire, and additional metadata
-  // necessariy to handle expiration. Note that clients may not support
-  // expiration of every type of feature.
   optional ExpirationInfo expiration_info = 3;
-
-  optional Stream stream_extension = 185431437;
-  optional Cluster cluster_extension = 190812910;
-  extensions 185431438;  // Card
-  optional Content content_extension = 185431439;
-  extensions 194964015;  // Token
-  extensions 286406442;  // REDACTED
-  extensions 286406443;  // REDACTED
-
-  reserved 246375740, 274598443, 274598444, 277068786;
+  optional Stream stream = 185431437;
+  optional Content content = 185431439;
+  optional Cluster cluster = 190812910;
+  optional Token token = 194964015;
 }

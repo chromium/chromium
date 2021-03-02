@@ -64,14 +64,12 @@ feedwire::DataOperation MakeDataOperationWithContent(
   feedwire::DataOperation result = MakeDataOperation(operation);
   result.mutable_feature()->set_renderable_unit(feedwire::Feature::CONTENT);
   result.mutable_feature()
-      ->mutable_content_extension()
+      ->mutable_content()
       ->mutable_xsurface_content()
       ->set_xsurface_output(xsurface_content);
 
-  result.mutable_feature()
-      ->mutable_content_extension()
-      ->add_prefetch_metadata()
-      ->set_uri("http://uri-for-" + xsurface_content);
+  result.mutable_feature()->mutable_content()->add_prefetch_metadata()->set_uri(
+      "http://uri-for-" + xsurface_content);
   return result;
 }
 
@@ -216,7 +214,7 @@ TEST(ProtocolTranslatorTest, TranslateContent) {
 TEST(ProtocolTranslatorTest, TranslateContentFailsWhenMissingContent) {
   feedwire::DataOperation wire_operation =
       MakeDataOperationWithContent(feedwire::DataOperation::UPDATE_OR_APPEND);
-  wire_operation.mutable_feature()->clear_content_extension();
+  wire_operation.mutable_feature()->clear_content();
   EXPECT_FALSE(TranslateDataOperation(wire_operation));
 }
 

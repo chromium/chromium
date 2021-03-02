@@ -6,51 +6,22 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/chrome_fulfillment_info.proto";
+import "components/feed/core/proto/v2/wire/feed_entry_point_data.proto";
 import "components/feed/core/proto/v2/wire/token.proto";
 
+option optimize_for = LITE_RUNTIME;
+
 message FeedQuery {
-  enum RequestReason {
-    // Bucket for any not listed. Should not be used (prefer adding a new
-    // request reason)
-    UNKNOWN_REQUEST_REASON = 0;
-
-    // App is manually triggering a request, outside of scheduling a request.
-    // Should be used rarely.
-    MANUAL_REFRESH = 1;
-
-    // Host wants a request to refresh content.
-    SCHEDULED_REFRESH = 2;
-
-    // Host wants a request to load more content.
-    NEXT_PAGE_SCROLL = 3;
-
-    REDACTED_4 = 4;
-
-    // Host wants to update content in place.
-    IN_PLACE_UPDATE = 5;
-  }
-
-  // The reason the query is being initiated.
-  optional RequestReason reason = 1;
-
-  // A collection of Token messages, wrapped in a message so it can be used in a
-  // oneof.
   message Tokens { repeated Token tokens = 1; }
-
-  oneof token {
-    // The token for requesting the next page of Feed content, to be used with
-    // reason = NEXT_PAGE_SCROLL.
-    Token next_page_token = 3;
-    // Tokens from InPlaceUpdateHandle for content to update in place, if
-    // reason = IN_PLACE_UPDATE.
-    Tokens in_place_update_tokens = 5;
+  enum RequestReason {
+    UNKNOWN_REQUEST_REASON = 0;
+    MANUAL_REFRESH = 1;
+    SCHEDULED_REFRESH = 2;
+    NEXT_PAGE_SCROLL = 3;
   }
-
-  // Information on how to do content fulfillment for Chrome.
+  oneof token { Token next_page_token = 3; }
+  optional RequestReason reason = 1;
+  optional FeedEntryPointData feed_entry_point_data = 9;
   optional ChromeFulfillmentInfo chrome_fulfillment_info = 341477699;
-
-  reserved 2;
 }

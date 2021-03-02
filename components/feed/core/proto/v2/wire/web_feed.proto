@@ -1,0 +1,59 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package feedwire.webfeed;
+
+import "components/feed/core/proto/v2/wire/color.proto";
+import "components/feed/core/proto/v2/wire/consistency_token.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Warning!
+// Warning! Protobufs here are provisional, and will change in
+// backwards-incompatible ways. Warning!
+
+message ListFollowedWebFeedRequest {}
+message ListFollowedWebFeedResponse {}
+
+message FollowUriRequest {}
+message FollowUriResponse {
+  ConsistencyToken consistency_token = 1;
+}
+message UnfollowUriRequest {}
+message UnfollowUriResponse {
+  ConsistencyToken consistency_token = 1;
+}
+message Image {
+  string url = 1;
+}
+message WebMetadata {
+  string subtitle = 1;
+  string detail_text = 2;
+  string visit_url = 3;
+  Image header_image = 4;
+  Color header_text_color = 6;
+  bool is_claimed = 5;
+}
+message FolloableWebFeedInfo {
+  string web_feed_id = 1;
+  string title = 2;
+  string presentation_url = 3;
+  string main_uri = 4;
+  string favicon_uri = 5;
+  repeated UriMatcher uri_matcher = 6;
+}
+message ListRecommendedUrlsRequest {}
+message ListRecommendedUrlsResponse {
+  repeated FolloableWebFeedInfo recommended_web_feed = 1;
+}
+message VisualHeaderStyle {
+  Color follow_button_color = 3;
+  Color following_button_color = 5;
+  Image image = 4;
+}
+message UriMatcher {
+  string domain_match = 1;
+}

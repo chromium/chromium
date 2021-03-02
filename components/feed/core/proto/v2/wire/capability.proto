@@ -8,27 +8,22 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// Feature capability of either the client or the server.
 enum Capability {
   UNKNOWN_CAPABILITY = 0;
-  // The client is capable of a basic UI.
-  BASE_UI = 1;
+  BASE_UI = 1 [deprecated = true];
   INFINITE_FEED = 5;
   DISMISS_COMMAND = 9;
   UNDO_FOR_DISMISS_COMMAND = 10;
-  REDACTED_11 = 11;
-  // UNUSED_IN_CHROME HEIRLOOMED_FEED = 13;
-  // UNUSED_IN_CHROME SPORTS_FEATURE = 14;
-  // UNUSED_IN_CHROME PAID_CONTENT = 15;
-  // UNUSED_IN_CHROME OPEN_VIDEO_COMMAND = 16;
+  SPORTS_IN_GAME_UPDATE = 35;
+  PERSIST_GAME_CONTENT = 46;
   UI_THEME_V2 = 17;
-  // UNUSED_IN_CHROME INLINE_VIDEO_AUTOPLAY = 18;
   CARD_MENU = 19;
   REQUEST_SCHEDULE = 20;
   HEART = 23;
   SHARE = 24;
   OPEN_IN_TAB = 27;
   DOWNLOAD_LINK = 28;
+  READ_LATER = 30;
   LOTTIE_ANIMATIONS = 37;
   LONG_PRESS_CARD_MENU = 38;
   PREFETCH_METADATA = 43;

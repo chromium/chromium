@@ -7,6 +7,7 @@
 #include <sstream>
 #include <type_traits>
 #include "base/json/string_escape.h"
+#include "components/feed/core/proto/v2/wire/action_payload.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -123,6 +124,12 @@ class TextProtoPrinter {
     PRINT_FIELD(client_instance_id);
     PRINT_FIELD(advertising_id);
     PRINT_FIELD(device_country);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::ActionPayload& v) {
+    BeginMessage();
+    PRINT_FIELD(action_payload_data);
     EndMessage();
     return *this;
   }
@@ -317,6 +324,9 @@ std::string ToTextProto(const feedwire::Version& v) {
   return TextProtoPrinter::ToString(v);
 }
 std::string ToTextProto(const feedwire::ClientInfo& v) {
+  return TextProtoPrinter::ToString(v);
+}
+std::string ToTextProto(const feedwire::ActionPayload& v) {
   return TextProtoPrinter::ToString(v);
 }
 std::string ToTextProto(const feedstore::StreamData& v) {

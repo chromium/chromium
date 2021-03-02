@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/public/types.h"
@@ -36,8 +37,8 @@ struct UploadActionsDiscoverApi {
 };
 
 struct ListFollowedWebFeedDiscoverApi {
-  using Request = feedwire::ListFollowedWebFeedRequest;
-  using Response = feedwire::ListFollowedWebFeedResponse;
+  using Request = feedwire::webfeed::ListFollowedWebFeedRequest;
+  using Response = feedwire::webfeed::ListFollowedWebFeedResponse;
   static const NetworkRequestType kRequestType =
       NetworkRequestType::kListFollowedWebFeeds;
   static base::StringPiece Method() { return "GET"; }
@@ -46,8 +47,8 @@ struct ListFollowedWebFeedDiscoverApi {
 };
 
 struct UnfollowWebFeedDiscoverApi {
-  using Request = feedwire::UnfollowWebFeedRequest;
-  using Response = feedwire::UnfollowWebFeedResponse;
+  using Request = feedwire::webfeed::UnfollowUriRequest;
+  using Response = feedwire::webfeed::UnfollowUriResponse;
   static const NetworkRequestType kRequestType =
       NetworkRequestType::kUnfollowWebFeed;
   static base::StringPiece Method() { return "POST"; }

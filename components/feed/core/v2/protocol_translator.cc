@@ -96,7 +96,7 @@ bool TranslateFeature(feedwire::Feature* feature,
   result.stream_structure.set_type(type);
 
   if (type == feedstore::StreamStructure::CONTENT) {
-    feedwire::Content* wire_content = feature->mutable_content_extension();
+    feedwire::Content* wire_content = feature->mutable_content();
 
     if (!wire_content->has_xsurface_content())
       return false;

@@ -6,51 +6,27 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/feature.proto";
-// UNUSED_IN_CHROME import
-// "components/feed/core/proto/v2/wire/in_place_update_handle.proto";
 import "components/feed/core/proto/v2/wire/payload_metadata.proto";
 import "components/feed/core/proto/v2/wire/render_data.proto";
-// UNUSED_IN_CHROME import "components/feed/core/proto/v2/wire/templates.proto";
-import "components/feed/core/proto/v2/wire/token.proto";
 import "components/feed/core/proto/v2/wire/request_schedule.proto";
+import "components/feed/core/proto/v2/wire/token.proto";
 
-// An extensible operation to change the state of data on the client.
+option optimize_for = LITE_RUNTIME;
+
 message DataOperation {
-  // Next tag: 8
-
   enum Operation {
     UNKNOWN_OPERATION = 0;
-    // Remove all stored content of all types
     CLEAR_ALL = 1;
-    // Update content if it exists, else append to the bottom of the feed
     UPDATE_OR_APPEND = 2;
-    // Remove the item from the stream
     REMOVE = 3;
   }
-
-  // The operation to perform on the data.
-  optional Operation operation = 1;
-
-  // Data common to all payload types.
-  optional PayloadMetadata metadata = 2;
-
-  // The actual data being supplied.
   oneof payload {
-    // A stream UI level feature such as a cluster or card.
     Feature feature = 3;
-
-    // A token, capable of making a next page request.
     Token next_page_token = 5;
-
-    // Information to help render the content in the response.
     RenderData render_data = 6;
-
-    // UNUSED_IN_CHROME InPlaceUpdateHandle in_place_update_handle = 8;
-    // UNUSED_IN_CHROME Templates templates = 4 [deprecated = true];
-
     RequestSchedule request_schedule = 9;
   }
+  optional Operation operation = 1;
+  optional PayloadMetadata metadata = 2;
 }

@@ -8,7 +8,6 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// Copy of third_party/protobuf/src/google/protobuf/duration.proto.
 message Duration {
   int64 seconds = 1;
   int32 nanos = 2;

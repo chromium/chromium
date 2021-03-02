@@ -6,14 +6,13 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/duration.proto";
+
+option optimize_for = LITE_RUNTIME;
 
 message RequestSchedule {
   message TimeBasedSchedule {
-    repeated feedwire.Duration refresh_time_from_response_time = 1;
+    repeated Duration refresh_time_from_response_time = 1;
   }
-
   oneof schedule { TimeBasedSchedule time_based_schedule = 1; }
 }

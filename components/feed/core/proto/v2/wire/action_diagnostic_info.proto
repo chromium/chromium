@@ -8,6 +8,6 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-message ChromeFulfillmentInfo {
-  optional bool notice_card_acknowledged = 1;
+message ActionDiagnosticInfo {
+  optional int32 actions_remaining = 1;
 }

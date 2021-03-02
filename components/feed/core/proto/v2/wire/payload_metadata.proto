@@ -6,14 +6,10 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/content_id.proto";
 
-// Metadata common to all payloads in a DataOperation.
-message PayloadMetadata {
-  // The unique identifier of the payload.
-  optional ContentId content_id = 1;
+option optimize_for = LITE_RUNTIME;
 
-  reserved 2, 3, 4, 5;
+message PayloadMetadata {
+  optional ContentId content_id = 1;
 }

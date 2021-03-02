@@ -15,10 +15,11 @@
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -59,8 +60,7 @@ feedwire::Response GetTestFeedResponse() {
 
 feedwire::UploadActionsRequest GetTestActionRequest() {
   feedwire::UploadActionsRequest request;
-  request.add_feed_actions()->mutable_content_id()->set_content_domain(
-      "example.com");
+  request.add_feed_actions()->mutable_client_data()->set_duration_ms(123);
   return request;
 }
 
@@ -507,14 +507,15 @@ TEST_F(FeedNetworkTest, SendApiRequestSendsValidRequest_UploadActions) {
 }
 
 TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
-  CallbackReceiver<FeedNetwork::ApiResult<feedwire::UnfollowWebFeedResponse>>
+  CallbackReceiver<
+      FeedNetwork::ApiResult<feedwire::webfeed::UnfollowUriResponse>>
       receiver;
   feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>({},
                                                              receiver.Bind());
   RespondToDiscoverRequest("", net::HTTP_OK);
 
   ASSERT_TRUE(receiver.GetResult());
-  const FeedNetwork::ApiResult<feedwire::UnfollowWebFeedResponse>& result =
+  const FeedNetwork::ApiResult<feedwire::webfeed::UnfollowUriResponse>& result =
       *receiver.GetResult();
   EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
   EXPECT_TRUE(result.response_body);

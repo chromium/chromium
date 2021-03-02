@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+syntax = "proto3";
 
 package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-message ChromeFulfillmentInfo {
-  optional bool notice_card_acknowledged = 1;
+message FloatValue {
+  float value = 1;
 }

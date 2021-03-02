@@ -8,14 +8,6 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// The data needed by the server to handle action recording. This information is
-// opaque to the client and will be the information that is round-tripped so the
-// server can properly handle the action. For the Not Interested In action, this
-// data will contain the ids needed to record that the user is not interested
-// in that particular topic or source.
-// NOTE: it is important to keep this to a bare minimum amount of data.
 message ActionPayload {
-  // Reserved fields for renderable unit extensions
-  // Please use CL numbers you own for extension numbers.
-  extensions 257605906;  // ActionPayloadData
+  optional bytes action_payload_data = 257605906;
 }

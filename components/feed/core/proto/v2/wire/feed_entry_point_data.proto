@@ -8,6 +8,6 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-message ChromeFulfillmentInfo {
-  optional bool notice_card_acknowledged = 1;
+message FeedEntryPointData {
+  optional int32 feed_entry_point_source_value = 1;
 }

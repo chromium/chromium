@@ -16,10 +16,11 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -57,7 +58,6 @@ GURL GetFeedQueryURL(feedwire::FeedQuery::RequestReason reason) {
   // Add URLs for Bling when it is supported.
   switch (reason) {
     case feedwire::FeedQuery::SCHEDULED_REFRESH:
-    case feedwire::FeedQuery::IN_PLACE_UPDATE:
       return GURL(
           "https://www.google.com/httpservice/noretry/TrellisClankService/"
           "FeedQuery");

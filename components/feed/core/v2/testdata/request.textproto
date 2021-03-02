@@ -8,7 +8,7 @@ feed_request {
       build_type: DEV
       api_version: 29
     }
-    app_type: CLANK
+    app_type: CHROME_ANDROID
     app_version {
       major: 79
       minor: 0

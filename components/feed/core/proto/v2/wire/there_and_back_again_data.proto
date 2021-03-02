@@ -6,10 +6,10 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/action_payload.proto";
 
+option optimize_for = LITE_RUNTIME;
+
 message ThereAndBackAgainData {
-  optional feedwire.ActionPayload action_payload = 1;
+  optional ActionPayload action_payload = 1;
 }

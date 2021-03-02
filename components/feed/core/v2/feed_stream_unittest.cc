@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -118,8 +119,14 @@ std::string ModelStateFor(const StreamType& stream_type, FeedStore* store) {
 
 feedwire::FeedAction MakeFeedAction(int64_t id, size_t pad_size = 0) {
   feedwire::FeedAction action;
-  action.mutable_content_id()->set_id(id);
-  action.mutable_content_id()->set_content_domain(std::string(pad_size, 'a'));
+
+  std::string pad;
+  if (pad_size > 0) {
+    pad = " " + std::string(pad_size - 1, 'a');
+  }
+
+  action.mutable_action_payload()->set_action_payload_data(
+      base::StrCat({base::NumberToString(id), pad}));
   return action;
 }
 
@@ -1918,7 +1925,9 @@ TEST_F(FeedStreamTest, StorePendingAction) {
   std::vector<feedstore::StoredAction> result =
       ReadStoredActions(stream_->GetStore());
   ASSERT_EQ(1ul, result.size());
-  EXPECT_EQ(42ul, result[0].action().content_id().id());
+
+  EXPECT_EQ(ToTextProto(MakeFeedAction(42ul).action_payload()),
+            ToTextProto(result[0].action().action_payload()));
 }
 
 TEST_F(FeedStreamTest, UploadActionWhileSignedOutIsNoOp) {
@@ -2280,8 +2289,11 @@ TEST_F(FeedStreamTest, LoadMoreUploadsActions) {
   stream_->UploadAction(MakeFeedAction(100ul), true, base::DoNothing());
   WaitForIdleTaskQueue();
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
-  EXPECT_EQ(100ul,
-            network_.GetActionRequestSent()->feed_actions(0).content_id().id());
+
+  EXPECT_EQ(
+      ToTextProto(MakeFeedAction(100ul).action_payload()),
+      ToTextProto(
+          network_.GetActionRequestSent()->feed_actions(0).action_payload()));
 }
 
 TEST_F(FeedStreamTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
@@ -2359,8 +2371,10 @@ TEST_F(FeedStreamTest, BackgroundingAppUploadsActions) {
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
-  EXPECT_EQ(1ul,
-            network_.GetActionRequestSent()->feed_actions(0).content_id().id());
+  EXPECT_EQ(
+      ToTextProto(MakeFeedAction(1ul).action_payload()),
+      ToTextProto(
+          network_.GetActionRequestSent()->feed_actions(0).action_payload()));
 }
 
 TEST_F(FeedStreamTest, BackgroundingAppDoesNotUploadActions) {
@@ -2434,8 +2448,10 @@ TEST_F(FeedStreamTest, UploadActionsSkipsStaleActionsByTimestamp) {
   // Just one action should have been uploaded.
   EXPECT_EQ(1, network_.GetActionRequestCount());
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
-  EXPECT_EQ(3ul,
-            network_.GetActionRequestSent()->feed_actions(0).content_id().id());
+  EXPECT_EQ(
+      ToTextProto(MakeFeedAction(3ul).action_payload()),
+      ToTextProto(
+          network_.GetActionRequestSent()->feed_actions(0).action_payload()));
 
   ASSERT_TRUE(cr.GetResult());
   EXPECT_EQ(1ul, cr.GetResult()->upload_attempt_count);

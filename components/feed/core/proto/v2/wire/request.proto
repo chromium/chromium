@@ -6,20 +6,15 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/feed_request.proto";
 
-// Top level request message.
+option optimize_for = LITE_RUNTIME;
+
 message Request {
-  // Supported versions of request messages are specified as extensions to
-  // the top-level request message.  An enum is used to denote the expected
-  // extensions for this request.
   enum RequestVersion {
     UNKNOWN_REQUEST_VERSION = 0;
     FEED_QUERY = 1;
   }
   optional RequestVersion request_version = 1;
-
   optional FeedRequest feed_request = 1000;
 }

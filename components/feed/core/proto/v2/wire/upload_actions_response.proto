@@ -6,15 +6,9 @@ syntax = "proto3";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/consistency_token.proto";
-import "components/feed/core/proto/v2/wire/feed_action.proto";
 
-message UploadActionsRequest {
-  repeated FeedAction feed_actions = 1;
-  ConsistencyToken consistency_token = 2;
-}
+option optimize_for = LITE_RUNTIME;
 
 message UploadActionsResponse {
   ConsistencyToken consistency_token = 1;

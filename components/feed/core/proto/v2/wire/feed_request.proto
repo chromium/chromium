@@ -6,32 +6,18 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/capability.proto";
 import "components/feed/core/proto/v2/wire/client_info.proto";
 import "components/feed/core/proto/v2/wire/consistency_token.proto";
-// UNUSED_IN_CHROME import "components/feed/core/proto/v2/wire/feed_id.proto";
+import "components/feed/core/proto/v2/wire/diagnostic_info.proto";
 import "components/feed/core/proto/v2/wire/feed_query.proto";
 
-// Request to fetch new data for the feed
+option optimize_for = LITE_RUNTIME;
+
 message FeedRequest {
-  // Information about the client making the request.
   optional ClientInfo client_info = 1;
-
-  // Query parameters to fetch feed data.
   optional FeedQuery feed_query = 2;
-
-  // The list of client supported capabilities.
   repeated Capability client_capability = 4;
-
-  // Token used to read from/write to the same storage.
   optional ConsistencyToken consistency_token = 5;
-
-  // Created on the server and used by the client to identify the feed when
-  // clients will store multiple infinite feeds.
-  // See [INTERNAL LINK]
-  // UNUSED_IN_CHROME repeated FeedId feed_ids_to_preserve = 12;
-
-  reserved 3, 13;
+  optional DiagnosticInfo diagnostic_info = 14;
 }
