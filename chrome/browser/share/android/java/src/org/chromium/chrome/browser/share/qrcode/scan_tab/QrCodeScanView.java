@@ -19,7 +19,9 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
@@ -104,7 +106,9 @@ class QrCodeScanView {
             }
 
             String errorString = mContext.getResources().getString(stringResource);
-            displayCameraErrorDialog(errorString);
+            // displayCameraErrorDialog should be called from the UI thread.
+            PostTask.runOrPostTask(
+                    UiThreadTaskTraits.DEFAULT, () -> displayCameraErrorDialog(errorString));
         }
     };
 
