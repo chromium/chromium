@@ -1718,10 +1718,6 @@ crbug.com/400841 media/video-canvas-draw.html [ Failure ]
 # Source map asyncification requires some 3-way changes with the DevTools frontend.
 crbug.com/1032016 http/tests/devtools/sources/debugger-breakpoints/breakpoints-ui-shifted-breakpoint.js [ Pass Failure Timeout ]
 
-# Migrating DevTools common module to localization V2, temporarily skipping these tests
-crbug.com/1136655 http/tests/devtools/network/network-filter-updated-requests.js [ Pass Failure ]
-crbug.com/1136655 http/tests/devtools/network/network-update-calculator-for-all-requests.js [ Pass Failure ]
-
 # switching to apache-win32: needs triaging.
 crbug.com/528062 [ Win ] http/tests/css/missing-repaint-after-slow-style-sheet.pl [ Failure ]
 crbug.com/528062 [ Win ] http/tests/local/blob/send-data-blob.html [ Failure Timeout ]
