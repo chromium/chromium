@@ -70,10 +70,6 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
   void SetContentHint(
       WebMediaStreamTrack::ContentHintType content_hint) override;
 
-  // Returns the maximum number of channels preferred by any sink connected to
-  // this track.
-  int NumPreferredChannels() const;
-
   // Returns a unique class identifier. Some subclasses override and use this
   // method to provide safe down-casting to their type.
   virtual void* GetClassIdentifier() const;

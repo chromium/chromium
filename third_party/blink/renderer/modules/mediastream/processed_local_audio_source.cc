@@ -455,13 +455,9 @@ void ProcessedLocalAudioSource::CaptureUsingProcessor(
   media::AudioBus* processed_data = nullptr;
   base::TimeDelta processed_data_audio_delay;
   int new_volume = 0;
-
-  // Maximum number of channels used by the sinks.
-  const int num_preferred_channels = NumPreferredChannels();
-
   while (audio_processor_->ProcessAndConsumeData(
-      current_volume, num_preferred_channels, key_pressed, &processed_data,
-      &processed_data_audio_delay, &new_volume)) {
+      current_volume, key_pressed, &processed_data, &processed_data_audio_delay,
+      &new_volume)) {
     DCHECK(processed_data);
 
     level_calculator_.Calculate(*processed_data, force_report_nonzero_energy);

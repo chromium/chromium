@@ -124,18 +124,6 @@ class MediaStreamAudioDeliverer {
       consumer->OnData(audio_bus, reference_time);
   }
 
-  // Returns the maximum number of channels preferred by any consumer or -1 if
-  // unknown.
-  int NumPreferredChannels() const {
-    base::AutoLock auto_lock(consumers_lock_);
-    int num_preferred_channels = -1;
-    for (Consumer* consumer : consumers_) {
-      num_preferred_channels =
-          std::max(num_preferred_channels, consumer->NumPreferredChannels());
-    }
-    return num_preferred_channels;
-  }
-
  private:
   // In debug builds, check that all methods that could cause object graph or
   // data flow changes are being called on the main thread.
