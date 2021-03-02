@@ -111,21 +111,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         }
     }
 
-    /**
-     * TODO(crbug.com/1136111): Try to remove this method. ToolbarContainer's visibility should not
-     * be set outside this class. Please do not use this method without discussing with the owners.
-     *
-     * Sets the visibility of the toolbar_container view.
-     */
-    @Deprecated
-    void setToolbarContainerVisibility(int visibility) {
-        mToolbarContainer.setVisibility(visibility);
-        // Trigger a capture when toolbar container view is set visible.
-        if (mToolbarContainer.isReadyForCapture()) {
-            invalidateBitmap();
-        }
-    }
-
     @Override
     public boolean gatherTransparentRegion(Region region) {
         // Reset the translation on the control container before attempting to compute the

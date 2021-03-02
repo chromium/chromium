@@ -224,10 +224,10 @@ public class StartSurfaceToolbarCoordinator {
 
     /**
      * @param toolbarHeight The height of start surface toolbar.
-     * @return Whether or not toolbar container view should be hidden.
+     * @return Whether or not toolbar layout view should be hidden.
      */
-    boolean shouldHideToolbarContainer(int toolbarHeight) {
-        return mToolbarMediator.shouldHideToolbarContainer(toolbarHeight);
+    boolean shouldHideToolbarLayout(int toolbarHeight) {
+        return mToolbarMediator.shouldHideToolbarLayout(toolbarHeight);
     }
 
     void onNativeLibraryReady() {
