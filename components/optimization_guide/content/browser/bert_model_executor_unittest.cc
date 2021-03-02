@@ -39,9 +39,10 @@ class BertModelExecutorTest : public testing::Test {
     base::FilePath model_file_path = source_root_dir.AppendASCII("components")
                                          .AppendASCII("test")
                                          .AppendASCII("data")
-                                         .AppendASCII("optimization_guide")
-                                         .AppendASCII("simple_test.tflite");
-    // TODO(crbug/1173328): Find a small testable BERT model.
+                                         .AppendASCII("optimization_guide");
+    model_file_path =
+        is_valid ? model_file_path.AppendASCII("bert_page_topics_model.tflite")
+                 : model_file_path.AppendASCII("simple_test.tflite");
     model_executor_->OnModelFileUpdated(
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt,
         model_file_path);
@@ -56,6 +57,28 @@ class BertModelExecutorTest : public testing::Test {
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
   std::unique_ptr<BertModelExecutor> model_executor_;
 };
+
+TEST_F(BertModelExecutorTest, ValidBertModel) {
+  CreateModelExecutor();
+
+  PushModelFileToModelExecutor(/*is_valid=*/true);
+  EXPECT_TRUE(model_executor()->HasLoadedModel());
+
+  std::string input = "some text";
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  model_executor()->ExecuteModelWithInput(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             const base::Optional<std::vector<tflite::task::core::Category>>&
+                 output) {
+            EXPECT_TRUE(output.has_value());
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      input);
+  run_loop->Run();
+}
 
 TEST_F(BertModelExecutorTest, InvalidBertModel) {
   CreateModelExecutor();
