@@ -766,8 +766,9 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
       origin,
       /*persist_for_incognito=*/is_incognito_and_in_memory, clock_,
       &class_factory_->transactional_leveldb_factory(), &earliest_sweep_,
-      std::move(lock_manager), std::move(run_tasks_callback),
-      std::move(tear_down_callback), std::move(backing_store));
+      &earliest_compaction_, std::move(lock_manager),
+      std::move(run_tasks_callback), std::move(tear_down_callback),
+      std::move(backing_store));
 
   it = factories_per_origin_.emplace(origin, std::move(origin_state)).first;
 

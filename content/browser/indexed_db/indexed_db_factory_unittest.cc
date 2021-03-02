@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+#include <ctime>
 #include <memory>
 #include <utility>
 
@@ -329,9 +330,69 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_EQ(IndexedDBOriginState::ClosingState::kPreCloseGracePeriod,
             factory()->GetOriginFactory(origin)->closing_stage());
 
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+
+  // The factory should be closed, as the pre close tasks are delayed.
+  EXPECT_FALSE(factory()->GetOriginFactory(origin));
+
+  // Move the clock to run the tasks in the next close sequence.
+  // NOTE: The constants rate-limiting sweeps and compaction are currently the
+  // same. This test may need to be restructured if these values diverge.
+  clock.Advance(IndexedDBOriginState::kMaxEarliestGlobalSweepFromNow);
+
+  // Open a connection & immediately release it to cause the closing sequence to
+  // start again.
+  std::tie(origin_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenOriginFactory(origin, context()->data_path(),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(origin_state_handle.IsHeld()) << s.ToString();
+  origin_state_handle.Release();
+
+  // Manually execute the timer so that the PreCloseTaskList task doesn't also
+  // run.
   factory()->GetOriginFactory(origin)->close_timer()->FireNow();
 
-  // Since the compaction task always runs, the test assumes it is running.
+  // The pre-close tasks should be running now.
+  ASSERT_TRUE(factory()->GetOriginFactory(origin));
+  EXPECT_EQ(IndexedDBOriginState::ClosingState::kRunningPreCloseTasks,
+            factory()->GetOriginFactory(origin)->closing_stage());
+  ASSERT_TRUE(factory()->GetOriginFactory(origin)->pre_close_task_queue());
+  EXPECT_TRUE(
+      factory()->GetOriginFactory(origin)->pre_close_task_queue()->started());
+
+  // Stop sweep by opening a connection.
+  std::tie(origin_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenOriginFactory(origin, context()->data_path(),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(origin_state_handle.IsHeld()) << s.ToString();
+  EXPECT_FALSE(
+      OriginStateFromHandle(origin_state_handle)->pre_close_task_queue());
+  origin_state_handle.Release();
+
+  // Move clock forward to trigger next sweep, but origin has longer
+  // sweep minimum, so no tasks should execute.
+  clock.Advance(IndexedDBOriginState::kMaxEarliestGlobalSweepFromNow);
+
+  origin_state_handle.Release();
+  EXPECT_TRUE(factory()->GetOriginFactory(origin));
+  EXPECT_EQ(IndexedDBOriginState::ClosingState::kPreCloseGracePeriod,
+            factory()->GetOriginFactory(origin)->closing_stage());
+
+  // Manually execute the timer so that the PreCloseTaskList task doesn't also
+  // run.
+  factory()->GetOriginFactory(origin)->close_timer()->FireNow();
+  EXPECT_TRUE(factory()->GetOriginFactory(origin));
+  RunPostedTasks();
+  EXPECT_FALSE(factory()->GetOriginFactory(origin));
+
+  //  Finally, move the clock forward so the origin should allow a sweep.
+  clock.Advance(IndexedDBOriginState::kMaxEarliestOriginSweepFromNow);
+  std::tie(origin_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenOriginFactory(origin, context()->data_path(),
+                                        /*create_if_missing=*/true);
+  origin_state_handle.Release();
+  factory()->GetOriginFactory(origin)->close_timer()->FireNow();
+
   ASSERT_TRUE(factory()->GetOriginFactory(origin));
   EXPECT_EQ(IndexedDBOriginState::ClosingState::kRunningPreCloseTasks,
             factory()->GetOriginFactory(origin)->closing_stage());
@@ -375,6 +436,43 @@ TEST_F(IndexedDBFactoryTestWithMockTime, TombstoneSweeperTiming) {
   clock.Advance(IndexedDBOriginState::kMaxEarliestOriginSweepFromNow);
 
   EXPECT_TRUE(origin_state_handle.origin_state()->ShouldRunTombstoneSweeper());
+}
+
+TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  SetupContextWithFactories(nullptr, &clock);
+
+  const Origin origin = Origin::Create(GURL("http://localhost:81"));
+
+  IndexedDBOriginStateHandle origin_state_handle;
+  leveldb::Status s;
+
+  // Open a connection & immediately release it to cause the closing sequence to
+  // start.
+  std::tie(origin_state_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenOriginFactory(origin, context()->data_path(),
+                                        /*create_if_missing=*/true);
+  EXPECT_TRUE(origin_state_handle.IsHeld()) << s.ToString();
+
+  // The factory should be closed, as the pre close tasks are delayed.
+  EXPECT_FALSE(origin_state_handle.origin_state()->ShouldRunCompaction());
+
+  // Move the clock to run the tasks in the next close sequence.
+  clock.Advance(IndexedDBOriginState::kMaxEarliestGlobalCompactionFromNow);
+
+  EXPECT_TRUE(origin_state_handle.origin_state()->ShouldRunCompaction());
+
+  // Move clock forward to trigger next compaction, but origin has longer
+  // compaction minimum, so no tasks should execute.
+  clock.Advance(IndexedDBOriginState::kMaxEarliestGlobalCompactionFromNow);
+
+  EXPECT_FALSE(origin_state_handle.origin_state()->ShouldRunCompaction());
+
+  //  Finally, move the clock forward so the origin should allow a compaction.
+  clock.Advance(IndexedDBOriginState::kMaxEarliestOriginCompactionFromNow);
+
+  EXPECT_TRUE(origin_state_handle.origin_state()->ShouldRunCompaction());
 }
 
 // Remove this test when the kill switch is removed.

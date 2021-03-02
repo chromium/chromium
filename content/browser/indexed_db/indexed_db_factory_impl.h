@@ -225,6 +225,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   IndexedDBClassFactory* const class_factory_;
   base::Clock* const clock_;
   base::Time earliest_sweep_;
+  base::Time earliest_compaction_;
 
   base::flat_map<url::Origin, std::unique_ptr<IndexedDBOriginState>>
       factories_per_origin_;

@@ -67,8 +67,9 @@ constexpr unsigned char kDataVersionTypeByte = 2;
 constexpr unsigned char kRecoveryBlobJournalTypeByte = 3;
 constexpr unsigned char kActiveBlobJournalTypeByte = 4;
 constexpr unsigned char kEarliestSweepTimeTypeByte = 5;
+constexpr unsigned char kEarliestCompactionTimeTypeByte = 6;
 constexpr unsigned char kMaxSimpleGlobalMetaDataTypeByte =
-    6;  // Insert before this and increment.
+    7;  // Insert before this and increment.
 constexpr unsigned char kScopesPrefixByte = 50;
 constexpr unsigned char kDatabaseFreeListTypeByte = 100;
 constexpr unsigned char kDatabaseNameTypeByte = 201;
@@ -1054,6 +1055,9 @@ std::string IndexedDBKeyToDebugString(base::StringPiece key) {
         case kEarliestSweepTimeTypeByte:
           result << "kEarliestSweepTimeTypeByte";
           break;
+        case kEarliestCompactionTimeTypeByte:
+          result << "kEarliestCompactionTimeTypeByte";
+          break;
         case kScopesPrefixByte:
           result << "Scopes key: "
                  << leveldb_scopes::KeyToDebugString(base::make_span(
@@ -1491,6 +1495,12 @@ std::string ActiveBlobJournalKey::Encode() {
 std::string EarliestSweepKey::Encode() {
   std::string ret = KeyPrefix::EncodeEmpty();
   ret.push_back(kEarliestSweepTimeTypeByte);
+  return ret;
+}
+
+std::string EarliestCompactionKey::Encode() {
+  std::string ret = KeyPrefix::EncodeEmpty();
+  ret.push_back(kEarliestCompactionTimeTypeByte);
   return ret;
 }
 

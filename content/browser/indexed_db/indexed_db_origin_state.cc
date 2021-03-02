@@ -73,6 +73,36 @@ base::Time GenerateNextGlobalSweepTime(base::Time now) {
   return now + base::TimeDelta::FromMilliseconds(rand_millis);
 }
 
+constexpr const base::TimeDelta kMinEarliestOriginCompactionFromNow =
+    base::TimeDelta::FromDays(1);
+static_assert(kMinEarliestOriginCompactionFromNow <
+                  IndexedDBOriginState::kMaxEarliestOriginCompactionFromNow,
+              "Min < Max");
+
+constexpr const base::TimeDelta kMinEarliestGlobalCompactionFromNow =
+    base::TimeDelta::FromMinutes(5);
+static_assert(kMinEarliestGlobalCompactionFromNow <
+                  IndexedDBOriginState::kMaxEarliestGlobalCompactionFromNow,
+              "Min < Max");
+
+base::Time GenerateNextOriginCompactionTime(base::Time now) {
+  uint64_t range = IndexedDBOriginState::kMaxEarliestOriginCompactionFromNow
+                       .InMilliseconds() -
+                   kMinEarliestOriginCompactionFromNow.InMilliseconds();
+  int64_t rand_millis = kMinEarliestOriginCompactionFromNow.InMilliseconds() +
+                        static_cast<int64_t>(base::RandGenerator(range));
+  return now + base::TimeDelta::FromMilliseconds(rand_millis);
+}
+
+base::Time GenerateNextGlobalCompactionTime(base::Time now) {
+  uint64_t range = IndexedDBOriginState::kMaxEarliestGlobalCompactionFromNow
+                       .InMilliseconds() -
+                   kMinEarliestGlobalCompactionFromNow.InMilliseconds();
+  int64_t rand_millis = kMinEarliestGlobalCompactionFromNow.InMilliseconds() +
+                        static_cast<int64_t>(base::RandGenerator(range));
+  return now + base::TimeDelta::FromMilliseconds(rand_millis);
+}
+
 }  // namespace
 
 const base::Feature kCompactIDBOnClose{"CompactIndexedDBOnClose",
@@ -83,12 +113,18 @@ constexpr const base::TimeDelta
 constexpr const base::TimeDelta
     IndexedDBOriginState::kMaxEarliestOriginSweepFromNow;
 
+constexpr const base::TimeDelta
+    IndexedDBOriginState::kMaxEarliestGlobalCompactionFromNow;
+constexpr const base::TimeDelta
+    IndexedDBOriginState::kMaxEarliestOriginCompactionFromNow;
+
 IndexedDBOriginState::IndexedDBOriginState(
     url::Origin origin,
     bool persist_for_incognito,
     base::Clock* clock,
     TransactionalLevelDBFactory* transactional_leveldb_factory,
     base::Time* earliest_global_sweep_time,
+    base::Time* earliest_global_compaction_time,
     std::unique_ptr<DisjointRangeLockManager> lock_manager,
     TasksAvailableCallback notify_tasks_callback,
     TearDownCallback tear_down_callback,
@@ -98,6 +134,7 @@ IndexedDBOriginState::IndexedDBOriginState(
       clock_(clock),
       transactional_leveldb_factory_(transactional_leveldb_factory),
       earliest_global_sweep_time_(earliest_global_sweep_time),
+      earliest_global_compaction_time_(earliest_global_compaction_time),
       lock_manager_(std::move(lock_manager)),
       backing_store_(std::move(backing_store)),
       notify_tasks_callback_(std::move(notify_tasks_callback)),
@@ -106,6 +143,10 @@ IndexedDBOriginState::IndexedDBOriginState(
   DCHECK(earliest_global_sweep_time_);
   if (*earliest_global_sweep_time_ == base::Time())
     *earliest_global_sweep_time_ = GenerateNextGlobalSweepTime(clock_->Now());
+  DCHECK(earliest_global_compaction_time_);
+  if (*earliest_global_compaction_time_ == base::Time())
+    *earliest_global_compaction_time_ =
+        GenerateNextGlobalCompactionTime(clock_->Now());
 }
 
 IndexedDBOriginState::~IndexedDBOriginState() {
@@ -367,7 +408,6 @@ bool IndexedDBOriginState::ShouldRunTombstoneSweeper() {
   if (!s.ok() && !s.IsNotFound())
     return false;
 
-  // This origin hasn't been swept too recently.
   if (origin_earliest_sweep > now)
     return false;
 
@@ -391,7 +431,40 @@ bool IndexedDBOriginState::ShouldRunTombstoneSweeper() {
 
 bool IndexedDBOriginState::ShouldRunCompaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::FeatureList::IsEnabled(kCompactIDBOnClose);
+  if (!base::FeatureList::IsEnabled(kCompactIDBOnClose))
+    return false;
+
+  base::Time now = clock_->Now();
+  // Check that the last compaction hasn't run too recently.
+  if (*earliest_global_compaction_time_ > now)
+    return false;
+
+  base::Time origin_earliest_compaction;
+  leveldb::Status s = indexed_db::GetEarliestCompactionTime(
+      backing_store_->db(), &origin_earliest_compaction);
+  // TODO(dmurph): Log this or report to UMA.
+  if (!s.ok() && !s.IsNotFound())
+    return false;
+
+  if (origin_earliest_compaction > now)
+    return false;
+
+  // A compaction will happen now, so reset the compaction timers.
+  *earliest_global_compaction_time_ = GenerateNextGlobalCompactionTime(now);
+  std::unique_ptr<LevelDBDirectTransaction> txn =
+      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
+          backing_store_->db());
+  s = indexed_db::SetEarliestCompactionTime(
+      txn.get(), GenerateNextOriginCompactionTime(now));
+  // TODO(dmurph): Log this or report to UMA.
+  if (!s.ok())
+    return false;
+  s = txn->Commit();
+
+  // TODO(dmurph): Log this or report to UMA.
+  if (!s.ok())
+    return false;
+  return true;
 }
 
 }  // namespace content

@@ -248,6 +248,11 @@ class EarliestSweepKey {
   static std::string Encode();
 };
 
+class EarliestCompactionKey {
+ public:
+  static std::string Encode();
+};
+
 class ScopesPrefix {
  public:
   CONTENT_EXPORT static std::vector<uint8_t> Encode();

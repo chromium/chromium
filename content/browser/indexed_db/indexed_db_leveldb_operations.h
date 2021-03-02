@@ -217,6 +217,15 @@ WARN_UNUSED_RESULT leveldb::Status SetEarliestSweepTime(
     Transaction* txn,
     base::Time earliest_sweep);
 
+WARN_UNUSED_RESULT leveldb::Status GetEarliestCompactionTime(
+    TransactionalLevelDBDatabase* db,
+    base::Time* earliest_compaction);
+
+template <typename Transaction>
+WARN_UNUSED_RESULT leveldb::Status SetEarliestCompactionTime(
+    Transaction* txn,
+    base::Time earliest_compaction);
+
 CONTENT_EXPORT const leveldb::Comparator* GetDefaultLevelDBComparator();
 
 }  // namespace indexed_db
