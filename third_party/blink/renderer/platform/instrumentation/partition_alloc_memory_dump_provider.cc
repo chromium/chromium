@@ -6,7 +6,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/format_macros.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/malloc_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -77,45 +76,14 @@ void PartitionStatsDumperImpl::PartitionDumpTotals(
     const auto& thread_cache_stats = memory_stats->current_thread_cache_stats;
     auto* thread_cache_dump = memory_dump_->CreateAllocatorDump(
         dump_name + "/thread_cache/main_thread");
-    base::trace_event::ReportPartitionAllocThreadCacheStats(thread_cache_dump,
-                                                            thread_cache_stats);
+    base::trace_event::ReportPartitionAllocThreadCacheStats(
+        thread_cache_dump, thread_cache_stats, ".MainThread");
 
     const auto& all_thread_caches_stats = memory_stats->all_thread_caches_stats;
     auto* all_thread_caches_dump =
         memory_dump_->CreateAllocatorDump(dump_name + "/thread_cache");
     base::trace_event::ReportPartitionAllocThreadCacheStats(
-        all_thread_caches_dump, all_thread_caches_stats);
-
-    if (all_thread_caches_stats.alloc_count) {
-      int hit_rate_percent =
-          static_cast<int>((100 * all_thread_caches_stats.alloc_hits) /
-                           all_thread_caches_stats.alloc_count);
-      base::UmaHistogramPercentage("Memory.PartitionAlloc.ThreadCache.HitRate",
-                                   hit_rate_percent);
-
-      int batch_fill_rate_percent =
-          static_cast<int>((100 * all_thread_caches_stats.batch_fill_count) /
-                           all_thread_caches_stats.alloc_count);
-      base::UmaHistogramPercentage(
-          "Memory.PartitionAlloc.ThreadCache.BatchFillRate",
-          batch_fill_rate_percent);
-    }
-
-    if (thread_cache_stats.alloc_count) {
-      int hit_rate_percent =
-          static_cast<int>((100 * thread_cache_stats.alloc_hits) /
-                           thread_cache_stats.alloc_count);
-      base::UmaHistogramPercentage(
-          "Memory.PartitionAlloc.ThreadCache.HitRate.MainThread",
-          hit_rate_percent);
-
-      int batch_fill_rate_percent =
-          static_cast<int>((100 * thread_cache_stats.batch_fill_count) /
-                           thread_cache_stats.alloc_count);
-      base::UmaHistogramPercentage(
-          "Memory.PartitionAlloc.ThreadCache.BatchFillRate.MainThread",
-          batch_fill_rate_percent);
-    }
+        all_thread_caches_dump, all_thread_caches_stats, "");
   }
 }
 

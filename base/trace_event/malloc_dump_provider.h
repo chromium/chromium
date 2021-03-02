@@ -60,7 +60,8 @@ class MemoryAllocatorDump;
 
 BASE_EXPORT void ReportPartitionAllocThreadCacheStats(
     MemoryAllocatorDump* dump,
-    const ThreadCacheStats& stats);
+    const ThreadCacheStats& stats,
+    const std::string& metrics_suffix);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace trace_event
