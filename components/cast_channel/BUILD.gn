@@ -30,6 +30,8 @@ static_library("cast_channel") {
     "keep_alive_delegate.h",
     "keep_alive_handler.cc",
     "keep_alive_handler.h",
+    "libcast_socket_service.cc",
+    "libcast_socket_service.h",
     "logger.cc",
     "logger.h",
     "mojo_data_pump.cc",
@@ -41,12 +43,17 @@ static_library("cast_channel") {
     "//components/cast_certificate",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/openscreen_platform:openscreen_platform_network_service",
     "//components/prefs",
     "//components/version_info",
     "//content/public/browser",
     "//crypto",
     "//net",
+    "//services/data_decoder/public/cpp",
+    "//third_party/openscreen/src/cast/common:channel",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+    "//third_party/openscreen/src/cast/sender:channel",
+    "//third_party/openscreen/src/platform",
   ]
   public_deps = [
     "//services/data_decoder/public/cpp",
@@ -84,6 +91,7 @@ source_set("unit_tests") {
     "cast_transport_unittest.cc",
     "enum_table_unittest.cc",
     "keep_alive_delegate_unittest.cc",
+    "libcast_socket_service_unittest.cc",
     "logger_unittest.cc",
   ]
   deps = [
@@ -93,6 +101,7 @@ source_set("unit_tests") {
     "//components/cast_certificate",
     "//components/cast_certificate:cast_certificate_reader",
     "//components/cast_certificate:test_support",
+    "//components/openscreen_platform:openscreen_platform",
     "//components/prefs",
     "//components/prefs:test_support",
     "//content/test:test_support",
@@ -101,6 +110,7 @@ source_set("unit_tests") {
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/openscreen/src/cast/common:test_helpers",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_unittest_proto",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
   ]

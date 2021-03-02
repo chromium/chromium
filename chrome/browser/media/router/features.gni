@@ -5,9 +5,11 @@
 import("//build/config/chrome_build.gni")
 
 declare_args() {
-  # Exclude openscreen in NaCl, since there is no packet support
-  # in that build configuration. Once NaCl goes away, this check should be
-  # removed.
+  # TODO(crbug.com/702997): Exclude openscreen in NaCl, since there is no packet
+  # support in that build configuration.  Once NaCl goes away, this check should
+  # be removed.
+  # NOTE: This option refers to the inclusion of code for the Open Screen
+  # Protocol, not the entire openscreen library.
   enable_openscreen =
       !is_nacl &&
       (target_os == "linux" || target_os == "chromeos" || target_os == "mac")

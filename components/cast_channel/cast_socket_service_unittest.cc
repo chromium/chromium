@@ -25,7 +25,7 @@ namespace cast_channel {
 
 class CastSocketServiceTest : public testing::Test {
  public:
-  CastSocketServiceTest() : cast_socket_service_(new CastSocketService()) {
+  CastSocketServiceTest() : cast_socket_service_(new CastSocketServiceImpl()) {
     cast_socket_service_->SetTaskRunnerForTest(
         base::MakeRefCounted<base::TestSimpleTaskRunner>());
   }
@@ -38,7 +38,7 @@ class CastSocketServiceTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<CastSocketService> cast_socket_service_;
+  std::unique_ptr<CastSocketServiceImpl> cast_socket_service_;
   base::MockCallback<CastSocket::OnOpenCallback> mock_on_open_callback_;
   MockCastSocketObserver mock_observer_;
 };
