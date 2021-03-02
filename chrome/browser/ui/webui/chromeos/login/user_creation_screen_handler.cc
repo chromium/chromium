@@ -47,9 +47,8 @@ void UserCreationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_USER_CREATION_CHILD_BUTTON_DESCRIPTION);
   builder->AddF("childSignInTitle", IDS_OOBE_USER_CREATION_CHILD_SIGNIN_TITLE,
                 ui::GetChromeOSDeviceName());
-  builder->AddF("childSignInSubtitle",
-                IDS_OOBE_USER_CREATION_CHILD_SIGNIN_SUBTITLE,
-                ui::GetChromeOSDeviceNameInPlural());
+  builder->Add("childSignInSubtitle",
+               IDS_OOBE_USER_CREATION_CHILD_SIGNIN_SUBTITLE);
   builder->Add("createAccountForChildLabel",
                IDS_OOBE_USER_CREATION_CHILD_ACCOUNT_CREATION_BUTTON_LABEL);
   builder->Add("signInForChildLabel",

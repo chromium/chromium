@@ -6,17 +6,13 @@
   height: 170px;
 }
 
-:host-context(html:not([new-layout])) #ready-img {
-  max-height: 320px;
+#ready-img {
+  height: 288px;
 }
 
 @media screen and (max-height: 736px) {
   #voice-match-animation {
     height: 150px;
-  }
-
-  :host-context(html:not([new-layout])) #ready-img {
-    max-height: 280px;
   }
 }
 

@@ -71,3 +71,16 @@ h1,
   height: 350px;
   transform: translateY(-15%);
 }
+
+@media screen and (max-height: 1040px) {
+  :host-context([orientation=vertical][screen=oobe]) .animation-container {
+    display: none;
+  }
+}
+
+@media screen and (max-height: 825px) {
+  :host-context([orientation=vertical][screen=gaia-signin])
+      .animation-container {
+    display: none;
+  }
+}

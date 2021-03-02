@@ -88,8 +88,8 @@
       :host-context([new-layout][screen=oobe]) #header-container,
       :host-context([new-layout][screen=gaia-signin]) #header-container {
         padding-top: calc(var(--multidevice-setup-dialog-content-padding)
-          + 2 * min(40px, max(24px, calc(var(--multidevice-setup-dialog-height)
-          * 0.025))) + 32px);
+          + 2 * clamp(20px, calc(var(--multidevice-setup-dialog-height)
+          * 0.035), 40px) + 34px);
       }
 
       :host-context([new-layout]) #additional-content-container {

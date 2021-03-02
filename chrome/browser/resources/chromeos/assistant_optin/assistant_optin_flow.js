@@ -81,10 +81,14 @@ Polymer({
           '--oobe-oobe-dialog-height-base', oobeDialogHeight + 'px');
       document.documentElement.style.setProperty(
           '--oobe-oobe-dialog-width-base', oobeDialogWidth + 'px');
-      if (parseInt(oobeDialogWidth) > parseInt(oobeDialogHeight)) {
-        document.documentElement.setAttribute('orientation', 'horizontal');
-      } else {
-        document.documentElement.setAttribute('orientation', 'vertical');
+
+      if (loadTimeData.valueExists('newLayoutEnabled') &&
+          loadTimeData.getBoolean('newLayoutEnabled')) {
+        if (parseInt(oobeDialogWidth) > parseInt(oobeDialogHeight)) {
+          document.documentElement.setAttribute('orientation', 'horizontal');
+        } else {
+          document.documentElement.setAttribute('orientation', 'vertical');
+        }
       }
     }
 

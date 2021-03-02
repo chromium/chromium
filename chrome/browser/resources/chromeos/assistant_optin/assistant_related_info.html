@@ -14,13 +14,17 @@
       padding-bottom: 16px;
     }
 
+    #relatedInfoImg {
+      height: 288px;
+    }
+
     :host-context(html:not([new-layout])) #relatedInfoImg {
-      max-height: 240px;
+      height: 240px;
     }
 
     @media screen and (max-height: 736px) {
       :host-context(html:not([new-layout])) #relatedInfoImg {
-        max-height: 200px;
+        height: 200px;
       }
     }
     /**
