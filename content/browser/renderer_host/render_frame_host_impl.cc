@@ -8150,7 +8150,7 @@ void RenderFrameHostImpl::BindFederatedAuthRequestReceiver(
 
 void RenderFrameHostImpl::BindFederatedAuthResponseReceiver(
     mojo::PendingReceiver<blink::mojom::FederatedAuthResponse> receiver) {
-  DCHECK(base::FeatureList::IsEnabled(features::kWebID));
+  DCHECK(IsWebIDEnabled());
   FederatedAuthResponseImpl::Create(this, std::move(receiver));
 }
 
