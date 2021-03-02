@@ -14229,6 +14229,41 @@
       Otherwise it may be set to one of the following values: "tls1.2" or "tls1.3". When set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not use SSL/TLS versions greater than the specified version. An unrecognized value will be ignored.''',
     },
     {
+      'name': 'CECPQ2Enabled',
+      'owners': ['file://crypto/OWNERS'],
+      'type': 'main',
+      'example_value': True,
+      'default': True,
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable default CECPQ2 rollout process',
+        },
+        {
+          'value': False,
+          'caption': 'Disable CECPQ2',
+        },
+      ],
+      'supported_on': [
+        'chrome.*:90-',
+        'chrome_os:90-',
+        'android:90-',
+      ],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'id': 830,
+      'caption': '''CECPQ2 post-quantum key-agreement enabled for TLS''',
+      'tags': ['system-security'],
+      'desc': '''If this policy is not configured, or is set to enabled, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will follow the default rollout process for CECPQ2, a post-quantum key-agreement algorithm in TLS.
+
+      CECPQ2 results in larger TLS messages which, in very rare cases, can trigger bugs in some networking hardware. This policy can be set to False to disable CECPQ2 while networking issues are resolved.
+
+      This policy is a temporary measure and will be removed in future versions of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.''',
+    },
+    {
       'name': 'CertificateTransparencyEnforcementDisabledForUrls',
       'owners': ['file://components/certificate_transparency/OWNERS', 'rsleevi@chromium.org'],
       'type': 'list',
@@ -25743,6 +25778,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 829,
+  'highest_id_currently_used': 830,
   'highest_atomic_group_id_currently_used': 40
 }

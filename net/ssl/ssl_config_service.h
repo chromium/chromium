@@ -43,6 +43,11 @@ struct NET_EXPORT SSLContextConfig {
   // Ex: To disable TLS_RSA_WITH_RC4_128_MD5, specify 0x0004, while to
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   std::vector<uint16_t> disabled_cipher_suites;
+
+  // If false, disables post-quantum key agreement in TLS connections.
+  bool cecpq2_enabled = true;
+
+  // ADDING MORE HERE? Don't forget to update |SSLContextConfigsAreEqual|.
 };
 
 // The interface for retrieving global SSL configuration.  This interface

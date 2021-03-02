@@ -43,6 +43,9 @@ struct SSLConfig {
   // ".example.net" matches exactly "example.net". Hostnames must be
   // canonicalized according to the rules used by GURL.
   array<string> client_cert_pooling_policy;
+
+  // If false, disables post-quantum key agreement in TLS connections.
+  bool cecpq2_enabled = true;
 };
 
 // Receives SSL configuration updates.
