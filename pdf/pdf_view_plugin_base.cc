@@ -152,6 +152,16 @@ void PdfViewPluginBase::ScrollBy(const gfx::Vector2d& delta) {
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::GetDocumentPassword(
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK(password_callback_.is_null());
+  password_callback_ = std::move(callback);
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "getPassword");
+  SendMessage(std::move(message));
+}
+
 SkColor PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
 }
@@ -171,6 +181,8 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
            &PdfViewPluginBase::HandleDisplayAnnotationsMessage},
           {"getNamedDestination",
            &PdfViewPluginBase::HandleGetNamedDestinationMessage},
+          {"getPasswordComplete",
+           &PdfViewPluginBase::HandleGetPasswordCompleteMessage},
           {"getSelectedText", &PdfViewPluginBase::HandleGetSelectedTextMessage},
           {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
           {"rotateCounterclockwise",
@@ -515,6 +527,14 @@ void PdfViewPluginBase::HandleGetNamedDestinationMessage(
   }
 
   SendMessage(std::move(reply));
+}
+
+void PdfViewPluginBase::HandleGetPasswordCompleteMessage(
+    const base::Value& message) {
+  const std::string* password = message.FindStringKey("password");
+  CHECK(password);
+  DCHECK(!password_callback_.is_null());
+  std::move(password_callback_).Run(*password);
 }
 
 void PdfViewPluginBase::HandleGetSelectedTextMessage(

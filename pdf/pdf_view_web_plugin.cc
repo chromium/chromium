@@ -222,9 +222,6 @@ void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
 
 void PdfViewWebPlugin::NotifyTouchSelectionOccurred() {}
 
-void PdfViewWebPlugin::GetDocumentPassword(
-    base::OnceCallback<void(const std::string&)> callback) {}
-
 void PdfViewWebPlugin::Beep() {}
 
 void PdfViewWebPlugin::Alert(const std::string& message) {}

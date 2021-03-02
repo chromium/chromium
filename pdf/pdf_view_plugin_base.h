@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_engine.h"
@@ -54,6 +55,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void ScrollToX(int x_screen_coords) override;
   void ScrollToY(int y_screen_coords) override;
   void ScrollBy(const gfx::Vector2d& delta) override;
+  void GetDocumentPassword(
+      base::OnceCallback<void(const std::string&)> callback) override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
 
@@ -235,6 +238,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value& message);
   void HandleGetNamedDestinationMessage(const base::Value& message);
+  void HandleGetPasswordCompleteMessage(const base::Value& message);
   void HandleGetSelectedTextMessage(const base::Value& message);
   void HandleRotateClockwiseMessage(const base::Value& /*message*/);
   void HandleRotateCounterclockwiseMessage(const base::Value& /*message*/);
@@ -326,6 +330,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Whether the plugin has received a viewport changed message. Nothing should
   // be painted until this is received.
   bool received_viewport_message_ = false;
+
+  // The callback for receiving the password from the page.
+  base::OnceCallback<void(const std::string&)> password_callback_;
 
   // The current state of document load.
   DocumentLoadState document_load_state_ = DocumentLoadState::kLoading;

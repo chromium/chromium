@@ -111,8 +111,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
   void NotifyTouchSelectionOccurred() override;
-  void GetDocumentPassword(
-      base::OnceCallback<void(const std::string&)> callback) override;
   void Beep() override;
   void Alert(const std::string& message) override;
   bool Confirm(const std::string& message) override;
@@ -185,7 +183,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
  private:
   // Message handlers.
-  void HandleGetPasswordCompleteMessage(const pp::VarDictionary& dict);
   void HandleGetThumbnailMessage(const pp::VarDictionary& dict);
   void HandleLoadPreviewPageMessage(const pp::VarDictionary& dict);
   void HandleResetPrintPreviewModeMessage(const pp::VarDictionary& dict);
@@ -329,9 +326,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // Used for submitting forms.
   std::unique_ptr<UrlLoader> form_loader_;
-
-  // The callback for receiving the password from the page.
-  base::OnceCallback<void(const std::string&)> password_callback_;
 
   DocumentLoadState preview_document_load_state_ = DocumentLoadState::kComplete;
 

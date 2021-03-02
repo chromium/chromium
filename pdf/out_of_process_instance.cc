@@ -114,11 +114,6 @@ constexpr char kJSProducer[] = "producer";
 constexpr char kJSCreationDate[] = "creationDate";
 constexpr char kJSModDate[] = "modDate";
 constexpr char kJSCanSerializeDocument[] = "canSerializeDocument";
-// Get password (Plugin -> Page)
-constexpr char kJSGetPasswordType[] = "getPassword";
-// Get password complete arguments (Page -> Plugin)
-constexpr char kJSGetPasswordCompleteType[] = "getPasswordComplete";
-constexpr char kJSPassword[] = "password";
 // Print (Page -> Plugin)
 constexpr char kJSPrintType[] = "print";
 // Save attachment (Page -> Plugin)
@@ -721,9 +716,7 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
 
   std::string type = dict.Get(kType).AsString();
 
-  if (type == kJSGetPasswordCompleteType) {
-    HandleGetPasswordCompleteMessage(dict);
-  } else if (type == kJSPrintType) {
+  if (type == kJSPrintType) {
     Print();
   } else if (type == kJSSaveAttachmentType) {
     HandleSaveAttachmentMessage(dict);
@@ -1150,19 +1143,6 @@ void OutOfProcessInstance::NotifyTouchSelectionOccurred() {
   PostMessage(message);
 }
 
-void OutOfProcessInstance::GetDocumentPassword(
-    base::OnceCallback<void(const std::string&)> callback) {
-  if (password_callback_) {
-    NOTREACHED();
-    return;
-  }
-
-  password_callback_ = std::move(callback);
-  pp::VarDictionary message;
-  message.Set(kType, kJSGetPasswordType);
-  PostMessage(message);
-}
-
 void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
   engine()->KillFormFocus();
 
@@ -1394,16 +1374,6 @@ std::string OutOfProcessInstance::GetFileNameFromUrl(const std::string& url) {
       /*referrer_charset=*/std::string(), /*suggested_name=*/std::string(),
       /*mime_type=*/std::string(), /*default_name=*/std::string());
   return base::UTF16ToUTF8(file_name);
-}
-
-void OutOfProcessInstance::HandleGetPasswordCompleteMessage(
-    const pp::VarDictionary& dict) {
-  if (!password_callback_ || !dict.Get(kJSPassword).is_string()) {
-    NOTREACHED();
-    return;
-  }
-
-  std::move(password_callback_).Run(dict.Get(kJSPassword).AsString());
 }
 
 void OutOfProcessInstance::HandleGetThumbnailMessage(
