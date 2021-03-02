@@ -29,7 +29,9 @@ enum class AutocorrectActions {
   kUnderlined = 1,
   kReverted = 2,
   kUserAcceptedAutocorrect = 3,
-  kMaxValue = kUserAcceptedAutocorrect,
+  kUserActionClearedUnderline = 4,
+  kUserExitedTextFieldWithUnderline = 5,
+  kMaxValue = kUserExitedTextFieldWithUnderline,
 };
 
 bool IsCurrentInputMethodExperimentalMultilingual() {
@@ -86,7 +88,9 @@ void AutocorrectManager::HandleAutocorrect(gfx::Range autocorrect_range,
 
   original_text_ = original_text;
   key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
-  ClearUnderline();
+  if (!input_context->GetAutocorrectRange().is_empty()) {
+    ClearUnderline();
+  }
 
   input_context->SetAutocorrectRange(autocorrect_range);
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
@@ -131,6 +135,9 @@ void AutocorrectManager::ClearUnderline() {
   if (input_context && !input_context->GetAutocorrectRange().is_empty()) {
     input_context->SetAutocorrectRange(gfx::Range());
     LogAssistiveAutocorrectAction(AutocorrectActions::kUserAcceptedAutocorrect);
+  } else {
+    LogAssistiveAutocorrectAction(
+        AutocorrectActions::kUserActionClearedUnderline);
   }
 }
 
@@ -173,6 +180,12 @@ void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
 }
 
 void AutocorrectManager::OnFocus(int context_id) {
+  if (key_presses_until_underline_hide_ > 0) {
+    // TODO(b/149796494): move this to onblur()
+    LogAssistiveAutocorrectAction(
+        AutocorrectActions::kUserExitedTextFieldWithUnderline);
+    key_presses_until_underline_hide_ = -1;
+  }
   context_id_ = context_id;
 }
 

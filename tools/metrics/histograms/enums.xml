@@ -38939,6 +38939,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="UNDERLINED"/>
   <int value="2" label="REVERTED"/>
   <int value="3" label="USER_ACCEPTED_AUTOCORRECT"/>
+  <int value="4" label="USER_CLEARED_UNDERLINE"/>
+  <int value="5" label="USER_EXITED_TEXT_FIELD_WITH_UNDERLINE_PRESENT"/>
 </enum>
 
 <enum name="IMECommitType">
