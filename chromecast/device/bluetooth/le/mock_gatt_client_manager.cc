@@ -4,8 +4,6 @@
 
 #include "chromecast/device/bluetooth/le/mock_gatt_client_manager.h"
 
-#include "chromecast/device/bluetooth/le/remote_characteristic.h"
-
 namespace chromecast {
 namespace bluetooth {
 

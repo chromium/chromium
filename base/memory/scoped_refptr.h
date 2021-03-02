@@ -172,7 +172,7 @@ scoped_refptr<T> WrapRefCounted(T* t) {
 //   to another component (if a component merely needs to use t on the stack
 //   without keeping a ref: pass t as a raw T*).
 template <class T>
-class TRIVIAL_ABI scoped_refptr {
+class scoped_refptr {
  public:
   typedef T element_type;
 

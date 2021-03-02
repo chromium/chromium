@@ -8,8 +8,5 @@ source_set("distribution") {
     "app_distribution_provider.h",
     "app_distribution_provider.mm",
   ]
-  deps = [
-    "//base",
-    "//services/network/public/cpp",
-  ]
+  deps = [ "//base" ]
 }

@@ -14,9 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
-#include "chromecast/device/bluetooth/le/remote_characteristic.h"
-#include "chromecast/device/bluetooth/le/remote_device.h"
-#include "chromecast/device/bluetooth/le/remote_service.h"
 #include "chromecast/public/bluetooth/bluetooth_types.h"
 
 namespace base {
@@ -32,6 +29,9 @@ namespace bluetooth {
 
 class BluetoothManagerPlatform;
 class LeScanManager;
+class RemoteCharacteristic;
+class RemoteDevice;
+class RemoteService;
 
 class GattClientManager {
  public:
