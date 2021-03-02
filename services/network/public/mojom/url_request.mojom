@@ -226,8 +226,7 @@ struct URLRequest {
   // What this resource load is for (main frame, sub-frame, sub-resource,
   // object).
   // Note: this is an enum of type blink::mojom::ResourceType.
-  // TODO(jam): remove this from the struct since network service shouldn't know
-  // about this.
+  // TODO(https://crbug.com/1059639): remove this in favor of `destination`.
   int32 resource_type;
 
   // The priority of this request determined by Blink.
@@ -279,7 +278,7 @@ struct URLRequest {
   // The integrity used in Fetch API.
   string fetch_integrity;
 
-  // https://fetch.spec.whatwg.org/#concept-request-destiantion
+  // https://fetch.spec.whatwg.org/#concept-request-destination
   RequestDestination destination;
 
   // Optional resource request body.
