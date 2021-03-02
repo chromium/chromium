@@ -63,6 +63,7 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
           "item": [
             {
               "itemId":"234",
+              "url":"https://google.com/foo",
               "driveItem": {
                 "title": "Foo foo",
                 "mimeType": "Foo foo foo"
@@ -79,6 +80,7 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
             },
             {
               "itemId":"123",
+              "url":"https://google.com/bar",
               "driveItem": {
                 "title": "Bar",
                 "mimeType": "application/vnd.google-apps.document"
@@ -110,10 +112,12 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
   EXPECT_EQ("Foo foo", actual_documents.at(0)->title);
   EXPECT_EQ(drive::mojom::FileType::kOther, actual_documents.at(0)->type);
   EXPECT_EQ("Foo foo", actual_documents.at(0)->justification_text);
+  EXPECT_EQ("https://google.com/foo", actual_documents.at(0)->url.spec());
   EXPECT_EQ("Bar", actual_documents.at(1)->title);
   EXPECT_EQ("123", actual_documents.at(1)->id);
   EXPECT_EQ(drive::mojom::FileType::kDoc, actual_documents.at(1)->type);
   EXPECT_EQ("Foo bar foo bar", actual_documents.at(1)->justification_text);
+  EXPECT_EQ("https://google.com/bar", actual_documents.at(1)->url.spec());
 }
 
 TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
@@ -165,6 +169,7 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
           "item": [
             {
               "itemId":"234",
+              "url": "https://google.com/foo",
               "driveItem": {
                 "title": "Foo foo",
                 "mimeType": "application/vnd.google-apps.spreadsheet"

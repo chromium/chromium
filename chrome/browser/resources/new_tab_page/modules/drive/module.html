@@ -44,7 +44,7 @@
 </ntp-module-header>
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" items="[[files]]">
-    <a class="file" href="[[getTargetUrl_(item)]]">
+    <a class="file" href="[[item.url.url]]">
       <div class="file-icon-container">
         <img
             class="file-icon"

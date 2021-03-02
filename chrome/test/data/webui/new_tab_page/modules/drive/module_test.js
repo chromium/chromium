@@ -29,18 +29,21 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           title: 'Foo',
           id: '123',
           type: drive.mojom.FileType.kDoc,
+          url: {url: 'https://foo.com'},
         },
         {
           justificationText: 'Edited today',
           title: 'Bar',
           id: '234',
           type: drive.mojom.FileType.kSheet,
+          url: {url: 'https://bar.com'},
         },
         {
           justificationText: 'Created today',
           title: 'Caz',
           id: '345',
           type: drive.mojom.FileType.kOther,
+          url: {url: 'https://caz.com'},
         }
       ]
     };
@@ -61,14 +64,9 @@ suite('NewTabPageModulesDriveModuleTest', () => {
         'Edited today',
         items[1].querySelector('.file-description').textContent);
     const urls = module.shadowRoot.querySelectorAll('.file');
-    assertEquals(
-        'https://docs.google.com/document/d/123/edit?usp=drive_web',
-        urls[0].href);
-    assertEquals(
-        'https://docs.google.com/spreadsheets/d/234/edit?usp=drive_web',
-        urls[1].href);
-    assertEquals(
-        'https://drive.google.com/file/d/345/view?usp=drive_web', urls[2].href);
+    assertEquals('https://foo.com/', urls[0].href);
+    assertEquals('https://bar.com/', urls[1].href);
+    assertEquals('https://caz.com/', urls[2].href);
   });
 
   test('documents do not show without data', async () => {

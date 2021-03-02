@@ -185,7 +185,9 @@ void DriveService::OnJsonParsed(
         justification_text += *justification_text_path;
       }
       auto* id = item.FindStringKey("itemId");
-      if (!title || !mime_type || justification_text.empty() || !id) {
+      auto* url = item.FindStringKey("url");
+      if (!title || !mime_type || justification_text.empty() || !id || !url ||
+          !GURL(*url).is_valid()) {
         continue;
       }
       auto mojo_drive_doc = drive::mojom::File::New();
@@ -201,6 +203,7 @@ void DriveService::OnJsonParsed(
       }
       mojo_drive_doc->justification_text = justification_text;
       mojo_drive_doc->id = *id;
+      mojo_drive_doc->url = GURL(*url);
       document_list.push_back(std::move(mojo_drive_doc));
     }
     std::move(callback).Run(std::move(document_list));

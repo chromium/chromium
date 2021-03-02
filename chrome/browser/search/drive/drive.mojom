@@ -4,6 +4,8 @@
 
 module drive.mojom;
 
+import "url/mojom/url.mojom";
+
 // The types of documents available within Google Drive.
 // TODO(crbug/1176927): Verify prioritized types from
 // Item Suggest.
@@ -24,6 +26,8 @@ struct File {
   string title;
   // The type of the Drive Item.
   FileType type;
+  // The URL to navigate to the Drive Item.
+  url.mojom.Url url;
 };
 
 // Browser-side handler for requests from NTP Module UI.

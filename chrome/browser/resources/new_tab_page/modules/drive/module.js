@@ -68,31 +68,6 @@ class DriveModuleElement extends mixinBehaviors
         return '';
     }
   }
-
-  /**
-   * @param {drive.mojom.File} file
-   * @return {string}
-   * @private
-   */
-  getTargetUrl_(file) {
-    const id = file.id;
-    // TODO(crbug/1177439): Use URL from ItemSuggest to generate URL.
-    switch (file.type) {
-      case (drive.mojom.FileType.kDoc):
-        return `https://docs.google.com/document/d/${id}/edit?usp=drive_web`;
-      case (drive.mojom.FileType.kSlide):
-        return `https://docs.google.com/presentation/d/${
-            id}/edit?usp=drive_web`;
-      case (drive.mojom.FileType.kSheet):
-        return `https://docs.google.com/spreadsheets/d/${
-            id}/edit?usp=drive_web`;
-      default:
-        // TODO(crbug/1177426): Generic drive link leads to preview of page,
-        // will need to decide if this is appropriate or we want to navigate
-        // directly to the page we want.
-        return `https://drive.google.com/file/d/${id}/view?usp=drive_web`;
-    }
-  }
 }
 
 customElements.define(DriveModuleElement.is, DriveModuleElement);
