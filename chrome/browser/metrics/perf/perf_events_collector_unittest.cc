@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
@@ -170,11 +172,13 @@ class TestPerfCollector : public PerfCollector {
   using MetricCollector::StopTimer;
   using PerfCollector::AddCachedDataDelta;
   using PerfCollector::collection_params;
+  using PerfCollector::CollectPSICPU;
   using PerfCollector::command_selector;
   using PerfCollector::Init;
   using PerfCollector::IsRunning;
   using PerfCollector::max_frequencies_mhz;
   using PerfCollector::ParseOutputProtoIfValid;
+  using PerfCollector::ParsePSICPUStatus;
   using PerfCollector::RecordUserLogin;
   using PerfCollector::set_profile_done_callback;
 
@@ -371,6 +375,57 @@ TEST_F(PerfCollectorTest, IncognitoWindowOpened) {
   EXPECT_EQ(SerializeMessageToVector(perf_data_proto),
             SerializeMessageToVector(profile2.perf_data()));
   EXPECT_GT(profile2.cpu_max_frequency_mhz_size(), 0);
+}
+
+TEST_F(PerfCollectorTest, CollectPSICPUDataSuccess) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::FilePath psi_cpu_file = tmp_dir.GetPath().Append("psi_cpu");
+  ASSERT_TRUE(base::WriteFile(
+      psi_cpu_file, "some avg10=2.04 avg60=0.75 avg300=0.40 total=1576"));
+
+  base::HistogramTester histogram_tester;
+
+  auto sampled_profile = std::make_unique<SampledProfile>();
+  TestPerfCollector::CollectPSICPU(sampled_profile.get(), psi_cpu_file.value());
+
+  EXPECT_FLOAT_EQ(sampled_profile->psi_cpu_last_10s_pct(), 2.04);
+  EXPECT_FLOAT_EQ(sampled_profile->psi_cpu_last_60s_pct(), 0.75);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.ParsePSICPU",
+      TestPerfCollector::ParsePSICPUStatus::kSuccess, 1);
+}
+
+TEST_F(PerfCollectorTest, CollectPSICPUDataReadFileFailed) {
+  const char kPSICPUPath[] = "/some/random/path";
+  base::HistogramTester histogram_tester;
+
+  auto sampled_profile = std::make_unique<SampledProfile>();
+  TestPerfCollector::CollectPSICPU(sampled_profile.get(), kPSICPUPath);
+
+  EXPECT_FALSE(sampled_profile->has_psi_cpu_last_10s_pct());
+  EXPECT_FALSE(sampled_profile->has_psi_cpu_last_60s_pct());
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.ParsePSICPU",
+      TestPerfCollector::ParsePSICPUStatus::kReadFileFailed, 1);
+}
+
+TEST_F(PerfCollectorTest, CollectPSICPUDataUnexpectedDataFormat) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::FilePath psi_cpu_file = tmp_dir.GetPath().Append("psi_cpu");
+  ASSERT_TRUE(base::WriteFile(psi_cpu_file, "random content"));
+
+  base::HistogramTester histogram_tester;
+
+  auto sampled_profile = std::make_unique<SampledProfile>();
+  TestPerfCollector::CollectPSICPU(sampled_profile.get(), psi_cpu_file.value());
+
+  EXPECT_FALSE(sampled_profile->has_psi_cpu_last_10s_pct());
+  EXPECT_FALSE(sampled_profile->has_psi_cpu_last_60s_pct());
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.ParsePSICPU",
+      TestPerfCollector::ParsePSICPUStatus::kUnexpectedDataFormat, 1);
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_IvyBridge) {

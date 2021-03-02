@@ -10394,6 +10394,13 @@ histogram as enum -->
   <int value="3" label="All CPUs have zero frequencies"/>
 </enum>
 
+<enum name="ChromeOSParsePSICPUStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to read file /proc/pressure/cpu"/>
+  <int value="2" label="Unexpected data format in PSI CPU file"/>
+  <int value="3" label="Fail to parse PSI CPU values"/>
+</enum>
+
 <enum name="ChromeOSPlatformVerificationExpiryStatus">
   <summary>
     Possible results of a platform verification expiry check. See

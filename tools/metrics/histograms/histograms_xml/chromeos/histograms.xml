@@ -324,6 +324,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.CWP.ParsePSICPU" enum="ChromeOSParsePSICPUStatus"
+    expires_after="2022-02-25">
+  <owner>dubin@google.com</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    A count of successes and various failure modes related to the parsing of PSI
+    CPU data on Chrome OS. Recorded after each perf collection.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.CWP.RecordPerf" enum="ChromeOSProfileRecordStatus"
     expires_after="2021-11-30">
   <owner>dubin@google.com</owner>
