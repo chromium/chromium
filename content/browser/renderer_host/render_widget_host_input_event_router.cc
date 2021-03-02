@@ -1549,7 +1549,10 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
 
   if (gesture_event.unique_touch_event_id == 0 || is_gesture_start) {
     bool moved_recently = touchscreen_gesture_target_moved_recently_;
-    if (is_gesture_start)
+    // It seem that |target| can be nullptr here, not sure why. Until we know
+    // why, let's avoid dereferencing it in that case.
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=1155297
+    if (is_gesture_start && target)
       moved_recently = target->ScreenRectIsUnstableFor(gesture_event);
     SetTouchscreenGestureTarget(target, moved_recently);
   }
