@@ -4602,11 +4602,6 @@ const char kMediaAppPdfInInkName[] = "Media App Pdf in Ink";
 const char kMediaAppPdfInInkDescription[] =
     "Enables loading PDFs into Ink in chrome://media-app";
 
-const char kMediaNotificationsCounterName[] = "Media Notifications Counter";
-const char kMediaNotificationsCounterDescription[] =
-    "Remove media notifications from the notification counter in the status "
-    "area";
-
 const char kMediaSessionNotificationsName[] = "Media session notifications";
 const char kMediaSessionNotificationsDescription[] =
     "Shows notifications for media sessions showing the currently playing "

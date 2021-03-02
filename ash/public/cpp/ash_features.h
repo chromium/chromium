@@ -98,10 +98,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kManagedDeviceUIRedesign;
 // TODO(beccahughes): Remove after launch. (https://crbug.com/897836)
 ASH_PUBLIC_EXPORT extern const base::Feature kMediaSessionNotification;
 
-// Removes media notifications from the notification counter in the status area.
-// TODO(crbug.com/1111881): Remove when OS media controls launched.
-ASH_PUBLIC_EXPORT extern const base::Feature kMediaNotificationsCounter;
-
 // Enables resizing/moving the selection region for partial screenshot.
 ASH_PUBLIC_EXPORT extern const base::Feature kMovablePartialScreenshot;
 

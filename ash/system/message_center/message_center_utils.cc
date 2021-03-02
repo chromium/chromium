@@ -34,12 +34,6 @@ std::vector<message_center::Notification*> GetSortedVisibleNotifications() {
 }
 
 size_t GetNotificationCount() {
-  // If flag is set, do not include media notifications in count.
-  // TODO(crbug.com/1111881) This code can be removed when OS media controls are
-  // launched (expected by M90).
-  const bool skip_media_notification =
-      base::FeatureList::IsEnabled(features::kMediaNotificationsCounter);
-
   size_t count = 0;
   for (message_center::Notification* notification :
        message_center::MessageCenter::Get()->GetVisibleNotifications()) {
@@ -47,9 +41,6 @@ size_t GetNotificationCount() {
     // Don't count these notifications since we have `CameraMicTrayItemView` to
     // show indicators on the systray.
     if (notifier == kVmCameraMicNotifierId)
-      continue;
-
-    if (skip_media_notification && notifier == kMediaSessionNotifierId)
       continue;
 
     ++count;
