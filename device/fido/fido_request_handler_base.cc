@@ -125,6 +125,10 @@ void FidoRequestHandlerBase::InitDiscoveries(
                        weak_factory_.GetWeakPtr()));
   }
 
+  bool has_platform =
+      base::Contains(transport_availability_info_.available_transports,
+                     FidoTransportProtocol::kInternal);
+
   // Initialize |notify_observer_callback_| with the number of times it has to
   // be invoked before Observer::OnTransportAvailabilityEnumerated is
   // dispatched.
@@ -134,10 +138,12 @@ void FidoRequestHandlerBase::InitDiscoveries(
   // ready, and additionally:
   //
   // 1) [If BLE or caBLE are enabled] once BLE adapters have been enumerated
-  // 2) When |observer_| is set, so that OnTransportAvailabilityEnumerated is
-  // never called before it is set.
+  // 2) [If platform transport requested] When
+  //    OnHasRecognizedPlatformCredentialFilled() runs.
+  // 3) When |observer_| is set, so that OnTransportAvailabilityEnumerated is
+  //    never called before it is set.
   notify_observer_callback_ = base::BarrierClosure(
-      discoveries_.size() + has_ble + 1,
+      discoveries_.size() + has_ble + has_platform + 1,
       base::BindOnce(
           &FidoRequestHandlerBase::NotifyObserverTransportAvailability,
           weak_factory_.GetWeakPtr()));
@@ -244,6 +250,20 @@ void FidoRequestHandlerBase::DiscoveryStarted(
       AuthenticatorAdded(discovery, authenticator);
     }
   }
+
+  // Allow GetAssertionRequestHandler to asynchronously check for known platform
+  // credentials and defer |notify_observer_callback_| until that check is done.
+  // (But don't bother if platform discovery failed to start.)
+  if (discovery->transport() == FidoTransportProtocol::kInternal) {
+    if (success) {
+      FillHasRecognizedPlatformCredential(base::BindOnce(
+          &FidoRequestHandlerBase::OnHasRecognizedPlatformCredentialFilled,
+          GetWeakPtr()));
+    } else {
+      FidoRequestHandlerBase::OnHasRecognizedPlatformCredentialFilled();
+    }
+  }
+
   DCHECK(notify_observer_callback_);
   notify_observer_callback_.Run();
 }
@@ -305,6 +325,11 @@ bool FidoRequestHandlerBase::HasAuthenticator(
   return base::Contains(active_authenticators_, authenticator_id);
 }
 
+void FidoRequestHandlerBase::FillHasRecognizedPlatformCredential(
+    base::OnceCallback<void()> done_callback) {
+  std::move(done_callback).Run();
+}
+
 void FidoRequestHandlerBase::NotifyObserverTransportAvailability() {
   DCHECK(observer_);
   observer_->OnTransportAvailabilityEnumerated(transport_availability_info_);
@@ -324,6 +349,10 @@ void FidoRequestHandlerBase::InitializeAuthenticatorAndDispatchRequest(
 
 void FidoRequestHandlerBase::ConstructBleAdapterPowerManager() {
   bluetooth_adapter_manager_ = std::make_unique<BleAdapterManager>(this);
+}
+
+void FidoRequestHandlerBase::OnHasRecognizedPlatformCredentialFilled() {
+  notify_observer_callback_.Run();
 }
 
 void FidoRequestHandlerBase::StopDiscoveries() {

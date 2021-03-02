@@ -84,10 +84,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
                                     bool can_power_on,
                                     bool is_peripheral_role_supported) override;
   void DispatchRequest(FidoAuthenticator* authenticator) override;
-  void AuthenticatorAdded(FidoDiscoveryBase* discovery,
-                          FidoAuthenticator* authenticator) override;
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override;
+  void FillHasRecognizedPlatformCredential(
+      base::OnceCallback<void()> done_callback) override;
 
   // AuthTokenRequester::Delegate:
   void AuthenticatorSelectedForPINUVAuthToken(
@@ -129,6 +129,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
           blobs);
   void OnWriteLargeBlob(FidoAuthenticator* authenticator,
                         CtapDeviceResponseCode status);
+  void OnHasPlatformCredential(base::OnceCallback<void()> done_callback,
+                               bool has_credential);
 
   CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;

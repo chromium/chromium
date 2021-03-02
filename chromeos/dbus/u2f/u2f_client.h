@@ -66,9 +66,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) U2FClient {
 
   // Returns whether a set of IDs belong to credentials registered by this
   // platform authenticator.
-  // TODO(martinkr): Change to take a callback.
-  virtual base::Optional<u2f::HasCredentialsResponse> HasCredentialsBlocking(
-      const u2f::HasCredentialsRequest& request) = 0;
+  virtual void HasCredentials(
+      const u2f::HasCredentialsRequest& request,
+      DBusMethodCallback<u2f::HasCredentialsResponse> callback) = 0;
 
   // Returns whether a set of IDs belong to credentials registered by the legacy
   // U2F authenticator.

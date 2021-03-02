@@ -29,8 +29,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       base::RepeatingCallback<uint32_t()> generate_request_id_callback);
   ~ChromeOSAuthenticator() override;
 
-  static bool HasCredentialForGetAssertionRequest(
-      const CtapGetAssertionRequest& request);
+  static void HasCredentialForGetAssertionRequest(
+      const CtapGetAssertionRequest& request,
+      base::OnceCallback<void(bool has_credential)> callback);
 
   static void HasLegacyU2fCredentialForGetAssertionRequest(
       const CtapGetAssertionRequest& request,
