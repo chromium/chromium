@@ -12,7 +12,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/navigation_predictor/navigation_predictor_renderer_warmup_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -160,9 +159,7 @@ NavigationPredictorKeyedService::Prediction::web_contents() const {
 NavigationPredictorKeyedService::NavigationPredictorKeyedService(
     content::BrowserContext* browser_context)
     : search_engine_preconnector_(browser_context),
-      renderer_warmup_client_(
-          std::make_unique<NavigationPredictorRendererWarmupClient>(
-              Profile::FromBrowserContext(browser_context))),
+
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!browser_context->IsOffTheRecord());
@@ -171,8 +168,6 @@ NavigationPredictorKeyedService::NavigationPredictorKeyedService(
   // Start preconnecting to the search engine.
   search_engine_preconnector_.StartPreconnecting(/*with_startup_delay=*/true);
 #endif
-
-  AddObserver(renderer_warmup_client_.get());
 }
 
 NavigationPredictorKeyedService::~NavigationPredictorKeyedService() {

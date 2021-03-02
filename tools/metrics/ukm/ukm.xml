@@ -9641,6 +9641,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="NavigationPredictorRendererWarmup">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

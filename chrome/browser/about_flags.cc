@@ -3457,10 +3457,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNavigationPredictorDescription,
      kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kNavigationPredictor)},
-    {"enable-navigation-predictor-renderer-warmup",
-     flag_descriptions::kEnableNavigationPredictorRendererWarmupName,
-     flag_descriptions::kEnableNavigationPredictorRendererWarmupDescription,
-     kOsAll, FEATURE_VALUE_TYPE(features::kNavigationPredictorRendererWarmup)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_LINUX
     {"enable-preconnect-to-search",
      flag_descriptions::kEnablePreconnectToSearchName,

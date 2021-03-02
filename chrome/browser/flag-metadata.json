@@ -2065,11 +2065,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-navigation-predictor-renderer-warmup",
-    "owners": [ "tbansal", "ryansturm", "instant-nav" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-network-logging-to-file",
     "owners": [ "net-dev" ],
     // This flag is used to capture early-browser network logging on platforms

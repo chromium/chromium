@@ -851,8 +851,6 @@ static_library("browser") {
     "navigation_predictor/navigation_predictor_keyed_service_factory.h",
     "navigation_predictor/navigation_predictor_preconnect_client.cc",
     "navigation_predictor/navigation_predictor_preconnect_client.h",
-    "navigation_predictor/navigation_predictor_renderer_warmup_client.cc",
-    "navigation_predictor/navigation_predictor_renderer_warmup_client.h",
     "navigation_predictor/search_engine_preconnector.cc",
     "navigation_predictor/search_engine_preconnector.h",
     "net/chrome_mojo_proxy_resolver_factory.cc",

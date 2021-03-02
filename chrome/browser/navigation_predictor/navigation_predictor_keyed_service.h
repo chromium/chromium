@@ -21,8 +21,6 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
-class NavigationPredictorRendererWarmupClient;
-
 // Keyed service that can be used to receive notifications about the URLs for
 // the next predicted navigation.
 class NavigationPredictorKeyedService : public KeyedService {
@@ -165,10 +163,6 @@ class NavigationPredictorKeyedService : public KeyedService {
 
   // Manages preconnecting to the user's default search engine.
   SearchEnginePreconnector search_engine_preconnector_;
-
-  // Manages warming up a spare renderer based on predictions.
-  std::unique_ptr<NavigationPredictorRendererWarmupClient>
-      renderer_warmup_client_;
 
   std::unordered_set<content::WebContents*> visible_web_contents_;
 

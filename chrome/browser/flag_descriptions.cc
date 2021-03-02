@@ -640,12 +640,6 @@ const char kEnableNavigationPredictorDescription[] =
     "Enables navigation predictor feature that predicts the next likely "
     "navigation using a set of heuristics.";
 
-const char kEnableNavigationPredictorRendererWarmupName[] =
-    "Enables navigation predictor";
-const char kEnableNavigationPredictorRendererWarmupDescription[] =
-    "Enables navigation predictor feature that predicts the next likely "
-    "navigation using a set of heuristics.";
-
 const char kEnablePreconnectToSearchName[] =
     "Enables preconnections to default search engine";
 const char kEnablePreconnectToSearchDescription[] =
