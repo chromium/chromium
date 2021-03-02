@@ -26,6 +26,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/language/settings/LanguageItemPickerPreference.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageListPreference.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageSettings.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguagesManager.java",
 
     # Todo(https://crbug.com/1176981): Remove cyclical dependancy with Translate bridge.
@@ -39,6 +40,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
@@ -72,6 +74,8 @@ android_resources("java_resources") {
     "java/res/layout/languages_preference.xml",
     "java/res/layout/preference_category_no_title_or_padding.xml",
     "java/res/menu/languages_action_bar_menu.xml",
+    "java/res/xml/languages_detailed_preferences.xml",
+    "java/res/xml/languages_preferences.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

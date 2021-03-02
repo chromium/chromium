@@ -738,7 +738,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManager.java",
   "java/src/org/chromium/chrome/browser/javascript/WebContextFetcher.java",
   "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
-  "java/src/org/chromium/chrome/browser/language/settings/LanguageSettings.java",
   "java/src/org/chromium/chrome/browser/lens/LensController.java",
   "java/src/org/chromium/chrome/browser/lens/LensEntryPoint.java",
   "java/src/org/chromium/chrome/browser/lens/LensFeature.java",

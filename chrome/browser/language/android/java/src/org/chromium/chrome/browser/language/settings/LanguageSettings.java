@@ -15,16 +15,16 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
+import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
@@ -37,8 +37,8 @@ import java.util.Collection;
  * Settings fragment that displays information about Chrome languages, which allow users to
  * seamlessly find and manage their languages preferences across platforms.
  */
-public class LanguageSettings
-        extends PreferenceFragmentCompat implements AddLanguageFragment.Launcher {
+public class LanguageSettings extends PreferenceFragmentCompat
+        implements AddLanguageFragment.Launcher, FragmentSettingsLauncher {
     // Default number of items to list in a collection preference summary.
     private static final int COLLECTION_SUMMARY_ITEM_LIMIT = 3;
 
@@ -57,6 +57,9 @@ public class LanguageSettings
     static final String TRANSLATION_ADVANCED_SECTION = "translation_advanced_settings_section";
     static final String TARGET_LANGUAGE_KEY = "translate_settings_target_language";
     static final String ALWAYS_LANGUAGES_KEY = "translate_settings_always_languages";
+
+    // SettingsLauncher injected from main Settings Activity.
+    private SettingsLauncher mSettingsLauncher;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -243,6 +246,15 @@ public class LanguageSettings
     }
 
     /**
+     * Overrides FragmentSettingsLauncher.setSettingsLauncher to inject the App SettingsLauncher.
+     * @param settingsLauncher App SettingsLauncher instance.
+     */
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
+    }
+
+    /**
      * Set preference's OnPreferenceClickListener to launch the Select Language Fragment.
      * @param Preference preference The Preference to set listener on.
      * @param int launchCode The language options code to filter selectable languages.
@@ -267,8 +279,7 @@ public class LanguageSettings
      * @param int requestCode The code to return from the select language fragment with.
      */
     private void launchSelectLanguage(int launchCode, int requestCode) {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        Intent intent = settingsLauncher.createSettingsActivityIntent(
+        Intent intent = mSettingsLauncher.createSettingsActivityIntent(
                 getActivity(), AddLanguageFragment.class.getName());
         intent.putExtra(AddLanguageFragment.INTENT_LANGUAGE_OPTIONS, launchCode);
         startActivityForResult(intent, requestCode);

@@ -930,8 +930,6 @@ chrome_java_resources = [
   "java/res/xml/do_not_track_preferences.xml",
   "java/res/xml/google_services_preferences.xml",
   "java/res/xml/homepage_preferences.xml",
-  "java/res/xml/languages_detailed_preferences.xml",
-  "java/res/xml/languages_preferences.xml",
   "java/res/xml/legal_information_preferences.xml",
   "java/res/xml/main_preferences.xml",
   "java/res/xml/manage_sync_preferences.xml",

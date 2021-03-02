@@ -1104,7 +1104,6 @@ android_library("chrome_test_java") {
     "//chrome/browser/incognito/interstitial/android:javatests",
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
-    "//chrome/browser/language/android:java_resources",
     "//chrome/browser/offline_pages/android:java",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
