@@ -46,7 +46,6 @@
     <div class="sr-only" role="heading" aria-level="1">
       Emoji Search Results
     </div>
-
     <template is="dom-repeat" items="[[results]]">
       <div class="result">
         <emoji-button
@@ -54,6 +53,11 @@
             variants="[[item.item.alternates]]">
         </emoji-button>
         <div class="name">[[item.item.base.name]]</div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[!results.length]]">
+      <div class="no-result">
+        No results
       </div>
     </template>
 
