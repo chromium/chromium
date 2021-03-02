@@ -13,6 +13,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.LocalDate
 import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -129,12 +131,13 @@ class BuildConfigGenerator extends DefaultTask {
         def dependencyDirectories = []
         def downloadExecutor = Executors.newCachedThreadPool()
         def downloadTasks = []
+        def mergeLicensesDeps = []
         graph.dependencies.values().each { dependency ->
             if (excludeDependency(dependency) || computeJavaGroupForwardingTarget(dependency) != null) {
                 return
             }
             logger.debug "Processing ${dependency.name}: \n${jsonDump(dependency)}"
-            def depDir = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
+            def depDir = computeDepDir(dependency)
             def absoluteDepDir = "${normalisedRepoPath}/${depDir}"
 
             dependencyDirectories.add(depDir)
@@ -173,28 +176,19 @@ class BuildConfigGenerator extends DefaultTask {
             }
 
             if (!skipLicenses) {
-                if (dependency.licensePath?.trim()) {
-                    new File("${absoluteDepDir}/LICENSE").write(
-                            new File("${normalisedRepoPath}/${dependency.licensePath}").text)
-                } else if (dependency.licenseUrl?.trim()) {
-                    File destFile = new File("${absoluteDepDir}/LICENSE")
-                    downloadTasks.add(downloadExecutor.submit {
-                        downloadFile(dependency.id, dependency.licenseUrl, destFile)
-                        if (destFile.text.contains("<html")) {
-                            throw new RuntimeException("Found HTML in LICENSE file. Please add an "
-                                    + "override to ChromiumDepGraph.groovy for ${dependency.id}.")
-                        }
-                    })
-                } else {
-                    getLogger().warn("Missing license for ${dependency.id}.")
-                    getLogger().warn("License Name was: ${dependency.licenseName}")
-                }
+                validateLicenses(dependency)
+                downloadLicenses(dependency, normalisedRepoPath, downloadExecutor, downloadTasks)
+                mergeLicensesDeps.add(dependency)
             }
         }
         downloadExecutor.shutdown()
         // Check for exceptions.
         for (def task : downloadTasks) {
             task.get()
+        }
+
+        mergeLicensesDeps.each { dependency ->
+            mergeLicenses(dependency, normalisedRepoPath)
         }
 
         // 3. Generate the root level build files
@@ -206,6 +200,10 @@ class BuildConfigGenerator extends DefaultTask {
         dependencyDirectories.sort { path1, path2 -> return path1.compareTo(path2) }
         updateReadmeReferenceFile(dependencyDirectories,
                                   "${normalisedRepoPath}/additional_readme_paths.json")
+    }
+
+    private static String computeDepDir(ChromiumDepGraph.DependencyDescription dependency) {
+        return "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
     }
 
     private void updateBuildTargetDeclaration(ChromiumDepGraph depGraph,
@@ -712,15 +710,21 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     static String makeReadme(ChromiumDepGraph.DependencyDescription dependency) {
-        def licenseString
-        // Replace license names with ones that are whitelisted, see third_party/PRESUBMIT.py
-        switch (dependency.licenseName) {
-            case "The Apache Software License, Version 2.0":
-                licenseString = "Apache Version 2.0"
-                break
-            default:
-                licenseString = dependency.licenseName
+        def licenseStrings = []
+        for (ChromiumDepGraph.LicenseSpec license : dependency.licenses) {
+            // Replace license names with ones that are whitelisted, see third_party/PRESUBMIT.py
+            switch (license.name) {
+                case "The Apache Software License, Version 2.0":
+                    licenseStrings.add("Apache Version 2.0")
+                    break
+                case "GNU General Public License, version 2, with the Classpath Exception":
+                    licenseStrings.add("GPL v2 with the classpath exception")
+                    break
+                default:
+                    licenseStrings.add(license.name)
+            }
         }
+        def licenseString = String.join(", ", licenseStrings)
 
         def securityCritical = dependency.supportsAndroid && dependency.isShipped
         def licenseFile = dependency.isShipped? "LICENSE" : "NOT_SHIPPED"
@@ -767,6 +771,66 @@ class BuildConfigGenerator extends DefaultTask {
         """.stripIndent()
 
         return str
+    }
+
+    static void validateLicenses(ChromiumDepGraph.DependencyDescription dependency) {
+        if (dependency.licenses.isEmpty()) {
+            throw new RuntimeException("Missing license for ${dependency.id}.")
+            return
+        }
+
+        for (ChromiumDepGraph.LicenseSpec license : dependency.licenses) {
+            if (!license.path?.trim() && !license.url?.trim()) {
+                def exceptionMessage = "Missing license for ${dependency.id}. "
+                    + "License Name was: ${license.name}"
+                throw new RuntimeException(exceptionMessage)
+            }
+        }
+    }
+
+    static void downloadLicenses(ChromiumDepGraph.DependencyDescription dependency,
+                                 String normalisedRepoPath,
+                                 ExecutorService downloadExecutor,
+                                 List<Future> downloadTasks) {
+        def depDir = normalisedRepoPath +"/" + computeDepDir(dependency)
+        for (int i = 0; i < dependency.licenses.size(); ++i) {
+            def license = dependency.licenses[i]
+            if (!license.path?.trim() && license.url?.trim()) {
+                def destFileSuffix = (dependency.licenses.size() > 1) ? "${i+1}.tmp" : ""
+                def destFile = new File("${depDir}/LICENSE${destFileSuffix}")
+                downloadTasks.add(downloadExecutor.submit {
+                    downloadFile(dependency.id, license.url, destFile)
+                    if (destFile.text.contains("<html")) {
+                        throw new RuntimeException("Found HTML in LICENSE file. Please add an "
+                                + "override to ChromiumDepGraph.groovy for ${dependency.id}.")
+                    }
+                })
+            }
+        }
+    }
+
+    static void mergeLicenses(ChromiumDepGraph.DependencyDescription dependency,
+                              String normalisedRepoPath) {
+        def depDir = computeDepDir(dependency)
+        def outFile = new File("${normalisedRepoPath}/${depDir}/LICENSE")
+
+        if (dependency.licenses.size() == 1) {
+            def licensePath0 = dependency.licenses.get(0).path?.trim()
+            if (licensePath0) {
+                outFile.write(new File("${normalisedRepoPath}/${licensePath0}").text)
+            }
+            return
+        }
+
+        outFile.write("Third-Party Software Licenses\n")
+        for (int i = 0; i < dependency.licenses.size(); ++i) {
+            def licenseSpec = dependency.licenses[i]
+            outFile.append("\n${i+1}. ${licenseSpec.name}\n\n")
+            def licensePath = (licenseSpec.path != null)
+                ? licenseSpec.path.trim()
+                : "${depDir}/LICENSE${i+1}.tmp"
+            outFile.append(new File("${normalisedRepoPath}/${licensePath}").text)
+        }
     }
 
     static String make3ppPb(ChromiumDepGraph.DependencyDescription dependency,

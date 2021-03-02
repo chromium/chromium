@@ -31,6 +31,7 @@ class ChromiumDepGraph {
             url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
         'com_android_tools_desugar_jdk_libs': new PropertyOverride(
             licenseUrl: "https://raw.githubusercontent.com/google/desugar_jdk_libs/master/LICENSE",
+            licenseName: "GNU General Public License, version 2, with the Classpath Exception",
             generateTarget: false),
         'com_android_tools_desugar_jdk_libs_configuration': new PropertyOverride(
             licensePath: "licenses/desugar_jdk_libs_configuration.txt",
@@ -44,7 +45,8 @@ class ChromiumDepGraph {
             licensePath: "licenses/Codehaus_License-2009.txt",
             licenseName: "MIT"),
         'com_github_kevinstern_software_and_algorithms': new PropertyOverride(
-            licenseUrl: "https://raw.githubusercontent.com/KevinStern/software-and-algorithms/master/LICENSE"),
+            licenseUrl: "https://raw.githubusercontent.com/KevinStern/software-and-algorithms/master/LICENSE",
+            licenseName: "MIT License"),
         'com_google_android_datatransport_transport_api': new PropertyOverride(
             description: "Interfaces for data logging in GmsCore SDKs."),
         'com_google_android_datatransport_transport_backend_cct': new PropertyOverride(
@@ -66,14 +68,16 @@ class ChromiumDepGraph {
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
             licenseName: "Apache 2.0"),
         'com_google_code_findbugs_jFormatString': new PropertyOverride(
-            licenseUrl: "https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/licenses/LICENSE.txt"),
+            licenseUrl: "https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/licenses/LICENSE.txt",
+            licenseName: "GNU Lesser Public License"),
         'com_google_code_gson_gson': new PropertyOverride(
             url: "https://github.com/google/gson",
             licenseUrl: "https://raw.githubusercontent.com/google/gson/master/LICENSE",
             licenseName: "Apache 2.0"),
         'com_google_errorprone_error_prone_annotation': new PropertyOverride(
             url: "https://errorprone.info/",
-            licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt"),
+            licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            licenseName: "Apache 2.0"),
         'com_google_errorprone_error_prone_annotations': new PropertyOverride(
             url: "https://errorprone.info/",
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
@@ -256,23 +260,32 @@ class ChromiumDepGraph {
             licenseUrl: "https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt",
             licenseName: "GPL v2 with the classpath exception"),
         'org_ow2_asm_asm': new PropertyOverride(
-            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt"),
+            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt",
+            licenseName: "BSD"),
         'org_ow2_asm_asm_analysis': new PropertyOverride(
-            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt"),
+            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt",
+            licenseName: "BSD"),
         'org_ow2_asm_asm_commons': new PropertyOverride(
-            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt"),
+            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt",
+            licenseName: "BSD"),
         'org_ow2_asm_asm_tree': new PropertyOverride(
-            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt"),
+            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt",
+            licenseName: "BSD"),
         'org_ow2_asm_asm_util': new PropertyOverride(
-            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt"),
+            licenseUrl: "https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt",
+            licenseName: "BSD"),
         'org_pcollections_pcollections': new PropertyOverride(
-            licenseUrl: "https://raw.githubusercontent.com/hrldcpr/pcollections/master/LICENSE"),
+            licenseUrl: "https://raw.githubusercontent.com/hrldcpr/pcollections/master/LICENSE",
+            licenseName: "The MIT License"),
         'org_plumelib_plume_util': new PropertyOverride(
-            licenseUrl: "https://raw.githubusercontent.com/plume-lib/plume-util/master/LICENSE"),
+            licenseUrl: "https://raw.githubusercontent.com/plume-lib/plume-util/master/LICENSE",
+            licenseName: "MIT"),
         'org_plumelib_require_javadoc': new PropertyOverride(
-            licenseUrl: "https://raw.githubusercontent.com/plume-lib/require-javadoc/master/LICENSE"),
+            licenseUrl: "https://raw.githubusercontent.com/plume-lib/require-javadoc/master/LICENSE",
+            licenseName: "MIT"),
         'org_plumelib_reflection_util': new PropertyOverride(
-            licenseUrl: "https://raw.githubusercontent.com/plume-lib/reflection-util/master/LICENSE"),
+            licenseUrl: "https://raw.githubusercontent.com/plume-lib/reflection-util/master/LICENSE",
+            licenseName: "MIT"),
         'org_robolectric_annotations': new PropertyOverride(
             licensePath: "licenses/Codehaus_License-2009.txt",
             licenseName: "MIT"),
@@ -313,6 +326,15 @@ class ChromiumDepGraph {
         'org_robolectric_utils_reflector': new PropertyOverride(
             licensePath: "licenses/Codehaus_License-2009.txt",
             licenseName: "MIT"),
+    ]
+
+    // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some
+    // libraries refer to license templates such as https://opensource.org/licenses/MIT
+    final def LICENSE_OVERRIDES = [
+      'https://developer.android.com/studio/terms.html': 'licenses/Android_SDK_License-December_9_2016.txt',
+      'http://openjdk.java.net/legal/gplv2+ce.html': 'licenses/GNU_v2_with_Classpath_Exception_1991.txt',
+      'http://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web': 'licenses/SIL_Open_Font.txt',
+      'http://www.unicode.org/copyright.html#License': 'licenses/Unicode.txt',
     ]
 
     Project[] projects
@@ -483,10 +505,9 @@ class ChromiumDepGraph {
                                 List<String> childModules) {
         def pom = getPomFromArtifact(artifact.id.componentIdentifier).file
         def pomContent = new XmlSlurper(false, false).parse(pom)
-        String licenseName = ''
-        String licenseUrl = ''
+        def licenses = []
         if (!skipLicenses) {
-            (licenseName, licenseUrl) = resolveLicenseInformation(id, pomContent)
+            licenses = resolveLicenseInformation(id, pomContent)
         }
 
         def fileUrl = getFileUrlFromArtifact(artifact)
@@ -507,9 +528,7 @@ class ChromiumDepGraph {
                 extension: artifact.extension,
                 componentId: artifact.id.componentIdentifier,
                 children: Collections.unmodifiableList(new ArrayList<>(childModules)),
-                licenseName: licenseName,
-                licenseUrl: licenseUrl,
-                licensePath: "",
+                licenses: licenses,
                 directoryName: id.toLowerCase(),
                 fileName: artifact.file.name,
                 fileUrl: fileUrl,
@@ -521,33 +540,58 @@ class ChromiumDepGraph {
         ))
     }
 
-    private customizeDep(DependencyDescription dep) {
+    private void customizeLicenses(DependencyDescription dep,
+                                   PropertyOverride fallbackProperties) {
+        for (LicenseSpec license : dep.licenses) {
+            if (!license.url) {
+                continue
+            }
+            def licenseOverridePath = LICENSE_OVERRIDES[license.url]
+            if (licenseOverridePath) {
+                license.url = ''
+                license.path = licenseOverridePath
+            }
+        }
+
         if (dep.id?.startsWith("com_google_android_")) {
             logger.debug("Using Android license for ${dep.id}")
-            dep.licenseName = "Android Software Development Kit License"
-            dep.licenseUrl = ""
-            // This should match fetch_all._ANDROID_SDK_LICENSE_PATH.
-            dep.licensePath = "licenses/Android_SDK_License-December_9_2016.txt"
+            dep.licenses.clear()
+            dep.licenses.add(new LicenseSpec(
+                name: "Android Software Development Kit License",
+                path: "licenses/Android_SDK_License-December_9_2016.txt"))
+        }
+
+        if (fallbackProperties != null) {
+            if (fallbackProperties.licenseName == null) {
+                if (fallbackProperties.licensePath != null
+                        || fallbackProperties.licenseUrl != null) {
+                    def errorMsg = "PropertyOverride must specify 'licenseName' if either "
+                        + "'licensePath' or licenseUrl' is specified."
+                    throw new IllegalStateException(errorMsg)
+                }
+                return
+            }
+
+            dep.licenses.clear()
+            def license = new LicenseSpec(
+                name : fallbackProperties.licenseName,
+                path: fallbackProperties.licensePath,
+                url: fallbackProperties.licenseUrl,
+            )
+            dep.licenses.add(license)
+        }
+    }
+
+    private customizeDep(DependencyDescription dep) {
+        if (dep.id?.startsWith("com_google_android_")) {
             if (!dep.url) {
                 dep.url = "https://developers.google.com/android/guides/setup"
             }
         } else if (dep.id?.startsWith("com_google_firebase_")) {
-            // Use proper Android license file.
-            if (dep.licenseUrl?.equals("https://developer.android.com/studio/terms.html")) {
-                logger.debug("Using Android license for ${dep.id}")
-                dep.licenseUrl = ""
-                dep.licensePath = "licenses/Android_SDK_License-December_9_2016.txt"
-            }
             // Some firebase dependencies don't set their URL.
             if (!dep.url) {
                 dep.url = "https://firebase.google.com"
             }
-        } else if (dep.licenseUrl?.equals("http://openjdk.java.net/legal/gplv2+ce.html")) {
-            logger.debug("Detected GPL v2 /w classpath license for ${dep.id}")
-            // This avoids using html in a LICENSE file.
-            dep.licenseUrl = ""
-            dep.licenseName = "GPL v2 with the classpath exception"
-            dep.licensePath = "licenses/GNU_v2_with_Classpath_Exception_1991.txt"
         }
 
         def fallbackProperties = PROPERTY_OVERRIDES.get(dep.id)
@@ -555,15 +599,6 @@ class ChromiumDepGraph {
             logger.debug("Using fallback properties for ${dep.id}")
             if (fallbackProperties.description != null) {
               dep.description = fallbackProperties.description
-            }
-            if (fallbackProperties.licenseName != null) {
-              dep.licenseName = fallbackProperties.licenseName
-            }
-            if (fallbackProperties.licenseUrl != null) {
-              dep.licenseUrl = fallbackProperties.licenseUrl
-            }
-            if (fallbackProperties.licensePath != null) {
-                dep.licensePath = fallbackProperties.licensePath
             }
             if (fallbackProperties.url != null) {
                 dep.url = fallbackProperties.url
@@ -580,12 +615,12 @@ class ChromiumDepGraph {
         }
 
         if (skipLicenses) {
-            dep.licenseName = ''
-            dep.licensePath = ''
-            dep.licenseUrl = ''
+            dep.licenses.clear()
             if (dep.id?.endsWith('license')) {
                 dep.exclude = true
             }
+        } else {
+            customizeLicenses(dep, fallbackProperties)
         }
 
         return dep
@@ -593,17 +628,18 @@ class ChromiumDepGraph {
 
     private resolveLicenseInformation(String id, GPathResult pomContent) {
       GPathResult licenses = pomContent?.licenses?.license
-      if (!licenses || licenses.size() == 0) {
-          return ["License Missing Error", ""]
-      } else if (licenses.size() > 1) {
-          def allUrls = ''
-          for (def license : licenses) {
-              allUrls += license.url.text() + " "
-          }
-          return ["Multiple Licenses Error: ${allUrls}", ""]
+      if (!licenses) {
+          return []
       }
 
-      return [licenses[0].name.text(), licenses[0].url.text()]
+      def out = []
+      for (GPathResult license : licenses) {
+          out.add(new LicenseSpec(
+              name: license.name.text(),
+              url: license.url.text()
+          ))
+      }
+      return out
     }
 
     private getFileUrlFromArtifact(ResolvedArtifact artifact) {
@@ -656,7 +692,7 @@ class ChromiumDepGraph {
         String id
         ResolvedArtifact artifact
         String group, name, version, extension, displayName, description, url
-        String licenseName, licenseUrl, licensePath
+        List<LicenseSpec> licenses
         String fileName, fileUrl
         // The local directory name to store the files like artifact, license
         // file, 3pp subdirectory, and etc. Must be lowercase since 3pp uses
@@ -669,6 +705,10 @@ class ChromiumDepGraph {
         ComponentIdentifier componentId
         List<String> children
         String cipdSuffix
+    }
+
+    static class LicenseSpec {
+      String name, url, path
     }
 
     static class PropertyOverride {
