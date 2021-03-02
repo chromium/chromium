@@ -68654,6 +68654,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="POST, reload, link, or other non-cache loads."/>
 </enum>
 
+<enum name="SearchResultExtractorClientStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="No results"/>
+  <int value="2" label="Unexpected URL"/>
+  <int value="3" label="WebContents was gone"/>
+  <int value="4" label="Native was not initialized"/>
+  <int value="5" label="Already extracting"/>
+  <int value="6" label="WebContents had non-SRP URL"/>
+</enum>
+
 <enum name="SearchTemplateURLEvent">
   <summary>
     Events within the TemplateURL system we log, i.e. edge cases.

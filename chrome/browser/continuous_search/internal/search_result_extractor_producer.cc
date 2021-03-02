@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/continuous_search/internal/jni_headers/SearchResultExtractorProducer_jni.h"
 #include "chrome/browser/continuous_search/internal/search_result_category.h"
 #include "chrome/browser/continuous_search/internal/search_result_extractor_producer_interface.h"
@@ -94,6 +95,10 @@ void SearchResultExtractorProducer::OnResultsCallback(
     const std::string& query,
     SearchResultExtractorClientStatus status,
     mojom::CategoryResultsPtr results) {
+  base::UmaHistogramEnumeration(
+      "Browser.ContinuousSearch.SearchResultExtractionStatus", status,
+      SearchResultExtractorClientStatus::kMaxValue);
+
   JNIEnv* env = base::android::AttachCurrentThread();
   if (status != SearchResultExtractorClientStatus::kSuccess) {
     java_interface_->OnError(env, java_ref_, status);
@@ -104,6 +109,8 @@ void SearchResultExtractorProducer::OnResultsCallback(
   for (const mojom::ResultGroupPtr& group : results->groups) {
     result_count += group->results.size();
   }
+  base::UmaHistogramCounts100(
+      "Browser.ContinuousSearch.NumberOfSearchResultsExtracted", result_count);
 
   std::vector<std::string> labels;
   std::vector<int> group_sizes;

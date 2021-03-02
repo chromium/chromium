@@ -86,6 +86,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Browser.ContinuousSearch.NumberOfSearchResultsExtracted"
+    units="count" expires_after="2021-06-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>mahmoudi@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records the number of search results extracted. It is emitted when results
+    for a Google search results page are extracted by the browser when the
+    continuous search mode is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ContinuousSearch.SearchResultExtractionStatus"
+    enum="SearchResultExtractorClientStatus" expires_after="2021-06-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>mahmoudi@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records the status of the search result extraction. It is emitted when
+    results for a Google search results page are extracted by the browser when
+    the continuous search mode is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Browser.DarkModeStatus" enum="DarkModeStatus"
     expires_after="2021-08-29">
   <owner>lgrey@chromium.org</owner>
