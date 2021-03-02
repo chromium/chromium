@@ -3553,15 +3553,14 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
 
   int render_process_id = opener->GetProcess()->GetID();
 
-  SiteInstance* source_site_instance = opener->GetSiteInstance();
+  auto* source_site_instance =
+      static_cast<SiteInstanceImpl*>(opener->GetSiteInstance());
 
-  const GURL source_site_url = source_site_instance->GetSiteURL();
   const std::string& partition_id =
-      GetContentClient()->browser()->GetStoragePartitionIdForSite(
-          GetBrowserContext(), source_site_url);
+      source_site_instance->GetStoragePartitionId();
   {
-    StoragePartition* partition = BrowserContext::GetStoragePartitionForSite(
-        GetBrowserContext(), source_site_url);
+    StoragePartition* partition = BrowserContext::GetStoragePartition(
+        GetBrowserContext(), source_site_instance);
     DOMStorageContextWrapper* dom_storage_context =
         static_cast<DOMStorageContextWrapper*>(
             partition->GetDOMStorageContext());

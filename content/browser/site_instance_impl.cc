@@ -892,6 +892,17 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   has_site_ = true;
   site_info_ = site_info;
 
+  auto storage_partition_id = ComputeStoragePartitionId();
+  if (storage_partition_id_.has_value()) {
+    // Verify that setting `site_info_` did not cause the storage_partition_id
+    // to change from the value that was previously computed.
+    CHECK_EQ(storage_partition_id_.value(), storage_partition_id);
+  } else {
+    // The partition ID was never requested before `site_info` was set so
+    // assign it now.
+    storage_partition_id_ = storage_partition_id;
+  }
+
   // Now that we have a site, register it with the BrowsingInstance.  This
   // ensures that we won't create another SiteInstance for this site within
   // the same BrowsingInstance, because all same-site pages within a
@@ -1231,6 +1242,23 @@ std::string SiteInstanceImpl::GetPartitionDomain(
     return storage_partition_config.partition_domain();
   }
   return storage_partition->GetPartitionDomain();
+}
+
+const std::string& SiteInstanceImpl::GetStoragePartitionId() {
+  if (!storage_partition_id_.has_value()) {
+    // Note: This can get called before `site_info_` is set. This will result
+    // in a partition ID being generated from an empty site URL. This is ok
+    // as long as the ID does not change when `site_info_` is actually set.
+    // There is code in SetSiteInfoInternal() to verify this condition.
+    storage_partition_id_ = ComputeStoragePartitionId();
+  }
+
+  return storage_partition_id_.value();
+}
+
+std::string SiteInstanceImpl::ComputeStoragePartitionId() const {
+  return GetContentClient()->browser()->GetStoragePartitionIdForSite(
+      browsing_instance_->GetBrowserContext(), site_info_.site_url());
 }
 
 bool SiteInstanceImpl::IsOriginalUrlSameSite(

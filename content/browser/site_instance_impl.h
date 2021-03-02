@@ -534,6 +534,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // safe.
   std::string GetPartitionDomain(StoragePartitionImpl* storage_partition);
 
+  // Storage Partition ID to use when associating storage partition namespaces
+  // with this object.
+  const std::string& GetStoragePartitionId();
+
   // Set the web site that this SiteInstance is rendering pages for.
   // This includes the scheme and registered domain, but not the port.  If the
   // URL does not have a valid registered domain, then the full hostname is
@@ -724,6 +728,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // to be handled by this default SiteInstance.
   void AddSiteInfoToDefault(const SiteInfo& site_info);
 
+  // Helper function that asks the embedder to compute a storage partition ID
+  // based on the current `site_info_`.
+  std::string ComputeStoragePartitionId() const;
+
   // Return whether both UrlInfos must share a process to preserve script
   // relationships.  The decision is based on a variety of factors such as
   // the registered domain of the URLs (google.com, bbc.co.uk), the scheme
@@ -816,6 +824,13 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // Contains the state that is only required for default SiteInstances.
   class DefaultSiteInstanceState;
   std::unique_ptr<DefaultSiteInstanceState> default_site_instance_state_;
+
+  // Keeps track of the storage partition ID associated with this object.
+  // It caches the value returned by the embedder so it can ensure consistent
+  // values are returned over the lifetime of this object. This member gets set
+  // by either GetStoragePartitionId() or SetSiteInfoInternal(), whichever is
+  // called first.
+  base::Optional<std::string> storage_partition_id_;
 
   DISALLOW_COPY_AND_ASSIGN(SiteInstanceImpl);
 };

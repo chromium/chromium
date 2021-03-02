@@ -2497,8 +2497,8 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
   if (instance) {
     // TODO(ajwong): When GetDefaultSessionStorageNamespace() goes away, remove
     // this if statement so |instance| must not be null.
-    partition_id = GetContentClient()->browser()->GetStoragePartitionIdForSite(
-        browser_context_, instance->GetSiteURL());
+    partition_id =
+        static_cast<SiteInstanceImpl*>(instance)->GetStoragePartitionId();
   }
 
   // TODO(ajwong): Should this use the |partition_id| directly rather than
