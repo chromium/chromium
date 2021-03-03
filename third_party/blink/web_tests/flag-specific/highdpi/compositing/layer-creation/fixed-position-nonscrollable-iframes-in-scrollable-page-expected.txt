@@ -15,14 +15,50 @@ In all iframes, the green fixed-position element should not be composited.
       "transform": 1
     },
     {
+      "name": "LayoutView #document",
+      "bounds": [225, 225],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 3
+    },
+    {
       "name": "LayoutIFrame (positioned) IFRAME id='iframe2' class='composited'",
       "bounds": [231, 231],
-      "transform": 2
+      "transform": 4
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [225, 225],
+      "transform": 5
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 6
     },
     {
       "name": "LayoutIFrame (positioned) IFRAME id='iframe3'",
       "position": [15, 570],
       "bounds": [231, 231]
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [225, 225],
+      "transform": 7
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 8
     },
     {
       "name": "ContentsLayer for Vertical Scrollbar Layer",
@@ -47,7 +83,65 @@ In all iframes, the green fixed-position element should not be composited.
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
+        [18, 48, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
         [15, 300, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [3, 3, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 573, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "parent": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
       ]
     }
   ]

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Check bounds of inline text boxes after line breaks assert_approx_equals: Line 1 left expected 8 +/- 1 but got 12
+Harness: the test ran to completion.
+

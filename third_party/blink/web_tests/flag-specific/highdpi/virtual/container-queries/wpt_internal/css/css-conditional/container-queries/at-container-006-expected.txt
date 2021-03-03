@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Pseudo-element ::backdrop responds to container size changes assert_equals: expected "rgb(0, 0, 0)" but got "rgb(0, 128, 0)"
+Harness: the test ran to completion.
+

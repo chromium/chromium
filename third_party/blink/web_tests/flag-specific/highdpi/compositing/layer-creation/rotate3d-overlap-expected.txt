@@ -26,6 +26,7 @@
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV class='box')",
       "position": [-7, 173],
       "bounds": [164, 164],
+      "backgroundColor": "#0000FF",
       "transform": 2
     },
     {
@@ -39,6 +40,7 @@
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV class='box')",
       "position": [-7, 173],
       "bounds": [164, 164],
+      "backgroundColor": "#0000FF",
       "transform": 4
     }
   ],

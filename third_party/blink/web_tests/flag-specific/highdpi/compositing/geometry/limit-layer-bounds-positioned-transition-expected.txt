@@ -17,6 +17,7 @@ Text here
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='indicator')",
       "position": [-1201, -32],
       "bounds": [1801, 213],
+      "backgroundColor": "#008000",
       "transform": 1
     }
   ],

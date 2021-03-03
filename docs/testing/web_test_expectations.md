@@ -105,15 +105,25 @@ results from try jobs, by using the command-tool
    [tryserver.blink](https://ci.chromium.org/p/chromium/g/tryserver.blink/builders).
    In addition, this will also trigger the CQ try builders that run blink web tests.
    linux-rel, mac-rel and win10_chromium_x64_rel_ng.
-   Optionally one can choose to trigger only blink try bots alone. 
+   * Optionally one can choose to trigger only blink try bots alone.
    Run the tool with the option -
    `blink_tool.py rebaseline-cl --use-blink-try-bots-only`
+   * If you would like to rebaseline for highdpi, use the flag-specific option.
+   `blink_tool.py rebaseline-cl --flag-specific=highdpi`. This will trigger
+   only the highdpi try builder. Since this is an experimental builder at this time,
+   this will not be triggered with the default or '--use-blink-try-bots-only' options.
+   * If you need to trigger all the builders including highdpi, run the tool with
+   desired options multiple times. There is no need to wait for the builders
+   triggered with default option to finish before triggering the highdpi and vice versa.
 3. Wait for all try jobs to finish.
 4. Run `blink_tool.py rebaseline-cl` again to fetch new baselines.
    By default, this will download new baselines for any failing tests
    in the blink try jobs and CQ try bots.
-   Again, there is an option to use only blink try jobs results for rebaselining. 
+   * Again, there is an option to use only blink try jobs results for rebaselining.
    (Run `blink_tool.py rebaseline-cl --help` for more specific options.)
+   * To rebaseline for highdpi runs -
+   `blink_tool.py rebaseline-cl --flag-specific=highdpi` which will download baselines
+   for any failures in the highdpi run only.
 5. Commit the new baselines and upload a new patch.
 
 This way, the new baselines can be reviewed along with the changes, which helps

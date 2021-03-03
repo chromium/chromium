@@ -1,0 +1,7 @@
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x300
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x300
+    LayoutNGBlockFlow {BODY} at (0,0) size 1200x300
+layer at (0,0) size 1200x0
+  LayoutNGBlockFlow {DIV} at (0,0) size 1200x0 (display-locked)

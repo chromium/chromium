@@ -26,6 +26,7 @@ This tests that squashed layers' offset from renderer is updated properly. If no
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV id='squashed')",
       "position": [-138, -138],
       "bounds": [150, 150],
+      "backgroundColor": "#0000FF",
       "transform": 2
     }
   ],

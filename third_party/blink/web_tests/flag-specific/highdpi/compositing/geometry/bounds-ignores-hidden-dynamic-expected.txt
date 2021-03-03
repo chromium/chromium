@@ -16,6 +16,7 @@
       "position": [15, 15],
       "bounds": [75, 75],
       "contentsOpaque": true,
+      "backgroundColor": "#000000",
       "transform": 1
     }
   ],

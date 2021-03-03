@@ -4,7 +4,7 @@
       "name": "Scrolling Contents Layer",
       "bounds": [3012, 2274],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#008000",
       "invalidations": [
         [12, 12, 3000, 2250]
       ],

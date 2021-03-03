@@ -17,6 +17,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='searchbar'",
       "bounds": [225, 225],
+      "backgroundColor": "#800080",
       "transform": 3
     },
     {

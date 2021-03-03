@@ -18,7 +18,6 @@ Layer tree when the fixed elements are out-of-view (should have just a root laye
       "name": "LayoutNGBlockFlow (positioned) DIV id='fixed2'",
       "contentsOpaque": true,
       "drawsContent": false,
-      "backgroundColor": "#C0C0C0",
       "transform": 2
     },
     {

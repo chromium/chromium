@@ -7,15 +7,9 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGTableCell (relative positioned) TD id='cellToScroll' class='relative'",
+      "name": "LayoutNGTableCellNew (relative positioned) TD id='cellToScroll' class='relative'",
       "bounds": [681, 704],
       "transform": 1
-    },
-    {
-      "name": "Scrolling Contents Layer",
-      "position": [3, 3],
-      "bounds": [1425, 676],
-      "transform": 2
     },
     {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
@@ -34,6 +28,12 @@
       "position": [656, 679],
       "bounds": [22, 22],
       "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [3, 3],
+      "bounds": [1425, 676],
+      "transform": 2
     }
   ],
   "transforms": [

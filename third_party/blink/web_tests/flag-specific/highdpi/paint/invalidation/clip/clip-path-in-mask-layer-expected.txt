@@ -14,6 +14,11 @@
         [0, 0, 300, 300]
       ],
       "transform": 1
+    },
+    {
+      "name": "Synthesized Clip",
+      "bounds": [300, 300],
+      "transform": 1
     }
   ],
   "transforms": [

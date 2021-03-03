@@ -43,12 +43,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 default=False,
                 help='Only download new baselines for tests that are directly '
                 'modified in the CL.'),
-            optparse.make_option(
-                '--no-trigger-jobs',
-                dest='trigger_jobs',
-                action='store_false',
-                default=True,
-                help='Do not trigger any try jobs.'),
+            optparse.make_option('--no-trigger-jobs',
+                                 dest='trigger_jobs',
+                                 action='store_false',
+                                 default=True,
+                                 help='Do not trigger any try jobs.'),
             optparse.make_option(
                 '--fill-missing',
                 dest='fill_missing',
@@ -56,9 +55,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 default=None,
                 help='If some platforms have no try job results, use results '
                 'from try job results of other platforms.'),
-            optparse.make_option(
-                '--no-fill-missing', dest='fill_missing',
-                action='store_false'),
+            optparse.make_option('--no-fill-missing',
+                                 dest='fill_missing',
+                                 action='store_false'),
             optparse.make_option(
                 '--use-blink-try-bots-only',
                 dest='use_blink_try_bots_only',
@@ -79,6 +78,16 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 action='append',
                 help=('Comma-separated-list of builders to pull new baselines '
                       'from (can also be provided multiple times).')),
+            optparse.make_option(
+                '--flag-specific',
+                dest='flag_specific',
+                default=None,
+                action='store',
+                help=('Name of a flag-specific configuration defined in '
+                      'FlagSpecificConfig. This option will rebaseline '
+                      'results for the given FlagSpecificConfig while ignoring results '
+                      'from other builders. Highdpi is the only suported config '
+                      'at this time.')),
             optparse.make_option(
                 '--patchset',
                 default=None,
@@ -109,8 +118,19 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if options.use_blink_try_bots_only:
             self._selected_try_bots = self.selected_try_bots - self.cq_try_bots
 
+        if options.flag_specific and options.flag_specific != "highdpi":
+            _log.error(
+                'Aborted: rebaseline-cl supports only highdpi as flag_specific '
+                'option at this time.')
+            return 1
+
+        if options.flag_specific:
+            _log.info("Running the tool with highdpi builder only.")
+            self._selected_try_bots = self.highdpi_builder
+
         jobs = self.git_cl.latest_try_jobs(
             builder_names=self.selected_try_bots, patchset=options.patchset)
+
         self._log_jobs(jobs)
         builders_with_no_jobs = self.selected_try_bots - {
             b.builder_name
@@ -131,9 +151,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if options.trigger_jobs and builders_with_no_jobs:
             self.trigger_try_jobs(builders_with_no_jobs)
             return 1
-
         jobs_to_results = self._fetch_results(jobs)
-
         builders_with_results = {b.builder_name for b in jobs_to_results}
         builders_without_results = (
             set(self.selected_try_bots) - builders_with_results)
@@ -196,6 +214,12 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
     @property
     def cq_try_bots(self):
         return frozenset(self._tool.builders.all_cq_try_builder_names())
+
+    @property
+    def highdpi_builder(self):
+        return frozenset(
+            self._tool.builders.all_flag_specific_try_builder_names(
+                flag_specific="highdpi"))
 
     def _get_issue_number(self):
         """Returns the current CL issue number, or None."""
@@ -261,13 +285,19 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         """
         results_fetcher = self._tool.results_fetcher
         results = {}
+
         for build, status in jobs.iteritems():
-            if status == TryJobStatus('COMPLETED', 'SUCCESS'):
+            # TODO(crbug.com/1178099): highdpi builder status is always
+            # ('COMPLETED', 'SUCCESS') since it is experimental.
+            # Remove the special case once it is stabilized.
+            if (status == TryJobStatus('COMPLETED', 'SUCCESS')
+                    and 'optional-highdpi' not in build.builder_name):
                 # Builds with passing try jobs are mapped to None, to indicate
                 # that there are no baselines to download.
                 results[build] = None
                 continue
-            if status != TryJobStatus('COMPLETED', 'FAILURE'):
+            if (status != TryJobStatus('COMPLETED', 'FAILURE')
+                    and 'optional-highdpi' not in build.builder_name):
                 # Only completed failed builds will contain actual failed
                 # web tests to download baselines for.
                 continue

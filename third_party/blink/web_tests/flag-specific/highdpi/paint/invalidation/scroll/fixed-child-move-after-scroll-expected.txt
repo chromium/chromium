@@ -8,6 +8,11 @@
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='fixedParent'",
+      "contentsOpaque": true,
+      "drawsContent": false
+    },
+    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='toMove'",
       "bounds": [150, 150],
       "contentsOpaque": true,

@@ -22,6 +22,7 @@ class RebaselineTest(AbstractRebaseliningCommand):
             self.build_number_option,
             self.step_name_option,
             self.results_directory_option,
+            self.flag_specific_option,
         ])
 
     def execute(self, options, args, tool):
@@ -43,16 +44,21 @@ class RebaselineTest(AbstractRebaseliningCommand):
             options.builder)
         test_name = options.test
         for suffix in self._baseline_suffix_list:
-            self._rebaseline_test(
-                port_name, test_name, suffix, results_url,
-                self._tool.builders.is_wpt_builder(options.builder))
+            self._rebaseline_test(port_name,
+                                  test_name,
+                                  suffix,
+                                  results_url,
+                                  self._tool.builders.is_wpt_builder(
+                                      options.builder),
+                                  options=options)
 
     def _rebaseline_test(self,
                          port_name,
                          test_name,
                          suffix,
                          results_url,
-                         is_wpt=False):
+                         is_wpt=False,
+                         options=None):
         """Downloads a baseline file and saves it to the filesystem.
 
         Args:
@@ -63,13 +69,16 @@ class RebaselineTest(AbstractRebaseliningCommand):
                 test name and results_url this determines what file to download.
             results_url: Base URL to download the actual result from.
             is_wpt: (Optional, default to False) Whether this is a WPT builder.
+            options: (Optional, default to None) An object with the command line options.
         """
-        port = self._tool.port_factory.get(port_name)
+        port = self._tool.port_factory.get(port_name, options)
 
         # TODO(crbug.com/1154085): Undo this special case when we have WPT bots
         # on more ports.
         if is_wpt:
             baseline_directory = port.web_tests_dir()
+        elif options and options.flag_specific:
+            baseline_directory = port.baseline_flag_specific_dir()
         else:
             baseline_directory = port.baseline_version_dir()
 

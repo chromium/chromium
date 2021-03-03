@@ -1,0 +1,71 @@
+Tests Input.dispatchMouseEvent method.
+-----Event-----
+type: mousedown
+button: 0
+buttons: 1
+x: 100
+y: 200
+-----Event-----
+type: mousedown
+button: 1
+buttons: 5
+x: 100
+y: 200
+-----Event-----
+type: mouseup
+button: 1
+buttons: 1
+x: 100
+y: 200
+-----Event-----
+type: mouseup
+button: 0
+buttons: 0
+x: 100
+y: 200
+-----Event-----
+type: mousemove
+button: 0
+buttons: 0
+shiftKey
+x: 50
+y: 150
+-----Event-----
+type: mousedown
+button: 2
+buttons: 2
+x: 100
+y: 200
+-----Event-----
+type: contextmenu
+button: 2
+buttons: 2
+x: 100
+y: 200
+-----Event-----
+type: mouseup
+button: 2
+buttons: 0
+x: 100
+y: 200
+-----Event-----
+type: mousedown
+button: 3
+buttons: 8
+x: 100
+y: 200
+-----Event-----
+type: mousedown
+button: 4
+buttons: 24
+x: 100
+y: 200
+-----Event-----
+type: mousewheel
+button: 0
+buttons: 0
+x: 100
+y: 200
+deltaX: 75
+deltaY: 105
+

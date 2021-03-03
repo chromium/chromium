@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Verify that removing a source triggers a proper image load and doesn't result in a crash. assert_unreached: The test failed on fail 1 Reached unreachable code
+Harness: the test ran to completion.
+

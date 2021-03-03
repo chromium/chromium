@@ -1,0 +1,14 @@
+Test for page-break-before:always and page-break-after:always
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+PASS: page number of "firstPage" is 0
+FAIL: expected page number of "secondPage1" is 1. Was 0
+FAIL: expected page number of "secondPage2" is 1. Was 0
+FAIL: expected page number of "thirdPage" is 2. Was 1
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

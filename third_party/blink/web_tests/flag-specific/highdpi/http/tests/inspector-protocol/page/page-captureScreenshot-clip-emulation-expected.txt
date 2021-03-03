@@ -1,0 +1,36 @@
+Tests that screenshot works with clip and emulation
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    dpr : undefined
+    height : 53
+    width : 53
+    x : 0
+    y : 0
+}
+{
+    id : <number>
+    result : {
+        data : iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAAAXNSR0IArs4c6QAAAINJREFUaIHt2kENgDAUBNEtwRRC8IOeVg8KEAI3MFDSTDPv1ONOev0lue9MZhk94A/r+zrKwBmdtJqc+5w/ZRSFURRGURhFYRSFURRGURhFYRSFURRGURhFYRSFURRGURhFYRSFURRGURhFYRSFURRGUUwZ9R0xtjpwRifXliQpM97QPoOLCdpXWLNaAAAAAElFTkSuQmCC
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        data : iVBORw0KGgoAAAANSUhEUgAAAJ8AAACfCAYAAADnGwvgAAAAAXNSR0IArs4c6QAAAcJJREFUeJzt2DEOhDAQBMH1iYfzc98DECktQVXqZILWBl4zew8EfvUAvkt8ZMRHRnxkxEfmuH0514MzeL3z+qni8pERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkREfGfGRER8Z8ZERHxnxkVkze9cj+CaXj4z4yIiPjPjI/AFGwgc7Bd5CFwAAAABJRU5ErkJggg==
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        data : iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAAXNSR0IArs4c6QAAAFhJREFUSInt1jEZgCAUReHz/IhBCwclCEFsYDpNoAkowYSDEzuP6Z4C/3oMWmNCMd0EAE7zlZ4M5WDxVfqECRMmTJgwYcKEjez/xjf7KiUBYHG/phzxulU+D8cMF2fRWSsAAAAASUVORK5CYII=
+    }
+    sessionId : <string>
+}
+

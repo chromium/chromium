@@ -159,5 +159,12 @@
             "Android", "android_weblayer", "android_webview",
             "chrome_android", "Release"],
         "is_try_builder": true
+    },
+    "linux-blink-optional-highdpi-rel": {
+        "master": "tryserver.blink",
+        "port_name": "linux-trusty",
+        "specifiers": ["Trusty", "Release"],
+        "flag_specific": "highdpi",
+        "is_try_builder": true
     }
 }

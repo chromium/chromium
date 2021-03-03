@@ -12,15 +12,6 @@
       "transform": 1
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [428, 1350],
-      "invalidations": [
-        [75, 465, 300, 75],
-        [75, 300, 300, 75]
-      ],
-      "transform": 2
-    },
-    {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
       "position": [0, 578],
       "bounds": [428, 22],
@@ -37,6 +28,15 @@
       "position": [428, 578],
       "bounds": [22, 22],
       "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [428, 1350],
+      "invalidations": [
+        [75, 465, 300, 75],
+        [75, 300, 300, 75]
+      ],
+      "transform": 2
     }
   ],
   "transforms": [

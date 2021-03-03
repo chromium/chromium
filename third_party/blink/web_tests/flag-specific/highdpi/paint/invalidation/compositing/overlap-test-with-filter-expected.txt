@@ -15,7 +15,6 @@
     {
       "name": "LayoutNGBlockFlow BODY",
       "bounds": [426, 126],
-      "backgroundColor": "#FFFF00",
       "transform": 1
     },
     {

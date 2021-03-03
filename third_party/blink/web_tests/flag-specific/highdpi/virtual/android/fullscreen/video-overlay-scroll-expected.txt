@@ -1,0 +1,25 @@
+{
+  "layers": [
+    {
+      "name": "LayoutVideo (positioned) VIDEO id='video'",
+      "bounds": [1200, 900],
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='phase-pre-ready state-no-source sizing-small use-default-poster'",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#333333"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "bounds": [1200, 900],
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGFlexibleBox DIV",
+      "bounds": [1200, 900]
+    }
+  ]
+}
+

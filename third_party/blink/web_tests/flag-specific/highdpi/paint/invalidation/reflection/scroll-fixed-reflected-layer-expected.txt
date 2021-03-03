@@ -11,6 +11,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='reflected fixed'",
       "bounds": [150, 150],
       "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
       "invalidations": [
         [0, 0, 150, 150]
       ],

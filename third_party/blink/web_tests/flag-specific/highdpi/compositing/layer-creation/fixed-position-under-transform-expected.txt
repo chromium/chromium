@@ -11,6 +11,7 @@
       "name": "LayoutNGBlockFlow DIV id='transform'",
       "position": [150, 150],
       "bounds": [384, 384],
+      "backgroundColor": "#FF0000",
       "transform": 3
     },
     {

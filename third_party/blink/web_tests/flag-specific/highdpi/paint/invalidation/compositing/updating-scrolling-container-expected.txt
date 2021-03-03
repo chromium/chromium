@@ -15,12 +15,6 @@
       "transform": 1
     },
     {
-      "name": "Scrolling Contents Layer",
-      "position": [8, 8],
-      "bounds": [600, 600],
-      "transform": 1
-    },
-    {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
       "position": [7, 286],
       "bounds": [278, 22],
@@ -36,6 +30,12 @@
       "name": "Scroll Corner Layer",
       "position": [285, 285],
       "bounds": [22, 22],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [8, 8],
+      "bounds": [600, 600],
       "transform": 1
     }
   ],

@@ -7,24 +7,50 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutTableRow TR",
-      "position": [12, 27],
+      "name": "LayoutNGTableRow TR",
       "drawsContent": false,
-      "backgroundColor": "#0000FF"
+      "transform": 1
     },
     {
-      "name": "LayoutTableRow TR",
-      "position": [12, 42],
-      "bounds": [351, 153],
-      "backgroundColor": "#0000FF"
+      "name": "LayoutNGTableRow TR",
+      "bounds": [321, 153],
+      "transform": 2
     },
     {
-      "name": "LayoutTableRow TR class='shadow-inset'",
-      "position": [12, 210],
-      "bounds": [351, 153],
-      "backgroundColor": "#0000FF",
+      "name": "LayoutNGTableRow TR class='shadow-inset'",
+      "bounds": [321, 153],
       "invalidations": [
-        [15, 0, 153, 153]
+        [0, 0, 153, 153]
+      ],
+      "transform": 3
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 27, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 42, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 210, 0, 1]
       ]
     }
   ]

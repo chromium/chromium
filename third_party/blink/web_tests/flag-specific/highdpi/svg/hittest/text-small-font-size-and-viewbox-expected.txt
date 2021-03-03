@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Hit-test of text with fractional (< 1) font-size and small (high scalefactor) viewBox assert_equals: 2,85 expected Element node <a xlink:href="#">ABCDEFGH</a> but got Element node <svg viewBox="0 0 22 28" font-family="Ahem" font-size="0....
+Harness: the test ran to completion.
+

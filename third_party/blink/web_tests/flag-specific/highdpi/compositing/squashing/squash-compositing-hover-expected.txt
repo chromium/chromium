@@ -144,6 +144,7 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
       "position": [120, 120],
       "bounds": [150, 150],
+      "backgroundColor": "#00FF00",
       "transform": 2
     },
     {
@@ -157,6 +158,7 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top')",
       "position": [120, 120],
       "bounds": [150, 150],
+      "backgroundColor": "#00FFFF",
       "transform": 3
     }
   ],

@@ -1,0 +1,27 @@
+This should be covered by a green overlay.
+
+A single square should be visible covered by a green overlay.
+
+This test ensures that transforming a non-fast scrollable area correctly updates list of non-fast scrollable rects (See http://crbug.com/417345).
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS nonFastScrollableRects.length is 1
+FAIL rectToString(nonFastScrollableRects[0]) should be [0, 0, 222, 222]. Was [0, 0, 333, 333].
+Trigger style update
+PASS internals.updateStyleAndReturnAffectedElementCount() is 1
+Verifying layout hasn't been triggered
+PASS internals.needsLayoutCount() is 3
+Update non-fast element's transform
+Trigger style update
+PASS internals.updateStyleAndReturnAffectedElementCount() is 1
+Verifying layout still hasn't been triggered
+PASS internals.needsLayoutCount() is 3
+Verifying non-fast regions have been updated
+PASS nonFastScrollableRects.length is 1
+FAIL rectToString(nonFastScrollableRects[0]) should be [110, 10, 222, 222]. Was [165, 15, 333, 333].
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+

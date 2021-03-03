@@ -25,16 +25,16 @@ scroll me
       "transform": 2
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [278, 600],
-      "backgroundColor": "#FFFF0080",
-      "transform": 3
-    },
-    {
       "name": "ContentsLayer for Vertical Scrollbar Layer",
       "position": [278, 0],
       "bounds": [22, 300],
       "transform": 2
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [278, 600],
+      "backgroundColor": "#FFFF0080",
+      "transform": 3
     }
   ],
   "transforms": [

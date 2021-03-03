@@ -8,7 +8,7 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='outer A'",
-      "position": [-32, -32],
+      "position": [-31, -31],
       "bounds": [528, 441],
       "transform": 1
     },
@@ -20,10 +20,10 @@
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [8, 8],
+      "position": [7, 7],
       "bounds": [330, 354],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#DDDDDD",
       "transform": 2
     },
     {
@@ -34,7 +34,7 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='outer B'",
-      "position": [-31, -32],
+      "position": [-31, -31],
       "bounds": [528, 441],
       "transform": 3
     },
@@ -46,10 +46,10 @@
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [7, 8],
+      "position": [7, 7],
       "bounds": [330, 354],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#DDDDDD",
       "transform": 4
     },
     {
@@ -60,7 +60,7 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='outer C'",
-      "position": [-32, -31],
+      "position": [-31, -31],
       "bounds": [528, 441],
       "transform": 5
     },
@@ -72,10 +72,10 @@
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [7, 8],
+      "position": [8, 8],
       "bounds": [330, 354],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#DDDDDD",
       "transform": 6
     },
     {
@@ -101,7 +101,7 @@
       "position": [8, 8],
       "bounds": [330, 354],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#DDDDDD",
       "transform": 8
     },
     {
@@ -128,7 +128,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [61, 61, 0, 1]
+        [62, 62, 0, 1]
       ]
     },
     {
@@ -147,7 +147,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [62, 61, 0, 1]
+        [62, 62, 0, 1]
       ]
     },
     {

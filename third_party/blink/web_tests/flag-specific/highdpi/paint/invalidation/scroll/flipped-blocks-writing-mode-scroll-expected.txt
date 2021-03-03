@@ -12,17 +12,18 @@
       "transform": 1
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [15000, 578],
-      "invalidations": [
-        [0, 0, 15000, 300]
-      ],
-      "transform": 1
-    },
-    {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
       "position": [0, 578],
       "bounds": [600, 22],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [15000, 578],
+      "backgroundColor": "#008000",
+      "invalidations": [
+        [0, 0, 15000, 300]
+      ],
       "transform": 1
     }
   ],

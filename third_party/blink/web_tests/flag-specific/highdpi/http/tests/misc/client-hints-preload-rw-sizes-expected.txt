@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Client-Hints sent with the right Width value Accept-CH header is present assert_not_equals: got disallowed value 0
+Harness: the test ran to completion.
+

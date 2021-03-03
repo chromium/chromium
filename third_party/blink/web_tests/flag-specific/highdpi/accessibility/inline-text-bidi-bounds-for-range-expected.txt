@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Tests that we can compute the bounds of a range of text from the accessibility tree in bidirectional text. assert_approx_equals: expected 8 +/- 2 but got 12
+Harness: the test ran to completion.
+

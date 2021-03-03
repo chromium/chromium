@@ -10,7 +10,7 @@
       "name": "LayoutView #document",
       "bounds": [600, 600],
       "contentsOpaqueForText": true,
-      "backgroundColor": "#FF0000"
+      "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='positioned layer'",

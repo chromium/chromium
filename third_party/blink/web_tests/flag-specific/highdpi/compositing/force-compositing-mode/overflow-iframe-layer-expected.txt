@@ -9,6 +9,7 @@
     {
       "name": "Scrolling Contents Layer",
       "bounds": [762, 774],
+      "backgroundColor": "#0000FF",
       "transform": 1
     },
     {

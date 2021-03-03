@@ -9,7 +9,6 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
       "bounds": [21, 21],
-      "backgroundColor": "#FF0000",
       "invalidations": [
         [0, 0, 21, 21]
       ],

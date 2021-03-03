@@ -1,0 +1,46 @@
+crbug.com/99124: Table rows shouldn't straddle page boundaries.
+
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+Text Text Text
+Text Text	Text Text Text
+Text Text
+FAIL:
+Expected 464 for clientTop+offsetTop, but got 379, clientTop: 1, + offsetTop: 378. 
+
+<td class="td" data-total-y="464">Text Text Text <br> Text Text</td>
+FAIL:
+Expected 211 for clientTop+offsetTop, but got 169, clientTop: 1, + offsetTop: 168. 
+
+<td class="td" data-total-y="211">Text Text Text <br> Text Text</td>

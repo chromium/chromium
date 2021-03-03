@@ -18,6 +18,7 @@
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='containerOverlapsComposited')",
       "position": [18, 18],
       "bounds": [150, 45000],
+      "backgroundColor": "#008000",
       "transform": 2
     },
     {

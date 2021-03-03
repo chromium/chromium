@@ -14,6 +14,7 @@
     {
       "name": "Scrolling Contents Layer",
       "bounds": [1500, 1500],
+      "backgroundColor": "#C0C0C0",
       "transform": 1
     },
     {

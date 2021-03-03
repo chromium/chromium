@@ -12,6 +12,12 @@
       "transform": 1
     },
     {
+      "name": "Scroll Corner Layer",
+      "position": [431, 206],
+      "bounds": [22, 22],
+      "transform": 1
+    },
+    {
       "name": "Scrolling Contents Layer",
       "bounds": [428, 345],
       "contentsOpaqueForText": true,
@@ -30,12 +36,6 @@
       "position": [428, 0],
       "bounds": [22, 225],
       "transform": 2
-    },
-    {
-      "name": "Scroll Corner Layer",
-      "position": [431, 206],
-      "bounds": [22, 22],
-      "transform": 1
     }
   ],
   "transforms": [

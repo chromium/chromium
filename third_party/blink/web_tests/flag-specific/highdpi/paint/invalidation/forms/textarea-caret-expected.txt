@@ -6,15 +6,31 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [12, 12, 264, 53]
+        [12, 12, 271, 53]
       ]
     },
     {
-      "name": "LayoutTextControl TEXTAREA id='editor'",
+      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [-2, -2],
-      "bounds": [268, 57],
+      "bounds": [275, 57],
+      "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [0, 0, 268, 57]
+        [0, 0, 275, 57]
+      ],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [1, 30],
+      "bounds": [246, 22],
+      "transform": 1
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [247, 29],
+      "bounds": [22, 22],
+      "invalidations": [
+        [0, 0, 22, 22]
       ],
       "transform": 1
     },
@@ -29,26 +45,11 @@
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
-      "position": [1, 30],
-      "bounds": [239, 22],
-      "transform": 1
-    },
-    {
-      "name": "Scroll Corner Layer",
-      "position": [240, 29],
-      "bounds": [22, 22],
-      "invalidations": [
-        [0, 0, 22, 22]
-      ],
-      "transform": 1
-    },
-    {
       "name": "Decoration Layer",
       "position": [-2, -2],
-      "bounds": [268, 57],
+      "bounds": [275, 57],
       "invalidations": [
-        [0, 0, 268, 57]
+        [0, 0, 275, 57]
       ],
       "transform": 1
     }
@@ -70,7 +71,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [-462, 0, 0, 1]
+        [-455, 0, 0, 1]
       ]
     }
   ]

@@ -11,10 +11,6 @@
       "bounds": [480, 510]
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [458, 1836]
-    },
-    {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
       "position": [0, 488],
       "bounds": [458, 22]
@@ -28,6 +24,11 @@
       "name": "Scroll Corner Layer",
       "position": [458, 488],
       "bounds": [22, 22]
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [458, 1836],
+      "backgroundColor": "#C0C0C0"
     }
   ]
 }

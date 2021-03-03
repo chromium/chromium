@@ -12,6 +12,7 @@ Hi!
       "position": [-540, -135],
       "bounds": [540, 135],
       "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
       "transform": 1
     },
     {

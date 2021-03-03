@@ -12,7 +12,7 @@ Test CSS clip with composited layers. Left and right sides should look the same.
       "name": "LayoutNGBlockFlow (positioned) DIV class='composited box'",
       "position": [-7, -7],
       "bounds": [165, 165],
-      "backgroundColor": "#808080",
+      "backgroundColor": "#666666",
       "transform": 2
     },
     {

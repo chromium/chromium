@@ -10,12 +10,12 @@
       ]
     },
     {
-      "name": "LayoutNGTableCell TD",
+      "name": "LayoutNGTableCellNew TD",
       "bounds": [88, 96],
       "transform": 1
     },
     {
-      "name": "LayoutNGTableCell TD",
+      "name": "LayoutNGTableCellNew TD",
       "bounds": [88, 96],
       "transform": 2
     }

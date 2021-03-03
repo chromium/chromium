@@ -10,7 +10,8 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
       "bounds": [150, 150],
-      "contentsOpaque": true
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
     },
     {
       "name": "ContentsLayer for Vertical Scrollbar Layer",

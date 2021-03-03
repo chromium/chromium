@@ -18,6 +18,7 @@ CASE 1, original layer tree
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top')",
       "position": [120, 120],
       "bounds": [150, 150],
+      "backgroundColor": "#00FFFF",
       "transform": 1
     }
   ],
@@ -54,6 +55,7 @@ CASE 2, change color of "inner" to red
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top')",
       "position": [120, 120],
       "bounds": [150, 150],
+      "backgroundColor": "#00FFFF",
       "invalidations": [
         [15, 15, 75, 75]
       ],

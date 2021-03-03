@@ -1,0 +1,41 @@
+Tests that form controls are rendered with correct theme. See crbug.com/591315.
+Emulating device: 800x600x1
+Loading page with viewport=none
+Device:
+window.screenX = 0px
+window.screenY = 0px
+Viewport: = ?none
+@media orientation = landscape
+window.orientation = 0
+@media resolution = 96dpi
+@media device-pixel-ratio = 1.0000000298023224
+window.devicePixelRatio = 1.0000000298023224
+Widths:
+@media device-width = 800px
+screen.width = 800px
+screen.availWidth = 800px
+window.outerWidth = 800px
+window.innerWidth = 980px
+@media width = 980px
+doc.docElem.clientWidth = 980px
+doc.docElem.offsetWidth = 980px
+doc.docElem.scrollWidth = 980px
+doc.body.clientWidth = 980px
+doc.body.offsetWidth = 980px
+doc.body.scrollWidth = 980px
+Heights:
+@media device-height = 600px
+screen.height = 600px
+screen.availHeight = 600px
+window.outerHeight = 600px
+window.innerHeight = 735px
+@media height = ???
+doc.docElem.clientHeight = 1000px
+doc.docElem.offsetHeight = 1000px
+doc.docElem.scrollHeight = 1000px
+doc.body.clientHeight = 735px
+doc.body.offsetHeight = 1000px
+doc.body.scrollHeight = 1000px
+measured radio: 13x13
+measured checkbox: 13x13
+

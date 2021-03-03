@@ -8,8 +8,7 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV class='composited container-box'",
-      "position": [-42, -42],
-      "bounds": [234, 234],
+      "bounds": [150, 150],
       "transform": 1
     },
     {

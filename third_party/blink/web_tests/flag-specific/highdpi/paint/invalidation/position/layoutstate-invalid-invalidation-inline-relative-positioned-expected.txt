@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF",
       "invalidations": [
         [12, 330, 150, 150],
-        [12, 300, 150, 150]
+        [12, 300, 150, 30]
       ]
     }
   ]

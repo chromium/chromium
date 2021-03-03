@@ -13,6 +13,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='scrollpanel'",
       "bounds": [150, 150],
+      "backgroundColor": "#FF0000",
       "invalidations": [
         [0, 0, 150, 150]
       ],

@@ -285,11 +285,13 @@ class TestRebaseline(BaseTestCase):
     @staticmethod
     def options(**kwargs):
         return optparse.Values(
-            dict({
-                'optimize': True,
-                'verbose': True,
-                'results_directory': None
-            }, **kwargs))
+            dict(
+                {
+                    'optimize': True,
+                    'verbose': True,
+                    'results_directory': None,
+                    'flag_specific': None
+                }, **kwargs))
 
     def test_rebaseline_test_passes_on_all_builders(self):
         self.tool.results_fetcher.set_results(
@@ -550,7 +552,8 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
         return optparse.Values({
             'optimize': False,
             'verbose': True,
-            'results_directory': None
+            'results_directory': None,
+            'flag_specific': None
         })
 
     # In the following test cases, we use a mock rebaseline-test-internal to
@@ -906,7 +909,8 @@ class TestRebaselineExecute(BaseTestCase):
             'optimize': False,
             'builders': None,
             'suffixes': 'txt,png',
-            'verbose': True
+            'verbose': True,
+            'flag_specific': None
         })
 
     def test_rebaseline(self):

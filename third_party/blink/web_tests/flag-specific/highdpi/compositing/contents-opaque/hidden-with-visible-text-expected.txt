@@ -10,7 +10,6 @@ Caption
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='caption'",
       "bounds": [300, 150],
-      "backgroundColor": "#008000",
       "transform": 1
     }
   ],

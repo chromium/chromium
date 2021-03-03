@@ -17,15 +17,24 @@ Even though we can opt-out of fixed-position compositing for unscrollable fixed-
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
-      "position": [15, 150],
       "bounds": [150, 150],
       "contentsOpaque": true,
-      "backgroundColor": "#00FF00"
+      "backgroundColor": "#00FF00",
+      "transform": 2
     }
   ],
   "transforms": [
     {
       "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 150, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

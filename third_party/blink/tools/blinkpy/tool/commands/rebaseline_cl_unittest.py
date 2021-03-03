@@ -26,12 +26,19 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
     def setUp(self):
         BaseTestCase.setUp(self)
         LoggingTestCase.setUp(self)
-
+        self.maxDiff = None
         builds = {
-            Build('MOCK Try Win', 5000): TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Mac', 4000): TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Linux', 6000): TryJobStatus(
-                'COMPLETED', 'FAILURE'),
+            Build('MOCK Try Win', 5000):
+            TryJobStatus('COMPLETED', 'FAILURE'),
+            Build('MOCK Try Mac', 4000):
+            TryJobStatus('COMPLETED', 'FAILURE'),
+            Build('MOCK Try Linux', 6000):
+            TryJobStatus('COMPLETED', 'FAILURE'),
+            # Test the special case for experimental builders
+            # Highdpi is an experimental builder whose status
+            # is returned as ('COMPLETED', 'SUCCESS') even with failures.
+            Build('MOCK Try Highdpi', 8000):
+            TryJobStatus('COMPLETED', 'SUCCESS'),
         }
 
         self.command.git_cl = MockGitCL(self.tool, builds)
@@ -58,6 +65,11 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'port_name': 'test-mac-mac10.11',
                 'specifiers': ['Mac10.11', 'Release'],
                 'is_try_builder': True,
+            },
+            'MOCK Try Highdpi': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['trusty', 'Release'],
+                "flag_specific": "highdpi",
             },
         })
         web_test_results = WebTestResults({
@@ -183,7 +195,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'verbose': False,
             'builders': [],
             'patchset': None,
-            'use_blink_try_bots_only': False
+            'use_blink_try_bots_only': False,
+            'flag_specific': None
         }
         options.update(kwargs)
         return optparse.Values(dict(**options))
@@ -422,6 +435,20 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: Rebaselining two/image-fail.html\n',
         ])
 
+    def test_execute_with_flag_specific_experimental(self):
+        exit_code = self.command.execute(
+            self.command_options(flag_specific='highdpi'), [], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: Running the tool with highdpi builder only.\n',
+            'INFO: Finished try jobs found for all try bots.\n',
+            'INFO: Rebaselining one/flaky-fail.html\n',
+            'INFO: Rebaselining one/missing.html\n',
+            'INFO: Rebaselining one/slow-fail.html\n',
+            'INFO: Rebaselining one/text-fail.html\n',
+            'INFO: Rebaselining two/image-fail.html\n',
+        ])
+
     def test_rebaseline_command_invocations(self):
         """Tests the list of commands that are called for rebaselining."""
         # First write test contents to the mock filesystem so that
@@ -520,7 +547,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
              'MOCK_Try_Win/5000/blink_web_tests%20%28with%20patch%29/layout-test-results/results.html\n'
              ), 'INFO: There are some builders with no results:\n',
             'INFO:   MOCK Try Win\n', 'INFO: For one/flaky-fail.html:\n',
-            'INFO: Using "MOCK Try Linux" build 6000 for test-win-win7.\n',
+            'INFO: Using "MOCK Try Highdpi" build 8000 for test-win-win7.\n',
             'INFO: Rebaselining one/flaky-fail.html\n'
         ])
 

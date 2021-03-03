@@ -1,0 +1,557 @@
+Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of document coordinates.
+{
+    computedStyles : [
+    ]
+    domNodes : [
+        [0] : {
+            backendNodeId : <number>
+            baseURL : <string>
+            childNodeIndexes : [
+                [0] : 1
+            ]
+            documentEncoding : windows-1252
+            documentURL : <string>
+            frameId : <string>
+            layoutNodeIndex : 0
+            nodeName : #document
+            nodeType : 9
+            nodeValue : 
+            scrollOffsetX : 0
+            scrollOffsetY : 2421
+        }
+        [1] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 2
+                [1] : 8
+            ]
+            frameId : <string>
+            layoutNodeIndex : 1
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+        [2] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 3
+                [1] : 5
+                [2] : 6
+                [3] : 7
+            ]
+            nodeName : HEAD
+            nodeType : 1
+            nodeValue : 
+        }
+        [3] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 4
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [4] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      * {       margin: 0;       padding: 0;       font: 10px Ahem;     }   
+        }
+        [5] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [6] : {
+            attributes : [
+                [0] : {
+                    name : src
+                    value : ../../resources/ahem.js
+                }
+            ]
+            backendNodeId : <number>
+            nodeName : SCRIPT
+            nodeType : 1
+            nodeValue : 
+        }
+        [7] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [8] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 9
+                [1] : 10
+                [2] : 12
+                [3] : 13
+                [4] : 15
+                [5] : 16
+                [6] : 33
+            ]
+            layoutNodeIndex : 2
+            nodeName : BODY
+            nodeType : 1
+            nodeValue : 
+        }
+        [9] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [10] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : height:2000px;
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 11
+            ]
+            layoutNodeIndex : 3
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [11] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 4
+            nodeName : #text
+            nodeType : 3
+            nodeValue : main frame content
+        }
+        [12] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [13] : {
+            attributes : [
+                [0] : {
+                    name : id
+                    value : fragment
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 14
+            ]
+            layoutNodeIndex : 5
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [14] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 6
+            nodeName : #text
+            nodeType : 3
+            nodeValue : main frame fragment
+        }
+        [15] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [16] : {
+            attributes : [
+                [0] : {
+                    name : src
+                    value : dom-snapshot-scroll-offset-iframe.html#fragment
+                }
+                [1] : {
+                    name : width
+                    value : 300
+                }
+                [2] : {
+                    name : height
+                    value : 200
+                }
+            ]
+            backendNodeId : <number>
+            contentDocumentIndex : 17
+            frameId : <string>
+            layoutNodeIndex : 7
+            nodeName : IFRAME
+            nodeType : 1
+            nodeValue : 
+        }
+        [17] : {
+            backendNodeId : <number>
+            baseURL : <string>
+            childNodeIndexes : [
+                [0] : 18
+            ]
+            documentEncoding : windows-1252
+            documentURL : <string>
+            frameId : <string>
+            layoutNodeIndex : 8
+            nodeName : #document
+            nodeType : 9
+            nodeValue : 
+            scrollOffsetX : 0
+            scrollOffsetY : 465
+        }
+        [18] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 19
+                [1] : 25
+            ]
+            frameId : <string>
+            layoutNodeIndex : 9
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+        [19] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 20
+                [1] : 22
+                [2] : 23
+                [3] : 24
+            ]
+            nodeName : HEAD
+            nodeType : 1
+            nodeValue : 
+        }
+        [20] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 21
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [21] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      * {       margin: 0;       padding: 0;       font: 10px Ahem;     }   
+        }
+        [22] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [23] : {
+            attributes : [
+                [0] : {
+                    name : src
+                    value : ../../resources/ahem.js
+                }
+            ]
+            backendNodeId : <number>
+            nodeName : SCRIPT
+            nodeType : 1
+            nodeValue : 
+        }
+        [24] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [25] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 26
+                [1] : 27
+                [2] : 29
+                [3] : 30
+                [4] : 32
+            ]
+            layoutNodeIndex : 10
+            nodeName : BODY
+            nodeType : 1
+            nodeValue : 
+        }
+        [26] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [27] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : height:500px;
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 28
+            ]
+            layoutNodeIndex : 11
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [28] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 12
+            nodeName : #text
+            nodeType : 3
+            nodeValue : iframe content
+        }
+        [29] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [30] : {
+            attributes : [
+                [0] : {
+                    name : id
+                    value : fragment
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 31
+            ]
+            layoutNodeIndex : 13
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [31] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 14
+            nodeName : #text
+            nodeType : 3
+            nodeValue : iframe fragment
+        }
+        [32] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [33] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 15
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+    ]
+    layoutTreeNodes : [
+        [0] : {
+            boundingBox : {
+                height : 900
+                width : 1200
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 0
+            isStackingContext : true
+        }
+        [1] : {
+            boundingBox : {
+                height : 3321
+                width : 1178
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 1
+            isStackingContext : true
+        }
+        [2] : {
+            boundingBox : {
+                height : 3321
+                width : 1178
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 8
+        }
+        [3] : {
+            boundingBox : {
+                height : 3000
+                width : 1178
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 10
+        }
+        [4] : {
+            boundingBox : {
+                height : 15
+                width : 270
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 11
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 270
+                        x : 0
+                        y : 0
+                    }
+                    numCharacters : 18
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : main frame content
+        }
+        [5] : {
+            boundingBox : {
+                height : 15
+                width : 1178
+                x : 0
+                y : 3000
+            }
+            domNodeIndex : 13
+        }
+        [6] : {
+            boundingBox : {
+                height : 15
+                width : 285
+                x : 0
+                y : 3000
+            }
+            domNodeIndex : 14
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 285
+                        x : 0
+                        y : 3000
+                    }
+                    numCharacters : 19
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : main frame fragment
+        }
+        [7] : {
+            boundingBox : {
+                height : 306
+                width : 456
+                x : 0
+                y : 3015
+            }
+            domNodeIndex : 16
+        }
+        [8] : {
+            boundingBox : {
+                height : 300
+                width : 450
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 17
+            isStackingContext : true
+        }
+        [9] : {
+            boundingBox : {
+                height : 765
+                width : 428
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 18
+            isStackingContext : true
+        }
+        [10] : {
+            boundingBox : {
+                height : 765
+                width : 428
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 25
+        }
+        [11] : {
+            boundingBox : {
+                height : 750
+                width : 428
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 27
+        }
+        [12] : {
+            boundingBox : {
+                height : 15
+                width : 210
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 28
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 210
+                        x : 0
+                        y : 0
+                    }
+                    numCharacters : 14
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : iframe content
+        }
+        [13] : {
+            boundingBox : {
+                height : 15
+                width : 428
+                x : 0
+                y : 750
+            }
+            domNodeIndex : 30
+        }
+        [14] : {
+            boundingBox : {
+                height : 15
+                width : 225
+                x : 0
+                y : 750
+            }
+            domNodeIndex : 31
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 225
+                        x : 0
+                        y : 750
+                    }
+                    numCharacters : 15
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : iframe fragment
+        }
+        [15] : {
+            boundingBox : {
+                height : 0
+                width : 0
+                x : 0
+                y : 2421
+            }
+            domNodeIndex : 33
+            layoutText :      
+        }
+    ]
+}
+

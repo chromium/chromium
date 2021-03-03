@@ -11,12 +11,14 @@
       "position": [-600, 0],
       "bounds": [384, 384],
       "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
       "transform": 1
     },
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='green')",
       "position": [-600, 0],
       "bounds": [450, 450],
+      "backgroundColor": "#008000",
       "transform": 1
     }
   ],

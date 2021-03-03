@@ -11,7 +11,7 @@
       "position": [22, 0],
       "bounds": [1500, 1500],
       "contentsOpaqueForText": true,
-      "backgroundColor": "#FF0000",
+      "backgroundColor": "#FFFFFF",
       "transform": 1
     },
     {

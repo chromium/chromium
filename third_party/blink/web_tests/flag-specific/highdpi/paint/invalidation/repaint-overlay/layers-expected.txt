@@ -22,16 +22,6 @@
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
-      "bounds": [300, 300],
-      "contentsOpaque": true,
-      "backgroundColor": "#FFFF00",
-      "invalidations": [
-        [30, 30, 15, 15]
-      ],
-      "transform": 6
-    },
-    {
       "name": "Horizontal Scrollbar Layer",
       "position": [1, 452],
       "bounds": [450, 0],
@@ -42,6 +32,16 @@
       "position": [452, 1],
       "bounds": [0, 450],
       "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
+      "bounds": [300, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
+      "invalidations": [
+        [30, 30, 15, 15]
+      ],
+      "transform": 6
     },
     {
       "name": "Vertical Scrollbar Layer",

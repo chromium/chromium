@@ -560,8 +560,8 @@ test is being re-baselined.
 
 ### Rebaselining flag-specific expectations
 
-Though we prefer the Rebaseline Tool to local rebaselining, the Rebaseline Tool
-doesn't support rebaselining flag-specific expectations.
+Though we prefer the [Rebaseline Tool](./web_test_expectations.md#How-to-rebaseline) to local rebaselining, the Rebaseline Tool
+doesn't support rebaselining flag-specific expectations except highdpi.
 
 ```bash
 third_party/blink/tools/run_web_tests.py --additional-driver-flag=--enable-flag --reset-results foo/bar/test.html

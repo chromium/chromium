@@ -9,7 +9,7 @@
     {
       "name": "LayoutInline (relative positioned) SPAN",
       "position": [12, 12],
-      "bounds": [300, 150]
+      "drawsContent": false
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) (floating) DIV id='float'",

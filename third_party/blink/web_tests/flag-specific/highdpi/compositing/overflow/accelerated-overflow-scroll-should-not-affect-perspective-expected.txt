@@ -12,20 +12,6 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='child first'",
-      "bounds": [90, 300],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 4
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='child second'",
-      "bounds": [90, 300],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
-      "transform": 6
-    },
-    {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
       "position": [0, 278],
       "bounds": [278, 22],
@@ -42,6 +28,20 @@
       "position": [278, 278],
       "bounds": [22, 22],
       "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='child first'",
+      "bounds": [90, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='child second'",
+      "bounds": [90, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 6
     }
   ],
   "transforms": [
