@@ -1290,7 +1290,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <message name="IDS_TOS_NOTIFICATION_TITLE" desc="The title of the notification that informs the user that a term of service change is coming." formatter_data="android_java">
-        Chrome’s Terms of Service are changing March 31
+        Chrome's Terms of Service are changing March 31
       </message>
       <message name="IDS_TOS_NOTIFICATION_BODY_TEXT" desc="The body text of the notification that informs the user that a term of service change is coming." formatter_data="android_java">
         Please review the new terms
@@ -5421,13 +5421,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
        Type a valid URL
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_CANT_CREATE" desc="A catchall error message for when the shortcut cannot be created. (On the New Tab Page)">
-       Can’t create shortcut
+       Can't create shortcut
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_CANT_EDIT" desc="A catchall error message for when the shortcut cannot be edited. (On the New Tab Page)">
-       Can’t edit shortcut
+       Can't edit shortcut
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_CANT_REMOVE" desc="A catchall error message for when the shortcut cannot be removed. (On the New Tab Page)">
-       Can’t remove shortcut
+       Can't remove shortcut
       </message>
       <message name="IDS_NTP_CONFIRM_MSG_SHORTCUT_REMOVED" desc="The title of the shortcut removed confirmation message when removing a custom link. (On the New Tab Page)">
         Shortcut removed
@@ -5702,7 +5702,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Why am I seeing this?
       </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_1" desc="First paragraph shown in the body of the info dialog of a task module.">
-        You’re seeing this item based on your previous activity using Google services. You can see your data, delete it, and change your settings at <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
+        You're seeing this item based on your previous activity using Google services. You can see your data, delete it, and change your settings at <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_2" desc="Second paragraph shown in the body of the info dialog of a task module.">
         Learn about the data Google collects and why at <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>policies.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
@@ -5717,13 +5717,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Find what you added to shopping carts and check out when you're ready
       </message>
       <message name="IDS_NTP_MODULES_CART_MODULE_MENU_HIDE_TOAST_MESSAGE" desc="Text shown in the toast confirming the cart module has been temporarily hidden.">
-        Carts hidden. They’ll reappear when you make changes.
+        Carts hidden. They'll reappear when you make changes.
       </message>
       <message name="IDS_NTP_MODULES_CART_CART_MENU_HIDE_MERCHANT" desc="An option in the action menu of one cart in the chrome cart module. When clicked, cart from that merchant will be temporarily hidden. Note that the MERCHANT field can be either merchant name (e.g. Amazon) or domain (e.g. amazon.com). ">
         Hide <ph name="MERCHANT">$1<ex>Amazon</ex></ph>
       </message>
       <message name="IDS_NTP_MODULES_CART_CART_MENU_HIDE_MERCHANT_TOAST_MESSAGE" desc="Text shown in the toast confirming the cart for a specific merchant has been temporarily hidden. Note that the MERCHANT field can be either merchant name (e.g. Amazon) or domain (e.g. amazon.com).">
-        <ph name="MERCHANT">$1<ex>Amazon</ex> hidden. You’ll see it again when you revisit your cart.</ph>
+        <ph name="MERCHANT">$1<ex>Amazon</ex> hidden. You'll see it again when you revisit your cart.</ph>
       </message>
       <message name="IDS_NTP_MODULES_CART_CART_MENU_REMOVE_MERCHANT" desc="An option in the action menu of one cart in the chrome cart module. When clicked, cart from that merchant wil be permanently removed. Note that the MERCHANT field can be either merchant name (e.g. Amazon) or domain (e.g. amazon.com).">
         Never show <ph name="MERCHANT">$1<ex>Amazon</ex></ph>
@@ -6416,7 +6416,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Attach <ph name="BEGIN_LINK">&lt;a href="#" id="bluetooth-logs-info-link"&gt;</ph>Bluetooth Logs<ph name="END_LINK">&lt;/a&gt;</ph> (Google internal)
         </message>
         <message name="IDS_FEEDBACK_ASSISTANT_LOGS_MESSAGE" desc="Message shown after user clicks on the assistant logs hyperlink">
-          This information helps us better understand your Assistant issue. It’s stored for up to 90 days and access is restricted to appropriate engineering and feedback teams.
+          This information helps us better understand your Assistant issue. It's stored for up to 90 days and access is restricted to appropriate engineering and feedback teams.
         </message>
         <message name="IDS_FEEDBACK_BLUETOOTH_LOGS_MESSAGE" desc="Message shown after user clicks on the bluetooth logs hyperlink">
           To better diagnose Bluetooth issues, Googlers can include additional Bluetooth logs with their feedback reports. When this option is checked, your report will include btsnoop and HCI logs from your current session, sanitized to remove as much PII as possible. Access to these logs will be restricted to managers of the Chrome OS product group in Listnr. Logs will be purged after 90 days.
@@ -7770,18 +7770,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_NEW_TAB_GUEST_SESSION_HEADING"
               desc="Heading used when a person enters Guest Session">
-          You’re browsing as a Guest
+          You're browsing as a Guest
         </message>
         <if expr="chromeos">
           <message name="IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION"
               desc="Used when a person enters Guest Session">
-            Pages you view in this window won’t appear in the browser history and they won’t leave other traces, like cookies, on the computer after you sign out. Files you download and bookmarks you create won’t be preserved.
+            Pages you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you sign out. Files you download and bookmarks you create won't be preserved.
           </message>
         </if>
         <if expr="not chromeos">
           <message name="IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION"
               desc="Used when a person enters Guest Session">
-            Pages you view in this window won’t appear in the browser history and they won’t leave other traces, like cookies, on the computer after you close all open Guest windows. Any files you download will be preserved, however.
+            Pages you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you close all open Guest windows. Any files you download will be preserved, however.
           </message>
         </if>
         <message name="IDS_NEW_TAB_TILE_GRID_ACCESSIBLE_DESCRIPTION"
@@ -8467,10 +8467,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Setup in progress...
         </message>
         <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown on the personal options page when there is an unrecoverable error.">
-          Sync isn’t working. Try signing in again.
+          Sync isn't working. Try signing in again.
         </message>
         <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in Chrome OS as well as for managed accounts.">
-          Sync isn’t working. Try signing out and back in again.
+          Sync isn't working. Try signing out and back in again.
         </message>
         <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
           Enter your passphrase to sync your data
@@ -10618,7 +10618,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Can't open this folder
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TEXT" desc="Text of dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
-      <ph name="ORIGIN">$1<ex>example.com</ex></ph> can’t open this folder because it contains system files
+      <ph name="ORIGIN">$1<ex>example.com</ex></ph> can't open this folder because it contains system files
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_BUTTON" desc="Text of the button in dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
       Choose a different folder
@@ -10627,7 +10627,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Can't open this file
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TEXT" desc="Text of dialog explaining that the user selected a file in a directory that chrome doesn't want to expose to the web">
-      <ph name="ORIGIN">$1<ex>example.com</ex></ph> can’t open files in this folder because it contains system files
+      <ph name="ORIGIN">$1<ex>example.com</ex></ph> can't open files in this folder because it contains system files
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_BUTTON" desc="Text of the button in dialog explaining that the user selected a file in a directory that chrome doesn't want to expose to the web">
       Choose a different file
@@ -10826,13 +10826,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Touch your security key again to complete the request.
       </message>
       <message name="IDS_WEBAUTHN_PIN_ENTRY_ERROR_MISMATCH" desc="Error message. Displayed when the user attempts to set a PIN code for their security key (an external physical device for user authentication), and the confirmation value does not match the first value they entered.">
-        The PINs you entered don’t match
+        The PINs you entered don't match
       </message>
       <message name="IDS_WEBAUTHN_CLIENT_PIN_SOFT_BLOCK_DESCRIPTION" desc="Description in the error dialog shown after their security key (an external physical device for user authentication) was blocked due to the user entering a wrong security key PIN too many times">
         The security key is locked because the wrong PIN was entered too many times. To unlock it, remove and reinsert it.
       </message>
       <message name="IDS_WEBAUTHN_CLIENT_PIN_HARD_BLOCK_DESCRIPTION" desc="Description in the error dialog shown after their security key (an external physical device for user authentication) was blocked due to the user entering a wrong security key PIN too many times">
-        The security key is locked because the wrong PIN was entered too many times. You’ll need to reset the security key.
+        The security key is locked because the wrong PIN was entered too many times. You'll need to reset the security key.
       </message>
       <message name="IDS_WEBAUTHN_CLIENT_PIN_AUTHENTICATOR_REMOVED_DESCRIPTION" desc="Description in the error dialog shown after their security key (an external physical device for user authentication) was removed while the application was waiting for the security key PIN to be entered.">
         Reinsert your security key and try again
