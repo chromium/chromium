@@ -19,7 +19,7 @@
             },
             {
                 "domain": "Browser",
-                "include": ["getVersion", "getHistograms", "getHistogram", "getBrowserCommandLine", "grantPermissions", "setDownloadBehavior", "resetPermissions", "crash", "crashGpuProcess", "setPermission"]
+                "include": ["getVersion", "getHistograms", "getHistogram", "getBrowserCommandLine", "grantPermissions", "setDownloadBehavior", "cancelDownload", "resetPermissions", "crash", "crashGpuProcess", "setPermission"]
             },
             {
                 "domain": "DOM",

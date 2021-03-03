@@ -485,6 +485,24 @@ Response BrowserHandler::DoSetDownloadBehavior(
   return Response::Success();
 }
 
+Response BrowserHandler::CancelDownload(const std::string& guid,
+                                        Maybe<std::string> browser_context_id) {
+  BrowserContext* browser_context = nullptr;
+  Response response = FindBrowserContext(browser_context_id, &browser_context);
+  if (!response.IsSuccess())
+    return response;
+  auto* delegate =
+      DevToolsDownloadManagerDelegate::GetOrCreateInstance(browser_context);
+  auto* download_item = delegate->GetDownloadByGuid(guid);
+  if (!download_item)
+    return Response::InvalidParams("No download item found for the given GUID");
+  // DownloadItem::Cancel is implemented in a soft way, where there would be no
+  // error triggered if the state is not suitable for cancallation (e.g.
+  // already cancelled or finished).
+  download_item->Cancel(true);
+  return Response::Success();
+}
+
 Response BrowserHandler::GetHistogram(
     const std::string& in_name,
     const Maybe<bool> in_delta,

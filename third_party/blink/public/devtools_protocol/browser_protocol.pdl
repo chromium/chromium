@@ -987,6 +987,14 @@ domain Browser
       # or 'allowAndName'.
       optional string downloadPath
 
+  # Cancel a download if in progress
+  experimental command cancelDownload
+    parameters
+      # Global unique identifier of the download.
+      string guid
+      # BrowserContext to perform the action in. When omitted, default browser context is used.
+      optional BrowserContextID browserContextId
+
   # Close browser gracefully.
   command close
 

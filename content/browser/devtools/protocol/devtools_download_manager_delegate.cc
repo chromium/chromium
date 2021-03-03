@@ -166,5 +166,13 @@ void DevToolsDownloadManagerDelegate::OnDownloadPathGenerated(
       download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 
+download::DownloadItem* DevToolsDownloadManagerDelegate::GetDownloadByGuid(
+    const std::string& guid) {
+  if (!download_manager_) {
+    return nullptr;
+  }
+  return download_manager_->GetDownloadByGuid(guid);
+}
+
 }  // namespace protocol
 }  // namespace content
