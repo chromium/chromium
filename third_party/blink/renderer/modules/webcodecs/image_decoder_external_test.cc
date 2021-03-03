@@ -211,7 +211,6 @@ TEST_F(ImageDecoderTest, DecodeGif) {
 
     auto* frame = result->image();
     EXPECT_EQ(frame->duration(), 0u);
-    EXPECT_EQ(frame->orientation(), 1u);
     EXPECT_EQ(frame->displayWidth(), 16u);
     EXPECT_EQ(frame->displayHeight(), 16u);
   }
@@ -226,7 +225,6 @@ TEST_F(ImageDecoderTest, DecodeGif) {
 
     auto* frame = result->image();
     EXPECT_EQ(frame->duration(), 0u);
-    EXPECT_EQ(frame->orientation(), 1u);
     EXPECT_EQ(frame->displayWidth(), 16u);
     EXPECT_EQ(frame->displayHeight(), 16u);
   }

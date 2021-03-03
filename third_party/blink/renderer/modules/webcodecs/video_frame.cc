@@ -640,37 +640,6 @@ base::Optional<uint64_t> VideoFrame::duration() const {
   return local_frame->metadata().frame_duration->InMicroseconds();
 }
 
-uint8_t VideoFrame::orientation() const {
-  auto local_frame = handle_->frame();
-  if (!local_frame || !local_frame->metadata().transformation.has_value())
-    return static_cast<uint8_t>(ImageOrientationEnum::kOriginTopLeft);
-
-  const auto& tx = *local_frame->metadata().transformation;
-  if (!tx.mirrored) {
-    switch (tx.rotation) {
-      case media::VIDEO_ROTATION_0:
-        return static_cast<uint8_t>(ImageOrientationEnum::kOriginTopLeft);
-      case media::VIDEO_ROTATION_90:
-        return static_cast<uint8_t>(ImageOrientationEnum::kOriginRightTop);
-      case media::VIDEO_ROTATION_180:
-        return static_cast<uint8_t>(ImageOrientationEnum::kOriginBottomRight);
-      case media::VIDEO_ROTATION_270:
-        return static_cast<uint8_t>(ImageOrientationEnum::kOriginLeftBottom);
-    }
-  }
-
-  switch (tx.rotation) {
-    case media::VIDEO_ROTATION_0:
-      return static_cast<uint8_t>(ImageOrientationEnum::kOriginTopRight);
-    case media::VIDEO_ROTATION_90:
-      return static_cast<uint8_t>(ImageOrientationEnum::kOriginRightBottom);
-    case media::VIDEO_ROTATION_180:
-      return static_cast<uint8_t>(ImageOrientationEnum::kOriginBottomLeft);
-    case media::VIDEO_ROTATION_270:
-      return static_cast<uint8_t>(ImageOrientationEnum::kOriginLeftTop);
-  }
-}
-
 void VideoFrame::close() {
   handle_->Invalidate();
 }
@@ -726,9 +695,10 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
     return nullptr;
   }
 
+  const auto orientation_enum = VideoTransformationToImageOrientation(
+      local_handle->frame()->metadata().transformation.value_or(
+          media::kNoTransformation));
   if (auto sk_img = local_handle->sk_image()) {
-    const auto orientation_enum =
-        ImageOrientation::FromEXIFValue(orientation());
     *status = kNormalSourceImageStatus;
     return UnacceleratedStaticBitmapImage::Create(std::move(sk_img),
                                                   orientation_enum);
@@ -754,11 +724,19 @@ bool VideoFrame::WouldTaintOrigin() const {
 FloatSize VideoFrame::ElementSize(
     const FloatSize& default_object_size,
     const RespectImageOrientationEnum respect_orientation) const {
-  // BitmapSourceSize() will always respect orientation.
-  if (respect_orientation == kDoNotRespectImageOrientation) {
-    if (auto local_frame = handle_->frame())
-      return FloatSize(local_frame->natural_size());
-    return FloatSize();
+  // BitmapSourceSize() will always ignore orientation.
+  if (respect_orientation == kRespectImageOrientation) {
+    auto local_frame = handle_->frame();
+    if (!local_frame)
+      return FloatSize();
+
+    const auto orientation_enum = VideoTransformationToImageOrientation(
+        local_frame->metadata().transformation.value_or(
+            media::kNoTransformation));
+    auto orientation_adjusted_size = FloatSize(local_frame->natural_size());
+    if (ImageOrientation(orientation_enum).UsesWidthAsHeight())
+      return orientation_adjusted_size.TransposedSize();
+    return orientation_adjusted_size;
   }
   return FloatSize(BitmapSourceSize());
 }
@@ -787,14 +765,8 @@ IntSize VideoFrame::BitmapSourceSize() const {
   if (!local_frame)
     return IntSize();
 
-  const auto transform =
-      local_frame->metadata().transformation.value_or(media::kNoTransformation);
-  if (transform == media::kNoTransformation ||
-      transform.rotation == media::VIDEO_ROTATION_0 ||
-      transform.rotation == media::VIDEO_ROTATION_180) {
-    return IntSize(local_frame->natural_size());
-  }
-  return IntSize(local_frame->natural_size()).TransposedSize();
+  // ImageBitmaps should always return the size w/o respecting orientation.
+  return IntSize(local_frame->natural_size());
 }
 
 ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
@@ -809,7 +781,9 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  const auto orientation_enum = ImageOrientation::FromEXIFValue(orientation());
+  const auto orientation_enum = VideoTransformationToImageOrientation(
+      local_handle->frame()->metadata().transformation.value_or(
+          media::kNoTransformation));
   if (auto sk_img = local_handle->sk_image()) {
     auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
         UnacceleratedStaticBitmapImage::Create(std::move(sk_img),

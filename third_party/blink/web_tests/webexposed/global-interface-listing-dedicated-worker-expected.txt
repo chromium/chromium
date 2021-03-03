@@ -1767,7 +1767,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter displayWidth
 [Worker]     getter duration
 [Worker]     getter format
-[Worker]     getter orientation
 [Worker]     getter planes
 [Worker]     getter timestamp
 [Worker]     method clone

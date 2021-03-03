@@ -79,8 +79,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   base::Optional<uint64_t> timestamp() const;
   base::Optional<uint64_t> duration() const;
 
-  uint8_t orientation() const;
-
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.
   void close();

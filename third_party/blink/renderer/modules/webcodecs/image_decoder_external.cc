@@ -245,13 +245,9 @@ void ImageDecoderExternal::OnStateChange() {
       result = consumer_->EndRead(available);
     }
 
-    if (result == BytesConsumer::Result::kError) {
-      data_complete_ = true;
-    } else {
-      data_complete_ = result == BytesConsumer::Result::kDone;
-      decoder_->SetData(stream_buffer_, data_complete_);
-    }
-
+    data_complete_ = result == BytesConsumer::Result::kDone ||
+                     result == BytesConsumer::Result::kError;
+    decoder_->SetData(stream_buffer_, data_complete_);
     MaybeUpdateMetadata();
     MaybeSatisfyPendingDecodes();
   }
@@ -401,14 +397,14 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
         break;
       case ImageOrientationEnum::kOriginLeftTop:
         frame->metadata().transformation = media::VideoTransformation(
-            media::VIDEO_ROTATION_270, /*mirrored=*/true);
+            media::VIDEO_ROTATION_90, /*mirrored=*/true);
         break;
       case ImageOrientationEnum::kOriginRightTop:
         frame->metadata().transformation = media::VIDEO_ROTATION_90;
         break;
       case ImageOrientationEnum::kOriginRightBottom:
         frame->metadata().transformation = media::VideoTransformation(
-            media::VIDEO_ROTATION_90, /*mirrored=*/true);
+            media::VIDEO_ROTATION_270, /*mirrored=*/true);
         break;
       case ImageOrientationEnum::kOriginLeftBottom:
         frame->metadata().transformation = media::VIDEO_ROTATION_270;
@@ -421,8 +417,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     request->result = ImageDecodeResult::Create();
     request->result->setImage(
         MakeGarbageCollected<VideoFrame>(base::MakeRefCounted<VideoFrameHandle>(
-            std::move(frame), std::move(sk_image),
-            ExecutionContext::From(script_state_))));
+            std::move(frame), std::move(sk_image))));
     request->result->setComplete(is_complete);
   }
 

@@ -1012,16 +1012,25 @@ void PaintCanvasVideoRenderer::Paint(
     canvas->rotate(angle);
 
     gfx::SizeF rotated_dest_size = dest_rect.size();
-    if (video_transformation.rotation == VIDEO_ROTATION_90 ||
-        video_transformation.rotation == VIDEO_ROTATION_270) {
+
+    const bool has_flipped_size =
+        video_transformation.rotation == VIDEO_ROTATION_90 ||
+        video_transformation.rotation == VIDEO_ROTATION_270;
+    if (has_flipped_size) {
       rotated_dest_size =
           gfx::SizeF(rotated_dest_size.height(), rotated_dest_size.width());
     }
-    canvas->scale((needs_y_flip ? -1 : 1) *
-                      SkFloatToScalar(rotated_dest_size.width() /
-                                      video_frame->visible_rect().width()),
-                  SkFloatToScalar(rotated_dest_size.height() /
-                                  video_frame->visible_rect().height()));
+    auto sx = SkFloatToScalar(rotated_dest_size.width() /
+                              video_frame->visible_rect().width());
+    auto sy = SkFloatToScalar(rotated_dest_size.height() /
+                              video_frame->visible_rect().height());
+    if (needs_y_flip) {
+      if (has_flipped_size)
+        sy *= -1;
+      else
+        sx *= -1;
+    }
+    canvas->scale(sx, sy);
     canvas->translate(
         -SkFloatToScalar(video_frame->visible_rect().width() * 0.5f),
         -SkFloatToScalar(video_frame->visible_rect().height() * 0.5f));

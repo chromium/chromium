@@ -8946,7 +8946,6 @@ interface VideoFrame
     getter displayWidth
     getter duration
     getter format
-    getter orientation
     getter planes
     getter timestamp
     method clone

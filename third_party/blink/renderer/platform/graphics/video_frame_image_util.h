@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "media/base/video_transformation.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -25,6 +27,10 @@ class RasterContextProvider;
 namespace blink {
 class CanvasResourceProvider;
 class StaticBitmapImage;
+
+// Converts a media orientation into a blink one.
+PLATFORM_EXPORT ImageOrientationEnum
+VideoTransformationToImageOrientation(media::VideoTransformation transform);
 
 // Returns true if CreateImageFromVideoFrame() expects to create an
 // AcceleratedStaticBitmapImage. Note: This may be overridden if a software
@@ -65,12 +71,16 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 // end up repeatedly drawn.
 //
 // A |raster_context_provider| is required to convert texture backed frames.
+//
+// If |ignore_video_transformation| is true, the media::VideoTransformation on
+// the |frame| will be ignored.
 PLATFORM_EXPORT bool DrawVideoFrameIntoResourceProvider(
     scoped_refptr<media::VideoFrame> frame,
     CanvasResourceProvider* resource_provider,
     viz::RasterContextProvider* raster_context_provider,
     const gfx::Rect& dest_rect,
-    media::PaintCanvasVideoRenderer* video_renderer = nullptr);
+    media::PaintCanvasVideoRenderer* video_renderer = nullptr,
+    bool ignore_video_transformation = false);
 
 // Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache

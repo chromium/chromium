@@ -73,6 +73,33 @@ bool ShouldCreateAcceleratedImages(
 
 }  // namespace
 
+ImageOrientationEnum VideoTransformationToImageOrientation(
+    media::VideoTransformation transform) {
+  if (!transform.mirrored) {
+    switch (transform.rotation) {
+      case media::VIDEO_ROTATION_0:
+        return ImageOrientationEnum::kOriginTopLeft;
+      case media::VIDEO_ROTATION_90:
+        return ImageOrientationEnum::kOriginRightTop;
+      case media::VIDEO_ROTATION_180:
+        return ImageOrientationEnum::kOriginBottomRight;
+      case media::VIDEO_ROTATION_270:
+        return ImageOrientationEnum::kOriginLeftBottom;
+    }
+  }
+
+  switch (transform.rotation) {
+    case media::VIDEO_ROTATION_0:
+      return ImageOrientationEnum::kOriginTopRight;
+    case media::VIDEO_ROTATION_90:
+      return ImageOrientationEnum::kOriginLeftTop;
+    case media::VIDEO_ROTATION_180:
+      return ImageOrientationEnum::kOriginBottomLeft;
+    case media::VIDEO_ROTATION_270:
+      return ImageOrientationEnum::kOriginRightBottom;
+  }
+}
+
 bool WillCreateAcceleratedImagesFromVideoFrame(const media::VideoFrame* frame) {
   return CanUseZeroCopyImages(*frame) ||
          ShouldCreateAcceleratedImages(GetRasterContextProvider().get());
@@ -159,12 +186,15 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     resource_provider = local_resource_provider.get();
   }
 
-  if (!DrawVideoFrameIntoResourceProvider(std::move(frame), resource_provider,
-                                          raster_context_provider.get(),
-                                          final_dest_rect, video_renderer)) {
+  if (!DrawVideoFrameIntoResourceProvider(
+          std::move(frame), resource_provider, raster_context_provider.get(),
+          final_dest_rect, video_renderer,
+          /*ignore_video_transformation=*/true)) {
     return nullptr;
   }
-  return resource_provider->Snapshot();
+
+  return resource_provider->Snapshot(
+      VideoTransformationToImageOrientation(transform));
 }
 
 bool DrawVideoFrameIntoResourceProvider(
@@ -172,7 +202,8 @@ bool DrawVideoFrameIntoResourceProvider(
     CanvasResourceProvider* resource_provider,
     viz::RasterContextProvider* raster_context_provider,
     const gfx::Rect& dest_rect,
-    media::PaintCanvasVideoRenderer* video_renderer) {
+    media::PaintCanvasVideoRenderer* video_renderer,
+    bool ignore_video_transformation) {
   DCHECK(frame);
   DCHECK(resource_provider);
   DCHECK(gfx::Rect(gfx::Size(resource_provider->Size())).Contains(dest_rect));
@@ -208,7 +239,9 @@ bool DrawVideoFrameIntoResourceProvider(
   video_renderer->Paint(
       frame.get(), resource_provider->Canvas(), gfx::RectF(dest_rect),
       media_flags,
-      frame->metadata().transformation.value_or(media::kNoTransformation),
+      ignore_video_transformation
+          ? media::kNoTransformation
+          : frame->metadata().transformation.value_or(media::kNoTransformation),
       raster_context_provider);
   return true;
 }
