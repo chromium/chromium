@@ -227,8 +227,6 @@ def ExtractFarFile(file_path, extract_dir):
     raise Exception('Could not find FAR host tool "%s".' % far_tool)
   if not os.path.isfile(file_path):
     raise Exception('Could not find FAR file "%s".' % file_path)
-  if os.path.isdir(extract_dir):
-    raise Exception('Could not find extraction directory "%s".' % extract_dir)
 
   subprocess.check_call([
       far_tool, 'extract',
@@ -345,6 +343,8 @@ def GetPackageSizes(far_files, build_out_dir, extract_dir):
   package_blobs = {}
   for far_file in far_files:
     package_name = FarBaseName(far_file)
+    if package_name in package_blobs:
+      raise Exception('Duplicate FAR file base name "%s".' % package_name)
     package_blobs[package_name] = GetBlobs(far_file, build_out_dir, extract_dir)
 
   # Print package blob sizes (does not count sharing).
@@ -389,11 +389,10 @@ def GetBinarySizes(args, sizes_config):
   the aggregated sizes across all blobs."""
 
   # Calculate compressed and uncompressed package sizes.
-  extract_dir = args.extract_dir if args.extract_dir else tempfile.mkdtemp()
+  extract_dir = tempfile.mkdtemp()
   package_sizes = GetPackageSizes(sizes_config['far_files'], args.build_out_dir,
                                   extract_dir)
-  if not args.extract_dir:
-    shutil.rmtree(extract_dir)
+  shutil.rmtree(extract_dir)
 
   # Optionally calculate total compressed and uncompressed package sizes.
   if 'far_total_name' in sizes_config:
@@ -418,10 +417,6 @@ def main():
       required=True,
       help='Location of the build artifacts.',
   )
-  parser.add_argument(
-      '--extract-dir',
-      help='Debugging option, specifies directory for extracted FAR files.'
-      'If present, extracted files will not be deleted after use.')
   parser.add_argument(
       '--isolated-script-test-output',
       type=os.path.realpath,
@@ -471,11 +466,6 @@ def main():
   if not os.path.isdir(args.build_out_dir):
     raise Exception('Could not find build output directory "%s".' %
                     args.build_out_dir)
-
-  if args.extract_dir and not os.path.isdir(args.extract_dir):
-    raise Exception(
-        'Could not find FAR file extraction output directory "%s".' %
-        args.extract_dir)
 
   with open(os.path.join(DIR_SOURCE_ROOT, args.sizes_path)) as sizes_file:
     sizes_config = json.load(sizes_file)
