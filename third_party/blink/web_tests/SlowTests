@@ -732,3 +732,5 @@ crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execu
 crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]
 crbug.com/1145641 external/wpt/requestidlecallback/callback-invoked.html [ Slow ]
 crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Slow ]
+crbug.com/1182691 external/wpt/webcodecs/audio-encoder.any.html [ Slow ]
+crbug.com/1182691 external/wpt/webcodecs/video-encoder.any.html [ Slow ]

@@ -2487,7 +2487,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 [ Mac11.0 ] external/wpt/preload/download-resources.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-flexbox/table-as-item-stretch-cross-size-3.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/table-as-item-inflexible-in-column-2.html [ Failure ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/webcodecs/video-encoder.any.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/modal-close-watcher/basic.html [ Crash ]
 crbug.com/626703 [ Mac10.13 ] wpt_internal/modal-close-watcher/basic.html [ Crash ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/hsl-008.html [ Failure ]
@@ -2670,7 +2669,6 @@ crbug.com/626703 [ Mac10.13 ] external/wpt/x-frame-options/multiple.html [ Timeo
 crbug.com/626703 [ Mac10.13 ] external/wpt/FileAPI/idlharness.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Failure ]
-crbug.com/626703 [ Win10 ] external/wpt/webcodecs/video-encoder.any.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection.https.html [ Timeout ]
 crbug.com/626703 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Timeout ]
@@ -5727,7 +5725,6 @@ crbug.com/1182680 [ Linux ] http/tests/devtools/console/console-format-collectio
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Pass Failure ]
 crbug.com/1182689 [ Mac10.14 ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
 crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Pass Failure ]
-crbug.com/1182691 [ Linux ] external/wpt/webcodecs/audio-encoder.any.html [ Pass Failure ]
 
 # Test doesn't support small script streaming yet.
 crbug.com/1011762 http/tests/inspector-protocol/page/page-produceCompilationCache.js [ Pass Failure Timeout ]
