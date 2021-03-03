@@ -95,7 +95,6 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
       bool lazy);
   void OnExtensionShouldSuspendAck(const std::string& extension_id,
                                    int sequence_id);
-  void OnExtensionSuspendAck(const std::string& extension_id);
   void OnExtensionTransferBlobsAck(const std::vector<std::string>& blob_uuids);
   void OnExtensionWakeEventPage(int request_id,
                                 const std::string& extension_id);

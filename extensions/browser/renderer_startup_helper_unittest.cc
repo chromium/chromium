@@ -60,6 +60,12 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
     unloaded_extensions_.push_back(extension_id);
   }
 
+  void SuspendExtension(
+      const std::string& extension_id,
+      mojom::Renderer::SuspendExtensionCallback callback) override {
+    std::move(callback).Run();
+  }
+
   void CancelSuspendExtension(const std::string& extension_id) override {}
 
   void SetSessionInfo(version_info::Channel channel,

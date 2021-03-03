@@ -604,12 +604,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_ShouldSuspend,
                      std::string /* extension_id */,
                      uint64_t /* sequence_id */)
 
-// If we complete a round of ShouldSuspend->ShouldSuspendAck messages without
-// the lazy background page becoming active again, we are ready to unload. This
-// message tells the page to dispatch the suspend event.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_Suspend,
-                     std::string /* extension_id */)
-
 // Response to the renderer for ExtensionHostMsg_GetAppInstallState.
 IPC_MESSAGE_ROUTED2(ExtensionMsg_GetAppInstallStateResponse,
                     std::string /* state */,
@@ -836,10 +830,6 @@ IPC_MESSAGE_ROUTED1(ExtensionHostMsg_ResponseAck,
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_ShouldSuspendAck,
                      std::string /* extension_id */,
                      uint64_t /* sequence_id */)
-
-// Response to ExtensionMsg_Suspend, after we dispatch the suspend event.
-IPC_MESSAGE_CONTROL1(ExtensionHostMsg_SuspendAck,
-                     std::string /* extension_id */)
 
 // Informs the browser to increment the keepalive count for the lazy background
 // page, keeping it alive.

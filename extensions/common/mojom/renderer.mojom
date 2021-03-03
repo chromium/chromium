@@ -25,6 +25,11 @@ interface Renderer {
   // Notifies the renderer that an extension was unloaded in the browser.
   UnloadExtension(string extension_id);
 
+  // Tells the page to dispatch the suspend event. If we complete a round of
+  // ShouldSuspend Mojo method and the reply without the lazy background page
+  // becoming active again, we are ready to unload.
+  SuspendExtension(string extension_id) => ();
+
   // Cancels suspending the extension.
   CancelSuspendExtension(string extension_id);
 

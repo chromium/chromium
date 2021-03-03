@@ -542,7 +542,15 @@ void ProcessManager::OnShouldSuspendAck(const std::string& extension_id,
   ExtensionHost* host = GetBackgroundHostForExtension(extension_id);
   if (host &&
       sequence_id == background_page_data_[extension_id].close_sequence_id) {
-    host->render_process_host()->Send(new ExtensionMsg_Suspend(extension_id));
+    mojom::Renderer* renderer =
+        RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
+            ->GetRenderer(host->render_process_host());
+    if (renderer) {
+      renderer->SuspendExtension(
+          extension_id,
+          base::BindOnce(&ProcessManager::OnSuspendAck,
+                         weak_ptr_factory_.GetWeakPtr(), extension_id));
+    }
   }
 }
 

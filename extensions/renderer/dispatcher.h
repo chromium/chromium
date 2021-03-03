@@ -216,6 +216,9 @@ class Dispatcher : public content::RenderThreadObserver,
   void ActivateExtension(const std::string& extension_id) override;
   void SetActivityLoggingEnabled(bool enabled) override;
   void UnloadExtension(const std::string& extension_id) override;
+  void SuspendExtension(
+      const std::string& extension_id,
+      mojom::Renderer::SuspendExtensionCallback callback) override;
   void CancelSuspendExtension(const std::string& extension_id) override;
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session_type,
@@ -251,7 +254,6 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
                        const base::ListValue& event_args);
   void OnShouldSuspend(const std::string& extension_id, uint64_t sequence_id);
-  void OnSuspend(const std::string& extension_id);
   void OnTransferBlobs(const std::vector<std::string>& blob_uuids);
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
   void OnClearTabSpecificPermissions(

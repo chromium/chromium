@@ -80,6 +80,11 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void ActivateExtension(const std::string& extension_id) override {}
   void SetActivityLoggingEnabled(bool enabled) override {}
   void UnloadExtension(const std::string& extension_id) override {}
+  void SuspendExtension(
+      const std::string& extension_id,
+      mojom::Renderer::SuspendExtensionCallback callback) override {
+    std::move(callback).Run();
+  }
   void CancelSuspendExtension(const std::string& extension_id) override {}
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session,

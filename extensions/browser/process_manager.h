@@ -173,9 +173,6 @@ class ProcessManager : public KeyedService,
   void OnShouldSuspendAck(const std::string& extension_id,
                           uint64_t sequence_id);
 
-  // Same as above, for the Suspend message.
-  void OnSuspendAck(const std::string& extension_id);
-
   // Tracks network requests for a given RenderFrameHost, used to know
   // when network activity is idle for lazy background pages.
   void NetworkRequestStarted(content::RenderFrameHost* render_frame_host,
@@ -333,6 +330,10 @@ class ProcessManager : public KeyedService,
 
   // Clears background page data for this extension.
   void ClearBackgroundPageData(const std::string& extension_id);
+
+  // Handles a response to the SuspendExtension Mojo method, used for lazy
+  // background pages.
+  void OnSuspendAck(const std::string& extension_id);
 
   // The set of ExtensionHosts running viewless background extensions.
   ExtensionHostSet background_hosts_;

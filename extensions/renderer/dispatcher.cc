@@ -872,7 +872,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_Loaded, OnLoaded)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_HANDLER(ExtensionMsg_ShouldSuspend, OnShouldSuspend)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_Suspend, OnSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_TransferBlobs, OnTransferBlobs)
   IPC_MESSAGE_HANDLER(ExtensionMsg_UpdatePermissions, OnUpdatePermissions)
   IPC_MESSAGE_HANDLER(ExtensionMsg_ClearTabSpecificPermissions,
@@ -995,6 +994,18 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // We don't do anything with existing platform-app stylesheets. They will
   // stay resident, but the URL pattern corresponding to the unloaded
   // extension's URL just won't match anything anymore.
+}
+
+void Dispatcher::SuspendExtension(
+    const std::string& extension_id,
+    mojom::Renderer::SuspendExtensionCallback callback) {
+  // Dispatch the suspend event. This doesn't go through the standard event
+  // dispatch machinery because it requires special handling. We need to let
+  // the browser know when we are starting and stopping the event dispatch, so
+  // that it still considers the extension idle despite any activity the suspend
+  // event creates.
+  DispatchEvent(extension_id, kOnSuspendEvent, base::ListValue(), nullptr);
+  std::move(callback).Run();
 }
 
 void Dispatcher::CancelSuspendExtension(const std::string& extension_id) {
@@ -1213,16 +1224,6 @@ void Dispatcher::OnShouldSuspend(const std::string& extension_id,
                                  uint64_t sequence_id) {
   RenderThread::Get()->Send(
       new ExtensionHostMsg_ShouldSuspendAck(extension_id, sequence_id));
-}
-
-void Dispatcher::OnSuspend(const std::string& extension_id) {
-  // Dispatch the suspend event. This doesn't go through the standard event
-  // dispatch machinery because it requires special handling. We need to let
-  // the browser know when we are starting and stopping the event dispatch, so
-  // that it still considers the extension idle despite any activity the suspend
-  // event creates.
-  DispatchEvent(extension_id, kOnSuspendEvent, base::ListValue(), nullptr);
-  RenderThread::Get()->Send(new ExtensionHostMsg_SuspendAck(extension_id));
 }
 
 void Dispatcher::OnTransferBlobs(const std::vector<std::string>& blob_uuids) {
