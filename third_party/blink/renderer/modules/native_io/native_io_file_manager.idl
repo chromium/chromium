@@ -5,7 +5,7 @@
 // https://github.com/fivedots/nativeio-explainer
 
 [Exposed = (Window, Worker),
- RuntimeEnabled = NativeIO,
+ RuntimeEnabled = StorageFoundationAPI,
  SecureContext] interface NativeIOFileManager {
   [ CallWith = ScriptState, RaisesException, MeasureAs = StorageFoundationOpen ]
       Promise<NativeIOFile> open(DOMString name);

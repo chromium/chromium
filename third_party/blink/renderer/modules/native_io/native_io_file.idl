@@ -6,7 +6,7 @@
 
 [
   Exposed=(Window, Worker),
-  RuntimeEnabled=NativeIO,
+  RuntimeEnabled=StorageFoundationAPI,
   SecureContext
 ] interface NativeIOFile {
   [CallWith=ScriptState] Promise<void> close();
