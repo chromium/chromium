@@ -91,7 +91,7 @@ fyi_goma_rbe_canary_builder(
     name = "ios-device-goma-rbe-canary-clobber",
     cores = None,
     os = os.MAC_10_15,
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -168,7 +168,7 @@ fyi_goma_rbe_latest_client_builder(
     name = "ios-device-goma-rbe-latest-clobber",
     cores = None,
     os = os.MAC_10_15,
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
 )
 
 fyi_goma_rbe_latest_client_builder(
@@ -279,7 +279,7 @@ goma_mac_builder(
     name = "Chromium iOS Goma RBE ToT",
     goma_backend = goma.backend.RBE_TOT,
     os = os.MAC_10_15,
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
 )
 
 goma_mac_builder(
