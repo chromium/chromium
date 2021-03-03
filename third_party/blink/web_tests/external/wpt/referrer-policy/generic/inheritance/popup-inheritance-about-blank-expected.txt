@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS The fetch() API in an about:blank popup with the 'client' referrer is fetched with no 'Referer' header
+PASS The fetch() API in an about:blank popup with a custom URL referrer is fetched with a 'Referer` header that uses the outer document's URL along with its referrer policy
+FAIL The value of document.referrer in an about:blank popup is the outer document's full URL, regardless of referrer policy assert_equals: expected "http://web-platform.test:8001/referrer-policy/generic/inheritance/popup-inheritance-about-blank.html" but got "http://web-platform.test:8001/"
+PASS A subresource fetched from an about:blank popup is fetched with no 'Referer' header
+Harness: the test ran to completion.
+
