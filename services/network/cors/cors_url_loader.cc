@@ -478,9 +478,10 @@ void CorsURLLoader::StartRequest() {
     return;
   }
 
-  // Clone the devtools observer
+  // Clone the devtools observer only if the original request has a
+  // |devtools_request_id|.
   mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
-  if (devtools_observer_) {
+  if (devtools_observer_ && request_.devtools_request_id) {
     devtools_observer_->Clone(
         devtools_observer.InitWithNewPipeAndPassReceiver());
   }
