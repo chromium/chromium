@@ -16,6 +16,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
 
 namespace {
 
@@ -78,11 +79,11 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
 
   DCHECK(!(ShouldInsertCSS() && ShouldRemoveCSS()));
 
-  auto action_type = UserScript::ActionType::ADD_JAVASCRIPT;
+  auto action_type = mojom::ActionType::kAddJavascript;
   if (ShouldInsertCSS())
-    action_type = UserScript::ActionType::ADD_CSS;
+    action_type = mojom::ActionType::kAddCss;
   else if (ShouldRemoveCSS())
-    action_type = UserScript::ActionType::REMOVE_CSS;
+    action_type = mojom::ActionType::kRemoveCss;
 
   ScriptExecutor::FrameScope frame_scope =
       details_->all_frames.get() && *details_->all_frames

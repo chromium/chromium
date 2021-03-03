@@ -34,6 +34,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/host_id.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
@@ -61,8 +62,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(extensions::UserScript::InjectionType,
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::UserScript::RunLocation,
                           extensions::UserScript::RUN_LOCATION_LAST - 1)
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::UserScript::ActionType,
-                          extensions::UserScript::ACTION_TYPE_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::ActionType,
+                          extensions::mojom::ActionType::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::MessagingEndpoint::Type,
                           extensions::MessagingEndpoint::Type::kLast)
@@ -168,7 +169,7 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ExecuteCode_Params)
   IPC_STRUCT_MEMBER(HostID, host_id)
 
   // Whether the code is JavaScript or CSS.
-  IPC_STRUCT_MEMBER(extensions::UserScript::ActionType, action_type)
+  IPC_STRUCT_MEMBER(extensions::mojom::ActionType, action_type)
 
   // String of code to execute.
   IPC_STRUCT_MEMBER(std::string, code)

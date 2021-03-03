@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/user_script.h"
 
 class GURL;
@@ -106,7 +107,7 @@ class ScriptExecutor {
   // failure and appropriate error message).
   // TODO(devlin): Make |frame_ids| a std::set<> (since they must be unique).
   void ExecuteScript(const HostID& host_id,
-                     UserScript::ActionType action_type,
+                     mojom::ActionType action_type,
                      const std::string& code,
                      FrameScope frame_scope,
                      const std::vector<int>& frame_ids,

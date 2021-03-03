@@ -18,6 +18,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -293,10 +294,10 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
   }
 
   script_executor->ExecuteScript(
-      HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_JAVASCRIPT,
-      std::move(code_to_execute), frame_scope, frame_ids,
-      ScriptExecutor::MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-      ScriptExecutor::DEFAULT_PROCESS,
+      HostID(HostID::EXTENSIONS, extension()->id()),
+      mojom::ActionType::kAddJavascript, std::move(code_to_execute),
+      frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
+      UserScript::DOCUMENT_IDLE, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), std::move(script_url), user_gesture(),
       CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
@@ -408,7 +409,7 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
   DCHECK(script_executor);
 
   script_executor->ExecuteScript(
-      HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_CSS,
+      HostID(HostID::EXTENSIONS, extension()->id()), mojom::ActionType::kAddCss,
       std::move(code_to_execute), frame_scope, frame_ids,
       ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
       ScriptExecutor::DEFAULT_PROCESS,
@@ -476,8 +477,8 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
   DCHECK(code.empty() || !script_url.is_valid());
 
   script_executor->ExecuteScript(
-      HostID(HostID::EXTENSIONS, extension()->id()), UserScript::REMOVE_CSS,
-      std::move(code), frame_scope, frame_ids,
+      HostID(HostID::EXTENSIONS, extension()->id()),
+      mojom::ActionType::kRemoveCss, std::move(code), frame_scope, frame_ids,
       ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
       ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), std::move(script_url), user_gesture(),

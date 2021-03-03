@@ -290,7 +290,7 @@ ScriptExecutor::ScriptExecutor(content::WebContents* web_contents)
 ScriptExecutor::~ScriptExecutor() {}
 
 void ScriptExecutor::ExecuteScript(const HostID& host_id,
-                                   UserScript::ActionType action_type,
+                                   mojom::ActionType action_type,
                                    const std::string& code,
                                    ScriptExecutor::FrameScope frame_scope,
                                    const std::vector<int>& frame_ids,
@@ -331,8 +331,8 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
   // Generate the unique key that represents this CSS injection or removal
   // from an extension (i.e. tabs.insertCSS or tabs.removeCSS).
   if (host_id.type() == HostID::EXTENSIONS &&
-      (action_type == UserScript::ADD_CSS ||
-       action_type == UserScript::REMOVE_CSS))
+      (action_type == mojom::ActionType::kAddCss ||
+       action_type == mojom::ActionType::kRemoveCss))
     params.injection_key = GenerateInjectionKey(host_id, script_url, code);
 
   // Handler handles IPCs and deletes itself on completion.

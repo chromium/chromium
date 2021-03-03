@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -124,9 +125,9 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
 
   ScriptExecutorHelper helper;
   script_executor.ExecuteScript(
-      HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-      kCode, ScriptExecutor::SPECIFIED_FRAMES,
-      {ExtensionApiFrameIdMap::kTopFrameId},
+      HostID(HostID::EXTENSIONS, extension->id()),
+      mojom::ActionType::kAddJavascript, kCode,
+      ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
       ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
       ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
       GURL() /* script_url */, false /* user_gesture */, CSSOrigin::kAuthor,
@@ -205,8 +206,9 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // get a result.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
+        HostID(HostID::EXTENSIONS, extension->id()),
+        mojom::ActionType::kAddJavascript, kCode,
+        ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
         GURL() /* script_url */, false /* user_gesture */, CSSOrigin::kAuthor,
@@ -224,8 +226,9 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // should result in frame2_child being added to the results.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
+        HostID(HostID::EXTENSIONS, extension->id()),
+        mojom::ActionType::kAddJavascript, kCode,
+        ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
         GURL() /* script_url */, false /* user_gesture */, CSSOrigin::kAuthor,
@@ -252,8 +255,9 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // doesn't exist.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::SPECIFIED_FRAMES,
+        HostID(HostID::EXTENSIONS, extension->id()),
+        mojom::ActionType::kAddJavascript, kCode,
+        ScriptExecutor::SPECIFIED_FRAMES,
         {frame1_id, frame2_id, kNonExistentFrameId},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
@@ -275,8 +279,9 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // Try injecting into a single non-existent frame.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
+        HostID(HostID::EXTENSIONS, extension->id()),
+        mojom::ActionType::kAddJavascript, kCode,
+        ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
         GURL() /* script_url */, false /* user_gesture */, CSSOrigin::kAuthor,
