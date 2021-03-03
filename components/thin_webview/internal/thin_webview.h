@@ -46,7 +46,8 @@ class ThinWebView : public content::WebContentsObserver {
 
  private:
   // content::WebContentsObserver overrides:
-  void DocumentAvailableInMainFrame() override;
+  void DocumentAvailableInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   void SetWebContents(
       content::WebContents* web_contents,

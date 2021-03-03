@@ -302,7 +302,8 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
     }
 
     // WebContentsObserver:
-    void DocumentOnLoadCompletedInMainFrame() override {
+    void DocumentOnLoadCompletedInMainFrame(
+        RenderFrameHost* render_frame_host) override {
       observed_ = true;
       if (run_loop_.running())
         run_loop_.Quit();

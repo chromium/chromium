@@ -52,7 +52,8 @@ class LoadingPredictorTabHelper
       const GURL& url,
       const std::string& mime_type,
       network::mojom::RequestDestination request_destination) override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   void SetLoadingPredictorForTesting(
       base::WeakPtr<LoadingPredictor> predictor) {

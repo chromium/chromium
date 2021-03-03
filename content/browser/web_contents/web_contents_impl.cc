@@ -5455,11 +5455,12 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
   }
 }
 
-void WebContentsImpl::DocumentAvailableInMainFrame() {
+void WebContentsImpl::DocumentAvailableInMainFrame(
+    RenderFrameHost* render_frame_host) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::DocumentAvailableInMainFrame");
-  observers_.NotifyObservers(
-      &WebContentsObserver::DocumentAvailableInMainFrame);
+  observers_.NotifyObservers(&WebContentsObserver::DocumentAvailableInMainFrame,
+                             render_frame_host);
 }
 
 void WebContentsImpl::PassiveInsecureContentFound(const GURL& resource_url) {
@@ -7120,7 +7121,8 @@ void WebContentsImpl::DocumentOnLoadCompleted(
   GetRenderViewHost()->DocumentOnLoadCompletedInMainFrame();
 
   observers_.NotifyObservers(
-      &WebContentsObserver::DocumentOnLoadCompletedInMainFrame);
+      &WebContentsObserver::DocumentOnLoadCompletedInMainFrame,
+      render_frame_host);
 
   // TODO(avi): Remove. http://crbug.com/170921
   NotificationService::current()->Notify(

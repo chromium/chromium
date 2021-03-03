@@ -102,7 +102,8 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
   }
 
   void WaitForBubbleToBeShown() {
-    manager_->DocumentOnLoadCompletedInMainFrame();
+    manager_->DocumentOnLoadCompletedInMainFrame(
+        web_contents()->GetMainFrame());
     base::RunLoop().RunUntilIdle();
   }
 

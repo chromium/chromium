@@ -216,7 +216,8 @@ void NavigationControllerImpl::TitleWasSet(content::NavigationEntry* entry) {
   OnNavigationEntryChanged();
 }
 
-void NavigationControllerImpl::DocumentAvailableInMainFrame() {
+void NavigationControllerImpl::DocumentAvailableInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   // The main document is loaded, but not necessarily all the subresources. Some
   // fields like "title" will change here.
 

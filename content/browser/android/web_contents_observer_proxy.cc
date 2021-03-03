@@ -139,7 +139,8 @@ void WebContentsObserverProxy::DidChangeVisibleSecurityState() {
       AttachCurrentThread(), java_observer_);
 }
 
-void WebContentsObserverProxy::DocumentAvailableInMainFrame() {
+void WebContentsObserverProxy::DocumentAvailableInMainFrame(
+    RenderFrameHost* render_frame_host) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_documentAvailableInMainFrame(env,
                                                              java_observer_);

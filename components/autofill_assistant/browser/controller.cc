@@ -1979,7 +1979,8 @@ void Controller::DidFinishNavigation(
   }
 }
 
-void Controller::DocumentAvailableInMainFrame() {
+void Controller::DocumentAvailableInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   OnUrlChange();
 }
 

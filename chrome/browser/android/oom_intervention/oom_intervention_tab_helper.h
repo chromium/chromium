@@ -61,7 +61,8 @@ class OomInterventionTabHelper
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   // CrashDumpManager::Observer:
   void OnCrashDumpProcessed(

@@ -107,7 +107,7 @@ class ChromePermissionRequestManagerTest
   }
 
   void WaitForBubbleToBeShown() {
-    manager_->DocumentOnLoadCompletedInMainFrame();
+    manager_->DocumentOnLoadCompletedInMainFrame(main_rfh());
     base::RunLoop().RunUntilIdle();
   }
 

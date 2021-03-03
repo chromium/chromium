@@ -161,7 +161,7 @@ void NfcPermissionContextTests::RequestManagerDocumentLoadCompleted() {
 void NfcPermissionContextTests::RequestManagerDocumentLoadCompleted(
     content::WebContents* web_contents) {
   permissions::PermissionRequestManager::FromWebContents(web_contents)
-      ->DocumentOnLoadCompletedInMainFrame();
+      ->DocumentOnLoadCompletedInMainFrame(web_contents->GetMainFrame());
 }
 
 ContentSetting NfcPermissionContextTests::GetNfcContentSetting(GURL frame_0,

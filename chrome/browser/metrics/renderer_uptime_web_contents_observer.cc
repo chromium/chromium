@@ -29,7 +29,8 @@ RendererUptimeWebContentsObserver::CreateForWebContents(
   return observer;
 }
 
-void RendererUptimeWebContentsObserver::DocumentAvailableInMainFrame() {
+void RendererUptimeWebContentsObserver::DocumentAvailableInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   // RendererUptimeTracker can be null in unittests.
   if (RendererUptimeTracker* tracker = RendererUptimeTracker::Get()) {
     tracker->OnLoadInMainFrame(
