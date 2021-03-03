@@ -4,6 +4,7 @@
 
 module chromeos.libassistant.mojom;
 
+import "chromeos/services/libassistant/public/mojom/settings_controller.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 
 enum ServiceState {
@@ -38,16 +39,6 @@ interface ServiceController {
   // Will be a noop if the service is already stopped.
   ResetAllDataAndStop();
 
-  // Sets whether spoken feedback is enabled.
-  SetSpokenFeedbackEnabled(bool value);
-
-  // Sets the authentication tokens used by Libassistant.
-  // Passing in an empty array will restart Libassistant in signed-out mode.
-  SetAuthenticationTokens(array<AuthenticationToken> tokens);
-
-  // Sets whether hotword detection is enabled.
-  SetHotwordEnabled(bool value);
-
   // Add a state observer. It will immediately be called with the current state,
   // and then once for each state change.
   AddAndFireStateObserver(pending_remote<StateObserver> observer);
@@ -61,12 +52,6 @@ interface StateObserver {
   OnStateChanged(ServiceState new_state);
 };
 
-// A token used by Libassistant to authenticate the user.
-struct AuthenticationToken {
-  string gaia_id;
-  string access_token;
-};
-
 // Configuration settings that must be set to allow Libassistant to boot.
 struct BootupConfig {
   // A custom URI for the S3 Server. Used to use a fake S3 server during
@@ -78,6 +63,7 @@ struct BootupConfig {
   // If false, the logs will end up in /var/log/chrome/.
   bool log_in_home_dir;
 
+  array<AuthenticationToken> authentication_tokens;
   string locale;
   bool spoken_feedback_enabled;
   bool hotword_enabled;

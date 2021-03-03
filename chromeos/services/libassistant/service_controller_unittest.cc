@@ -16,6 +16,8 @@
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
+#include "chromeos/services/libassistant/settings_controller.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/device_state_listener.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,6 +48,13 @@ using ::testing::StrictMock;
         << "Path '" << path << "' not found in config: " << config_string; \
     EXPECT_EQ(*actual, expected);                                          \
   })
+
+std::vector<mojom::AuthenticationTokenPtr> ToVector(
+    mojom::AuthenticationTokenPtr token) {
+  std::vector<mojom::AuthenticationTokenPtr> result;
+  result.push_back(std::move(token));
+  return result;
+}
 
 class StateObserverMock : public mojom::StateObserver {
  public:
@@ -93,13 +102,30 @@ class AssistantManagerObserverMock : public AssistantManagerObserver {
   MOCK_METHOD(void, OnAssistantManagerDestroyed, ());
 };
 
+class SettingsControllerMock : public mojom::SettingsController {
+ public:
+  SettingsControllerMock() = default;
+  SettingsControllerMock(const SettingsControllerMock&) = delete;
+  SettingsControllerMock& operator=(const SettingsControllerMock&) = delete;
+  ~SettingsControllerMock() override = default;
+
+  // mojom::SettingsController implementation:
+  MOCK_METHOD(void,
+              SetAuthenticationTokens,
+              (std::vector<mojom::AuthenticationTokenPtr> tokens));
+  MOCK_METHOD(void, SetLocale, (const std::string& value));
+  MOCK_METHOD(void, SetSpokenFeedbackEnabled, (bool value));
+  MOCK_METHOD(void, SetHotwordEnabled, (bool value));
+};
+
 class AssistantServiceControllerTest : public testing::Test {
  public:
   AssistantServiceControllerTest()
       : service_controller_(
             std::make_unique<ServiceController>(&delegate_,
                                                 /*platform_api=*/nullptr)) {
-    service_controller_->Bind(client_.BindNewPipeAndPassReceiver());
+    service_controller_->Bind(client_.BindNewPipeAndPassReceiver(),
+                              &settings_controller_);
   }
 
   mojo::Remote<mojom::ServiceController>& client() { return client_; }
@@ -165,6 +191,10 @@ class AssistantServiceControllerTest : public testing::Test {
     return delegate_;
   }
 
+  SettingsControllerMock& settings_controller_mock() {
+    return settings_controller_;
+  }
+
  private:
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory() {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
@@ -177,6 +207,7 @@ class AssistantServiceControllerTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
 
   assistant::FakeAssistantManagerServiceDelegate delegate_;
+  testing::NiceMock<SettingsControllerMock> settings_controller_;
   mojo::Remote<mojom::ServiceController> client_;
   std::unique_ptr<ServiceController> service_controller_;
 };
@@ -634,6 +665,27 @@ TEST_F(AssistantServiceControllerTest,
   EXPECT_CALL(observer, OnDestroyingAssistantManager);
   EXPECT_CALL(observer, OnAssistantManagerDestroyed);
   DestroyServiceController();
+}
+
+TEST_F(AssistantServiceControllerTest,
+       ShouldPassBootupConfigToSettingsController) {
+  const bool hotword_enabled = true;
+  const bool spoken_feedback_enabled = false;
+
+  EXPECT_CALL(settings_controller_mock(), SetLocale("locale"));
+  EXPECT_CALL(settings_controller_mock(), SetHotwordEnabled(hotword_enabled));
+  EXPECT_CALL(settings_controller_mock(),
+              SetSpokenFeedbackEnabled(spoken_feedback_enabled));
+  EXPECT_CALL(settings_controller_mock(), SetAuthenticationTokens);
+
+  auto bootup_config = mojom::BootupConfig::New();
+  bootup_config->locale = "locale";
+  bootup_config->hotword_enabled = hotword_enabled;
+  bootup_config->spoken_feedback_enabled = spoken_feedback_enabled;
+  bootup_config->authentication_tokens =
+      ToVector(mojom::AuthenticationToken::New("user", "token"));
+
+  Initialize(std::move(bootup_config));
 }
 
 }  // namespace libassistant

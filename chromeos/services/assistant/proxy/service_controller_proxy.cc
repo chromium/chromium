@@ -50,19 +50,6 @@ void InitializeAssistantManager(
       arguments.assistant_manager_delegate);
 }
 
-std::vector<AuthenticationTokenPtr> ToMojomAuthenticationTokens(
-    const ServiceControllerProxy::AuthTokens& tokens) {
-  std::vector<AuthenticationTokenPtr> result;
-
-  for (const std::pair<std::string, std::string>& token : tokens) {
-    result.emplace_back(AuthenticationTokenPtr(base::in_place,
-                                               /*gaia_id=*/token.first,
-                                               /*access_token=*/token.second));
-  }
-
-  return result;
-}
-
 }  // namespace
 
 ServiceControllerProxy::ServiceControllerProxy(
@@ -80,8 +67,7 @@ ServiceControllerProxy::~ServiceControllerProxy() = default;
 
 void ServiceControllerProxy::Start(
     assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
-    chromeos::libassistant::mojom::BootupConfigPtr bootup_config,
-    const AuthTokens& auth_tokens) {
+    chromeos::libassistant::mojom::BootupConfigPtr bootup_config) {
   // We need to initialize the |AssistantManager| once it's created and before
   // it's started, so we register a callback to do just that.
   StartArguments arguments;
@@ -92,7 +78,6 @@ void ServiceControllerProxy::Start(
   // The mojom service will create the |AssistantManager|.
   service_controller_remote_->Initialize(std::move(bootup_config),
                                          BindURLLoaderFactory());
-  SetAuthTokens(auth_tokens);
   service_controller_remote_->Start();
 }
 
@@ -102,15 +87,6 @@ void ServiceControllerProxy::Stop() {
 
 void ServiceControllerProxy::ResetAllDataAndStop() {
   service_controller_remote_->ResetAllDataAndStop();
-}
-
-void ServiceControllerProxy::SetSpokenFeedbackEnabled(bool value) {
-  service_controller_remote_->SetSpokenFeedbackEnabled(value);
-}
-
-void ServiceControllerProxy::SetAuthTokens(const AuthTokens& tokens) {
-  service_controller_remote_->SetAuthenticationTokens(
-      ToMojomAuthenticationTokens(tokens));
 }
 
 void ServiceControllerProxy::AddAndFireStateObserver(

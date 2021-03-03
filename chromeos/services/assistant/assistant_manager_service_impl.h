@@ -265,9 +265,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   chromeos::libassistant::mojom::DisplayController& display_controller();
   ServiceControllerProxy& service_controller();
   const ServiceControllerProxy& service_controller() const;
+  chromeos::libassistant::mojom::SettingsController& settings_controller();
   base::Thread& background_thread();
   void set_stop_interaction_delay_for_testing(base::TimeDelta delay) {
-    stop_interactioin_delay_ = delay;
+    stop_interaction_delay_ = delay;
   }
 
   void SetStateAndInformObservers(State new_state);
@@ -312,7 +313,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // Configuration passed to libassistant.
   chromeos::libassistant::mojom::BootupConfigPtr bootup_config_;
 
-  base::TimeDelta stop_interactioin_delay_ =
+  base::TimeDelta stop_interaction_delay_ =
       base::TimeDelta::FromMilliseconds(500);
   std::unique_ptr<base::CancelableOnceClosure> stop_interaction_closure_;
 

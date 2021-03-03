@@ -55,6 +55,7 @@ void LibassistantServiceTester::BindControllers() {
                 display_controller_.BindNewPipeAndPassReceiver(),
                 media_controller_.BindNewPipeAndPassReceiver(),
                 service_controller_.BindNewPipeAndPassReceiver(),
+                settings_controller_.BindNewPipeAndPassReceiver(),
                 speaker_id_enrollment_controller_.BindNewPipeAndPassReceiver(),
                 std::move(pending_audio_output_delegate_remote),
                 std::move(pending_media_delegate_remote),

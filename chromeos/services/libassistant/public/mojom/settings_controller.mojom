@@ -1,0 +1,34 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.libassistant.mojom;
+
+// Interface managing the settings of Libassistant.
+// This controller is hosted in the Libassistant mojom service, and will be
+// invoked from the browser process.
+// All settings can be set at any time, even before the Libassistant service
+// has been initialized/started.
+// Note that the settings will be reset to their default values when the
+// Libassistant service is stopped.
+interface SettingsController {
+  // Sets the authentication tokens used by Libassistant.
+  // Passing in an empty array will restart Libassistant in signed-out mode.
+  SetAuthenticationTokens(array<AuthenticationToken> tokens);
+
+  // Sets the locale used on the local ChromeOS device.
+  SetLocale(string locale);
+
+  // Sets whether spoken feedback is enabled.
+  SetSpokenFeedbackEnabled(bool value);
+
+  // Sets whether hotword detection is enabled.
+  SetHotwordEnabled(bool value);
+};
+
+// A token used by Libassistant to authenticate the user.
+struct AuthenticationToken {
+  string gaia_id;
+  string access_token;
+};
+

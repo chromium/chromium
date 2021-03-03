@@ -109,6 +109,7 @@ void AssistantProxy::BindControllers(
       display_controller_remote_.BindNewPipeAndPassReceiver(),
       media_controller_remote_.BindNewPipeAndPassReceiver(),
       pending_service_controller_remote.InitWithNewPipeAndPassReceiver(),
+      settings_controller_remote_.BindNewPipeAndPassReceiver(),
       pending_speaker_id_enrollment_controller_remote
           .InitWithNewPipeAndPassReceiver(),
       std::move(pending_audio_output_delegate_remote),
@@ -185,6 +186,12 @@ chromeos::libassistant::mojom::MediaController&
 AssistantProxy::media_controller() {
   DCHECK(media_controller_remote_.is_bound());
   return *media_controller_remote_.get();
+}
+
+chromeos::libassistant::mojom::SettingsController&
+AssistantProxy::settings_controller() {
+  DCHECK(settings_controller_remote_.is_bound());
+  return *settings_controller_remote_;
 }
 
 void AssistantProxy::AddSpeechRecognitionObserver(

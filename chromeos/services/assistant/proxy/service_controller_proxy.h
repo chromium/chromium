@@ -34,9 +34,6 @@ class LibassistantServiceHost;
 // exposing methods to start/stop and configure Libassistant.
 class ServiceControllerProxy {
  public:
-  // Each authentication token exists of a [gaia_id, access_token] tuple.
-  using AuthTokens = std::vector<std::pair<std::string, std::string>>;
-
   ServiceControllerProxy(
       LibassistantServiceHost* host,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -53,16 +50,10 @@ class ServiceControllerProxy {
   // Start() can only be called when the service is stopped.
   void Start(
       assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
-      chromeos::libassistant::mojom::BootupConfigPtr bootup_config,
-      const AuthTokens& auth_tokens);
+      chromeos::libassistant::mojom::BootupConfigPtr bootup_config);
   // Stop and destroy the |AssistantManager| and all related objects.
   void Stop();
   void ResetAllDataAndStop();
-
-  void SetSpokenFeedbackEnabled(bool value);
-
-  // Passing in an empty vector will start Libassistant in signed-out mode.
-  void SetAuthTokens(const AuthTokens& tokens);
 
   void AddAndFireStateObserver(
       mojo::PendingRemote<chromeos::libassistant::mojom::StateObserver>

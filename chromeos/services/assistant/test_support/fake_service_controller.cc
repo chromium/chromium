@@ -19,7 +19,7 @@ namespace assistant {
     return;                                                                 \
   }
 
-FakeServiceController::FakeServiceController() : receiver_(this) {}
+FakeServiceController::FakeServiceController() {}
 FakeServiceController::~FakeServiceController() = default;
 
 void FakeServiceController::SetState(State new_state) {
@@ -36,15 +36,18 @@ void FakeServiceController::SetState(State new_state) {
 
 void FakeServiceController::Bind(
     mojo::PendingReceiver<chromeos::libassistant::mojom::ServiceController>
-        pending_receiver) {
-  EXPECT_FALSE(receiver_.is_bound());
-  receiver_.Bind(std::move(pending_receiver));
+        service_receiver,
+    mojo::PendingReceiver<chromeos::libassistant::mojom::SettingsController>
+        settings_receiver) {
+  service_receiver_.Bind(std::move(service_receiver));
+  settings_receiver_.Bind(std::move(settings_receiver));
 }
 
 void FakeServiceController::Unbind() {
   // All mojom objects must now be unbound, as that needs to happen on the
   // same thread as they were bound (which is the background thread).
-  receiver_.reset();
+  service_receiver_.reset();
+  settings_receiver_.reset();
   state_observers_.Clear();
 }
 
@@ -79,7 +82,10 @@ void FakeServiceController::Initialize(
     chromeos::libassistant::mojom::BootupConfigPtr config,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
   mojom_task_runner_ = base::SequencedTaskRunnerHandle::Get();
-  libassistant_config_ = std::move(*config);
+  libassistant_config_ = std::move(config);
+
+  authentication_tokens_ =
+      std::move(libassistant_config_->authentication_tokens);
 }
 
 void FakeServiceController::Start() {

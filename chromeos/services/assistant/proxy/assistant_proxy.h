@@ -59,6 +59,9 @@ class AssistantProxy {
   // Returns the controller that manages media related settings.
   chromeos::libassistant::mojom::MediaController& media_controller();
 
+  // Returns the controller that manages Libassistant settings.
+  chromeos::libassistant::mojom::SettingsController& settings_controller();
+
   // The background thread is temporary exposed until the entire Libassistant
   // API is hidden behind this proxy API.
   base::Thread& background_thread() { return background_thread_; }
@@ -104,6 +107,8 @@ class AssistantProxy {
       display_controller_remote_;
   mojo::Remote<chromeos::libassistant::mojom::MediaController>
       media_controller_remote_;
+  mojo::Remote<chromeos::libassistant::mojom::SettingsController>
+      settings_controller_remote_;
 
   std::unique_ptr<ConversationControllerProxy> conversation_controller_proxy_;
   std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;

@@ -11,6 +11,7 @@
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
 #include "libassistant/shared/public/assistant_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -55,7 +56,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   ServiceController& operator=(ServiceController&) = delete;
   ~ServiceController() override;
 
-  void Bind(mojo::PendingReceiver<mojom::ServiceController> receiver);
+  void Bind(mojo::PendingReceiver<mojom::ServiceController> receiver,
+            mojom::SettingsController* settings_controller);
 
   // Set a callback to initialize |AssistantManager| and
   // |AssistantManagerInternal|. This callback will be invoked before
@@ -72,13 +74,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void ResetAllDataAndStop() override;
   void AddAndFireStateObserver(
       mojo::PendingRemote<mojom::StateObserver> observer) override;
-  void SetSpokenFeedbackEnabled(bool value) override;
-  void SetHotwordEnabled(bool value) override;
-  void SetAuthenticationTokens(
-      std::vector<mojom::AuthenticationTokenPtr> tokens) override;
 
   void AddAndFireAssistantManagerObserver(AssistantManagerObserver* observer);
   void RemoveAssistantManagerObserver(AssistantManagerObserver* observer);
+  void RemoveAllAssistantManagerObservers();
 
   bool IsInitialized() const;
   // Note this is true even when the service is running (as it is still started
@@ -92,27 +91,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
  private:
-  class DeviceSettingsUpdater;
   class DeviceStateListener;
-
-  using UpdateSettingsCallback = base::OnceCallback<void(const std::string&)>;
-  void UpdateSettings(const std::string& settings,
-                      UpdateSettingsCallback callback);
 
   void OnStartFinished();
 
   void SetStateAndInformObservers(mojom::ServiceState new_state);
-
-  void SetLocale(const std::string& value);
-
-  // The settings are being passed in to clearly document when the internal
-  // options must be updated.
-  void SetInternalOptions(const base::Optional<std::string>& locale,
-                          base::Optional<bool> spoken_feedback_enabled);
-  // The settings are being passed in to clearly document when the device
-  // settings must be updated.
-  void SetDeviceSettings(const base::Optional<std::string>& locale,
-                         base::Optional<bool> hotword_enabled);
 
   void CreateAndRegisterDeviceStateListener();
   void CreateAndRegisterChromiumApiDelegate(
@@ -121,10 +104,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
 
   mojom::ServiceState state_ = mojom::ServiceState::kStopped;
-  // The below options will be initialize during the Initialize() call.
-  base::Optional<std::string> locale_;
-  base::Optional<bool> spoken_feedback_enabled_;
-  base::Optional<bool> hotword_enabled_;
+
+  // Called during |Initialize| to apply boot configuration.
+  mojom::SettingsController* settings_controller_ = nullptr;
 
   // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
   assistant::AssistantManagerServiceDelegate* const delegate_;
@@ -141,12 +123,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   std::unique_ptr<assistant::LibassistantV1Api> libassistant_v1_api_;
   std::unique_ptr<DeviceStateListener> device_state_listener_;
 
-  // Instantiated when |SetHotwordEnabled| is called.
-  // Will wait until Libassistant is started, and then update the device
-  // settings.
-  std::unique_ptr<DeviceSettingsUpdater> device_settings_updater_;
-
-  mojo::Receiver<mojom::ServiceController> receiver_;
+  mojo::Receiver<mojom::ServiceController> receiver_{this};
   mojo::RemoteSet<mojom::StateObserver> state_observers_;
   base::ObserverList<AssistantManagerObserver> assistant_manager_observers_;
 };

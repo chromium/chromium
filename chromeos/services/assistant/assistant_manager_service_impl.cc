@@ -90,14 +90,20 @@ CommunicationErrorType CommunicationErrorTypeFromLibassistantErrorCode(
   return CommunicationErrorType::Other;
 }
 
-ServiceControllerProxy::AuthTokens ToAuthTokensOrEmpty(
+std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>
+ToAuthenticationTokens(
     const base::Optional<AssistantManagerService::UserInfo>& user) {
-  if (!user.has_value())
-    return {};
+  std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr> result;
 
-  DCHECK(!user.value().gaia_id.empty());
-  DCHECK(!user.value().access_token.empty());
-  return {std::make_pair(user.value().gaia_id, user.value().access_token)};
+  if (user.has_value()) {
+    DCHECK(!user.value().gaia_id.empty());
+    DCHECK(!user.value().access_token.empty());
+    result.emplace_back(libassistant::mojom::AuthenticationToken::New(
+        /*gaia_id=*/user.value().gaia_id,
+        /*access_token=*/user.value().access_token));
+  }
+
+  return result;
 }
 
 const char* ToTriggerSource(AssistantEntryPoint entry_point) {
@@ -319,7 +325,7 @@ void AssistantManagerServiceImpl::SetUser(
     return;
 
   VLOG(1) << "Set user information (Gaia ID and access token).";
-  service_controller().SetAuthTokens(ToAuthTokensOrEmpty(user));
+  settings_controller().SetAuthenticationTokens(ToAuthenticationTokens(user));
 }
 
 void AssistantManagerServiceImpl::EnableListening(bool enable) {
@@ -440,7 +446,7 @@ void AssistantManagerServiceImpl::StopActiveInteraction(
 
   main_task_runner()->PostDelayedTask(FROM_HERE,
                                       stop_interaction_closure_->callback(),
-                                      stop_interactioin_delay_);
+                                      stop_interaction_delay_);
 }
 
 void AssistantManagerServiceImpl::StartEditReminderInteraction(
@@ -782,13 +788,13 @@ void AssistantManagerServiceImpl::InitAssistant(
   DCHECK(!IsServiceStarted());
 
   auto bootup_config = bootup_config_.Clone();
+  bootup_config->authentication_tokens = ToAuthenticationTokens(user);
+  bootup_config->hotword_enabled = assistant_state()->hotword_enabled().value();
   bootup_config->locale = assistant_state()->locale().value();
   bootup_config->spoken_feedback_enabled = spoken_feedback_enabled_;
-  bootup_config->hotword_enabled = assistant_state()->hotword_enabled().value();
 
   service_controller().Start(
-      /*assistant_manager_delegate=*/this, std::move(bootup_config),
-      ToAuthTokensOrEmpty(user));
+      /*assistant_manager_delegate=*/this, std::move(bootup_config));
 }
 
 base::Thread& AssistantManagerServiceImpl::GetBackgroundThreadForTesting() {
@@ -874,7 +880,7 @@ void AssistantManagerServiceImpl::OnAccessibilityStatusChanged(
   // When |spoken_feedback_enabled_| changes we need to update our internal
   // options to turn on/off A11Y features in LibAssistant.
   if (IsServiceStarted())
-    service_controller().SetSpokenFeedbackEnabled(spoken_feedback_enabled_);
+    settings_controller().SetSpokenFeedbackEnabled(spoken_feedback_enabled_);
 }
 
 void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {
@@ -1046,6 +1052,11 @@ AssistantManagerServiceImpl::conversation_controller_proxy() {
 
 ServiceControllerProxy& AssistantManagerServiceImpl::service_controller() {
   return assistant_proxy_->service_controller();
+}
+
+::chromeos::libassistant::mojom::SettingsController&
+AssistantManagerServiceImpl::settings_controller() {
+  return assistant_proxy_->settings_controller();
 }
 
 const ServiceControllerProxy& AssistantManagerServiceImpl::service_controller()

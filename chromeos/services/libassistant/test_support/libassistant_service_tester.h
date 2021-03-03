@@ -76,6 +76,7 @@ class LibassistantServiceTester {
   mojo::Remote<mojom::DisplayController> display_controller_;
   mojo::Remote<mojom::MediaController> media_controller_;
   mojo::Remote<mojom::ServiceController> service_controller_;
+  mojo::Remote<mojom::SettingsController> settings_controller_;
   mojo::Remote<mojom::SpeakerIdEnrollmentController>
       speaker_id_enrollment_controller_;
   mojo::PendingReceiver<mojom::AudioOutputDelegate>

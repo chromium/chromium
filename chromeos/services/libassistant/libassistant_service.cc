@@ -16,6 +16,7 @@
 #include "chromeos/services/libassistant/media_controller.h"
 #include "chromeos/services/libassistant/platform_api.h"
 #include "chromeos/services/libassistant/service_controller.h"
+#include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/speaker_id_enrollment_controller.h"
 
 namespace chromeos {
@@ -39,19 +40,22 @@ LibassistantService::LibassistantService(
       display_controller_(
           std::make_unique<DisplayController>(&speech_recognition_observers_)),
       media_controller_(std::make_unique<MediaController>()),
+      settings_controller_(std::make_unique<SettingsController>()),
       speaker_id_enrollment_controller_(
           std::make_unique<SpeakerIdEnrollmentController>(
               audio_input_controller_.get())) {
   service_controller_->AddAndFireAssistantManagerObserver(
-      display_controller_.get());
+      conversation_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
       conversation_state_listener_.get());
+  service_controller_->AddAndFireAssistantManagerObserver(
+      display_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
       media_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
       speaker_id_enrollment_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
-      conversation_controller_.get());
+      settings_controller_.get());
 
   platform_api_->SetAudioInputProvider(
       &audio_input_controller_->audio_input_provider());
@@ -61,15 +65,7 @@ LibassistantService::~LibassistantService() {
   // We explicitly stop the Libassistant service before destroying anything,
   // to prevent use-after-free bugs.
   service_controller_->Stop();
-  service_controller_->RemoveAssistantManagerObserver(
-      display_controller_.get());
-  service_controller_->RemoveAssistantManagerObserver(
-      conversation_state_listener_.get());
-  service_controller_->RemoveAssistantManagerObserver(media_controller_.get());
-  service_controller_->RemoveAssistantManagerObserver(
-      speaker_id_enrollment_controller_.get());
-  service_controller_->RemoveAssistantManagerObserver(
-      conversation_controller_.get());
+  service_controller_->RemoveAllAssistantManagerObservers();
 }
 
 void LibassistantService::Bind(
@@ -79,6 +75,7 @@ void LibassistantService::Bind(
     mojo::PendingReceiver<mojom::DisplayController> display_controller,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingReceiver<mojom::ServiceController> service_controller,
+    mojo::PendingReceiver<mojom::SettingsController> settings_controller,
     mojo::PendingReceiver<mojom::SpeakerIdEnrollmentController>
         speaker_id_enrollment_controller,
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
@@ -93,7 +90,9 @@ void LibassistantService::Bind(
                           std::move(media_delegate));
   platform_api_->Bind(std::move(audio_output_delegate),
                       platform_delegate_.get());
-  service_controller_->Bind(std::move(service_controller));
+  settings_controller_->Bind(std::move(settings_controller));
+  service_controller_->Bind(std::move(service_controller),
+                            settings_controller_.get());
   speaker_id_enrollment_controller_->Bind(
       std::move(speaker_id_enrollment_controller));
 }

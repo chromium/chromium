@@ -30,6 +30,7 @@ class FakeLibassistantService
   void Unbind();
 
   FakeServiceController& service_controller() { return service_controller_; }
+  FakeServiceController& settings_controller() { return service_controller_; }
 
   // Return the receiver that was passed into the last Bind() call.
   mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>
@@ -53,6 +54,8 @@ class FakeLibassistantService
           media_controller,
       mojo::PendingReceiver<chromeos::libassistant::mojom::ServiceController>
           service_controller,
+      mojo::PendingReceiver<chromeos::libassistant::mojom::SettingsController>
+          settings_controller,
       mojo::PendingReceiver<
           chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
           speaker_id_enrollment_controller,
