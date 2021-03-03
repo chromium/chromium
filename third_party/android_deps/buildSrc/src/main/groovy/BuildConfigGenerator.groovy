@@ -353,6 +353,8 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     private static void addSpecialTreatment(StringBuilder sb, String dependencyId, String dependencyExtension) {
+        addPreconditionsOverrideTreatment(sb, dependencyId)
+
         if (dependencyId.startsWith('org_robolectric')) {
             // Skip platform checks since it depends on
             // accessibility_test_framework_java which requires_android.
@@ -492,7 +494,7 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # because androidx_concurrent_futures also depends on it and to avoid\n')
                 sb.append('  # defining ListenableFuture.class twice.\n')
                 sb.append('  deps += [":com_google_guava_listenablefuture_java"]\n')
-                sb.append('  jar_excluded_patterns = ["*/ListenableFuture.class"]\n')
+                sb.append('  jar_excluded_patterns += ["*/ListenableFuture.class"]\n')
                 break
             case 'com_google_code_findbugs_jsr305':
             case 'com_google_errorprone_error_prone_annotations':
@@ -538,7 +540,7 @@ class BuildConfigGenerator extends DefaultTask {
                 break
             case 'com_google_android_gms_play_services_basement':
                 sb.append('  # https://crbug.com/989505\n')
-                sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
+                sb.append('  jar_excluded_patterns += ["META-INF/proguard/*"]\n')
                 // Deprecated deps jar but still needed by play services basement.
                 sb.append('  input_jars_paths=["\\$android_sdk/optional/org.apache.http.legacy.jar"]\n')
                 sb.append('  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"\n')
@@ -601,6 +603,44 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  enable_bytecode_checks = false\n')
                 break
         }
+    }
+
+    private static void addPreconditionsOverrideTreatment(StringBuilder sb, String dependencyId) {
+        def targetName = translateTargetName(dependencyId)
+        switch(targetName) {
+          case "androidx_core_core":
+          case "com_google_guava_guava_android":
+          case "google_play_services_basement":
+              def preconditionsTarget = (targetName == "androidx_core_core")
+                  ? "preconditions_androidx_stub_java"
+                  : "preconditions_stub_java"
+              sb.append("""
+                |
+                | jar_excluded_patterns = []
+                | if (!is_java_debug && !dcheck_always_on) {
+                |   # Omit the file since we use our own copy.
+                |   jar_excluded_patterns += [
+                |     "${computePreconditionsClassForDep(dependencyId)}",
+                |   ]
+                |   deps += [
+                |     "//third_party/android_deps/local_modifications/preconditions:${preconditionsTarget}",
+                |   ]
+                | }
+                |""".stripMargin())
+         }
+    }
+
+    private static String computePreconditionsClassForDep(String dependencyId) {
+        def targetName = translateTargetName(dependencyId)
+        switch (targetName) {
+            case "androidx_core_core":
+              return "androidx/core/util/Preconditions.class"
+            case "com_google_guava_guava_android":
+              return "com/google/common/base/Preconditions.class"
+            case "google_play_services_basement":
+              return "com/google/android/gms/common/internal/Preconditions.class"
+        }
+        return null
     }
 
     private void updateDepsDeclaration(ChromiumDepGraph depGraph, String cipdBucket,
