@@ -111,6 +111,15 @@
         <item name="verticalInset">@dimen/menu_chip_vertical_inset</item>
     </style>
 
+    <style name="MenuFooterChip" parent="MenuChip">
+        <item name="textAlignStart">true</item>
+        <item name="reduceEndPadding">true</item>
+        <item name="reduceTextStartPadding">true</item>
+        <item name="iconHeight">@dimen/menu_footer_chip_icon_size</item>
+        <item name="iconWidth">@dimen/menu_footer_chip_icon_size</item>
+        <item name="verticalInset">@dimen/menu_footer_chip_vertical_inset</item>
+    </style>
+
     <!-- Used by Chrome and Content -->
     <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources" />
     <style name="TextAppearance.RobotoMediumStyle">

@@ -316,6 +316,10 @@
     <!-- NTP Feed dimensions -->
     <dimen name="feed_header_menu_max_width">225dp</dimen>
 
+    <!-- Web Feed dimensions -->
+    <dimen name="web_feed_icon_size">24dp</dimen>
+    <dimen name="web_feed_monogram_text_size">14dp</dimen>
+
     <!-- Explore sites page -->
     <dimen name="explore_sites_category_padding_vertical">20dp</dimen>
     <dimen name="explore_sites_category_padding_horizontal">12dp</dimen>

@@ -42,6 +42,7 @@
     <dimen name="chip_corner_radius">8dp</dimen>
     <dimen name="chip_default_height">32dp</dimen>
     <dimen name="chip_end_padding">16dp</dimen>
+    <dimen name="chip_reduced_end_padding">12dp</dimen>
     <dimen name="chip_element_leading_padding">8dp</dimen>
     <dimen name="chip_element_extended_leading_padding">16dp</dimen>
     <dimen name="chip_bg_vertical_inset">8dp</dimen>
@@ -52,8 +53,15 @@
     <dimen name="chip_end_padding_with_end_icon">6dp</dimen>
     <dimen name="chip_extended_end_padding_with_end_icon">16dp</dimen>
     <dimen name="chip_text_multiline_vertical_padding">12dp</dimen>
+    <dimen name="chip_text_reduced_leading_padding">4dp</dimen>
     <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(8dp) ) / 2 -->
     <dimen name="menu_chip_vertical_inset">10dp</dimen>
+
+    <!-- Menu footer chip measures-->
+    <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(12dp) ) / 2 -->
+    <dimen name="menu_footer_chip_end_padding">8dp</dimen>
+    <dimen name="menu_footer_chip_icon_size">16dp</dimen>
+    <dimen name="menu_footer_chip_vertical_inset">8dp</dimen>
 
     <!-- Dropdown default measures -->
     <dimen name="dropdown_item_height">50dp</dimen>

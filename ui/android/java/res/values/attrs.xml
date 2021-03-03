@@ -21,8 +21,10 @@
     <declare-styleable name="ChipView">
         <attr name="allowMultipleLines" format="boolean"/>
         <attr name="extendLateralPadding" format="boolean"/>
+        <attr name="reduceEndPadding" format="boolean"/>
         <attr name="solidColorChip" format="boolean"/>
         <attr name="textAlignStart" format="boolean"/>
+        <attr name="reduceTextStartPadding" format="boolean"/>
         <attr name="chipColor" format="color"/>
         <attr name="chipStyle" format="reference"/>
         <attr name="cornerRadius" format="dimension"/>

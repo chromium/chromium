@@ -75,6 +75,7 @@ public class ChipView extends LinearLayout {
 
         boolean extendLateralPadding =
                 a.getBoolean(R.styleable.ChipView_extendLateralPadding, false);
+        boolean reduceEndPadding = a.getBoolean(R.styleable.ChipView_reduceEndPadding, false);
 
         @Px
         int leadingElementPadding = extendLateralPadding
@@ -84,7 +85,9 @@ public class ChipView extends LinearLayout {
 
         // End padding is already longer so no need to adjust in the 'extendLateralPadding' case.
         @Px
-        int endPadding = getResources().getDimensionPixelSize(R.dimen.chip_end_padding);
+        int endPadding = reduceEndPadding
+                ? getResources().getDimensionPixelSize(R.dimen.chip_reduced_end_padding)
+                : getResources().getDimensionPixelSize(R.dimen.chip_end_padding);
 
         mEndIconStartPadding = extendLateralPadding
                 ? getResources().getDimensionPixelSize(R.dimen.chip_end_icon_extended_margin_start)
@@ -122,6 +125,8 @@ public class ChipView extends LinearLayout {
                 getResources().getDimensionPixelSize(R.dimen.chip_bg_vertical_inset));
         boolean allowMultipleLines = a.getBoolean(R.styleable.ChipView_allowMultipleLines, false);
         boolean textAlignStart = a.getBoolean(R.styleable.ChipView_textAlignStart, false);
+        boolean reduceTextStartPadding =
+                a.getBoolean(R.styleable.ChipView_reduceTextStartPadding, false);
         a.recycle();
 
         mStartIcon = new ChromeImageView(getContext());
@@ -157,6 +162,12 @@ public class ChipView extends LinearLayout {
         if (textAlignStart) {
             // Default of 'center' is defined in the ChipTextView style.
             mPrimaryText.setTextAlignment((View.TEXT_ALIGNMENT_VIEW_START));
+        }
+        if (reduceTextStartPadding) {
+            mPrimaryText.setPaddingRelative(
+                    getResources().getDimensionPixelSize(R.dimen.chip_text_reduced_leading_padding),
+                    mPrimaryText.getPaddingTop(), mPrimaryText.getPaddingEnd(),
+                    mPrimaryText.getPaddingBottom());
         }
         addView(mPrimaryText);
 
