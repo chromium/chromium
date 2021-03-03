@@ -11,10 +11,6 @@ if (is_android) {
 source_set("feed_core_v2") {
   sources = [
     "algorithm.h",
-    "config.cc",
-    "config.h",
-    "enums.cc",
-    "enums.h",
     "feed_network.cc",
     "feed_network.h",
     "feed_network_impl.cc",
@@ -27,14 +23,10 @@ source_set("feed_core_v2") {
     "image_fetcher.h",
     "metrics_reporter.cc",
     "metrics_reporter.h",
-    "notice_card_tracker.cc",
-    "notice_card_tracker.h",
     "offline_page_spy.cc",
     "offline_page_spy.h",
     "persistent_key_value_store_impl.cc",
     "persistent_key_value_store_impl.h",
-    "prefs.cc",
-    "prefs.h",
     "proto_util.cc",
     "proto_util.h",
     "protocol_translator.cc",
@@ -46,11 +38,8 @@ source_set("feed_core_v2") {
     "public/persistent_key_value_store.cc",
     "public/persistent_key_value_store.h",
     "public/refresh_task_scheduler.h",
-    "public/types.h",
     "request_throttler.cc",
     "request_throttler.h",
-    "scheduling.cc",
-    "scheduling.h",
     "stream_model.cc",
     "stream_model.h",
     "stream_model/ephemeral_change.cc",
@@ -75,8 +64,6 @@ source_set("feed_core_v2") {
     "tasks/upload_actions_task.h",
     "tasks/wait_for_store_initialize_task.cc",
     "tasks/wait_for_store_initialize_task.h",
-    "types.cc",
-    "types.h",
   ]
   deps = [
     ":common",
@@ -100,10 +87,41 @@ source_set("feed_core_v2") {
   ]
 
   public_deps = [
+    ":feed_core_base",
     "//base",
     "//base/util/values:values_util",
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/proto:proto_v2",
+  ]
+}
+
+# This smaller source set is used by Chrome for iOS.
+source_set("feed_core_base") {
+  sources = [
+    "config.cc",
+    "config.h",
+    "enums.cc",
+    "enums.h",
+    "notice_card_tracker.cc",
+    "notice_card_tracker.h",
+    "prefs.cc",
+    "prefs.h",
+    "public/types.h",
+    "scheduling.cc",
+    "scheduling.h",
+    "types.cc",
+    "types.h",
+  ]
+  deps = [
+    "//base",
+    "//base/util/type_safety",
+    "//base/util/values:values_util",
+    "//components/feed:feature_list",
+    "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/proto:proto_v2",
+    "//components/prefs",
+    "//components/version_info:channel",
+    "//url",
   ]
 }
 
