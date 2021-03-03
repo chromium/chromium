@@ -206,7 +206,7 @@ public class PickerCategoryView extends RelativeLayout
         mMultiSelectionAllowed = multiSelectionAllowed;
 
         mDecoderServiceHost = new DecoderServiceHost(this, context, animatedThumbnailsSupported);
-        mDecoderServiceHost.bind(context);
+        mDecoderServiceHost.bind();
 
         mSelectionDelegate = new SelectionDelegate<PickerBitmap>();
         mSelectionDelegate.addObserver(this);
@@ -275,7 +275,7 @@ public class PickerCategoryView extends RelativeLayout
         }
 
         if (mDecoderServiceHost != null) {
-            mDecoderServiceHost.unbind(mWindowAndroid.getContext().get());
+            mDecoderServiceHost.unbind();
             mDecoderServiceHost = null;
         }
 

@@ -110,6 +110,9 @@ public class DecoderServiceHost
         sIntentSupplier = intentSupplier;
     }
 
+    // This is true after {#link bindService()} has been called for {@link mConnection}. It
+    // indicates that {@link unbindService()} should be called.
+    private boolean mBindServiceCalled;
     IDecoderService mIRemoteService;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -247,23 +250,20 @@ public class DecoderServiceHost
 
     /**
      * Initiate binding with the {@link DecoderService}.
-     * @param context The context to use.
      */
-    public void bind(Context context) {
+    public void bind() {
         Intent intent = sIntentSupplier.get();
         intent.setAction(IDecoderService.class.getName());
         mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        mBindServiceCalled = true;
     }
 
     /**
      * Unbind from the {@link DecoderService}.
-     * @param context The context to use.
      */
-    public void unbind(Context context) {
-        if (mIRemoteService != null) {
-            context.unbindService(mConnection);
-            mIRemoteService = null;
-        }
+    public void unbind() {
+        if (mBindServiceCalled) mContext.unbindService(mConnection);
+        mBindServiceCalled = false;
     }
 
     /**
