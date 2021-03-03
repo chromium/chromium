@@ -233,8 +233,12 @@ bool DrawVideoFrameIntoResourceProvider(
     video_renderer = local_video_renderer.get();
   }
 
-  // TODO(crbug.com/1183572): It'd be nice to Map() GpuMemoryBuffer backed
-  // frames into CPU backed ones when we're using a non-accelerated provider.
+  // If the provider isn't accelerated, avoid GPU round trips to upload frame
+  // data from GpuMemoryBuffer backed frames which aren't mappable.
+  if (frame->HasGpuMemoryBuffer() && !frame->IsMappable() &&
+      !resource_provider->IsAccelerated()) {
+    frame = media::ConvertToMemoryMappedFrame(std::move(frame));
+  }
 
   video_renderer->Paint(
       frame.get(), resource_provider->Canvas(), gfx::RectF(dest_rect),
