@@ -4,7 +4,10 @@
 
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -19,17 +22,31 @@ constexpr const char* kBatteryDischargeRateHistogramName =
     "Power.BatteryDischargeRate2";
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode";
+constexpr const char* kBatterySamplingDelayHistogramName =
+    "Power.BatterySamplingDelay";
 
 }  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
     const base::WeakPtr<UsageScenarioDataStore>& data_store,
     std::unique_ptr<BatteryLevelProvider> battery_level_provider)
-    : data_store_(data_store),
-      battery_level_provider_(std::move(battery_level_provider)) {
+    : blocking_task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      data_store_(data_store),
+      battery_level_provider_(
+          battery_level_provider.release(),
+          base::OnTaskRunnerDeleter(blocking_task_runner_)) {
   DCHECK(performance_monitor::ProcessMonitor::Get());
   performance_monitor::ProcessMonitor::Get()->AddObserver(this);
-  battery_state_ = battery_level_provider_->GetBatteryState();
+
+  // Unretained is safe since |battery_level_provider_| is destroyed on
+  // |blocking_task_runner_|.
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&BatteryLevelProvider::GetBatteryState,
+                     base::Unretained(battery_level_provider_.get())),
+      base::BindOnce(&PowerMetricsReporter::OnFirstBatteryStateSampled,
+                     weak_factory_.GetWeakPtr()));
 }
 
 PowerMetricsReporter::~PowerMetricsReporter() {
@@ -38,30 +55,31 @@ PowerMetricsReporter::~PowerMetricsReporter() {
   }
 }
 
+void PowerMetricsReporter::AwaitFirstSampleForTesting(
+    base::OnceClosure closure) {
+  if (!interval_begin_.is_null()) {
+    std::move(closure).Run();
+  } else {
+    on_battery_sampled_for_testing_ = std::move(closure);
+  }
+}
+
 void PowerMetricsReporter::OnAggregatedMetricsSampled(
     const performance_monitor::ProcessMonitor::Metrics& metrics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto* process_monitor = performance_monitor::ProcessMonitor::Get();
-  base::TimeDelta sampling_interval =
-      process_monitor->GetScheduledSamplingInterval();
-
-  auto now = base::TimeTicks::Now();
-  base::TimeDelta interval_duration = now - interval_begin_;
-  interval_begin_ = now;
-
-  auto discharge_mode_and_rate =
-      GetBatteryDischargeRateDuringInterval(interval_duration);
-
-  ReportHistograms(sampling_interval, interval_duration,
-                   discharge_mode_and_rate.first,
-                   discharge_mode_and_rate.second);
-
-  ReportUKMs(metrics, interval_duration, discharge_mode_and_rate.first,
-             discharge_mode_and_rate.second);
+  sampling_task_scheduled_ = base::TimeTicks::Now();
+  // Unretained is safe since |battery_level_provider_| is destroyed on
+  // |blocking_task_runner_|.
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&BatteryLevelProvider::GetBatteryState,
+                     base::Unretained(battery_level_provider_.get())),
+      base::BindOnce(&PowerMetricsReporter::OnBatteryStateAndMetricsSampled,
+                     weak_factory_.GetWeakPtr(), metrics));
 }
 
-void PowerMetricsReporter::ReportHistograms(
+void PowerMetricsReporter::ReportBatteryHistograms(
     base::TimeDelta sampling_interval,
     base::TimeDelta interval_duration,
     BatteryDischargeMode discharge_mode,
@@ -93,6 +111,45 @@ void PowerMetricsReporter::ReportHistograms(
     base::UmaHistogramCounts1000(kBatteryDischargeRateHistogramName,
                                  *discharge_rate_during_interval);
   }
+}
+
+void PowerMetricsReporter::OnFirstBatteryStateSampled(
+    const BatteryLevelProvider::BatteryState& battery_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  battery_state_ = battery_state;
+  interval_begin_ = base::TimeTicks::Now();
+  if (on_battery_sampled_for_testing_)
+    std::move(on_battery_sampled_for_testing_).Run();
+}
+
+void PowerMetricsReporter::OnBatteryStateAndMetricsSampled(
+    const performance_monitor::ProcessMonitor::Metrics& metrics,
+    const BatteryLevelProvider::BatteryState& battery_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto* process_monitor = performance_monitor::ProcessMonitor::Get();
+  base::TimeDelta sampling_interval =
+      process_monitor->GetScheduledSamplingInterval();
+
+  auto now = base::TimeTicks::Now();
+  base::TimeDelta interval_duration = now - interval_begin_;
+  interval_begin_ = now;
+
+  base::UmaHistogramMicrosecondsTimes(kBatterySamplingDelayHistogramName,
+                                      now - sampling_task_scheduled_);
+
+  auto discharge_mode_and_rate =
+      GetBatteryDischargeRateDuringInterval(battery_state, interval_duration);
+
+  ReportBatteryHistograms(sampling_interval, interval_duration,
+                          discharge_mode_and_rate.first,
+                          discharge_mode_and_rate.second);
+
+  ReportUKMs(metrics, interval_duration, discharge_mode_and_rate.first,
+             discharge_mode_and_rate.second);
+
+  if (on_battery_sampled_for_testing_)
+    std::move(on_battery_sampled_for_testing_).Run();
 }
 
 void PowerMetricsReporter::ReportUKMs(
@@ -170,9 +227,10 @@ void PowerMetricsReporter::ReportUKMs(
 
 std::pair<PowerMetricsReporter::BatteryDischargeMode, base::Optional<int64_t>>
 PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
+    const BatteryLevelProvider::BatteryState& new_battery_state,
     base::TimeDelta interval_duration) {
   auto previous_battery_state =
-      std::exchange(battery_state_, battery_level_provider_->GetBatteryState());
+      std::exchange(battery_state_, new_battery_state);
 
   if (previous_battery_state.battery_count == 0 ||
       battery_state_.battery_count == 0) {

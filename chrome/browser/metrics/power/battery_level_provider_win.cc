@@ -129,6 +129,11 @@ std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
 
 std::vector<BatteryLevelProvider::BatteryInterface>
 BatteryLevelProviderWin::GetBatteryInterfaceList() {
+  // Proactively mark as blocking to fail early, since calls below may also
+  // trigger ScopedBlockingCall.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
   // Battery interfaces are enumerated at every sample to detect when a new
   // interface is added, and avoid holding dangling handles when a battery is
   // disconnected.
