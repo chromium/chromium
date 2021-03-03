@@ -416,8 +416,6 @@ test("components_unittests") {
   # Desktop-only deps.
   if (!is_android && !is_ios) {
     deps += [
-      "//components/feedback:unit_tests",
-
       # See comment in components/guest_view/browser/BUILD.gn for why
       # guest_view is currently non-mobile.
       "//components/guest_view/browser:unit_tests",
@@ -425,6 +423,10 @@ test("components_unittests") {
       "//components/web_modal:unit_tests",
       "//components/zoom:unit_tests",
     ]
+  }
+
+  if (!is_android) {
+    deps += [ "//components/feedback:unit_tests" ]
   }
 
   if (enable_rlz_support) {

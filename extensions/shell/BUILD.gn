@@ -40,6 +40,7 @@ source_set("app_shell_lib") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/feedback",
+    "//components/feedback/content:factory",
     "//components/guest_view/browser",
     "//components/guest_view/renderer",
     "//components/keep_alive_registry",

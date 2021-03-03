@@ -53,7 +53,7 @@
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/timezone/timezone_resolver.h"
 #include "components/drive/drive_pref_names.h"
-#include "components/feedback/tracing_manager.h"
+#include "components/feedback/content/content_tracing_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -707,7 +707,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
                            pref_name == ::prefs::kPerformanceTracingEnabled)) {
     const bool enabled = performance_tracing_enabled_.GetValue();
     if (enabled)
-      tracing_manager_ = TracingManager::Create();
+      tracing_manager_ = ContentTracingManager::Create();
     else
       tracing_manager_.reset();
     SystemTrayClient::Get()->SetPerformanceTracingIconVisible(enabled);

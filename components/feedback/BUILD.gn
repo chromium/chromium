@@ -16,8 +16,6 @@ static_library("feedback") {
     "feedback_switches.h",
     "feedback_uploader.cc",
     "feedback_uploader.h",
-    "feedback_uploader_factory.cc",
-    "feedback_uploader_factory.h",
     "feedback_util.cc",
     "feedback_util.h",
     "redaction_tool.cc",
@@ -34,11 +32,8 @@ static_library("feedback") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/feedback/proto",
-    "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/variations/net",
-    "//content/public/browser",
-    "//content/public/common",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
@@ -70,7 +65,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/user_prefs",
     "//components/variations/net",
-    "//content/test:test_support",
     "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
@@ -79,8 +73,10 @@ source_set("unit_tests") {
   ]
 }
 
-fuzzer_test("redaction_tool_fuzzer") {
-  sources = [ "redaction_tool_fuzzer.cc" ]
-  deps = [ ":feedback" ]
-  dict = "redaction_tool_fuzzer.dict"
+if (!is_ios) {
+  fuzzer_test("redaction_tool_fuzzer") {
+    sources = [ "redaction_tool_fuzzer.cc" ]
+    deps = [ ":feedback" ]
+    dict = "redaction_tool_fuzzer.dict"
+  }
 }

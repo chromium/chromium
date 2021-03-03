@@ -32,13 +32,9 @@ const char kHistogramsAttachmentName[] = "histograms.zip";
 
 }  // namespace
 
-FeedbackData::FeedbackData(feedback::FeedbackUploader* uploader)
-    : uploader_(uploader),
-      trace_id_(0),
-      pending_op_count_(1),
-      report_sent_(false),
-      from_assistant_(false),
-      assistant_debug_info_allowed_(false) {
+FeedbackData::FeedbackData(FeedbackUploader* uploader,
+                           TracingManager* tracing_manager)
+    : uploader_(uploader), tracing_manager_(tracing_manager) {
   CHECK(uploader_);
 }
 
@@ -55,11 +51,11 @@ void FeedbackData::CompressSystemInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (trace_id_ != 0) {
-    TracingManager* manager = TracingManager::Get();
     ++pending_op_count_;
-    if (!manager || !manager->GetTraceData(
-                        trace_id_, base::BindOnce(&FeedbackData::OnGetTraceData,
-                                                  this, trace_id_))) {
+    if (!tracing_manager_ ||
+        !tracing_manager_->GetTraceData(
+            trace_id_,
+            base::BindOnce(&FeedbackData::OnGetTraceData, this, trace_id_))) {
       pending_op_count_--;
       trace_id_ = 0;
     }
@@ -103,9 +99,8 @@ void FeedbackData::OnGetTraceData(
     int trace_id,
     scoped_refptr<base::RefCountedString> trace_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TracingManager* manager = TracingManager::Get();
-  if (manager)
-    manager->DiscardTraceData(trace_id);
+  if (tracing_manager_)
+    tracing_manager_->DiscardTraceData(trace_id);
 
   AddFile(kTraceFilename, std::move(trace_data->data()));
 

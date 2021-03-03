@@ -274,6 +274,7 @@ source_set("chromeos") {
     "//components/exo",
     "//components/favicon/core",
     "//components/feedback",
+    "//components/feedback/content",
     "//components/flags_ui",
     "//components/full_restore",
     "//components/gcm_driver",

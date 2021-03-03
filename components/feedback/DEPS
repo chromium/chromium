@@ -1,12 +1,10 @@
 include_rules = [
   "-content",
-  "+components/keyed_service",
+  "+components/keyed_service/core",
   "+components/prefs",
   "+components/sync_preferences",
   "+components/user_prefs",
   "+components/variations",
-  "+content/public/browser",
-  "+content/public/test",
   "+google_apis/gaia",
   "+net/base",
   "+net/traffic_annotation",

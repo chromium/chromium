@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FEEDBACK_FEEDBACK_UPLOADER_FACTORY_H_
-#define COMPONENTS_FEEDBACK_FEEDBACK_UPLOADER_FACTORY_H_
+#ifndef COMPONENTS_FEEDBACK_CONTENT_FEEDBACK_UPLOADER_FACTORY_H_
+#define COMPONENTS_FEEDBACK_CONTENT_FEEDBACK_UPLOADER_FACTORY_H_
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -52,4 +52,4 @@ class FeedbackUploaderFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace feedback
 
-#endif  // COMPONENTS_FEEDBACK_FEEDBACK_UPLOADER_FACTORY_H_
+#endif  // COMPONENTS_FEEDBACK_CONTENT_FEEDBACK_UPLOADER_FACTORY_H_

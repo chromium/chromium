@@ -436,6 +436,7 @@ static_library("ui") {
     "//components/feed:buildflags",
     "//components/feed:feature_list",
     "//components/feedback",
+    "//components/feedback/content",
     "//components/find_in_page",
     "//components/flags_ui",
     "//components/gcm_driver",

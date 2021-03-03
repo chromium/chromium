@@ -4187,6 +4187,7 @@ static_library("browser") {
       "//components/constrained_window",
       "//components/download/quarantine",
       "//components/feedback",
+      "//components/feedback/content:factory",
       "//components/image_fetcher/core",
       "//components/keep_alive_registry",
       "//components/pref_registry",

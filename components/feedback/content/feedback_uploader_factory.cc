@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/feedback/feedback_uploader_factory.h"
+#include "components/feedback/content/feedback_uploader_factory.h"
 
 #include "base/memory/singleton.h"
 #include "components/feedback/feedback_uploader.h"

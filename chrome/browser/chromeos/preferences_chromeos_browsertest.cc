@@ -21,7 +21,6 @@
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/common/pref_names.h"
-#include "components/feedback/tracing_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"

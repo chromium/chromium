@@ -23,9 +23,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
-#include "components/feedback/tracing_manager.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 #include "extensions/browser/api/feedback_private/feedback_service.h"
@@ -157,7 +157,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   }
 
   // The manager is only available if tracing is enabled.
-  if (TracingManager* manager = TracingManager::Get()) {
+  if (ContentTracingManager* manager = ContentTracingManager::Get()) {
     info->trace_id = std::make_unique<int>(manager->RequestTrace());
   }
   info->flow = flow;
@@ -330,7 +330,8 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
       ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
   scoped_refptr<FeedbackData> feedback_data =
       base::MakeRefCounted<FeedbackData>(
-          delegate->GetFeedbackUploaderForContext(browser_context()));
+          delegate->GetFeedbackUploaderForContext(browser_context()),
+          ContentTracingManager::Get());
   feedback_data->set_description(feedback_info.description);
 
   if (feedback_info.product_id)
