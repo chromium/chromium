@@ -1891,27 +1891,24 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   CompleteCryptoHandshake();
 
   char data[] = "ABCD";
-  std::unique_ptr<quic::QuicEncryptedPacket> client_ping;
+  MockQuicData quic_data2(version_);
   std::unique_ptr<quic::QuicEncryptedPacket> ack_and_data_out;
+  quic_data2.AddRead(
+      SYNCHRONOUS, server_maker_.MakePingPacket(1, /*include_version=*/false));
+  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
-    client_ping = client_maker_.MakeAckAndPingPacket(packet_num++, false, 1, 1);
+    quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeAckAndPingPacket(
+                                         packet_num++, false, 1, 1));
   } else {
-    client_ping = client_maker_.MakePingPacket(packet_num++, true);
+    quic_data2.AddWrite(SYNCHRONOUS,
+                        client_maker_.MakePingPacket(packet_num++, true));
   }
-  ack_and_data_out = client_maker_.MakeDataPacket(
-      packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true, false,
-      absl::string_view(data));
-  std::unique_ptr<quic::QuicEncryptedPacket> server_ping(
-      server_maker_.MakePingPacket(1, /*include_version=*/false));
-  MockRead reads[] = {
-      MockRead(SYNCHRONOUS, server_ping->data(), server_ping->length(), 0),
-      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
-  MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, client_ping->data(), client_ping->length(), 2),
-      MockWrite(SYNCHRONOUS, ack_and_data_out->data(),
-                ack_and_data_out->length(), 3)};
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  quic_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeDataPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
+          false, absl::string_view(data)));
+  quic_data2.AddSocketDataToFactory(&socket_factory_);
   // Create connected socket.
   std::unique_ptr<DatagramClientSocket> new_socket =
       socket_factory_.CreateDatagramClientSocket(DatagramSocket::DEFAULT_BIND,
@@ -1946,8 +1943,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   session_->WritevData(stream->id(), 4, 0, quic::NO_FIN,
                        quic::NOT_RETRANSMISSION, absl::nullopt);
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
 
 TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
@@ -1965,13 +1962,13 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
   CompleteCryptoHandshake();
 
   for (size_t i = 0; i < kMaxReadersPerQuicSession; ++i) {
-    MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
-    std::unique_ptr<quic::QuicEncryptedPacket> ping_out(
+    MockQuicData quic_data2(version_);
+    quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    quic_data2.AddWrite(
+        SYNCHRONOUS,
         client_maker_.MakePingPacket(i + packet_num, /*include_version=*/true));
-    MockWrite writes[] = {
-        MockWrite(SYNCHRONOUS, ping_out->data(), ping_out->length(), i + 2)};
-    StaticSocketDataProvider socket_data(reads, writes);
-    socket_factory_.AddSocketDataProvider(&socket_data);
+
+    quic_data2.AddSocketDataToFactory(&socket_factory_);
 
     // Create connected socket.
     std::unique_ptr<DatagramClientSocket> new_socket =
@@ -1996,58 +1993,50 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
           std::move(new_socket), std::move(new_reader), std::move(new_writer)));
       // Spin message loop to complete migration.
       base::RunLoop().RunUntilIdle();
-      EXPECT_TRUE(socket_data.AllReadDataConsumed());
-      EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+      EXPECT_TRUE(quic_data2.AllReadDataConsumed());
+      EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
     } else {
       // Max readers exceeded.
       EXPECT_FALSE(session_->MigrateToSocket(
           std::move(new_socket), std::move(new_reader), std::move(new_writer)));
-      EXPECT_TRUE(socket_data.AllReadDataConsumed());
-      EXPECT_FALSE(socket_data.AllWriteDataConsumed());
+      EXPECT_TRUE(quic_data2.AllReadDataConsumed());
+      EXPECT_FALSE(quic_data2.AllWriteDataConsumed());
     }
   }
 }
 
 TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
-  std::unique_ptr<quic::QuicEncryptedPacket> settings_packet;
-  std::unique_ptr<quic::QuicEncryptedPacket> client_ping =
-      client_maker_.MakeAckAndPingPacket(2, false, 1, 1);
-  std::unique_ptr<quic::QuicEncryptedPacket> initial_ping;
-  std::vector<MockWrite> old_writes;
-  std::vector<MockRead> old_reads;
+  MockQuicData quic_data(version_);
+  socket_data_.reset();
+  int packet_num = 1;
+
   if (VersionUsesHttp3(version_.transport_version)) {
-    settings_packet = client_maker_.MakeInitialSettingsPacket(1);
-    old_writes.push_back(MockWrite(ASYNC, settings_packet->data(),
-                                   settings_packet->length(), 0));
+    quic_data.AddWrite(ASYNC,
+                       client_maker_.MakeInitialSettingsPacket(packet_num++));
   } else {
-    initial_ping = client_maker_.MakePingPacket(1, true);
-    old_writes.push_back(
-        MockWrite(ASYNC, initial_ping->data(), initial_ping->length(), 0));
+    quic_data.AddWrite(ASYNC, client_maker_.MakePingPacket(packet_num++, true));
   }
-  old_reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, 1));
-  old_reads.push_back(MockRead(ASYNC, ERR_NETWORK_CHANGED, 2));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_NETWORK_CHANGED);
 
-  socket_data_ = std::make_unique<SequencedSocketData>(
-      base::span<const MockRead>(old_reads.data(), old_reads.size()),
-      base::span<const MockWrite>(old_writes.data(), old_writes.size()));
-
-  std::unique_ptr<quic::QuicEncryptedPacket> server_ping(
-      server_maker_.MakePingPacket(1, /*include_version=*/false));
+  quic_data.AddSocketDataToFactory(&socket_factory_);
   Initialize();
   CompleteCryptoHandshake();
 
   if (!VersionUsesHttp3(version_.transport_version))
     session_->connection()->SendPing();
-  MockWrite writes[] = {
-      MockWrite(SYNCHRONOUS, client_ping->data(), client_ping->length(), 1)};
-  MockRead new_reads[] = {
-      MockRead(SYNCHRONOUS, server_ping->data(), server_ping->length(), 0),
-      MockRead(ASYNC, ERR_IO_PENDING, 2),  // pause reading.
-      MockRead(ASYNC, server_ping->data(), server_ping->length(), 3),
-      MockRead(ASYNC, ERR_IO_PENDING, 4),  // pause reading
-      MockRead(ASYNC, ERR_NETWORK_CHANGED, 5)};
-  SequencedSocketData new_socket_data(new_reads, writes);
-  socket_factory_.AddSocketDataProvider(&new_socket_data);
+
+  MockQuicData quic_data2(version_);
+  quic_data2.AddRead(
+      SYNCHRONOUS, server_maker_.MakePingPacket(1, /*include_version=*/false));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeAckAndPingPacket(
+                                       packet_num++, false, 1, 1));
+  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data2.AddRead(
+      ASYNC, server_maker_.MakePingPacket(1, /*include_version=*/false));
+  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data2.AddRead(ASYNC, ERR_NETWORK_CHANGED);
+  quic_data2.AddSocketDataToFactory(&socket_factory_);
 
   // Create connected socket.
   std::unique_ptr<DatagramClientSocket> new_socket =
@@ -2073,22 +2062,19 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   base::RunLoop().RunUntilIdle();
 
   // Read error on old socket does not impact session.
-  EXPECT_TRUE(socket_data_->IsPaused());
-  socket_data_->Resume();
+  quic_data.Resume();
   EXPECT_TRUE(session_->connection()->connected());
-  EXPECT_TRUE(new_socket_data.IsPaused());
-  new_socket_data.Resume();
+  quic_data2.Resume();
 
   // Read error on new socket causes session close.
-  EXPECT_TRUE(new_socket_data.IsPaused());
   EXPECT_TRUE(session_->connection()->connected());
-  new_socket_data.Resume();
+  quic_data2.Resume();
   EXPECT_FALSE(session_->connection()->connected());
 
-  EXPECT_TRUE(socket_data_->AllReadDataConsumed());
-  EXPECT_TRUE(socket_data_->AllWriteDataConsumed());
-  EXPECT_TRUE(new_socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(new_socket_data.AllWriteDataConsumed());
+  EXPECT_TRUE(quic_data.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data.AllWriteDataConsumed());
+  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
 
 TEST_P(QuicChromiumClientSessionTest,
