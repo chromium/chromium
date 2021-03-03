@@ -99,10 +99,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // PdfViewPluginBase:
   void DidScroll(const gfx::Vector2d& offset) override;
-  void NavigateToDestination(int page,
-                             const float* x,
-                             const float* y,
-                             const float* zoom) override;
   void UpdateCursor(PP_CursorType_Dev cursor) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;

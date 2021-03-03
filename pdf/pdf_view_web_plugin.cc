@@ -199,11 +199,6 @@ void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
 void PdfViewWebPlugin::DidScroll(const gfx::Vector2d& offset) {}
 
-void PdfViewWebPlugin::NavigateToDestination(int page,
-                                             const float* x,
-                                             const float* y,
-                                             const float* zoom) {}
-
 void PdfViewWebPlugin::UpdateCursor(PP_CursorType_Dev cursor) {}
 
 void PdfViewWebPlugin::UpdateTickMarks(

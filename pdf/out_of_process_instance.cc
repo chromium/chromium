@@ -143,12 +143,6 @@ constexpr char kJSPrintPreviewPageCount[] = "pageCount";
 constexpr char kJSLoadPreviewPageType[] = "loadPreviewPage";
 constexpr char kJSPreviewPageUrl[] = "url";
 constexpr char kJSPreviewPageIndex[] = "index";
-// Navigate to the given destination (Plugin -> Page)
-constexpr char kJSNavigateToDestinationType[] = "navigateToDestination";
-constexpr char kJSNavigateToDestinationPage[] = "page";
-constexpr char kJSNavigateToDestinationXOffset[] = "x";
-constexpr char kJSNavigateToDestinationYOffset[] = "y";
-constexpr char kJSNavigateToDestinationZoom[] = "zoom";
 // Open the email editor with the given parameters (Plugin -> Page)
 constexpr char kJSEmailType[] = "email";
 constexpr char kJSEmailTo[] = "to";
@@ -1033,22 +1027,6 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data().drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
-}
-
-void OutOfProcessInstance::NavigateToDestination(int page,
-                                                 const float* x,
-                                                 const float* y,
-                                                 const float* zoom) {
-  pp::VarDictionary message;
-  message.Set(kType, kJSNavigateToDestinationType);
-  message.Set(kJSNavigateToDestinationPage, pp::Var(page));
-  if (x)
-    message.Set(kJSNavigateToDestinationXOffset, pp::Var(*x));
-  if (y)
-    message.Set(kJSNavigateToDestinationYOffset, pp::Var(*y));
-  if (zoom)
-    message.Set(kJSNavigateToDestinationZoom, pp::Var(*zoom));
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::UpdateCursor(PP_CursorType_Dev cursor) {

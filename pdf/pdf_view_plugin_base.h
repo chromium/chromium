@@ -58,6 +58,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void ScrollToPage(int page) override;
   void NavigateTo(const std::string& url,
                   WindowOpenDisposition disposition) override;
+  void NavigateToDestination(int page,
+                             const float* x,
+                             const float* y,
+                             const float* zoom) override;
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
   SkColor GetBackgroundColor() override;
