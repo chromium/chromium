@@ -2884,8 +2884,14 @@ TEST_F(RenderWidgetHostViewAuraTest, ConflictingAllocationsResolve) {
 
 // Checks that WidgetInputHandler::CursorVisibilityChange IPC messages are
 // dispatched to the renderer at the correct times.
-// TODO(crbug.com/1177138) Re-enable test
-TEST_F(RenderWidgetHostViewAuraTest, DISABLED_CursorVisibilityChange) {
+//
+// TODO(crbug.com/1164453): Investigate CrOS failure.
+#if defined(OS_CHROMEOS)
+#define MAYBE_CursorVisibilityChange DISABLED_CursorVisibilityChange
+#else
+#define MAYBE_CursorVisibilityChange CursorVisibilityChange
+#endif
+TEST_F(RenderWidgetHostViewAuraTest, MAYBE_CursorVisibilityChange) {
   InitViewForFrame(nullptr);
   aura::client::ParentWindowWithContext(
       view_->GetNativeView(),
