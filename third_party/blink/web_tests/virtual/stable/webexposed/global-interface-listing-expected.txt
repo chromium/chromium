@@ -9271,9 +9271,21 @@ interface XRBoundedReferenceSpace : XRReferenceSpace
     attribute @@toStringTag
     getter boundsGeometry
     method constructor
+interface XRCPUDepthInformation : XRDepthInformation
+    attribute @@toStringTag
+    getter data
+    method constructor
+    method getDepthInMeters
 interface XRDOMOverlayState
     attribute @@toStringTag
     getter type
+    method constructor
+interface XRDepthInformation
+    attribute @@toStringTag
+    getter height
+    getter normDepthBufferFromNormView
+    getter rawValueToMeters
+    getter width
     method constructor
 interface XRFrame
     attribute @@toStringTag
@@ -9281,6 +9293,7 @@ interface XRFrame
     getter trackedAnchors
     method constructor
     method createAnchor
+    method getDepthInformation
     method getHitTestResults
     method getHitTestResultsForTransientInput
     method getLightEstimate
@@ -9377,6 +9390,8 @@ interface XRRigidTransform
     method constructor
 interface XRSession : EventTarget
     attribute @@toStringTag
+    getter depthDataFormat
+    getter depthUsage
     getter domOverlayState
     getter environmentBlendMode
     getter inputSources
@@ -9458,7 +9473,12 @@ interface XRViewport
 interface XRWebGLBinding
     attribute @@toStringTag
     method constructor
+    method getDepthInformation
     method getReflectionCubeMap
+interface XRWebGLDepthInformation : XRDepthInformation
+    attribute @@toStringTag
+    getter texture
+    method constructor
 interface XRWebGLLayer : XRLayer
     static method getNativeFramebufferScaleFactor
     attribute @@toStringTag
