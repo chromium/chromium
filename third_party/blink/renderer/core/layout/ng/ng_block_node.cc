@@ -1476,8 +1476,10 @@ bool NGBlockNode::IsAtomicInlineLevel() const {
 }
 
 bool NGBlockNode::HasAspectRatio() const {
-  if (!Style().AspectRatio().IsAuto())
+  if (!Style().AspectRatio().IsAuto()) {
+    DCHECK(!GetAspectRatio().IsEmpty());
     return true;
+  }
   LayoutBox* layout_object = GetLayoutBox();
   if (!layout_object->IsImage() && !IsA<LayoutVideo>(layout_object) &&
       !layout_object->IsCanvas() && !layout_object->IsSVGRoot()) {
@@ -1497,19 +1499,15 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
       (ratio.GetType() == EAspectRatioType::kAutoAndRatio && !IsReplaced()))
     return Style().LogicalAspectRatio();
 
-  base::Optional<LayoutUnit> computed_inline_size;
-  base::Optional<LayoutUnit> computed_block_size;
-  GetOverrideIntrinsicSize(&computed_inline_size, &computed_block_size);
-  if (computed_inline_size && computed_block_size)
-    return LogicalSize(*computed_inline_size, *computed_block_size);
-
-  IntrinsicSizingInfo legacy_sizing_info;
-  To<LayoutReplaced>(box_)->ComputeIntrinsicSizingInfo(legacy_sizing_info);
-  LogicalSize intrinsic_ar{
-      LayoutUnit(legacy_sizing_info.aspect_ratio.Width()),
-      LayoutUnit(legacy_sizing_info.aspect_ratio.Height())};
-  if (!intrinsic_ar.IsEmpty())
-    return intrinsic_ar;
+  if (!ShouldApplySizeContainment()) {
+    IntrinsicSizingInfo legacy_sizing_info;
+    To<LayoutReplaced>(box_)->ComputeIntrinsicSizingInfo(legacy_sizing_info);
+    LogicalSize intrinsic_ar{
+        LayoutUnit(legacy_sizing_info.aspect_ratio.Width()),
+        LayoutUnit(legacy_sizing_info.aspect_ratio.Height())};
+    if (!intrinsic_ar.IsEmpty())
+      return intrinsic_ar;
+  }
   if (ratio.GetType() == EAspectRatioType::kAutoAndRatio)
     return Style().LogicalAspectRatio();
   return LogicalSize();
