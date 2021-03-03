@@ -380,7 +380,7 @@ vars = {
   # TODO(crbug.com/1166332) rename to clang_format_revision.
   'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
   'libcxx_revision':       '8fa87946779682841e21e2da977eccfb6cb3bded',
-  'libcxxabi_revision':    '6918862bfc2bff22b45058fac22b1596c49982fb',
+  'libcxxabi_revision':    '8f03866f94918e446203e82ee5d1654230584eb6',
   'libunwind_revision':    '8869f42e7fc234f038cd78097e19e304773cc8f0',
 
   # resultdb CIPD package version.
