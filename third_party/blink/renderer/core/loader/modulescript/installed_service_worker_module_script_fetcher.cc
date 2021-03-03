@@ -77,16 +77,9 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
 
   // TODO(sasebree) De-duplicate similar logic that lives in
   // ModuleScriptFetcher::WasModuleLoadSuccessful
-  const bool fetched_javascript_module =
-      expected_module_type_ == ModuleType::kJavaScript &&
-      MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
-          script_data->GetHttpContentType());
-  const bool fetched_json_module =
-      base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
-      expected_module_type_ == ModuleType::kJSON &&
-      MIMETypeRegistry::IsJSONMimeType(script_data->GetHttpContentType());
-
-  if (!fetched_javascript_module && !fetched_json_module) {
+  if (expected_module_type_ != ModuleType::kJavaScript ||
+      !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
+          script_data->GetHttpContentType())) {
     // This should never happen.
     // If we reach here, we know we received an incompatible mime type from the
     // network

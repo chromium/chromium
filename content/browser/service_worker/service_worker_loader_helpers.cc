@@ -54,9 +54,7 @@ bool CheckResponseHead(
 
   // Remain consistent with logic in
   // blink::InstalledServiceWorkerModuleScriptFetcher::Fetch()
-  if (!blink::IsSupportedJavascriptMimeType(response_head.mime_type) &&
-      !(base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
-        blink::IsJSONMimeType(response_head.mime_type))) {
+  if (!blink::IsSupportedJavascriptMimeType(response_head.mime_type)) {
     *out_completion_status =
         network::URLLoaderCompletionStatus(net::ERR_INSECURE_RESPONSE);
     *out_error_message =
