@@ -691,7 +691,7 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
   }
 
   UsbDevice& device = it->second;
-  if (device.shared_vm_name != vm_name || !device.guest_port) {
+  if (device.shared_vm_name != vm_name) {
     LOG(WARNING) << "Failed to detach " << guid << " from " << vm_name
                  << ". It appears to be shared with "
                  << (device.shared_vm_name ? *device.shared_vm_name
@@ -701,19 +701,20 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
                          ? base::NumberToString(*device.guest_port)
                          : "[not attached]")
                  << ".";
-    if (device.shared_vm_name == vm_name) {
-      // The VM hasn't been started yet, attaching is in progress, or attaching
-      // failed.
-      // TODO(timloh): Check what happens if attaching to a different VM races
-      // with an in progress attach.
-      RelinquishDeviceClaim(guid);
-      device.shared_vm_name = base::nullopt;
-      SignalUsbDeviceObservers();
-      std::move(callback).Run(/*success=*/true);
-      return;
-    }
 
     std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  if (!device.guest_port) {
+    // The VM hasn't been started yet, attaching is in progress, or attaching
+    // failed.
+    // TODO(timloh): Check what happens if attaching to a different VM races
+    // with an in progress attach.
+    RelinquishDeviceClaim(guid);
+    device.shared_vm_name = base::nullopt;
+    SignalUsbDeviceObservers();
+    std::move(callback).Run(/*success=*/true);
     return;
   }
 
