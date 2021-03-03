@@ -318,6 +318,15 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
   return worker_node;
 }
 
+WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeWithoutData(
+    WorkerNode::WorkerType worker_type,
+    FrameNodeImpl* parent) {
+  auto worker_node = CreateNode<WorkerNodeImpl>(worker_type, process_.get());
+  worker_node->AddClientFrame(parent);
+  workers_.push_back(std::move(worker_node));
+  return workers_.back().get();
+}
+
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     WorkerNode::WorkerType worker_type,
     std::string url,

@@ -296,6 +296,9 @@ class WebMemoryTestHarness : public GraphTestHarness {
                                 Bytes bytes,
                                 FrameNodeImpl* parent);
 
+  WorkerNodeImpl* AddWorkerNodeWithoutData(WorkerNode::WorkerType worker_type,
+                                           FrameNodeImpl* parent);
+
   WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
                                 std::string url,
                                 Bytes bytes,

@@ -365,7 +365,7 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
         // together with the measurement result.
         const auto* data =
             V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node);
-        if (data->url()) {
+        if (data && data->url()) {
           url = *data->url();
         }
       }
