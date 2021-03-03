@@ -1100,21 +1100,16 @@ v8::Local<v8::Object> {{v8_class}}::FindInstanceInPrototypeChain(
 {{cpp_class}}* V8{{interface_name}}::ToImpl(v8::Local<v8::Object> object) {
   DCHECK(object->Is{{interface_name}}());
   v8::Local<v8::{{interface_name}}> v8buffer = object.As<v8::{{interface_name}}>();
-  // TODO(ahaas): The use of IsExternal is wrong here. Instead we should call
-  // ToScriptWrappable(object)->ToImpl<ArrayBuffer>() and check for nullptr.
-  // We can then also avoid the call to Externalize below.
-  if (v8buffer->IsExternal()) {
+  if (auto script_wrappable = ToScriptWrappable(object)) {
     const WrapperTypeInfo* wrapper_type = ToWrapperTypeInfo(object);
     CHECK(wrapper_type);
     CHECK_EQ(wrapper_type->gin_embedder, gin::kEmbedderBlink);
-    return ToScriptWrappable(object)->ToImpl<{{cpp_class}}>();
+    return script_wrappable->ToImpl<{{cpp_class}}>();
   }
 
   // Transfer the ownership of the allocated memory to an {{interface_name}} without
   // copying.
-  auto backing_store = v8buffer->GetBackingStore();
-  v8buffer->Externalize(backing_store);
-  ArrayBufferContents contents(std::move(backing_store));
+  ArrayBufferContents contents(v8buffer->GetBackingStore());
   {{cpp_class}}* buffer = {{cpp_class}}::Create(contents);
   v8::Local<v8::Object> associatedWrapper = buffer->AssociateWithWrapper(v8::Isolate::GetCurrent(), buffer->GetWrapperTypeInfo(), object);
   DCHECK(associatedWrapper == object);
