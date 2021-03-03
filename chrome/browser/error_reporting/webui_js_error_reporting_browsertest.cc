@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -219,8 +220,17 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
 // Set up a profile with "Continue where you left off". Navigate to the JS error
 // page. Ensure that when the browser is closed and reopened, on-page-load
 // errors are still reported.
+//
+// Flaky on linux: crbug.com/1183025
+#if defined(OS_LINUX)
+#define MAYBE_ReportsErrorsDuringContinueWhereYouLeftOff \
+  DISABLED_ReportsErrorsDuringContinueWhereYouLeftOff
+#else
+#define MAYBE_ReportsErrorsDuringContinueWhereYouLeftOff \
+  ReportsErrorsDuringContinueWhereYouLeftOff
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
-                       ReportsErrorsDuringContinueWhereYouLeftOff) {
+                       MAYBE_ReportsErrorsDuringContinueWhereYouLeftOff) {
   MockCrashEndpoint endpoint(embedded_test_server());
   auto mock_processor =
       std::make_unique<ScopedMockChromeJsErrorReportProcessor>(endpoint);
