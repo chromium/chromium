@@ -48,6 +48,7 @@ const char kSuccessResult[] = "success";
 
 const char kTetherGuid[] = "tether-guid";
 
+const char kTestCellularGuid[] = "cellular_guid";
 const char kTestCellularDevicePath[] = "cellular_path";
 const char kTestCellularDeviceName[] = "cellular_name";
 const char kTestCellularServicePath[] = "cellular_service_path";
@@ -346,11 +347,24 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void AddCellularServiceWithESimProfile() {
-    // Add Cellular device.
-    helper_.device_test()->AddDevice(
-        kTestCellularDevicePath, shill::kTypeCellular, kTestCellularDeviceName);
+  void AddNonConnectablePSimService() {
+    AddCellularDevice();
+
+    // Add idle, non-connectable pSIM network.
+    helper_.service_test()->AddService(
+        kTestCellularServicePath, kTestCellularGuid, kTestCellularName,
+        shill::kTypeCellular, shill::kStateIdle, /*visible=*/true);
     base::RunLoop().RunUntilIdle();
+
+    // Add an ICCID and for that service.
+    helper_.service_test()->SetServiceProperty(kTestCellularServicePath,
+                                               shill::kIccidProperty,
+                                               base::Value(kTestIccid));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void AddCellularServiceWithESimProfile() {
+    AddCellularDevice();
 
     // Add EUICC which will hold the profile.
     helper_.hermes_manager_test()->AddEuicc(dbus::ObjectPath(kTestEuiccPath),
@@ -400,6 +414,12 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   }
 
  private:
+  void AddCellularDevice() {
+    helper_.device_test()->AddDevice(
+        kTestCellularDevicePath, shill::kTypeCellular, kTestCellularDeviceName);
+    base::RunLoop().RunUntilIdle();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
@@ -878,6 +898,12 @@ TEST_F(NetworkConnectionHandlerImplTest,
   EXPECT_TRUE(network_connection_observer()->GetRequested(kTetherGuid));
   EXPECT_EQ(NetworkConnectionHandler::kErrorTetherAttemptWithNoDelegate,
             network_connection_observer()->GetResult(kTetherGuid));
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, PSimProfile_NotConnectable) {
+  AddNonConnectablePSimService();
+  Connect(kTestCellularServicePath);
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_AlreadyConnectable) {
