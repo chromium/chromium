@@ -275,6 +275,7 @@
           "--enable-local-file-accesses",
           "--ozone-platform=headless",
           "--no-sandbox",
+          "--no-unsandboxed-zygote",
           "--test-launcher-jobs=1"
         ],
         "merge": {
@@ -1231,6 +1232,7 @@
           "--enable-local-file-accesses",
           "--ozone-platform=headless",
           "--no-sandbox",
+          "--no-unsandboxed-zygote",
           "--test-launcher-jobs=1"
         ],
         "merge": {

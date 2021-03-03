@@ -173,6 +173,7 @@ cast_test_group("cast_tests") {
       # --test-launcher-jobs=1 => so internal code can bind to port
       args = [
         "--no-sandbox",
+        "--no-unsandboxed-zygote",
         "--enable-local-file-accesses",
         "--test-launcher-jobs=1",
         "--enable-hardware-overlays=",
