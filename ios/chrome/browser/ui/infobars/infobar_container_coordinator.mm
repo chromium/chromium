@@ -276,7 +276,7 @@
 
 - (void)displayModalInfobar:(InfobarType)infobarType {
   InfobarCoordinator* infobarCoordinator =
-      [self infobarCoordinatorForInfobarTye:infobarType];
+      [self infobarCoordinatorForInfobarType:infobarType];
   DCHECK(infobarCoordinator);
   DCHECK(infobarCoordinator.infobarType != InfobarType::kInfobarTypeConfirm);
   [infobarCoordinator presentInfobarModal];
@@ -320,7 +320,7 @@
 // Returns the InfobarCoordinator for |infobarType|. If there's more than one
 // (e.g. kInfobarTypeConfirm) it will return the first one that was added. If no
 // InfobarCoordinator returns nil.
-- (InfobarCoordinator*)infobarCoordinatorForInfobarTye:
+- (InfobarCoordinator*)infobarCoordinatorForInfobarType:
     (InfobarType)infobarType {
   for (InfobarCoordinator* coordinator in self.infobarCoordinators) {
     if (coordinator.infobarType == infobarType) {
