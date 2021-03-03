@@ -107,6 +107,15 @@ android_library("base_module_java") {
     "//components/embedder_support/android:application_java",
     "//content/public/android:content_java",
   ]
+
+  # The arcore manifest needs to be merged into the base module because the Play
+  # Store verifies the com.google.ar.core.min_apk_version meta-data tag is in
+  # the base manifest.
+  if (enable_arcore) {
+    deps +=
+        [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java" ]
+  }
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   # Needed for android.webkit.WebViewFactory

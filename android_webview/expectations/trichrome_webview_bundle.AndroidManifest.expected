@@ -7,12 +7,14 @@
     tools:ignore="MissingLeanbackLauncher"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-  <queries>  # DIFF-ANCHOR: 5a71ec1f
+  <queries>  # DIFF-ANCHOR: 0c3a615d
     <intent>  # DIFF-ANCHOR: 28c960ba
       <action android:name="android.media.browse.MediaBrowserService"/>
     </intent>  # DIFF-ANCHOR: 28c960ba
+  </queries>  # DIFF-ANCHOR: 0c3a615d
+  <queries>  # DIFF-ANCHOR: 9588fea7
     <package android:name="com.google.ar.core"/>
-  </queries>  # DIFF-ANCHOR: 5a71ec1f
+  </queries>  # DIFF-ANCHOR: 9588fea7
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
