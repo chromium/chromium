@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class NGBoxFragmentBuilder;
 class NGBlockNode;
 class NGConstraintSpace;
 struct NGLogicalStaticPosition;
@@ -78,6 +79,11 @@ CORE_EXPORT void ComputeOutOfFlowBlockDimensions(
     const base::Optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions);
+
+CORE_EXPORT void AdjustOffsetForSplitInline(
+    const NGBlockNode& node,
+    const NGBoxFragmentBuilder* container_builder,
+    LogicalOffset& offset);
 
 }  // namespace blink
 

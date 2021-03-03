@@ -136,6 +136,27 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
           inline_container(inline_container) {}
   };
 
+  // Stores the calculated offset for an OOF positioned node, along with the
+  // information that was used in calculating the offset that will be used, in
+  // addition to the information in NodeToLayout, to perform a final layout
+  // pass.
+  struct OffsetInfo {
+    LogicalOffset offset;
+    // If |has_cached_layout_result| is true, this will hold the cached layout
+    // result that should be returned. Otherwise, this will hold the initial
+    // layout result if we needed to know the size in order to calculate the
+    // offset. If an initial result is set, it will either be re-used or
+    // replaced in the final layout pass.
+    scoped_refptr<const NGLayoutResult> initial_layout_result;
+    // The |block_estimate| is wrt. the candidate's writing mode.
+    base::Optional<LayoutUnit> block_estimate;
+    NGLogicalOutOfFlowDimensions node_dimensions;
+    bool absolute_needs_child_block_size = false;
+    // If true, a cached layout result was found. See the comment for
+    // |initial_layout_result| for more details.
+    bool has_cached_layout_result = false;
+  };
+
   bool SweepLegacyCandidates(HashSet<const LayoutObject*>* placed_objects);
 
   const ContainingBlockInfo GetContainingBlockInfo(
@@ -164,11 +185,16 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   scoped_refptr<const NGLayoutResult> LayoutOOFNode(
       const NodeToLayout& oof_node_to_layout,
-      const LayoutBox* only_layout);
+      const LayoutBox* only_layout,
+      OffsetInfo offset_info);
+
+  OffsetInfo CalculateOffset(const NodeToLayout& oof_node_to_layout,
+                             const LayoutBox* only_layout,
+                             bool is_first_run = true);
 
   scoped_refptr<const NGLayoutResult> Layout(
       const NodeToLayout& oof_node_to_layout,
-      const LayoutBox* only_layout);
+      const OffsetInfo& offset_info);
 
   bool IsContainingBlockForCandidate(const NGLogicalOutOfFlowPositionedNode&);
 
