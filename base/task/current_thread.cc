@@ -226,6 +226,11 @@ bool CurrentIOThread::RegisterJobObject(HANDLE job,
   return GetMessagePumpForIO()->RegisterJobObject(job, handler);
 }
 
+bool CurrentIOThread::WaitForIOCompletion(DWORD timeout,
+                                          MessagePumpForIO::IOHandler* filter) {
+  DCHECK(current_->IsBoundToCurrentThread());
+  return GetMessagePumpForIO()->WaitForIOCompletion(timeout, filter);
+}
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 bool CurrentIOThread::WatchFileDescriptor(
     int fd,

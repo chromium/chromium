@@ -339,7 +339,7 @@ void BackendImpl::CleanupCache() {
 
     if (user_flags_ & kNoRandom) {
       // This is a net_unittest, verify that we are not 'leaking' entries.
-      File::WaitForPendingIOForTesting(&num_pending_io_);
+      File::WaitForPendingIO(&num_pending_io_);
       DCHECK(!num_refs_);
     } else {
       File::DropPendingIO();
