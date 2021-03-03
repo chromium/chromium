@@ -98,8 +98,8 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Shows the network settings for |network_id|.
   void ShowNetworkSettings(const std::string& network_id);
 
-  // Shows the mobile setup dialog for |network_id|.
-  void ShowMobileSetup(const std::string& network_id);
+  // Shows the carrier account detail page for |network_id|.
+  void ShowCarrierAccountDetail(const std::string& network_id);
 
   // The details of the connected VPN network if any, otherwise null.
   // Used for displaying the VPN disconnected notification.
