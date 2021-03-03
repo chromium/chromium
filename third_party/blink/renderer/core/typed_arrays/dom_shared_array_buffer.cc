@@ -16,8 +16,6 @@ v8::Local<v8::Value> DOMSharedArrayBuffer::Wrap(
   const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
   v8::Local<v8::SharedArrayBuffer> wrapper =
       v8::SharedArrayBuffer::New(isolate, Content()->BackingStore());
-  wrapper->Externalize(Content()->BackingStore());
-
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
 }
 
@@ -28,8 +26,6 @@ v8::MaybeLocal<v8::Value> DOMSharedArrayBuffer::WrapV2(
   const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
   v8::Local<v8::SharedArrayBuffer> wrapper = v8::SharedArrayBuffer::New(
       script_state->GetIsolate(), Content()->BackingStore());
-  wrapper->Externalize(Content()->BackingStore());
-
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
                               wrapper);
 }

@@ -110,8 +110,6 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(
   {
     v8::Context::Scope context_scope(creation_context->CreationContext());
     wrapper = v8::ArrayBuffer::New(isolate, Content()->BackingStore());
-
-    wrapper->Externalize(Content()->BackingStore());
   }
 
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
@@ -127,8 +125,6 @@ v8::MaybeLocal<v8::Value> DOMArrayBuffer::WrapV2(ScriptState* script_state) {
     v8::Context::Scope context_scope(script_state->GetContext());
     wrapper = v8::ArrayBuffer::New(script_state->GetIsolate(),
                                    Content()->BackingStore());
-
-    wrapper->Externalize(Content()->BackingStore());
   }
 
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
