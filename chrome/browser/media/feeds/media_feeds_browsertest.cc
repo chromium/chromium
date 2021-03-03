@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/feeds/media_feeds_contents_observer.h"
 #include "chrome/browser/media/feeds/media_feeds_service.h"
@@ -925,8 +926,16 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
   }
 }
 
+// Flaky on linux: crbug.com/1124983
+#if defined(OS_LINUX)
+#define MAYBE_ResetMediaFeed_WebContentsDestroyed \
+  DISABLED_ResetMediaFeed_WebContentsDestroyed
+#else
+#define MAYBE_ResetMediaFeed_WebContentsDestroyed \
+  ResetMediaFeed_WebContentsDestroyed
+#endif
 IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
-                       ResetMediaFeed_WebContentsDestroyed) {
+                       MAYBE_ResetMediaFeed_WebContentsDestroyed) {
   // Open a separate tab, so that `CloseTab` below doesn't close *all* the
   // browser window and doesn't destroy the browser state that
   // GetDiscoveredFeeds relies on in the last test steps.  See also
