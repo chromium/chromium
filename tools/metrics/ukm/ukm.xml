@@ -11914,7 +11914,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentRequest.CheckoutEvents">
-  <owner>sebsg@chromium.org</owner>
+  <owner>sahel@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
   <metric name="CompletionStatus">
     <summary>
       How the Payment Request ended. Values defined in the CompletionStatus enum
