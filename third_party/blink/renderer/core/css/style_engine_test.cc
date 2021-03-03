@@ -4108,6 +4108,35 @@ TEST_F(StyleEngineTest, CounterContentNameCase) {
   EXPECT_EQ(String(u"\u3042"), counter->GetText());
 }
 
+// https://crbug.com/1182969
+TEST_F(StyleEngineTest, CountersShouldNotCauseListMarkerUpdates) {
+  // Reproducible only when @counter-style rules are disabled
+  ScopedCSSAtRuleCounterStyleForTest disabled_scope(false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { counter-reset: a; }
+      p::before {
+        counter-increment: a;
+        content: counter(a);
+      }
+    </style>
+    <ol><li id="target"></li></ol>
+  )HTML");
+
+  // Shouldn't crash
+  UpdateAllLifecyclePhases();
+
+  LayoutObject* list_item =
+      GetDocument().getElementById("target")->GetLayoutObject();
+  LayoutObject* marker = ListMarker::MarkerFromListItem(list_item);
+
+  GetDocument().body()->appendChild(GetDocument().CreateElementForBinding("p"));
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  EXPECT_FALSE(marker->NeedsLayout());
+}
+
 TEST_F(StyleEngineTest, NonDirtyStyleRecalcRoot) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id="host">

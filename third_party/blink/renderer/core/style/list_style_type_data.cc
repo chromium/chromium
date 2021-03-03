@@ -78,6 +78,8 @@ EListStyleType CounterContentData::ToDeprecatedListStyleTypeEnum() const {
 }
 
 bool ListStyleTypeData::IsCounterStyleReferenceValid(Document& document) const {
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
+
   if (!IsCounterStyle()) {
     DCHECK(!counter_style_);
     return true;
@@ -96,6 +98,7 @@ bool ListStyleTypeData::IsCounterStyleReferenceValid(Document& document) const {
 
 const CounterStyle& ListStyleTypeData::GetCounterStyle(
     Document& document) const {
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
   DCHECK(IsCounterStyle());
   if (!IsCounterStyleReferenceValid(document)) {
     counter_style_ = document.GetStyleEngine().FindCounterStyleAcrossScopes(

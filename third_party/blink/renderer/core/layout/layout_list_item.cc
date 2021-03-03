@@ -97,6 +97,9 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
 void LayoutListItem::UpdateCounterStyle() {
   NOT_DESTROYED();
 
+  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled())
+    return;
+
   if (!StyleRef().GetListStyleType() ||
       StyleRef().GetListStyleType()->IsCounterStyleReferenceValid(
           GetDocument())) {
