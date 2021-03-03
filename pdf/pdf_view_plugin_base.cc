@@ -152,6 +152,16 @@ void PdfViewPluginBase::ScrollBy(const gfx::Vector2d& delta) {
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::ScrollToPage(int page) {
+  if (!engine_ || engine_->GetNumberOfPages() == 0)
+    return;
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "goToPage");
+  message.SetIntKey("page", page);
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::GetDocumentPassword(
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK(password_callback_.is_null());

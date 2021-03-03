@@ -99,7 +99,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // PdfViewPluginBase:
   void DidScroll(const gfx::Vector2d& offset) override;
-  void ScrollToPage(int page) override;
   void NavigateTo(const std::string& url,
                   WindowOpenDisposition disposition) override;
   void NavigateToDestination(int page,

@@ -134,9 +134,6 @@ constexpr char kJSDataToSave[] = "dataToSave";
 constexpr char kJSConsumeSaveTokenType[] = "consumeSaveToken";
 // Notify when touch selection occurs (Plugin -> Page)
 constexpr char kJSTouchSelectionOccurredType[] = "touchSelectionOccurred";
-// Go to page (Plugin -> Page)
-constexpr char kJSGoToPageType[] = "goToPage";
-constexpr char kJSPageNumber[] = "page";
 // Reset print preview mode (Page -> Plugin)
 constexpr char kJSResetPrintPreviewModeType[] = "resetPrintPreviewMode";
 constexpr char kJSPrintPreviewUrl[] = "url";
@@ -1040,16 +1037,6 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data().drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
-}
-
-void OutOfProcessInstance::ScrollToPage(int page) {
-  if (!engine() || engine()->GetNumberOfPages() == 0)
-    return;
-
-  pp::VarDictionary message;
-  message.Set(kType, kJSGoToPageType);
-  message.Set(kJSPageNumber, pp::Var(page));
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::NavigateTo(const std::string& url,
