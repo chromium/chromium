@@ -2938,7 +2938,9 @@ class AdsMemoryMeasurementTest : public AdsPageLoadMetricsObserverTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AdsMemoryMeasurementTest, SingleAdFrame_MaxMemoryBytesRecorded) {
+// TODO(crbug.com/1184366): flaky test.
+TEST_F(AdsMemoryMeasurementTest,
+       DISABLED_SingleAdFrame_MaxMemoryBytesRecorded) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
