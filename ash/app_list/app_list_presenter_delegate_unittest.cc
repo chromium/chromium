@@ -85,8 +85,13 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/touch_selection/touch_selection_menu_runner.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/touchui/touch_selection_controller_impl.h"
+#include "ui/views/touchui/touch_selection_menu_runner_views.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -303,7 +308,8 @@ class PopulatedAppListTest : public AshTestBase,
  protected:
   void CreateAndOpenAppList() {
     app_list_view_ = new AppListView(app_list_test_delegate_.get());
-    app_list_view_->InitView(GetContext());
+    app_list_view_->InitView(Shell::GetContainer(
+        Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer));
     app_list_view_->Show(AppListViewState::kFullscreenAllApps,
                          false /*is_side_shelf*/);
   }
@@ -336,6 +342,23 @@ class PopulatedAppListTest : public AshTestBase,
         ->contents_view()
         ->apps_container_view()
         ->app_list_folder_view();
+  }
+
+  void UpdateFolderName(const std::string& name) {
+    base::string16 folder_name = base::UTF8ToUTF16(name);
+    folder_view()->folder_header_view()->SetFolderNameForTest(folder_name);
+    folder_view()->folder_header_view()->ContentsChanged(
+        folder_view()->folder_header_view()->GetFolderNameViewForTest(),
+        folder_name);
+  }
+
+  const std::string GetFolderName() {
+    return base::UTF16ToUTF8(
+        folder_view()->folder_header_view()->GetFolderNameForTest());
+  }
+
+  void RefreshFolderName() {
+    folder_view()->folder_header_view()->ItemNameChanged();
   }
 
   test::AppListTestModel* app_list_test_model_ = nullptr;
@@ -3043,6 +3066,61 @@ TEST_F(AppListPresenterDelegateTest,
 
   EXPECT_EQ(gfx::RoundedCornersF(background_radius, background_radius, 0, 0),
             background_shield->layer()->rounded_corner_radii());
+}
+
+// Tests that the touch selection menu created when tapping an open folder's
+// folder name view be interacted with.
+TEST_F(PopulatedAppListTest, TouchSelectionMenu) {
+  InitializeAppsGrid();
+
+  AppListFolderItem* folder_item =
+      app_list_test_model_->CreateAndPopulateFolderWithApps(4);
+  EXPECT_TRUE(folder_item->is_folder());
+  EXPECT_EQ(1u, app_list_test_model_->top_level_item_list()->item_count());
+  EXPECT_EQ(
+      AppListFolderItem::kItemType,
+      app_list_test_model_->top_level_item_list()->item_at(0)->GetItemType());
+
+  // Open the folder.
+  ASSERT_FALSE(AppListIsInFolderView());
+  GetEventGenerator()->GestureTapAt(
+      apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(AppListIsInFolderView());
+
+  // Check that the touch selection menu runner is not running.
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance());
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Set the folder name and simulate tap on the folder name view.
+  views::View* folder_name_view =
+      folder_view()->folder_header_view()->GetFolderNameViewForTest();
+  UpdateFolderName("folder_name");
+  GetEventGenerator()->GestureTapAt(
+      folder_name_view->GetBoundsInScreen().CenterPoint());
+
+  // Fire the timer to show the textfield quick menu.
+  views::TextfieldTestApi textfield_test_api(
+      folder_view()->folder_header_view()->GetFolderNameViewForTest());
+  static_cast<views::TouchSelectionControllerImpl*>(
+      textfield_test_api.touch_selection_controller())
+      ->ShowQuickMenuImmediatelyForTesting();
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Tap the leftmost button in the touch_menu_container and check that the
+  // folder name has been cut.
+  views::TouchSelectionMenuRunnerViews::TestApi test_api(
+      static_cast<views::TouchSelectionMenuRunnerViews*>(
+          ui::TouchSelectionMenuRunner::GetInstance()));
+  views::LabelButton* button = test_api.GetFirstButton();
+  ASSERT_TRUE(button);
+  gfx::Point point = button->GetBoundsInScreen().CenterPoint();
+  GetEventGenerator()->GestureTapAt(point);
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Refresh the folder item name.
+  RefreshFolderName();
+  // Check folder_name_view's name.
+  ASSERT_EQ("", GetFolderName());
 }
 
 // Tests how app list is laid out during different state transitions and app

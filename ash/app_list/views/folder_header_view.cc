@@ -340,7 +340,7 @@ void FolderHeaderView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   Update();
 }
 
-views::View* FolderHeaderView::GetFolderNameViewForTest() const {
+views::Textfield* FolderHeaderView::GetFolderNameViewForTest() const {
   return folder_name_view_;
 }
 

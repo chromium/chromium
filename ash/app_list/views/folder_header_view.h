@@ -44,11 +44,12 @@ class APP_LIST_EXPORT FolderHeaderView : public views::View,
   const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  views::View* GetFolderNameViewForTest() const;
+  views::Textfield* GetFolderNameViewForTest() const;
 
  private:
   class FolderNameView;
   friend class test::FolderHeaderViewTest;
+  friend class PopulatedAppListTest;
 
   // Updates UI.
   void Update();

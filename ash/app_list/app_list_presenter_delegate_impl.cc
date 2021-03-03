@@ -231,6 +231,11 @@ void AppListPresenterDelegateImpl::ProcessLocatedEvent(
         root_controller->GetContainer(kShellWindowId_VirtualKeyboardContainer);
     if (keyboard_container->Contains(target))
       return;
+
+    aura::Window* settings_bubble_container =
+        root_controller->GetContainer(kShellWindowId_SettingBubbleContainer);
+    if (settings_bubble_container->Contains(target))
+      return;
   }
 
   // If the event happened on the home button's widget, it'll get handled by the
@@ -257,8 +262,14 @@ void AppListPresenterDelegateImpl::ProcessLocatedEvent(
   }
 
   aura::Window* window = view_->GetWidget()->GetNativeView()->parent();
-  if (!window->Contains(target) && !presenter_->HandleCloseOpenFolder() &&
-      !switches::ShouldNotDismissOnBlur() && !IsTabletMode()) {
+  if (window->Contains(target))
+    return;
+  // Try to close an open folder window: return if an open folder view was
+  // closed successfully.
+  if (presenter_->HandleCloseOpenFolder())
+    return;
+
+  if (!switches::ShouldNotDismissOnBlur() && !IsTabletMode()) {
     // Do not dismiss the app list if the event is targeting shelf area
     // containing app icons.
     if (target == shelf->hotseat_widget()->GetNativeWindow() &&

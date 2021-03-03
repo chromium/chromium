@@ -2549,6 +2549,7 @@ test("ash_unittests") {
     "//ui/resources",
     "//ui/snapshot",
     "//ui/strings",
+    "//ui/touch_selection:touch_selection",
     "//ui/views",
     "//ui/views:test_support",
     "//ui/views/window/vector_icons",
