@@ -623,7 +623,6 @@ void CastRunner::OnIsolatedContextEmpty(WebContentRunner* context) {
   isolated_contexts_.erase(it);
 }
 
-// TODO(crbug.com/1171057): Add integration test.
 void CastRunner::OnAudioServiceRequest(
     fidl::InterfaceRequest<fuchsia::media::Audio> request) {
   // If we have a component that allows AudioCapturer access then redirect the
@@ -642,7 +641,6 @@ void CastRunner::OnAudioServiceRequest(
   base::ComponentContextForProcess()->svc()->Connect(std::move(request));
 }
 
-// TODO(crbug.com/1171057): Add integration test.
 void CastRunner::OnCameraServiceRequest(
     fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
   // If we have a component that allows camera access then redirect the
