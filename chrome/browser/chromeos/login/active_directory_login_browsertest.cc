@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
-#include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
 #include "components/user_manager/user_names.h"

@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
-#include "chrome/browser/chromeos/login/test/session_flags_manager.h"
+#include "chrome/browser/ash/login/test/session_flags_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"

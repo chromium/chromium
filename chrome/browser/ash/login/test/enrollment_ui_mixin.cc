@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/chromeos/login/test/test_predicate_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 

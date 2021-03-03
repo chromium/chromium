@@ -5,7 +5,7 @@
 #include "ash/constants/ash_switches.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/chromeos/login/test/test_condition_waiter.h"
+#include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {

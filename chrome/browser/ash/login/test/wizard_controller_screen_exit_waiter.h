@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/test/test_condition_waiter.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 
 namespace base {
@@ -51,4 +51,4 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_

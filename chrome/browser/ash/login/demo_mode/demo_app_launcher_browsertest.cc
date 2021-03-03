@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/login/demo_mode/demo_app_launcher.h"
-#include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/test/test_condition_waiter.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

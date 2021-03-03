@@ -7,7 +7,7 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/chromeos/login/test/webview_content_extractor.h"
+#include "chrome/browser/ash/login/test/webview_content_extractor.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/guest_view/browser/guest_view_manager.h"

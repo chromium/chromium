@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 
 #include "base/run_loop.h"
 

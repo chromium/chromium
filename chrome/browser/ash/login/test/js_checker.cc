@@ -6,7 +6,7 @@
 
 #include "base/json/string_escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/login/test/test_predicate_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
