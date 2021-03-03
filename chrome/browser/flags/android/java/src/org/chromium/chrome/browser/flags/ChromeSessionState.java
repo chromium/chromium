@@ -11,14 +11,6 @@ import org.chromium.base.annotations.NativeMethods;
  */
 public class ChromeSessionState {
     /**
-     * Records the current custom tab visibility state with native-side feature utilities.
-     * @param visible Whether a custom tab is visible.
-     */
-    public static void setCustomTabVisible(boolean visible) {
-        ChromeSessionStateJni.get().setCustomTabVisible(visible);
-    }
-
-    /**
      * Records whether the activity is in multi-window mode with native-side feature utilities.
      * @param isInMultiWindowMode Whether the activity is in Android N multi-window mode.
      */
@@ -36,7 +28,6 @@ public class ChromeSessionState {
 
     @NativeMethods
     interface Natives {
-        void setCustomTabVisible(boolean visible);
         void setActivityType(@ActivityType int type);
         void setIsInMultiWindowMode(boolean isInMultiWindowMode);
     }
