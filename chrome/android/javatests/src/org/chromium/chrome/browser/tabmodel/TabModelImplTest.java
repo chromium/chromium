@@ -22,6 +22,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
@@ -124,6 +125,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1182156")
     public void validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             sActivityTestRule.getActivity().getActivityTab().setIsTabSaveEnabled(false);
