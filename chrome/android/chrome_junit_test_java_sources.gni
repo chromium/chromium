@@ -210,6 +210,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/suggestions/SuggestionsImageFetcherTest.java",
   "junit/src/org/chromium/chrome/browser/survey/ChromeSurveyControllerTest.java",
   "junit/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridgeUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/sync/AndroidSyncSettingsTest.java",
   "junit/src/org/chromium/chrome/browser/tab/HistoricalTabSaverUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabAttributesTest.java",

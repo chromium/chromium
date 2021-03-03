@@ -26,11 +26,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -42,7 +42,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Tests for AndroidSyncSettings.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class AndroidSyncSettingsTest {
     // Thread-safe class to fake user interaction with auto-sync settings which also counts calls
     // to certain methods.
@@ -116,11 +117,8 @@ public class AndroidSyncSettingsTest {
         }
     }
 
-    // |mChromeBrowserRule| is used to wait for the native feature list to initialize.
     @Rule
-    public TestRule mChromeBrowserRule = new ChromeBrowserTestRule();
-    @Rule
-    public TestRule mProcessorRule = new Features.InstrumentationProcessor();
+    public TestRule mProcessorRule = new Features.JUnitProcessor();
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -196,57 +194,96 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testToggleMasterSyncFromSettings() {
+    @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testToggleMasterSyncFromSettingsWithDecouplingEnabled() {
         createAndroidSyncSettings();
 
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
         Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
 
         mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)) {
-            Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
-        } else {
-            Assert.assertFalse(getDoesMasterSyncAllowSyncOnUiThread());
-        }
+        Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
     }
 
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testToggleChromeSyncFromSettings() {
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testToggleMasterSyncFromSettingsWithDecouplingDisabled() {
+        createAndroidSyncSettings();
+
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
+        Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
+
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
+        Assert.assertFalse(getDoesMasterSyncAllowSyncOnUiThread());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testToggleChromeSyncFromSettingsWithDecouplingEnabled() {
         createAndroidSyncSettings();
 
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
 
-        // First sync
+        // Enable sync for Chrome app.
         mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, true);
         Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertTrue(getIsChromeSyncEnabledOnUiThread());
 
-        // Disable sync automatically for the app
+        // Disable sync for Chrome app.
         mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, false);
         Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertFalse(getIsChromeSyncEnabledOnUiThread());
 
-        // Re-enable sync
+        // Re-enable sync for Chrome app.
         mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, true);
         Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertTrue(getIsChromeSyncEnabledOnUiThread());
 
-        // Disable master sync
+        // Disable master sync (all apps).
         mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
+        Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertTrue(getIsChromeSyncEnabledOnUiThread());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)) {
-            Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
-        } else {
-            Assert.assertFalse(getDoesMasterSyncAllowSyncOnUiThread());
-        }
     }
 
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testToggleAccountSyncFromApplication() {
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testToggleChromeSyncFromSettingsWithDecouplingDisabled() {
+        createAndroidSyncSettings();
+
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
+
+        // Enable sync for Chrome app.
+        mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, true);
+        Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
+        Assert.assertTrue(getIsChromeSyncEnabledOnUiThread());
+
+        // Disable sync for Chrome app.
+        mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, false);
+        Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
+        Assert.assertFalse(getIsChromeSyncEnabledOnUiThread());
+
+        // Re-enable sync for Chrome app.
+        mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mAuthority, true);
+        Assert.assertTrue(getDoesMasterSyncAllowSyncOnUiThread());
+        Assert.assertTrue(getIsChromeSyncEnabledOnUiThread());
+
+        // Disable master sync (all apps).
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(false);
+        Assert.assertFalse(getDoesMasterSyncAllowSyncOnUiThread());
+        Assert.assertTrue(getIsChromeSyncEnabledOnUiThread());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testToggleAccountSyncFromApplicationWithDecouplingEnabled() {
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
 
         createAndroidSyncSettings();
@@ -261,7 +298,24 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testToggleSyncabilityForMultipleAccounts() {
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testToggleAccountSyncFromApplicationWithDecouplingDisabled() {
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
+
+        createAndroidSyncSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAndroidSyncSettings.enableChromeSync());
+        Assert.assertTrue(getIsChromeSyncEnabledOnUiThread());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAndroidSyncSettings.disableChromeSync());
+        Assert.assertFalse(getIsChromeSyncEnabledOnUiThread());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testToggleSyncabilityForMultipleAccountsWithDecouplingEnabled() {
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
 
         createAndroidSyncSettings();
@@ -288,7 +342,36 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testSyncSettingsCaching() {
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testToggleSyncabilityForMultipleAccountsWithDecouplingDisabled() {
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
+
+        createAndroidSyncSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAndroidSyncSettings.enableChromeSync();
+            Assert.assertTrue(mAndroidSyncSettings.isChromeSyncEnabled());
+
+            mAndroidSyncSettings.updateAccount(mAlternateAccount);
+            mAndroidSyncSettings.enableChromeSync();
+            Assert.assertTrue(mAndroidSyncSettings.isChromeSyncEnabled());
+
+            mAndroidSyncSettings.disableChromeSync();
+            Assert.assertFalse(mAndroidSyncSettings.isChromeSyncEnabled());
+            mAndroidSyncSettings.updateAccount(mAccount);
+            Assert.assertTrue(mAndroidSyncSettings.isChromeSyncEnabled());
+
+            // Ensure we don't erroneously re-use cached data.
+            mAndroidSyncSettings.updateAccount(null);
+            Assert.assertFalse(mAndroidSyncSettings.isChromeSyncEnabled());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testSyncSettingsCachingWithDecouplingEnabled() {
         mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
 
         createAndroidSyncSettings();
@@ -300,7 +383,7 @@ public class AndroidSyncSettingsTest {
             int masterSyncAutomaticallyCalls =
                     mSyncContentResolverDelegate.mGetMasterSyncAutomaticallyCalls.get();
             int isSyncableCalls = mSyncContentResolverDelegate.mGetIsSyncableCalls.get();
-            int getSyncAutomaticallyAcalls =
+            int getSyncAutomaticallyCalls =
                     mSyncContentResolverDelegate.mGetSyncAutomaticallyCalls.get();
 
             // Do a bunch of reads.
@@ -312,7 +395,7 @@ public class AndroidSyncSettingsTest {
                     mSyncContentResolverDelegate.mGetMasterSyncAutomaticallyCalls.get());
             Assert.assertEquals(
                     isSyncableCalls, mSyncContentResolverDelegate.mGetIsSyncableCalls.get());
-            Assert.assertEquals(getSyncAutomaticallyAcalls,
+            Assert.assertEquals(getSyncAutomaticallyCalls,
                     mSyncContentResolverDelegate.mGetSyncAutomaticallyCalls.get());
 
             // Do a bunch of reads for alternate account.
@@ -325,7 +408,7 @@ public class AndroidSyncSettingsTest {
                     mSyncContentResolverDelegate.mGetMasterSyncAutomaticallyCalls.get());
             Assert.assertEquals(
                     isSyncableCalls + 1, mSyncContentResolverDelegate.mGetIsSyncableCalls.get());
-            Assert.assertEquals(getSyncAutomaticallyAcalls + 1,
+            Assert.assertEquals(getSyncAutomaticallyCalls + 1,
                     mSyncContentResolverDelegate.mGetSyncAutomaticallyCalls.get());
         });
     }
@@ -333,7 +416,54 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testAndroidSyncSettingsNotifiesDelegate() {
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testSyncSettingsCachingWithDecouplingDisabled() {
+        mSyncContentResolverDelegate.setMasterSyncAutomatically(true);
+
+        createAndroidSyncSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAndroidSyncSettings.enableChromeSync();
+            Assert.assertTrue(mAndroidSyncSettings.isChromeSyncEnabled());
+
+            int masterSyncAutomaticallyCalls =
+                    mSyncContentResolverDelegate.mGetMasterSyncAutomaticallyCalls.get();
+            int isSyncableCalls = mSyncContentResolverDelegate.mGetIsSyncableCalls.get();
+            int getSyncAutomaticallyCalls =
+                    mSyncContentResolverDelegate.mGetSyncAutomaticallyCalls.get();
+
+            // Do a bunch of reads.
+            mAndroidSyncSettings.doesMasterSyncSettingAllowChromeSync();
+            mAndroidSyncSettings.isChromeSyncEnabled();
+
+            // Ensure values were read from cache.
+            Assert.assertEquals(masterSyncAutomaticallyCalls,
+                    mSyncContentResolverDelegate.mGetMasterSyncAutomaticallyCalls.get());
+            Assert.assertEquals(
+                    isSyncableCalls, mSyncContentResolverDelegate.mGetIsSyncableCalls.get());
+            Assert.assertEquals(getSyncAutomaticallyCalls,
+                    mSyncContentResolverDelegate.mGetSyncAutomaticallyCalls.get());
+
+            // Do a bunch of reads for alternate account.
+            mAndroidSyncSettings.updateAccount(mAlternateAccount);
+            mAndroidSyncSettings.doesMasterSyncSettingAllowChromeSync();
+            mAndroidSyncSettings.isChromeSyncEnabled();
+
+            // Ensure settings were only fetched once.
+            Assert.assertEquals(masterSyncAutomaticallyCalls + 1,
+                    mSyncContentResolverDelegate.mGetMasterSyncAutomaticallyCalls.get());
+            Assert.assertEquals(
+                    isSyncableCalls + 1, mSyncContentResolverDelegate.mGetIsSyncableCalls.get());
+            Assert.assertEquals(getSyncAutomaticallyCalls + 1,
+                    mSyncContentResolverDelegate.mGetSyncAutomaticallyCalls.get());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testAndroidSyncSettingsNotifiesDelegateWithDecouplingEnabled() {
         createAndroidSyncSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -357,6 +487,8 @@ public class AndroidSyncSettingsTest {
 
             syncSettingsDelegate.clearNotification();
             mAndroidSyncSettings.enableChromeSync();
+            // enableChromeSync() was a no-op because sync was already enabled for this account. So
+            // there shouldn't be a notification.
             Assert.assertFalse("enableChromeSync shouldn't notify delegate",
                     syncSettingsDelegate.receivedNotification());
 
@@ -367,6 +499,56 @@ public class AndroidSyncSettingsTest {
 
             syncSettingsDelegate.clearNotification();
             mAndroidSyncSettings.disableChromeSync();
+            // disableChromeSync() was a no-op because sync was already disabled. So there shouldn't
+            // be a notification.
+            Assert.assertFalse("disableChromeSync shouldn't notify delegate",
+                    syncSettingsDelegate.receivedNotification());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @Features.DisableFeatures(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
+    public void testAndroidSyncSettingsNotifiesDelegateWithDecouplingDisabled() {
+        createAndroidSyncSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            MockSyncSettingsDelegate syncSettingsDelegate = new MockSyncSettingsDelegate();
+            mAndroidSyncSettings.setDelegate(syncSettingsDelegate);
+
+            syncSettingsDelegate.clearNotification();
+            mAndroidSyncSettings.enableChromeSync();
+            Assert.assertTrue("enableChromeSync should notify delegate",
+                    syncSettingsDelegate.receivedNotification());
+
+            syncSettingsDelegate.clearNotification();
+            mAndroidSyncSettings.updateAccount(mAlternateAccount);
+            Assert.assertTrue("switching to account with different settings should notify",
+                    syncSettingsDelegate.receivedNotification());
+
+            syncSettingsDelegate.clearNotification();
+            mAndroidSyncSettings.updateAccount(mAccount);
+            Assert.assertTrue("switching to account with different settings should notify",
+                    syncSettingsDelegate.receivedNotification());
+
+            syncSettingsDelegate.clearNotification();
+            mAndroidSyncSettings.enableChromeSync();
+            // enableChromeSync() was a no-op because sync was already enabled for this account.
+            // So there shouldn't be a notification.
+            Assert.assertFalse("enableChromeSync shouldn't notify delegate",
+                    syncSettingsDelegate.receivedNotification());
+
+            syncSettingsDelegate.clearNotification();
+            mAndroidSyncSettings.disableChromeSync();
+            Assert.assertTrue("disableChromeSync should notify delegate",
+                    syncSettingsDelegate.receivedNotification());
+
+            syncSettingsDelegate.clearNotification();
+            mAndroidSyncSettings.disableChromeSync();
+
+            // disableChromeSync() was a no-op because sync was already disabled. So there shouldn't
+            // be a notification.
             Assert.assertFalse("disableChromeSync shouldn't notify delegate",
                     syncSettingsDelegate.receivedNotification());
         });

@@ -530,7 +530,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/TileGroupUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridgeTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/AccountManagementFragmentTest.java",
-  "javatests/src/org/chromium/chrome/browser/sync/AndroidSyncSettingsTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/AutofillTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/BookmarksTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/FakeProfileSyncService.java",

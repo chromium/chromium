@@ -894,6 +894,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/video_tutorials/internal:junit",
     "//chrome/browser/webapps/android:java",
     "//chrome/browser/xsurface:java",
+    "//chrome/test:sync_integration_test_support_java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/background_task_scheduler:background_task_scheduler_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
