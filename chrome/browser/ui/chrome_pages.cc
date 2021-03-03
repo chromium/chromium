@@ -461,13 +461,10 @@ void ShowConnectivityDiagnosticsApp(Profile* profile) {
                           web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS);
 }
 
-void ShowScanningApp(Profile* profile,
-                     chromeos::scanning::ScanAppEntryPoint entry_point) {
+void ShowScanningApp(Profile* profile) {
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kScanningUI));
-  DCHECK_EQ(chromeos::scanning::ScanAppEntryPoint::kSettings, entry_point);
 
   LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SCANNING);
-  chromeos::scanning::RecordScanAppEntryPoint(entry_point);
 }
 
 void ShowDiagnosticsApp(Profile* profile) {

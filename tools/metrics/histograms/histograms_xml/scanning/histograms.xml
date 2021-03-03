@@ -54,6 +54,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Scanning.ScanAppEntryPoint" enum="ScanAppEntryPoint"
     expires_after="2021-12-04">
+  <obsolete>
+    Data no longer needed 2021-02.
+  </obsolete>
   <owner>gavinwill@chromium.org</owner>
   <owner>jschettler@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>

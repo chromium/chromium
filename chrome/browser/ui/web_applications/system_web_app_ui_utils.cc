@@ -38,7 +38,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chromeos/components/scanning/scanning_uma.h"
 #endif
 
 namespace {
@@ -216,15 +215,6 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
 
   DCHECK(url.GetOrigin() ==
          provider->registrar().GetAppLaunchUrl(params.app_id).GetOrigin());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Log enumerated entry point for the Scan app.
-  if (app_type == SystemAppType::SCANNING &&
-      params.source == apps::mojom::AppLaunchSource::kSourceAppLauncher) {
-    chromeos::scanning::RecordScanAppEntryPoint(
-        chromeos::scanning::ScanAppEntryPoint::kLauncher);
-  }
-#endif
 
   // Make sure we have a browser for app.  Always reuse an existing browser for
   // popups, otherwise check app type whether we should use a single window.

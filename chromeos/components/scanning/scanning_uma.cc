@@ -10,10 +10,6 @@
 namespace chromeos {
 namespace scanning {
 
-void RecordScanAppEntryPoint(ScanAppEntryPoint entry_point) {
-  base::UmaHistogramEnumeration("Scanning.ScanAppEntryPoint", entry_point);
-}
-
 ScanJobSettingsResolution GetResolutionEnumValue(const int resolution) {
   switch (resolution) {
     case 75:

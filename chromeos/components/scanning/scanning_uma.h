@@ -12,12 +12,6 @@ namespace scanning {
 // you're adding to any of these enums, update the corresponding enum listing in
 // tools/metrics/histograms/enums.xml.
 
-enum class ScanAppEntryPoint {
-  kSettings = 0,
-  kLauncher = 1,
-  kMaxValue = kLauncher,
-};
-
 enum class ScanJobFailureReason {
   kUnknownScannerError = 0,
   kScannerNotFound = 1,
@@ -36,9 +30,6 @@ enum class ScanJobSettingsResolution {
   k600Dpi = 6,
   kMaxValue = k600Dpi,
 };
-
-// Records ScanAppEntryPoint histogram value.
-void RecordScanAppEntryPoint(ScanAppEntryPoint entry_point);
 
 // Converts resolution integer value to a ScanJobSettingsResolution enum value.
 ScanJobSettingsResolution GetResolutionEnumValue(const int resolution);
