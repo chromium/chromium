@@ -5725,7 +5725,7 @@ crbug.com/1182678 [ Linux ] external/wpt/touch-events/multi-touch-interactions.h
 crbug.com/1182680 [ Linux ] http/tests/devtools/console/console-format-collections.js [ Pass Failure ]
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Pass Failure ]
 crbug.com/1182689 [ Mac10.14 ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
-crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Pass Failure ]
+crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Pass Failure Timeout ]
 
 # Test doesn't support small script streaming yet.
 crbug.com/1011762 http/tests/inspector-protocol/page/page-produceCompilationCache.js [ Pass Failure Timeout ]
