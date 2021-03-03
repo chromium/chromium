@@ -113,15 +113,8 @@ DefaultDecoderFactory::GetSupportedVideoDecoderConfigsForWebRTC() {
     return supported_configs;
 
 #if BUILDFLAG(ENABLE_LIBVPX)
-  SupportedVideoDecoderConfigs vpx_configs =
-      VpxVideoDecoder::SupportedConfigs();
-
-  for (auto& config : vpx_configs) {
-    if (config.profile_min >= VP9PROFILE_MIN &&
-        config.profile_max <= VP9PROFILE_MAX) {
-      supported_configs.emplace_back(config);
-    }
-  }
+  // When the VpxVideoDecoder has been updated for RTC add
+  // `VpxVideoDecoder::SupportedConfigs()` to `supported_configs`.
 #endif
 
 #if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
@@ -142,10 +135,8 @@ DefaultDecoderFactory::GetSupportedVideoDecoderConfigsForWebRTC() {
   }
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  SupportedVideoDecoderConfigs ffmpeg_configs =
-      FFmpegVideoDecoder::SupportedConfigsForWebRTC();
-  supported_configs.insert(supported_configs.end(), ffmpeg_configs.begin(),
-                           ffmpeg_configs.end());
+  // When the FFmpegVideoDecoder has been updated for RTC add
+  // `FFmpegVideoDecoder::SupportedConfigsForWebRTC()` to `supported_configs`.
 #endif
 
   return supported_configs;

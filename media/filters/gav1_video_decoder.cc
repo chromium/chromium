@@ -284,6 +284,12 @@ void Gav1VideoDecoder::Initialize(const VideoDecoderConfig& config,
   settings.release_input_buffer = ReleaseInputBufferImpl;
   settings.callback_private_data = this;
 
+  if (low_delay || config.is_rtc()) {
+    // The `frame_parallel` setting is false by default, so this serves more as
+    // documentation that it should be false for low delay decoding.
+    settings.frame_parallel = false;
+  }
+
   libgav1_decoder_ = std::make_unique<libgav1::Decoder>();
   libgav1::StatusCode status = libgav1_decoder_->Init(&settings);
   if (status != kLibgav1StatusOk) {
@@ -412,6 +418,10 @@ void Gav1VideoDecoder::Reset(base::OnceClosure reset_cb) {
   } else {
     std::move(reset_cb).Run();
   }
+}
+
+bool Gav1VideoDecoder::IsOptimizedForRTC() const {
+  return true;
 }
 
 void Gav1VideoDecoder::Detach() {

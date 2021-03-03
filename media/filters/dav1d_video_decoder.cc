@@ -220,7 +220,7 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // |n_frame_threads|=1 (https://crbug.com/957511) the minimum total number of
   // threads is 6 (two tile and two frame) regardless of core count. The maximum
   // is min(2 * base::SysInfo::NumberOfProcessors(), limits::kMaxVideoThreads).
-  if (low_delay)
+  if (low_delay || config.is_rtc())
     s.n_frame_threads = 1;
   else if (s.n_frame_threads * (s.n_tile_threads + 1) > max_threads)
     s.n_frame_threads = std::max(2, max_threads / (s.n_tile_threads + 1));
@@ -280,6 +280,10 @@ void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {
                                                      std::move(reset_cb));
   else
     std::move(reset_cb).Run();
+}
+
+bool Dav1dVideoDecoder::IsOptimizedForRTC() const {
+  return true;
 }
 
 void Dav1dVideoDecoder::Detach() {
