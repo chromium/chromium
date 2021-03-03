@@ -77,6 +77,16 @@ cast_source_set("cma_audio_output") {
   ]
 }
 
+cast_source_set("resampler") {
+  sources = [ "cast_audio_resampler_impl.cc" ]
+
+  deps = [
+    "//base",
+    "//chromecast/media/api",
+    "//media",
+  ]
+}
+
 cast_source_set("audio") {
   sources = [
     "cast_audio_input_stream.cc",
@@ -89,7 +99,6 @@ cast_source_set("audio") {
     "cast_audio_mixer.h",
     "cast_audio_output_stream.cc",
     "cast_audio_output_stream.h",
-    "cast_audio_resampler_impl.cc",
     "cma_audio_output_stream.cc",
     "cma_audio_output_stream.h",
   ]
