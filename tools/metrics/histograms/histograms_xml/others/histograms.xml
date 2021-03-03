@@ -17787,6 +17787,9 @@ regressions. -->
 
 <histogram name="WebFont.LoadLimitOnDiskCacheMiss" enum="WebFontLoadLimitState"
     expires_after="2021-03-21">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
   <owner>ksakamoto@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <summary>

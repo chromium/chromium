@@ -141,9 +141,6 @@ void FontResource::WillReloadAfterDiskCacheMiss() {
   }
   if (load_limit_state_ == LoadLimitState::kLongLimitExceeded)
     NotifyClientsLongLimitExceeded();
-
-  base::UmaHistogramEnumeration("WebFont.LoadLimitOnDiskCacheMiss",
-                                load_limit_state_);
 }
 
 void FontResource::FontLoadShortLimitCallback() {
