@@ -1146,9 +1146,6 @@ extern const char kPrivacyReorderedAndroidDescription[];
 extern const char kPrivacySandboxSettingsName[];
 extern const char kPrivacySandboxSettingsDescription[];
 
-extern const char kSafetyCheckAndroidName[];
-extern const char kSafetyCheckAndroidDescription[];
-
 extern const char kSafetyCheckWeakPasswordsName[];
 extern const char kSafetyCheckWeakPasswordsDescription[];
 

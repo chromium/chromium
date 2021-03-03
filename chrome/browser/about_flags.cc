@@ -5835,12 +5835,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrivacySandboxSettings)},
 
 #if defined(OS_ANDROID)
-    {"safety-check-android", flag_descriptions::kSafetyCheckAndroidName,
-     flag_descriptions::kSafetyCheckAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kSafetyCheckAndroid)},
-#endif
-
-#if defined(OS_ANDROID)
     {"metrics-settings-android", flag_descriptions::kMetricsSettingsAndroidName,
      flag_descriptions::kMetricsSettingsAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMetricsSettingsAndroid,

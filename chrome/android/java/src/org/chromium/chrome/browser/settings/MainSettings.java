@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -204,15 +203,6 @@ public class MainSettings extends PreferenceFragmentCompat
         if (!TemplateUrlServiceFactory.get().isLoaded()) {
             TemplateUrlServiceFactory.get().registerLoadListener(this);
             TemplateUrlServiceFactory.get().load();
-        }
-
-        // Only show the Safety check section if the Safety check flag is on.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_CHECK_ANDROID)) {
-            getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
-        } else {
-            findPreference(PREF_SAFETY_CHECK)
-                    .setTitle(SafetyCheckSettingsFragment.getSafetyCheckSettingsElementTitle(
-                            getContext()));
         }
 
         // Replace the account section header, replace SyncAndServicesSettings with

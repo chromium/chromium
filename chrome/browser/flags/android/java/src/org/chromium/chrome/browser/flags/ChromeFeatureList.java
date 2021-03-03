@@ -415,7 +415,6 @@ public abstract class ChromeFeatureList {
     public static final String RELATED_SEARCHES_UI = "RelatedSearchesUi";
     public static final String REQUEST_DESKTOP_SITE_FOR_TABLETS = "RequestDesktopSiteForTablets";
     public static final String REPORT_FEED_USER_ACTIONS = "ReportFeedUserActions";
-    public static final String SAFETY_CHECK_ANDROID = "SafetyCheckAndroid";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED =
             "SafeBrowsingEnhancedProtection";

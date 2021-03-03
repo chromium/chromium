@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.safety_check;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +25,6 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat {
     private ButtonCompat mCheckButton;
 
     private TextView mTimestampTextView;
-
-    public static CharSequence getSafetyCheckSettingsElementTitle(Context context) {
-        return context.getString(R.string.prefs_safety_check);
-    }
 
     /**
      * Initializes all the objects related to the preferences page.

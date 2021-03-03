@@ -1954,11 +1954,6 @@ const char kPrivacySandboxSettingsDescription[] =
     "Enables privacy sandbox settings. Requires at least one of the Privacy "
     "Sandbox APIs to be enabled.";
 
-const char kSafetyCheckAndroidName[] = "Safety Check on Android";
-const char kSafetyCheckAndroidDescription[] =
-    "A settings component for checking multiple areas of browser safety. "
-    "Requires #password-check to also be enabled.";
-
 const char kSafetyCheckWeakPasswordsName[] = "Safety check for weak passwords";
 const char kSafetyCheckWeakPasswordsDescription[] =
     "If weak passwords were found, show them in safety check.";

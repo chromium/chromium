@@ -532,11 +532,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kRequestDesktopSiteForTablets;
 #endif
 
-#if defined(OS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kSafetyCheckAndroid;
-#endif
-
 #if defined(OS_WIN)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSafetyCheckChromeCleanerChild;

@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
@@ -39,7 +38,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests {@link SafetyCheckSettingsFragment} together with {@link SafetyCheckViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures(ChromeFeatureList.SAFETY_CHECK_ANDROID)
 public class SafetyCheckSettingsFragmentTest {
     private static final String PASSWORDS = "passwords";
     private static final String SAFE_BROWSING = "safe_browsing";
