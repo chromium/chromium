@@ -33,6 +33,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
@@ -177,6 +178,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   title_fade_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
   title_fade_label_->SetMultiLine(true);
   title_fade_label_->SetMaxLines(kHoverCardTitleMaxLines);
+  title_fade_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
   domain_label_ = AddChildView(std::make_unique<views::Label>(
       base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -193,6 +195,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   domain_fade_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   domain_fade_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   domain_fade_label_->SetMultiLine(false);
+  domain_fade_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
   if (TabHoverCardController::AreHoverCardImagesEnabled()) {
     using Alignment = views::ImageView::Alignment;
