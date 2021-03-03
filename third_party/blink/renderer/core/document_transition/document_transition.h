@@ -40,8 +40,10 @@ class CORE_EXPORT DocumentTransition
   bool HasPendingActivity() const override;
 
   // JavaScript API implementation.
-  ScriptPromise prepare(ScriptState*, const DocumentTransitionInit*);
-  void start();
+  ScriptPromise prepare(ScriptState*,
+                        const DocumentTransitionInit*,
+                        ExceptionState&);
+  ScriptPromise start(ScriptState*, ExceptionState&);
 
   // This uses std::move semantics to take the request from this object.
   std::unique_ptr<Request> TakePendingRequest();
@@ -54,7 +56,7 @@ class CORE_EXPORT DocumentTransition
   void NotifyHasChangesToCommit();
 
   void NotifyPrepareFinished(uint32_t sequence_id);
-  void NotifyStartFinished();
+  void NotifyStartFinished(uint32_t sequence_id);
 
   void ParseAndSetTransitionParameters(const DocumentTransitionInit* params);
 
@@ -63,12 +65,19 @@ class CORE_EXPORT DocumentTransition
   State state_ = State::kIdle;
 
   Member<ScriptPromiseResolver> prepare_promise_resolver_;
+  Member<ScriptPromiseResolver> start_promise_resolver_;
   base::TimeDelta duration_;
   Request::Effect effect_ = Request::Effect::kNone;
 
   std::unique_ptr<Request> pending_request_;
 
-  uint32_t prepare_sequence_id_ = 0u;
+  uint32_t last_prepare_sequence_id_ = 0u;
+  uint32_t last_start_sequence_id_ = 0u;
+
+  // Use a common counter for sequence ids to avoid confusion. Prepare
+  // and start sequence ids are technically in a different namespace, but this
+  // avoids any confusion while debugging.
+  uint32_t next_sequence_id_ = 1u;
 };
 
 }  // namespace blink

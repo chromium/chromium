@@ -65,9 +65,10 @@ TEST_F(DocumentTransitionTest, TransitionPreparePromiseResolves) {
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
 
-  ScriptPromiseTester promise_tester(script_state,
-                                     transition->prepare(script_state, &init));
+  ScriptPromiseTester promise_tester(
+      script_state, transition->prepare(script_state, &init, exception_state));
 
   EXPECT_EQ(GetState(transition), State::kPreparing);
   UpdateAllLifecyclePhasesAndSimulateCommit();
@@ -83,14 +84,15 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareRejectsPreviousPromise) {
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   DocumentTransitionInit init;
   ScriptPromiseTester first_promise_tester(
-      script_state, transition->prepare(script_state, &init));
+      script_state, transition->prepare(script_state, &init, exception_state));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
   ScriptPromiseTester second_promise_tester(
-      script_state, transition->prepare(script_state, &init));
+      script_state, transition->prepare(script_state, &init, exception_state));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
   UpdateAllLifecyclePhasesAndSimulateCommit();
@@ -109,8 +111,9 @@ TEST_F(DocumentTransitionTest, EffectParsing) {
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
   DocumentTransitionInit default_init;
-  transition->prepare(script_state, &default_init);
+  transition->prepare(script_state, &default_init, exception_state);
 
   auto request = transition->TakePendingRequest();
   ASSERT_TRUE(request);
@@ -121,7 +124,7 @@ TEST_F(DocumentTransitionTest, EffectParsing) {
   // Test "explode" effect parsing.
   DocumentTransitionInit explode_init;
   explode_init.setRootTransition("explode");
-  transition->prepare(script_state, &explode_init);
+  transition->prepare(script_state, &explode_init, exception_state);
 
   request = transition->TakePendingRequest();
   ASSERT_TRUE(request);
@@ -132,7 +135,7 @@ TEST_F(DocumentTransitionTest, EffectParsing) {
   // Test invalid effect parsing.
   DocumentTransitionInit invalid_init;
   invalid_init.setRootTransition("invalid effect");
-  transition->prepare(script_state, &invalid_init);
+  transition->prepare(script_state, &invalid_init, exception_state);
 
   request = transition->TakePendingRequest();
   ASSERT_TRUE(request);
@@ -147,10 +150,11 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   DocumentTransitionInit init;
   ScriptPromiseTester first_promise_tester(
-      script_state, transition->prepare(script_state, &init));
+      script_state, transition->prepare(script_state, &init, exception_state));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
   UpdateAllLifecyclePhasesAndSimulateCommit();
@@ -159,7 +163,7 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
   EXPECT_EQ(GetState(transition), State::kPrepared);
 
   ScriptPromiseTester second_promise_tester(
-      script_state, transition->prepare(script_state, &init));
+      script_state, transition->prepare(script_state, &init, exception_state));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
   UpdateAllLifecyclePhasesAndSimulateCommit();
@@ -171,12 +175,13 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
 TEST_F(DocumentTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   DocumentTransitionInit init;
   ScriptPromiseTester tester(
       script_state,
       DocumentTransitionSupplement::documentTransition(GetDocument())
-          ->prepare(script_state, &init));
+          ->prepare(script_state, &init, exception_state));
 
   // ActiveScriptWrappable should keep the transition alive.
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -192,10 +197,14 @@ TEST_F(DocumentTransitionTest, StartHasNoEffectUnlessPrepared) {
   EXPECT_EQ(GetState(transition), State::kIdle);
   EXPECT_FALSE(transition->TakePendingRequest());
 
-  transition->start();
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
 
+  transition->start(script_state, exception_state);
   EXPECT_EQ(GetState(transition), State::kIdle);
   EXPECT_FALSE(transition->TakePendingRequest());
+  EXPECT_TRUE(exception_state.HadException());
 }
 
 TEST_F(DocumentTransitionTest, StartAfterPrepare) {
@@ -204,10 +213,11 @@ TEST_F(DocumentTransitionTest, StartAfterPrepare) {
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   DocumentTransitionInit init;
-  ScriptPromiseTester prepare_tester(script_state,
-                                     transition->prepare(script_state, &init));
+  ScriptPromiseTester prepare_tester(
+      script_state, transition->prepare(script_state, &init, exception_state));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
   UpdateAllLifecyclePhasesAndSimulateCommit();
@@ -215,28 +225,36 @@ TEST_F(DocumentTransitionTest, StartAfterPrepare) {
   EXPECT_TRUE(prepare_tester.IsFulfilled());
   EXPECT_EQ(GetState(transition), State::kPrepared);
 
-  transition->start();
-  EXPECT_EQ(GetState(transition), State::kStarted);
-
+  ScriptPromiseTester start_tester(
+      script_state, transition->start(script_state, exception_state));
   // Take the request.
-  EXPECT_TRUE(transition->TakePendingRequest());
-
-  // Subsequent starts should not do anything.
-  transition->start();
+  auto start_request = transition->TakePendingRequest();
+  EXPECT_TRUE(start_request);
   EXPECT_EQ(GetState(transition), State::kStarted);
+
+  // Subsequent starts should get an exception.
+  EXPECT_FALSE(exception_state.HadException());
+  transition->start(script_state, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
   EXPECT_FALSE(transition->TakePendingRequest());
+
+  start_request->TakeFinishedCallback().Run();
+  EXPECT_EQ(GetState(transition), State::kIdle);
+  start_tester.WaitUntilSettled();
+  EXPECT_TRUE(start_tester.IsFulfilled());
 }
 
-TEST_F(DocumentTransitionTest, StartIsPropagated) {
+TEST_F(DocumentTransitionTest, StartPromiseIsResolved) {
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   DocumentTransitionInit init;
-  ScriptPromiseTester prepare_tester(script_state,
-                                     transition->prepare(script_state, &init));
+  ScriptPromiseTester prepare_tester(
+      script_state, transition->prepare(script_state, &init, exception_state));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
   UpdateAllLifecyclePhasesAndSimulateCommit();
@@ -244,15 +262,14 @@ TEST_F(DocumentTransitionTest, StartIsPropagated) {
   EXPECT_TRUE(prepare_tester.IsFulfilled());
   EXPECT_EQ(GetState(transition), State::kPrepared);
 
-  transition->start();
+  ScriptPromiseTester start_tester(
+      script_state, transition->start(script_state, exception_state));
 
   EXPECT_EQ(GetState(transition), State::kStarted);
   UpdateAllLifecyclePhasesAndSimulateCommit();
 
-  // TODO(vmpstr): This test relies on the fact that the commit callback will
-  // switch the state to kIdle. Long term, the state should only switch to
-  // kStarted here, and have a separate callback for when the transition is
-  // finished. When that happens, the expectations of this test should change.
+  start_tester.WaitUntilSettled();
+  EXPECT_TRUE(start_tester.IsFulfilled());
   EXPECT_EQ(GetState(transition), State::kIdle);
 }
 

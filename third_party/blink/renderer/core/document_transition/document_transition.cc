@@ -49,6 +49,7 @@ DocumentTransition::DocumentTransition(Document* document)
 void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(prepare_promise_resolver_);
+  visitor->Trace(start_promise_resolver_);
 
   ScriptWrappable::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
@@ -60,17 +61,21 @@ void DocumentTransition::ContextDestroyed() {
     prepare_promise_resolver_->Detach();
     prepare_promise_resolver_ = nullptr;
   }
+  if (start_promise_resolver_) {
+    start_promise_resolver_->Detach();
+    start_promise_resolver_ = nullptr;
+  }
 }
 
 bool DocumentTransition::HasPendingActivity() const {
-  if (prepare_promise_resolver_)
+  if (prepare_promise_resolver_ || start_promise_resolver_)
     return true;
   return false;
 }
 
-ScriptPromise DocumentTransition::prepare(
-    ScriptState* script_state,
-    const DocumentTransitionInit* params) {
+ScriptPromise DocumentTransition::prepare(ScriptState* script_state,
+                                          const DocumentTransitionInit* params,
+                                          ExceptionState& exception_state) {
   // Reject any previous prepare promises.
   if (state_ == State::kPreparing || state_ == State::kPrepared) {
     if (prepare_promise_resolver_) {
@@ -81,18 +86,24 @@ ScriptPromise DocumentTransition::prepare(
     state_ = State::kIdle;
   }
 
-  // Increment the sequence id before any early outs so we will correctly
-  // process callbacks from previous requests.
-  ++prepare_sequence_id_;
+  // Get the sequence id before any early outs so we will correctly process
+  // callbacks from previous requests.
+  last_prepare_sequence_id_ = next_sequence_id_++;
 
   // If we are not attached to a view, then we can't prepare a transition.
-  // Reject the promise. We also reject the promise if we're in any state other
-  // than idle.
-  if (!document_ || !document_->View() || state_ != State::kIdle) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
-                                           "Invalid state"));
+  // Reject the promise.
+  if (!document_ || !document_->View()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The document must be connected to a window.");
+    return ScriptPromise();
+  }
+  // We also reject the promise if we're in any state other than idle.
+  if (state_ != State::kIdle) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The document is already executing a transition.");
+    return ScriptPromise();
   }
 
   // We're going to be creating a new transition, initialize the params.
@@ -106,21 +117,31 @@ ScriptPromise DocumentTransition::prepare(
       effect_, duration_,
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
-          WrapCrossThreadWeakPersistent(this), prepare_sequence_id_)));
+          WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
 
   NotifyHasChangesToCommit();
   return prepare_promise_resolver_->Promise();
 }
 
-void DocumentTransition::start() {
-  if (state_ != State::kPrepared)
-    return;
+ScriptPromise DocumentTransition::start(ScriptState* script_state,
+                                        ExceptionState& exception_state) {
+  if (state_ != State::kPrepared) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Transition must be prepared before it can be started.");
+    return ScriptPromise();
+  }
 
+  last_start_sequence_id_ = next_sequence_id_++;
   state_ = State::kStarted;
-  pending_request_ = Request::CreateStart(ConvertToBaseOnceCallback(
-      CrossThreadBindOnce(&DocumentTransition::NotifyStartFinished,
-                          WrapCrossThreadWeakPersistent(this))));
+  start_promise_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_request_ =
+      Request::CreateStart(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          &DocumentTransition::NotifyStartFinished,
+          WrapCrossThreadWeakPersistent(this), last_start_sequence_id_)));
   NotifyHasChangesToCommit();
+  return start_promise_resolver_->Promise();
 }
 
 void DocumentTransition::NotifyHasChangesToCommit() {
@@ -137,7 +158,7 @@ void DocumentTransition::NotifyHasChangesToCommit() {
 
 void DocumentTransition::NotifyPrepareFinished(uint32_t sequence_id) {
   // This notification is for a different sequence id.
-  if (sequence_id != prepare_sequence_id_)
+  if (sequence_id != last_prepare_sequence_id_)
     return;
 
   // We could have detached the resolver if the execution context was destroyed.
@@ -152,7 +173,20 @@ void DocumentTransition::NotifyPrepareFinished(uint32_t sequence_id) {
   state_ = State::kPrepared;
 }
 
-void DocumentTransition::NotifyStartFinished() {
+void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
+  // This notification is for a different sequence id.
+  if (sequence_id != last_start_sequence_id_)
+    return;
+
+  // We could have detached the resolver if the execution context was destroyed.
+  if (!start_promise_resolver_)
+    return;
+
+  DCHECK(state_ == State::kStarted);
+  DCHECK(start_promise_resolver_);
+
+  start_promise_resolver_->Resolve();
+  start_promise_resolver_ = nullptr;
   state_ = State::kIdle;
 }
 
