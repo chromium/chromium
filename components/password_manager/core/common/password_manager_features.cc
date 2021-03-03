@@ -58,7 +58,7 @@ const base::Feature kEnablePasswordsAccountStorage = {
 
 const base::Feature KEnablePasswordGenerationForClearTextFields = {
     "EnablePasswordGenerationForClearTextFields",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables filling password on a website when there is saved password on
 // affiliated website.
