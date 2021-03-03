@@ -295,6 +295,7 @@
 <translation id="2053111141626950936"><ph name="LANGUAGE" />のページは翻訳されません。</translation>
 <translation id="2053553514270667976">郵便番号</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 件の候補}other{# 件の候補}}</translation>
+<translation id="2071692954027939183">通常、許可されていないため、通知は自動的にブロックされました</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="20817612488360358">システム プロキシ設定を使用するように設定されていますが、明示的なプロキシの設定も指定されています。</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
@@ -783,6 +784,7 @@
 <translation id="4058922952496707368">キー「<ph name="SUBKEY" />」: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1（封筒）</translation>
 <translation id="4067947977115446013">有効なアドレスの追加</translation>
+<translation id="4072193657607981494">ポリシーを読み込んでいます</translation>
 <translation id="4072486802667267160">ご注文の処理中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="4075732493274867456">クライアントとサーバーで、共通の SSL プロトコル バージョンまたは暗号スイートがサポートされていません。</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -917,6 +919,7 @@
 <translation id="4510487217173779431">長4（封筒）</translation>
 <translation id="4515275063822566619">Chrome と Google アカウント（<ph name="ACCOUNT_EMAIL" />）に保存されているクレジット カードと住所です。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="4517607026994743406">Comm-10（封筒）</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm（<ph name="ORIENTATION" />）</translation>
 <translation id="4522570452068850558">詳細</translation>
 <translation id="4524138615196389145">今後 WebAuthn を使用して、カードの確認をより迅速に行います</translation>
 <translation id="4524805452350978254">カードを管理</translation>
@@ -1336,6 +1339,7 @@
 <translation id="614940544461990577">次をお試しください</translation>
 <translation id="6150036310511284407">3 穴パンチ（左）</translation>
 <translation id="6151417162996330722">サーバー証明書の有効期限が長すぎます。</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" />（<ph name="ORIENTATION" />）</translation>
 <translation id="6157877588268064908">配送方法と要件を確認するには、住所を選択してください</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6169916984152623906">現在、シークレット モードで閲覧しています。あなたのアクティビティは、このデバイスを利用する他のユーザーには表示されません。ただし、ダウンロードしたファイルとブックマークは通常どおり保存されます。</translation>
@@ -1883,6 +1887,7 @@
 <translation id="8364627913115013041">未設定</translation>
 <translation id="8368476060205742148">Google Play 開発者サービス</translation>
 <translation id="8371889962595521444">カスタムルート証明書</translation>
+<translation id="8374636051559112948">各サイズに対応</translation>
 <translation id="8380941800586852976">危険</translation>
 <translation id="8381674639488873545">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。<ph name="BEGIN_LINK" />理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> から <ph name="VM_NAME" /> への貼り付けは管理者が設定したポリシーによってブロックされています</translation>
@@ -2064,6 +2069,7 @@
 <translation id="9114524666733003316">カードを確認しています…</translation>
 <translation id="9114581008513152754">このブラウザは、会社またはその他の組織によって管理されていません。このデバイスでのアクティビティは、Chrome 以外で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">アップロード済み</translation>
+<translation id="9128016270925453879">ポリシーが読み込まれました</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
 <translation id="9141013498910525015">住所を管理</translation>

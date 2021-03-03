@@ -185,6 +185,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2239812875700136898">Contrôlez vos articles à l'aide du bouton Options pour Discover</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
+<translation id="2278052315791335171">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
 <translation id="230115972905494466">Aucun appareil compatible détecté</translation>
 <translation id="230155349749732438">Pour utiliser ce paramètre, vous devez activer l'option <ph name="BEGIN_LINK" />Améliorer les recherches et la navigation<ph name="END_LINK" /></translation>
@@ -357,6 +358,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3398320232533725830">Ouvrir le gestionnaire de favoris</translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
+<translation id="3440975416244667276">Appuyez de manière prolongée pour plus d'informations</translation>
 <translation id="3443221991560634068">Actualiser la page active</translation>
 <translation id="3451542610083122179">Privacy Sandbox est une initiative de préservation du Web ouvert qui vise à vous protéger contre les mécanismes de suivi.
 
@@ -950,6 +952,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7475688122056506577">Carte SD introuvable. Certains de vos fichiers risquent d'être manquants.</translation>
 <translation id="7479104141328977413">Gestion des onglets</translation>
 <translation id="7481312909269577407">Avancer</translation>
+<translation id="7481864133709957613">Pour lancer une recherche, appuyez sur des mots de manière prolongée</translation>
 <translation id="7482656565088326534">Onglet ''Aperçu''</translation>
 <translation id="7484997419527351112">Discover - désactivé</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Dernière mise à jour <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -959,6 +962,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="751961395872307827">Impossible de se connecter au site</translation>
 <translation id="752220631458524187">Déconnectez l'appareil lorsque vous avez terminé</translation>
+<translation id="7523960634226602883">Faites une recherche avec votre appareil photo via Google Lens</translation>
 <translation id="753225086557513863">Téléchargement programmé pour plus tard</translation>
 <translation id="7559975015014302720">Mode simplifié désactivé</translation>
 <translation id="7562080006725997899">Effacement des données de navigation en cours</translation>

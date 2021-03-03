@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">‏בעזרת הלחצן 'אפשרויות של Discover' ניתן לקבוע אילו מאמרים יוצגו</translation>
 <translation id="2259659629660284697">ייצוא סיסמאות…</translation>
 <translation id="2276696007612801991">‏יש להיכנס לחשבון Google כדי לבדוק את הסיסמאות שלך</translation>
+<translation id="2278052315791335171">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">כתובת לחיוב</translation>
 <translation id="230115972905494466">לא נמצאו מכשירים תואמים</translation>
 <translation id="230155349749732438">כדי להשתמש בהגדרה זו, יש להפעיל את האפשרות <ph name="BEGIN_LINK" />שיפור של חיפושים וגלישה<ph name="END_LINK" /></translation>
@@ -357,6 +358,7 @@
 <translation id="3398320232533725830">פתיחת מנהל הסימניות</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3429160811076349561">התכונות הניסיוניות מושבתות</translation>
+<translation id="3440975416244667276">לחיצה ארוכה תציג פרטים רלוונטים נוספים</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="3451542610083122179">‏'ארגז חול (Sandbox) של הגדרות פרטיות' הוא פרויקט מתמשך לשמירה על האופי הפתוח של רשת האינטרנט, מתוך שאיפה להגן עליך ועל שאר המשתמשים מפני אמצעי מעקב.
 
@@ -950,6 +952,7 @@
 <translation id="7475688122056506577">‏לא נמצא כרטיס SD. ייתכן שחלק מהקבצים שלך חסרים.</translation>
 <translation id="7479104141328977413">ניהול כרטיסיות</translation>
 <translation id="7481312909269577407">קדימה</translation>
+<translation id="7481864133709957613">כדי לבצע חיפוש בדף זה, יש ללחוץ לחיצה ארוכה על מילים במקום להקיש עליהן.</translation>
 <translation id="7482656565088326534">כרטיסיית תצוגה מקדימה</translation>
 <translation id="7484997419527351112">‏Discover – כבוי</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (עודכן <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -959,6 +962,7 @@
 <translation id="7514365320538308">הורדה</translation>
 <translation id="751961395872307827">לא ניתן להתחבר לאתר</translation>
 <translation id="752220631458524187">יש לנתק את הכבל בסיום הפעולה</translation>
+<translation id="7523960634226602883">‏חיפוש עם המצלמה באמצעות Google Lens</translation>
 <translation id="753225086557513863">ההורדה תוזמנה למועד מאוחר יותר</translation>
 <translation id="7559975015014302720">מצב הטעינה המהירה מושבת</translation>
 <translation id="7562080006725997899">ניקוי נתוני הגלישה מתבצע</translation>

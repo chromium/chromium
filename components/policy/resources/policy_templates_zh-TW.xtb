@@ -275,6 +275,7 @@
 <translation id="1393485621820363363">已啟用企業裝置印表機</translation>
 <translation id="1397855852561539316">預設搜尋引擎建議網址</translation>
 <translation id="1413936351612032792">回報 Linux 應用程式使用情形資訊</translation>
+<translation id="1417888712677507140">封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
 <translation id="1418387035898607074">針對從信任的來源下載的檔案略過安全瀏覽檢查</translation>
 <translation id="142346659686073702">允許無關聯的使用者使用 Crostini</translation>
 <translation id="1425551776320718592">禁止這部裝置的使用者採用 ADB 側載，且不強制執行 Powerwash (這可能會讓裝置處於不安全的狀態)</translation>
@@ -375,6 +376,7 @@
 <translation id="1514888685242892912">啟用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">啟用浮動式無障礙選單</translation>
 <translation id="1515824657887788963">允許頁面在關閉時執行同步 XHR 要求。</translation>
+<translation id="1516486219683984217">不允許使用系統通知</translation>
 <translation id="1522425503138261032">允許網站追蹤使用者的實際位置</translation>
 <translation id="1523774894176285446">要啟動的替代瀏覽器 (適用於已設定的網站)。</translation>
 <translation id="152657506688053119">預設搜尋的替代網址清單</translation>
@@ -2289,6 +2291,13 @@
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="4121350739760194865">阻止應用程式宣傳資訊在新分頁上顯示</translation>
 <translation id="4122473079291425973">如果系統可以取得與卡片相關的網頁內容，新分頁就會顯示卡片，但使用者可以變更這項設定</translation>
+<translation id="4122565688998751716">這項政策已遭淘汰，請改用「<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />」政策。
+
+設定 Linux 上的 <ph name="PRODUCT_NAME" /> 是否要使用原生通知。
+
+如果設為 True 或未設定，則 <ph name="PRODUCT_NAME" /> 可以使用原生通知。
+
+如果設為 False，<ph name="PRODUCT_NAME" /> 不會使用原生通知。<ph name="PRODUCT_NAME" /> 的訊息中心將做為備用選項。</translation>
 <translation id="412697421478384751">允許使用者設定強度不足的螢幕鎖定 PIN 碼</translation>
 <translation id="4138655880188755661">時間限制</translation>
 <translation id="4147818922357566987">僅啟用與重大修正項目相關的變化版本</translation>
@@ -2792,6 +2801,11 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用單聲道音訊，但使用者隨時可以啟用。</translation>
+<translation id="4933301190614090397">控管允許瀏覽器在關閉前處理保持運作要求的時間長度 (以秒為單位)。
+
+      指定這項政策後，可以阻止瀏覽器在指定的秒數內關閉，藉此處理保持運作 (https://fetch.spec.whatwg.org/#request-keepalive-flag) 要求。
+
+      預設值 (0) 代表這項功能已停用。</translation>
 <translation id="4942681160308347946">將這項政策設為 True 時，系統會在登入畫面啟用互動朗讀功能。將這項政策設為 False 時，系統會在登入畫面停用互動朗讀功能。
 
       如果設定這項政策，使用者可暫時啟用或停用互動朗讀功能。當登入畫面重新載入或閒置達一分鐘時，互動朗讀功能會還原成原始狀態。
@@ -2966,6 +2980,11 @@
 <translation id="519247340330463721">設定安全瀏覽相關政策。</translation>
 <translation id="5196520640744454600">在登入畫面上啟用相黏鍵功能</translation>
 <translation id="5206454085187851382">如果在 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
+<translation id="5207543664699568887">設定 Linux 上的 <ph name="PRODUCT_NAME" /> 是否要使用系統通知。
+
+如果設為 True 或未設定，則 <ph name="PRODUCT_NAME" /> 可以使用系統通知。
+
+如果設為 False，<ph name="PRODUCT_NAME" /> 不會使用系統通知。<ph name="PRODUCT_NAME" /> 的訊息中心將做為備用選項。</translation>
 <translation id="5208675398826212411">這項政策會設定透過 DNS 攔截檢查的內部網路重新導向行為。這些檢查機制會嘗試偵測瀏覽器是否透過 Proxy，將使用者重新導向未知的主機名稱。
 
       如果未設定這項政策，瀏覽器會使用預設的 DNS 攔截檢查行為和內部網路重新導向建議。在 M88 版中，這兩個功能預設為啟用，但在未來版本中會預設為停用。
@@ -3212,6 +3231,15 @@
       如果啟用或不設定這項政策，系統會啟用 <ph name="PRODUCT_NAME" /> 功能。如果停用這項政策，這項功能將無法使用。
 
       這項企業政策只是暫時性措施，至少在 Chrome 93 版前都可供使用。</translation>
+<translation id="5494322570831642650">指定使用者是否可在 <ph name="PRODUCT_NAME" /> 中以無痕模式開啟網頁。
+
+      如果將這項政策設為「Enabled」或不予設定，使用者能夠以無痕模式開啟網頁。
+
+      如果設為「Disabled」，使用者將無法以無痕模式開啟網頁。
+
+      如果設為「Forced」，使用者只能以無痕模式開啟網頁。請注意，「Forced」選項不適用於 Chrome Android 版。
+
+      注意：在 iOS 上，如果政策在工作階段期間發生變更，那麼只有在裝置重新啟動後才會生效。</translation>
 <translation id="5497565614013170656">用於比對印表機 ID 的規則運算式。</translation>
 <translation id="5499375345075963939">這項政策僅於零售模式中有效。
 
@@ -3298,6 +3326,16 @@
 <translation id="5620392548325769024">這會啟用歡迎頁面，並在作業系統升級後第一次啟動瀏覽器時顯示。</translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>
+<translation id="5636088574608432506">這項政策可控管瀏覽器的登入行為，讓你指定使用者是否能用帳戶登入 <ph name="PRODUCT_NAME" />，並使用帳戶相關服務 (例如 <ph name="PRODUCT_NAME" /> 同步功能)。
+
+
+      如果將這項政策設為「禁止登入瀏覽器」，使用者將無法登入瀏覽器，也無法使用帳戶相關服務。在這種情況下，使用者無法使用瀏覽器層級的功能 (例如 <ph name="PRODUCT_NAME" /> 同步功能)。在 <ph name="IOS_NAME" /> 上，如果這項政策在使用者登入瀏覽器後才設為「停用」，系統會立即將他們登出；在其他平台上，已登入的使用者則會在下次執行 <ph name="PRODUCT_NAME" /> 時被強制登出，但他們在所有平台上的本機設定檔資料 (例如書籤、密碼等) 都會保留下來，並能繼續使用。使用者仍然可以登入並使用 Gmail 等 Google 網路服務。
+
+      如果將這項政策設為「允許登入瀏覽器」，則使用者可以登入瀏覽器。在 <ph name="IOS_NAME" /> 以外的所有平台上，使用者會在登入 Gmail 等 Google 網路服務後自動登入瀏覽器。在登入瀏覽器的狀態下，瀏覽器會保留使用者的帳戶資訊。不過，<ph name="PRODUCT_NAME" /> 同步功能不會因此預設為開啟，使用者必須另外選擇啟用這項功能。啟用這項政策後，使用者將無法關閉允許登入瀏覽器的設定。如要控管是否提供 <ph name="PRODUCT_NAME" /> 同步功能，請使用 <ph name="SYNC_POLICY_NAME" /> 政策。
+
+      如果將這項政策設為「強制登入瀏覽器」，使用者會看到選取帳戶的對話方塊，而且必須選擇帳戶並登入才能使用瀏覽器。這樣可以確保系統在與該帳戶關聯的所有受管理帳戶中套用並強制執行相關政策。根據預設，這項設定會開啟帳戶的 <ph name="PRODUCT_NAME" /> 同步功能 (除非網域管理員已停用 <ph name="PRODUCT_NAME" /> 同步功能，或是另外設定了 <ph name="SYNC_POLICY_NAME" /> 政策)。<ph name="GUEST_MODE_POLICY_NAME" /> 的預設值將設為已停用。請注意，啟用這項政策後，未登入的現有設定檔會遭到鎖定，無法再使用。詳情請參閱說明中心文章：https://support.google.com/chrome/a/answer/7572556。這個選項不支援 <ph name="LINUX_OS_NAME" />、<ph name="ANDROID_NAME" /> 和 <ph name="IOS_NAME" />。如果你採用這個選項，系統將改為使用「允許登入瀏覽器」。
+
+      如果不設定這項政策，使用者可以決定是否要在 <ph name="PRODUCT_NAME" /> 設定中啟用瀏覽器登入選項，並視需要自行選用。</translation>
 <translation id="5641279111657132737">這項政策已遭淘汰，請改用「<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策指定允許整合驗證的伺服器。只有當 Proxy 或這份許可清單中的伺服器傳送驗證要求給 <ph name="PRODUCT_NAME" /> 時，系統才會啟用整合驗證。
@@ -4518,6 +4556,7 @@
       這項政策只能透過 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />進行設定。</translation>
 <translation id="7246767840750730334">允許啟用 Phone Hub 通知。</translation>
 <translation id="7249828445670652637">允許 ARC 應用程式使用「<ph name="PRODUCT_OS_NAME" />」CA 憑證</translation>
+<translation id="7251825257294351251">允許系統通知</translation>
 <translation id="7252681704926980614">在每個列印工作中，將使用者名稱和檔案名稱傳送給原生印表機伺服器。系統預設為不傳送。
 
       如果將這項政策設為 True，Chrome 會一併停用通訊協定並非 IPPS、USB 或 USB 型 IPP 的印表機，避免使用者名稱和檔案名稱透過網路公開傳送。</translation>
@@ -4765,6 +4804,7 @@
 
       如果將這項政策設為停用，只要使用者執行會開啟檔案選取對話方塊的動作 (例如匯入書籤、上傳檔案、儲存連結等)，螢幕上就會改為顯示訊息。系統會視同使用者已按下檔案選取對話方塊上的 [取消]。</translation>
 <translation id="7638300388094655454">Google Cast</translation>
+<translation id="7638764766629234761">允許使用系統通知</translation>
 <translation id="7643883929273267746">限制在 <ph name="PRODUCT_NAME" /> 中顯示的帳戶</translation>
 <translation id="7648907905084499629">對所有網站上的 Cookie 使用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行為</translation>
 <translation id="7657261947024629645">效能最佳化。</translation>
@@ -4861,6 +4901,10 @@
 <translation id="776110834126722255">已淘汰</translation>
 <translation id="7763614521440615342">在新分頁顯示內容建議</translation>
 <translation id="7765879851993224640">允許使用 Smart Lock 登入功能。</translation>
+<translation id="7774451488719504808">如 https://www.chromestatus.com/feature/5148698084376576 所述，<ph name="PRODUCT_NAME" /> 會封鎖 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 所觸發的 JavaScript 強制回應對話方塊 (如果是從與主頁框不同來源的子頁框觸發的話)。
+       這項政策可讓你覆寫此變更。
+       如果將這項政策設為啟用或不予設定，系統會封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。
+       如果將這項政策設為停用，系統就不會封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
 <translation id="7774768074957326919">使用系統 Proxy 設定</translation>
 <translation id="777734450201217641">在登入畫面上啟用無障礙功能快速鍵。
 
@@ -4978,6 +5022,7 @@
 <translation id="7904177352786629708">如果將這項政策設為啟用，系統會略過 CNAME 查詢。系統產生 Kerberos SPN 時會使用先前輸入的伺服器名稱。
 
       如果將這項政策設為停用或不設定，系統產生 Kerberos SPN 時，CNAME 查詢會決定伺服器的標準名稱。</translation>
+<translation id="7906983682927840536">在瀏覽器關閉時擷取保持運作時間長度</translation>
 <translation id="7908384265697653397">將使用者登出前的緩衝天數。如果使用者未將 <ph name="PRODUCT_OS_NAME" />版本更新為指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> 版，系統會在設定的天數過後將該使用者登出</translation>
 <translation id="7912255076272890813">設定允許的應用程式/擴充功能類型</translation>
 <translation id="791267408364877739">在使用具有安全疑慮的指令列旗標時，顯示安全性警告。</translation>
@@ -5227,6 +5272,7 @@
 <translation id="8270320981823560179">雲端硬碟</translation>
 <translation id="827054846390793641">連線時，在主機桌面啟用連線相關 UI</translation>
 <translation id="8274603902181597201">清除使用者的 eCryptfs 主目錄，改用全新的 Ext4 加密主目錄。</translation>
+<translation id="8278133379873210419">隱藏從不同來源子頁框觸發的 JavaScript 對話方塊</translation>
 <translation id="8284296539558710573">跨來源 HTTP 驗證提示</translation>
 <translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 設定為停用，當裝置播放簡報時，系統將根據 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 所設百分比延長螢幕調暗延遲時間。一旦延長螢幕調暗延遲時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。
 
@@ -5504,6 +5550,7 @@
 <translation id="8705895771006864851">如果將這項政策設為 True，系統會適時在 <ph name="PRODUCT_NAME" /> 中顯示整合式翻譯工具列，為使用者提供翻譯功能。使用者也可以按一下滑鼠右鍵開啟內容選單，選擇其中的翻譯選項。如果將這項政策設為 False，系統會關閉所有內建的翻譯功能。
 
       如果設定這項政策，使用者將無法變更此功能。如果不設定，使用者將可變更這項設定。</translation>
+<translation id="8715885991031124968">允許從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
 <translation id="8720547069538712402">允許使用者啟用/停用拼字檢查功能</translation>
 <translation id="8736538322216687231">強制執行低度的 YouTube 嚴格篩選模式</translation>
 <translation id="8745669971728319820">這項政策可控管系統是否要回報擴充功能和外掛程式資訊。

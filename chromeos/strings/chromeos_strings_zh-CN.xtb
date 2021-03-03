@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">强制门户</translation>
 <translation id="2008685064673031089">高峰搜索</translation>
 <translation id="2080070583977670716">更多设置</translation>
+<translation id="2126937207024182736">可用内存为 <ph name="AVAILABLE_MEMORY" /> GB，总共 <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">已加入队列</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
+<translation id="2217935453350629363">当前速度</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">激活状态</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
+<translation id="4431821876790500265">查看报告</translation>
 <translation id="445059817448385655">旧密码</translation>
 <translation id="4453205916657964690">子网掩码</translation>
 <translation id="4454245904991689773">将扫描的文件保存至</translation>
@@ -174,6 +177,7 @@
 <translation id="4932733599132424254">日期</translation>
 <translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
 <translation id="4985509611418653372">运行</translation>
+<translation id="4999333166442584738">隐藏报告</translation>
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">群组名称</translation>

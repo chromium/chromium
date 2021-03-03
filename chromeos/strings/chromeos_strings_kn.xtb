@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್</translation>
 <translation id="2008685064673031089">ಪ್ರೈಮ್ ಹುಡುಕಾಟ</translation>
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB ಯಲ್ಲಿನ <ph name="AVAILABLE_MEMORY" /> GB ಲಭ್ಯವಿದೆ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
 <translation id="2161394479394250669">ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಿ</translation>
+<translation id="2217935453350629363">ಪ್ರಸ್ತುತ ವೇಗ</translation>
 <translation id="2224337661447660594">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">ಸಕ್ರಿಯ ಸ್ಥಿತಿ</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ನನ್ನ ಡ್ರೈವ್</translation>
 <translation id="4429881212383817840">Kerberos ಟಿಕೆಟ್ ಶೀಘ್ರದಲ್ಲೇ ಅವಧಿ ಮೀರಲಿದೆ</translation>
+<translation id="4431821876790500265">ವರದಿಯನ್ನು ನೋಡಿ</translation>
 <translation id="445059817448385655">ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್‌</translation>
 <translation id="4453205916657964690">ಸಬ್‌ನೆಟ್‌ ಮಾಸ್ಕ್‌</translation>
 <translation id="4454245904991689773">ಇದರಲ್ಲಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -174,6 +177,7 @@
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="498186245079027698">ಸ್ಕ್ಯಾನರ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಸ್ಕ್ಯಾನ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಕಷ್ಟು ಸ್ಥಳೀಯ ಸ್ಥಳವಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="4985509611418653372">ರನ್‌ ಮಾಡಿ</translation>
+<translation id="4999333166442584738">ವರದಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="500920857929044050">ಪರೀಕ್ಷೆ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">ಗುಂಪು ಹೆಸರು</translation>

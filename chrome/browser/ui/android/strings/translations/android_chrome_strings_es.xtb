@@ -185,6 +185,7 @@ Toca cualquier palabra para buscarla. Para acotar la búsqueda, mantén pulsado 
 <translation id="2239812875700136898">Controla tus historias con el botón Opciones de Discover</translation>
 <translation id="2259659629660284697">Exportar contraseñas…</translation>
 <translation id="2276696007612801991">Inicia sesión en tu cuenta de Google para comprobar tus contraseñas</translation>
+<translation id="2278052315791335171">Al eliminar esta contraseña, no se eliminará tu cuenta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
 <translation id="230115972905494466">No se han podido encontrar dispositivos compatibles</translation>
 <translation id="230155349749732438">Para usar este ajuste, la función <ph name="BEGIN_LINK" />Mejorar las búsquedas y la navegación<ph name="END_LINK" /> debe estar activada</translation>
@@ -357,6 +358,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3398320232533725830">Abre el administrador de marcadores</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
+<translation id="3440975416244667276">Mantén pulsado para ver más información relevante</translation>
 <translation id="3443221991560634068">Vuelve a cargar la página actual</translation>
 <translation id="3451542610083122179">La zona de pruebas de privacidad es una iniciativa en curso para preservar la Web abierta que ayudará a protegerte de mecanismos de seguimiento.
 
@@ -950,6 +952,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7475688122056506577">No se ha encontrado la tarjeta SD. Es posible que falten algunos de tus archivos.</translation>
 <translation id="7479104141328977413">Gestión de pestañas</translation>
 <translation id="7481312909269577407">Adelante</translation>
+<translation id="7481864133709957613">Para buscar en esta página, mantén pulsadas las palabras en lugar de tocarlas.</translation>
 <translation id="7482656565088326534">Pestaña de vista previa</translation>
 <translation id="7484997419527351112">Discover: desactivado</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualizada el <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -959,6 +962,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7514365320538308">Descargar</translation>
 <translation id="751961395872307827">No se puede establecer conexión con el sitio web</translation>
 <translation id="752220631458524187">Desconéctalo cuando termines</translation>
+<translation id="7523960634226602883">Buscar con la cámara mediante Google Lens</translation>
 <translation id="753225086557513863">Programada para más adelante</translation>
 <translation id="7559975015014302720">El modo básico está desactivado</translation>
 <translation id="7562080006725997899">Borrando datos de navegación</translation>

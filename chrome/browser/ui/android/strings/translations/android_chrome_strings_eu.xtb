@@ -185,6 +185,7 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2239812875700136898">Istorioak kontrolatzeko, sakatu "Discover-en aukerak" botoia</translation>
 <translation id="2259659629660284697">Esportatu pasahitzak…</translation>
 <translation id="2276696007612801991">Hasi saioa Google-ko kontuan pasahitzak egiaztatzeko</translation>
+<translation id="2278052315791335171">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="SITE" /> webguneko kontua</translation>
 <translation id="2286841657746966508">Fakturazio-helbidea</translation>
 <translation id="230115972905494466">Ez da aurkitu gailu bateragarririk</translation>
 <translation id="230155349749732438">Ezarpen hau erabiltzeko, <ph name="BEGIN_LINK" />Hobetu bilaketak eta arakatze-jarduerak<ph name="END_LINK" /> eginbideak aktibatuta egon behar du</translation>
@@ -357,6 +358,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3398320232533725830">Ireki laster-marken kudeatzailea</translation>
 <translation id="3414952576877147120">Tamaina:</translation>
 <translation id="3429160811076349561">Probako eginbideak desaktibatuta daude</translation>
+<translation id="3440975416244667276">Informazio esanguratsu gehiago ikusteko, eduki hitzak sakatuta</translation>
 <translation id="3443221991560634068">Kargatu berriro uneko orria</translation>
 <translation id="3451542610083122179">Sare irekia mantentzeko abian den ekimen bat da pribatutasun sandbox-a, eta zu jarraipen-mekanismoetatik babestea du helburu.
 
@@ -950,6 +952,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7475688122056506577">Ez da aurkitu SD txartela. Baliteke fitxategi batzuk falta izatea.</translation>
 <translation id="7479104141328977413">Fitxen kudeaketa</translation>
 <translation id="7481312909269577407">Aurrera</translation>
+<translation id="7481864133709957613">Orri honetako gauzak bilatzeko, hitzak labur sakatu beharrean, eduki itzazu sakatuta</translation>
 <translation id="7482656565088326534">Aurrebista-fitxa</translation>
 <translation id="7484997419527351112">Discover: desaktibatuta</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (azken eguneratzea: <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -959,6 +962,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="751961395872307827">Ezin da konektatu webgunera</translation>
 <translation id="752220631458524187">Deskonekta ezazu amaitzen duzunean</translation>
+<translation id="7523960634226602883">Egin bilaketak kamerarekin Google Lens erabilita</translation>
 <translation id="753225086557513863">Geroago deskargatzeko programatuta</translation>
 <translation id="7559975015014302720">Oinarrizko modua desaktibatuta dago</translation>
 <translation id="7562080006725997899">Arakatze-datuak garbitzen</translation>

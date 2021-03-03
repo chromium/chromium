@@ -23,6 +23,7 @@
 <translation id="1516530951338665275">ପେୟାରିଂ ଜାରି ରଖିବା ପାଇଁ Google Chrome ବ୍ଲୁଟୁଥ୍ ଆକ୍ସେସ୍ 
 ଆବଶ୍ୟକ କରେ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome ଅପ୍‍‍‍‍‍ଡେଟ୍‌</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ଏହି Chrome ପ୍ରୋଫାଇଲରେ ପୂର୍ବରୁ ସାଇନ୍ ଇନ୍ କରିସାରିଛନ୍ତି। ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="1587223624401073077">Google Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ବ୍ୟବହାର କରୁଛି।</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ବିପଜ୍ଜନକ ଅଟେ, ତେଣୁ Chrome ଏହାକୁ ଅବରୋଧ କରିଛି।</translation>
 <translation id="1597911401261118146">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଡାଟା ଚୋରି ଏବଂ ଅନ୍ୟ ସୁରକ୍ଷା ସମସ୍ୟାଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ଅଛି ନା ନାହିଁ ତାହା ଯାଞ୍ଚ କରିବାକୁ, <ph name="BEGIN_LINK" />Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
@@ -117,6 +118,7 @@
 <translation id="3735758079232443276">ଆପଣ ଯେତେବେଳେ Chrome ଆରମ୍ଭ କରିବେ, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠାଗୁଡ଼ିକ ଦେଖାଯିବ ତାହା "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନ୍‌ସନ୍ ବଦଳାଇଦିଏ।</translation>
 <translation id="3779473566290487688">Google Chromeର ଭବିଷ୍ୟତର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ OS X 10.11 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ OS X 10.10 ସଂସ୍କରଣ ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="386202838227397562">ଦୟାକରି ସମସ୍ତ Google Chrome ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3865754807470779944">Chrome ସଂସ୍କରଣ <ph name="PRODUCT_VERSION" /> ଇନଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
 <translation id="3873044882194371212">Chromeର ଇନ୍‍କ&amp;ଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍‍ ଖୋଲନ୍ତୁ</translation>
@@ -187,6 +189,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 ସେକେଣ୍ଡରେ ରିଷ୍ଟାର୍ଟ ହେବ}other{Google Chrome # ସେକେଣ୍ଡରେ ରିଷ୍ଟାର୍ଟ ହେବ}}</translation>
 <translation id="573759479754913123">Chrome OS ବିଷୟରେ</translation>
+<translation id="5756509061973259733">ଏହି ଡିଭାଇସରେ ଏହି ଆକାଉଣ୍ଟ ସହ ଏକ Chrome ପ୍ରୋଫାଇଲ୍ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome କେନେରୀ</translation>
 <translation id="5804318322022881572">Chrome ଲଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5867197326698922595">Google Chrome ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>

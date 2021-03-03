@@ -962,6 +962,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2060375639911876205">Quitar el perfil de eSIM</translation>
 <translation id="2065405795449409761">Un software de prueba automatizado está controlando Chrome.</translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
+<translation id="2071692954027939183">Se bloquearon las notificaciones de forma automática porque no sueles permitirlas.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Haz clic para instalar la extensión}other{Haz clic para instalar estas extensiones}}</translation>
 <translation id="2073505299004274893">Usa <ph name="CHARACTER_LIMIT" /> caracteres como máximo</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% de batería</translation>
@@ -1127,6 +1128,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2241634353105152135">Solo esta vez</translation>
 <translation id="2242687258748107519">Información del archivo</translation>
 <translation id="2246549592927364792">¿Quieres obtener descripciones de imágenes de Google?</translation>
+<translation id="2247738527273549923">Tu organización administra este dispositivo.</translation>
 <translation id="2249111429176737533">Abrir como ventana con pestañas</translation>
 <translation id="2249605167705922988">p. ej. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Abrir con el lector del sistema</translation>
@@ -1235,6 +1237,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2359345697448000899">Para administrar tus extensiones, haz clic en la opción Extensiones en el menú Herramientas.</translation>
 <translation id="2359556993567737338">Conectar el dispositivo Bluetooth</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2361100938102002520">Estás agregando un perfil administrado a este navegador. El administrador controla tu perfil y puede acceder a sus datos.</translation>
 <translation id="236117173274098341">Optimizar</translation>
 <translation id="236141728043665931">Bloquear siempre el acceso al micrófono</translation>
 <translation id="2364498172489649528">Aprobado</translation>
@@ -1483,6 +1486,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2641065435954454414">Preparando la descarga</translation>
 <translation id="2642111877055905627">Pelota de fútbol</translation>
 <translation id="2643698698624765890">Para administrar tus extensiones, haz clic en la opción Extensiones del menú Ventana.</translation>
+<translation id="2645047101481282803"><ph name="PROFILE_NAME" /> administra tu dispositivo.</translation>
 <translation id="264810637653812429">No se encontraron dispositivos compatibles.</translation>
 <translation id="2649045351178520408">Cadena de certificados ASCII con codificación Base64</translation>
 <translation id="2653033005692233957">Error en la búsqueda</translation>
@@ -1698,6 +1702,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2875698561019555027">(Páginas de error de Chrome)</translation>
 <translation id="2876336351874743617">Dedo 2</translation>
 <translation id="2876369937070532032">Enviar a Google las URL de algunas páginas que visitas, cuando tu seguridad esté en riesgo</translation>
+<translation id="2877467134191447552">Puedes agregar cuentas adicionales para acceder a sitios web y apps.</translation>
 <translation id="2878782256107578644">El análisis está en curso. ¿Deseas abrir la descarga?</translation>
 <translation id="2878889940310164513">Agregar conexión móvil…</translation>
 <translation id="288042212351694283">Accede a tus dispositivos U2F (Universal 2nd Factor).</translation>
@@ -2274,6 +2279,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3550915441744863158">Debido a que Chrome se actualiza automáticamente, siempre tendrás la versión más reciente</translation>
 <translation id="3551320343578183772">Cerrar pestaña</translation>
 <translation id="3552780134252864554">Borrar al salir</translation>
+<translation id="3554493885489666172"><ph name="PROFILE_NAME" /> administra tu dispositivo. Los administradores pueden acceder a los datos de cualquier perfil en este dispositivo.</translation>
 <translation id="3555812735919707620">Eliminar extensión</translation>
 <translation id="3556000484321257665">Tu motor de búsqueda se cambió a <ph name="URL" />.</translation>
 <translation id="3556433843310711081">Tu administrador puede desbloquearlo por ti</translation>
@@ -2448,6 +2454,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3732530910372558017">El PIN debe contener 63 caracteres como máximo</translation>
 <translation id="3732857534841813090">Información relacionada con el Asistente de Google</translation>
 <translation id="3733127536501031542">Servidor SLL con suplemento especial</translation>
+<translation id="3733296813637058299">Instalaremos esas apps por ti. Puedes encontrar más apps para tu <ph name="DEVICE_TYPE" /> en Play Store.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3738632186060045350">Se borrarán los datos de <ph name="DEVICE_TYPE" /> en 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -2946,6 +2953,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K en vivo)</translation>
 <translation id="4310139701823742692">El archivo no tiene el formato correcto. Verifica el archivo PPD y vuelve a intentarlo.</translation>
+<translation id="43106757207292366">Desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />, puedes administrar las Cuentas de Google a las que se accedió. Es posible que se apliquen a todas las cuentas los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios o las apps accedan a la información de tu cuenta, podrás acceder a tu <ph name="DEVICE_TYPE" /> como invitado o navegar en la Web desde una <ph name="LINK_2_BEGIN" />ventana de incógnito<ph name="LINK_2_END" />.</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Administrar la sincronización</translation>
@@ -3493,6 +3501,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4936042273057045735">No se admite la sincronización de notificaciones para teléfonos que tengan un perfil de trabajo</translation>
 <translation id="4939805055470675027">No se pudo establecer conexión con <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Hay <ph name="PRINTER_COUNT" /> impresoras disponibles para guardar.</translation>
+<translation id="4940448324259979830"><ph name="PROFILE_NAME" /> administra esta cuenta.</translation>
 <translation id="4940845626435830013">Reservar espacio del disco</translation>
 <translation id="4941074198479265146">Por lo general los sitios se conectan a dispositivos MIDI para habilitar funciones para crear y editar música.</translation>
 <translation id="4941246025622441835">Utiliza esta solicitud de dispositivo al registrar el dispositivo para la administración empresarial:</translation>
@@ -3773,6 +3782,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5288678174502918605">Volv&amp;er a abrir una pestaña cerrada</translation>
 <translation id="52895863590846877">La página no está en <ph name="LANGUAGE" /></translation>
 <translation id="52912272896845572">Archivo de clave privada no válido</translation>
+<translation id="5291739252352359682">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome (por el momento, disponible solo en inglés). El audio y los subtítulos se procesan en el dispositivo y nunca se envían a otra parte.</translation>
 <translation id="529175790091471945">Formatear este dispositivo</translation>
 <translation id="5293170712604732402">Restaurar la configuración a los valores predeterminados originales</translation>
 <translation id="5294097441441645251">Debe comenzar con una letra minúscula o un guion bajo</translation>
@@ -5184,8 +5194,10 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6922128026973287222">Guarda los datos y explóralos más rápidamente con la extensión Ahorro de datos de Google. Haz clic aquí para obtener más información.</translation>
 <translation id="6922570474772078053">Apagando</translation>
 <translation id="6922745772873733498">Ingresa un PIN para imprimir</translation>
+<translation id="6922763095098248079">Tu organización administra este dispositivo. Los administradores pueden acceder a los datos de cualquier perfil en este dispositivo.</translation>
 <translation id="6923132443355966645">Desplazar/Hacer clic</translation>
 <translation id="6923633482430812883">Se produjo un error al activar el uso compartido. Asegúrate de que el servidor de archivos al que te estás conectando sea compatible con SMBv2 o versiones posteriores.</translation>
+<translation id="6925127338315966709">Estás agregando un perfil administrado a este navegador. El administrador controla tu perfil y puede acceder a sus datos. Los favoritos, el historial, las contraseñas y otras opciones de configuración se podrán sincronizar con tu cuenta, y el administrador podrá controlarlas.</translation>
 <translation id="6929126689972602640">Las cuentas de instituciones educativas no admiten la función de controles parentales. Si quieres agregar una cuenta de institución educativa para acceder a Google Classroom y otros sitios web a fin de hacer tarea en el hogar, primero accede con la cuenta personal del niño. Puedes agregar la cuenta de institución educativa más tarde en la configuración.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930036377490597025">Llave de seguridad externa o sensor integrado</translation>
@@ -6183,6 +6195,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8047242494569930800">Mover a la Cuenta de Google</translation>
 <translation id="804786196054284061">Acuerdo de licencia de usuario final</translation>
 <translation id="8048977114738515028">Crea un acceso directo de escritorio en tu dispositivo para acceder directamente a este perfil</translation>
+<translation id="8049029041626250638">Conecta un teclado o mouse. Si usas dispositivos Bluetooth, asegúrate de que estén listos para vincularse.</translation>
 <translation id="8049705080247101012">Google marcó <ph name="EXTENSION_NAME" /> como extensión maliciosa y se canceló la instalación</translation>
 <translation id="8049948037269924837">Desplazamiento invertido del panel táctil</translation>
 <translation id="8050038245906040378">Firma de código comercial de Microsoft</translation>
@@ -6746,6 +6759,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8716931980467311658">¿Quieres borrar todos los datos y las apps de Linux que se encuentran en tu carpeta Archivos de Linux de este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717145295869185525">No puede usar datos ni dispositivos de realidad virtual</translation>
 <translation id="8717864919010420084">Copiar vínculo</translation>
+<translation id="8718994464069323380">Se detectó una pantalla táctil</translation>
 <translation id="8719472795285728850">Escuchando actividades de extensiones…</translation>
 <translation id="8719653885894320876">Se produjo un error al descargar <ph name="PLUGIN_NAME" /></translation>
 <translation id="8720200012906404956">Buscando una red móvil. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -7126,6 +7140,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9109283579179481106">Conéctate a una red móvil</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
+<translation id="9111668656364922873">Te damos la bienvenida a tu nuevo perfil</translation>
 <translation id="9112748030372401671">Cambiar el fondo de pantalla</translation>
 <translation id="9112987648460918699">Buscar...</translation>
 <translation id="9114663181201435112">Acceder de forma fácil</translation>

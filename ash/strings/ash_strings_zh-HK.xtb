@@ -305,6 +305,7 @@
 <translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">改回「<ph name="FROM_LOCALE" />」(需要重新啟動)</translation>
 <translation id="3576141592585647168">變更時區</translation>
+<translation id="3593039967545720377">如要存取剪貼簿記錄，按下<ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看剪貼簿。複製項目即可開始使用。</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕，即可查看開啟的應用程式</translation>
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>

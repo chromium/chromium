@@ -299,6 +299,7 @@
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> լեզվով էջերը չեն թարգմանվի:</translation>
 <translation id="2053553514270667976">Փոստային դասիչ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 առաջարկ}one{# suggestions}other{# առաջարկ}}</translation>
+<translation id="2071692954027939183">Ծանուցումներն ավտոմատ արգելափակվել են, քանի որ դուք դրանք սովորաբար մերժում եք։</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="20817612488360358">Համակարգի պրոքսի-սերվերի կարգավորումները կայված են, բայց նաև նշված է նրա ուղղակի կազմաձևում:</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
@@ -790,6 +791,7 @@
 <translation id="4058922952496707368">Բանալու «<ph name="SUBKEY" />»՝ <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ծրար)</translation>
 <translation id="4067947977115446013">Ավելացրեք վավեր հասցե</translation>
+<translation id="4072193657607981494">Կանոնները բեռնվում են</translation>
 <translation id="4072486802667267160">Վճարումը մշակելու ընթացքում սխալ առաջացավ: Նորից փորձեք:</translation>
 <translation id="4075732493274867456">Սպասառուն և սերվերը չեն աջակցում SSL հաղորդակարգի միևնույն տարբերակը կամ ծածկագրման լրակազմը:</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -928,6 +930,7 @@
 <translation id="4510487217173779431">Chou4 (ծրար)</translation>
 <translation id="4515275063822566619">Քարտերն ու հասցեները նշված են ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />) և Chrome-ում: Դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="4517607026994743406">Comm-10 (ծրար)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> մմ (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
 <translation id="4524138615196389145">Այսուհետ ավելի արագ հաստատեք ձեր քարտերը WebAuthn-ի միջոցով</translation>
 <translation id="4524805452350978254">Կառավարել քարտերը</translation>
@@ -1347,6 +1350,7 @@
 <translation id="614940544461990577">Փորձեք՝</translation>
 <translation id="6150036310511284407">Երեք անցք ձախ կողմում</translation>
 <translation id="6151417162996330722">Սերվերի վկայականը չափազանց երկար վավերականության ժամկետ ունի:</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> դյմ (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Ուղարկման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6169916984152623906">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին: Սակայն ներբեռնումներն ու էջանիշները կպահվեն։</translation>
@@ -1894,6 +1898,7 @@
 <translation id="8364627913115013041">Կարգավորված չէ:</translation>
 <translation id="8368476060205742148">Google Play-ի ծառայություններ</translation>
 <translation id="8371889962595521444">Հատուկ արմատային հավաստագրեր</translation>
+<translation id="8374636051559112948">Տարբեր</translation>
 <translation id="8380941800586852976">Վտանգավոր</translation>
 <translation id="8381674639488873545">Այս գանձումները կարող են մեկանգամյա կամ պարբերական լինել և հնարավոր է ակնհայտ չերևան: <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Դուք չեք կարող <ph name="ORIGIN_NAME" /> կայքից բովանդակություն փոխանցել <ph name="VM_NAME" />, քանի որ ադմինիստրատորն արգելափակել է այդ հնարավորությունը։</translation>
@@ -2074,6 +2079,7 @@
 <translation id="9114524666733003316">Քարտի հաստատում...</translation>
 <translation id="9114581008513152754">Ձեր դիտարկիչը չի կառավարվում որևէ ընկերության կամ կազմակերպության կողմից։ Սարքում արվող գործողությունները կարող են կառավարվել Chrome-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Վերբեռնված է</translation>
+<translation id="9128016270925453879">Կանոնները բեռնվել են</translation>
 <translation id="9128870381267983090">Կապակցեք ցանցին</translation>
 <translation id="9137013805542155359">Ցույց տալ բնօրինակը</translation>
 <translation id="9141013498910525015">Կառավարել հասցեները</translation>

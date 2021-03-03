@@ -962,6 +962,7 @@
 <translation id="2060375639911876205">移除 eSIM 卡个人资料</translation>
 <translation id="2065405795449409761">Chrome 正受到自动测试软件的控制。</translation>
 <translation id="2071393345806050157">没有本地日志文件。</translation>
+<translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{点击即可安装该扩展程序}other{点击即可安装这些扩展程序}}</translation>
 <translation id="2073505299004274893">字符数不得超过 <ph name="CHARACTER_LIMIT" /> 个</translation>
 <translation id="2075474481720804517">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1127,6 +1128,7 @@
 <translation id="2241634353105152135">仅一次</translation>
 <translation id="2242687258748107519">文件信息</translation>
 <translation id="2246549592927364792">要从 Google 获取图片说明吗？</translation>
+<translation id="2247738527273549923">您的设备由贵单位管理</translation>
 <translation id="2249111429176737533">在标签页窗口中打开</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
 <translation id="2251218783371366160">使用系统查看器打开</translation>
@@ -1235,6 +1237,7 @@
 <translation id="2359345697448000899">您可以通过点击“工具”菜单中的“扩展程序”，管理您的扩展程序。</translation>
 <translation id="2359556993567737338">连接蓝牙设备</translation>
 <translation id="2359808026110333948">继续</translation>
+<translation id="2361100938102002520">您正要向此浏览器添加一份受管理的个人资料。您的管理员可控制该个人资料，且可访问其中的数据。</translation>
 <translation id="236117173274098341">优化</translation>
 <translation id="236141728043665931">始终禁止使用麦克风</translation>
 <translation id="2364498172489649528">通过</translation>
@@ -1482,6 +1485,7 @@
 <translation id="2641065435954454414">正在准备下载</translation>
 <translation id="2642111877055905627">足球</translation>
 <translation id="2643698698624765890">您可以通过点击“窗口”菜单中的“扩展程序”，管理您的扩展程序。</translation>
+<translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="264810637653812429">找不到任何兼容设备。</translation>
 <translation id="2649045351178520408">Base64 编码 ASCII，证书链</translation>
 <translation id="2653033005692233957">搜索失败</translation>
@@ -1697,6 +1701,7 @@
 <translation id="2875698561019555027">（Chrome 错误页面）</translation>
 <translation id="2876336351874743617">手指 2</translation>
 <translation id="2876369937070532032">当您面临安全风险时，将您所访问的部分网页的网址发送给 Google</translation>
+<translation id="2877467134191447552">您可添加其他帐号以用于访问网站和应用。</translation>
 <translation id="2878782256107578644">正在扫描。立即打开？</translation>
 <translation id="2878889940310164513">添加移动网络…</translation>
 <translation id="288042212351694283">访问您的 Universal 2nd Factor 设备</translation>
@@ -2273,6 +2278,7 @@
 <translation id="3550915441744863158">Chrome会自动更新，因此您使用的始终都是最新版本</translation>
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3552780134252864554">退出时清除</translation>
+<translation id="3554493885489666172">您的设备由 <ph name="PROFILE_NAME" /> 管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="3555812735919707620">卸载扩展程序</translation>
 <translation id="3556000484321257665">您的搜索引擎已改为 <ph name="URL" />。</translation>
 <translation id="3556433843310711081">您的管理员可为您取消屏蔽此网站</translation>
@@ -2447,6 +2453,7 @@
 <translation id="3732530910372558017">PIN 码不得超过 63 个字符</translation>
 <translation id="3732857534841813090">Google 助理相关信息</translation>
 <translation id="3733127536501031542">带有递升式验证机制的 SSL 服务器</translation>
+<translation id="3733296813637058299">我们将为您安装这些应用。您可在 Play 商店中找到更多适用于您的 <ph name="DEVICE_TYPE" />的应用。</translation>
 <translation id="3735740477244556633">排序依据</translation>
 <translation id="3738632186060045350">系统将会在 24 小时后删除 <ph name="DEVICE_TYPE" /> 数据</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
@@ -2944,6 +2951,7 @@
 <translation id="4307992518367153382">基本</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K（实际大小为 <ph name="NUM_KILOBYTES_LIVE" /> K）</translation>
 <translation id="4310139701823742692">文件格式有误。请检查 PPD 文件，然后重试。</translation>
+<translation id="43106757207292366">您可从<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />中管理已登录的 Google 帐号。您向网站和应用授予的权限可能会应用于所有帐号。如果不想让网站或应用获取您的帐号信息，您不妨以访客身份登录 <ph name="DEVICE_TYPE" />，或者在<ph name="LINK_2_BEGIN" />无痕式窗口<ph name="LINK_2_END" />中浏览网页。</translation>
 <translation id="431076611119798497">详细信息(&amp;D)</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
@@ -3491,6 +3499,7 @@
 <translation id="4936042273057045735">设有工作资料的手机无法同步通知</translation>
 <translation id="4939805055470675027">无法连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 台可保存的打印机。</translation>
+<translation id="4940448324259979830">该帐号由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">预留磁盘空间大小</translation>
 <translation id="4941074198479265146">网站通常会连接到 MIDI 设备以实现某些功能（例如创作和编辑音乐）</translation>
 <translation id="4941246025622441835">将设备登记到企业管理目录下时使用此设备前提条件：</translation>
@@ -3771,6 +3780,7 @@
 <translation id="5288678174502918605">重新打开关闭的标签页(&amp;E)</translation>
 <translation id="52895863590846877">不是<ph name="LANGUAGE" />网页</translation>
 <translation id="52912272896845572">私有密钥文件无效。</translation>
+<translation id="5291739252352359682">在 Chrome 浏览器中自动为媒体创建字幕（目前仅提供英文版）。音频和字幕的处理工作都会在设备上完成，相关数据绝不会外泄。</translation>
 <translation id="529175790091471945">将此设备格式化</translation>
 <translation id="5293170712604732402">将设置还原为原始默认设置</translation>
 <translation id="5294097441441645251">必须以小写字符或下划线开头</translation>
@@ -5182,8 +5192,10 @@
 <translation id="6922128026973287222">使用 Google 流量节省程序可以节省流量并加快加载速度。点击此处即可了解详情。</translation>
 <translation id="6922570474772078053">正在关闭</translation>
 <translation id="6922745772873733498">请输入 PIN 码以进行打印</translation>
+<translation id="6922763095098248079">您的设备由贵单位管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="6923132443355966645">滚动/点击</translation>
 <translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>
+<translation id="6925127338315966709">您正要向此浏览器添加一份受管理的个人资料。您的管理员可控制该个人资料，且可访问其中的数据。书签、历史记录、密码及其他设置可以同步到您的帐号中，并由您的管理员管理。</translation>
 <translation id="6929126689972602640">学校帐号不支持家长控制功能。如果您想添加学校帐号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人帐号登录。您可于需要时再在设置中添加学校帐号。</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930036377490597025">外部安全密钥或内置传感器</translation>
@@ -6181,6 +6193,7 @@
 <translation id="8047242494569930800">移至 Google 帐号</translation>
 <translation id="804786196054284061">最终用户许可协议</translation>
 <translation id="8048977114738515028">在设备上创建桌面快捷方式，以便直接访问此个人资料</translation>
+<translation id="8049029041626250638">您可以连接一个键盘或鼠标。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="8049705080247101012">Google 已将“<ph name="EXTENSION_NAME" />”标记为恶意扩展程序并已阻止系统安装它</translation>
 <translation id="8049948037269924837">触控板反向滚动</translation>
 <translation id="8050038245906040378">Microsoft 商业代码签名</translation>
@@ -6743,6 +6756,7 @@
 <translation id="8716931980467311658">要从这部 <ph name="DEVICE_TYPE" /> 中删除您“Linux 文件”文件夹中的所有 Linux 应用和数据吗？</translation>
 <translation id="8717145295869185525">不允许使用虚拟实境设备和数据</translation>
 <translation id="8717864919010420084">复制链接</translation>
+<translation id="8718994464069323380">检测到触摸屏</translation>
 <translation id="8719472795285728850">正在监听扩展程序活动…</translation>
 <translation id="8719653885894320876"><ph name="PLUGIN_NAME" /> 下载失败</translation>
 <translation id="8720200012906404956">正在查找移动网络。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -7123,6 +7137,7 @@
 <translation id="9109283579179481106">连接到移动网络</translation>
 <translation id="9111102763498581341">解锁</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />：<ph name="STATUS" /></translation>
+<translation id="9111668656364922873">欢迎使用您的新个人资料</translation>
 <translation id="9112748030372401671">更换您的壁纸</translation>
 <translation id="9112987648460918699">查找...</translation>
 <translation id="9114663181201435112">轻松登录</translation>

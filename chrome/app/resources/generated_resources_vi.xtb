@@ -965,6 +965,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2060375639911876205">Xóa hồ sơ eSIM</translation>
 <translation id="2065405795449409761">Chrome đang được phần mềm kiểm tra tự động kiểm soát.</translation>
 <translation id="2071393345806050157">Không có tệp nhật ký cục bộ.</translation>
+<translation id="2071692954027939183">Các thông báo tự động bị chặn do bạn thường xuyên không cho phép các thông báo đó</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Nhấp để cài đặt tiện ích này}other{Nhấp để cài đặt các tiện ích này}}</translation>
 <translation id="2073505299004274893">Hãy sử dụng tối đa <ph name="CHARACTER_LIMIT" /> ký tự</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% pin</translation>
@@ -1130,6 +1131,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2242687258748107519">Thông tin tệp</translation>
 <translation id="2246549592927364792">Tải nội dung mô tả hình ảnh từ Google?</translation>
+<translation id="2247738527273549923">Thiết bị do tổ chức của bạn quản lý</translation>
 <translation id="2249111429176737533">Mở bằng cửa sổ dạng thẻ</translation>
 <translation id="2249605167705922988">ví dụ: 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Mở bằng trình xem hệ thống</translation>
@@ -1238,6 +1240,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2359345697448000899">Quản lý tiện ích của bạn bằng cách nhấp vào Tiện ích trong menu Công cụ.</translation>
 <translation id="2359556993567737338">Kết nối thiết bị Bluetooth</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
+<translation id="2361100938102002520">Bạn đang thêm một hồ sơ được quản lý vào trình duyệt này. Quản trị viên của bạn có quyền kiểm soát hồ sơ đó và có thể truy cập vào dữ liệu của hồ sơ.</translation>
 <translation id="236117173274098341">Tối ưu hóa</translation>
 <translation id="236141728043665931">Luôn chặn quyền truy cập micrô</translation>
 <translation id="2364498172489649528">Đã đạt</translation>
@@ -1486,6 +1489,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2641065435954454414">Đang chuẩn bị tải xuống</translation>
 <translation id="2642111877055905627">Bóng đá</translation>
 <translation id="2643698698624765890">Quản lý tiện ích của bạn bằng cách nhấp vào Tiện ích trong menu Cửa sổ.</translation>
+<translation id="2645047101481282803">Thiết bị của bạn do <ph name="PROFILE_NAME" /> quản lý</translation>
 <translation id="264810637653812429">Không tìm thấy thiết bị tương thích nào.</translation>
 <translation id="2649045351178520408">ASCII được mã hóa base64, chuỗi chứng chỉ</translation>
 <translation id="2653033005692233957">Không tìm kiếm được</translation>
@@ -1701,6 +1705,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2875698561019555027">(Các trang lỗi của Chrome)</translation>
 <translation id="2876336351874743617">Ngón tay số 2</translation>
 <translation id="2876369937070532032">Gửi URL của một số trang mà bạn truy cập cho Google khi bạn gặp rủi ro về bảo mật</translation>
+<translation id="2877467134191447552">Bạn có thể thêm các tài khoản bổ sung để truy cập vào trang web và ứng dụng.</translation>
 <translation id="2878782256107578644">Hệ thống đang quét, bạn muốn mở ngay?</translation>
 <translation id="2878889940310164513">Thêm mạng di động...</translation>
 <translation id="288042212351694283">Truy cập thiết bị Universal 2nd Factor</translation>
@@ -2277,6 +2282,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3550915441744863158">Chrome tự động cập nhật nên bạn luôn có phiên bản mới nhất</translation>
 <translation id="3551320343578183772">Đóng Thẻ</translation>
 <translation id="3552780134252864554">Xóa khi thoát</translation>
+<translation id="3554493885489666172">Thiết bị của bạn do <ph name="PROFILE_NAME" /> quản lý. Quản trị viên có thể truy cập vào dữ liệu trong bất kỳ hồ sơ nào trên thiết bị này.</translation>
 <translation id="3555812735919707620">Xóa tiện ích</translation>
 <translation id="3556000484321257665">Công cụ tìm kiếm của bạn đã được thay đổi thành <ph name="URL" />.</translation>
 <translation id="3556433843310711081">Người quản lý của bạn có thể bỏ chặn trang web cho bạn</translation>
@@ -2451,6 +2457,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3732530910372558017">Mã PIN chỉ được dài tối đa 63 ký tự</translation>
 <translation id="3732857534841813090">Thông tin liên quan đến Trợ lý Google</translation>
 <translation id="3733127536501031542">Máy chủ SSL với Step-up</translation>
+<translation id="3733296813637058299">Chúng tôi sẽ cài đặt các ứng dụng đó cho bạn. Bạn có thể tìm thêm ứng dụng cho <ph name="DEVICE_TYPE" /> của mình trong Cửa hàng Play.</translation>
 <translation id="3735740477244556633">Sắp xếp theo</translation>
 <translation id="3738632186060045350">Dữ liệu trên <ph name="DEVICE_TYPE" /> sẽ bị xóa sau 24 giờ</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -2949,6 +2956,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4307992518367153382">Cơ bản</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K hiện có)</translation>
 <translation id="4310139701823742692">Tệp có định dạng sai. Hãy kiểm tra tệp PPD rồi thử lại.</translation>
+<translation id="43106757207292366">Bạn có thể quản lý các Tài khoản Google đã đăng nhập trong phần <ph name="LINK_BEGIN" />Cài đặt<ph name="LINK_END" />. Những quyền mà bạn đã cấp cho các trang web và ứng dụng có thể áp dụng cho tất cả tài khoản. Nếu không muốn các trang web hoặc ứng dụng truy cập vào thông tin tài khoản của mình, thì bạn có thể đăng nhập vào <ph name="DEVICE_TYPE" /> với tư cách khách hoặc duyệt web trong một <ph name="LINK_2_BEGIN" />cửa sổ ẩn danh<ph name="LINK_2_END" />.</translation>
 <translation id="431076611119798497">&amp;Chi tiết</translation>
 <translation id="4312866146174492540">Chặn (mặc định)</translation>
 <translation id="4314815835985389558">Quản lý dữ liệu đồng bộ hóa</translation>
@@ -3496,6 +3504,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4936042273057045735">Không dùng được tính năng đồng bộ hóa thông báo trên điện thoại có hồ sơ công việc</translation>
 <translation id="4939805055470675027">Không thể kết nối với <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Hiện có <ph name="PRINTER_COUNT" /> máy in để bạn lưu.</translation>
+<translation id="4940448324259979830">Tài khoản này do <ph name="PROFILE_NAME" /> quản lý</translation>
 <translation id="4940845626435830013">Dự trữ kích thước ổ đĩa</translation>
 <translation id="4941074198479265146">Các trang web thường kết nối với thiết bị MIDI để áp dụng những tính năng như tạo và chỉnh sửa nhạc</translation>
 <translation id="4941246025622441835">Sử dụng yêu cầu thiết bị này khi đăng ký thiết bị để quản lý doanh nghiệp:</translation>
@@ -3776,6 +3785,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5288678174502918605">&amp;Mở lại Thẻ đã Đóng</translation>
 <translation id="52895863590846877">Trang không viết bằng <ph name="LANGUAGE" /></translation>
 <translation id="52912272896845572">Tệp khóa cá nhân không hợp lệ.</translation>
+<translation id="5291739252352359682">Tự động tạo phụ đề cho nội dung nghe nhìn trong trình duyệt Chrome (hiện chỉ có bằng tiếng Anh). Âm thanh và phụ đề sẽ được xử lý ngay trên thiết bị và chỉ lưu trên thiết bị.</translation>
 <translation id="529175790091471945">Định dạng thiết bị này</translation>
 <translation id="5293170712604732402">Khôi phục cài đặt về mặc định ban đầu</translation>
 <translation id="5294097441441645251">Phải bắt đầu bằng ký tự viết thường hoặc dấu gạch dưới</translation>
@@ -5187,8 +5197,10 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6922128026973287222">Tiết kiệm dữ liệu và duyệt web nhanh hơn với Trình tiết kiệm dữ liệu của Google. Nhấp để tìm hiểu thêm.</translation>
 <translation id="6922570474772078053">Đang tắt</translation>
 <translation id="6922745772873733498">Nhập một mã pin để in</translation>
+<translation id="6922763095098248079">Thiết bị do tổ chức của bạn quản lý. Quản trị viên có thể truy cập vào dữ liệu trong bất kỳ hồ sơ nào trên thiết bị này.</translation>
 <translation id="6923132443355966645">Cuộn / Nhấp</translation>
 <translation id="6923633482430812883">Lỗi kết nối mục chia sẻ. Vui lòng kiểm tra để đảm bảo rằng máy chủ tệp mà bạn đang kết nối hỗ trợ SMBv2 trở lên.</translation>
+<translation id="6925127338315966709">Bạn đang thêm một hồ sơ được quản lý vào trình duyệt này. Quản trị viên của bạn có quyền kiểm soát hồ sơ đó và có thể truy cập vào dữ liệu của hồ sơ. Các dấu trang, danh sách trang web đã truy cập, mật khẩu, cũng như các chế độ cài đặt khác có thể được đồng bộ hóa với tài khoản và được quản trị viên của bạn quản lý.</translation>
 <translation id="6929126689972602640">Tài khoản trường học không hỗ trợ các quyền kiểm soát của cha mẹ. Nếu bạn muốn thêm một tài khoản trường học để truy cập vào Google Lớp học và các trang web khác để làm bài tập ở nhà, trước tiên, hãy đăng nhập bằng tài khoản cá nhân của trẻ. Bạn có thể thêm tài khoản trường học sau này trong phần cài đặt.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930036377490597025">Khóa bảo mật bên ngoài hoặc cảm biến tích hợp</translation>
@@ -6186,6 +6198,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8047242494569930800">Di chuyển sang Tài khoản Google</translation>
 <translation id="804786196054284061">Thỏa thuận cấp phép người dùng cuối</translation>
 <translation id="8048977114738515028">Tạo một lối tắt trên màn hình trên thiết bị của bạn để truy cập ngay vào hồ sơ này</translation>
+<translation id="8049029041626250638">Kết nối bàn phím hoặc chuột. Nếu bạn đang dùng thiết bị Bluetooth, hãy đảm bảo thiết bị đã sẵn sàng ghép nối.</translation>
 <translation id="8049705080247101012">Google đã gắn cờ "<ph name="EXTENSION_NAME" />" là độc hại và cài đặt đã bị chặn</translation>
 <translation id="8049948037269924837">Đảo ngược hướng cuộn bàn di chuột</translation>
 <translation id="8050038245906040378">Ký Mã Thương mại của Microsoft</translation>
@@ -6749,6 +6762,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8716931980467311658">Bạn muốn xóa tất cả ứng dụng Linux và dữ liệu trong thư mục tệp Linux khỏi <ph name="DEVICE_TYPE" /> này?</translation>
 <translation id="8717145295869185525">Không được phép sử dụng dữ liệu và thiết bị thực tế ảo</translation>
 <translation id="8717864919010420084">Sao chép đường liên kết</translation>
+<translation id="8718994464069323380">Đã phát hiện thấy màn hình cảm ứng</translation>
 <translation id="8719472795285728850">Đang nghe các hoạt động của tiện ích...</translation>
 <translation id="8719653885894320876">Không tải <ph name="PLUGIN_NAME" /> xuống được</translation>
 <translation id="8720200012906404956">Đang tìm mạng di động. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -7129,6 +7143,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9109283579179481106">Kết nối với mạng di động</translation>
 <translation id="9111102763498581341">Mở khóa</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
+<translation id="9111668656364922873">Chào mừng bạn đến với hồ sơ mới</translation>
 <translation id="9112748030372401671">Thay đổi hình nền của bạn</translation>
 <translation id="9112987648460918699">Tìm...</translation>
 <translation id="9114663181201435112">Đăng nhập dễ dàng</translation>

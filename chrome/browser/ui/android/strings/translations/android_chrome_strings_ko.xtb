@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">디스커버 버튼 옵션으로 새 탭 페이지에 표시될 뉴스를 관리하세요</translation>
 <translation id="2259659629660284697">비밀번호 내보내기...</translation>
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
+<translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="2286841657746966508">결제주소</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
 <translation id="230155349749732438">이 설정을 사용하려면 <ph name="BEGIN_LINK" />검색 및 탐색 기능 개선<ph name="END_LINK" />이 사용 설정되어 있어야 합니다.</translation>
@@ -357,6 +358,7 @@
 <translation id="3398320232533725830">북마크 관리자 열기</translation>
 <translation id="3414952576877147120">크기:</translation>
 <translation id="3429160811076349561">무료 체험 기능 사용 안함</translation>
+<translation id="3440975416244667276">길게 터치하면 관련 정보가 표시됩니다.</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
 <translation id="3451542610083122179">개인정보 보호 샌드박스는 추적 메커니즘으로부터 사용자를 보호하도록 돕는 오픈 웹을 유지하기 위해 진행되는 이니셔티브입니다.
 
@@ -950,6 +952,7 @@
 <translation id="7475688122056506577">SD 카드가 없습니다. 일부 파일이 누락되었을 수 있습니다.</translation>
 <translation id="7479104141328977413">탭 관리</translation>
 <translation id="7481312909269577407">앞으로</translation>
+<translation id="7481864133709957613">페이지에서 검색하려면 단어를 탭하는 대신 길게 터치하세요.</translation>
 <translation id="7482656565088326534">미리보기 탭</translation>
 <translation id="7484997419527351112">디스커버 - 사용 안함</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />(<ph name="TIME_SINCE_UPDATE" />에 업데이트됨)</translation>
@@ -959,6 +962,7 @@
 <translation id="7514365320538308">다운로드</translation>
 <translation id="751961395872307827">사이트에 연결할 수 없습니다</translation>
 <translation id="752220631458524187">완료 후 연결 해제하세요.</translation>
+<translation id="7523960634226602883">Google 렌즈를 사용하여 카메라로 검색</translation>
 <translation id="753225086557513863">다운로드 예약</translation>
 <translation id="7559975015014302720">라이트 모드 사용 중지됨</translation>
 <translation id="7562080006725997899">인터넷 사용 기록 삭제</translation>

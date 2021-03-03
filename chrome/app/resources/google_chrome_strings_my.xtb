@@ -23,6 +23,7 @@
 <translation id="1516530951338665275">Google Chrome သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
  လိုပါသည်။ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Update Chrome</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ကို ဤ Chrome ပရိုဖိုင်တွင် လက်မှတ်ထိုးဝင်ထားပြီး ဖြစ်သည်။ ၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="1587223624401073077">Google Chrome iသည် သင်၏ ကင်မရာကို သုံးနေ</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> သည် အန္တရာယ်ရှိသောကြောင့် Chrome က ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
 <translation id="1597911401261118146">သင်၏စကားဝှက်များတွင် ဒေတာပေါက်ကြားမှုနှင့် အခြားသော လုံခြုံရေးပြဿနာများ ရှိ၊ မရှိ စစ်ဆေးရန် <ph name="BEGIN_LINK" />Chrome သို့ လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" />။</translation>
@@ -117,6 +118,7 @@
 <translation id="3735758079232443276">သင် Chrome အား စသုံးသောအခါ စာမျက်နှာမှ ပြသသည်ကို ဤတိုးချဲလိုင်း "<ph name="EXTENSION_NAME" />" မှ ပြောင်းလဲခဲ့၏။</translation>
 <translation id="3779473566290487688">Google Chrome အနာဂတ်အပ်ဒိတ်များ ရယူရန် OS X 10.11 နှင့်အထက် လိုအပ်ပါမည်။ ဤကွန်ပျူတာက OS X 10.10 အသုံးပြုနေသည်။</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="386202838227397562">ကျေးဇူးပြုပြီး Google Chrome ဝင်ဒိုးများကို ပိတ်ပြီ ထပ်စမ်းပါ။</translation>
 <translation id="3865754807470779944">Chrome ဗားရှင်း <ph name="PRODUCT_VERSION" /> ကို ထည့်သွင်းလိုက်သည်</translation>
 <translation id="3873044882194371212">Chrome ရုပ်ဖျက်ဝင်းဒိုးတွင် လင့်ခ်ကို ဖွင့်ရန်</translation>
@@ -188,6 +190,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome သည် ၁ စက္ကန့်အတွင်း ပြန်လည်စတင်ပါမည်}other{Google Chrome သည် # စက္ကန့်အတွင်း ပြန်လည်စတင်ပါမည်}}</translation>
 <translation id="573759479754913123">Chrome OS အကြောင်း</translation>
+<translation id="5756509061973259733">ယခုစက်တွင် ဤအကောင့်သုံးထားသော Chrome ပရိုဖိုင် ရှိနှင့်ပြီးဖြစ်သည်</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ကို ဖွင့်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5867197326698922595">Google Chrome က စကားဝှက်များ တည်းဖြတ်ရန် ကြိုးပမ်းနေသည်။</translation>

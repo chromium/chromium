@@ -965,6 +965,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2060375639911876205">Profiel voor e-simkaart verwijderen</translation>
 <translation id="2065405795449409761">Chrome wordt beheerd door geautomatiseerde testsoftware.</translation>
 <translation id="2071393345806050157">Geen lokaal logbestand.</translation>
+<translation id="2071692954027939183">Meldingen zijn automatisch geblokkeerd omdat je deze doorgaans niet toestaat</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Klik om de extensie te installeren}other{Klik om deze extensies te installeren}}</translation>
 <translation id="2073505299004274893">Gebruik maximaal <ph name="CHARACTER_LIMIT" /> tekens</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% batterijlading</translation>
@@ -1130,6 +1131,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2242687258748107519">Bestandsinformatie</translation>
 <translation id="2246549592927364792">Afbeeldingsbeschrijvingen ophalen van Google?</translation>
+<translation id="2247738527273549923">Je apparaat wordt beheerd door je organisatie</translation>
 <translation id="2249111429176737533">Openen als venster met tabbladen</translation>
 <translation id="2249605167705922988">bijv. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Openen met systeemviewer</translation>
@@ -1238,6 +1240,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2359345697448000899">Je kunt je extensies beheren door in het gereedschapsmenu te klikken op 'Extensies'.</translation>
 <translation id="2359556993567737338">Verbinding maken met bluetooth-apparaat</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
+<translation id="2361100938102002520">Je voegt een beheerd profiel toe aan deze browser. Je beheerder beheert het profiel en heeft toegang tot de gegevens.</translation>
 <translation id="236117173274098341">Optimaliseren</translation>
 <translation id="236141728043665931">Microfoontoegang altijd blokkeren</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
@@ -1486,6 +1489,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2641065435954454414">Download voorbereiden</translation>
 <translation id="2642111877055905627">Voetbal</translation>
 <translation id="2643698698624765890">Je kunt je extensies beheren door in het paginamenu te klikken op 'Extensies'.</translation>
+<translation id="2645047101481282803">Je apparaat wordt beheerd door <ph name="PROFILE_NAME" /></translation>
 <translation id="264810637653812429">Geen geschikte apparaten gevonden.</translation>
 <translation id="2649045351178520408">Base64 Encoded ASCII, certificaatketen</translation>
 <translation id="2653033005692233957">Zoeken is mislukt</translation>
@@ -1701,6 +1705,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2875698561019555027">(Chrome-foutpagina's)</translation>
 <translation id="2876336351874743617">Vinger 2</translation>
 <translation id="2876369937070532032">Verzendt URL's van bepaalde pagina's die je bezoekt naar Google wanneer je beveiliging risico loopt</translation>
+<translation id="2877467134191447552">Je kunt extra accounts toevoegen om toegang tot websites en apps te krijgen.</translation>
 <translation id="2878782256107578644">Bezig met scannen, nu openen?</translation>
 <translation id="2878889940310164513">Simkaart toevoegen...</translation>
 <translation id="288042212351694283">Toegang tot je Universal 2nd Factor-apparaten</translation>
@@ -2277,6 +2282,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3550915441744863158">Chrome wordt automatisch bijgewerkt, zodat je altijd beschikt over de nieuwste versie</translation>
 <translation id="3551320343578183772">Tabblad sluiten</translation>
 <translation id="3552780134252864554">Gewist bij afsluiten</translation>
+<translation id="3554493885489666172">Je apparaat wordt beheerd door <ph name="PROFILE_NAME" />. Beheerders hebben op dit apparaat toegang tot de gegevens van elk profiel.</translation>
 <translation id="3555812735919707620">Extensie verwijderen</translation>
 <translation id="3556000484321257665">Je zoekmachine is gewijzigd in <ph name="URL" />.</translation>
 <translation id="3556433843310711081">Je beheerder kan de blokkering van de site opheffen</translation>
@@ -2451,6 +2457,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3732530910372558017">Pincode mag maximaal 63 tekens lang zijn</translation>
 <translation id="3732857534841813090">Aan de Google Assistent gerelateerde informatie</translation>
 <translation id="3733127536501031542">SSL-server met step-up</translation>
+<translation id="3733296813637058299">We installeren deze apps voor je. In de Play Store vind je nog meer apps voor je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3735740477244556633">Sorteren op</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-gegevens worden over 24 uur verwijderd</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -2949,6 +2956,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4307992518367153382">Basisinstellingen</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K live)</translation>
 <translation id="4310139701823742692">Bestand heeft een onjuiste indeling. Controleer het PPD-bestand en probeer het opnieuw.</translation>
+<translation id="43106757207292366">Je kunt ingelogde Google-accounts beheren via <ph name="LINK_BEGIN" />Instellingen<ph name="LINK_END" />. Rechten die je hebt gegeven aan websites en apps kunnen van toepassing zijn op alle accounts. Als je niet wilt dat sites of apps toegang tot je accountgegevens hebben, kun je als gast inloggen op je <ph name="DEVICE_TYPE" /> of in een <ph name="LINK_2_BEGIN" />incognitovenster<ph name="LINK_2_END" /> op internet browsen.</translation>
 <translation id="431076611119798497">&amp;Details</translation>
 <translation id="4312866146174492540">Blokkeren (standaard)</translation>
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
@@ -3496,6 +3504,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4936042273057045735">Synchronisatie van meldingen wordt niet ondersteund voor telefoons in een werkprofiel</translation>
 <translation id="4939805055470675027">Kan geen verbinding maken met <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Er kunnen <ph name="PRINTER_COUNT" /> printers worden opgeslagen.</translation>
+<translation id="4940448324259979830">Dit account wordt beheerd door <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Schijfgrootte reserveren</translation>
 <translation id="4941074198479265146">Sites maken meestal verbinding met MIDI-apparaten voor functies zoals muziek maken en bewerken</translation>
 <translation id="4941246025622441835">Gebruik deze apparaataanvraag wanneer het apparaat wordt geactiveerd voor bedrijfsbeheer:</translation>
@@ -3776,6 +3785,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5288678174502918605">Gesloten tabblad opni&amp;euw openen</translation>
 <translation id="52895863590846877">Pagina is niet in het <ph name="LANGUAGE" /></translation>
 <translation id="52912272896845572">Privésleutelbestand is ongeldig.</translation>
+<translation id="5291739252352359682">Maakt automatisch een ondertiteling voor media in de Chrome-browser (momenteel alleen beschikbaar in het Engels). Audio en ondertiteling worden lokaal verwerkt en worden nooit doorgestuurd vanaf het apparaat.</translation>
 <translation id="529175790091471945">Dit apparaat formatteren</translation>
 <translation id="5293170712604732402">Instellingen terugzetten naar de oorspronkelijke standaardwaarden</translation>
 <translation id="5294097441441645251">Moet beginnen met een kleine letter of underscore</translation>
@@ -5187,8 +5197,10 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6922128026973287222">Sla gegevens op en surf sneller met Databesparing van Google. Klik voor meer informatie.</translation>
 <translation id="6922570474772078053">Uitschakelen</translation>
 <translation id="6922745772873733498">Geef een pincode op om af te drukken</translation>
+<translation id="6922763095098248079">Je apparaat wordt beheerd door je organisatie. Beheerders hebben op dit apparaat toegang tot de gegevens van elk profiel.</translation>
 <translation id="6923132443355966645">Scroll/klik</translation>
 <translation id="6923633482430812883">Fout bij het activeren van de fileshare. Controleer of de bestandsserver waarmee je verbinding maakt, SMBv2 of hoger ondersteunt.</translation>
+<translation id="6925127338315966709">Je voegt een beheerd profiel toe aan deze browser. Je beheerder beheert het profiel en heeft toegang tot de gegevens. Bookmarks, geschiedenis, wachtwoorden en andere instellingen kunnen worden gesynchroniseerd met je account en worden beheerd door je beheerder.</translation>
 <translation id="6929126689972602640">Ouderlijk toezicht wordt niet ondersteund voor schoolaccounts. Log in met het persoonlijke account van je kind als je een schoolaccount wilt toevoegen voor toegang tot Google Classroom en andere websites waarop je thuis schoolwerk kunt doen. Je kunt het schoolaccount later toevoegen in de instellingen.</translation>
 <translation id="6929760895658557216">Oké Google</translation>
 <translation id="6930036377490597025">Externe beveiligingssleutel of ingebouwde sensor</translation>
@@ -6185,6 +6197,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8047242494569930800">Verplaatsen naar Google-account</translation>
 <translation id="804786196054284061">Licentieovereenkomst voor eindgebruikers</translation>
 <translation id="8048977114738515028">Maak een snelkoppeling op je apparaat voor directe toegang tot dit profiel</translation>
+<translation id="8049029041626250638">Sluit een toetsenbord of muis aan. Als je bluetooth-apparaten gebruikt, zorg je dat de apparaten klaar zijn om te worden gekoppeld.</translation>
 <translation id="8049705080247101012">Google heeft <ph name="EXTENSION_NAME" /> als schadelijk gemarkeerd en de installatie is geblokkeerd</translation>
 <translation id="8049948037269924837">Omgekeerd scrollen touchpad</translation>
 <translation id="8050038245906040378">Commerciële handtekening bij programmacode van Microsoft</translation>
@@ -6748,6 +6761,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8716931980467311658">Alle Linux-apps en -gegevens in je map met Linux-bestanden verwijderen van deze <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717145295869185525">Geen toestemming om virtualreality-apparaten en -gegevens te gebruiken</translation>
 <translation id="8717864919010420084">Link kopiëren</translation>
+<translation id="8718994464069323380">Touchscreen waargenomen</translation>
 <translation id="8719472795285728850">Luisteren naar extensie-activiteit…</translation>
 <translation id="8719653885894320876">Kan <ph name="PLUGIN_NAME" /> niet downloaden</translation>
 <translation id="8720200012906404956">Zoeken naar een mobiel netwerk. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -7129,6 +7143,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9109283579179481106">Verbinden met mobiel netwerk</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
+<translation id="9111668656364922873">Welkom bij je nieuwe profiel</translation>
 <translation id="9112748030372401671">Je achtergrond wijzigen</translation>
 <translation id="9112987648460918699">Zoek...</translation>
 <translation id="9114663181201435112">Gemakkelijk inloggen</translation>

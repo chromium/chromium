@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Portal captiu</translation>
 <translation id="2008685064673031089">Cerca principal</translation>
 <translation id="2080070583977670716">Més opcions de configuració</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">S'HA POSAT A LA CUA</translation>
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
+<translation id="2217935453350629363">Velocitat actual</translation>
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Estat d'activació</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
+<translation id="4431821876790500265">Mostra l'informe</translation>
 <translation id="445059817448385655">Contrasenya antiga</translation>
 <translation id="4453205916657964690">Màscara de subxarxa</translation>
 <translation id="4454245904991689773">Desa a</translation>
@@ -174,6 +177,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4985509611418653372">Executa</translation>
+<translation id="4999333166442584738">Amaga l'informe</translation>
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Nom del grup</translation>

@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">ຄວບຄຸມເລື່ອງລາວຂອງທ່ານຈາກປຸ່ມຕົວເລືອກສຳລັບ Discover</translation>
 <translation id="2259659629660284697">ສົ່ງລະຫັດຜ່ານອອກ...</translation>
 <translation id="2276696007612801991">ເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານເພື່ອກວດລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="2278052315791335171">ການລຶບລະຫັດຜ່ານນີ້ຈະບໍ່ລຶບບັນຊີຂອງທ່ານຢູ່ <ph name="SITE" /> ອອກ</translation>
 <translation id="2286841657746966508">ທີ່ຢູ່ການຮຽກເກັບເງິນ</translation>
 <translation id="230115972905494466">ບໍ່ພົບອຸປະກອນທີ່ເຂົ້າກັນໄດ້</translation>
 <translation id="230155349749732438">ເພື່ອໃຊ້ການຕັ້ງຄ່ານີ້ຕ້ອງເປີດ <ph name="BEGIN_LINK" />ເຮັດໃຫ້ການຊອກຫາ ແລະ ການທ່ອງເວັບດີຂຶ້ນ<ph name="END_LINK" /></translation>
@@ -357,6 +358,7 @@
 <translation id="3398320232533725830">ເປີດຕົວຈັດການບຸກມາກ</translation>
 <translation id="3414952576877147120">ຂະໜາດ:</translation>
 <translation id="3429160811076349561">ຄຸນສົມບັດການທົດລອງໃຊ້ປິດຢູ່</translation>
+<translation id="3440975416244667276">ແຕະຄ້າງໄວ້ເພື່ອເບິ່ງຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="3443221991560634068">ໂຫຼດໜ້າປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="3451542610083122179">ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວເປັນໂຄງການລິເລີ່ມທີ່ດຳເນີນຢູ່ເພື່ອປົກປ້ອງເວັບແບບເປີດ ເຊິ່ງຈະຊ່ວຍປ້ອງກັນທ່ານຈາກກົນໄກການຕິດຕາມຕ່າງໆ.
 
@@ -950,6 +952,7 @@
 <translation id="7475688122056506577">ບໍ່ພົບແຜ່ນ SD. ບາງໄຟລ໌ຂອງທ່ານອາດຈະຫາຍໄປ.</translation>
 <translation id="7479104141328977413">ການຈັດການແຖບ</translation>
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
+<translation id="7481864133709957613">ເພື່ອຊອກຫາຈາກໜ້ານີ້, ໃຫ້ແຕະໃສ່ຄຳສັບຄ້າງໄວ້ແທນການແຕະໃສ່ເທື່ອດຽວ</translation>
 <translation id="7482656565088326534">ແຖບສະແດງຕົວຢ່າງ</translation>
 <translation id="7484997419527351112">Discover - ປິດຢູ່</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (ອັບ​ເດດ​ແລ້ວ <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -959,6 +962,7 @@
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
 <translation id="751961395872307827">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເວັບໄຊໄດ້</translation>
 <translation id="752220631458524187">ຕັດການເຊື່ອມຕໍ່ເມື່ອທ່ານສຳເລັດແລ້ວ</translation>
+<translation id="7523960634226602883">ຊອກຫາດ້ວຍກ້ອງຂອງທ່ານໂດຍໃຊ້ Google Lens</translation>
 <translation id="753225086557513863">ກຳນົດເວລາສຳລັບພາຍຫຼັງແລ້ວ</translation>
 <translation id="7559975015014302720">ໂໝດ Lite ປິດຢູ່</translation>
 <translation id="7562080006725997899">ກຳ​ລັງລຶບຂໍ້​ມູນການທ່ອງເນັດ</translation>

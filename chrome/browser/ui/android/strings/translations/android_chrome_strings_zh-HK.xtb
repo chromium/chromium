@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">按一下 [探索的選項] 按鈕來控制您的報導</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查密碼</translation>
+<translation id="2278052315791335171">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
 <translation id="230115972905494466">找不到兼容的裝置</translation>
 <translation id="230155349749732438">如要使用此設定，請務必開啟<ph name="BEGIN_LINK" />改善搜尋和瀏覽體驗<ph name="END_LINK" />功能</translation>
@@ -357,6 +358,7 @@
 <translation id="3398320232533725830">開啟書籤管理員</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3429160811076349561">試用功能已關閉</translation>
+<translation id="3440975416244667276">輕觸並按住即可查看更多相關資料</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3451542610083122179">「私隱沙箱」是一項進行中的計劃，目的是保護開放網絡，防止有心人透過追蹤機制取得您的資料。您的資料。網絡，防止有心人透過追蹤機制取得您的資料。
 
@@ -950,6 +952,7 @@
 <translation id="7475688122056506577">找不到 SD 卡，您的部分檔案可能會遺失。</translation>
 <translation id="7479104141328977413">分頁管理</translation>
 <translation id="7481312909269577407">向前</translation>
+<translation id="7481864133709957613">如要在此頁面上搜尋，請輕觸並按住 (而非輕按) 字詞</translation>
 <translation id="7482656565088326534">預覽分頁</translation>
 <translation id="7484997419527351112">探索 - 關閉</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (上次更新： <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -959,6 +962,7 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="751961395872307827">無法連接網站</translation>
 <translation id="752220631458524187">請在完成後拔除連接線</translation>
+<translation id="7523960634226602883">使用 Google 智能鏡頭，透過相機搜尋</translation>
 <translation id="753225086557513863">已預定稍後下載</translation>
 <translation id="7559975015014302720">精簡模式已關閉</translation>
 <translation id="7562080006725997899">正在清除瀏覽資料</translation>

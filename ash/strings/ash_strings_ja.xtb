@@ -305,6 +305,7 @@
 <translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">「<ph name="FROM_LOCALE" />」に戻します（再起動が必要です）</translation>
 <translation id="3576141592585647168">タイムゾーンを変更</translation>
+<translation id="3593039967545720377"><ph name="SHORTCUT_KEY_NAME" /> + V キーを押してクリップボードの履歴にアクセスすると、クリップボードを表示できます。開始するにはアイテムをコピーします。</translation>
 <translation id="3593646411856133110">開いているアプリを表示するには、上にスワイプして長押ししてください</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
 <translation id="3604801046548457007">デスク <ph name="DESK_TITILE" /> が作成されました</translation>

@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">通过“‘探索’功能的选项”按钮控制您的报道</translation>
 <translation id="2259659629660284697">导出密码…</translation>
 <translation id="2276696007612801991">您需要先登录 Google 帐号才能检查您的密码</translation>
+<translation id="2278052315791335171">删除此密码不会删除您在 <ph name="SITE" /> 上的帐号</translation>
 <translation id="2286841657746966508">帐单邮寄地址</translation>
 <translation id="230115972905494466">未找到任何兼容设备</translation>
 <translation id="230155349749732438">必须开启<ph name="BEGIN_LINK" />改善搜索和浏览体验<ph name="END_LINK" />，才能使用此设置</translation>
@@ -357,6 +358,7 @@
 <translation id="3398320232533725830">打开书签管理器</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3429160811076349561">试用版功能已关闭</translation>
+<translation id="3440975416244667276">轻触并按住即可查看更多相关信息</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3451542610083122179">隐私沙盒是一项正在持续推进的计划，旨在保护开放网络，使您免受跟踪机制的跟踪。
 
@@ -950,6 +952,7 @@
 <translation id="7475688122056506577">找不到 SD 卡。您的某些文件可能会丢失。</translation>
 <translation id="7479104141328977413">标签页管理</translation>
 <translation id="7481312909269577407">前进</translation>
+<translation id="7481864133709957613">若要从此页面中执行搜索，请轻触并按住（而非点按）相关字词</translation>
 <translation id="7482656565088326534">预览标签页</translation>
 <translation id="7484997419527351112">探索 - 已关闭</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />（上次更新时间：<ph name="TIME_SINCE_UPDATE" />）</translation>
@@ -959,6 +962,7 @@
 <translation id="7514365320538308">下载</translation>
 <translation id="751961395872307827">无法连接到该网站</translation>
 <translation id="752220631458524187">完成当前操作后断开连接</translation>
+<translation id="7523960634226602883">借助摄像头使用 Google 智能镜头进行搜索</translation>
 <translation id="753225086557513863">已安排为延后下载</translation>
 <translation id="7559975015014302720">精简模式已关闭</translation>
 <translation id="7562080006725997899">正在清除浏览数据</translation>

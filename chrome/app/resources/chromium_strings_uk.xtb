@@ -49,6 +49,7 @@
 <translation id="2770231113462710648">Змінити веб-переглядач за умовчанням на:</translation>
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2816712596130903444">Створити окремий профіль Chromium?</translation>
+<translation id="2837693172913560447">Буде створено новий профіль Chromium для <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Видалити з Chromium…</translation>
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2910007522516064972">Про &amp;Chromium</translation>
@@ -123,6 +124,7 @@
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
+<translation id="5252179775517634216">Цей профіль Chromium уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chromium для <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Щоб застосувати зміни, перезапустіть Chromium</translation>
 <translation id="5358375970380395591">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Chromium. Ваші дані Chromium, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -233,6 +235,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7773960292263897147">Застереження: Chromium не може заборонити розширенням реєструвати вашу історію веб-перегляду. Щоб вимкнути це розширення в режимі анонімного перегляду, зніміть прапорець поруч із цим параметром.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7827169012280634081">Видаляти файли cookie й дані сайтів, коли ви закриваєте Chromium</translation>
+<translation id="7828947555739565424">Профіль Chromium із цим обліковим записом уже існує на цьому пристрої</translation>
 <translation id="7857220146454061152">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система OS X 10.11 або новішої версії. На цьому комп'ютері встановлено OS X 10.10.</translation>
 <translation id="7867198900892795913">Не вдалось оновити Chromium до останньої версії. Ви не зможете скористатися новими функціями та застосувати виправлення системи безпеки.</translation>
 <translation id="7898472181347242998">Щоб дізнатися, чи пристрій використовує актуальну версію операційної системи, перейдіть у <ph name="LINK_BEGIN" />налаштування ОС Chromium<ph name="LINK_END" /></translation>

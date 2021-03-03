@@ -277,6 +277,7 @@
 <translation id="1393485621820363363">Impresoras de dispositivos de empresa habilitadas</translation>
 <translation id="1397855852561539316">URL de sugerencia del proveedor de búsquedas predeterminadas</translation>
 <translation id="1413936351612032792">Proporcionar información sobre el uso de aplicaciones de Linux</translation>
+<translation id="1417888712677507140">Bloquear los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
 <translation id="1418387035898607074">Saltar comprobaciones de Navegación segura para las descargas de archivos desde fuentes de confianza</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados utilicen Crostini</translation>
 <translation id="1425551776320718592">Impide que los usuarios de este dispositivo utilicen la instalación de fuente desconocida adb sin forzar un Powerwash, lo cual puede dejar el dispositivo en un estado de seguridad vulnerable</translation>
@@ -377,6 +378,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1514888685242892912">Habilitar <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">Habilita el menú de accesibilidad flotante</translation>
 <translation id="1515824657887788963">Permite que las páginas realicen solicitudes XHR síncronas durante el cierre de la página.</translation>
+<translation id="1516486219683984217">No permitir que se usen notificaciones del sistema</translation>
 <translation id="1522425503138261032">Permitir que los sitios puedan hacer un seguimiento de la ubicación física de los usuarios</translation>
 <translation id="1523774894176285446">Navegador alternativo donde se abren los sitios web configurados.</translation>
 <translation id="152657506688053119">Lista de URL alternativas para el proveedor de búsquedas predeterminado</translation>
@@ -2333,6 +2335,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="4121350739760194865">Evitar que las promociones de aplicaciones aparezcan en la página Nueva pestaña</translation>
 <translation id="4122473079291425973">La página Nueva pestaña mostrará tarjetas si hay contenido disponible, pero se permitirá que el usuario cambie este ajuste</translation>
+<translation id="4122565688998751716">Esta política está obsoleta. Usa la política <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" /> en su lugar.
+
+Configura si <ph name="PRODUCT_NAME" /> en Linux usará notificaciones nativas.
+
+Si se asigna el valor True a esta política o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> podrá usar notificaciones nativas.
+
+Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notificaciones nativas. Se usará el Centro de mensajes de <ph name="PRODUCT_NAME" /> como alternativa.</translation>
 <translation id="412697421478384751">Permitir que los usuarios utilicen un PIN poco seguro para la pantalla de bloqueo</translation>
 <translation id="4138655880188755661">Límite de tiempo</translation>
 <translation id="4147818922357566987">Habilitar variaciones referentes solo a correcciones críticas</translation>
@@ -2838,6 +2847,12 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el modo de audio en mono se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="4933301190614090397">Controla la duración (en segundos) permitida para las solicitudes keepalive al cerrar el navegador.
+
+      Si se especifica un valor, se podrá bloquear el cierre del navegador durante el número de segundos
+      indicado para procesar las solicitudes keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
+
+      El valor predeterminado (0) significa que esta función está inhabilitada.</translation>
 <translation id="4942681160308347946">Si se le asigna el valor "true" a esta política, los mensajes de voz se activan en la pantalla de inicio de sesión. Si se le asigna el valor "false", los mensajes de voz se desactivan en la pantalla de inicio de sesión.
 
       Si se configura esta política, los usuarios pueden activar y desactivar temporalmente los mensajes de voz. Cuando la pantalla de inicio de sesión se vuelve a cargar o permanece inactiva durante un minuto, vuelve a su estado original.
@@ -3015,6 +3030,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="519247340330463721">Configura las políticas relacionadas con la función Navegación segura</translation>
 <translation id="5196520640744454600">Habilitar las teclas persistentes en la pantalla de inicio de sesión</translation>
 <translation id="5206454085187851382">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para el usuario. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="5207543664699568887">Configura si <ph name="PRODUCT_NAME" /> en Linux usará notificaciones del sistema.
+
+Si se asigna el valor True a esta política o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> podrá usar notificaciones del sistema.
+
+Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notificaciones del sistema. Se usará el Centro de mensajes de <ph name="PRODUCT_NAME" /> como alternativa.</translation>
 <translation id="5208675398826212411">Esta política configura el comportamiento de la redirección de una intranet mediante comprobaciones de interceptación de DNS. Con las comprobaciones, se intenta averiguar si el navegador está detrás de un proxy que redirige nombres de host desconocidos.
 
       Si no se define esta política, el navegador usará el comportamiento predeterminado de las comprobaciones de interceptación de DNS y las sugerencias de redirección de una intranet. Estas opciones están habilitadas por defecto en la versión M88, pero se inhabilitarán de forma predeterminada en la siguiente versión.
@@ -3263,6 +3283,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se habilita esta política o no se le asigna ningún valor, se habilitará la función <ph name="PRODUCT_NAME" />. Si no se habilita esta política, dicha función no estará disponible.
 
       Esta política de empresa sirve para una adaptación a corto plazo y estará disponible como mínimo hasta la versión 93 de Chrome.</translation>
+<translation id="5494322570831642650">Especifica si el usuario podrá abrir páginas en modo de incógnito en <ph name="PRODUCT_NAME" />.
+
+      Si se habilita esta política o no se le asigna ningún valor, se podrán abrir páginas en modo de incógnito.
+
+      Si se inhabilita esta política, no se podrán abrir páginas en modo de incógnito.
+
+      Si se asigna el valor "Forced" a esta política, solo se podrán abrir páginas en modo de incógnito. Ten en cuenta que el valor "Forced" no funciona en dispositivos con Android en Chrome.
+
+      Nota: En iOS, si se cambia esta política durante una sesión, los cambios se aplicarán después de reiniciar.</translation>
 <translation id="5497565614013170656">Expresión regular con la que debe coincidir el ID de impresora.</translation>
 <translation id="5499375345075963939">Esta política solo se encuentra activa en el modo comercial.
 
@@ -3349,6 +3378,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="5620392548325769024">Habilitar la opción para que se muestre la página de bienvenida al abrir el navegador por primera vez después de actualizar el SO</translation>
 <translation id="5630352020869108293">Restaurar la última sesión</translation>
 <translation id="5633871703004128675">Habilitar la función de accesibilidad de resaltado del símbolo de intercalación de texto</translation>
+<translation id="5636088574608432506">Esta política controla el comportamiento del navegador cuando se inicia sesión. Permite definir si los usuarios pueden iniciar sesión en <ph name="PRODUCT_NAME" /> con su cuenta y usar los servicios asociados, como la función Sincronización de <ph name="PRODUCT_NAME" />.
+
+      Si se asigna el valor "Inhabilitar inicio de sesión en el navegador" a esta política, el usuario no podrá iniciar sesión en el navegador ni utilizar los servicios asociados a su cuenta. Además, las funciones del navegador, como Sincronización de <ph name="PRODUCT_NAME" />, no se podrán usar ni estarán disponibles. En <ph name="IOS_NAME" />, si el usuario ha iniciado sesión y la política está inhabilitada, se cerrará la sesión inmediatamente. En otras plataformas, se cerrará sesión la próxima vez que ejecuten <ph name="PRODUCT_NAME" />. En todas las plataformas, se conservarán y se podrán seguir usando los datos del perfil local, como los marcadores, las contraseñas, etc. Además, el usuario podrá iniciar sesión en servicios web de Google y usarlos (por ejemplo, Gmail).
+
+      Si se asigna el valor "Habilitar inicio de sesión en el navegador" a esta política, el usuario podrá iniciar sesión en el navegador. En todas las plataformas excepto <ph name="IOS_NAME" />, cuando el usuario inicie sesión en servicios web de Google, como Gmail, también iniciará sesión automáticamente en el navegador. Si el usuario ha iniciado sesión en el navegador, la información de la cuenta del usuario se conservará en el navegador. Sin embargo, la función Sincronización de <ph name="PRODUCT_NAME" /> no se activará de forma predeterminada; el usuario deberá activar esta función por separado. Si se habilita esta política, se impedirá que el usuario desactive la opción que permite iniciar sesión en el navegador. Para controlar la disponibilidad de Sincronización de <ph name="PRODUCT_NAME" />, usa la política <ph name="SYNC_POLICY_NAME" />.
+
+      Si se asigna el valor "Forzar a los usuarios a iniciar sesión para usar el navegador" a esta política, se mostrará un cuadro de diálogo de selección de cuenta al usuario para que elija una e inicie sesión en el navegador. De este modo, se asegura que, en el caso de las cuentas gestionadas, se apliquen y se cumplan las políticas asociadas a la cuenta. Además, se activará de forma predeterminada la función Sincronización de <ph name="PRODUCT_NAME" /> de la cuenta, excepto si el administrador del dominio ha inhabilitado Sincronización de <ph name="PRODUCT_NAME" /> o si la política <ph name="SYNC_POLICY_NAME" /> está activada. De forma predeterminada, la política <ph name="GUEST_MODE_POLICY_NAME" /> estará inhabilitada. Ten en cuenta que, después de habilitar esta política, los perfiles con los que no se haya iniciado sesión se bloquearán y no se podrá acceder a ellos. Para obtener más información, consulta este artículo del Centro de Ayuda: https://support.google.com/chrome/a/answer/7572556. Esta opción no es compatible con <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> ni <ph name="IOS_NAME" />. Si se usa, cambiará a "Habilitar inicio de sesión en el navegador".
+
+      Si no se asigna ningún valor a esta política, el usuario podrá decidir si quiere habilitar el inicio sesión en el navegador en la configuración de <ph name="PRODUCT_NAME" /> y usar esta opción cuando lo crea oportuno.</translation>
 <translation id="5641279111657132737">Esta política está obsoleta. Usa la política <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> en su lugar.
 
       Si se define esta política, especificará qué servidores deberían tener permiso para la autenticación integrada. La autenticación integrada solo se activará cuando <ph name="PRODUCT_NAME" /> reciba una solicitud de autenticación de un proxy o un servidor que esté incluido en la lista de permitidos.
@@ -4607,6 +4645,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Permite habilitar las notificaciones de Mi teléfono.</translation>
 <translation id="7249828445670652637">Habilitar los certificados de CA de <ph name="PRODUCT_OS_NAME" /> a las aplicaciones ARC</translation>
+<translation id="7251825257294351251">Permitir notificaciones del sistema</translation>
 <translation id="7252681704926980614">Enviar los nombres de usuario y de archivo al servidor de impresoras nativas con cada trabajo de impresión. Los nombres no se envían de forma predeterminada.
 
       Si se asigna el valor "True" a esta política, también se inhabilitarán las impresoras que utilicen protocolos distintos a IPPS, USB o IPP por USB, ya que el nombre de usuario y de archivo no deben enviarse desprotegidos a través de la red.</translation>
@@ -4863,6 +4902,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si se inhabilita esta política, cuando un usuario ejecute una acción que abra un cuadro de diálogo de selección de archivos (por ejemplo, importar marcadores, subir archivos, guardar enlaces, etc.), aparecerá un mensaje en su lugar. Se asume que el usuario habrá hecho clic en Cancelar en el cuadro de diálogo de selección de archivos.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
+<translation id="7638764766629234761">Permitir que se usen notificaciones del sistema</translation>
 <translation id="7643883929273267746">Restringir cuentas que se muestran en <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Usar el comportamiento de cookies de <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> en todos los sitios web</translation>
 <translation id="7657261947024629645">Optimizar para un mejor rendimiento.</translation>
@@ -4959,6 +4999,10 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="7765879851993224640">Permitir que se use el inicio de sesión con Smart Lock</translation>
+<translation id="7774451488719504808">Tal como se describe en la página https://www.chromestatus.com/feature/5148698084376576, los cuadros de diálogo modales de JavaScript, activados por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> y <ph name="JS_PROMPT" />, se bloquearán en <ph name="PRODUCT_NAME" /> si se activan desde un submarco cuyo origen sea diferente al del marco principal.
+       Esta política permite anular ese cambio.
+       Si se habilita esta política o no se le asigna ningún valor, se bloquearán los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente.
+       Si se inhabilita esta política, no se bloquearán los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente.</translation>
 <translation id="7774768074957326919">Utilizar configuración de proxy del sistema</translation>
 <translation id="777734450201217641">Esta política habilita las combinaciones de teclas para las funciones de accesibilidad en la pantalla de inicio de sesión.
 
@@ -5076,6 +5120,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7904177352786629708">Si se asigna el valor "Enabled" a esta política, se omitirá la consulta de CNAME. El nombre del servidor se usará tal como se haya introducido al generar el SPN de Kerberos.
 
       Si se le asigna el valor "Disbled" o no se le asigna ninguno, se hará una consulta de CNAME para determinar el nombre canónico del servidor al generar el SPN de Kerberos.</translation>
+<translation id="7906983682927840536">Obtener duración de keepalive al cerrar</translation>
 <translation id="7908384265697653397">Número de días tras los que se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="7912255076272890813">Configurar tipos de extensiones o aplicaciones permitidos</translation>
 <translation id="791267408364877739">Mostrar advertencias de seguridad si se utilizan instrucciones de línea de comandos potencialmente peligrosas</translation>
@@ -5328,6 +5373,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Habilitar la UI relacionada con la conexión en el escritorio del host cuando una conexión esté activa</translation>
 <translation id="8274603902181597201">Borrar los eCryptfs del directorio principal del usuario y empezar con un nuevo directorio principal cifrado con ext4.</translation>
+<translation id="8278133379873210419">Impedir que se activen cuadros de diálogo de JavaScript desde submarcos de origen diferente</translation>
 <translation id="8284296539558710573">Solicitudes de autenticación HTTP de origen cruzado</translation>
 <translation id="8284527236880877730">Si se inhabilita la política <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> y se establece <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" />, se especifica el porcentaje del retraso de atenuación de pantalla cuando el dispositivo esté en el modo de presentación. Si se ajusta el retraso de atenuación de pantalla, se ajustan los retrasos de apagado de pantalla, bloqueo de pantalla e inactividad para mantener las mismas distancias del retraso de atenuación de pantalla que tenía la configuración original.
 
@@ -5610,6 +5656,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8705895771006864851">Si se le asigna el valor "Habilitada" a esta política, se proporcionará a los usuarios la posibilidad de traducir mediante una barra de herramientas de traducción integrada en <ph name="PRODUCT_NAME" />, si procede, y una opción para traducir en el menú contextual que aparece al hacer clic con el botón derecho. Si se le asigna el valor "Inhabilitada", se desactivarán todas las funciones de traducción integradas.
 
       Si se configura la política, los usuarios no podrán cambiar esta función. Si no se le asigna ningún valor, podrán cambiar esta opción.</translation>
+<translation id="8715885991031124968">Permitir los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
 <translation id="8720547069538712402">Permitir que los usuarios habiliten o inhabiliten el corrector ortográfico</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido en YouTube como mínimo</translation>
 <translation id="8745669971728319820">Esta política determina si se recoge información sobre extensiones y complementos.

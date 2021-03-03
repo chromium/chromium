@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">Discover ボタンのオプションから記事を管理できます</translation>
 <translation id="2259659629660284697">パスワードをエクスポート…</translation>
 <translation id="2276696007612801991">パスワードを確認するには、Google アカウントにログインしてください</translation>
+<translation id="2278052315791335171">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません。</translation>
 <translation id="2286841657746966508">請求先住所</translation>
 <translation id="230115972905494466">対応デバイスが見つかりませんでした</translation>
 <translation id="230155349749732438">この設定を使用するには、[<ph name="BEGIN_LINK" />検索とブラウジングを改善する<ph name="END_LINK" />] をオンにする必要があります</translation>
@@ -357,6 +358,7 @@
 <translation id="3398320232533725830">ブックマーク マネージャを開く</translation>
 <translation id="3414952576877147120">サイズ:</translation>
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
+<translation id="3440975416244667276">長押しすると、その他の関連情報が表示されます</translation>
 <translation id="3443221991560634068">現在のページを再読み込みする</translation>
 <translation id="3451542610083122179">プライバシー サンドボックスは、トラッキング メカニズムからユーザーを保護して、オープンウェブの理念を支える開発中の取り組みです。
 
@@ -950,6 +952,7 @@
 <translation id="7475688122056506577">SD カードが見つかりません。一部のファイルが欠落している可能性があります。</translation>
 <translation id="7479104141328977413">タブの管理</translation>
 <translation id="7481312909269577407">進む</translation>
+<translation id="7481864133709957613">このページで検索するには、単語をタップではなく長押しします</translation>
 <translation id="7482656565088326534">[プレビュー] タブ</translation>
 <translation id="7484997419527351112">Discover - オフ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />（<ph name="TIME_SINCE_UPDATE" />に更新）</translation>
@@ -959,6 +962,7 @@
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="751961395872307827">サイトに接続できません</translation>
 <translation id="752220631458524187">完了したら取り外してください</translation>
+<translation id="7523960634226602883">Google レンズを使ってカメラで検索します</translation>
 <translation id="753225086557513863">後で開始</translation>
 <translation id="7559975015014302720">ライトモードはオフです</translation>
 <translation id="7562080006725997899">閲覧データの消去</translation>

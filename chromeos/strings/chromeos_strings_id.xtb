@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2008685064673031089">Penelusuran bilangan prima</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
+<translation id="2126937207024182736">Tersedia <ph name="AVAILABLE_MEMORY" /> GB dari <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">DALAM ANTREAN</translation>
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
+<translation id="2217935453350629363">Kecepatan saat ini</translation>
 <translation id="2224337661447660594">Tidak ada internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status aktivasi</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4429881212383817840">Masa berlaku tiket Kerberos segera berakhir</translation>
+<translation id="4431821876790500265">Lihat laporan</translation>
 <translation id="445059817448385655">Sandi lama</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Pindai ke</translation>
@@ -174,6 +177,7 @@
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="498186245079027698">Periksa pemindai, lalu coba lagi. Pastikan terdapat cukup ruang penyimpanan lokal untuk menyimpan file hasil pemindaian.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
+<translation id="4999333166442584738">Sembunyikan laporan</translation>
 <translation id="500920857929044050">Hentikan pengujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Nama grup</translation>

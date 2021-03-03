@@ -295,6 +295,7 @@
 <translation id="2053111141626950936"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
 <translation id="2053553514270667976">우편번호</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{제안 1개}other{제안 #개}}</translation>
+<translation id="2071692954027939183">알림을 평소에 허용하지 않았기 때문에 알림이 자동으로 차단되었습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="20817612488360358">시스템 프록시 설정이 사용하도록 설정되었지만 명시적 프록시 설정도 지정되어 있습니다.</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
@@ -783,6 +784,7 @@
 <translation id="4058922952496707368">'<ph name="SUBKEY" />' 키: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1(봉투)</translation>
 <translation id="4067947977115446013">유효한 주소 추가</translation>
+<translation id="4072193657607981494">정책 로드 중</translation>
 <translation id="4072486802667267160">주문을 처리하는 중에 오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="4075732493274867456">클라이언트와 서버가 일반적인 SSL 프로토콜 버전 또는 암호화 제품군을 지원하지 않습니다.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -917,6 +919,7 @@
 <translation id="4510487217173779431">Chou4(봉투)</translation>
 <translation id="4515275063822566619">카드와 주소는 Chrome 및 Google 계정(<ph name="ACCOUNT_EMAIL" />)에서 가져왔습니다. 이 정보는 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="4517607026994743406">Comm-10(봉투)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" />×<ph name="HEIGHT" />mm(<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">세부정보</translation>
 <translation id="4524138615196389145">지금부터 WebAuthn을 사용하여 빠르게 카드를 확인합니다.</translation>
 <translation id="4524805452350978254">카드 관리</translation>
@@ -1336,6 +1339,7 @@
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
 <translation id="6150036310511284407">왼쪽 3공 펀칭</translation>
 <translation id="6151417162996330722">서버 인증서의 유효 기간이 너무 깁니다.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" />×<ph name="HEIGHT" />(<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">배송 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6169916984152623906">이제 비공개로 인터넷을 사용할 수 있으며, 이 기기를 사용하는 다른 사용자가 내 활동을 볼 수 없습니다. 하지만 다운로드한 항목과 북마크는 저장됩니다.</translation>
@@ -1882,6 +1886,7 @@
 <translation id="8364627913115013041">설정 안됨</translation>
 <translation id="8368476060205742148">Google Play 서비스</translation>
 <translation id="8371889962595521444">맞춤 루트 인증서</translation>
+<translation id="8374636051559112948">다양함</translation>
 <translation id="8380941800586852976">위험</translation>
 <translation id="8381674639488873545">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다. <ph name="BEGIN_LINK" />사이트 표시하기<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME" /> VM으로 공유하는 작업이 차단되었습니다.</translation>
@@ -2062,6 +2067,7 @@
 <translation id="9114524666733003316">카드 확인 중...</translation>
 <translation id="9114581008513152754">이 브라우저는 회사 또는 다른 조직에서 관리하지 않습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">업로드됨</translation>
+<translation id="9128016270925453879">정책 로드됨</translation>
 <translation id="9128870381267983090">네트워크에 연결</translation>
 <translation id="9137013805542155359">원본 보기</translation>
 <translation id="9141013498910525015">주소 관리</translation>

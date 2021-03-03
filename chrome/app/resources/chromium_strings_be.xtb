@@ -51,6 +51,7 @@
 <translation id="2770231113462710648">Зрабіць стандартным наступны браўзер:</translation>
 <translation id="2799223571221894425">Перазапусціць</translation>
 <translation id="2816712596130903444">Стварыць асобны профіль Chromium?</translation>
+<translation id="2837693172913560447">Будзе створаны новы профіль Chromium для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Выдаліць з Chromium...</translation>
 <translation id="2885378588091291677">Менеджар заданняў</translation>
 <translation id="2910007522516064972">Пра &amp;Chromium</translation>
@@ -125,6 +126,7 @@
 <translation id="4987820182225656817">Госці могуць выкарыстоўваць Chromium, не пакідаючы нічога пасля сябе.</translation>
 <translation id="4994636714258228724">Дадаць мяне ў Chromium</translation>
 <translation id="5224391634244552924">Няма захаваных пароляў. Chromium можа правяраць толькі захаваныя паролі.</translation>
+<translation id="5252179775517634216">Уваход у гэты профіль Chromium ужо выкананы карыстальнікам <ph name="EXISTING_USER" />. Будзе створаны новы профіль Chromium для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Каб прымяніць змяненні, перазапусціце Chromium</translation>
 <translation id="5358375970380395591">Вы ўваходзіце праз уліковы запіс пад кіраваннем, што дае адміністратару кантроль над вашым профілем у браўзеры Chromium. Даныя Chromium (праграмы, закладкі, гісторыя, паролі і іншыя налады) будуць назаўсёды прывязаны да ўліковага запісу <ph name="USER_NAME" />. Вы зможаце выдаліць гэтыя даныя праз панэль кіравання Уліковымі запісамі Google, але іх нельга будзе звязаць з іншым уліковым запісам. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium абнаўляецца (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -234,6 +236,7 @@
 <translation id="7773960292263897147">Увага! Chromium не можа забараніць пашырэнням весці запіс вашай гісторыі праглядаў сайтаў. Скасуйце выбар гэтай налады, каб выключыць гэта пашырэнне ў рэжыме інкогніта.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7827169012280634081">Выдаліць файлы cookie і даныя сайтаў пры выхадзе з браўзера Chromium</translation>
+<translation id="7828947555739565424">Профіль Chromium з такім уліковым запісам ужо існуе на гэтай прыладзе</translation>
 <translation id="7857220146454061152">Каб атрымліваць наступныя абнаўленні Chromium, вам патрэбна версія OS X 10.11 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца OS X 10.10.</translation>
 <translation id="7867198900892795913">Браўзеру Chromium не ўдалося абнавіцца да апошняй версіі, таму ў ім няма новых функцый і выпраўленняў сістэмы бяспекі.</translation>
 <translation id="7898472181347242998">Каб даведацца, ці абноўлена прылада, адкрыйце <ph name="LINK_BEGIN" />Налады Chromium OS<ph name="LINK_END" /></translation>

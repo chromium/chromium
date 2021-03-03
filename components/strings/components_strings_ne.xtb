@@ -299,6 +299,7 @@
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> भाषाका पृष्ठहरू अनुवाद गरिने छैनन्।</translation>
 <translation id="2053553514270667976">जिप कोड</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{१ सुझाव}other{# सुझावहरू}}</translation>
+<translation id="2071692954027939183">तपाईं सामान्यतया सूचनाहरू देखाउने अनुमति दिनुहुन्न। त्यसैले सूचनाहरू स्वतः ब्लक गरिएका छन्</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="20817612488360358">प्रणाली प्रोक्सी सेटिङहरू प्रयोगका लागि सेट छन् तर एउटा स्पष्ट प्रोक्सी कन्फिगरेसन पनि निर्दिष्ट गरिएको छ।</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
@@ -787,6 +788,7 @@
 <translation id="4058922952496707368">कुञ्जी "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
+<translation id="4072193657607981494">नीतिहरू लोड गरिँदै छन्</translation>
 <translation id="4072486802667267160">तपाईंको भुक्तानीको प्रक्रियालाई अघि बढाउँदा कुनै त्रुटि भयो, कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4075732493274867456">ग्राहक र सर्भरले एउटा साधारण SSL प्रोटोकल संस्करण वा साइफर सुइटलाई समर्थन गर्दैनन्।</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -924,6 +926,7 @@
 <translation id="4510487217173779431">Chou4 (Envelope)</translation>
 <translation id="4515275063822566619">कार्ड र ठेगानाहरू तपाईंको Chrome र Google खाता (<ph name="ACCOUNT_EMAIL" />) बाट प्राप्त भएका हुन्। तपाईं  <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई तिनीहरूलाई व्यवस्थित गर्न सक्नुहुन्छ।</translation>
 <translation id="4517607026994743406">Comm-10 (Envelope)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> मिलिमिटर (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4524138615196389145">अब उप्रान्त WebAuthn प्रयोग गरी आफ्ना कार्डहरूको अझ छिटो पुष्टि गर्नुहोस्</translation>
 <translation id="4524805452350978254">कार्डहरूको व्यवस्थापन गर्नुहोस्</translation>
@@ -1343,6 +1346,7 @@
 <translation id="614940544461990577">यसो गरी हेर्नुहोस्:</translation>
 <translation id="6150036310511284407">बायाँपट्टि तीन प्वाल</translation>
 <translation id="6151417162996330722">सर्भर सर्टिफिकेटसँग निकै लामो भएको एक वैधता अवधि छ।</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> इन्च (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">ढुवानीका विधि र मापदण्डहरू हेर्न, ठेगाना चयन गर्नुहोस्</translation>
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6169916984152623906">तपाईं अब निजी रूपमा ब्राउज गर्न सक्नुहुन्छ र यो यन्त्रको प्रयोग गर्ने अन्य व्यक्तिहरूले तपाईंको क्रियाकलाप देख्ने छैनन्। यद्यपि, तपाईंका डाउनलोड र बुकमार्कहरू सुरक्षित गरिनेछन्।</translation>
@@ -1890,6 +1894,7 @@
 <translation id="8364627913115013041">सेट गरिएको छैन।</translation>
 <translation id="8368476060205742148">Google Play सम्बन्धी सेवाहरू</translation>
 <translation id="8371889962595521444">आफू अनुकूल मूल प्रमाणपत्रहरू</translation>
+<translation id="8374636051559112948">पेजअनुसार फरक छ</translation>
 <translation id="8380941800586852976">खतरनाक</translation>
 <translation id="8381674639488873545">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यससम्बन्धी विवरणहरू स्पष्ट रूपमा उल्लेख नगरिएको हुन सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME" /> मा सेयर गर्न रोक लगाउनुभएको छ</translation>
@@ -2070,6 +2075,7 @@
 <translation id="9114524666733003316">कार्डको पुष्टि गर्दै...</translation>
 <translation id="9114581008513152754">कुनै कम्पनी वा अन्य सङ्गठनले यो ब्राउजर व्यवस्थापन गर्दैन। यो यन्त्रका क्रियाकलाप Chrome बाहिरबाट व्यवस्थापन गर्न सकिन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">अपलोड गरिएको</translation>
+<translation id="9128016270925453879">नीतिहरू लोड गरिएका छन्</translation>
 <translation id="9128870381267983090">नेटवर्कमा जडान गर्नुहोस्</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
 <translation id="9141013498910525015">ठेगानाहरू व्यवस्थित गर्नुहोस्</translation>
