@@ -26,6 +26,7 @@ function_registration("api_registration") {
     "//components/policy/proto",
 
     # Different APIs include headers from these targets.
+    "//chrome/common",
     "//chrome/common:mojo_bindings",
     "//components/omnibox/browser",
     "//components/translate/core/browser",
