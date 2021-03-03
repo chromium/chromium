@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -1011,7 +1012,16 @@ public class InstantStartTest {
 
         View surface = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         ChromeRenderTestRule.sanitize(surface);
-        // TODO(crbug.com/1065314): fix favicon.
+        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
+
+        // Focus the omnibox.
+        UrlBar urlBar =
+                mActivityTestRule.getActivity().findViewById(org.chromium.chrome.R.id.url_bar);
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) urlBar::requestFocus);
+        // Clear the focus.
+        TestThreadUtils.runOnUiThreadBlocking(urlBar::clearFocus);
+        // Default search engine logo should still show.
+        ChromeRenderTestRule.sanitize(surface);
         mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
     }
 
