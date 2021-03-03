@@ -646,7 +646,9 @@ class ExperimentalFullscreenControllerInteractiveTest
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_FullscreenOnSecondDisplay DISABLED_FullscreenOnSecondDisplay
 #else
-#define MAYBE_FullscreenOnSecondDisplay FullscreenOnSecondDisplay
+// TODO(crbug.com/1183146): Disabled everywhere temporarily as a crash fix
+// while a better solution is investigated.
+#define MAYBE_FullscreenOnSecondDisplay DISABLED_FullscreenOnSecondDisplay
 #endif
 // An end-to-end test that mocks a dual-screen configuration and executes
 // javascript to request and exit fullscreen on the second display.
@@ -731,8 +733,10 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_FullscreenOnSecondDisplayMaximized \
   DISABLED_FullscreenOnSecondDisplayMaximized
 #else
+// TODO(crbug.com/1183146): Disabled everywhere temporarily as a crash fix
+// while a better solution is investigated.
 #define MAYBE_FullscreenOnSecondDisplayMaximized \
-  FullscreenOnSecondDisplayMaximized
+  DISABLED_FullscreenOnSecondDisplayMaximized
 #endif
 // An end-to-end test that mocks a dual-screen configuration and executes
 // javascript to request and exit fullscreen on the second display, while

@@ -1986,35 +1986,8 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   // Use GetScreenInfo here to retain legacy behavior for the current screen.
   blink::ScreenInfo current_screen_info;
   GetScreenInfo(&current_screen_info);
-
-  display::Screen* screen = display::Screen::GetScreen();
-  // Just return the legacy singular ScreenInfo, if its id is invalid or if the
-  // display::Screen is not initialized; each of which occurs in various tests.
-  if (current_screen_info.display_id == blink::ScreenInfo::kInvalidDisplayId ||
-      !screen || screen->GetAllDisplays().empty()) {
-    return blink::ScreenInfos(current_screen_info);
-  }
-
-  blink::ScreenInfos result;
-  bool current_display_added = false;
-  for (const auto& display : screen->GetAllDisplays()) {
-    if (display.id() == current_screen_info.display_id) {
-      DCHECK(!current_display_added);
-      result.screen_infos.push_back(current_screen_info);
-      result.current_display_id = current_screen_info.display_id;
-      current_display_added = true;
-      continue;
-    }
-    blink::ScreenInfo screen_info;
-    DisplayUtil::DisplayToScreenInfo(&screen_info, display);
-    if (display::Display::HasForceRasterColorProfile()) {
-      screen_info.display_color_spaces = gfx::DisplayColorSpaces(
-          display::Display::GetForcedRasterColorProfile());
-    }
-    result.screen_infos.push_back(screen_info);
-  }
-  DCHECK(current_display_added);
-  return result;
+  // TODO(enne): Temporary workaround for http://crbug.com/1183146.
+  return blink::ScreenInfos(current_screen_info);
 }
 
 void RenderWidgetHostImpl::GetSnapshotFromBrowser(
