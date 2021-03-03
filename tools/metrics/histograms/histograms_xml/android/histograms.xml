@@ -1991,6 +1991,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.RequestDesktopSite.TabletEligible" enum="Boolean"
+    expires_after="M96">
+  <owner>gangwu@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <summary>
+    Records if Chrome width is eligible for requesting desktop sites. Recorded
+    only when navigating to google or google search. This is recorded when
+    chrome adds X-Eligible-Tablet to the http header per request.
+  </summary>
+</histogram>
+
+<histogram name="Android.RequestDesktopSite.UseDesktopUserAgent" enum="Boolean"
+    expires_after="M96">
+  <owner>gangwu@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <summary>
+    Records if Chrome uses the desktop site user agent to request websites. This
+    is recorded when each tab loads a new url or reloads a url.
+  </summary>
+</histogram>
+
+<histogram name="Android.RequestDesktopSite.UserSwitchToDesktop" enum="Boolean"
+    expires_after="M96">
+  <owner>gangwu@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <summary>
+    Records if a user switched to request desktop site from the app menu. This
+    is recorded when a user manually switches sites between the desktop/mobile.
+  </summary>
+</histogram>
+
 <histogram name="Android.RestoreResult" enum="AndroidRestoreResult"
     expires_after="M81">
   <owner>aberent@chromium.org</owner>
