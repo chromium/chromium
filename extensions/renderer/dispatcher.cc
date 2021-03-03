@@ -866,7 +866,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(Dispatcher, message)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_CancelSuspend, OnCancelSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DeliverMessage, OnDeliverMessage)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnConnect, OnDispatchOnConnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect, OnDispatchOnDisconnect)
@@ -998,6 +997,11 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // extension's URL just won't match anything anymore.
 }
 
+void Dispatcher::CancelSuspendExtension(const std::string& extension_id) {
+  DispatchEvent(extension_id, kOnSuspendCanceledEvent, base::ListValue(),
+                nullptr);
+}
+
 void Dispatcher::SetSystemFont(const std::string& font_family,
                                const std::string& font_size) {
   system_font_family_ = font_family;
@@ -1050,11 +1054,6 @@ void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
 
   if (update_origin_whitelist)
     UpdateOriginPermissions(*extension);
-}
-
-void Dispatcher::OnCancelSuspend(const std::string& extension_id) {
-  DispatchEvent(extension_id, kOnSuspendCanceledEvent, base::ListValue(),
-                nullptr);
 }
 
 void Dispatcher::OnDeliverMessage(int worker_thread_id,

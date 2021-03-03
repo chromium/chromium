@@ -25,6 +25,9 @@ interface Renderer {
   // Notifies the renderer that an extension was unloaded in the browser.
   UnloadExtension(string extension_id);
 
+  // Cancels suspending the extension.
+  CancelSuspendExtension(string extension_id);
+
   // Informs the renderer what channel (dev, beta, stable, etc) and user session
   // type is running. |is_lock_screen_context| represents whether the browser
   // context is associated with Chrome OS lock screen.

@@ -46,12 +46,14 @@
 #include "extensions/browser/process_manager_delegate.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 
 using content::BrowserContext;
@@ -599,8 +601,11 @@ void ProcessManager::CancelSuspend(const Extension* extension) {
   ExtensionHost* host = GetBackgroundHostForExtension(extension->id());
   if (host && is_closing) {
     is_closing = false;
-    host->render_process_host()->Send(
-        new ExtensionMsg_CancelSuspend(extension->id()));
+    mojom::Renderer* renderer =
+        RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
+            ->GetRenderer(host->render_process_host());
+    if (renderer)
+      renderer->CancelSuspendExtension(extension->id());
     // This increment / decrement is to simulate an instantaneous event. This
     // has the effect of invalidating close_sequence_id, preventing any in
     // progress closes from completing and starting a new close process if

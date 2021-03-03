@@ -610,10 +610,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_ShouldSuspend,
 IPC_MESSAGE_CONTROL1(ExtensionMsg_Suspend,
                      std::string /* extension_id */)
 
-// The browser changed its mind about suspending this extension.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_CancelSuspend,
-                     std::string /* extension_id */)
-
 // Response to the renderer for ExtensionHostMsg_GetAppInstallState.
 IPC_MESSAGE_ROUTED2(ExtensionMsg_GetAppInstallStateResponse,
                     std::string /* state */,

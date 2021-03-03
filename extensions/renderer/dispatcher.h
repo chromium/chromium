@@ -216,6 +216,7 @@ class Dispatcher : public content::RenderThreadObserver,
   void ActivateExtension(const std::string& extension_id) override;
   void SetActivityLoggingEnabled(bool enabled) override;
   void UnloadExtension(const std::string& extension_id) override;
+  void CancelSuspendExtension(const std::string& extension_id) override;
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session_type,
                       bool lock_screen_context) override;
@@ -234,7 +235,6 @@ class Dispatcher : public content::RenderThreadObserver,
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
-  void OnCancelSuspend(const std::string& extension_id);
   void OnDeliverMessage(int worker_thread_id,
                         const PortId& target_port_id,
                         const Message& message);
