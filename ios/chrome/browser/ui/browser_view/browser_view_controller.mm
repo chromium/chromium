@@ -1688,17 +1688,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         }
       }];
 
-  if (self.thumbStripEnabled) {
-    DCHECK(self.thumbStripPanHandler);
-    CGFloat baseViewHeight = size.height;
-    self.thumbStripPanHandler.baseViewHeight = baseViewHeight;
-    // On rotation, reposition the BVC container if positioned at the bottom.
-    if (self.bottomPosition) {
-      self.view.superview.transform = CGAffineTransformMakeTranslation(
-          0, self.thumbStripPanHandler.revealedHeight);
-    }
-  }
-
   id<CRWWebViewProxy> webViewProxy = self.currentWebState->GetWebViewProxy();
   [webViewProxy surfaceSizeChanged];
 

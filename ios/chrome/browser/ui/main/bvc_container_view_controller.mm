@@ -100,6 +100,23 @@
                          : [super shouldAutorotate];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+  if (self.thumbStripEnabled) {
+    DCHECK(self.thumbStripPanHandler);
+    CGFloat baseViewHeight = size.height;
+    self.thumbStripPanHandler.baseViewHeight = baseViewHeight;
+    // On rotation, reposition the BVC container if the state is currently
+    // Revealed.
+    if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed) {
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.revealedHeight);
+    }
+  }
+}
+
 #pragma mark - ThumbStripSupporting
 
 - (BOOL)isThumbStripEnabled {
