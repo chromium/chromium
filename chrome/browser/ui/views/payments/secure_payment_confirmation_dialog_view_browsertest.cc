@@ -359,4 +359,16 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   CloseDialogAndWait();
 }
 
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       WebContentsClosed) {
+  CreateModel();
+
+  InvokeSecurePaymentConfirmationUI();
+
+  // Test passes if there is no crash.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  GetActiveWebContents()->Close();
+  event_waiter_->Wait();
+}
+
 }  // namespace payments

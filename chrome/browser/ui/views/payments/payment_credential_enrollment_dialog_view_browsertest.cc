@@ -355,4 +355,16 @@ IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
   CloseDialogAndWait();
 }
 
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       WebContentsClosed) {
+  CreateModel();
+
+  InvokePaymentCredentialEnrollmentUI();
+
+  // Test passes if there is no crash.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  GetActiveWebContents()->Close();
+  event_waiter_->Wait();
+}
+
 }  // namespace payments
