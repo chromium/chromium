@@ -76,10 +76,10 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorder(
 FloatRoundedRect RoundedBorderGeometry::RoundedInnerBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect) {
-  int left_width = style.BorderLeftWidth();
-  int right_width = style.BorderRightWidth();
-  int top_width = style.BorderTopWidth();
-  int bottom_width = style.BorderBottomWidth();
+  int left_width = style.BorderLeftWidth().ToInt();
+  int right_width = style.BorderRightWidth().ToInt();
+  int top_width = style.BorderTopWidth().ToInt();
+  int bottom_width = style.BorderBottomWidth().ToInt();
 
   LayoutRectOutsets insets(-top_width, -right_width, -bottom_width,
                            -left_width);
@@ -105,12 +105,12 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     PhysicalBoxSides sides_to_include) {
-  int left_width = sides_to_include.left ? floorf(style.BorderLeftWidth()) : 0;
+  int left_width = sides_to_include.left ? style.BorderLeftWidth().Floor() : 0;
   int right_width =
-      sides_to_include.right ? floorf(style.BorderRightWidth()) : 0;
-  int top_width = sides_to_include.top ? floorf(style.BorderTopWidth()) : 0;
+      sides_to_include.right ? style.BorderRightWidth().Floor() : 0;
+  int top_width = sides_to_include.top ? style.BorderTopWidth().Floor() : 0;
   int bottom_width =
-      sides_to_include.bottom ? floorf(style.BorderBottomWidth()) : 0;
+      sides_to_include.bottom ? style.BorderBottomWidth().Floor() : 0;
 
   return PixelSnappedRoundedInnerBorder(
       style, border_rect,

@@ -157,7 +157,7 @@ class StyleBuilderConverter {
                                                 const CSSValue&);
   template <typename T>
   static T ConvertLineWidth(StyleResolverState&, const CSSValue&);
-  static float ConvertBorderWidth(StyleResolverState&, const CSSValue&);
+  static LayoutUnit ConvertBorderWidth(StyleResolverState&, const CSSValue&);
   static LayoutUnit ConvertLayoutUnit(StyleResolverState&, const CSSValue&);
   static base::Optional<Length> ConvertGapLength(const StyleResolverState&,
                                                  const CSSValue&);

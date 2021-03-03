@@ -138,11 +138,10 @@ static FloatPoint StickyPositionOffsetForLayer(PaintLayer& layer) {
 
 static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
                                         const LayoutObject& layout_object) {
-  const int min_border_width = std::min(
-      layout_object.StyleRef().BorderTopWidth(),
-      std::min(layout_object.StyleRef().BorderLeftWidth(),
-               std::min(layout_object.StyleRef().BorderRightWidth(),
-                        layout_object.StyleRef().BorderBottomWidth())));
+  const ComputedStyle& style = layout_object.StyleRef();
+  const LayoutUnit min_border_width =
+      std::min(std::min(style.BorderLeftWidth(), style.BorderTopWidth()),
+               std::min(style.BorderRightWidth(), style.BorderBottomWidth()));
 
   bool could_obscure_decorations =
       (paint_layer.GetScrollableArea() &&
@@ -153,16 +152,13 @@ static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
   // rings can be drawn with the center of the path aligned with the offset, so
   // only 2/3 of the width is outside of the offset.
   const int outline_drawn_inside =
-      layout_object.StyleRef().OutlineStyleIsAuto()
-          ? std::ceil(
-                layout_object.StyleRef().GetOutlineStrokeWidthForFocusRing() /
-                3.f) +
-                1
+      style.OutlineStyleIsAuto()
+          ? std::ceil(style.GetOutlineStrokeWidthForFocusRing() / 3.f) + 1
           : 0;
 
-  return could_obscure_decorations && layout_object.StyleRef().HasOutline() &&
-         (layout_object.StyleRef().OutlineOffsetInt() - outline_drawn_inside) <
-             -min_border_width;
+  return could_obscure_decorations && style.HasOutline() &&
+         (style.OutlineOffsetInt() - outline_drawn_inside) <
+             -min_border_width.ToInt();
 }
 
 CompositedLayerMapping::CompositedLayerMapping(PaintLayer& layer)

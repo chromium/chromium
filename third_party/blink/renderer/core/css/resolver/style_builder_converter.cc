@@ -1060,8 +1060,8 @@ void StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
   }
 }
 
-float StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
-                                                const CSSValue& value) {
+LayoutUnit StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
+                                                     const CSSValue& value) {
   double result = 0;
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
@@ -1086,9 +1086,8 @@ float StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
         primitive_value.ComputeLength<float>(state.CssToLengthConversionData());
   }
   if (result > 0.0 && result < 1.0)
-    return 1.0;
-  return clampTo<float>(result, defaultMinimumForClamp<float>(),
-                        defaultMaximumForClamp<float>());
+    return LayoutUnit(1);
+  return LayoutUnit(result);
 }
 
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(StyleResolverState& state,

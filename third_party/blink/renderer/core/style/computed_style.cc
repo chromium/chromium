@@ -2264,11 +2264,14 @@ TextEmphasisMark ComputedStyle::GetTextEmphasisMark() const {
 LayoutRectOutsets ComputedStyle::ImageOutsets(
     const NinePieceImage& image) const {
   return LayoutRectOutsets(
-      NinePieceImage::ComputeOutset(image.Outset().Top(), BorderTopWidth()),
-      NinePieceImage::ComputeOutset(image.Outset().Right(), BorderRightWidth()),
+      NinePieceImage::ComputeOutset(image.Outset().Top(),
+                                    BorderTopWidth().ToInt()),
+      NinePieceImage::ComputeOutset(image.Outset().Right(),
+                                    BorderRightWidth().ToInt()),
       NinePieceImage::ComputeOutset(image.Outset().Bottom(),
-                                    BorderBottomWidth()),
-      NinePieceImage::ComputeOutset(image.Outset().Left(), BorderLeftWidth()));
+                                    BorderBottomWidth().ToInt()),
+      NinePieceImage::ComputeOutset(image.Outset().Left(),
+                                    BorderLeftWidth().ToInt()));
 }
 
 void ComputedStyle::SetBorderImageSource(StyleImage* image) {

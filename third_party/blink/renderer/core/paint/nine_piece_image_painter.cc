@@ -105,9 +105,9 @@ void PaintPieces(GraphicsContext& context,
   FloatSize slice_scale(image_size.Width() / unzoomed_image_size.Width(),
                         image_size.Height() / unzoomed_image_size.Height());
 
-  IntRectOutsets border_widths(style.BorderTopWidth(), style.BorderRightWidth(),
-                               style.BorderBottomWidth(),
-                               style.BorderLeftWidth());
+  IntRectOutsets border_widths(
+      style.BorderTopWidth().ToInt(), style.BorderRightWidth().ToInt(),
+      style.BorderBottomWidth().ToInt(), style.BorderLeftWidth().ToInt());
   NinePieceImageGrid grid(
       nine_piece_image, image_size, slice_scale, style.EffectiveZoom(),
       PixelSnappedIntRect(border_image_rect), border_widths, sides_to_include);
