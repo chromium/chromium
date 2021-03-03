@@ -79,7 +79,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final : public VideoDecoder {
       std::unique_ptr<VideoFrameFactory> video_frame_factory);
 
   // VideoDecoder implementation:
-  std::string GetDisplayName() const override;
   VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

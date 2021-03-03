@@ -32,10 +32,13 @@ class FakeVideoDecoder : public VideoDecoder {
   // Constructs an object with a decoding delay of |decoding_delay| frames.
   // |bytes_decoded_cb| is called after each decode. The sum of the byte
   // count over all calls will be equal to total_bytes_decoded().
-  FakeVideoDecoder(const std::string& decoder_name,
+  // Allows setting a fake ID so that tests for wrapper decoders can check
+  // that underlying decoders change successfully.
+  FakeVideoDecoder(int decoder_id,
                    int decoding_delay,
                    int max_parallel_decoding_requests,
                    const BytesDecodedCB& bytes_decoded_cb);
+
   ~FakeVideoDecoder() override;
 
   // Enables encrypted config supported. Must be called before Initialize().
@@ -48,8 +51,8 @@ class FakeVideoDecoder : public VideoDecoder {
   // Decoder implementation.
   bool SupportsDecryption() const override;
   bool IsPlatformDecoder() const override;
-  std::string GetDisplayName() const override;
   VideoDecoderType GetDecoderType() const override;
+  int GetDecoderId() { return decoder_id_; }
 
   // VideoDecoder implementation
   void Initialize(const VideoDecoderConfig& config,
@@ -109,7 +112,7 @@ class FakeVideoDecoder : public VideoDecoder {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const std::string decoder_name_;
+  const int decoder_id_;
   const size_t decoding_delay_;
   const int max_parallel_decoding_requests_;
   BytesDecodedCB bytes_decoded_cb_;

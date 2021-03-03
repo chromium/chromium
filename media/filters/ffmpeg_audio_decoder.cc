@@ -65,10 +65,6 @@ FFmpegAudioDecoder::~FFmpegAudioDecoder() {
     ReleaseFFmpegResources();
 }
 
-std::string FFmpegAudioDecoder::GetDisplayName() const {
-  return "FFmpegAudioDecoder";
-}
-
 AudioDecoderType FFmpegAudioDecoder::GetDecoderType() const {
   return AudioDecoderType::kFFmpeg;
 }
@@ -205,7 +201,7 @@ bool FFmpegAudioDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
           << "end of stream AVPackets correctly.";
 
       MEDIA_LOG(DEBUG, media_log_)
-          << GetDisplayName() << " failed to decode an audio buffer: "
+          << GetDecoderType() << " failed to decode an audio buffer: "
           << AVErrorToString(decoding_loop_->last_averror_code()) << ", at "
           << buffer.AsHumanReadableString();
       break;

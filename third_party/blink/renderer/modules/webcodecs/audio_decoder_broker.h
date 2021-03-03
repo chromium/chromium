@@ -40,8 +40,7 @@ class MediaAudioTaskWrapper;
 class CrossThreadAudioDecoderClient {
  public:
   struct DecoderDetails {
-    std::string display_name;
-    media::AudioDecoderType decoder_id;
+    media::AudioDecoderType decoder_type;
     bool is_platform_decoder;
     bool needs_bitstream_conversion;
   };
@@ -69,8 +68,6 @@ class CrossThreadAudioDecoderClient {
 class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
                                           public CrossThreadAudioDecoderClient {
  public:
-  static constexpr char kDefaultDisplayName[] = "EmptyWebCodecsAudioDecoder";
-
   explicit AudioDecoderBroker(media::MediaLog* media_log,
                               ExecutionContext& execution_context);
   ~AudioDecoderBroker() override;
@@ -80,7 +77,6 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
   AudioDecoderBroker& operator=(const AudioDecoderBroker&) = delete;
 
   // AudioDecoder implementation.
-  std::string GetDisplayName() const override;
   media::AudioDecoderType GetDecoderType() const override;
   bool IsPlatformDecoder() const override;
   void Initialize(const media::AudioDecoderConfig& config,
@@ -122,7 +118,7 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
   // Owner of state and methods to be used on media_task_runner_;
   std::unique_ptr<MediaAudioTaskWrapper> media_tasks_;
 
-  // Wrapper state for GetDisplayName(), IsPlatformDecoder() and others.
+  // Wrapper state for DecoderType(), IsPlatformDecoder() and others.
   base::Optional<DecoderDetails> decoder_details_;
 
   // Pending InitCB saved from the last call to Initialize();

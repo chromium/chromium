@@ -10,11 +10,11 @@
 
 namespace media {
 
-FakeVideoDecoder::FakeVideoDecoder(const std::string& decoder_name,
+FakeVideoDecoder::FakeVideoDecoder(int decoder_id,
                                    int decoding_delay,
                                    int max_parallel_decoding_requests,
                                    const BytesDecodedCB& bytes_decoded_cb)
-    : decoder_name_(decoder_name),
+    : decoder_id_(decoder_id),
       decoding_delay_(decoding_delay),
       max_parallel_decoding_requests_(max_parallel_decoding_requests),
       bytes_decoded_cb_(bytes_decoded_cb),
@@ -23,12 +23,12 @@ FakeVideoDecoder::FakeVideoDecoder(const std::string& decoder_name,
       total_bytes_decoded_(0),
       fail_to_initialize_(false) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DVLOG(1) << decoder_name_ << ": " << __func__;
+  DVLOG(1) << decoder_id_ << ": " << __func__;
   DCHECK_GE(decoding_delay, 0);
 }
 
 FakeVideoDecoder::~FakeVideoDecoder() {
-  DVLOG(1) << decoder_name_ << ": " << __func__;
+  DVLOG(1) << decoder_id_ << ": " << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (state_ == STATE_UNINITIALIZED)
@@ -64,12 +64,8 @@ bool FakeVideoDecoder::IsPlatformDecoder() const {
   return is_platform_decoder_;
 }
 
-std::string FakeVideoDecoder::GetDisplayName() const {
-  return decoder_name_;
-}
-
 VideoDecoderType FakeVideoDecoder::GetDecoderType() const {
-  return VideoDecoderType::kUnknown;
+  return VideoDecoderType::kTesting;
 }
 
 void FakeVideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -78,7 +74,7 @@ void FakeVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                   InitCB init_cb,
                                   const OutputCB& output_cb,
                                   const WaitingCB& waiting_cb) {
-  DVLOG(1) << decoder_name_ << ": " << __func__;
+  DVLOG(1) << decoder_id_ << ": " << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
   DCHECK(held_decode_callbacks_.empty())
@@ -105,11 +101,11 @@ void FakeVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   if (fail_to_initialize_) {
-    DVLOG(1) << decoder_name_ << ": Initialization failed.";
+    DVLOG(1) << decoder_id_ << ": Initialization failed.";
     state_ = STATE_ERROR;
     init_cb_.RunOrHold(StatusCode::kDecoderInitializeNeverCompleted);
   } else {
-    DVLOG(1) << decoder_name_ << ": Initialization succeeded.";
+    DVLOG(1) << decoder_id_ << ": Initialization succeeded.";
     state_ = STATE_NORMAL;
     init_cb_.RunOrHold(OkStatus());
   }

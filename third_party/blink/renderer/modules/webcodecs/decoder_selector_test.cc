@@ -31,9 +31,9 @@ enum DecoderCapability {
   kSucceed,
 };
 
-const char kNoDecoder[] = "";
-const char kDecoder1[] = "Decoder1";
-const char kDecoder2[] = "Decoder2";
+const int kNoDecoder = 0xdead;
+const int kDecoder1 = 0xabc;
+const int kDecoder2 = 0xdef;
 
 // Specializations for the AUDIO version of the test.
 class AudioDecoderSelectorTestParam {
@@ -44,6 +44,7 @@ class AudioDecoderSelectorTestParam {
   using MockDecoderSelector = DecoderSelector<media::DemuxerStream::AUDIO>;
   using MockDecoder = media::MockAudioDecoder;
   using Output = media::AudioBuffer;
+  using DecoderType = media::AudioDecoderType;
 
   static media::AudioDecoderConfig CreateConfig() {
     return media::TestAudioConfig::Normal();
@@ -82,6 +83,7 @@ class VideoDecoderSelectorTestParam {
   using MockDecoderSelector = DecoderSelector<media::DemuxerStream::VIDEO>;
   using MockDecoder = media::MockVideoDecoder;
   using Output = media::VideoFrame;
+  using DecoderType = media::VideoDecoderType;
 
   static media::VideoDecoderConfig CreateConfig() {
     return media::TestVideoConfig::Normal();
@@ -129,24 +131,26 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
   using DecoderConfig = typename TypeParam::MockDecoderSelector::DecoderConfig;
   using MockDecoder = typename TypeParam::MockDecoder;
   using Output = typename TypeParam::Output;
+  using DecoderType = typename TypeParam::DecoderType;
 
   WebCodecsDecoderSelectorTest() { CreateDecoderSelector(); }
 
   void OnOutput(scoped_refptr<Output> output) { NOTREACHED(); }
 
-  MOCK_METHOD1_T(OnDecoderSelected, void(std::string));
+  MOCK_METHOD1_T(OnDecoderSelected, void(int));
 
   void OnDecoderSelectedThunk(std::unique_ptr<Decoder> decoder) {
-    // Report only the name of the decoder, since that's what the tests care
+    // Report only the id of the mock, since that's what the tests care
     // about. The decoder will be destructed immediately.
-    OnDecoderSelected(decoder ? decoder->GetDisplayName() : kNoDecoder);
+    OnDecoderSelected(
+        decoder ? static_cast<MockDecoder*>(decoder.get())->GetDecoderId()
+                : kNoDecoder);
   }
 
-  void AddMockDecoder(const std::string& decoder_name,
-                      DecoderCapability capability) {
+  void AddMockDecoder(int decoder_id, DecoderCapability capability) {
     // Actual decoders are created in CreateDecoders(), which may be called
     // multiple times by the DecoderSelector.
-    mock_decoders_to_create_.emplace_back(decoder_name, capability);
+    mock_decoders_to_create_.emplace_back(decoder_id, capability);
   }
 
   std::vector<std::unique_ptr<Decoder>> CreateDecoders() {
@@ -190,8 +194,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
 
   std::unique_ptr<DecoderSelector<TypeParam::kStreamType>> decoder_selector_;
 
-  std::vector<std::pair<std::string, DecoderCapability>>
-      mock_decoders_to_create_;
+  std::vector<std::pair<int, DecoderCapability>> mock_decoders_to_create_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebCodecsDecoderSelectorTest);

@@ -151,10 +151,6 @@ Dav1dVideoDecoder::~Dav1dVideoDecoder() {
   CloseDecoder();
 }
 
-std::string Dav1dVideoDecoder::GetDisplayName() const {
-  return "Dav1dVideoDecoder";
-}
-
 VideoDecoderType Dav1dVideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kDav1d;
 }

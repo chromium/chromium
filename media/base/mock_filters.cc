@@ -72,17 +72,17 @@ void MockDemuxerStream::set_liveness(DemuxerStream::Liveness liveness) {
   liveness_ = liveness;
 }
 
-MockVideoDecoder::MockVideoDecoder() : MockVideoDecoder("MockVideoDecoder") {}
+MockVideoDecoder::MockVideoDecoder() : MockVideoDecoder(0) {}
 
-MockVideoDecoder::MockVideoDecoder(std::string decoder_name)
-    : MockVideoDecoder(false, false, std::move(decoder_name)) {}
+MockVideoDecoder::MockVideoDecoder(int decoder_id)
+    : MockVideoDecoder(false, false, decoder_id) {}
 
 MockVideoDecoder::MockVideoDecoder(bool is_platform_decoder,
                                    bool supports_decryption,
-                                   std::string decoder_name)
+                                   int decoder_id)
     : is_platform_decoder_(is_platform_decoder),
       supports_decryption_(supports_decryption),
-      decoder_name_(std::move(decoder_name)) {
+      decoder_id_(decoder_id) {
   ON_CALL(*this, CanReadWithoutStalling()).WillByDefault(Return(true));
   ON_CALL(*this, IsOptimizedForRTC()).WillByDefault(Return(false));
 }
@@ -97,14 +97,6 @@ bool MockVideoDecoder::SupportsDecryption() const {
   return supports_decryption_;
 }
 
-std::string MockVideoDecoder::GetDisplayName() const {
-  return decoder_name_;
-}
-
-VideoDecoderType MockVideoDecoder::GetDecoderType() const {
-  return VideoDecoderType::kUnknown;
-}
-
 MockAudioEncoder::MockAudioEncoder() = default;
 MockAudioEncoder::~MockAudioEncoder() {
   OnDestruct();
@@ -115,17 +107,17 @@ MockVideoEncoder::~MockVideoEncoder() {
   Dtor();
 }
 
-MockAudioDecoder::MockAudioDecoder() : MockAudioDecoder("MockAudioDecoder") {}
+MockAudioDecoder::MockAudioDecoder() : MockAudioDecoder(0) {}
 
-MockAudioDecoder::MockAudioDecoder(std::string decoder_name)
-    : MockAudioDecoder(false, false, std::move(decoder_name)) {}
+MockAudioDecoder::MockAudioDecoder(int decoder_id)
+    : MockAudioDecoder(false, false, decoder_id) {}
 
 MockAudioDecoder::MockAudioDecoder(bool is_platform_decoder,
                                    bool supports_decryption,
-                                   std::string decoder_name)
+                                   int decoder_id)
     : is_platform_decoder_(is_platform_decoder),
       supports_decryption_(supports_decryption),
-      decoder_name_(decoder_name) {}
+      decoder_id_(decoder_id) {}
 
 MockAudioDecoder::~MockAudioDecoder() = default;
 
@@ -135,14 +127,6 @@ bool MockAudioDecoder::IsPlatformDecoder() const {
 
 bool MockAudioDecoder::SupportsDecryption() const {
   return supports_decryption_;
-}
-
-std::string MockAudioDecoder::GetDisplayName() const {
-  return decoder_name_;
-}
-
-AudioDecoderType MockAudioDecoder::GetDecoderType() const {
-  return AudioDecoderType::kUnknown;
 }
 
 MockRendererClient::MockRendererClient() = default;

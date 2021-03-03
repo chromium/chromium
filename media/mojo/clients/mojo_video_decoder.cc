@@ -147,10 +147,6 @@ VideoDecoderType MojoVideoDecoder::GetDecoderType() const {
   return decoder_type_;
 }
 
-std::string MojoVideoDecoder::GetDisplayName() const {
-  return "MojoVideoDecoder";
-}
-
 void MojoVideoDecoder::FailInit(InitCB init_cb, Status err) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(std::move(init_cb), std::move(err)));

@@ -131,10 +131,6 @@ VideoDecoderType VpxVideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kVpx;
 }
 
-std::string VpxVideoDecoder::GetDisplayName() const {
-  return "VpxVideoDecoder";
-}
-
 void VpxVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                  bool /* low_delay */,
                                  CdmContext* /* cdm_context */,

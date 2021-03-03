@@ -85,7 +85,6 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
   ~MediaCodecAudioDecoder() override;
 
   // AudioDecoder implementation.
-  std::string GetDisplayName() const override;
   AudioDecoderType GetDecoderType() const override;
   void Initialize(const AudioDecoderConfig& config,
                   CdmContext* cdm_context,

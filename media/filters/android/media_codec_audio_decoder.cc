@@ -48,10 +48,6 @@ MediaCodecAudioDecoder::~MediaCodecAudioDecoder() {
   ClearInputQueue(DecodeStatus::ABORTED);
 }
 
-std::string MediaCodecAudioDecoder::GetDisplayName() const {
-  return "MediaCodecAudioDecoder";
-}
-
 AudioDecoderType MediaCodecAudioDecoder::GetDecoderType() const {
   return AudioDecoderType::kMediaCodec;
 }

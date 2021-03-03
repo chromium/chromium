@@ -1155,10 +1155,6 @@ AndroidOverlayFactoryCB MediaCodecVideoDecoder::CreateOverlayFactoryCb() {
   return base::BindRepeating(overlay_factory_cb_, *overlay_info_.routing_token);
 }
 
-std::string MediaCodecVideoDecoder::GetDisplayName() const {
-  return "MediaCodecVideoDecoder";
-}
-
 VideoDecoderType MediaCodecVideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kMediaCodec;
 }

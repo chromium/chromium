@@ -220,17 +220,25 @@ class MockDemuxerStream : public DemuxerStream {
 class MockVideoDecoder : public VideoDecoder {
  public:
   MockVideoDecoder();
-  explicit MockVideoDecoder(std::string decoder_name);
+  // Give a decoder a specific ID, like 42, so that different decoders in unit
+  // tests can be differentiated from one another. All of these decoders have
+  // a decoder type of kTesting, so that can't be used to differentiate them.
+  explicit MockVideoDecoder(int decoder_id);
   MockVideoDecoder(bool is_platform_decoder,
                    bool supports_decryption,
-                   std::string decoder_name);
+                   int decoder_id);
   ~MockVideoDecoder() override;
 
   // Decoder implementation
   bool IsPlatformDecoder() const override;
   bool SupportsDecryption() const override;
-  std::string GetDisplayName() const override;
-  VideoDecoderType GetDecoderType() const override;
+  VideoDecoderType GetDecoderType() const override {
+    return VideoDecoderType::kTesting;
+  }
+
+  // Allows getting the unique ID from a mock decoder so that they can be
+  // identified during tests without having to add unique VideoDecoderTypes.
+  int GetDecoderId() const { return decoder_id_; }
 
   // VideoDecoder implementation.
   void Initialize(const VideoDecoderConfig& config,
@@ -262,7 +270,7 @@ class MockVideoDecoder : public VideoDecoder {
  private:
   const bool is_platform_decoder_;
   const bool supports_decryption_;
-  const std::string decoder_name_;
+  const int decoder_id_ = 0;
   DISALLOW_COPY_AND_ASSIGN(MockVideoDecoder);
 };
 
@@ -335,17 +343,22 @@ class MockVideoEncoder : public VideoEncoder {
 class MockAudioDecoder : public AudioDecoder {
  public:
   MockAudioDecoder();
-  explicit MockAudioDecoder(std::string decoder_name);
+  explicit MockAudioDecoder(int decoder_id);
   explicit MockAudioDecoder(bool is_platform_decoder,
                             bool supports_decryption,
-                            std::string decoder_name);
+                            int decoder_id);
   ~MockAudioDecoder() override;
 
   // Decoder implementation
   bool IsPlatformDecoder() const override;
   bool SupportsDecryption() const override;
-  std::string GetDisplayName() const override;
-  AudioDecoderType GetDecoderType() const override;
+  AudioDecoderType GetDecoderType() const override {
+    return AudioDecoderType::kTesting;
+  }
+
+  // Allows getting the unique ID from a mock decoder so that they can be
+  // identified during tests without having to add unique VideoDecoderTypes.
+  int GetDecoderId() const { return decoder_id_; }
 
   // AudioDecoder implementation.
   void Initialize(const AudioDecoderConfig& config,
@@ -368,7 +381,7 @@ class MockAudioDecoder : public AudioDecoder {
  private:
   const bool is_platform_decoder_;
   const bool supports_decryption_;
-  const std::string decoder_name_;
+  const int decoder_id_ = 0;
   DISALLOW_COPY_AND_ASSIGN(MockAudioDecoder);
 };
 

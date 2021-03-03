@@ -23,8 +23,10 @@ enum class AudioDecoderType : int {
   kDecrypting = 3,  // DecryptingAudioDecoder
   kMediaCodec = 4,  // MediaCodecAudioDecoder (Android)
   kBroker = 5,      // AudioDecoderBroker
+  kTesting = 6,     // Never send this to UKM, for tests only.
 
-  kMaxValue = kBroker  // Keep this at the end and equal to the last entry.
+  // Keep this at the end and equal to the last entry.
+  kMaxValue = kTesting,
 };
 
 // List of known VideoDecoder implementations; recorded to UKM, always add new
@@ -49,11 +51,17 @@ enum class VideoDecoderType : int {
   // Chromeos uses VideoDecoderPipeline. This could potentially become more
   // granulated in the future.
   kChromeOs = 15,
-  kMaxValue = kChromeOs  // Keep this at the end and equal to the last entry.
+
+  kTesting = 16,  // Never send this to UKM, for tests only.
+
+  // Keep this at the end and equal to the last entry.
+  kMaxValue = kTesting
 };
 
 MEDIA_EXPORT std::string GetDecoderName(AudioDecoderType type);
 MEDIA_EXPORT std::string GetDecoderName(VideoDecoderType type);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, AudioDecoderType type);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, VideoDecoderType type);
 
 class MEDIA_EXPORT Decoder {
  public:
@@ -71,12 +79,6 @@ class MEDIA_EXPORT Decoder {
   // problems, it does allow incompatible decoders to pass the filtering step in
   // |DecoderSelector| potentially slowing down the selection process.
   virtual bool SupportsDecryption() const;
-
-  // Returns the name of the decoder for logging and decoder selection purposes.
-  // This name should be available immediately after construction, and should
-  // also be stable in the sense that the name does not change across multiple
-  // constructions.
-  virtual std::string GetDisplayName() const = 0;
 
  protected:
   Decoder();

@@ -42,10 +42,6 @@ bool DecryptingAudioDecoder::SupportsDecryption() const {
   return true;
 }
 
-std::string DecryptingAudioDecoder::GetDisplayName() const {
-  return "DecryptingAudioDecoder";
-}
-
 AudioDecoderType DecryptingAudioDecoder::GetDecoderType() const {
   return AudioDecoderType::kDecrypting;
 }
@@ -266,7 +262,7 @@ void DecryptingAudioDecoder::DeliverFrame(
 
   if (status == Decryptor::kError) {
     DVLOG(2) << "DeliverFrame() - kError";
-    MEDIA_LOG(ERROR, media_log_) << GetDisplayName() << ": decode error";
+    MEDIA_LOG(ERROR, media_log_) << GetDecoderType() << ": decode error";
     state_ = kDecodeFinished;  // TODO add kError state
     std::move(decode_cb_).Run(DecodeStatus::DECODE_ERROR);
     return;
@@ -279,7 +275,7 @@ void DecryptingAudioDecoder::DeliverFrame(
         "no key for key ID " + base::HexEncode(key_id.data(), key_id.size()) +
         "; will resume decoding after new usable key is available";
     DVLOG(1) << __func__ << ": " << log_message;
-    MEDIA_LOG(INFO, media_log_) << GetDisplayName() << ": " << log_message;
+    MEDIA_LOG(INFO, media_log_) << GetDecoderType() << ": " << log_message;
 
     // Set |pending_buffer_to_decode_| back as we need to try decoding the
     // pending buffer again when new key is added to the decryptor.
@@ -288,7 +284,7 @@ void DecryptingAudioDecoder::DeliverFrame(
     if (need_to_try_again_if_nokey_is_returned) {
       // The |state_| is still kPendingDecode.
       MEDIA_LOG(INFO, media_log_)
-          << GetDisplayName() << ": key was added, resuming decode";
+          << GetDecoderType() << ": key was added, resuming decode";
       DecodePendingBuffer();
       return;
     }
@@ -335,7 +331,7 @@ void DecryptingAudioDecoder::OnCdmContextEvent(CdmContext::Event event) {
 
   if (state_ == kWaitingForKey) {
     MEDIA_LOG(INFO, media_log_)
-        << GetDisplayName() << ": key added, resuming decode";
+        << GetDecoderType() << ": key added, resuming decode";
     state_ = kPendingDecode;
     DecodePendingBuffer();
   }

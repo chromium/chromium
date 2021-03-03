@@ -257,10 +257,10 @@ class MediaVideoTaskWrapper {
     base::Optional<DecoderDetails> decoder_details;
     if (decoder_) {
       status = media::OkStatus();
-      decoder_details = DecoderDetails(
-          {decoder_->GetDisplayName(), decoder_->GetDecoderType(),
-           decoder_->IsPlatformDecoder(), decoder_->NeedsBitstreamConversion(),
-           decoder_->GetMaxDecodeRequests()});
+      decoder_details = DecoderDetails({decoder_->GetDecoderType(),
+                                        decoder_->IsPlatformDecoder(),
+                                        decoder_->NeedsBitstreamConversion(),
+                                        decoder_->GetMaxDecodeRequests()});
     }
 
     // Fire |init_cb|.
@@ -322,8 +322,6 @@ class MediaVideoTaskWrapper {
   base::WeakPtrFactory<MediaVideoTaskWrapper> weak_factory_{this};
 };
 
-constexpr char VideoDecoderBroker::kDefaultDisplayName[];
-
 VideoDecoderBroker::VideoDecoderBroker(
     ExecutionContext& execution_context,
     media::GpuVideoAcceleratorFactories* gpu_factories,
@@ -352,11 +350,6 @@ VideoDecoderBroker::~VideoDecoderBroker() {
 media::VideoDecoderType VideoDecoderBroker::GetDecoderType() const {
   return decoder_details_ ? decoder_details_->decoder_id
                           : media::VideoDecoderType::kBroker;
-}
-
-std::string VideoDecoderBroker::GetDisplayName() const {
-  return decoder_details_ ? decoder_details_->display_name
-                          : VideoDecoderBroker::kDefaultDisplayName;
 }
 
 bool VideoDecoderBroker::IsPlatformDecoder() const {

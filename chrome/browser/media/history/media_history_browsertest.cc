@@ -775,7 +775,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DISABLED_GetPlaybackSessions) {
 
 // TODO(crbug.com/1177109) Re-enable test
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       DISABLED_SaveImagesWithDifferentSessions) {
+                       SaveImagesWithDifferentSessions) {
   auto* browser = CreateBrowserFromParam();
   auto expected_metadata = GetExpectedMetadata();
   auto expected_artwork = GetExpectedArtwork();

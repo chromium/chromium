@@ -207,12 +207,6 @@ VdaVideoDecoder::~VdaVideoDecoder() {
   DCHECK(!gpu_weak_vda_);
 }
 
-std::string VdaVideoDecoder::GetDisplayName() const {
-  DVLOG(3) << __func__;
-  DCHECK(parent_task_runner_->BelongsToCurrentThread());
-  return "VdaVideoDecoder";
-}
-
 VideoDecoderType VdaVideoDecoder::GetDecoderType() const {
   DVLOG(3) << __func__;
   DCHECK(parent_task_runner_->BelongsToCurrentThread());

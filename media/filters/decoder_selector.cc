@@ -286,9 +286,9 @@ void DecoderSelector<StreamType>::InitializeDecoder() {
   decoders_.erase(decoders_.begin());
   is_platform_decoder_ = decoder_->IsPlatformDecoder();
   TRACE_EVENT_ASYNC_STEP_INTO0("media", kSelectDecoderTrace, this,
-                               decoder_->GetDisplayName());
+                               GetDecoderName(decoder_->GetDecoderType()));
 
-  DVLOG(2) << __func__ << ": initializing " << decoder_->GetDisplayName();
+  DVLOG(2) << __func__ << ": initializing " << decoder_->GetDecoderType();
   const bool is_live = stream_->liveness() == DemuxerStream::LIVENESS_LIVE;
   traits_->InitializeDecoder(
       decoder_.get(), config_, is_live, cdm_context_,
@@ -299,7 +299,7 @@ void DecoderSelector<StreamType>::InitializeDecoder() {
 
 template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::OnDecoderInitializeDone(Status status) {
-  DVLOG(2) << __func__ << ": " << decoder_->GetDisplayName()
+  DVLOG(2) << __func__ << ": " << decoder_->GetDecoderType()
            << " success=" << std::hex << status.code();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -308,7 +308,7 @@ void DecoderSelector<StreamType>::OnDecoderInitializeDone(Status status) {
     // together and then send them as an informational notice instead of
     // using NotifyError.
     MEDIA_LOG(INFO, media_log_)
-        << "Failed to initialize " << decoder_->GetDisplayName();
+        << "Failed to initialize " << decoder_->GetDecoderType();
 
     // Try the next decoder on the list.
     decoder_.reset();
@@ -381,7 +381,9 @@ void DecoderSelector<StreamType>::RunSelectDecoderCB() {
       "media", kSelectDecoderTrace, this, "type",
       DemuxerStream::GetTypeName(StreamType), "decoder",
       base::StringPrintf(
-          "%s (%s)", decoder_ ? decoder_->GetDisplayName().c_str() : "null",
+          "%s (%s)",
+          decoder_ ? GetDecoderName(decoder_->GetDecoderType()).c_str()
+                   : "null",
           decrypting_demuxer_stream_ ? "encrypted" : "unencrypted"));
 
   task_runner_->PostTask(

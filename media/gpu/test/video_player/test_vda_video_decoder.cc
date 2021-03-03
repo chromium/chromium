@@ -78,12 +78,8 @@ TestVDAVideoDecoder::~TestVDAVideoDecoder() {
   video_frames_.clear();
 }
 
-std::string TestVDAVideoDecoder::GetDisplayName() const {
-  return "TestVDAVideoDecoder";
-}
-
 VideoDecoderType TestVDAVideoDecoder::GetDecoderType() const {
-  return VideoDecoderType::kUnknown;
+  return VideoDecoderType::kTesting;
 }
 
 bool TestVDAVideoDecoder::IsPlatformDecoder() const {

@@ -60,7 +60,6 @@ class MojoVideoDecoder final : public VideoDecoder,
   // Decoder implementation
   bool IsPlatformDecoder() const final;
   bool SupportsDecryption() const final;
-  std::string GetDisplayName() const override;
   VideoDecoderType GetDecoderType() const final;
 
   // VideoDecoder implementation.

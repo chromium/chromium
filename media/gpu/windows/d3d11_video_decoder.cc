@@ -146,10 +146,6 @@ D3D11VideoDecoder::~D3D11VideoDecoder() {
     AddLifetimeProgressionStage(D3D11LifetimeProgression::kPlaybackSucceeded);
 }
 
-std::string D3D11VideoDecoder::GetDisplayName() const {
-  return "D3D11VideoDecoder";
-}
-
 VideoDecoderType D3D11VideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kD3D11;
 }

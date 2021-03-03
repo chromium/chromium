@@ -201,7 +201,6 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::InitializeDecoder(
     const WaitingCB& waiting_cb) {
   DCHECK(config.IsValidConfig());
   stats_.video_decoder_info.decoder_type = VideoDecoderType::kUnknown;
-  DVLOG(2) << decoder->GetDisplayName();
   // |decoder| is owned by a DecoderSelector and will stay
   // alive at least until |init_cb| is finished executing.
   decoder->Initialize(
@@ -216,8 +215,12 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecoderInitialized(
     DecoderType* decoder,
     InitCB cb,
     Status result) {
-  if (result.is_ok())
+  if (result.is_ok()) {
     stats_.video_decoder_info.decoder_type = decoder->GetDecoderType();
+    DVLOG(2) << stats_.video_decoder_info.decoder_type;
+  } else {
+    DVLOG(2) << "Decoder initialization failed.";
+  }
   std::move(cb).Run(result);
 }
 

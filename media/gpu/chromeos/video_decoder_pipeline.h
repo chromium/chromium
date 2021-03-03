@@ -149,7 +149,6 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   // VideoDecoder implementation
   VideoDecoderType GetDecoderType() const override;
-  std::string GetDisplayName() const override;
   bool IsPlatformDecoder() const override;
   int GetMaxDecodeRequests() const override;
   bool NeedsBitstreamConversion() const override;

@@ -38,7 +38,6 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
   Gav1VideoDecoder& operator=(const Gav1VideoDecoder&) = delete;
 
   // VideoDecoder implementation.
-  std::string GetDisplayName() const override;
   VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

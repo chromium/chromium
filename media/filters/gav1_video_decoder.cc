@@ -253,10 +253,6 @@ Gav1VideoDecoder::~Gav1VideoDecoder() {
   CloseDecoder();
 }
 
-std::string Gav1VideoDecoder::GetDisplayName() const {
-  return "Gav1VideoDecoder";
-}
-
 VideoDecoderType Gav1VideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kGav1;
 }

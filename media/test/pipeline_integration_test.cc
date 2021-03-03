@@ -350,9 +350,8 @@ class NoResponseApp : public FakeEncryptedMedia::AppBase {
 // is used to test post-Initialize() fallback paths.
 class FailingVideoDecoder : public VideoDecoder {
  public:
-  std::string GetDisplayName() const override { return "FailingVideoDecoder"; }
   VideoDecoderType GetDecoderType() const override {
-    return VideoDecoderType::kUnknown;
+    return VideoDecoderType::kTesting;
   }
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

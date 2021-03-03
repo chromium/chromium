@@ -45,7 +45,6 @@ class MediaVideoTaskWrapper;
 class CrossThreadVideoDecoderClient {
  public:
   struct DecoderDetails {
-    std::string display_name;
     media::VideoDecoderType decoder_id;
     bool is_platform_decoder;
     bool needs_bitstream_conversion;
@@ -76,8 +75,6 @@ class CrossThreadVideoDecoderClient {
 class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
                                           public CrossThreadVideoDecoderClient {
  public:
-  static constexpr char kDefaultDisplayName[] = "EmptyWebCodecsVideoDecoder";
-
   // |gpu_factories| may be null when GPU accelerated decoding is not available.
   explicit VideoDecoderBroker(
       ExecutionContext& execution_context,
@@ -91,7 +88,6 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
 
   // VideoDecoder implementation.
   media::VideoDecoderType GetDecoderType() const override;
-  std::string GetDisplayName() const override;
   bool IsPlatformDecoder() const override;
   void Initialize(const media::VideoDecoderConfig& config,
                   bool low_delay,
@@ -132,11 +128,7 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   // Owner of state and methods to be used on media_task_runner_;
   std::unique_ptr<MediaVideoTaskWrapper> media_tasks_;
 
-  // Display name for current underlying decoder. Will be kDefaultDisplayName
-  // if no decoder is currently initialized.
-  std::string display_name_ = kDefaultDisplayName;
-
-  // Wrapper state for GetDisplayName(), IsPlatformDecoder() and others.
+  // Wrapper state for GetDecoderType(), IsPlatformDecoder() and others.
   base::Optional<DecoderDetails> decoder_details_;
 
   // Set to match the underlying decoder's answer at every OnDecodeOutput().

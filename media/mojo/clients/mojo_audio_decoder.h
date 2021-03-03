@@ -36,7 +36,6 @@ class MojoAudioDecoder final : public AudioDecoder,
   // Decoder implementation
   bool IsPlatformDecoder() const final;
   bool SupportsDecryption() const final;
-  std::string GetDisplayName() const override;
   AudioDecoderType GetDecoderType() const override;
 
   // AudioDecoder implementation.

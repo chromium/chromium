@@ -80,11 +80,6 @@ VideoDecoderType OffloadingVideoDecoder::GetDecoderType() const {
   return helper_->decoder()->GetDecoderType();
 }
 
-std::string OffloadingVideoDecoder::GetDisplayName() const {
-  // This call is expected to be static and safe to call from any thread.
-  return helper_->decoder()->GetDisplayName();
-}
-
 void OffloadingVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                         bool low_delay,
                                         CdmContext* cdm_context,
