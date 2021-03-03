@@ -575,7 +575,9 @@ class AppLaunchHandlerSystemWebAppsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest, LaunchSWA) {
+// TODO(crbug.com/1184448): Diasbled for being flaky.
+IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
+                       DISABLED_LaunchSWA) {
   Browser* app_browser = LaunchSystemWebApp();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
