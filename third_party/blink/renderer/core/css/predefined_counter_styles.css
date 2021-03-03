@@ -62,7 +62,7 @@
 @counter-style cjk-decimal {
   system: numeric;
   range: 0 infinite;
-  symbols: \3007  \4E00  \4E8C  \4E09  \56DB  \4E94  \516D  \4E03  \516B  \4E5D;
+  symbols: "\3007" "\4E00" "\4E8C" "\4E09" "\56DB" "\4E94" "\516D" "\4E03" "\516B" "\4E5D";
   /* 〇 一 二 三 四 五 六 七 八 九 */
   suffix: "\3001";
   /* "、" */

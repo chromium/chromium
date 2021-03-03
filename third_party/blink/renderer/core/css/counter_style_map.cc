@@ -87,8 +87,11 @@ void CounterStyleMap::AddCounterStyles(const RuleSet& rule_set) {
 
   for (StyleRuleCounterStyle* rule : rule_set.CounterStyleRules()) {
     CounterStyle* counter_style = CounterStyle::Create(*rule);
-    if (!counter_style)
+    if (!counter_style) {
+      DCHECK(owner_document_) << "Predefined counter style " << rule->GetName()
+                              << " has invalid symbols";
       continue;
+    }
     AtomicString name = rule->GetName();
     if (CounterStyle* replaced = counter_styles_.at(name))
       replaced->SetIsDirty();
