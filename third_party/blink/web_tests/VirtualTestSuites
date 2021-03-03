@@ -281,7 +281,7 @@
               "fast/forms/fieldset",
               "fast/multicol",
               "fragmentation"],
-    "args": ["--enable-blink-features=LayoutNGBlockFragmentation,LayoutNGFieldset"]
+    "args": ["--enable-blink-features=LayoutNGBlockFragmentation"]
   },
   {
     "prefix": "layout_ng_fragment_traversal",
