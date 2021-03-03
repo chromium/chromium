@@ -8,6 +8,8 @@ module sharing.mojom;
 interface IncomingMessagesListener {
   // Called by the browser process when a new message is received.
   OnMessage(string message);
+  // Called by the browser process when message receiving is complete.
+  OnComplete(bool success);
 };
 
 // Runs in the browser process and called by the Nearby utility process.

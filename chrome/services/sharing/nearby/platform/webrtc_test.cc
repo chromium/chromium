@@ -224,6 +224,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessages) {
             mojo::Remote<sharing::mojom::IncomingMessagesListener> remote(
                 std::move(listener));
             remote->OnMessage(std::string(message));
+            remote->OnComplete(true);
           }));
 
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
@@ -231,10 +232,12 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessages) {
   EXPECT_TRUE(messenger);
 
   base::RunLoop loop;
-  EXPECT_TRUE(messenger->StartReceivingMessages([&](const ByteArray& msg) {
-    EXPECT_EQ(message, msg);
-    loop.Quit();
-  }));
+  EXPECT_TRUE(messenger->StartReceivingMessages(
+      [&](const ByteArray& msg) { EXPECT_EQ(message, msg); },
+      [&](bool success) {
+        EXPECT_TRUE(success);
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -274,10 +277,12 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
   EXPECT_TRUE(messenger);
 
   base::RunLoop loop;
-  EXPECT_TRUE(messenger->StartReceivingMessages([&](const ByteArray& msg) {
-    EXPECT_EQ(message, msg);
-    loop.Quit();
-  }));
+  EXPECT_TRUE(messenger->StartReceivingMessages(
+      [&](const ByteArray& msg) {
+        EXPECT_EQ(message, msg);
+        loop.Quit();
+      },
+      [](bool success) {}));
   loop.Run();
 
   EXPECT_TRUE(remote.is_connected());
@@ -320,10 +325,12 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
   EXPECT_TRUE(messenger);
 
   base::RunLoop loop;
-  EXPECT_TRUE(messenger->StartReceivingMessages([&](const ByteArray& msg) {
-    EXPECT_EQ(message, msg);
-    loop.Quit();
-  }));
+  EXPECT_TRUE(messenger->StartReceivingMessages(
+      [&](const ByteArray& msg) {
+        EXPECT_EQ(message, msg);
+        loop.Quit();
+      },
+      [](bool success) {}));
   loop.Run();
 
   // Create a second receiver sessions to return
@@ -358,10 +365,12 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
           }));
 
   base::RunLoop loop_2;
-  EXPECT_TRUE(messenger->StartReceivingMessages([&](const ByteArray& msg) {
-    EXPECT_EQ(message, msg);
-    loop_2.Quit();
-  }));
+  EXPECT_TRUE(messenger->StartReceivingMessages(
+      [&](const ByteArray& msg) {
+        EXPECT_EQ(message, msg);
+        loop_2.Quit();
+      },
+      [](bool success) {}));
   loop_2.Run();
 }
 
