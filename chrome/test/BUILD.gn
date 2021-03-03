@@ -3357,6 +3357,7 @@ group("ct_telemetry_perf_tests_without_chrome") {
 template("performance_test_suite_template") {
   forward_variables_from(invoker, [ "override_board" ])
   script_test(target_name) {
+    run_under_python2 = true
     script = "//testing/scripts/run_performance_tests.py"
     if (is_chromeos_device) {
       if (defined(override_board)) {

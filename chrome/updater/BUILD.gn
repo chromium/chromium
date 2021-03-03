@@ -455,6 +455,7 @@ if (is_win || is_mac) {
   }
 
   script_test("updater_integration_tests") {
+    run_under_python2 = true
     script = "//testing/scripts/run_isolated_script_test.py"
 
     args = [

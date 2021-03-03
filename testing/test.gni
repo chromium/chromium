@@ -592,7 +592,6 @@ template("script_test") {
     }
 
     data = [
-      "//.vpython",
       "//testing/test_env.py",
 
       # These aren't needed by *every* test, but they're likely needed often
@@ -602,6 +601,15 @@ template("script_test") {
 
       invoker.script,
     ]
+
+    if (defined(invoker.run_under_python2) && invoker.run_under_python2) {
+      use_vpython3 = false
+      data += [ "//.vpython" ]
+    } else {
+      use_vpython3 = true
+      data += [ "//.vpython3" ]
+    }
+
     if (defined(invoker.data)) {
       data += invoker.data
     }
