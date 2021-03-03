@@ -212,7 +212,10 @@ def GetCompressedSize(file_path):
     print(compressor_output, file=sys.stderr)
     raise Exception('Could not get compressed bytes for %s' % file_path)
 
-  return int(match.group('bytes'))
+  # Round the compressed file size up to an integer number of blobfs blocks.
+  BLOBFS_BLOCK_SIZE = 8192  # Fuchsia's blobfs file system uses 8KiB blocks.
+  blob_bytes = int(match.group('bytes'))
+  return math.ceil(blob_bytes / BLOBFS_BLOCK_SIZE) * BLOBFS_BLOCK_SIZE
 
 
 def ExtractFarFile(file_path, extract_dir):
