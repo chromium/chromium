@@ -10,6 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -147,6 +149,8 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   std::unordered_map<int, AllocatedBuffers> allocated_buffers_;
 
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
+
+  scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
 
   gpu::GpuMemoryBufferConfigurationSet native_configurations_;
   mutable base::WaitableEvent native_configurations_initialized_;

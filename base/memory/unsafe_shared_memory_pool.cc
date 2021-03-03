@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/shared_memory_pool.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 
 #include "base/logging.h"
 
@@ -10,16 +10,16 @@ namespace {
 constexpr size_t kMaxStoredBuffers = 32;
 }  // namespace
 
-namespace media {
+namespace base {
 
-SharedMemoryPool::SharedMemoryPool() = default;
+UnsafeSharedMemoryPool::UnsafeSharedMemoryPool() = default;
 
-SharedMemoryPool::~SharedMemoryPool() = default;
+UnsafeSharedMemoryPool::~UnsafeSharedMemoryPool() = default;
 
-SharedMemoryPool::SharedMemoryHandle::SharedMemoryHandle(
+UnsafeSharedMemoryPool::Handle::Handle(
     base::UnsafeSharedMemoryRegion region,
     base::WritableSharedMemoryMapping mapping,
-    scoped_refptr<SharedMemoryPool> pool)
+    scoped_refptr<UnsafeSharedMemoryPool> pool)
     : region_(std::move(region)),
       mapping_(std::move(mapping)),
       pool_(std::move(pool)) {
@@ -28,22 +28,22 @@ SharedMemoryPool::SharedMemoryHandle::SharedMemoryHandle(
   DCHECK(mapping_.IsValid());
 }
 
-SharedMemoryPool::SharedMemoryHandle::~SharedMemoryHandle() {
+UnsafeSharedMemoryPool::Handle::~Handle() {
   pool_->ReleaseBuffer(std::move(region_), std::move(mapping_));
 }
 
-base::UnsafeSharedMemoryRegion*
-SharedMemoryPool::SharedMemoryHandle::GetRegion() {
-  return &region_;
+const base::UnsafeSharedMemoryRegion&
+UnsafeSharedMemoryPool::Handle::GetRegion() const {
+  return region_;
 }
 
-base::WritableSharedMemoryMapping*
-SharedMemoryPool::SharedMemoryHandle::GetMapping() {
-  return &mapping_;
+const base::WritableSharedMemoryMapping&
+UnsafeSharedMemoryPool::Handle::GetMapping() const {
+  return mapping_;
 }
 
-std::unique_ptr<SharedMemoryPool::SharedMemoryHandle>
-SharedMemoryPool::MaybeAllocateBuffer(size_t region_size) {
+std::unique_ptr<UnsafeSharedMemoryPool::Handle>
+UnsafeSharedMemoryPool::MaybeAllocateBuffer(size_t region_size) {
   base::AutoLock lock(lock_);
 
   DCHECK_GE(region_size, 0u);
@@ -53,17 +53,15 @@ SharedMemoryPool::MaybeAllocateBuffer(size_t region_size) {
   // Only change the configured size if bigger region is requested to avoid
   // unncecessary reallocations.
   if (region_size > region_size_) {
-    mappings_.clear();
     regions_.clear();
     region_size_ = region_size;
   }
   if (!regions_.empty()) {
-    DCHECK_EQ(mappings_.size(), regions_.size());
-    DCHECK_GE(regions_.back().GetSize(), region_size_);
-    auto handle = std::make_unique<SharedMemoryHandle>(
-        std::move(regions_.back()), std::move(mappings_.back()), this);
+    auto region = std::move(regions_.back());
     regions_.pop_back();
-    mappings_.pop_back();
+    DCHECK_GE(region.first.GetSize(), region_size_);
+    auto handle = std::make_unique<Handle>(std::move(region.first),
+                                           std::move(region.second), this);
     return handle;
   }
 
@@ -75,19 +73,17 @@ SharedMemoryPool::MaybeAllocateBuffer(size_t region_size) {
   if (!mapping.IsValid())
     return nullptr;
 
-  return std::make_unique<SharedMemoryHandle>(std::move(region),
-                                              std::move(mapping), this);
+  return std::make_unique<Handle>(std::move(region), std::move(mapping), this);
 }
 
-void SharedMemoryPool::Shutdown() {
+void UnsafeSharedMemoryPool::Shutdown() {
   base::AutoLock lock(lock_);
   DCHECK(!is_shutdown_);
   is_shutdown_ = true;
-  mappings_.clear();
   regions_.clear();
 }
 
-void SharedMemoryPool::ReleaseBuffer(
+void UnsafeSharedMemoryPool::ReleaseBuffer(
     base::UnsafeSharedMemoryRegion region,
     base::WritableSharedMemoryMapping mapping) {
   base::AutoLock lock(lock_);
@@ -102,8 +98,7 @@ void SharedMemoryPool::ReleaseBuffer(
                   << " valid: " << (region.IsValid() ? "true" : "false");
     return;
   }
-  regions_.emplace_back(std::move(region));
-  mappings_.emplace_back(std::move(mapping));
+  regions_.emplace_back(std::move(region), std::move(mapping));
 }
 
-}  // namespace media
+}  // namespace base

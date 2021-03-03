@@ -71,6 +71,7 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
     : gpu_service_provider_(gpu_service_provider),
       client_id_(client_id),
       gpu_memory_buffer_support_(std::move(gpu_memory_buffer_support)),
+      pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       task_runner_(std::move(task_runner)) {
   if (!WillGetGmbConfigFromGpu()) {
     native_configurations_ = gpu::GetNativeGpuMemoryBufferConfigurations(
@@ -238,7 +239,8 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       base::BindOnce(
           &OnGpuMemoryBufferDestroyed, task_runner_,
           base::BindOnce(&HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer,
-                         weak_ptr_, id, client_id_)));
+                         weak_ptr_, id, client_id_)),
+      this, pool_);
 }
 
 void HostGpuMemoryBufferManager::SetDestructionSyncToken(

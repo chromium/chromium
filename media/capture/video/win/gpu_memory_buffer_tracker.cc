@@ -89,7 +89,7 @@ bool GpuMemoryBufferTracker::CreateBufferInternal() {
   buffer_ = gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
       std::move(buffer_handle), buffer_size_,
       gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
-      gpu::GpuMemoryBufferImpl::DestructionCallback());
+      gpu::GpuMemoryBufferImpl::DestructionCallback(), nullptr, nullptr);
   if (!buffer_) {
     NOTREACHED() << "Failed to create GPU memory buffer";
     return false;

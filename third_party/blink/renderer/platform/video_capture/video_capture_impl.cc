@@ -369,7 +369,10 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
                 ->CreateGpuMemoryBufferImplFromHandle(
                     buffer_context_->TakeGpuMemoryBufferHandle(),
                     gfx::Size(frame_info_->coded_size), gfx_format,
-                    gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing());
+                    gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
+                    video_capture_impl_.gpu_factories_
+                        ->GpuMemoryBufferManager(),
+                    video_capture_impl_.pool_);
         buffer_context_->SetGpuMemoryBuffer(std::move(gmb));
       }
       CHECK(buffer_context_->GetGpuMemoryBuffer());
@@ -381,7 +384,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
                   buffer_context_->GetGpuMemoryBuffer()->CloneHandle(),
                   buffer_context_->GetGpuMemoryBuffer()->GetSize(),
                   buffer_context_->GetGpuMemoryBuffer()->GetFormat(),
-                  gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing());
+                  gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
+                  video_capture_impl_.gpu_factories_->GpuMemoryBufferManager());
     }
   }
   // After initializing, either |frame_| or |gpu_memory_buffer_| has been set.
@@ -496,7 +500,8 @@ VideoCaptureImpl::VideoCaptureImpl(
       video_capture_host_for_testing_(nullptr),
       state_(blink::VIDEO_CAPTURE_STATE_STOPPED),
       main_task_runner_(std::move(main_task_runner)),
-      gpu_memory_buffer_support_(new gpu::GpuMemoryBufferSupport()) {
+      gpu_memory_buffer_support_(new gpu::GpuMemoryBufferSupport()),
+      pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()) {
   CHECK(!session_id.is_empty());
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DETACH_FROM_THREAD(io_thread_checker_);

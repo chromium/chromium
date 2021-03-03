@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -191,7 +192,9 @@ GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    GpuMemoryBufferImpl::DestructionCallback callback) {
+    GpuMemoryBufferImpl::DestructionCallback callback,
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER:
       return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
@@ -210,7 +213,8 @@ GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
 #if defined(OS_WIN)
     case gfx::DXGI_SHARED_HANDLE:
       return GpuMemoryBufferImplDXGI::CreateFromHandle(
-          std::move(handle), size, format, usage, std::move(callback));
+          std::move(handle), size, format, usage, std::move(callback),
+          gpu_memory_buffer_manager, std::move(pool));
 #endif
 #if defined(OS_ANDROID)
     case gfx::ANDROID_HARDWARE_BUFFER:

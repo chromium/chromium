@@ -398,7 +398,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   //
   // The region is NOT owned by the video frame. Both the region and its
   // associated mapping must outlive this instance.
-  void BackWithSharedMemory(base::UnsafeSharedMemoryRegion* region);
+  void BackWithSharedMemory(const base::UnsafeSharedMemoryRegion* region);
 
   // As above, but the VideoFrame owns the shared memory region as well as the
   // mapping. They will be destroyed with their VideoFrame.
@@ -406,7 +406,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                                  base::WritableSharedMemoryMapping mapping);
 
   // Valid for shared memory backed VideoFrames.
-  base::UnsafeSharedMemoryRegion* shm_region() {
+  const base::UnsafeSharedMemoryRegion* shm_region() {
     DCHECK(IsValidSharedMemoryFrame());
     DCHECK(storage_type_ == STORAGE_SHMEM);
     return shm_region_;
@@ -683,7 +683,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Shared memory handle, if this frame is STORAGE_SHMEM.  The region pointed
   // to is unowned.
-  base::UnsafeSharedMemoryRegion* shm_region_ = nullptr;
+  const base::UnsafeSharedMemoryRegion* shm_region_ = nullptr;
 
   // Used if this is a STORAGE_SHMEM frame with owned shared memory. In that
   // case, shm_region_ will refer to this region.

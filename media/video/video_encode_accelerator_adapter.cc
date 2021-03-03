@@ -79,8 +79,8 @@ VideoEncodeAcceleratorAdapter::PendingEncode::~PendingEncode() = default;
 VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
     GpuVideoAcceleratorFactories* gpu_factories,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner)
-    : output_pool_(base::MakeRefCounted<SharedMemoryPool>()),
-      input_pool_(base::MakeRefCounted<SharedMemoryPool>()),
+    : output_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
+      input_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       gpu_factories_(gpu_factories),
       accelerator_task_runner_(gpu_factories_->GetTaskRunner()),
       callback_task_runner_(std::move(callback_task_runner)) {
@@ -416,10 +416,11 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
     return;
   }
 
-  base::UnsafeSharedMemoryRegion* region = output_handle_holder_->GetRegion();
+  const base::UnsafeSharedMemoryRegion& region =
+      output_handle_holder_->GetRegion();
   // There is always one output buffer.
   accelerator_->UseOutputBitstreamBuffer(
-      BitstreamBuffer(0, region->Duplicate(), region->GetSize()));
+      BitstreamBuffer(0, region.Duplicate(), region.GetSize()));
   InitCompleted(Status());
 }
 
@@ -434,13 +435,13 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
 
   DCHECK_EQ(buffer_id, 0);
   // There is always one output buffer.
-  base::WritableSharedMemoryMapping* mapping =
+  const base::WritableSharedMemoryMapping& mapping =
       output_handle_holder_->GetMapping();
-  DCHECK_LE(result.size, mapping->size());
+  DCHECK_LE(result.size, mapping.size());
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (h264_converter_) {
-    uint8_t* src = static_cast<uint8_t*>(mapping->memory());
+    uint8_t* src = static_cast<uint8_t*>(mapping.memory());
     size_t dst_size = result.size;
     size_t actual_output_size = 0;
     bool config_changed = false;
@@ -482,15 +483,16 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   } else {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     result.data.reset(new uint8_t[result.size]);
-    memcpy(result.data.get(), mapping->memory(), result.size);
+    memcpy(result.data.get(), mapping.memory(), result.size);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   // Give the buffer back to |accelerator_|
-  base::UnsafeSharedMemoryRegion* region = output_handle_holder_->GetRegion();
+  const base::UnsafeSharedMemoryRegion& region =
+      output_handle_holder_->GetRegion();
   accelerator_->UseOutputBitstreamBuffer(
-      BitstreamBuffer(buffer_id, region->Duplicate(), region->GetSize()));
+      BitstreamBuffer(buffer_id, region.Duplicate(), region.GetSize()));
 
   for (auto it = active_encodes_.begin(); it != active_encodes_.end(); ++it) {
     if ((*it)->timestamp == result.timestamp) {
@@ -603,26 +605,26 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
   if (!handle)
     return Status(StatusCode::kEncoderFailedEncode);
 
-  base::UnsafeSharedMemoryRegion* region = handle->GetRegion();
-  base::WritableSharedMemoryMapping* mapping = handle->GetMapping();
+  const base::UnsafeSharedMemoryRegion& region = handle->GetRegion();
+  const base::WritableSharedMemoryMapping& mapping = handle->GetMapping();
 
   auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_I420, options_.frame_size, gfx::Rect(size), size,
-      mapping->GetMemoryAsSpan<uint8_t>().data(), mapping->size(),
+      mapping.GetMemoryAsSpan<uint8_t>().data(), mapping.size(),
       src_frame->timestamp());
 
   if (!shared_frame || !mapped_src_frame)
     return Status(StatusCode::kEncoderFailedEncode);
 
-  shared_frame->BackWithSharedMemory(region);
+  shared_frame->BackWithSharedMemory(&region);
   // Keep the SharedMemoryHolder until the frame is destroyed so that the
   // memory is not freed prematurely.
   shared_frame->AddDestructionObserver(BindToCurrentLoop(base::BindOnce(
       base::DoNothing::Once<
-          std::unique_ptr<SharedMemoryPool::SharedMemoryHandle>>(),
+          std::unique_ptr<base::UnsafeSharedMemoryPool::Handle>>(),
       std::move(handle))));
   auto status =
       ConvertAndScaleFrame(*mapped_src_frame, *shared_frame, resize_buf_);
@@ -667,6 +669,8 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   // view in CPU memory. It allows us to use ConvertAndScaleFrame() without
   // having to tinker with libyuv and GpuMemoryBuffer memory views.
   // |mapped_gpu_frame| doesn't own anything, but unmaps the buffer when freed.
+  // This is true because |gpu_frame| is created with
+  // |VEA_READ_CAMERA_AND_CPU_READ_WRITE| usage flag.
   auto mapped_gpu_frame = ConvertToMemoryMappedFrame(gpu_frame);
   auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
                               ? ConvertToMemoryMappedFrame(src_frame)

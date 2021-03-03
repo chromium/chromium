@@ -514,7 +514,7 @@ void OpenXrApiWrapper::CreateSharedMailboxes(
             std::move(gpu_memory_buffer_handle),
             gfx::Size(texture2d_desc.Width, texture2d_desc.Height),
             gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
-            base::DoNothing());
+            base::DoNothing(), nullptr, nullptr);
 
     const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                         gpu::SHARED_IMAGE_USAGE_DISPLAY |

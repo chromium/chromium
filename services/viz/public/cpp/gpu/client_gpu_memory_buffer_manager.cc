@@ -33,7 +33,8 @@ ClientGpuMemoryBufferManager::ClientGpuMemoryBufferManager(
     mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu)
     : thread_("GpuMemoryThread"),
       gpu_memory_buffer_support_(
-          std::make_unique<gpu::GpuMemoryBufferSupport>()) {
+          std::make_unique<gpu::GpuMemoryBufferSupport>()),
+      pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()) {
   CHECK(thread_.Start());
   // The thread is owned by this object. Which means the task will not run if
   // the object has been destroyed. So Unretained() is safe.
@@ -155,7 +156,8 @@ ClientGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
           std::move(gmb_handle), size, format, usage,
           base::BindOnce(&NotifyDestructionOnCorrectThread,
-                         thread_.task_runner(), std::move(callback)));
+                         thread_.task_runner(), std::move(callback)),
+          this, pool_);
   if (!buffer) {
     DeletedGpuMemoryBuffer(gmb_handle_id, gpu::SyncToken());
     return nullptr;

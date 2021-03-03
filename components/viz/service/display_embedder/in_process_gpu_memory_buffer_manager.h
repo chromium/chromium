@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/service/viz_service_export.h"
@@ -64,6 +66,8 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
   gpu::GpuMemoryBufferSupport gpu_memory_buffer_support_;
   const int client_id_;
   int next_gpu_memory_id_ = 1;
+
+  scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
 
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
   gpu::SyncPointManager* const sync_point_manager_;

@@ -12,10 +12,10 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "media/base/media_export.h"
-#include "media/base/shared_memory_pool.h"
 #include "media/base/video_encoder.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
@@ -114,9 +114,9 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
       const gfx::Size& size,
       scoped_refptr<VideoFrame> src_frame);
 
-  scoped_refptr<SharedMemoryPool> output_pool_;
-  scoped_refptr<SharedMemoryPool> input_pool_;
-  std::unique_ptr<SharedMemoryPool::SharedMemoryHandle> output_handle_holder_;
+  scoped_refptr<base::UnsafeSharedMemoryPool> output_pool_;
+  scoped_refptr<base::UnsafeSharedMemoryPool> input_pool_;
+  std::unique_ptr<base::UnsafeSharedMemoryPool::Handle> output_handle_holder_;
   size_t input_buffer_size_;
 
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;

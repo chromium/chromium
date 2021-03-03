@@ -9,6 +9,8 @@
 #include <map>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
@@ -271,6 +273,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
+
+  scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
 
   // Stores feedback from the clients, received in |ProcessFeedback()|.
   // Only accessed on the IO thread.

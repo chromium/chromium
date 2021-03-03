@@ -149,7 +149,10 @@ MEDIA_EXPORT gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 
 // A helper function to map GpuMemoryBuffer-based VideoFrame. This function
 // maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
-// format. The returned VideoFrame owns the |frame|.
+// format, unless the video frame is backed by DXGI GMB.
+// The returned VideoFrame owns the |frame|.
+// If the underlying buffer is DXGI, then it will be copied to shared memory
+// in GPU process.
 MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> frame);
 

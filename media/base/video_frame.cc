@@ -1119,7 +1119,8 @@ void VideoFrame::HashFrameForTesting(base::MD5Context* context,
   }
 }
 
-void VideoFrame::BackWithSharedMemory(base::UnsafeSharedMemoryRegion* region) {
+void VideoFrame::BackWithSharedMemory(
+    const base::UnsafeSharedMemoryRegion* region) {
   DCHECK(!shm_region_);
   DCHECK(!owned_shm_region_.IsValid());
   // Either we should be backing a frame created with WrapExternal*, or we are
