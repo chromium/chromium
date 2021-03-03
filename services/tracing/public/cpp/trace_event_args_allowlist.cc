@@ -29,6 +29,8 @@ const char* const kScopedBlockingCallAllowedArgs[] = {
 const char* const kPeekMessageAllowedArgs[] = {"sent_messages_in_queue",
                                                "chrome_message_pump", nullptr};
 const char* const kGPUAllowedArgs[] = {nullptr};
+// TODO(ssid): Remove this if we no longer have this argument. All latencyInfo
+// events seem to be converted already.
 const char* const kInputLatencyAllowedArgs[] = {"data", nullptr};
 const char* const kMemoryDumpAllowedArgs[] = {
     "count", "dumps", "function", "top_queued_message_tag", nullptr};
@@ -38,7 +40,6 @@ const char* const kRendererHostAllowedArgs[] = {
 const char* const kUIAllowedArgs[] = {
     "dpi", "message_id", "chrome_window_handle_event_info", nullptr};
 const char* const kV8GCAllowedArgs[] = {"num_items", "num_tasks", nullptr};
-const char* const kTopLevelFlowAllowedArgs[] = {"task_queue_name", nullptr};
 const char* const kTopLevelIpcRunTaskAllowedArgs[] = {"ipc_hash", nullptr};
 const char* const kLifecyclesTaskPostedAllowedArgs[] = {
     "task_queue_name", "time_since_disabled_ms", "ipc_hash", "location",
@@ -47,56 +48,59 @@ const char* const kMemoryPressureEventsAllowedArgs[] = {
     "level", "listener_creation_info", nullptr};
 
 const AllowlistEntry kEventArgsAllowlist[] = {
-    // Thread and process names are now recorded in perfetto.
+    // Args recorded in perfetto protos and exported by trace processor JSON
+    // exporter:
+
     {"__metadata", "thread_name", nullptr},
     {"__metadata", "process_name", nullptr},
     {"__metadata", "process_uptime_seconds", nullptr},
-    {"__metadata", "chrome_library_address", nullptr},
-    {"__metadata", "chrome_library_module", nullptr},
-    {"__metadata", "stackFrames", nullptr},
-    {"__metadata", "typeNames", nullptr},
     {"base", "MemoryPressureListener::Notify",
      kMemoryPressureEventsAllowedArgs},
     {"base", "MessagePumpForUI::ProcessNextWindowsMessage PeekMessage",
      kPeekMessageAllowedArgs},
+    {"base", "ScopedBlockingCall*", kScopedBlockingCallAllowedArgs},
+    {"browser", "KeyedServiceFactory::GetServiceForContext", nullptr},
+    {"ipc", "GpuChannelHost::Send", nullptr},
+    {"ipc", "SyncChannel::Send", nullptr},
+    {"latencyInfo", "*", kInputLatencyAllowedArgs},
+    {"startup", "PrefProvider::PrefProvider", nullptr},
+    {"startup", "TestAllowlist*", nullptr},
+    // Perfetto protos are missing "TaskGraphRunner::RunTask".
+    {"toplevel", "*", nullptr},
+    {"ui", "HWNDMessageHandler::OnWndProc", kUIAllowedArgs},
+    {"ui", "HWNDMessageHandler::OnDwmCompositionChanged", kUIAllowedArgs},
+    {TRACE_DISABLED_BY_DEFAULT("cpu_profiler"), "*", nullptr},
+    {TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction", nullptr},
+
+    // Needs conversion to perfetto protos:
+
+    {"__metadata", "chrome_library_address", nullptr},
+    {"__metadata", "chrome_library_module", nullptr},
+    {"__metadata", "stackFrames", nullptr},
+    {"__metadata", "typeNames", nullptr},
     {"base", "MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged",
      kMemoryPressureEventsAllowedArgs},
     {"base", "ScopedAllowBaseSyncPrimitivesOutsideBlockingScope",
      kScopedBlockingCallAllowedArgs},
     {"base", "ScopedAllowBlocking", kScopedBlockingCallAllowedArgs},
     {"base", "ScopedAllowIO", kScopedBlockingCallAllowedArgs},
-    {"base", "ScopedBlockingCall*", kScopedBlockingCallAllowedArgs},
     {"base", "ScopedMayLoadLibraryAtBackgroundPriority",
      kScopedBlockingCallAllowedArgs},
     {"blink", "MemoryPressureListenerRegistry::onMemoryPressure",
      kMemoryPressureEventsAllowedArgs},
-    {"browser", "KeyedServiceFactory::GetServiceForContext", nullptr},
     {"browser", "TabLoader::OnMemoryPressure",
      kMemoryPressureEventsAllowedArgs},
     {"GPU", "*", kGPUAllowedArgs},
-    {"ipc", "GpuChannelHost::Send", nullptr},
-    {"ipc", "SyncChannel::Send", nullptr},
-    {"latencyInfo", "*", kInputLatencyAllowedArgs},
     {"memory", "RenderThreadImpl::OnMemoryPressure",
      kMemoryPressureEventsAllowedArgs},
     {"renderer_host", "*", kRendererHostAllowedArgs},
     {"shutdown", "*", nullptr},
-    // Now recorded in perfetto proto:
-    // perfetto/trace/track_event/chrome_content_settings_event_info.proto.
-    {"startup", "PrefProvider::PrefProvider", nullptr},
-    {"startup", "TestAllowlist*", nullptr},
-    {"toplevel", "*", nullptr},
     {"toplevel.ipc", "TaskAnnotator::RunTask", kTopLevelIpcRunTaskAllowedArgs},
-    {TRACE_DISABLED_BY_DEFAULT("cpu_profiler"), "*", nullptr},
     // Redefined the string since MemoryDumpManager::kTraceCategory causes
     // static initialization of this struct.
     {TRACE_DISABLED_BY_DEFAULT("memory-infra"), "*", kMemoryDumpAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("system_stats"), "*", nullptr},
     {TRACE_DISABLED_BY_DEFAULT("v8.gc"), "*", kV8GCAllowedArgs},
-    {"ui", "HWNDMessageHandler::OnWndProc", kUIAllowedArgs},
-    {"ui", "HWNDMessageHandler::OnDwmCompositionChanged", kUIAllowedArgs},
-    {TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction", nullptr},
-    {"toplevel.flow", "SequenceManager::PostTask", kTopLevelFlowAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("lifecycles"), "task_posted_to_disabled_queue",
      kLifecyclesTaskPostedAllowedArgs},
     {nullptr, nullptr, nullptr}};
