@@ -877,6 +877,7 @@
 }
 
 # File: //build/android/gyp/proguard.py (generated rules)
+-ignorewarnings
 # THIS LINE WAS OMITTED
 -repackageclasses ''
 -keep @interface org.chromium.base.annotations.VerifiesOnNMR1

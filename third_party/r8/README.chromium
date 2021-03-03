@@ -1,7 +1,6 @@
 Name: R8
 URL: https://r8.googlesource.com/r8
-Revision: 4c912119af8e3d21f70af8362d41cfff1db2bcc9
-Version: latest
+Version: 3.0.25
 License: BSD 3-Clause
 License File: NOT_SHIPPED
 Security Critical: no
@@ -10,7 +9,7 @@ Description:
 lib/r8.jar
  - Contains R8 (proguard replacement) as well as D8 (dexer).
 3pp
- - Contains our experimental code for using 3pp to package and upload r8.
+ - Contains code for 3pp-linux-amd64-packager to package and upload new versions of r8.
 desugar_jdk_libs.json
  - Configuration for Java library desugaring.
  - Taken from
@@ -21,59 +20,63 @@ desugar_jdk_libs.json
 R8 is a proguard-like optimizer that also has the ability to dex.
 
 Local Modifications:
-* Refer to commit descriptions within "patches" directory.
+* Refer to commit descriptions within "3pp/patches" directory.
 * Added "playground" directory for quick "how does this optimize" tests.
 * Removed references to ConcurrentHashMap and TimeZone#getTimeZone in desugar_jdk_libs.json.
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
   * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
 
 Update Instructions:
-# For the custom d8 jar (required only when CustomD8.java changes):
+* For the custom d8 jar:
+  * This is required only when CustomD8.java changes.
 autoninja -C out/Debug third_party/r8:custom_d8_java
 cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d8.jar
 
-# Download R8:
+* For a new version of r8:
+  * Find the latest successful run of the build bot:
+    * https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+    * The bot autoruns every 6 hours. Ping a trooper to trigger it if you need it sooner.
+      * https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+  * Go to its log page and look under:
+    * Expand "building chromium/third_party/r8" to see the CIPD instance ID.
+  * Copy this instance ID to the r8 entry in //DEPS.
+  * Update this file with the new version string and submit.
+
+* If patching fails:
 git clone https://r8.googlesource.com/r8
 cd r8
-# Find latest tag:
+  * Find latest tag:
 git fetch origin --tags
 git tag -l  # Often unnecessary as output from the fetch includes recent tags.
-git checkout $TAG  # e.g. 2.2.9-dev
-
-# Apply patches:
+git checkout $TAG  # e.g. 3.0.25-dev, whichever tag failed patching.
+  * Apply patches:
 git checkout -b my_branch
 git am $CHROMIUM_SRC/third_party/r8/patches/*.patch
-# Build:
+  * Fix patch conflicts.
+  * Save new patches. Change number if expecting more or fewer patches:
+git format-patch -3 -o $CHROMIUM_SRC/third_party/r8/3pp/patches
+  * Submit these fixed patches and the bot will automatically retry.
+
+* Local development (see above for setting up the r8 repo):
+  * Build
 tools/gradle.py r8
-# Shrink (improves r8/d8 launch time):
+  * Shrink (improves r8/d8 launch time):
 java -jar build/libs/r8.jar --debug --classfile --output r8.jar \
     --lib $CHROMIUM_SRC/third_party/jdk/current --pg-conf src/main/keep.txt \
     --no-minification --no-desugaring build/libs/r8.jar
 mv $CHROMIUM_SRC/third_party/r8/lib/r8.jar{,.bak}
 cp r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
 
-# Create patches if conflicts / new patches. Change number if expecting
-# different amount of patches:
-git format-patch -3 -o $CHROMIUM_SRC/third_party/r8/patches
-
-# Upload to CIPD:
-cd $CHROMIUM_SRC/third_party/r8
-cipd create --pkg-def cipd.yaml # Make note of the instance ID
-
-# Update backported methods list:
+* Update backported methods list:
 cd $CHROMIUM_SRC
 java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 16 > third_party/r8/backported_methods.txt
 
-# Manually update:
-* README.chromium (revision is the R8 commit (before patches applied)
-* //DEPS (instance ID output by cipd create)
-
-Update instructions for desugar_jdk_libs.json:
-* unzip -p third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/*.jar META-INF/desugar/d8/desugar.json > third_party/r8/desugar_jdk_libs.json
-* Remove all mentions of ConcurrentHashMap and TimeZone#getTimeZone and remove trailing commas.
-* Update //build/config/android/internal_rules.gni to point at the new .jar files:
-  1) desugar_jdk_libs-1.1.1.jar
-  2) desugar_jdk_libs_configuration-1.1.1.jar
+* Update instructions for desugar_jdk_libs.json:
+unzip -p third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/*.jar META-INF/desugar/d8/desugar.json > third_party/r8/desugar_jdk_libs.json
+  * Remove all mentions of ConcurrentHashMap and TimeZone#getTimeZone and remove trailing commas.
+  * Update //build/config/android/internal_rules.gni to point at the new .jar files:
+    * desugar_jdk_libs-1.1.1.jar
+    * desugar_jdk_libs_configuration-1.1.1.jar
 
 How to file bugs against R8:
 * Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.

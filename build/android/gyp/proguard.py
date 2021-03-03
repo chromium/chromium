@@ -302,7 +302,8 @@ def _OptimizeWithR8(options,
                                                      tmp_output)
     base_context = split_contexts_by_name['base']
 
-    cmd = build_utils.JavaCmd(options.warnings_as_errors) + [
+    # R8 OOMs with the default xmx=1G.
+    cmd = build_utils.JavaCmd(options.warnings_as_errors, xmx='2G') + [
         '-Dcom.android.tools.r8.allowTestProguardOptions=1',
         '-Dcom.android.tools.r8.verticalClassMerging=1',
     ]
@@ -573,7 +574,11 @@ def _CombineConfigs(configs, dynamic_config_data, exclude_generated=False):
 
 
 def _CreateDynamicConfig(options):
-  ret = []
+  # Our scripts already fail on output. Adding -ignorewarnings makes R8 output
+  # warnings rather than throw exceptions so we can selectively ignore them via
+  # dex.py's ignore list. Context: https://crbug.com/1180222
+  ret = ["-ignorewarnings"]
+
   if options.sourcefile:
     ret.append("-renamesourcefileattribute '%s' # OMIT FROM EXPECTATIONS" %
                options.sourcefile)
