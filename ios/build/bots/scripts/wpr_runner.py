@@ -402,7 +402,7 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
         test_config['test_filter'] = test_app.excluded_tests
     return test_config
 
-  def get_launch_test_app(self, params):
+  def get_launch_test_app(self):
     """Returns the proper test_app for the run.
 
     Returns:
