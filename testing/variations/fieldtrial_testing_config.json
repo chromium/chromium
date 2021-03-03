@@ -7825,7 +7825,7 @@
             ]
         }
     ],
-    "WebProtectRealTimeURLCheck": [
+    "WebProtectRealTimeURLCheckGA": [
         {
             "platforms": [
                 "chromeos",
@@ -7838,7 +7838,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SafeBrowsingRealTimeUrlLookupEnabledForEnterprise"
+                        "SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint"
                     ]
                 }
             ]
