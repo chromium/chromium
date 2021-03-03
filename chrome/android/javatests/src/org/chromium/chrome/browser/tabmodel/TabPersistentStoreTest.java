@@ -719,34 +719,6 @@ public class TabPersistentStoreTest {
 
     /**
      * Tests that a real {@link TabModelImpl} will use the {@link TabPersistentStore} to write out
-     * an updated metadata file when a closure is undone.
-     */
-    @Test
-    @SmallTest
-    @Feature({"TabPersistentStore"})
-    @ParameterAnnotations.UseMethodParameter(StoreParamProvider.class)
-    public void testUndoSingleTabClosureWritesTabListFile(boolean isCriticalPersistedTabDataEnabled)
-            throws Exception {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, isCriticalPersistedTabDataEnabled);
-        TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V5_NO_M18;
-        mMockDirectory.writeTabModelFiles(info, true);
-
-        // Start closing one tab, then undo it.  Make sure the tab list metadata is saved out.
-        TestTabModelSelector selector = createAndRestoreRealTabModelImpls(info);
-        MockTabPersistentStoreObserver mockObserver = selector.mTabPersistentStoreObserver;
-        final TabModel regularModel = selector.getModel(false);
-        int currentWrittenCallbackCount = mockObserver.listWrittenCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tabToClose = regularModel.getTabAt(2);
-            regularModel.closeTab(tabToClose, false, false, true);
-            regularModel.cancelTabClosure(tabToClose.getId());
-        });
-        mockObserver.listWrittenCallback.waitForCallback(currentWrittenCallbackCount, 1);
-    }
-
-    /**
-     * Tests that a real {@link TabModelImpl} will use the {@link TabPersistentStore} to write out
      * valid a valid metadata file and the TabModel's associated TabStates after closing and
      * canceling the closure of all the tabs simultaneously.
      */

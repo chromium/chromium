@@ -4,21 +4,31 @@
 
 package org.chromium.chrome.browser.tab;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Extracts a {@link TabState} from a {@link Tab}.
  */
 public class TabStateExtractor {
+    private static Map<Integer, TabState> sTabStatesForTesting;
+
     /**
      * Returns an opaque "state" object that can be persisted to storage.
      * @param tab The {@link Tab} from which to extract the state.
      **/
     public static TabState from(Tab tab) {
+        if (sTabStatesForTesting != null && sTabStatesForTesting.containsKey(tab.getId())) {
+            return sTabStatesForTesting.get(tab.getId());
+        }
+
         TabImpl tabImpl = (TabImpl) tab;
         if (!tabImpl.isInitialized()) return null;
         TabState tabState = new TabState();
@@ -68,5 +78,18 @@ public class TabStateExtractor {
                     referrer != null ? referrer.getPolicy() : 0,
                     pendingLoadParams.getInitiatorOrigin(), tab.isIncognito());
         }
+    }
+
+    @VisibleForTesting
+    public static void setTabStateForTesting(int tabId, TabState tabState) {
+        if (sTabStatesForTesting == null) {
+            sTabStatesForTesting = new HashMap<>();
+        }
+        sTabStatesForTesting.put(tabId, tabState);
+    }
+
+    @VisibleForTesting
+    public static void resetTabStatesForTesting() {
+        sTabStatesForTesting = null;
     }
 }

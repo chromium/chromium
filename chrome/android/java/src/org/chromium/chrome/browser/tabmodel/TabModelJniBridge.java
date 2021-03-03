@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -167,7 +168,8 @@ public abstract class TabModelJniBridge implements TabModel {
     public abstract void setActive(boolean active);
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         long init(TabModelJniBridge caller, Profile profile, boolean isTabbedActivity);
         Profile getProfileAndroid(long nativeTabModelJniBridge, TabModelJniBridge caller);
         void broadcastSessionRestoreComplete(

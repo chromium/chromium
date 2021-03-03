@@ -23,6 +23,16 @@ public class MockTab extends TabImpl {
         return tab;
     }
 
+    /**
+     * Create a new Tab for testing and initializes Tab UserData objects.
+     */
+    public static Tab createAndInitialize(
+            int id, boolean incognito, @TabLaunchType int tabLaunchType) {
+        TabImpl tab = new MockTab(id, incognito, tabLaunchType);
+        tab.initialize(null, null, null, null, null, false, null);
+        return tab;
+    }
+
     public static TabImpl initializeWithCriticalPersistedTabData(
             TabImpl tab, CriticalPersistedTabData criticalPersistedTabData) {
         tab.getUserDataHost().setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
@@ -48,5 +58,9 @@ public class MockTab extends TabImpl {
             @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
             TabState tabState) {
         TabHelpers.initTabHelpers(this, parent);
+    }
+
+    public void broadcastOnLoadStopped(boolean toDifferentDocument) {
+        for (TabObserver observer : mObservers) observer.onLoadStopped(this, toDifferentDocument);
     }
 }

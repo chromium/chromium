@@ -1296,7 +1296,8 @@ public class TabPersistentStore {
      * @param encrypted Whether or not the tab is encrypted.
      * @return File pointing at the TabState for the Tab.
      */
-    private File getTabStateFile(int tabId, boolean encrypted) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public File getTabStateFile(int tabId, boolean encrypted) {
         return TabStateFileManager.getTabStateFile(getStateDirectory(), tabId, encrypted);
     }
 
