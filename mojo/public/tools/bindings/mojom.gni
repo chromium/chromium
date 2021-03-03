@@ -184,6 +184,15 @@ if (enable_scrambled_message_ids) {
 #   import_dirs (optional)
 #       List of import directories that will get added when processing sources.
 #
+#   input_root_override (optional)
+#       Root path for the .mojom files used to generate the namespaces for
+#       interfaces. Useful with targets outside //, e.g. in parent directories
+#       above "//". The default input root is //
+#       Example: Vivaldi's source root is "//vivaldi/",
+#       and "//vivaldi/chromium/" is "//"
+#       In such cases, not using this argument lead to the output files being
+#       located in different directories than expected.
+#
 #   testonly (optional)
 #
 #   visibility (optional)
@@ -546,7 +555,11 @@ template("mojom") {
   # for the naming of any generated output files derived from their
   # corresponding input mojoms. These paths are always considered to be relative
   # to root_gen_dir.
-  source_abspaths = rebase_path(sources_list, "//")
+  if (defined(invoker.input_root_override)) {
+    source_abspaths = rebase_path(sources_list, invoker.input_root_override)
+  } else {
+    source_abspaths = rebase_path(sources_list, "//")
+  }
   output_file_base_paths = []
   foreach(path, source_abspaths) {
     output_file_base_paths +=
@@ -667,6 +680,13 @@ template("mojom") {
         rebase_path(build_metadata_filename),
       ]
 
+      if (defined(invoker.input_root_override)) {
+        args += [
+          "--input-root",
+          rebase_path(invoker.input_root_override),
+        ]
+      }
+
       foreach(enabled_feature, enabled_features) {
         args += [
           "--enable-feature",
@@ -687,18 +707,29 @@ template("mojom") {
 
   # Generate code that is shared by different variants.
   if (sources_list != []) {
+    base_dir = "//"
+    if (defined(invoker.input_root_override)) {
+      base_dir = invoker.input_root_override
+    }
+
     common_generator_args = [
       "--use_bundled_pylibs",
       "-o",
       rebase_path(root_gen_dir, root_build_dir),
       "generate",
       "-d",
-      rebase_path("//", root_build_dir),
+      rebase_path(base_dir, root_build_dir),
       "-I",
       rebase_path("//", root_build_dir),
       "--bytecode_path",
       rebase_path("$root_gen_dir/mojo/public/tools/bindings", root_build_dir),
     ]
+    if (defined(invoker.input_root_override)) {
+      common_generator_args += [
+        "-I",
+        rebase_path(invoker.input_root_override, root_build_dir),
+      ]
+    }
 
     if (defined(invoker.disallow_native_types) &&
         invoker.disallow_native_types) {
