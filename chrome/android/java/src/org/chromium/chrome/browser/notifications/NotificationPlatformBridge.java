@@ -626,10 +626,9 @@ public class NotificationPlatformBridge {
             Bitmap actionIcon = hasImage ? null : action.icon;
             if (action.type == NotificationActionType.TEXT) {
                 notificationBuilder.addTextAction(
-                        actionIcon, action.title, intent.getPendingIntent(), action.placeholder);
+                        actionIcon, action.title, intent, action.placeholder);
             } else {
-                notificationBuilder.addButtonAction(
-                        actionIcon, action.title, intent.getPendingIntent());
+                notificationBuilder.addButtonAction(actionIcon, action.title, intent);
             }
         }
 
@@ -661,7 +660,7 @@ public class NotificationPlatformBridge {
                 SingleWebsiteSettings.class.getName(),
                 SingleWebsiteSettings.createFragmentArgsForSite(origin));
         settingsIntent.setData(makeIntentData(notificationId, origin, -1 /* actionIndex */));
-        PendingIntent pendingSettingsIntent = PendingIntent.getActivity(context,
+        PendingIntentProvider settingsIntentProvider = PendingIntentProvider.getActivity(context,
                 PENDING_INTENT_REQUEST_CODE, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // If action buttons are displayed, there isn't room for the full Site Settings button
@@ -676,7 +675,8 @@ public class NotificationPlatformBridge {
                 : res.getString(R.string.page_info_site_settings_button);
         // If the settings button is displayed together with the other buttons it has to be the
         // last one, so add it after the other actions.
-        notificationBuilder.addSettingsAction(settingsIconId, settingsTitle, pendingSettingsIntent);
+        notificationBuilder.addSettingsAction(
+                settingsIconId, settingsTitle, settingsIntentProvider);
 
         return notificationBuilder.build(
                 new NotificationMetadata(NotificationUmaTracker.SystemNotificationType.SITES,

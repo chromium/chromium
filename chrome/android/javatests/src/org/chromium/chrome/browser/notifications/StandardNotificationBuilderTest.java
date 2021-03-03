@@ -64,14 +64,8 @@ public class StandardNotificationBuilderTest {
         }
 
         Context context = InstrumentationRegistry.getTargetContext();
-
-        Intent contentIntent = new Intent("contentIntent");
-        outContentAndDeleteIntents[0] = PendingIntentProvider.getBroadcast(
-                context, 0 /* requestCode */, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent deleteIntent = new Intent("deleteIntent");
-        outContentAndDeleteIntents[1] = PendingIntentProvider.getBroadcast(
-                context, 1 /* requestCode */, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        outContentAndDeleteIntents[0] = createIntent(context, "content");
+        outContentAndDeleteIntents[1] = createIntent(context, "delete");
 
         Bitmap image = Bitmap.createBitmap(
                 new int[] {Color.BLUE}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
@@ -98,9 +92,9 @@ public class StandardNotificationBuilderTest {
                 .setVibrate(new long[] {100L})
                 .setContentIntent(outContentAndDeleteIntents[0])
                 .setDeleteIntent(outContentAndDeleteIntents[1])
-                .addButtonAction(actionIcon, "button 1", null /* intent */)
-                .addButtonAction(actionIcon, "button 2", null /* intent */)
-                .addSettingsAction(0 /* iconId */, "settings", null /* intent */);
+                .addButtonAction(actionIcon, "button 1", createIntent(context, "button1"))
+                .addButtonAction(actionIcon, "button 2", createIntent(context, "button2"))
+                .addSettingsAction(0 /* iconId */, "settings", createIntent(context, "settings"));
     }
 
     private Notification buildNotification(NotificationBuilderBase builder) {
@@ -251,7 +245,8 @@ public class StandardNotificationBuilderTest {
         NotificationBuilderBase notificationBuilder =
                 new StandardNotificationBuilder(context)
                         .setChannelId(ChromeChannelDefinitions.ChannelId.SITES)
-                        .addTextAction(null, "Action Title", null, "Placeholder");
+                        .addTextAction(null, "Action Title", createIntent(context, "button"),
+                                "Placeholder");
 
         Notification notification = buildNotification(notificationBuilder);
 
@@ -260,5 +255,11 @@ public class StandardNotificationBuilderTest {
         Assert.assertNotNull(notification.actions[0].getRemoteInputs());
         Assert.assertEquals(1, notification.actions[0].getRemoteInputs().length);
         Assert.assertEquals("Placeholder", notification.actions[0].getRemoteInputs()[0].getLabel());
+    }
+
+    private static PendingIntentProvider createIntent(Context context, String action) {
+        Intent intent = new Intent("StandardNotificationBuilderTest." + action);
+        return PendingIntentProvider.getBroadcast(
+                context, 0 /* requestCode */, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

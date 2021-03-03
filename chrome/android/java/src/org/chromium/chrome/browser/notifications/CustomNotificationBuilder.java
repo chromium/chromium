@@ -216,7 +216,7 @@ public class CustomNotificationBuilder extends NotificationBuilderBase {
             }
 
             view.setTextViewText(R.id.button, action.title);
-            view.setOnClickPendingIntent(R.id.button, action.intent);
+            view.setOnClickPendingIntent(R.id.button, action.intent.getPendingIntent());
             bigView.addView(R.id.buttons, view);
         }
     }
@@ -229,7 +229,7 @@ public class CustomNotificationBuilder extends NotificationBuilderBase {
             bigView.setViewPadding(R.id.origin, leftPadding, 0, rightPadding, 0);
             return;
         }
-        bigView.setOnClickPendingIntent(R.id.origin, mSettingsAction.intent);
+        bigView.setOnClickPendingIntent(R.id.origin, mSettingsAction.intent.getPendingIntent());
         bigView.setInt(R.id.origin_settings_icon, "setColorFilter", BUTTON_ICON_COLOR_MATERIAL);
     }
 
