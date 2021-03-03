@@ -1570,8 +1570,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestEvaluateOnChromeScheme) {
 }
 
 // Tests that scripts are not duplicated after Scripts Panel switch.
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_TestNoScriptDuplicatesOnPanelSwitch \
+  DISABLED_TestNoScriptDuplicatesOnPanelSwitch
+#else
+#define MAYBE_TestNoScriptDuplicatesOnPanelSwitch \
+  TestNoScriptDuplicatesOnPanelSwitch
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       TestNoScriptDuplicatesOnPanelSwitch) {
+                       MAYBE_TestNoScriptDuplicatesOnPanelSwitch) {
   RunTest("testNoScriptDuplicatesOnPanelSwitch", kDebuggerTestPage);
 }
 
