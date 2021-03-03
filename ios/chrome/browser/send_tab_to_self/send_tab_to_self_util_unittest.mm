@@ -26,27 +26,35 @@ class SendTabToSelfModelMock : public TestSendTabToSelfModel {
   ~SendTabToSelfModelMock() override = default;
 
   bool IsReady() override { return true; }
-  bool HasValidTargetDevice() override { return true; }
+  bool HasValidTargetDevice() override { return has_valid_target_device_; }
+
+  void SetHasValidTargetDevice() { has_valid_target_device_ = true; }
+
+ private:
+  bool has_valid_target_device_ = false;
 };
 
 // TODO (crbug/974040): Move TestSendTabToSelfSyncService to components and
 // reuse in both ios/chrome and chrome tests
 class TestSendTabToSelfSyncService : public SendTabToSelfSyncService {
  public:
-  TestSendTabToSelfSyncService() = default;
+  explicit TestSendTabToSelfSyncService(
+      SendTabToSelfModel* send_tab_to_self_model)
+      : send_tab_to_self_model_(send_tab_to_self_model) {}
   ~TestSendTabToSelfSyncService() override = default;
 
   SendTabToSelfModel* GetSendTabToSelfModel() override {
-    return &send_tab_to_self_model_mock_;
+    return send_tab_to_self_model_;
   }
 
  protected:
-  SendTabToSelfModelMock send_tab_to_self_model_mock_;
+  SendTabToSelfModel* const send_tab_to_self_model_;
 };
 
 std::unique_ptr<KeyedService> BuildTestSendTabToSelfSyncService(
+    SendTabToSelfModel* send_tab_to_self_model,
     web::BrowserState* context) {
-  return std::make_unique<TestSendTabToSelfSyncService>();
+  return std::make_unique<TestSendTabToSelfSyncService>(send_tab_to_self_model);
 }
 
 class SendTabToSelfUtilTest : public PlatformTest {
@@ -63,6 +71,7 @@ class SendTabToSelfUtilTest : public PlatformTest {
   }
 
  protected:
+  SendTabToSelfModelMock send_tab_to_self_model_mock_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 
@@ -71,11 +80,13 @@ class SendTabToSelfUtilTest : public PlatformTest {
 };
 
 TEST_F(SendTabToSelfUtilTest, HasValidTargetDevice) {
+  SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
+      browser_state(), base::BindRepeating(&BuildTestSendTabToSelfSyncService,
+                                           &send_tab_to_self_model_mock_));
+
   EXPECT_FALSE(HasValidTargetDevice(browser_state()));
 
-  SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
-      browser_state(), base::BindRepeating(&BuildTestSendTabToSelfSyncService));
-
+  send_tab_to_self_model_mock_.SetHasValidTargetDevice();
   EXPECT_TRUE(HasValidTargetDevice(browser_state()));
 }
 
