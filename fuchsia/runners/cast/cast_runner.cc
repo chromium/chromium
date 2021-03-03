@@ -446,17 +446,36 @@ void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
                           std::vector<fuchsia::net::http::Header>());
 
   if (component_owner == main_context_.get()) {
+    const auto& application_config = cast_component->application_config();
+
     // If this component has the microphone permission then use it to route
     // Audio service requests through.
     if (IsPermissionGrantedInAppConfig(
-            cast_component->application_config(),
-            fuchsia::web::PermissionType::MICROPHONE)) {
-      audio_capturer_component_ = cast_component.get();
+            application_config, fuchsia::web::PermissionType::MICROPHONE)) {
+      if (first_audio_capturer_agent_url_.empty()) {
+        first_audio_capturer_agent_url_ = application_config.agent_url();
+      } else {
+        LOG_IF(WARNING, first_audio_capturer_agent_url_ !=
+                            application_config.agent_url())
+            << "Audio capturer already in use for different agent. "
+               "Current agent: "
+            << application_config.agent_url();
+      }
+      audio_capturer_components_.emplace(cast_component.get());
     }
 
-    if (IsPermissionGrantedInAppConfig(cast_component->application_config(),
+    if (IsPermissionGrantedInAppConfig(application_config,
                                        fuchsia::web::PermissionType::CAMERA)) {
-      video_capturer_component_ = cast_component.get();
+      if (first_video_capturer_agent_url_.empty()) {
+        first_video_capturer_agent_url_ = application_config.agent_url();
+      } else {
+        LOG_IF(WARNING, first_video_capturer_agent_url_ !=
+                            application_config.agent_url())
+            << "Video capturer already in use for different agent. "
+               "Current agent: "
+            << application_config.agent_url();
+      }
+      video_capturer_components_.emplace(cast_component.get());
     }
   }
 
@@ -480,11 +499,8 @@ void CastRunner::CancelPendingComponent(
 }
 
 void CastRunner::OnComponentDestroyed(CastComponent* component) {
-  if (component == audio_capturer_component_)
-    audio_capturer_component_ = nullptr;
-
-  if (component == video_capturer_component_)
-    video_capturer_component_ = nullptr;
+  audio_capturer_components_.erase(component);
+  video_capturer_components_.erase(component);
 }
 
 fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
@@ -611,13 +627,15 @@ void CastRunner::OnIsolatedContextEmpty(WebContentRunner* context) {
   isolated_contexts_.erase(it);
 }
 
+// TODO(crbug.com/1171057): Add integration test.
 void CastRunner::OnAudioServiceRequest(
     fidl::InterfaceRequest<fuchsia::media::Audio> request) {
   // If we have a component that allows AudioCapturer access then redirect the
   // fuchsia.media.Audio requests to the corresponding agent.
-  if (audio_capturer_component_) {
-    audio_capturer_component_->agent_manager()->ConnectToAgentService(
-        audio_capturer_component_->application_config().agent_url(),
+  if (!audio_capturer_components_.empty()) {
+    CastComponent* capturer_component = *audio_capturer_components_.begin();
+    capturer_component->agent_manager()->ConnectToAgentService(
+        capturer_component->application_config().agent_url(),
         std::move(request));
     return;
   }
@@ -628,13 +646,15 @@ void CastRunner::OnAudioServiceRequest(
   base::ComponentContextForProcess()->svc()->Connect(std::move(request));
 }
 
+// TODO(crbug.com/1171057): Add integration test.
 void CastRunner::OnCameraServiceRequest(
     fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
   // If we have a component that allows camera access then redirect the
   // fuchsia.camera3.DeviceWatcher requests to the corresponding agent.
-  if (video_capturer_component_) {
-    video_capturer_component_->agent_manager()->ConnectToAgentService(
-        video_capturer_component_->application_config().agent_url(),
+  if (!video_capturer_components_.empty()) {
+    CastComponent* capturer_component = *video_capturer_components_.begin();
+    capturer_component->agent_manager()->ConnectToAgentService(
+        capturer_component->application_config().agent_url(),
         std::move(request));
     return;
   }
