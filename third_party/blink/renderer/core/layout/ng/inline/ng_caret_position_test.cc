@@ -318,6 +318,37 @@ TEST_F(NGCaretPositionTest, GeneratedZeroWidthSpace) {
              cursor, kAtTextOffset, base::Optional<unsigned>(5));
 }
 
+// http://crbug.com/1183269
+// See also NGCaretPositionTest.CaretPositionAtSoftLineWrap
+TEST_F(NGCaretPositionTest, SoftLineWrap) {
+  LoadAhem();
+  InsertStyleElement(
+      "p { font: 10px/1 Ahem; }"
+      "p { width: 4ch;");
+  // Note: "contenteditable" adds
+  //    line-break: after-white-space;
+  //    overflow-wrap: break-word;
+  SetBodyInnerHTML("<p id=t contenteditable>abc xyz</p>");
+  const Text& text = To<Text>(*GetElementById("t")->firstChild());
+  const Position before_xyz(text, 4);  // before "w".
+
+  NGInlineCursor cursor;
+  cursor.MoveTo(*text.GetLayoutObject());
+
+  // Note: upstream/downstream before "xyz" are in different line.
+
+  ASSERT_EQ(NGTextOffset(0, 3), cursor.Current().TextOffset());
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(before_xyz, TextAffinity::kUpstream)),
+             cursor, kAtTextOffset, base::Optional<unsigned>(3));
+
+  cursor.MoveToNextForSameLayoutObject();
+  ASSERT_EQ(NGTextOffset(4, 7), cursor.Current().TextOffset());
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(before_xyz, TextAffinity::kDownstream)),
+             cursor, kAtTextOffset, base::Optional<unsigned>(4));
+}
+
 TEST_F(NGCaretPositionTest, ZeroWidthSpace) {
   LoadAhem();
   InsertStyleElement(

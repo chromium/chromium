@@ -2481,6 +2481,10 @@ class ComputedStyle : public ComputedStyleBase,
            GetLineBreak() == LineBreak::kAfterWhiteSpace;
   }
 
+  bool NeedsTrailingSpace() const {
+    return BreakOnlyAfterWhiteSpace() && AutoWrap();
+  }
+
   bool BreakWords() const {
     return (WordBreak() == EWordBreak::kBreakWord ||
             OverflowWrap() != EOverflowWrap::kNormal) &&
