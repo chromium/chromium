@@ -100,4 +100,21 @@ suite('nearby-page-template', function() {
     element.$$('#closeButton').click();
     assertTrue(closeTrigger);
   });
+
+  test('Open-in-new icon', async function() {
+    element.title = 'title';
+    element.subTitle = 'subTitle';
+    element.utilityButtonLabel = 'utility';
+
+    // Open-in-new icon not shown by default.
+    await test_util.waitAfterNextRender(element);
+    assertFalse(!!element.$$('#utilityButton #openInNewIcon'));
+
+    element.utilityButtonOpenInNew = true;
+    await test_util.waitAfterNextRender(element);
+    assertTrue(!!element.$$('#utilityButton #openInNewIcon'));
+    assertEquals(
+        'cr:open-in-new',
+        element.$$('#utilityButton #openInNewIcon').getAttribute('icon'));
+  });
 });

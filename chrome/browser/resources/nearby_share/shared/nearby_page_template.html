@@ -66,6 +66,10 @@
       #utilityButton {
         margin-inline-end: auto;
       }
+      #utilityButton iron-icon {
+        --iron-icon-fill-color: var(--text-color);
+        margin-inline-end: 8px;
+      }
     </style>
     <div id="pageContainer" role="dialog" aria-modal="true"
         aria-labelledby="[[getDialogAriaLabelledBy_(a11yAnnouncedSubTitle)]]">
@@ -89,7 +93,10 @@
           <template is="dom-if" if="[[utilityButtonLabel]]">
             <cr-button id="utilityButton" class="cancel-button"
                 on-click="onUtilityClick_" aria-label="[[utilityButtonLabel]]">
-              [[utilityButtonLabel]]
+              <template is="dom-if" if="[[utilityButtonOpenInNew]]">
+                <iron-icon id="openInNewIcon" icon="cr:open-in-new"></iron-icon>
+              </template>
+              <span>[[utilityButtonLabel]]</span>
             </cr-button>
           </template>
           <template is="dom-if" if="[[cancelButtonLabel]]">

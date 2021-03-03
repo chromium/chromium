@@ -73,6 +73,15 @@ Polymer({
       type: String,
     },
 
+    /**
+     * When true, shows the open-in-new icon to the left of the button label.
+     * @type {boolean}
+     * */
+    utilityButtonOpenInNew: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @type {string} */
     utilityButtonEventName: {
       type: String,
