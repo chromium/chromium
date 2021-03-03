@@ -439,10 +439,20 @@ class ProfileSyncService : public SyncService,
   // Manages the start and stop of the data types.
   std::unique_ptr<DataTypeManager> data_type_manager_;
 
+#if defined(OS_CHROMEOS)
+  // TODO(crbug.com/1176498): DCHECKs are disabled during automated testing on
+  // CrOS and this check failed when tested on an experimental
+  // builder. Revert https://crrev.com/c/2683949 to re-enable this DCHECK on
+  // CrOS. See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more
+  // details.
+  static constexpr bool kCheckNoObserversAtShutdown = false;
+#else
+  static constexpr bool kCheckNoObserversAtShutdown = true;
+#endif
   // Note: This is an Optional so that we can control its destruction - in
   // particular, to trigger the "check_empty" test in Shutdown().
   base::Optional<base::ObserverList<SyncServiceObserver,
-                                    /*check_empty=*/true>::Unchecked>
+                                    kCheckNoObserversAtShutdown>::Unchecked>
       observers_;
 
   base::ObserverList<ProtocolEventObserver>::Unchecked
