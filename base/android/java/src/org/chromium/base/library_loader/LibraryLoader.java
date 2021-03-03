@@ -309,7 +309,7 @@ public class LibraryLoader {
      *
      * @param useChromiumLinker Whether to use a chromium linker.
      * @param useModernLinker Given that one of the Chromium linkers is used, whether to use
-     *                        ModernLinker instea of the LegacyLinker.
+     *                        ModernLinker instead of the LegacyLinker.
      */
     public void setLinkerImplementation(boolean useChromiumLinker, boolean useModernLinker) {
         assert !mInitialized;
@@ -326,7 +326,7 @@ public class LibraryLoader {
     private void setLinkerImplementationIfNeededAlreadyLocked() {
         if (mConfigurationSet) return;
 
-        // Cannot use initializers for the fields below, as this makes roboelectric tests fail,
+        // Cannot use initial values for the fields below, as this makes robolectric tests fail,
         // since they don't have a NativeLibraries class.
         mUseChromiumLinker = NativeLibraries.sUseLinker;
         mUseModernLinker = NativeLibraries.sUseModernLinker;
@@ -757,7 +757,7 @@ public class LibraryLoader {
     }
 
     /**
-     * Assert that library process type in the LibraryLoarder is compatible with provided type.
+     * Assert that library process type in the LibraryLoader is compatible with provided type.
      *
      * @param libraryProcessType a library process type to assert.
      */

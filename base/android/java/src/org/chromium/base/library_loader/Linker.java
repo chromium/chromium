@@ -450,7 +450,7 @@ abstract class Linker {
 
         // from Parcelable
         LibInfo(Parcel in) {
-            // See below in writeToParcel() for the serializatiom protocol.
+            // See below in writeToParcel() for the serialization protocol.
             mLibFilePath = in.readString();
             mLoadAddress = in.readLong();
             mLoadSize = in.readLong();

@@ -125,7 +125,7 @@ public class EarlyNativeTest {
     @Test
     @SmallTest
     public void testNativeMethodsReadyAfterLibraryInitialized() {
-        // Test is a no-op if dcheck isn't on.
+        // Test is a no-op if DCHECK isn't on.
         if (!BuildConfig.DCHECK_IS_ON) return;
 
         LibraryLoader.getInstance().enableJniChecks();
