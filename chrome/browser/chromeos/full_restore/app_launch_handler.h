@@ -28,8 +28,6 @@ namespace full_restore {
 // 2. The user preference sets always restore or the user selects 'Restore' from
 // the notification dialog.
 // 3. The app is ready.
-//
-// TODO(crbug.com/1146900): Implement ARC apps launching.
 class AppLaunchHandler : public apps::AppRegistryCache::Observer {
  public:
   explicit AppLaunchHandler(Profile* profile);

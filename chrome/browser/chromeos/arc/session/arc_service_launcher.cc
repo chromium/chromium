@@ -52,6 +52,7 @@
 #include "chrome/browser/chromeos/arc/user_session/arc_user_session_service.h"
 #include "chrome/browser/chromeos/arc/video/gpu_arc_video_service_host.h"
 #include "chrome/browser/chromeos/arc/wallpaper/arc_wallpaper_service.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_usb_host_permission_manager.h"
@@ -252,6 +253,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   CertStoreService::GetForBrowserContext(profile);
   apps::ArcAppsFactory::GetForProfile(profile);
   chromeos::ApkWebAppService::Get(profile);
+  chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(profile);
 
   // ARC Container-only services.
   if (!arc::IsArcVmEnabled()) {

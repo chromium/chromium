@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   FullRestoreSaveHandler(const FullRestoreSaveHandler&) = delete;
   FullRestoreSaveHandler& operator=(const FullRestoreSaveHandler&) = delete;
 
+  void SetPrimaryProfilePath(const base::FilePath& profile_path);
+
   void SetActiveProfilePath(const base::FilePath& profile_path);
 
   // aura::EnvObserver:
@@ -62,6 +64,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   // Saves |window_info| to |profile_path_to_restore_data_|.
   void SaveWindowInfo(const WindowInfo& window_info);
+
+  // Invoked when the task is created for an ARC app.
+  void OnTaskCreated(const std::string app_id, int task_id);
+
+  // Invoked when the task is destroyed for an ARC app.
+  void OnTaskDestroyed(int task_id);
 
   // Flushes the full restore file in |profile_path| with the current restore
   // data.
@@ -122,8 +130,14 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // path.
   std::map<std::string, AppLaunchInfos> app_id_to_app_launch_infos_;
 
+  // The map from the task id to the app id for ARC apps.
+  std::map<int, std::string> task_id_to_app_id_;
+
   // The current active user profile path.
   base::FilePath active_profile_path_;
+
+  // The primary user profile path for ARC apps.
+  base::FilePath primary_profile_path_;
 
   // Timer used to delay the restore data writing to the full restore file.
   base::OneShotTimer save_timer_;

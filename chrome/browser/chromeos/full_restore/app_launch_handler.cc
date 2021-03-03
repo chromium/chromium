@@ -102,6 +102,9 @@ void AppLaunchHandler::OnGetRestoreData(
 
   if (ProfileHelper::Get()->GetUserByProfile(profile_) ==
       user_manager::UserManager::Get()->GetPrimaryUser()) {
+    ::full_restore::FullRestoreSaveHandler::GetInstance()
+        ->SetPrimaryProfilePath(profile_->GetPath());
+
     // In Multi-Profile mode, only set for the primary user. For other users,
     // active profile path is set when switch users.
     ::full_restore::SetActiveProfilePath(profile_->GetPath());

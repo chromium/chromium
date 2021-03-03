@@ -46,6 +46,11 @@ FullRestoreSaveHandler::~FullRestoreSaveHandler() {
   aura::Env::GetInstance()->RemoveObserver(this);
 }
 
+void FullRestoreSaveHandler::SetPrimaryProfilePath(
+    const base::FilePath& profile_path) {
+  primary_profile_path_ = profile_path;
+}
+
 void FullRestoreSaveHandler::SetActiveProfilePath(
     const base::FilePath& profile_path) {
   active_profile_path_ = profile_path;
@@ -176,6 +181,32 @@ void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
   pending_save_profile_paths_.insert(it->second.first);
 
   MaybeStartSaveTimer();
+}
+
+void FullRestoreSaveHandler::OnTaskCreated(const std::string app_id,
+                                           int task_id) {
+  task_id_to_app_id_[task_id] = app_id;
+
+  auto it = app_id_to_app_launch_infos_.find(app_id);
+  if (it == app_id_to_app_launch_infos_.end())
+    return;
+
+  auto launch_it = it->second.find(primary_profile_path_);
+  if (launch_it == it->second.end() || launch_it->second.empty())
+    return;
+
+  auto app_launch_info = std::move(*launch_it->second.begin());
+  app_launch_info->window_id = task_id;
+  it->second.erase(primary_profile_path_);
+  if (it->second.empty())
+    app_id_to_app_launch_infos_.erase(it);
+
+  AddAppLaunchInfo(primary_profile_path_, std::move(app_launch_info));
+}
+
+void FullRestoreSaveHandler::OnTaskDestroyed(int task_id) {
+  RemoveAppRestoreData(task_id);
+  task_id_to_app_id_.erase(task_id);
 }
 
 void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
