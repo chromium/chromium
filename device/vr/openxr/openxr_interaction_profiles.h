@@ -121,11 +121,19 @@ constexpr OpenXrSystemInputProfiles kGenericButtonInputProfiles[] = {
 
 constexpr OpenXrSystemInputProfiles kOculusTouchInputProfiles[] = {
     {nullptr, {"oculus-touch", "generic-trigger-squeeze-thumbstick"}, 2},
-    // TODO: Need to know the system name for the Rift S
+    {"Oculus Rift S",
+     {"oculus-touch-v2", "oculus-touch", "generic-trigger-squeeze-thumbstick"},
+     3},
     {"Quest",
      {"oculus-touch-v2", "oculus-touch", "generic-trigger-squeeze-thumbstick"},
      3},
-    {"Miramar",  // Name reported to OpenXR for the Quest 2
+    // Name currently reported by OpenXR for the Quest 2
+    {"Miramar",
+     {"oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
+      "generic-trigger-squeeze-thumbstick"},
+     4},
+    // Oculus says this will soon be the name OpenXR reports
+    {"Quest 2",
      {"oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
       "generic-trigger-squeeze-thumbstick"},
      4}};
