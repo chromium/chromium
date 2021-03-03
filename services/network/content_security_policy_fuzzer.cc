@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/at_exit.h"
+#include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "net/http/http_response_headers.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
@@ -14,9 +15,14 @@
 
 namespace {
 
-// This is a workaround for https://crbug.com/778929.
-struct IcuEnvironment {
-  IcuEnvironment() { CHECK(base::i18n::InitializeICU()); }
+struct Environment {
+  Environment() {
+    // This is a workaround for https://crbug.com/778929.
+    CHECK(base::i18n::InitializeICU());
+
+    base::CommandLine::Init(0, nullptr);
+  }
+
   // used by ICU integration.
   base::AtExitManager at_exit_manager;
 };
@@ -26,7 +32,7 @@ struct IcuEnvironment {
 namespace network {
 
 int LLVMFuzzerInitialize(int* argc, char*** argv) {
-  static IcuEnvironment env;
+  static Environment env;
 
   return 0;
 }
