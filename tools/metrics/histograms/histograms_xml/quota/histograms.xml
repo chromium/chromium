@@ -234,10 +234,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.TimeDeltaOfEvictionRounds" units="units"
-    expires_after="2021-03-04">
+    expires_after="2022-02-26">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
-  <summary>Time between two consecutive active eviction rounds.</summary>
+  <summary>
+    Time between two consecutive eviction rounds. Only recorded if at least one
+    origin has been evicted in each eviction round.
+  </summary>
 </histogram>
 
 <histogram name="Quota.TimeSpentToAEvictionRound" units="units"
