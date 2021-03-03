@@ -5040,7 +5040,6 @@ crbug.com/1057351 virtual/threaded-no-composited-antialiasing/animations/respons
 crbug.com/1057351 virtual/threaded-no-composited-antialiasing/animations/stability/empty-keyframes.html [ Pass Failure ]
 
 ### sheriff 2020-03-03
-crbug.com/1058073 [ Mac ] http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Pass Failure ]
 crbug.com/1058073 [ Mac ] http/tests/devtools/service-workers/sw-navigate-useragent.js [ Pass Failure ]
 crbug.com/1058137 virtual/threaded/http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Pass Failure ]
 
@@ -5750,6 +5749,17 @@ crbug.com/1183243 [ Linux ] http/tests/devtools/console/console-external-array.j
 
 # Webrtc-in-Chrome 2021-03-01
 crbug.com/webrtc/12507 external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+
+# Temporarily disabled for https://crrev.com/c/2727709
+crbug.com/1145610 http/tests/devtools/elements/edit/edit-dom-actions-1.js [ Pass Failure ]
+crbug.com/1145610 http/tests/devtools/elements/edit/edit-dom-actions-4.js [ Pass Failure ]
+crbug.com/1145610 http/tests/devtools/elements/edit/perform-undo-undo.js [ Pass Failure ]
+crbug.com/1145610 http/tests/devtools/elements/elements-panel-structure.js [ Pass Failure ]
+crbug.com/1145610 http/tests/devtools/elements/iframe-load-event.js [ Pass Failure ]
+crbug.com/1145610 http/tests/devtools/elements/inline-style-title.js [ Pass Failure ]
+crbug.com/1145610 http/tests/devtools/elements/shadow/shadow-host-display-modes.js [ Pass Failure ]
+crbug.com/1145610 http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Pass Failure ]
+crbug.com/1145610 http/tests/devtools/oopif/oopif-elements-nesting.js [ Pass Failure ]
 
 # Temporarily disabled for https://crrev.com/c/2713104
 crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass Failure ]
