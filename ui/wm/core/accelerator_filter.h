@@ -11,10 +11,6 @@
 #include "ui/events/event_handler.h"
 #include "ui/wm/core/wm_core_export.h"
 
-namespace ui {
-class AcceleratorHistory;
-}
-
 namespace wm {
 class AcceleratorDelegate;
 
@@ -24,8 +20,7 @@ class WM_CORE_EXPORT AcceleratorFilter : public ui::EventHandler {
  public:
   // AcceleratorFilter doesn't own |accelerator_history|, it's owned by
   // AcceleratorController.
-  AcceleratorFilter(std::unique_ptr<AcceleratorDelegate> delegate,
-                    ui::AcceleratorHistory* accelerator_history);
+  explicit AcceleratorFilter(std::unique_ptr<AcceleratorDelegate> delegate);
   ~AcceleratorFilter() override;
 
   // If the return value is true, |event| should be filtered out.
@@ -33,11 +28,9 @@ class WM_CORE_EXPORT AcceleratorFilter : public ui::EventHandler {
 
   // Overridden from ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
-  void OnMouseEvent(ui::MouseEvent* event) override;
 
  private:
   std::unique_ptr<AcceleratorDelegate> delegate_;
-  ui::AcceleratorHistory* accelerator_history_;
 
   DISALLOW_COPY_AND_ASSIGN(AcceleratorFilter);
 };

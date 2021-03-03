@@ -27,7 +27,9 @@ void ControlVHistogramRecorder::OnKeyEvent(ui::KeyEvent* event) {
                                          ->currently_pressed_keys();
       if (currently_pressed_keys.find(ui::VKEY_CONTROL) !=
               currently_pressed_keys.end() &&
-          currently_pressed_keys.size() == 1 && !ctrl_pressed_time_.is_null()) {
+          currently_pressed_keys.find(ui::VKEY_V) !=
+              currently_pressed_keys.end() &&
+          currently_pressed_keys.size() == 2 && !ctrl_pressed_time_.is_null()) {
         base::UmaHistogramTimes("Ash.ClipboardHistory.ControlToVDelay",
                                 base::TimeTicks::Now() - ctrl_pressed_time_);
         // Prevent a second V from recording a second metric.
