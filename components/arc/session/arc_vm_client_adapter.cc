@@ -292,6 +292,10 @@ std::vector<std::string> GenerateKernelCmdline(
       break;
   }
   VLOG(1) << "Applied " << log_profile_name << " USAP profile";
+
+  if (start_params.disable_download_provider)
+    result.push_back("androidboot.disable_download_provider=1");
+
   return result;
 }
 

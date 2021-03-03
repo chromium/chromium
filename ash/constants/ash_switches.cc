@@ -73,6 +73,10 @@ const char kArcDataCleanupOnStart[] = "arc-data-cleanup-on-start";
 // in autotests to resolve racy conditions.
 const char kArcDisableAppSync[] = "arc-disable-app-sync";
 
+// Flag that disables ARC download provider that prevents extra content to be
+// downloaded and installed in context of Play Store and GMS Core.
+const char kArcDisableDownloadProvider[] = "arc-disable-download-provider";
+
 // Flag to enables an experiment to allow users to turn on 64-bit support in
 // native bridge on systems that have such support available but not yet enabled
 // by default.

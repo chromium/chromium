@@ -130,6 +130,11 @@ class ArcContainerClientAdapter
         break;
     }
 
+    if (params.disable_download_provider) {
+      VLOG(1) << "Disabling download provider is not supported for "
+              << "container.";
+    }
+
     chromeos::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
   }

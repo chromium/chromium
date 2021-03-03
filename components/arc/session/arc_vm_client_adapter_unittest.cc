@@ -1172,7 +1172,8 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DemoMode) {
 
   class TestDemoDelegate : public ArcClientAdapter::DemoModeDelegate {
    public:
-    TestDemoDelegate(base::FilePath apps_path) : apps_path_(apps_path) {}
+    explicit TestDemoDelegate(base::FilePath apps_path)
+        : apps_path_(apps_path) {}
     ~TestDemoDelegate() override = default;
 
     void EnsureOfflineResourcesLoaded(base::OnceClosure callback) override {
@@ -1624,6 +1625,27 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_SendPropFailNotWritable) {
 
   UpgradeArcWithParamsAndStopVmCount(false, {}, /*run_until_stop_vm_count=*/3);
   ExpectArcStopped(/*stale_full_vm_stopped=*/true);
+}
+
+TEST_F(ArcVmClientAdapterTest, DisableDownloadProviderDefault) {
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  // Not expected arc_disable_download_provider in properties.
+  for (const auto& param : request.params())
+    EXPECT_EQ(std::string::npos, param.find("disable_download_provider"));
+}
+
+TEST_F(ArcVmClientAdapterTest, DisableDownloadProviderEnforced) {
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.disable_download_provider = true;
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.disable_download_provider=1"));
 }
 
 struct DalvikMemoryProfileTestParam {

@@ -28,6 +28,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcAvailability[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcAvailable[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDataCleanupOnStart[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableAppSync[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableDownloadProvider[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kArcDisableGmsCoreCache[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableLocaleSync[];
