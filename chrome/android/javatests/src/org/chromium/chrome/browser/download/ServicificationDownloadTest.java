@@ -14,15 +14,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ReducedModeNativeTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -100,8 +100,8 @@ public final class ServicificationDownloadTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "Noop since UseDownloadOfflineContentProvider is enabled in debug.")
     @Feature({"Download"})
+    @DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
     public void testResumeInterruptedDownload() {
         if (useDownloadOfflineContentProvider()) return;
         mNativeTestRule.assertMinimalBrowserStarted();
@@ -134,7 +134,7 @@ public final class ServicificationDownloadTest {
     @Test
     @LargeTest
     @Feature({"Download"})
-    @CommandLineFlags.Add({"enable-features=UseDownloadOfflineContentProvider"})
+    @EnableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
     public void testResumeInterruptedDownloadUsingDownloadOfflineContentProvider() {
         if (!useDownloadOfflineContentProvider()) return;
         mNativeTestRule.assertMinimalBrowserStarted();
