@@ -1017,10 +1017,13 @@ void NGInlineCursor::MoveToLastLogicalLeaf() {
 void NGInlineCursor::MoveToLastNonPseudoLeaf() {
   // TODO(yosin): We should introduce |IsTruncated()| to avoid to use
   // |in_hidden_for_paint|. See also |LayoutText::GetTextBoxInfo()|.
-  // When "text-overflow:ellipsis" specified, items are:
+  // When "text-overflow:ellipsis" specified, items usually are:
   //  [i+0] original non-truncated text (IsHiddenForPaint()=true)
   //  [i+1] truncated text
   //  [i+2] ellipsis (IsLayoutGeneratedText())
+  // But this is also possible:
+  //  [i+0] atomic inline box
+  //  [i+1] ellipsis (IsLayoutGeneratedText())
   NGInlineCursor last_leaf;
   bool in_hidden_for_paint = false;
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
@@ -1029,7 +1032,10 @@ void NGInlineCursor::MoveToLastNonPseudoLeaf() {
     if (cursor.Current().IsLineBreak() && last_leaf)
       break;
     if (cursor.Current().IsText()) {
-      DCHECK(!cursor.Current().IsLayoutGeneratedText());
+      if (cursor.Current().IsLayoutGeneratedText()) {
+        // |cursor| is at ellipsis.
+        break;
+      }
       if (in_hidden_for_paint && !cursor.Current().IsHiddenForPaint()) {
         // |cursor| is at truncated text.
         break;

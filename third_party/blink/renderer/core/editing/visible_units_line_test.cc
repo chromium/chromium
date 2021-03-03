@@ -1125,7 +1125,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithPositionRelative) {
 }
 
 // https://crbug.com/947462
-TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis) {
+TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis1) {
   LoadAhem();
   InsertStyleElement(R"HTML(
     div {
@@ -1144,6 +1144,34 @@ TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis) {
   EXPECT_EQ(
       Position(text, 7),
       EndOfLine(CreateVisiblePositionInDOMTree(*text, 6)).DeepEquivalent());
+}
+
+// https://crbug.com/1177753
+TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis2) {
+  InsertStyleElement(R"HTML(
+    div {
+      overflow: scroll;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 50px;
+      direction: rtl;
+    }
+    span {
+      display: inline-block;
+      width: 75px; /* Something bigger than 50px */
+    })HTML");
+  SetBodyContent("<div><span>x</span>&#x20;</div>");
+  Element* span = GetDocument().QuerySelector("span");
+
+  // Should not crash
+  const PositionWithAffinity& start_of_line =
+      StartOfLine(PositionWithAffinity(Position(span, 1)));
+
+  // The result on legacy layout is broken and not worth fixing.
+  EXPECT_EQ(LayoutNGEnabled()
+                ? PositionWithAffinity(Position::BeforeNode(*span))
+                : PositionWithAffinity(),
+            start_of_line);
 }
 
 }  // namespace blink
