@@ -139,13 +139,11 @@ source_set("core_unit_tests") {
     "feed_stream_unittest.cc",
     "image_fetcher_unittest.cc",
     "metrics_reporter_unittest.cc",
-    "notice_card_tracker_unittest.cc",
     "persistent_key_value_store_impl_unittest.cc",
     "proto_util_unittest.cc",
     "protocol_translator_unittest.cc",
     "public/feed_service_unittest.cc",
     "request_throttler_unittest.cc",
-    "scheduling_unittest.cc",
     "stream_model_unittest.cc",
     "test/callback_receiver.cc",
     "test/callback_receiver.h",
@@ -154,11 +152,11 @@ source_set("core_unit_tests") {
     "test/proto_printer.h",
     "test/stream_builder.cc",
     "test/stream_builder.h",
-    "types_unittest.cc",
   ]
 
   deps = [
     ":common",
+    ":feed_core_base_unit_tests",
     ":feed_core_v2",
     ":unit_tests_bundle_data",
     "//base",
@@ -183,6 +181,28 @@ source_set("core_unit_tests") {
     "//services/network/public/mojom",
     "//testing/gtest",
     "//third_party/zlib/google:compression_utils",
+  ]
+}
+
+# Tests for :feed_core_base that can be compiled in iOS.
+# This source set is added as a dep of :core_unit_tests.
+source_set("feed_core_base_unit_tests") {
+  testonly = true
+  sources = [
+    "notice_card_tracker_unittest.cc",
+    "scheduling_unittest.cc",
+    "types_unittest.cc",
+  ]
+  deps = [
+    ":feed_core_base",
+    "//base",
+    "//base/test:test_support",
+    "//components/feed:feature_list",
+    "//components/feed/core/common:feed_core_common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 
