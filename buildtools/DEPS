@@ -17,7 +17,8 @@ vars = {
   'gn_version': 'git_revision:dfcbc6fed0a8352696f92d67ccad54048ad182b3',
 
   # When changing these, also update the svn revisions in deps_revisions.gni
-  'clang_format_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
+  # TODO(crbug.com/1166332) rename to clang_format_revision.
+  'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
   'libcxx_revision':       '8fa87946779682841e21e2da977eccfb6cb3bded',
 }
 
@@ -25,7 +26,7 @@ deps = {
   'clang_format/script':
     Var('chromium_url') +
     '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
-    Var('clang_format_revision'),
+    Var('clang_fmt_revision'),
   'linux64': {
     'packages': [
       {
