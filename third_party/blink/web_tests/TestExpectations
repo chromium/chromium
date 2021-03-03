@@ -5226,7 +5226,7 @@ crbug.com/1098067 [ Fuchsia ] virtual/text-antialias/bidi-isolate-nextlinebreak-
 crbug.com/1098136 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure ]
 
 # Sheriff 2020-06-24
-crbug.com/1098676 [ Win ] http/tests/devtools/console-xhr-logging.js [ Pass Failure ]
+crbug.com/1098676 http/tests/devtools/console-xhr-logging.js [ Pass Failure ]
 
 # Tests blocking WPT importer
 crbug.com/1098844 external/wpt/wasm/jsapi/functions/entry.html [ Pass Crash Timeout ]
@@ -5395,6 +5395,8 @@ crbug.com/1042877 http/tests/security/mixedContent/strict-mode-image-blocked.htt
 crbug.com/1042877 http/tests/security/mixedContent/strict-mode-image-in-frame-blocked.https.html [ Failure ]
 crbug.com/1042877 http/tests/security/mixedContent/strict-mode-image-reportonly.https.php [ Failure ]
 crbug.com/1042877 http/tests/security/mixedContent/strict-mode-via-pref-image-blocked.https.html [ Failure ]
+
+crbug.com/1046784 http/tests/devtools/sources/debugger/anonymous-script-with-source-map-breakpoint.js [ Failure Pass ]
 
 # Mixed content autoupgrades cause test to fail because test relied on http subresources to test a different origin, needs to be changed to not rely on HTTP URLs.
 crbug.com/1042877 http/tests/security/img-crossorigin-redirect-credentials.https.html [ Failure ]
