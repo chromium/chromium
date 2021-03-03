@@ -472,6 +472,46 @@
       },
     },
 
+    'chrome_sizes_android': {
+      'chrome_sizes': {
+        'merge': {
+          'script': '//tools/perf/process_perf_results.py',
+        },
+        'resultdb': {
+          'enable': False,
+        },
+        'swarming': {
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-16.04"
+            }
+          ],
+        },
+        'remove_mixins': [
+          'android_q',
+          'android_r',
+          'bullhead',
+          'flame',
+          'flounder',
+          'foster',
+          'hammerhead',
+          'kitkat',
+          'lollipop',
+          'lollipop_generic',
+          'marshmallow',
+          'marshmallow_generic',
+          'nougat',
+          'nougat_generic',
+          'oreo_fleet',
+          'pie_fleet',
+          'sailfish',
+          'shamu',
+          'walleye',
+        ],
+      },
+    },
+
     'chromedriver_py_tests_isolated_scripts': {
       'chromedriver_py_tests': {
         'args': [
@@ -6608,6 +6648,11 @@
       'mojo_windows_specific_gtests',
       'network_service_fyi_gtests',
       'network_service_in_process_gtests',
+    ],
+
+    'monochrome_public_apk_checker_isolated_script_and_sizes': [
+      'chrome_sizes_android',
+      'monochrome_public_apk_checker_isolated_script',
     ],
 
     'network_service_extra_gtests': [
