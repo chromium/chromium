@@ -225,6 +225,11 @@ const char kDisablePrintPreview[]           = "disable-print-preview";
 // disable that check. This switch is used during automated testing.
 const char kDisablePromptOnRepost[]         = "disable-prompt-on-repost";
 
+// Disable stack profiling. Stack profiling may change performance. Disabling
+// stack profiling is beneficial when comparing performance metrics with a
+// build that has it disabled by default.
+const char kDisableStackProfiler[] = "disable-stack-profiler";
+
 // Some tests seem to require the application to close when the last
 // browser window is closed. Thus, we need a switch to force this behavior
 // for ChromeOS Aura, disable "zero window mode".

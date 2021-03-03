@@ -186,6 +186,11 @@ ThreadProfilerConfiguration::ChooseVariationGroup(
 ThreadProfilerConfiguration::BrowserProcessConfiguration
 ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
     const ThreadProfilerPlatformConfiguration& platform_configuration) {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kDisableStackProfiler))
+    return base::nullopt;
+
   const base::Optional<version_info::Channel> release_channel =
       GetReleaseChannel();
 
