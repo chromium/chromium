@@ -700,7 +700,8 @@ AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid) {
 
 struct HWNDSearchInfo {
   std::wstring title;
-  HWND hwnd;
+  HWND matched_hwnd{nullptr};
+  std::vector<std::wstring> matched_titles;
 };
 
 BOOL CALLBACK MatchWindow(HWND hwnd, LPARAM lParam) {
@@ -715,9 +716,9 @@ BOOL CALLBACK MatchWindow(HWND hwnd, LPARAM lParam) {
   }
 
   auto* info = reinterpret_cast<HWNDSearchInfo*>(lParam);
-  if (title.find(info->title) != std::wstring::npos) {
-    info->hwnd = hwnd;
-    return FALSE;
+  if (title.find(info->title) != std::string::npos) {
+    info->matched_titles.push_back(title);
+    info->matched_hwnd = hwnd;
   }
   return TRUE;
 }
@@ -738,11 +739,22 @@ AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
     return NULL;
   }
 
-  if (::EnumWindows(MatchWindow, reinterpret_cast<LPARAM>(&info))) {
+  ::EnumWindows(MatchWindow, reinterpret_cast<LPARAM>(&info));
+
+  // Fail if multiple matches are found.
+  if (info.matched_titles.size() > 1) {
+    LOG(ERROR) << "Ambiguous name: multiple windows matched:";
+    for (auto title : info.matched_titles) {
+      LOG(ERROR) << "  " << title;
+      // Extra empty log to avoid jamming titles together. Apparently titles
+      // contain special characters that prevent from printing anything coming
+      // afterwards.
+      LOG(ERROR) << "";
+    }
     return NULL;
   }
 
-  return info.hwnd;
+  return info.matched_hwnd;
 }
 
 }  // namespace ui

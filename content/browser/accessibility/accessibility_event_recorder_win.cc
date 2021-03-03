@@ -27,6 +27,7 @@
 namespace content {
 
 using ui::AccessibilityEventToString;
+using ui::GetHWNDBySelector;
 using ui::IAccessible2StateToString;
 using ui::IAccessibleRoleToString;
 using ui::IAccessibleStateToString;
