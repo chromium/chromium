@@ -1809,6 +1809,8 @@ TEST_F(TabStripModelTest, AddWebContents_ForgetOpeners) {
 TEST_F(TabStripModelTest, AddWebContents_LinkOpensInSameGroupAsOpener) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
+  MockTabStripModelObserver observer;
+  tabstrip.AddObserver(&observer);
   ASSERT_TRUE(tabstrip.empty());
 
   // Open the home page and add the tab to a group.
@@ -1819,6 +1821,7 @@ TEST_F(TabStripModelTest, AddWebContents_LinkOpensInSameGroupAsOpener) {
   ASSERT_EQ(1, tabstrip.count());
   tab_groups::TabGroupId group_id = tabstrip.AddToNewGroup({0});
   ASSERT_EQ(tabstrip.GetTabGroupForTab(0), group_id);
+  ASSERT_EQ(observer.group_update(group_id).contents_update_count, 1);
 
   // Open a tab by simulating a link that opens in a new tab.
   std::unique_ptr<WebContents> contents = CreateWebContents();
@@ -1826,6 +1829,9 @@ TEST_F(TabStripModelTest, AddWebContents_LinkOpensInSameGroupAsOpener) {
                           TabStripModel::ADD_ACTIVE);
   EXPECT_EQ(2, tabstrip.count());
   EXPECT_EQ(tabstrip.GetTabGroupForTab(1), group_id);
+
+  // There should have been a separate notification for the tab being grouped.
+  EXPECT_EQ(observer.group_update(group_id).contents_update_count, 2);
 
   tabstrip.CloseAllTabs();
   ASSERT_TRUE(tabstrip.empty());
