@@ -93,8 +93,6 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
       base::Optional<ServiceWorkerIdentifier> sw_identifier,
       const base::DictionaryValue& filter,
       bool lazy);
-  void OnExtensionShouldSuspendAck(const std::string& extension_id,
-                                   int sequence_id);
   void OnExtensionTransferBlobsAck(const std::vector<std::string>& blob_uuids);
   void OnExtensionWakeEventPage(int request_id,
                                 const std::string& extension_id);

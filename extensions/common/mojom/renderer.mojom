@@ -50,6 +50,10 @@ interface Renderer {
   // is only used for testing.
   SetScriptingAllowlist(array<string> extension_ids);
 
+  // Asks the lazy background page if it is ready to be suspended and replies
+  // back to the browser. This is sent when the page is considered idle.
+  ShouldSuspend() => ();
+
   // Tells the renderer to update an extension's policy_blocked_hosts set.
   UpdateDefaultPolicyHostRestrictions(
         URLPatternSet default_policy_blocked_hosts,

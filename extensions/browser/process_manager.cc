@@ -837,12 +837,18 @@ void ProcessManager::OnLazyBackgroundPageIdle(const std::string& extension_id,
       sequence_id == background_page_data_[extension_id].close_sequence_id) {
     // Tell the renderer we are about to close. This is a simple ping that the
     // renderer will respond to. The purpose is to control sequencing: if the
-    // extension remains idle until the renderer responds with an ACK, then we
-    // know that the extension process is ready to shut down. If our
-    // close_sequence_id has already changed, then we would ignore the
-    // ShouldSuspendAck, so we don't send the ping.
-    host->render_process_host()->Send(new ExtensionMsg_ShouldSuspend(
-        extension_id, sequence_id));
+    // extension remains idle until the renderer responds, then we know that the
+    // extension process is ready to shut down. If our close_sequence_id has
+    // already changed, then we would ignore the reply to this message, so we
+    // don't send the ping.
+    mojom::Renderer* renderer =
+        RendererStartupHelperFactory::GetForBrowserContext(browser_context())
+            ->GetRenderer(host->render_process_host());
+    if (renderer) {
+      renderer->ShouldSuspend(base::BindOnce(
+          &ProcessManager::OnShouldSuspendAck, weak_ptr_factory_.GetWeakPtr(),
+          extension_id, sequence_id));
+    }
   }
 }
 

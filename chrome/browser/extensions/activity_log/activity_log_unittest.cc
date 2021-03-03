@@ -94,6 +94,9 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void SetWebViewPartitionID(const std::string& partition_id) override {}
   void SetScriptingAllowlist(
       const std::vector<std::string>& extension_ids) override {}
+  void ShouldSuspend(ShouldSuspendCallback callback) override {
+    std::move(callback).Run();
+  }
   void UpdateDefaultPolicyHostRestrictions(
       const URLPatternSet& default_policy_blocked_hosts,
       const URLPatternSet& default_policy_allowed_hosts) override {}

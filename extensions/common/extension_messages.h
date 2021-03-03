@@ -598,13 +598,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_WakeEventPageResponse,
                      int /* request_id */,
                      bool /* success */)
 
-// Ask the lazy background page if it is ready to be suspended. This is sent
-// when the page is considered idle. The renderer will reply with the same
-// sequence_id so that we can tell which message it is responding to.
-IPC_MESSAGE_CONTROL2(ExtensionMsg_ShouldSuspend,
-                     std::string /* extension_id */,
-                     uint64_t /* sequence_id */)
-
 // Response to the renderer for ExtensionHostMsg_GetAppInstallState.
 IPC_MESSAGE_ROUTED2(ExtensionMsg_GetAppInstallStateResponse,
                     std::string /* state */,
@@ -826,11 +819,6 @@ IPC_MESSAGE_ROUTED3(ExtensionHostMsg_GetAppInstallState,
 // function has been processed.
 IPC_MESSAGE_ROUTED1(ExtensionHostMsg_ResponseAck,
                     int /* request_id */)
-
-// Response to ExtensionMsg_ShouldSuspend.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_ShouldSuspendAck,
-                     std::string /* extension_id */,
-                     uint64_t /* sequence_id */)
 
 // Informs the browser to increment the keepalive count for the lazy background
 // page, keeping it alive.

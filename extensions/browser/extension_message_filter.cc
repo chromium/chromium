@@ -101,7 +101,6 @@ void ExtensionMessageFilter::OverrideThreadForMessage(
     case ExtensionHostMsg_RemoveLazyServiceWorkerListener::ID:
     case ExtensionHostMsg_AddFilteredListener::ID:
     case ExtensionHostMsg_RemoveFilteredListener::ID:
-    case ExtensionHostMsg_ShouldSuspendAck::ID:
     case ExtensionHostMsg_TransferBlobsAck::ID:
     case ExtensionHostMsg_WakeEventPage::ID:
     case ExtensionHostMsg_OpenChannelToExtension::ID:
@@ -140,8 +139,6 @@ bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
                         OnExtensionAddFilteredListener)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveFilteredListener,
                         OnExtensionRemoveFilteredListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_ShouldSuspendAck,
-                        OnExtensionShouldSuspendAck)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_TransferBlobsAck,
                         OnExtensionTransferBlobsAck)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_WakeEventPage,
@@ -303,16 +300,6 @@ void ExtensionMessageFilter::OnExtensionRemoveFilteredListener(
 
   GetEventRouter()->RemoveFilteredEventListener(
       event_name, process, extension_id, sw_identifier, filter, lazy);
-}
-
-void ExtensionMessageFilter::OnExtensionShouldSuspendAck(
-     const std::string& extension_id, int sequence_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  ProcessManager::Get(browser_context_)
-      ->OnShouldSuspendAck(extension_id, sequence_id);
 }
 
 void ExtensionMessageFilter::OnExtensionTransferBlobsAck(
