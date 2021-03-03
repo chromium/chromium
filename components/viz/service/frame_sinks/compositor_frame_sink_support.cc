@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"
@@ -65,7 +66,8 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       allow_copy_output_requests_(is_root),
       animation_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Animation")) {
+              "PowerModeVoter.Animation")),
+      document_transitions_enabled_(features::IsDocumentTransitionEnabled()) {
   surface_animation_manager_.SetDirectiveFinishedCallback(
       base::BindRepeating(&CompositorFrameSinkSupport::
                               OnCompositorFrameTransitionDirectiveProcessed,
@@ -155,7 +157,7 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   // Let the animation manager process any new directives on the surface.
   const auto& transition_directives =
       surface->GetActiveFrameMetadata().transition_directives;
-  if (!transition_directives.empty()) {
+  if (document_transitions_enabled_ && !transition_directives.empty()) {
     // TODO(vmpstr): Figure out if `last_frame_time_` is correct here.
     // SurfaceAcitvation may have happened some time after we sent the last
     // BeginFrame to the client (which is when the frame time is updated). We

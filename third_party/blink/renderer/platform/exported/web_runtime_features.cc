@@ -675,4 +675,8 @@ void WebRuntimeFeatures::EnableCSSColorSchemeUARendering(bool enable) {
   RuntimeEnabledFeatures::SetCSSColorSchemeUARenderingEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableDocumentTransition(bool enable) {
+  RuntimeEnabledFeatures::SetDocumentTransitionEnabled(enable);
+}
+
 }  // namespace blink

@@ -368,6 +368,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
+  // Represents whether the DocumentTransition feature is enabled.
+  const bool document_transitions_enabled_;
+
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CompositorFrameSinkSupport);

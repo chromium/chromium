@@ -81,4 +81,12 @@ const base::Feature kHudDisplayForPerformanceMetrics{
 
 const base::Feature kJankInjectionAblationFeature{
     "JankInjectionAblation", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDocumentTransition{"DocumentTransition",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsDocumentTransitionEnabled() {
+  return base::FeatureList::IsEnabled(kDocumentTransition);
+}
+
 }  // namespace features
