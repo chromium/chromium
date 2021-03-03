@@ -37,6 +37,18 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
   LogSourceAccessManager* GetLogSourceAccessManager() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Create a FeedbackInfo to be passed to UI/JS
+  std::unique_ptr<api::feedback_private::FeedbackInfo> CreateFeedbackInfo(
+      const std::string& description_template,
+      const std::string& description_placeholder_text,
+      const std::string& category_tag,
+      const std::string& extra_diagnostics,
+      const GURL& page_url,
+      api::feedback_private::FeedbackFlow flow,
+      bool from_assistant,
+      bool include_bluetooth_logs,
+      bool from_chrome_labs_or_kaleidoscope);
+
   void RequestFeedbackForFlow(const std::string& description_template,
                               const std::string& description_placeholder_text,
                               const std::string& category_tag,

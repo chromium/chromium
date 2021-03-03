@@ -125,6 +125,60 @@ LogSourceAccessManager* FeedbackPrivateAPI::GetLogSourceAccessManager() const {
 }
 #endif
 
+std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
+    const std::string& description_template,
+    const std::string& description_placeholder_text,
+    const std::string& category_tag,
+    const std::string& extra_diagnostics,
+    const GURL& page_url,
+    api::feedback_private::FeedbackFlow flow,
+    bool from_assistant,
+    bool include_bluetooth_logs,
+    bool from_chrome_labs_or_kaleidoscope) {
+  auto info = std::make_unique<FeedbackInfo>();
+
+  info->description = description_template;
+  info->description_placeholder =
+      std::make_unique<std::string>(description_placeholder_text);
+  info->category_tag = std::make_unique<std::string>(category_tag);
+  info->page_url = std::make_unique<std::string>(page_url.spec());
+  info->system_information = std::make_unique<SystemInformationList>();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  info->from_assistant = std::make_unique<bool>(from_assistant);
+  info->include_bluetooth_logs = std::make_unique<bool>(include_bluetooth_logs);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Any extra diagnostics information should be added to the sys info.
+  if (!extra_diagnostics.empty()) {
+    SystemInformation extra_info;
+    extra_info.key = "EXTRA_DIAGNOSTICS";
+    extra_info.value = extra_diagnostics;
+    info->system_information->emplace_back(std::move(extra_info));
+  }
+
+  // The manager is only available if tracing is enabled.
+  if (TracingManager* manager = TracingManager::Get()) {
+    info->trace_id = std::make_unique<int>(manager->RequestTrace());
+  }
+  info->flow = flow;
+#if defined(OS_MAC)
+  const bool use_system_window_frame = true;
+#else
+  const bool use_system_window_frame = false;
+#endif
+  info->use_system_window_frame =
+      std::make_unique<bool>(use_system_window_frame);
+
+  // If the feedback is from Chrome Labs or Kaleidoscope then this should use
+  // a custom product ID.
+  if (from_chrome_labs_or_kaleidoscope) {
+    info->product_id =
+        std::make_unique<int>(kChromeLabsAndKaleidoscopeProductId);
+  }
+
+  return info;
+}
+
 void FeedbackPrivateAPI::RequestFeedbackForFlow(
     const std::string& description_template,
     const std::string& description_placeholder_text,
@@ -136,49 +190,12 @@ void FeedbackPrivateAPI::RequestFeedbackForFlow(
     bool include_bluetooth_logs,
     bool from_chrome_labs_or_kaleidoscope) {
   if (browser_context_ && EventRouter::Get(browser_context_)) {
-    FeedbackInfo info;
-    info.description = description_template;
-    info.description_placeholder =
-        std::make_unique<std::string>(description_placeholder_text);
-    info.category_tag = std::make_unique<std::string>(category_tag);
-    info.page_url = std::make_unique<std::string>(page_url.spec());
-    info.system_information = std::make_unique<SystemInformationList>();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    info.from_assistant = std::make_unique<bool>(from_assistant);
-    info.include_bluetooth_logs =
-        std::make_unique<bool>(include_bluetooth_logs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    auto info = CreateFeedbackInfo(
+        description_template, description_placeholder_text, category_tag,
+        extra_diagnostics, page_url, flow, from_assistant,
+        include_bluetooth_logs, from_chrome_labs_or_kaleidoscope);
 
-    // Any extra diagnostics information should be added to the sys info.
-    if (!extra_diagnostics.empty()) {
-      SystemInformation extra_info;
-      extra_info.key = "EXTRA_DIAGNOSTICS";
-      extra_info.value = extra_diagnostics;
-      info.system_information->emplace_back(std::move(extra_info));
-    }
-
-    // The manager is only available if tracing is enabled.
-    if (TracingManager* manager = TracingManager::Get()) {
-      info.trace_id = std::make_unique<int>(manager->RequestTrace());
-    }
-    info.flow = flow;
-#if defined(OS_MAC)
-    const bool use_system_window_frame = true;
-#else
-    const bool use_system_window_frame = false;
-#endif
-    info.use_system_window_frame =
-        std::make_unique<bool>(use_system_window_frame);
-
-    // If the feedback is from Chrome Labs or Kaleidoscope then this should use
-    // a custom product ID.
-    if (from_chrome_labs_or_kaleidoscope) {
-      info.product_id =
-          std::make_unique<int>(kChromeLabsAndKaleidoscopeProductId);
-    }
-
-    std::unique_ptr<base::ListValue> args =
-        feedback_private::OnFeedbackRequested::Create(info);
+    auto args = feedback_private::OnFeedbackRequested::Create(*info);
 
     auto event = std::make_unique<Event>(
         events::FEEDBACK_PRIVATE_ON_FEEDBACK_REQUESTED,
