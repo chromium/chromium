@@ -3703,6 +3703,21 @@
       "features": [
         "disable_accelerated_av1_decode_d3d11"
       ]
+    },
+    {
+      "id": 369,
+      "cr_bugs": [1184340],
+      "description": "Limit MSAA quality samples to 4 and storage samples 2 on Pollock",
+      "os": {
+        "type" : "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x15d8"],
+      "device_revision": ["0xe9", "0xea"],
+      "features": [
+        "max_msaa_sample_count_4",
+        "use_eqaa_storage_samples_2"
+      ]
     }
   ]
 }
