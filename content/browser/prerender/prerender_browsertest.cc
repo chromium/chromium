@@ -622,7 +622,7 @@ class MojoCapabilityControlTestContentBrowserClient
         base::Unretained(this)));
   }
 
-  void RegisterMojoBinderPoliciesForPrerendering(
+  void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       MojoBinderPolicyMap& policy_map) override {
     policy_map.SetPolicy<mojom::TestInterfaceForGrant>(
         MojoBinderPolicy::kGrant);

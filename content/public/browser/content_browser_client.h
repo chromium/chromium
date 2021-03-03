@@ -1098,12 +1098,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // bind Mojo interfaces. See content/browser/prerender/README.md for more
   // about capability control.
   //
+  // The embedder can add entries to `policy_map` for interfaces that it
+  // registers in `RegisterBrowserInterfaceBindersForFrame()`. It should not
+  // change or remove existing entries.
+  //
   // This function is called at most once, when the first RenderFrameHost is
-  // created that does a prerender. The embedder can add entries to `policy_map`
-  // for interfaces that it registers in
-  // `RegisterBrowserInterfaceBindersForFrame()`. It should not change or remove
-  // existing entries.
-  virtual void RegisterMojoBinderPoliciesForPrerendering(
+  // created for prerendering a page that is same-origin to the page that
+  // triggered the prerender.
+  virtual void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       MojoBinderPolicyMap& policy_map) {}
 
   // Content was unable to bind a receiver for this associated interface, so the

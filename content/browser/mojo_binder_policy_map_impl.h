@@ -29,9 +29,11 @@ class CONTENT_EXPORT MojoBinderPolicyMapImpl : public MojoBinderPolicyMap {
   MojoBinderPolicyMapImpl(MojoBinderPolicyMapImpl&&) = delete;
   MojoBinderPolicyMapImpl& operator=(MojoBinderPolicyMapImpl&&) = delete;
 
-  // Returns the instance used by MojoBinderPolicyApplier for pages that are
-  // prerendering. Currently this is the only use of this class.
-  static const MojoBinderPolicyMapImpl* GetInstanceForPrerendering();
+  // Returns the instance used by MojoBinderPolicyApplier for prerendering
+  // pages.
+  // This is used when the prerendered page and the page that triggered the
+  // prerendering are same origin. Currently this is the only use of this class.
+  static const MojoBinderPolicyMapImpl* GetInstanceForSameOriginPrerendering();
 
   // Gets the corresponding policy of a given Mojo interface name. If the
   // interface name is not in `policy_map_`, the given `default_policy` will be

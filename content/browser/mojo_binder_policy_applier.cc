@@ -15,10 +15,10 @@ MojoBinderPolicyApplier::~MojoBinderPolicyApplier() = default;
 
 // static
 std::unique_ptr<MojoBinderPolicyApplier>
-MojoBinderPolicyApplier::CreateForPrerendering(
+MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
     base::OnceClosure cancel_closure) {
   return std::make_unique<MojoBinderPolicyApplier>(
-      MojoBinderPolicyMapImpl::GetInstanceForPrerendering(),
+      MojoBinderPolicyMapImpl::GetInstanceForSameOriginPrerendering(),
       std::move(cancel_closure));
 }
 

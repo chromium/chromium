@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 
-void RegisterChromeMojoBinderPoliciesForPrerendering(
+void RegisterChromeMojoBinderPoliciesForSameOriginPrerendering(
     content::MojoBinderPolicyMap& policy_map) {
   // TODO(https://crbug.com/1145976): Set all Chrome's interface policies.
 

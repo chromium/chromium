@@ -16,11 +16,10 @@ namespace content {
 
 namespace {
 
-// Register mojo binder policies for prerendering for content/ interfaces.
-// TODO(https://crbug.com/1145976): Set same-origin policies and cross-origin
-// policies separately. The polices set in this function are for same-origin
-// prerendering.
-void RegisterContentBinderPoliciesForPrerendering(MojoBinderPolicyMap& map) {
+// Register mojo binder policies for same-origin prerendering for content/
+// interfaces.
+void RegisterContentBinderPoliciesForSameOriginPrerendering(
+    MojoBinderPolicyMap& map) {
   map.SetPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderPolicy::kCancel);
   map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);
@@ -37,9 +36,10 @@ void RegisterContentBinderPoliciesForPrerendering(MojoBinderPolicyMap& map) {
 class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
  public:
   BrowserInterfaceBrokerMojoBinderPolicyMapHolder() {
-    RegisterContentBinderPoliciesForPrerendering(map_);
-    GetContentClient()->browser()->RegisterMojoBinderPoliciesForPrerendering(
-        map_);
+    RegisterContentBinderPoliciesForSameOriginPrerendering(same_origin_map_);
+    GetContentClient()
+        ->browser()
+        ->RegisterMojoBinderPoliciesForSameOriginPrerendering(same_origin_map_);
   }
 
   ~BrowserInterfaceBrokerMojoBinderPolicyMapHolder() = default;
@@ -54,12 +54,14 @@ class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
   BrowserInterfaceBrokerMojoBinderPolicyMapHolder& operator=(
       BrowserInterfaceBrokerMojoBinderPolicyMapHolder&&) = delete;
 
-  const MojoBinderPolicyMapImpl* GetPolicyMap() const { return &map_; }
+  const MojoBinderPolicyMapImpl* GetSameOriginPolicyMap() const {
+    return &same_origin_map_;
+  }
 
  private:
   // TODO(https://crbug.com/1145976): Set default policy map for content/.
-  // Changes to `map_` require security review.
-  MojoBinderPolicyMapImpl map_;
+  // Changes to `same_origin_map_` require security review.
+  MojoBinderPolicyMapImpl same_origin_map_;
 };
 
 }  // namespace
@@ -73,11 +75,12 @@ MojoBinderPolicyMapImpl::MojoBinderPolicyMapImpl(
 MojoBinderPolicyMapImpl::~MojoBinderPolicyMapImpl() = default;
 
 const MojoBinderPolicyMapImpl*
-MojoBinderPolicyMapImpl::GetInstanceForPrerendering() {
+MojoBinderPolicyMapImpl::GetInstanceForSameOriginPrerendering() {
   static const base::NoDestructor<
       BrowserInterfaceBrokerMojoBinderPolicyMapHolder>
       map;
-  return map->GetPolicyMap();
+
+  return map->GetSameOriginPolicyMap();
 }
 
 MojoBinderPolicy MojoBinderPolicyMapImpl::GetMojoBinderPolicy(

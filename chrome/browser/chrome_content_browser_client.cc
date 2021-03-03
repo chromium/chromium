@@ -3891,12 +3891,13 @@ void ChromeContentBrowserClient::SessionEnding() {
 
 #endif  // defined(OS_WIN)
 
-void ChromeContentBrowserClient::RegisterMojoBinderPoliciesForPrerendering(
-    content::MojoBinderPolicyMap& policy_map) {
+void ChromeContentBrowserClient::
+    RegisterMojoBinderPoliciesForSameOriginPrerendering(
+        content::MojoBinderPolicyMap& policy_map) {
   // Changes to `policy_map` should be made in
-  // RegisterChromeMojoBinderPoliciesForPrerendering() which requires security
-  // review.
-  RegisterChromeMojoBinderPoliciesForPrerendering(policy_map);
+  // RegisterChromeMojoBinderPoliciesForSameOriginPrerendering() which requires
+  // security review.
+  RegisterChromeMojoBinderPoliciesForSameOriginPrerendering(policy_map);
 }
 
 void ChromeContentBrowserClient::OpenURL(

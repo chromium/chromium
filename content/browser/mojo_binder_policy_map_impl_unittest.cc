@@ -57,7 +57,7 @@ TEST_F(MojoBinderPolicyMapImplTest, InterfaceNotFound) {
 class MojoBinderPolicyTestContentBrowserClient
     : public TestContentBrowserClient {
  public:
-  void RegisterMojoBinderPoliciesForPrerendering(
+  void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       MojoBinderPolicyMap& policy_map) override {
     policy_map.SetPolicy<content::mojom::TestInterfaceForDefer>(
         MojoBinderPolicy::kDefer);
@@ -65,11 +65,12 @@ class MojoBinderPolicyTestContentBrowserClient
 };
 
 // Verifies the embedder can register its policies via
-// ContentBrowserClient::RegisterMojoBinderPoliciesForPrerendering.
+// ContentBrowserClient::RegisterMojoBinderPoliciesForSameOriginPrerendering.
 TEST_F(MojoBinderPolicyMapImplTest, RegisterMojoBinderPolicyMap) {
   MojoBinderPolicyTestContentBrowserClient test_browser_client;
   MojoBinderPolicyMapImpl policy_map;
-  test_browser_client.RegisterMojoBinderPoliciesForPrerendering(policy_map);
+  test_browser_client.RegisterMojoBinderPoliciesForSameOriginPrerendering(
+      policy_map);
   EXPECT_EQ(
       policy_map.GetMojoBinderPolicyOrDieForTesting(
           mojo::Remote<

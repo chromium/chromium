@@ -6333,8 +6333,10 @@ void RenderFrameHostImpl::CommitNavigation(
 
   if (blink::features::IsPrerender2Enabled()) {
     if (IsPrerendering()) {
+      // TODO(https://crbug.com/1132752): Check the prerendering page is
+      // same-origin to the prerender trigger page.
       broker_.ApplyMojoBinderPolicies(
-          MojoBinderPolicyApplier::CreateForPrerendering(
+          MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
               base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
                              base::Unretained(this))));
     }
@@ -6843,8 +6845,10 @@ void RenderFrameHostImpl::FailedNavigation(
   // instead to align with the prerendering LifecycleState.
   if (blink::features::IsPrerender2Enabled()) {
     if (IsPrerendering()) {
+      // TODO(https://crbug.com/1132752): Check the prerendering page is
+      // same-origin to the prerender trigger page.
       broker_.ApplyMojoBinderPolicies(
-          MojoBinderPolicyApplier::CreateForPrerendering(
+          MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
               base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
                              base::Unretained(this))));
     }
@@ -8847,8 +8851,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     if (blink::features::IsPrerender2Enabled() && is_initial_empty_commit &&
         !is_main_frame()) {
       if (IsPrerendering()) {
+        // TODO(https://crbug.com/1132752): Check the prerendering page is
+        // same-origin to the prerender trigger page.
         broker_.ApplyMojoBinderPolicies(
-            MojoBinderPolicyApplier::CreateForPrerendering(
+            MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
                 base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
                                base::Unretained(this))));
       }
