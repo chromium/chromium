@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewWrapper;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.webapps.PwaBottomSheetController;
 import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerFactory;
@@ -606,8 +607,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private boolean maybeShowPromo() {
         // Only one promo can be shown in one run to avoid nagging users too much.
-        if (SigninPromoUtil.launchSigninPromoIfNeeded(
-                    mActivity, SigninActivityLauncherImpl.get())) {
+        if (SigninPromoUtil.launchSigninPromoIfNeeded(mActivity, SigninActivityLauncherImpl.get(),
+                    ChromeVersionInfo.getProductMajorVersion())) {
             return true;
         }
         if (DataReductionPromoScreen.launchDataReductionPromo(
