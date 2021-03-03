@@ -238,6 +238,17 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedLayoutAlgorithm::Layout() {
     items_builder->AddPreviousItems(previous_fragment, *previous_items);
   }
 
+  // Some layout types (grid) manually calculate their inflow-bounds rather
+  // than use the value determined inside the builder. Just explicitly set this
+  // from the previous fragment for all types.
+  if (previous_fragment.InflowBounds()) {
+    LogicalRect inflow_bounds =
+        WritingModeConverter(writing_direction_,
+                             previous_physical_container_size_)
+            .ToLogical(*previous_fragment.InflowBounds());
+    container_builder_.SetInflowBounds(inflow_bounds);
+  }
+
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   // The block size may have been changed. This may affect the inline block

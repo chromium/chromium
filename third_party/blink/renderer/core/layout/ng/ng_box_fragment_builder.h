@@ -351,6 +351,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void SetIsAtBlockEnd() { is_at_block_end_ = true; }
   bool IsAtBlockEnd() const { return is_at_block_end_; }
 
+  // See |NGPhysicalBoxFragment::InflowBounds|.
+  void SetInflowBounds(const LogicalRect& inflow_bounds) {
+    DCHECK_NE(box_type_, NGPhysicalBoxFragment::NGBoxType::kInlineBox);
+    DCHECK(Node().IsScrollContainer());
+    inflow_bounds_ = inflow_bounds;
+  }
+
   void SetColumnSpanner(NGBlockNode spanner) { column_spanner_ = spanner; }
   bool FoundColumnSpanner() const { return !!column_spanner_; }
 

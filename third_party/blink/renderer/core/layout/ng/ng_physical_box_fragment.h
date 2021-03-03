@@ -132,6 +132,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // no out-of-flow positioned objects). This will return |base::nullopt| if:
   //  - The fragment is *not* a scroll container.
   //  - The scroll container contains no inflow children.
+  // This is normally the union of all inflow children's border-box rects
+  // (without relative positioning applied), however for grid layout it is the
+  // size and position of the grid instead.
+  // This is used for scrollable overflow calculations.
   const base::Optional<PhysicalRect> InflowBounds() const {
     if (!has_inflow_bounds_)
       return base::nullopt;

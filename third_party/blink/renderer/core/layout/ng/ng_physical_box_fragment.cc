@@ -1124,6 +1124,7 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
 
   DCHECK(Borders() == other.Borders());
   DCHECK(Padding() == other.Padding());
+  // NOTE: The |InflowBounds| can change if scrollbars are added/removed.
 }
 
 // Check our flags represent the actual children correctly.

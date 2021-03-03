@@ -121,11 +121,13 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   // Intrinsic block size is based on the final row offset. Because gutters are
   // included in row offsets, subtract out the final gutter (if there is one).
-  LayoutUnit final_gutter = (grid_geometry.row_geometry.sets.size() == 1)
-                                ? LayoutUnit()
-                                : grid_geometry.row_geometry.gutter_size;
+  DCHECK_GT(grid_geometry.row_geometry.sets.size(), 0u);
+  const LayoutUnit final_row_gutter =
+      (grid_geometry.row_geometry.sets.size() == 1)
+          ? LayoutUnit()
+          : grid_geometry.row_geometry.gutter_size;
   LayoutUnit intrinsic_block_size =
-      grid_geometry.row_geometry.sets.back().offset - final_gutter +
+      grid_geometry.row_geometry.sets.back().offset - final_row_gutter +
       BorderScrollbarPadding().block_end;
 
   intrinsic_block_size =
@@ -158,6 +160,30 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   }
 
   PlaceOutOfFlowItems(out_of_flow_items, grid_geometry, block_size);
+
+  // For scrollable overflow purposes grid is unique in that the "inflow-bounds"
+  // are the size of the grid, and *not* where the inflow grid-items are placed.
+  // Explicitly set the inflow-bounds to the grid size.
+  if (Node().IsScrollContainer()) {
+    DCHECK_GT(grid_geometry.column_geometry.sets.size(), 0u);
+    const LayoutUnit final_column_gutter =
+        (grid_geometry.column_geometry.sets.size() == 1)
+            ? LayoutUnit()
+            : grid_geometry.column_geometry.gutter_size;
+
+    LogicalRect inflow_bounds;
+    inflow_bounds.offset = {
+        grid_geometry.column_geometry.sets.front().offset,
+        grid_geometry.row_geometry.sets.front().offset,
+    };
+    inflow_bounds.size = {
+        grid_geometry.column_geometry.sets.back().offset - final_column_gutter -
+            inflow_bounds.offset.inline_offset,
+        grid_geometry.row_geometry.sets.back().offset - final_row_gutter -
+            inflow_bounds.offset.block_offset};
+
+    container_builder_.SetInflowBounds(inflow_bounds);
+  }
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);

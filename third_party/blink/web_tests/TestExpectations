@@ -3478,6 +3478,11 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repea
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-003.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-001.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-002.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-003.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-overflow-padding-001.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-overflow-padding-002.html [ Pass ]
 
 ### Tests failing with LayoutNGGrid enabled:
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/absolute-positioning-definite-sizes-001.html [ Failure ]
