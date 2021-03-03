@@ -642,6 +642,7 @@ public class NotificationPlatformBridge {
         notificationBuilder.setDefaults(
                 makeDefaults(vibrationPattern.length, silent, vibrateEnabled));
         notificationBuilder.setVibrate(makeVibrationPattern(vibrationPattern));
+        notificationBuilder.setSilent(silent);
 
         return notificationBuilder;
     }

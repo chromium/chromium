@@ -149,6 +149,7 @@ public abstract class NotificationBuilderBase {
     protected Action mSettingsAction;
     protected int mDefaults;
     protected long[] mVibratePattern;
+    protected boolean mSilent;
     protected long mTimestamp;
     protected boolean mRenotify;
     protected int mPriority;
@@ -399,6 +400,14 @@ public abstract class NotificationBuilderBase {
      */
     public NotificationBuilderBase setVibrate(long[] pattern) {
         mVibratePattern = Arrays.copyOf(pattern, pattern.length);
+        return this;
+    }
+
+    /**
+     * Sets whether this notification should be silent.
+     */
+    public NotificationBuilderBase setSilent(boolean silent) {
+        mSilent = silent;
         return this;
     }
 

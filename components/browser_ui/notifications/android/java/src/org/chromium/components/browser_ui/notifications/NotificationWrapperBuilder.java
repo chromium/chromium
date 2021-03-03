@@ -92,6 +92,8 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setSound(Uri sound);
 
+    NotificationWrapperBuilder setSilent(boolean silent);
+
     NotificationWrapperBuilder setDefaults(int defaults);
 
     NotificationWrapperBuilder setOnlyAlertOnce(boolean onlyAlertOnce);

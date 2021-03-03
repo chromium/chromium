@@ -242,6 +242,12 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     }
 
     @Override
+    public NotificationWrapperBuilder setSilent(boolean silent) {
+        // Not supported on non-compat builders.
+        return this;
+    }
+
+    @Override
     public NotificationWrapperBuilder setDefaults(int defaults) {
         mBuilder.setDefaults(defaults);
         return this;
