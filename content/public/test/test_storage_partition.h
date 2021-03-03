@@ -156,6 +156,8 @@ class TestStoragePartition : public StoragePartition {
   }
   ContentIndexContext* GetContentIndexContext() override;
 
+  NativeIOContext* GetNativeIOContext() override;
+
 #if !defined(OS_ANDROID)
   void set_host_zoom_map(HostZoomMap* map) { host_zoom_map_ = map; }
   HostZoomMap* GetHostZoomMap() override;
@@ -234,6 +236,7 @@ class TestStoragePartition : public StoragePartition {
   DevToolsBackgroundServicesContext* devtools_background_services_context_ =
       nullptr;
   ContentIndexContext* content_index_context_ = nullptr;
+  NativeIOContext* native_io_context_ = nullptr;
 #if !defined(OS_ANDROID)
   HostZoomMap* host_zoom_map_ = nullptr;
   HostZoomLevelContext* host_zoom_level_context_ = nullptr;

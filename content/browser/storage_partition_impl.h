@@ -85,7 +85,7 @@ class FontAccessContext;
 class GeneratedCodeCacheContext;
 class FileSystemAccessEntryFactory;
 class FileSystemAccessManagerImpl;
-class NativeIOContext;
+class NativeIOContextImpl;
 class PrefetchURLLoaderService;
 class QuotaContext;
 
@@ -165,6 +165,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   DevToolsBackgroundServicesContextImpl* GetDevToolsBackgroundServicesContext()
       override;
   ContentIndexContextImpl* GetContentIndexContext() override;
+  NativeIOContext* GetNativeIOContext() override;
 #if !defined(OS_ANDROID)
   HostZoomMap* GetHostZoomMap() override;
   HostZoomLevelContext* GetHostZoomLevelContext() override;
@@ -220,7 +221,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   FileSystemAccessManagerImpl* GetFileSystemAccessManager();
   BucketContext* GetBucketContext();
   QuotaContext* GetQuotaContext();
-  NativeIOContext* GetNativeIOContext();
   ConversionManagerImpl* GetConversionManager();
   FontAccessManagerImpl* GetFontAccessManager();
   PrerenderHostRegistry* GetPrerenderHostRegistry();
@@ -552,7 +552,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
       proto_database_provider_;
   scoped_refptr<ContentIndexContextImpl> content_index_context_;
-  scoped_refptr<NativeIOContext> native_io_context_;
+  scoped_refptr<NativeIOContextImpl> native_io_context_;
   std::unique_ptr<ConversionManagerImpl> conversion_manager_;
   std::unique_ptr<FontAccessManagerImpl> font_access_manager_;
   std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;

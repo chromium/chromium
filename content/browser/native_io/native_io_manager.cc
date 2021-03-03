@@ -44,7 +44,7 @@ std::vector<url::Origin> DoGetOrigins(const base::FilePath& native_io_root) {
 
   for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
        file_path = file_enumerator.Next()) {
-    // If the directory name has a non-ASCII character, `file_name` will be the
+    // If the directory name has a non-ASCII character, `file_path` will be the
     // empty string. This indicates corruption as any origin creates an
     // ASCII-only directory name, so those directories are ignored.
     std::string directory_name = file_path.BaseName().MaybeAsASCII();
@@ -59,6 +59,34 @@ std::vector<url::Origin> DoGetOrigins(const base::FilePath& native_io_root) {
 int64_t DoGetOriginUsage(const base::FilePath& origin_root) {
   // Returns 0 if `origin_root` does not exist.
   return base::ComputeDirectorySize(origin_root);
+}
+
+std::map<url::Origin, int64_t> DoGetOriginUsageMap(
+    const base::FilePath& native_io_root) {
+  std::map<url::Origin, int64_t> result;
+
+  // If the NativeIO directory wasn't created yet, there's no file to report.
+  if (!base::PathExists(native_io_root))
+    return result;
+
+  base::FileEnumerator file_enumerator(native_io_root, /*recursive=*/false,
+                                       base::FileEnumerator::DIRECTORIES);
+
+  for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
+       file_path = file_enumerator.Next()) {
+    // If the directory name has a non-ASCII character, `file_path` will be the
+    // empty string. This indicates corruption as any origin creates an
+    // ASCII-only directory name, so those directories are ignored.
+    std::string directory_name = file_path.BaseName().MaybeAsASCII();
+    if (directory_name == "")
+      continue;
+    url::Origin origin = storage::GetOriginFromIdentifier(directory_name);
+    int64_t usage = base::ComputeDirectorySize(file_path);
+    auto inserted = result.insert(std::make_pair(origin, usage));
+    DCHECK(inserted.second)
+        << "Origins in NativeIO's directory should have a unique folder.";
+  }
+  return result;
 }
 
 constexpr base::FilePath::CharType kNativeIODirectoryName[] =
@@ -290,6 +318,26 @@ void NativeIOManager::GetOriginUsage(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void NativeIOManager::GetOriginUsageMap(
+    base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {
+          // Needed for file I/O.
+          base::MayBlock(),
+
+          // Site data removal has a visible UI.
+          base::TaskPriority::USER_VISIBLE,
+
+          // BLOCK_SHUTDOWN is definitely not appropriate. We might be able to
+          // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
+          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      },
+      base::BindOnce(&DoGetOriginUsageMap, root_path_),
+      base::BindOnce(&NativeIOManager::DidGetOriginUsageMap,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void NativeIOManager::DidGetOriginsForType(
     storage::QuotaClient::GetOriginsForTypeCallback callback,
     std::vector<url::Origin> origins) {
@@ -312,6 +360,12 @@ void NativeIOManager::DidGetOriginUsage(
     storage::QuotaClient::GetOriginUsageCallback callback,
     int64_t usage) {
   std::move(callback).Run(usage);
+}
+
+void NativeIOManager::DidGetOriginUsageMap(
+    base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback,
+    std::map<url::Origin, int64_t> usage_map) {
+  std::move(callback).Run(usage_map);
 }
 
 base::FilePath NativeIOManager::RootPathForOrigin(const url::Origin& origin) {

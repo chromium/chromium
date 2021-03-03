@@ -88,6 +88,14 @@ class CONTENT_EXPORT NativeIOManager {
                       blink::mojom::StorageType type,
                       storage::QuotaClient::GetOriginUsageCallback callback);
 
+  // Computes the amount of bytes for all origins.
+  //
+  // This method walks the origin's entire directory and is therefore not
+  // particularly speedy.
+  // TODO(rstz): Consider a caching mechanism to improve performance.
+  void GetOriginUsageMap(
+      base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback);
+
   // Computes the path to the directory storing an origin's NativeIO files.
   //
   // Returns an empty path if the origin isn't supported for NativeIO.
@@ -142,6 +150,11 @@ class CONTENT_EXPORT NativeIOManager {
   // Called after the I/O part of GetOriginUsage() completed.
   void DidGetOriginUsage(storage::QuotaClient::GetOriginUsageCallback callback,
                          int64_t usage);
+
+  // Called after the I/O part of GetOriginUsageMap() completed.
+  void DidGetOriginUsageMap(
+      base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback,
+      std::map<url::Origin, int64_t> usage_map);
 
   // Points to the root directory for NativeIO files.
   //

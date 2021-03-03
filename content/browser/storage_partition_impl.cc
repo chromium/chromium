@@ -56,7 +56,7 @@
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
-#include "content/browser/native_io/native_io_context.h"
+#include "content/browser/native_io/native_io_context_impl.h"
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/quota/quota_context.h"
@@ -1227,7 +1227,7 @@ void StoragePartitionImpl::Initialize(
 
   dedicated_worker_service_ = std::make_unique<DedicatedWorkerServiceImpl>();
 
-  native_io_context_ = base::MakeRefCounted<NativeIOContext>();
+  native_io_context_ = base::MakeRefCounted<NativeIOContextImpl>();
   native_io_context_->Initialize(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
 

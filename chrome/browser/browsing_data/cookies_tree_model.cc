@@ -41,6 +41,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/permissions/permissions_client.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/native_io_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/url_constants.h"
@@ -1937,6 +1938,7 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfile(
   auto* storage_partition =
       content::BrowserContext::GetDefaultStoragePartition(profile);
   auto* file_system_context = storage_partition->GetFileSystemContext();
+  auto* native_io_context = storage_partition->GetNativeIOContext();
 
   auto container = std::make_unique<LocalDataContainer>(
       new browsing_data::CookieHelper(
@@ -1949,7 +1951,8 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfile(
       new browsing_data::IndexedDBHelper(storage_partition),
       browsing_data::FileSystemHelper::Create(
           file_system_context,
-          browsing_data_file_system_util::GetAdditionalFileSystemTypes()),
+          browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
+          native_io_context),
       BrowsingDataQuotaHelper::Create(profile),
       new browsing_data::ServiceWorkerHelper(
           storage_partition->GetServiceWorkerContext()),

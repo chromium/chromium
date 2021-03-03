@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/browser/native_io_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -74,9 +75,14 @@ class FileSystemHelperTest : public testing::Test {
     auto* file_system_context =
         BrowserContext::GetDefaultStoragePartition(&browser_context_)
             ->GetFileSystemContext();
-    helper_ = FileSystemHelper::Create(file_system_context, {});
+    auto* native_io_context =
+        BrowserContext::GetDefaultStoragePartition(&browser_context_)
+            ->GetNativeIOContext();
+    helper_ =
+        FileSystemHelper::Create(file_system_context, {}, native_io_context);
     content::RunAllTasksUntilIdle();
-    canned_helper_ = new CannedFileSystemHelper(file_system_context, {});
+    canned_helper_ =
+        new CannedFileSystemHelper(file_system_context, {}, native_io_context);
   }
 
   // Blocks on the run_loop quits.
