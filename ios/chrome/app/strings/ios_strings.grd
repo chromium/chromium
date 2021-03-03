@@ -1578,7 +1578,7 @@ While in incognito, sites can't use cookies to see your browsing activity across
         Split View
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED" desc="The material toast message when incogonito mode is disabled by policy [iOS only].">
-        Your organization turned off incognito mode
+        Your organization turned off Incognito mode
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_FORCED" desc="The material toast message when incogonito mode is forced by policy [iOS only].">
         Your organization requires Incognito mode
