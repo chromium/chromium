@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -56,6 +57,32 @@ void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
       100);
   base::UmaHistogramCounts1000("Memory.ParkableImage.Write.Throughput",
                                throughput_mb_s);
+}
+
+void AsanPoisonBuffer(RWBuffer* rw_buffer) {
+#if defined(ADDRESS_SANITIZER)
+  if (!rw_buffer || !rw_buffer->size())
+    return;
+
+  auto ro_buffer = rw_buffer->MakeROBufferSnapshot();
+  ROBuffer::Iter iter(ro_buffer);
+  do {
+    ASAN_POISON_MEMORY_REGION(iter.data(), iter.size());
+  } while (iter.Next());
+#endif
+}
+
+void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
+#if defined(ADDRESS_SANITIZER)
+  if (!rw_buffer || !rw_buffer->size())
+    return;
+
+  auto ro_buffer = rw_buffer->MakeROBufferSnapshot();
+  ROBuffer::Iter iter(ro_buffer);
+  do {
+    ASAN_UNPOISON_MEMORY_REGION(iter.data(), iter.size());
+  } while (iter.Next());
+#endif
 }
 
 }  // namespace
@@ -102,7 +129,7 @@ scoped_refptr<SegmentReader> ParkableImage::GetSegmentReader() {
 
 bool ParkableImage::CanParkNow() const {
   DCHECK(!is_on_disk());
-  return is_frozen() && rw_buffer_->HasNoSnapshots();
+  return is_frozen() && !is_locked() && rw_buffer_->HasNoSnapshots();
 }
 
 ParkableImage::ParkableImage(size_t initial_capacity)
@@ -111,10 +138,12 @@ ParkableImage::ParkableImage(size_t initial_capacity)
 }
 
 ParkableImage::~ParkableImage() {
+  DCHECK(!is_locked());
   auto& manager = ParkableImageManager::Instance();
   manager.Remove(this);
   if (on_disk_metadata_)
     manager.data_allocator().Discard(std::move(on_disk_metadata_));
+  AsanUnpoisonBuffer(rw_buffer_.get());
 }
 
 // static
@@ -130,9 +159,40 @@ scoped_refptr<SegmentReader> ParkableImage::MakeROSnapshot() {
 void ParkableImage::Freeze() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MutexLocker lock(lock_);
-
   DCHECK(!frozen_);
   frozen_ = true;
+
+  // If we don't have any snapshots of the current data, that means it could be
+  // parked at any time.
+  //
+  // If we have snapshots, we don't want to poison the buffer, because the
+  // snapshot is allowed to access the buffer's data freely.
+  if (CanParkNow())
+    AsanPoisonBuffer(rw_buffer_.get());
+}
+
+void ParkableImage::Lock() {
+  // Calling |Lock| only makes sense if the data is available.
+  DCHECK(rw_buffer_);
+
+  lock_depth_++;
+
+  AsanUnpoisonBuffer(rw_buffer_.get());
+}
+
+void ParkableImage::Unlock() {
+  // Check that we've locked it already.
+  DCHECK_GT(lock_depth_, 0u);
+  // While locked, we can never write the data to disk.
+  DCHECK(!is_on_disk());
+
+  lock_depth_--;
+
+  // We only poison the buffer if we're able to park after unlocking.
+  // This is to avoid issues when creating a ROBufferSegmentReader from the
+  // ParkableImage.
+  if (CanParkNow())
+    AsanPoisonBuffer(rw_buffer_.get());
 }
 
 // static
@@ -145,6 +205,8 @@ void ParkableImage::WriteToDiskInBackground(
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
   DCHECK(parkable_image);
   DCHECK(!parkable_image->on_disk_metadata_);
+
+  AsanUnpoisonBuffer(parkable_image->rw_buffer_.get());
 
   scoped_refptr<ROBuffer> ro_buffer =
       parkable_image->rw_buffer_->MakeROBufferSnapshot();
@@ -202,6 +264,8 @@ void ParkableImage::MaybeDiscardData() {
 
 void ParkableImage::DiscardData() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!is_locked());
+  AsanUnpoisonBuffer(rw_buffer_.get());
 
   rw_buffer_ = nullptr;
   ParkableImageManager::Instance().OnWrittenToDisk(this);
@@ -236,8 +300,10 @@ bool ParkableImage::MaybePark() {
 }
 
 void ParkableImage::Unpark() {
-  if (!is_on_disk())
+  if (!is_on_disk()) {
+    AsanUnpoisonBuffer(rw_buffer_.get());
     return;
+  }
 
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
 
@@ -264,6 +330,10 @@ void ParkableImage::Unpark() {
 
 size_t ParkableImage::size() const {
   return size_;
+}
+
+bool ParkableImage::is_locked() const {
+  return lock_depth_ != 0;
 }
 
 }  // namespace blink

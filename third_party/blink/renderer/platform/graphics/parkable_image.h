@@ -63,16 +63,17 @@ class PLATFORM_EXPORT ParkableImage final
   size_t size() const;
 
   bool is_frozen() const { return frozen_; }
-  bool is_on_disk() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return !rw_buffer_ && on_disk_metadata_;
-  }
-  bool CanParkNow() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
  private:
   friend class ParkableImageManager;
   friend class ParkableImageBaseTest;
 
   scoped_refptr<SegmentReader> GetSegmentReader() LOCKS_EXCLUDED(lock_);
+
+  // Locks and Unlocks the ParkableImage. A locked ParkableImage cannot be
+  // parked. Every call to Lock must have a corresponding call to Unlock.
+  void Lock() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void Unlock() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Attempt to park to disk. Returns false if it cannot be parked right now for
   // whatever reason, true if we will _attempt_ to park it to disk.
@@ -99,6 +100,14 @@ class PLATFORM_EXPORT ParkableImage final
   // this is only called when the image can be parked.
   void DiscardData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  // Returns whether the ParkableImage is locked or not. See |Lock| and |Unlock|
+  // for details.
+  bool is_locked() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  bool is_on_disk() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    return !rw_buffer_ && on_disk_metadata_;
+  }
+  bool CanParkNow() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   mutable Mutex lock_;
 
   std::unique_ptr<RWBuffer> rw_buffer_ GUARDED_BY(lock_);
@@ -110,6 +119,10 @@ class PLATFORM_EXPORT ParkableImage final
   size_t size_ = 0;
   // |frozen_| is only modified on the main thread.
   bool frozen_ = false;
+  // Counts the number of Lock/Unlock calls. Incremented by Lock, decremented by
+  // Unlock. The ParkableImage is unlocked iff |lock_depth_| is 0, i.e. we've
+  // called Lock and Unlock the same number of times.
+  size_t lock_depth_ GUARDED_BY(lock_) = 0;
   bool background_task_in_progress_ GUARDED_BY(lock_) = false;
 
   THREAD_CHECKER(thread_checker_);
