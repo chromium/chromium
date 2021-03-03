@@ -95,11 +95,11 @@ abstract class Linker {
     // value is used in tests, it is set to true so that the Linker does not have to wait for RELRO
     // to arrive from another process.
     @GuardedBy("mLock")
-    private boolean mRelroProducer = true;
+    protected boolean mRelroProducer = true;
 
     // Current common random base load address. A value of -1 indicates not yet initialized.
     @GuardedBy("mLock")
-    private long mBaseLoadAddress = -1;
+    protected long mBaseLoadAddress = -1;
 
     @GuardedBy("mLock")
     private boolean mLinkerWasWaitingSynchronously;
@@ -234,58 +234,27 @@ abstract class Linker {
     void setApkFilePath(String path) {}
 
     /**
-     * Loads the native library using a given mode.
+     * Loads a native shared library with the Chromium linker. Note the crazy linker treats
+     * libraries and files as equivalent, so you can only open one library in a given zip
+     * file. The library must not be the Chromium linker library.
      *
      * @param library The library name to load.
-     * @param loadAddress The address to load the library at, 0 when not specified.
-     * @param relroMode Tells whether and how to share relocations.
+     * @param isFixedAddressPermitted Whether the library can be loaded at a fixed address for RELRO
+     * sharing.
      */
-    @GuardedBy("mLock")
-    private void attemptLoadLibraryLocked(
-            String library, long loadAddress, @RelroSharingMode int relroMode) {
-        if (DEBUG) Log.i(TAG, "attemptLoadLibraryLocked: %s", library);
+    final void loadLibrary(String library, boolean isFixedAddressPermitted) {
+        if (DEBUG) Log.i(TAG, "loadLibrary: %s", library);
         assert !library.equals(LINKER_JNI_LIBRARY);
-        try {
-            loadLibraryImplLocked(library, loadAddress, relroMode);
-            if (!mLinkerWasWaitingSynchronously && mLibInfo != null && mState == State.DONE) {
-                atomicReplaceRelroLocked(true /* relroAvailableImmediately */);
-            }
-        } finally {
-            // Reset the state to serve the retry in loadLibrary().
-            mLinkerWasWaitingSynchronously = false;
-        }
-    }
-
-    /**
-     * Loads the native shared library.
-     *
-     * The library must not be the Chromium linker library. The LegacyLinker only allows loading one
-     * library per file, including zip/APK files.
-     *
-     * @param library The library name to load.
-     */
-    final void loadLibrary(String library) {
         synchronized (mLock) {
+            ensureInitializedLocked();
             try {
-                // Normally Chrome/Webview/Weblayer processes initialize when they choose whether to
-                // produce or consume the shared relocations. Initialization here is the last resort
-                // to choose the load address in tests that forget to decide whether they are a
-                // producer or a consumer.
-                ensureInitializedLocked();
-
-                // Load the library using the chosen load address and the RELRO sharing mode.
-                attemptLoadLibraryLocked(library, mBaseLoadAddress,
-                        mRelroProducer ? RelroSharingMode.PRODUCE : RelroSharingMode.CONSUME);
-            } catch (UnsatisfiedLinkError e) {
-                Log.w(TAG, "Failed to load native library with shared RELRO, retrying without");
-                try {
-                    // Retry without relocation sharing.
-                    attemptLoadLibraryLocked(
-                            library, 0 /* loadAddress */, RelroSharingMode.NO_SHARING);
-                } catch (UnsatisfiedLinkError e2) {
-                    Log.w(TAG, "Failed to load native library without RELRO sharing");
-                    throw e2;
+                loadLibraryImplLocked(library, isFixedAddressPermitted);
+                if (!mLinkerWasWaitingSynchronously && mLibInfo != null && mState == State.DONE) {
+                    atomicReplaceRelroLocked(true /* relroAvailableImmediately */);
                 }
+            } finally {
+                // Reset the state to serve the retry with |isFixedAddressPermitted=false|.
+                mLinkerWasWaitingSynchronously = false;
             }
         }
     }
@@ -331,22 +300,8 @@ abstract class Linker {
         }
     }
 
-    @IntDef({Linker.RelroSharingMode.NO_SHARING, Linker.RelroSharingMode.PRODUCE,
-            Linker.RelroSharingMode.CONSUME})
-    @Retention(RetentionPolicy.SOURCE)
-    protected @interface RelroSharingMode {
-        // Do not attempt to create or use a RELRO region.
-        int NO_SHARING = 0;
-
-        // Produce a shared memory region with relocations.
-        int PRODUCE = 1;
-
-        // Load the library and (potentially later) use the externally provided region.
-        int CONSUME = 2;
-    }
-
     /**
-     * Linker-specific entry point for library loading.
+     * Loads the native library.
      *
      * If the library is within a zip file, it must be uncompressed and page aligned in this file.
      *
@@ -357,15 +312,13 @@ abstract class Linker {
      * If blocking is avoided in a subclass (for performance reasons) then
      * {@link #atomicReplaceRelroLocked(boolean)} must be implemented to *atomically* replace the
      * RELRO region. Atomicity is required because the library code can be running concurrently on
-     * another thread.
+     *    another thread.
      *
-     * @param libraryName The name of the library to load.
-     * @param loadAddress Address to map the librarly at.
-     * @param relroMode Tells whether to use RELRO sharing and whether to produce or consume the
-     *          RELRO region.
+     * @param libFilePath The path of the library (possibly in the zip file).
+     * @param isFixedAddressPermitted If true, uses a fixed load address if one was
+     * supplied, otherwise ignores the fixed address and loads wherever available.
      */
-    protected abstract void loadLibraryImplLocked(
-            String libraryName, long loadAddress, @RelroSharingMode int relroMode);
+    abstract void loadLibraryImplLocked(String libFilePath, boolean isFixedAddressPermitted);
 
     /**
      * Atomically replaces the RELRO with the shared memory region described in the |mLibInfo|.
@@ -373,7 +326,7 @@ abstract class Linker {
      * By *not* calling {@link #waitForSharedRelrosLocked()} when loading the library subclasses opt
      * into supporting the atomic replacement of RELRO and override this method.
      * @param relroAvailableImmediately Whether the RELRO bundle arrived before
-     * {@link #loadLibraryImplLocked(String, long, int)} was called.
+     * {@link #loadLibraryImplLocked(String, boolean)} was called.
      */
     protected void atomicReplaceRelroLocked(boolean relroAvailableImmediately) {
         assert false;

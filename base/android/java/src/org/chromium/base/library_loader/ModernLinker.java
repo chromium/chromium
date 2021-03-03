@@ -27,19 +27,22 @@ class ModernLinker extends Linker {
 
     @Override
     @GuardedBy("mLock")
-    protected void loadLibraryImplLocked(
-            String library, long loadAddress, @RelroSharingMode int relroMode) {
-        // Only loading monochrome is supported.
+    void loadLibraryImplLocked(String library, boolean isFixedAddressPermitted) {
+        // We expect to load monochrome, if it's not the case, log.
         if (!"monochrome".equals(library) || DEBUG) {
-            Log.i(TAG, "loadLibraryImplLocked: %s, %d", library, relroMode);
+            Log.i(TAG, "loadLibraryImpl: %s, %b", library, isFixedAddressPermitted);
         }
         assert mState == State.INITIALIZED; // Only one successful call.
 
         String libFilePath = System.mapLibraryName(library);
-        if (relroMode == RelroSharingMode.NO_SHARING) {
+        boolean loadNoRelro = !isFixedAddressPermitted;
+        boolean provideRelro = isFixedAddressPermitted && mRelroProducer;
+        long loadAddress = isFixedAddressPermitted ? mBaseLoadAddress : 0;
+
+        if (loadNoRelro) {
             // System.loadLibrary() below implements the fallback.
             mState = State.DONE;
-        } else if (relroMode == RelroSharingMode.PRODUCE) {
+        } else if (provideRelro) {
             // Create the shared RELRO, and store it.
             LibInfo libInfo = new LibInfo();
             libInfo.mLibFilePath = libFilePath;
@@ -59,7 +62,6 @@ class ModernLinker extends Linker {
             // consuming RELRO is not expected with this Linker instance.
             mState = State.DONE_PROVIDE_RELRO;
         } else {
-            assert relroMode == RelroSharingMode.CONSUME;
             // Running in a child process, also with a fixed load address that is suitable for
             // shared RELRO.
             //
@@ -89,7 +91,8 @@ class ModernLinker extends Linker {
         try {
             System.loadLibrary(library);
         } catch (UnsatisfiedLinkError e) {
-            resetAndThrow("Failed at System.loadLibrary()");
+            if (loadNoRelro || provideRelro) resetAndThrow("Cannot load without relro sharing");
+            resetAndThrow("Unable to load the library a second time with the system linker");
         }
     }
 
