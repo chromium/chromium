@@ -1034,11 +1034,6 @@ if (enable_java_templates) {
         rebase_path(_backported_methods, root_build_dir),
       ]
 
-      if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
-        # Nocompile tests need lint to fail through ninja.
-        args += [ "--skip-build-server" ]
-      }
-
       if (defined(invoker.lint_suppressions_file)) {
         inputs += [ invoker.lint_suppressions_file ]
 
@@ -3113,11 +3108,6 @@ if (enable_java_templates) {
           "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:host_classpath)",
           "--enable-errorprone",
         ]
-
-        if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
-          # Nocompile tests need lint to fail through ninja.
-          args += [ "--skip-build-server" ]
-        }
       }
       foreach(e, _processor_args) {
         args += [ "--processor-arg=" + e ]
@@ -3735,10 +3725,9 @@ if (enable_java_templates) {
       _compile_java_forward_variables = [
         "additional_jar_files",
         "apk_name",
-        "jar_excluded_patterns",
-        "javac_args",
         "processor_args_javac",
-        "skip_build_server",
+        "javac_args",
+        "jar_excluded_patterns",
       ]
       _annotation_processor_deps = []
       if (defined(invoker.annotation_processor_deps)) {
