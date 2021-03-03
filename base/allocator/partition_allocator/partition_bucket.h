@@ -21,7 +21,8 @@ namespace internal {
 
 template <bool thread_safe>
 struct PartitionBucket {
-  // Accessed most in hot path => goes first.
+  // Accessed most in hot path => goes first. Only nullptr for invalid buckets,
+  // may be pointing to the sentinel.
   SlotSpanMetadata<thread_safe>* active_slot_spans_head;
 
   SlotSpanMetadata<thread_safe>* empty_slot_spans_head;
@@ -79,6 +80,11 @@ struct PartitionBucket {
     return true;
   }
 
+  // Some buckets are pseudo-buckets, which are disabled because they would
+  // otherwise not fulfill alignment constraints.
+  ALWAYS_INLINE bool is_valid() const {
+    return active_slot_spans_head != nullptr;
+  }
   ALWAYS_INLINE bool is_direct_mapped() const {
     return !num_system_pages_per_slot_span;
   }

@@ -91,7 +91,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   EXPECT_EQ(num_slots, static_cast<size_t>(
                            bucket.active_slot_spans_head->num_allocated_slots));
   EXPECT_EQ(nullptr, bucket.active_slot_spans_head->freelist_head);
-  EXPECT_TRUE(bucket.active_slot_spans_head);
+  EXPECT_TRUE(bucket.is_valid());
   EXPECT_TRUE(bucket.active_slot_spans_head !=
               SlotSpan::get_sentinel_slot_span());
 

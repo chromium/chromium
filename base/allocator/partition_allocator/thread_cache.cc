@@ -367,7 +367,7 @@ ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
                                std::memory_order_relaxed);
 
     // Invalid bucket.
-    if (!root_bucket.active_slot_spans_head) {
+    if (!root_bucket.is_valid()) {
       // Explicitly set this, as size computations iterate over all buckets.
       tcache_bucket->limit.store(0, std::memory_order_relaxed);
       tcache_bucket->slot_size = 0;

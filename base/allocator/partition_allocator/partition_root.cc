@@ -545,8 +545,10 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       for (j = 0; j < kNumBucketsPerOrder; ++j) {
         bucket->Init(current_size);
         // Disable pseudo buckets so that touching them faults.
-        if (current_size % kSmallestBucket)
+        if (current_size % kSmallestBucket) {
           bucket->active_slot_spans_head = nullptr;
+          PA_DCHECK(!bucket->is_valid());
+        }
         current_size += current_increment;
         ++bucket;
       }
@@ -887,7 +889,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
       // Don't report the pseudo buckets that the generic allocator sets up in
       // order to preserve a fast size->bucket map (see
       // PartitionRoot::Init() for details).
-      if (!bucket->active_slot_spans_head)
+      if (!bucket->is_valid())
         bucket_stats[i].is_valid = false;
       else
         internal::PartitionDumpBucketStats(&bucket_stats[i], bucket);
