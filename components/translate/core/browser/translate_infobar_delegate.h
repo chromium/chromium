@@ -172,10 +172,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   void ResetTranslationDeniedCount();
 
   // Translatable content languages.
-  virtual void GetContentLanguagesNames(
-      std::vector<base::string16>* content_languages) const;
-  virtual void GetContentLanguagesNativeNames(
-      std::vector<base::string16>* native_content_languages) const;
   virtual void GetContentLanguagesCodes(
       std::vector<std::string>* content_languages_codes) const;
 

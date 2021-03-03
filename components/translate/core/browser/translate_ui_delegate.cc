@@ -73,10 +73,6 @@ bool IsLikelyAmpCacheUrl(const GURL& url) {
 
 namespace translate {
 
-LanguageNameTriple::LanguageNameTriple() = default;
-LanguageNameTriple::~LanguageNameTriple() = default;
-LanguageNameTriple::LanguageNameTriple(const LanguageNameTriple&) = default;
-
 TranslateUIDelegate::TranslateUIDelegate(
     const base::WeakPtr<TranslateManager>& translate_manager,
     const std::string& source_language,
@@ -193,19 +189,9 @@ TranslateUIDelegate::~TranslateUIDelegate() {}
 void TranslateUIDelegate::MaybeSetContentLanguages() {
   std::string locale =
       TranslateDownloadManager::GetInstance()->application_locale();
-  translatable_content_languages_.clear();
-  std::vector<std::string> content_language_codes;
-  prefs_->GetTranslatableContentLanguages(locale, &content_language_codes);
-  translatable_content_languages_.reserve(content_language_codes.size());
-  for (std::string& language_code : content_language_codes) {
-    LanguageNameTriple languageInfo;
-    languageInfo.code = language_code;
-    languageInfo.name =
-        l10n_util::GetDisplayNameForLocale(language_code, locale, true);
-    languageInfo.native_name =
-        l10n_util::GetDisplayNameForLocale(language_code, language_code, true);
-    translatable_content_languages_.emplace_back(languageInfo);
-  }
+  translatable_content_languages_codes_.clear();
+  prefs_->GetTranslatableContentLanguages(
+      locale, &translatable_content_languages_codes_);
 }
 
 void TranslateUIDelegate::OnErrorShown(TranslateErrors::Type error_type) {
@@ -291,33 +277,13 @@ base::string16 TranslateUIDelegate::GetLanguageNameAt(size_t index) const {
   return languages_[index].second;
 }
 
-void TranslateUIDelegate::GetContentLanguagesNames(
-    std::vector<base::string16>* content_languages) const {
-  DCHECK(content_languages != nullptr);
-  content_languages->clear();
-
-  for (auto& entry : translatable_content_languages_) {
-    content_languages->push_back(entry.name);
-  }
-}
-
-void TranslateUIDelegate::GetContentLanguagesNativeNames(
-    std::vector<base::string16>* native_content_languages) const {
-  DCHECK(native_content_languages != nullptr);
-  native_content_languages->clear();
-
-  for (auto& entry : translatable_content_languages_) {
-    native_content_languages->push_back(entry.native_name);
-  }
-}
-
 void TranslateUIDelegate::GetContentLanguagesCodes(
     std::vector<std::string>* content_codes) const {
   DCHECK(content_codes != nullptr);
   content_codes->clear();
 
-  for (auto& entry : translatable_content_languages_) {
-    content_codes->push_back(entry.code);
+  for (auto& entry : translatable_content_languages_codes_) {
+    content_codes->push_back(entry);
   }
 }
 

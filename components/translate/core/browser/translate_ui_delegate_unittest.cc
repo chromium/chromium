@@ -233,42 +233,20 @@ TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenEnabled) {
 
   std::unique_ptr<TranslateUIDelegate> delegate =
       std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en", "fr");
-  std::vector<base::string16> expected_names = {base::UTF8ToUTF16("German"),
-                                                base::UTF8ToUTF16("Polish")};
-  std::vector<base::string16> expected_native_names = {
-      base::UTF8ToUTF16("Deutsch"), base::UTF8ToUTF16("polski")};
   std::vector<std::string> expected_codes = {"de", "pl"};
 
-  std::vector<base::string16> actual_names;
-  std::vector<base::string16> actual_native_names;
   std::vector<std::string> actual_codes;
 
   delegate->GetContentLanguagesCodes(&actual_codes);
-  delegate->GetContentLanguagesNames(&actual_names);
-  delegate->GetContentLanguagesNativeNames(&actual_native_names);
 
   EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
-  EXPECT_THAT(expected_names, ::testing::ContainerEq(actual_names));
-  EXPECT_THAT(expected_native_names,
-              ::testing::ContainerEq(actual_native_names));
 
   // Mimic an update.
   prefs->AddToLanguageList("it", /*force_blocked=*/false);
   delegate->MaybeSetContentLanguages();
   delegate->GetContentLanguagesCodes(&actual_codes);
-  delegate->GetContentLanguagesNames(&actual_names);
-  delegate->GetContentLanguagesNativeNames(&actual_native_names);
-
-  expected_names = {base::UTF8ToUTF16("German"), base::UTF8ToUTF16("Polish"),
-                    base::UTF8ToUTF16("Italian")};
-  expected_native_names = {base::UTF8ToUTF16("Deutsch"),
-                           base::UTF8ToUTF16("polski"),
-                           base::UTF8ToUTF16("italiano")};
   expected_codes = {"de", "pl", "it"};
   EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
-  EXPECT_THAT(expected_names, ::testing::ContainerEq(actual_names));
-  EXPECT_THAT(expected_native_names,
-              ::testing::ContainerEq(actual_native_names));
 }
 
 TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenDisabled) {
@@ -283,17 +261,10 @@ TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenDisabled) {
   std::unique_ptr<TranslateUIDelegate> delegate =
       std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en", "fr");
 
-  std::vector<base::string16> actual_names;
-  std::vector<base::string16> actual_native_names;
   std::vector<std::string> actual_codes;
 
   delegate->GetContentLanguagesCodes(&actual_codes);
-  delegate->GetContentLanguagesNames(&actual_names);
-  delegate->GetContentLanguagesNativeNames(&actual_native_names);
-
   EXPECT_TRUE(actual_codes.empty());
-  EXPECT_TRUE(actual_names.empty());
-  EXPECT_TRUE(actual_native_names.empty());
 }
 
 }  // namespace translate

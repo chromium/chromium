@@ -21,7 +21,6 @@ struct JavaLanguageInfoWrapper {
   JavaLanguageInfoWrapper(const JavaLanguageInfoWrapper& other);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_languages;
-  base::android::ScopedJavaLocalRef<jobjectArray> java_native_languages;
   base::android::ScopedJavaLocalRef<jobjectArray> java_codes;
   base::android::ScopedJavaLocalRef<jintArray> java_hash_codes;
 };
@@ -44,18 +43,16 @@ class TranslateUtils {
       std::vector<std::string>& language_codes);
 
   // An utility method that converts information about all translatable
-  // languages to a Java format. Note that translate languages won't have native
-  // names set.
+  // languages to a Java format.
   static JavaLanguageInfoWrapper GetTranslateLanguagesInJavaFormat(
       JNIEnv* env,
       TranslateInfoBarDelegate* delegate);
 
   // An utility method that converts information about translatable user's
-  // content languages languages to a Java format. Note that content languages
-  // won't have hash codes set.
-  static JavaLanguageInfoWrapper GetContentLanguagesInJavaFormat(
-      JNIEnv* env,
-      TranslateInfoBarDelegate* delegate);
+  // content languages codes to a Java format.
+  static base::android::ScopedJavaLocalRef<jobjectArray>
+  GetContentLanguagesInJavaFormat(JNIEnv* env,
+                                  TranslateInfoBarDelegate* delegate);
 };
 
 }  // namespace translate

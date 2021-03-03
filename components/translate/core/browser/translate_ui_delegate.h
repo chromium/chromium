@@ -26,17 +26,6 @@ class TranslateDriver;
 class TranslateManager;
 class TranslatePrefs;
 
-// Wrapper for language information: code, name and native name.
-struct LanguageNameTriple {
-  LanguageNameTriple();
-  ~LanguageNameTriple();
-  LanguageNameTriple(const LanguageNameTriple& other);
-
-  std::string code;
-  base::string16 name;
-  base::string16 native_name;
-};
-
 // The TranslateUIDelegate is a generic delegate for UI which offers Translate
 // feature to the user.
 
@@ -94,10 +83,6 @@ class TranslateUIDelegate {
   base::string16 GetLanguageNameAt(size_t index) const;
 
   // Translatable content languages.
-  void GetContentLanguagesNames(
-      std::vector<base::string16>* content_languages) const;
-  void GetContentLanguagesNativeNames(
-      std::vector<base::string16>* native_content_languages) const;
   void GetContentLanguagesCodes(
       std::vector<std::string>* content_languages_codes) const;
 
@@ -187,9 +172,9 @@ class TranslateUIDelegate {
   // The languages are sorted alphabetically based on the displayable name.
   std::vector<LanguageNamePair> languages_;
 
-  // The list of translatable user's setting languages.
-  // The languages are in order defined by the user.
-  std::vector<LanguageNameTriple> translatable_content_languages_;
+  // The list of language codes representing translatable user's setting
+  // languages. The languages are in order defined by the user.
+  std::vector<std::string> translatable_content_languages_codes_;
 
   // The index for language the page is in before translation.
   size_t source_language_index_;

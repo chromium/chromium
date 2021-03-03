@@ -35,6 +35,7 @@ ScopedJavaLocalRef<jintArray> TranslateUtils::GetJavaLanguageHashCodes(
 JavaLanguageInfoWrapper TranslateUtils::GetTranslateLanguagesInJavaFormat(
     JNIEnv* env,
     TranslateInfoBarDelegate* delegate) {
+  DCHECK(delegate);
   JavaLanguageInfoWrapper result;
   std::vector<base::string16> languages;
   std::vector<std::string> codes;
@@ -46,23 +47,13 @@ JavaLanguageInfoWrapper TranslateUtils::GetTranslateLanguagesInJavaFormat(
   return result;
 }
 
-JavaLanguageInfoWrapper TranslateUtils::GetContentLanguagesInJavaFormat(
+ScopedJavaLocalRef<jobjectArray>
+TranslateUtils::GetContentLanguagesInJavaFormat(
     JNIEnv* env,
     TranslateInfoBarDelegate* delegate) {
-  JavaLanguageInfoWrapper result;
-  std::vector<base::string16> languages;
-  std::vector<base::string16> languages_native_names;
+  DCHECK(delegate);
   std::vector<std::string> codes;
-
-  delegate->GetContentLanguagesNames(&languages);
-  delegate->GetContentLanguagesNativeNames(&languages_native_names);
   delegate->GetContentLanguagesCodes(&codes);
-  DCHECK(languages.size() == languages_native_names.size() &&
-         languages.size() == codes.size());
-  result.java_native_languages =
-      base::android::ToJavaArrayOfStrings(env, languages_native_names);
-  result.java_languages = base::android::ToJavaArrayOfStrings(env, languages);
-  result.java_codes = base::android::ToJavaArrayOfStrings(env, codes);
-  return result;
+  return base::android::ToJavaArrayOfStrings(env, codes);
 }
 }  // namespace translate

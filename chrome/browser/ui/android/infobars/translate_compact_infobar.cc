@@ -59,9 +59,7 @@ ScopedJavaLocalRef<jobject> TranslateCompactInfoBar::CreateRenderInfoBar(
   translate::JavaLanguageInfoWrapper translate_languages =
       translate::TranslateUtils::GetTranslateLanguagesInJavaFormat(env,
                                                                    delegate);
-  // TODO(https://crbug.com/1173577): Refactor GetContentLanguagesInJavaFormat
-  // to only return languageCodes.
-  translate::JavaLanguageInfoWrapper content_languages =
+  base::android::ScopedJavaLocalRef<jobjectArray> content_languages =
       translate::TranslateUtils::GetContentLanguagesInJavaFormat(env, delegate);
   ScopedJavaLocalRef<jstring> source_language_code =
       base::android::ConvertUTF8ToJavaString(env,
@@ -81,7 +79,7 @@ ScopedJavaLocalRef<jobject> TranslateCompactInfoBar::CreateRenderInfoBar(
       source_language_code, target_language_code,
       delegate->ShouldAlwaysTranslate(), delegate->triggered_from_menu(),
       translate_languages.java_languages, translate_languages.java_codes,
-      translate_languages.java_hash_codes, content_languages.java_codes,
+      translate_languages.java_hash_codes, content_languages,
       TabDefaultTextColor());
 }
 
@@ -207,10 +205,8 @@ base::android::ScopedJavaLocalRef<jobjectArray>
 TranslateCompactInfoBar::GetContentLanguagesCodes(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  std::vector<std::string> current_content_names;
-  translate::TranslateInfoBarDelegate* delegate = GetDelegate();
-  delegate->GetContentLanguagesCodes(&current_content_names);
-  return base::android::ToJavaArrayOfStrings(env, current_content_names);
+  return translate::TranslateUtils::GetContentLanguagesInJavaFormat(
+      env, GetDelegate());
 }
 
 int TranslateCompactInfoBar::GetParam(const std::string& paramName,

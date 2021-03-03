@@ -66,16 +66,12 @@ class MockTranslateInfoBarDelegate
   void SetTranslateLanguagesForTest(
       std::vector<std::pair<std::string, base::string16>> languages);
 
-  void SetContentLanguagesForTest(std::vector<LanguageNameTriple> languages);
-  void GetContentLanguagesNames(
-      std::vector<base::string16>* languages) const override;
-  void GetContentLanguagesNativeNames(
-      std::vector<base::string16>* native_languages) const override;
+  void SetContentLanguagesCodesForTest(std::vector<std::string> languages);
   void GetContentLanguagesCodes(std::vector<std::string>* codes) const override;
 
  private:
   std::vector<std::pair<std::string, base::string16>> languages_;
-  std::vector<LanguageNameTriple> content_languages_;
+  std::vector<std::string> content_languages_;
 };
 
 class MockTranslateInfoBarDelegateFactory {

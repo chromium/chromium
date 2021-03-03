@@ -313,16 +313,6 @@ void TranslateInfoBarDelegate::ResetTranslationDeniedCount() {
   prefs_->ResetTranslationDeniedCount(source_language_code());
 }
 
-void TranslateInfoBarDelegate::GetContentLanguagesNames(
-    std::vector<base::string16>* content_languages) const {
-  ui_delegate_.GetContentLanguagesNames(content_languages);
-}
-
-void TranslateInfoBarDelegate::GetContentLanguagesNativeNames(
-    std::vector<base::string16>* native_content_languages) const {
-  ui_delegate_.GetContentLanguagesNativeNames(native_content_languages);
-}
-
 void TranslateInfoBarDelegate::GetContentLanguagesCodes(
     std::vector<std::string>* content_codes) const {
   ui_delegate_.GetContentLanguagesCodes(content_codes);
