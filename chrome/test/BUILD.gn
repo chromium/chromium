@@ -3277,21 +3277,23 @@ if (is_chromeos_lacros) {
   }
 }
 
-if (is_linux || is_chromeos || is_mac || is_win) {
+if (is_linux || is_chromeos || is_mac || is_win || is_android) {
   import("//tools/binary_size/sizes.gni")
 
-  group("browser_tests_apprtc") {
-    testonly = true
-    data_deps = [ ":browser_tests" ]
-    data = [
-      "//third_party/webrtc/rtc_tools/testing/browsertest/apprtc/out/app_engine/",
-      "//third_party/webrtc/rtc_tools/testing/browsertest/apprtc/temp/google-cloud-sdk/",
-      "//third_party/webrtc/rtc_tools/testing/browsertest/collider/",
-    ]
-    if (is_win) {
-      write_runtime_deps = "$root_out_dir/$target_name.exe.runtime_deps"
-    } else {
-      write_runtime_deps = "$root_out_dir/$target_name.runtime_deps"
+  if (!is_android) {
+    group("browser_tests_apprtc") {
+      testonly = true
+      data_deps = [ ":browser_tests" ]
+      data = [
+        "//third_party/webrtc/rtc_tools/testing/browsertest/apprtc/out/app_engine/",
+        "//third_party/webrtc/rtc_tools/testing/browsertest/apprtc/temp/google-cloud-sdk/",
+        "//third_party/webrtc/rtc_tools/testing/browsertest/collider/",
+      ]
+      if (is_win) {
+        write_runtime_deps = "$root_out_dir/$target_name.exe.runtime_deps"
+      } else {
+        write_runtime_deps = "$root_out_dir/$target_name.runtime_deps"
+      }
     }
   }
 
@@ -3299,6 +3301,10 @@ if (is_linux || is_chromeos || is_mac || is_win) {
     data_deps = [ "//chrome" ]
     if (is_win) {
       data_deps += [ "//chrome/installer/mini_installer" ]
+    }
+    if (is_android) {
+      data_deps -= [ "//chrome" ]
+      data_deps += [ "//chrome/android:chrome_public_apk" ]
     }
   }
 }
