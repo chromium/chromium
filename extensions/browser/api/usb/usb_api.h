@@ -281,7 +281,7 @@ class UsbClaimInterfaceFunction : public UsbConnectionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnComplete(bool success);
+  void OnComplete(device::mojom::UsbClaimInterfaceResult result);
 
   DISALLOW_COPY_AND_ASSIGN(UsbClaimInterfaceFunction);
 };

@@ -220,7 +220,9 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
   FakeAndroidUsbDevice(
       scoped_refptr<FakeUsbDeviceInfo> device,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> client)
-      : FakeUsbDevice(device, std::move(client)) {
+      : FakeUsbDevice(device,
+                      /*blocked_interface_classes=*/{},
+                      std::move(client)) {
     broken_traits_ =
         static_cast<FakeAndroidUsbDeviceInfo*>(device.get())->broken_traits();
   }
@@ -424,6 +426,7 @@ class FakeAndroidUsbManager : public FakeUsbDeviceManager {
 
   void GetDevice(
       const std::string& guid,
+      const std::vector<uint8_t>& blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client)
       override {

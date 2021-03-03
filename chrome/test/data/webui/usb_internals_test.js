@@ -73,7 +73,8 @@ class FakeDeviceManagerRemote extends TestBrowserProxy {
 
   async enumerateDevicesAndSetClient() {}
 
-  async getDevice(guid, devicePendingReceiver, deviceClient) {
+  async getDevice(
+      guid, blockedInterfaceClasses, devicePendingReceiver, deviceClient) {
     this.methodCalled('getDevice');
     const deviceRemote = this.deviceRemoteMap.get(guid);
     deviceRemote.router.$.bindHandle(devicePendingReceiver.handle);

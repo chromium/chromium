@@ -188,7 +188,8 @@ void UsbDeviceManager::GetDevice(
     const std::string& guid,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver) {
   EnsureConnectionWithDeviceManager();
-  device_manager_->GetDevice(guid, std::move(device_receiver),
+  device_manager_->GetDevice(guid, /*blocked_interface_classes=*/{},
+                             std::move(device_receiver),
                              /*device_client=*/mojo::NullRemote());
 }
 

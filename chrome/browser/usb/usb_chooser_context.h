@@ -77,6 +77,7 @@ class UsbChooserContext : public permissions::ChooserContextBase,
   void GetDevices(device::mojom::UsbDeviceManager::GetDevicesCallback callback);
   void GetDevice(
       const std::string& guid,
+      base::span<const uint8_t> blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client);
 #if defined(OS_ANDROID)

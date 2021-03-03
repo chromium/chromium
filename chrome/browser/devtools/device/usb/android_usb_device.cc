@@ -116,8 +116,8 @@ void CreateDeviceOnInterfaceClaimed(
     AndroidDeviceInfo android_device_info,
     mojo::Remote<device::mojom::UsbDevice> device,
     const base::RepeatingClosure& barrier,
-    bool success) {
-  if (success) {
+    device::mojom::UsbClaimInterfaceResult result) {
+  if (result == device::mojom::UsbClaimInterfaceResult::kSuccess) {
     devices->push_back(
         new AndroidUsbDevice(rsa_key, android_device_info, std::move(device)));
     barrier.Run();

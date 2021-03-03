@@ -252,8 +252,8 @@ void AndroidAccessoryDiscovery::OnAccessoryConfigured(
 void AndroidAccessoryDiscovery::OnAccessoryInterfaceClaimed(
     mojo::Remote<device::mojom::UsbDevice> device,
     InterfaceInfo interface_info,
-    bool success) {
-  if (!success) {
+    mojom::UsbClaimInterfaceResult result) {
+  if (result != mojom::UsbClaimInterfaceResult::kSuccess) {
     FIDO_LOG(DEBUG) << "Failed to claim interface on an accessory device";
     RecordEvent(AOADiscoveryEvent::kAOAInterfaceFailed);
     return;

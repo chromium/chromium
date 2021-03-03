@@ -173,7 +173,8 @@ void UsbDeviceManagerHelper::GetDevice(
   EnsureUsbDeviceManagerConnection();
 
   DCHECK(device_manager_);
-  device_manager_->GetDevice(guid, std::move(device_receiver),
+  device_manager_->GetDevice(guid, /*blocked_interface_classes=*/{},
+                             std::move(device_receiver),
                              /*device_client=*/mojo::NullRemote());
 }
 

@@ -109,9 +109,11 @@ bool IsAndroidSecurityKeyRequest(
 void DeviceImpl::Create(scoped_refptr<device::UsbDevice> device,
                         mojo::PendingReceiver<mojom::UsbDevice> receiver,
                         mojo::PendingRemote<mojom::UsbDeviceClient> client,
+                        base::span<const uint8_t> blocked_interface_classes,
                         bool allow_security_key_requests) {
-  auto* device_impl = new DeviceImpl(std::move(device), std::move(client),
-                                     allow_security_key_requests);
+  auto* device_impl =
+      new DeviceImpl(std::move(device), std::move(client),
+                     blocked_interface_classes, allow_security_key_requests);
   device_impl->receiver_ = mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(device_impl), std::move(receiver));
 }
@@ -122,9 +124,12 @@ DeviceImpl::~DeviceImpl() {
 
 DeviceImpl::DeviceImpl(scoped_refptr<device::UsbDevice> device,
                        mojo::PendingRemote<mojom::UsbDeviceClient> client,
+                       base::span<const uint8_t> blocked_interface_classes,
                        bool allow_security_key_requests)
     : device_(std::move(device)),
       observer_(this),
+      blocked_interface_classes_(blocked_interface_classes.begin(),
+                                 blocked_interface_classes.end()),
       allow_security_key_requests_(allow_security_key_requests),
       client_(std::move(client)) {
   DCHECK(device_);
@@ -243,13 +248,13 @@ void DeviceImpl::SetConfiguration(uint8_t value,
 void DeviceImpl::ClaimInterface(uint8_t interface_number,
                                 ClaimInterfaceCallback callback) {
   if (!device_handle_) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     return;
   }
 
   const mojom::UsbConfigurationInfo* config = device_->GetActiveConfiguration();
   if (!config) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     return;
   }
 
@@ -259,11 +264,21 @@ void DeviceImpl::ClaimInterface(uint8_t interface_number,
         return interface->interface_number == interface_number;
       });
   if (interface_it == config->interfaces.end()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     return;
   }
 
-  device_handle_->ClaimInterface(interface_number, std::move(callback));
+  for (const auto& alternate : (*interface_it)->alternates) {
+    if (base::Contains(blocked_interface_classes_, alternate->class_code)) {
+      std::move(callback).Run(mojom::UsbClaimInterfaceResult::kProtectedClass);
+      return;
+    }
+  }
+
+  device_handle_->ClaimInterface(
+      interface_number,
+      base::BindOnce(&DeviceImpl::OnInterfaceClaimed,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DeviceImpl::ReleaseInterface(uint8_t interface_number,
@@ -423,6 +438,12 @@ void DeviceImpl::IsochronousTransferOut(
 void DeviceImpl::OnDeviceRemoved(scoped_refptr<device::UsbDevice> device) {
   DCHECK_EQ(device_, device);
   receiver_->Close();
+}
+
+void DeviceImpl::OnInterfaceClaimed(ClaimInterfaceCallback callback,
+                                    bool success) {
+  std::move(callback).Run(success ? mojom::UsbClaimInterfaceResult::kSuccess
+                                  : mojom::UsbClaimInterfaceResult::kFailure);
 }
 
 void DeviceImpl::OnClientConnectionError() {

@@ -19,6 +19,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
@@ -185,6 +186,7 @@ class USBDeviceImplTest : public testing::Test {
       const std::string& manufacturer,
       const std::string& product,
       const std::string& serial,
+      base::span<const uint8_t> blocked_interface_classes,
       bool allow_security_key_requests,
       mojo::PendingRemote<mojom::UsbDeviceClient> client) {
     mock_device_ =
@@ -193,7 +195,8 @@ class USBDeviceImplTest : public testing::Test {
 
     mojo::Remote<mojom::UsbDevice> proxy;
     DeviceImpl::Create(mock_device_, proxy.BindNewPipeAndPassReceiver(),
-                       std::move(client), allow_security_key_requests);
+                       std::move(client), blocked_interface_classes,
+                       allow_security_key_requests);
 
     // Set up mock handle calls to respond based on mock device configs
     // established by the test.
@@ -228,18 +231,28 @@ class USBDeviceImplTest : public testing::Test {
   mojo::Remote<mojom::UsbDevice> GetMockDeviceProxy(
       mojo::PendingRemote<mojom::UsbDeviceClient> client) {
     return GetMockDeviceProxy(0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF",
+                              /*blocked_interface_classes=*/{},
                               /*allow_security_key_requests=*/false,
                               std::move(client));
   }
 
   mojo::Remote<mojom::UsbDevice> GetMockSecurityKeyDeviceProxy() {
     return GetMockDeviceProxy(0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF",
+                              /*blocked_interface_classes=*/{},
                               /*allow_security_key_requests=*/true,
-                              mojo::NullRemote());
+                              /*client=*/mojo::NullRemote());
+  }
+
+  mojo::Remote<mojom::UsbDevice> GetMockDeviceProxyWithBlockedInterfaces(
+      base::span<const uint8_t> blocked_interface_classes) {
+    return GetMockDeviceProxy(0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF",
+                              blocked_interface_classes,
+                              /*allow_security_key_requests=*/false,
+                              /*client=*/mojo::NullRemote());
   }
 
   mojo::Remote<mojom::UsbDevice> GetMockDeviceProxy() {
-    return GetMockDeviceProxy(mojo::NullRemote());
+    return GetMockDeviceProxy(/*client=*/mojo::NullRemote());
   }
 
   void AddMockConfig(mojom::UsbConfigurationInfoPtr config) {
@@ -749,7 +762,11 @@ TEST_F(USBDeviceImplTest, ClaimAndReleaseInterface) {
     // Try to claim an invalid interface and expect failure.
     base::RunLoop loop;
     device->ClaimInterface(
-        2, base::BindOnce(&ExpectResultAndThen, false, loop.QuitClosure()));
+        2,
+        base::BindLambdaForTesting([&](mojom::UsbClaimInterfaceResult result) {
+          EXPECT_EQ(result, mojom::UsbClaimInterfaceResult::kFailure);
+          loop.Quit();
+        }));
     loop.Run();
   }
 
@@ -758,7 +775,11 @@ TEST_F(USBDeviceImplTest, ClaimAndReleaseInterface) {
   {
     base::RunLoop loop;
     device->ClaimInterface(
-        1, base::BindOnce(&ExpectResultAndThen, true, loop.QuitClosure()));
+        1,
+        base::BindLambdaForTesting([&](mojom::UsbClaimInterfaceResult result) {
+          EXPECT_EQ(result, mojom::UsbClaimInterfaceResult::kSuccess);
+          loop.Quit();
+        }));
     loop.Run();
   }
 
@@ -779,6 +800,66 @@ TEST_F(USBDeviceImplTest, ClaimAndReleaseInterface) {
     base::RunLoop loop;
     device->ReleaseInterface(
         1, base::BindOnce(&ExpectResultAndThen, true, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
+TEST_F(USBDeviceImplTest, ClaimProtectedInterface) {
+  mojo::Remote<mojom::UsbDevice> device =
+      GetMockDeviceProxyWithBlockedInterfaces({{2}});
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  {
+    base::RunLoop loop;
+    device->Open(base::BindOnce(
+        &ExpectOpenAndThen, mojom::UsbOpenDeviceError::OK, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  // The second interface implements a class which has been blocked above.
+  AddMockConfig(
+      ConfigBuilder(/*value=*/1)
+          .AddInterface(/*interface_number=*/0, /*alternate_setting=*/0,
+                        /*class_code=*/1, /*subclass_code=*/0,
+                        /*protocol_code=*/0)
+          .AddInterface(/*interface_number=*/1, /*alternate_setting=*/0,
+                        /*class_code=*/2, /*subclass_code=*/0,
+                        /*protocol_code=*/0)
+          .Build());
+
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _));
+
+  {
+    base::RunLoop loop;
+    device->SetConfiguration(
+        1, base::BindOnce(&ExpectResultAndThen, true, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  EXPECT_CALL(mock_handle(), ClaimInterfaceInternal(0, _));
+
+  {
+    base::RunLoop loop;
+    device->ClaimInterface(
+        0,
+        base::BindLambdaForTesting([&](mojom::UsbClaimInterfaceResult result) {
+          EXPECT_EQ(result, mojom::UsbClaimInterfaceResult::kSuccess);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    device->ClaimInterface(
+        1,
+        base::BindLambdaForTesting([&](mojom::UsbClaimInterfaceResult result) {
+          EXPECT_EQ(result, mojom::UsbClaimInterfaceResult::kProtectedClass);
+          loop.Quit();
+        }));
     loop.Run();
   }
 

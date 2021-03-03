@@ -4,10 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webusb/usb_device.h"
 
-#include <algorithm>
-#include <iterator>
 #include <utility>
-#include "build/chromeos_buildflags.h"
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -28,6 +25,7 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
+using device::mojom::blink::UsbClaimInterfaceResult;
 using device::mojom::blink::UsbControlTransferParamsPtr;
 using device::mojom::blink::UsbControlTransferRecipient;
 using device::mojom::blink::UsbControlTransferType;
@@ -53,50 +51,6 @@ const char kInterfaceNotFound[] =
 const char kInterfaceStateChangeInProgress[] =
     "An operation that changes interface state is in progress.";
 const char kOpenRequired[] = "The device must be opened first.";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kExtensionProtocol[] = "chrome-extension";
-
-// These Imprivata extensions can claim the protected HID interface class (used
-// as badge readers), see crbug.com/1065112 and crbug.com/995294.
-// This list needs to be alphabetically sorted for quick access via binary
-// search.
-const char* kImprivataExtensionIds[] = {
-    "baobpecgllpajfeojepgedjdlnlfffde", "bnfoibgpjolimhppjmligmcgklpboloj",
-    "cdgickkdpbekbnalbmpgochbninibkko", "cjakdianfealdjlapagfagpdpemoppba",
-    "cokoeepjbmmnhgdhlkpahohdaiedfjgn", "dahgfgiifpnaoajmloofonkndaaafacp",
-    "dbknmmkopacopifbkgookcdbhfnggjjh", "ddcjglpbfbibgepfffpklmpihphbcdco",
-    "dhodapiemamlmhlhblgcibabhdkohlen", "dlahpllbhpbkfnoiedkgombmegnnjopi",
-    "egfpnfjeaopimgpiioeedbpmojdapaip", "fnbibocngjnefolmcodjkkghijpdlnfm",
-    "jcnflhjcfjkplgkcinikhbgbhfldkadl", "jkfjfbelolphkjckiolfcakgalloegek",
-    "kmhpgpnbglclbaccjjgoioogjlnfgbne", "lpimkpkllnkdlcigdbgmabfplniahkgm",
-    "odehonhhkcjnbeaomlodfkjaecbmhklm", "olnmflhcfkifkgbiegcoabineoknmbjc",
-    "omificdfgpipkkpdhbjmefgfgbppehke", "phjobickjiififdadeoepbdaciefacfj",
-    "pkeacbojooejnjolgjdecbpnloibpafm", "pllbepacblmgialkkpcceohmjakafnbb",
-    "plpogimmgnkkiflhpidbibfmgpkaofec", "pmhiabnkkchjeaehcodceadhdpfejmmd",
-};
-const char** kExtensionNameMappingsEnd = std::end(kImprivataExtensionIds);
-
-bool IsCStrBefore(const char* first, const char* second) {
-  return strcmp(first, second) < 0;
-}
-
-bool IsClassAllowedForExtension(uint8_t class_code, const KURL& url) {
-  if (url.Protocol() != kExtensionProtocol)
-    return false;
-
-  switch (class_code) {
-    case 0x03:  // HID
-      DCHECK(std::is_sorted(kImprivataExtensionIds, kExtensionNameMappingsEnd,
-                            IsCStrBefore));
-      return std::binary_search(kImprivataExtensionIds,
-                                kExtensionNameMappingsEnd,
-                                url.Host().Utf8().c_str(), IsCStrBefore);
-    default:
-      return false;
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 DOMException* ConvertFatalTransferStatus(const UsbTransferStatus& status) {
   switch (status) {
@@ -314,17 +268,6 @@ ScriptPromise USBDevice::claimInterface(ScriptState* script_state,
           kInterfaceStateChangeInProgress));
     } else if (claimed_interfaces_[interface_index]) {
       resolver->Resolve();
-    } else if (IsProtectedInterfaceClass(interface_index)) {
-      GetExecutionContext()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kJavaScript,
-              mojom::ConsoleMessageLevel::kWarning,
-              "An attempt to claim a USB device interface "
-              "has been blocked because it "
-              "implements a protected interface class."));
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSecurityError,
-          "The requested interface implements a protected class."));
     } else {
       interface_state_change_in_progress_[interface_index] = true;
       device_requests_.insert(resolver);
@@ -643,44 +586,6 @@ wtf_size_t USBDevice::FindAlternateIndex(uint32_t interface_index,
   return kNotFound;
 }
 
-bool USBDevice::IsProtectedInterfaceClass(wtf_size_t interface_index) const {
-  DCHECK_NE(configuration_index_, kNotFound);
-  DCHECK_NE(interface_index, kNotFound);
-
-  // USB Class Codes are defined by the USB-IF:
-  // https://www.usb.org/defined-class-codes
-  const uint8_t kProtectedClasses[] = {
-      0x01,  // Audio
-      0x03,  // HID
-      0x08,  // Mass Storage
-      0x0B,  // Smart Card
-      0x0E,  // Video
-      0x10,  // Audio/Video
-      0xE0,  // Wireless Controller (Bluetooth and Wireless USB)
-  };
-  DCHECK(std::is_sorted(std::begin(kProtectedClasses),
-                        std::end(kProtectedClasses)));
-
-  const auto& alternates = Info()
-                               .configurations[configuration_index_]
-                               ->interfaces[interface_index]
-                               ->alternates;
-  for (const auto& alternate : alternates) {
-    if (std::binary_search(std::begin(kProtectedClasses),
-                           std::end(kProtectedClasses),
-                           alternate->class_code)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      return !IsClassAllowedForExtension(alternate->class_code,
-                                         GetExecutionContext()->Url());
-#else
-      return true;
-#endif
-    }
-  }
-
-  return false;
-}
-
 bool USBDevice::EnsureNoDeviceChangeInProgress(
     ScriptPromiseResolver* resolver) const {
   if (!device_.is_bound()) {
@@ -933,18 +838,36 @@ void USBDevice::OnConfigurationSelected(bool success,
   device_state_change_in_progress_ = false;
 }
 
-void USBDevice::AsyncClaimInterface(wtf_size_t interface_index,
-                                    ScriptPromiseResolver* resolver,
-                                    bool success) {
+void USBDevice::AsyncClaimInterface(
+    wtf_size_t interface_index,
+    ScriptPromiseResolver* resolver,
+    device::mojom::blink::UsbClaimInterfaceResult result) {
   if (!MarkRequestComplete(resolver))
     return;
 
-  OnInterfaceClaimedOrUnclaimed(success, interface_index);
-  if (success) {
-    resolver->Resolve();
-  } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Unable to claim interface."));
+  OnInterfaceClaimedOrUnclaimed(result == UsbClaimInterfaceResult::kSuccess,
+                                interface_index);
+
+  switch (result) {
+    case UsbClaimInterfaceResult::kSuccess:
+      resolver->Resolve();
+      break;
+    case UsbClaimInterfaceResult::kProtectedClass:
+      GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "An attempt to claim a USB device interface "
+              "has been blocked because it "
+              "implements a protected interface class."));
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSecurityError,
+          "The requested interface implements a protected class."));
+      break;
+    case UsbClaimInterfaceResult::kFailure:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError, "Unable to claim interface."));
+      break;
   }
 }
 

@@ -9,15 +9,22 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/usb/usb_blocklist.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/containers/fixed_flat_set.h"
+#include "extensions/common/constants.h"
+#endif
 
 // A UsbDeviceClient represents a UsbDevice pipe that has been passed to the
 // renderer process. The UsbDeviceClient pipe allows the browser process to
@@ -120,6 +127,42 @@ bool WebUsbServiceImpl::HasDevicePermission(
                                                embedding_origin_, device_info);
 }
 
+std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
+  std::vector<uint8_t> classes = {
+      device::mojom::kUsbAudioClass,       device::mojom::kUsbHidClass,
+      device::mojom::kUsbMassStorageClass, device::mojom::kUsbSmartCardClass,
+      device::mojom::kUsbVideoClass,       device::mojom::kUsbAudioVideoClass,
+      device::mojom::kUsbWirelessClass,
+  };
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+  // These Imprivata extensions can claim the protected HID interface class
+  // (used as badge readers), see crbug.com/1065112 and crbug.com/995294.
+  static constexpr auto kImprivataExtensionIds = base::MakeFixedFlatSet<
+      base::StringPiece>({
+      "baobpecgllpajfeojepgedjdlnlfffde", "bnfoibgpjolimhppjmligmcgklpboloj",
+      "cdgickkdpbekbnalbmpgochbninibkko", "cjakdianfealdjlapagfagpdpemoppba",
+      "cokoeepjbmmnhgdhlkpahohdaiedfjgn", "dahgfgiifpnaoajmloofonkndaaafacp",
+      "dbknmmkopacopifbkgookcdbhfnggjjh", "ddcjglpbfbibgepfffpklmpihphbcdco",
+      "dhodapiemamlmhlhblgcibabhdkohlen", "dlahpllbhpbkfnoiedkgombmegnnjopi",
+      "egfpnfjeaopimgpiioeedbpmojdapaip", "fnbibocngjnefolmcodjkkghijpdlnfm",
+      "jcnflhjcfjkplgkcinikhbgbhfldkadl", "jkfjfbelolphkjckiolfcakgalloegek",
+      "kmhpgpnbglclbaccjjgoioogjlnfgbne", "lpimkpkllnkdlcigdbgmabfplniahkgm",
+      "odehonhhkcjnbeaomlodfkjaecbmhklm", "olnmflhcfkifkgbiegcoabineoknmbjc",
+      "omificdfgpipkkpdhbjmefgfgbppehke", "phjobickjiififdadeoepbdaciefacfj",
+      "pkeacbojooejnjolgjdecbpnloibpafm", "pllbepacblmgialkkpcceohmjakafnbb",
+      "plpogimmgnkkiflhpidbibfmgpkaofec", "pmhiabnkkchjeaehcodceadhdpfejmmd",
+  });
+
+  if (requesting_origin_.scheme() == extensions::kExtensionScheme &&
+      base::Contains(kImprivataExtensionIds, requesting_origin_.host())) {
+    base::Erase(classes, device::mojom::kUsbHidClass);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return classes;
+}
+
 void WebUsbServiceImpl::GetDevices(GetDevicesCallback callback) {
   if (!chooser_context_) {
     std::move(callback).Run(std::vector<device::mojom::UsbDeviceInfoPtr>());
@@ -159,7 +202,9 @@ void WebUsbServiceImpl::GetDevice(
   mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client;
   device_clients_.push_back(std::make_unique<UsbDeviceClient>(
       this, guid, device_client.InitWithNewPipeAndPassReceiver()));
-  chooser_context_->GetDevice(guid, std::move(device_receiver),
+
+  chooser_context_->GetDevice(guid, GetProtectedInterfaceClasses(),
+                              std::move(device_receiver),
                               std::move(device_client));
 }
 

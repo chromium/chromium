@@ -14,12 +14,14 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/usb/frame_usb_services.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,10 +32,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/value_builder.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+
 using ::testing::_;
 
 using blink::mojom::WebUsbService;
 using device::FakeUsbDeviceInfo;
+using device::mojom::UsbClaimInterfaceResult;
 using device::mojom::UsbDeviceClient;
 using device::mojom::UsbDeviceInfo;
 using device::mojom::UsbDeviceInfoPtr;
@@ -396,3 +406,177 @@ TEST_F(WebUsbServiceImplTest, OpenAndNavigateCrossOrigin) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(tab_helper->IsDeviceConnected());
 }
+
+class WebUsbServiceImplProtectedInterfaceTest
+    : public WebUsbServiceImplTest,
+      public testing::WithParamInterface<uint8_t> {};
+
+TEST_P(WebUsbServiceImplProtectedInterfaceTest, BlockProtectedInterface) {
+  const auto kOrigin = url::Origin::Create(GURL(kDefaultTestUrl));
+
+  auto* context = GetChooserContext();
+
+  auto blocked_interface_alt = device::mojom::UsbAlternateInterfaceInfo::New();
+  blocked_interface_alt->alternate_setting = 0;
+  blocked_interface_alt->class_code = GetParam();
+
+  auto blocked_interface = device::mojom::UsbInterfaceInfo::New();
+  blocked_interface->interface_number = 0;
+  blocked_interface->alternates.push_back(std::move(blocked_interface_alt));
+
+  auto unblocked_interface_alt =
+      device::mojom::UsbAlternateInterfaceInfo::New();
+  unblocked_interface_alt->alternate_setting = 0;
+  unblocked_interface_alt->class_code = 0xff;  // Vendor specific interface.
+
+  auto unblocked_interface = device::mojom::UsbInterfaceInfo::New();
+  unblocked_interface->interface_number = 1;
+  unblocked_interface->alternates.push_back(std::move(unblocked_interface_alt));
+
+  auto config = device::mojom::UsbConfigurationInfo::New();
+  config->configuration_value = 1;
+  config->interfaces.push_back(std::move(blocked_interface));
+  config->interfaces.push_back(std::move(unblocked_interface));
+
+  std::vector<device::mojom::UsbConfigurationInfoPtr> configs;
+  configs.push_back(std::move(config));
+
+  auto fake_device = base::MakeRefCounted<FakeUsbDeviceInfo>(
+      0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF", std::move(configs));
+
+  auto device_info = device_manager()->AddDevice(fake_device);
+  context->GrantDevicePermission(kOrigin, kOrigin, *device_info);
+
+  mojo::Remote<WebUsbService> service;
+  ConnectToService(service.BindNewPipeAndPassReceiver());
+  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents());
+  ASSERT_TRUE(tab_helper);
+
+  GetDevicesBlocking(service.get(), {device_info->guid});
+
+  mojo::Remote<device::mojom::UsbDevice> device;
+  service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
+  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+
+  OpenDeviceBlocking(device.get());
+
+  {
+    base::RunLoop loop;
+    device->SetConfiguration(1, base::BindLambdaForTesting([&](bool success) {
+                               EXPECT_TRUE(success);
+                               loop.Quit();
+                             }));
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    device->ClaimInterface(
+        0, base::BindLambdaForTesting([&](UsbClaimInterfaceResult result) {
+          EXPECT_EQ(result, UsbClaimInterfaceResult::kProtectedClass);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    device->ClaimInterface(
+        1, base::BindLambdaForTesting([&](UsbClaimInterfaceResult result) {
+          EXPECT_EQ(result, UsbClaimInterfaceResult::kSuccess);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    WebUsbServiceImplProtectedInterfaceTests,
+    WebUsbServiceImplProtectedInterfaceTest,
+    testing::Values(0x01,    // Audio
+                    0x03,    // HID
+                    0x08,    // Mass Storage
+                    0x0B,    // Smart Card
+                    0x0E,    // Video
+                    0x10,    // Audio/Video
+                    0xE0));  // Wireless Controller (Bluetooth and Wireless USB)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WebUsbServiceImplTest, AllowlistedImprivataExtension) {
+  extensions::DictionaryBuilder manifest;
+  manifest.Set("name", "Fake Imprivata Extension")
+      .Set("description", "For testing.")
+      .Set("version", "0.1")
+      .Set("manifest_version", 2)
+      .Set("web_accessible_resources",
+           extensions::ListBuilder().Append("index.html").Build());
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder()
+          .SetManifest(manifest.Build())
+          .SetID("dhodapiemamlmhlhblgcibabhdkohlen")
+          .Build();
+  ASSERT_TRUE(extension);
+  extensions::ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
+  const GURL imprivata_url = extension->GetResourceURL("index.html");
+  const auto imprivata_origin = url::Origin::Create(imprivata_url);
+
+  auto* context = GetChooserContext();
+
+  auto alternate_setting = device::mojom::UsbAlternateInterfaceInfo::New();
+  alternate_setting->alternate_setting = 0;
+  alternate_setting->class_code = 0x03;  // HID
+
+  auto interface = device::mojom::UsbInterfaceInfo::New();
+  interface->interface_number = 1;
+  interface->alternates.push_back(std::move(alternate_setting));
+
+  auto config = device::mojom::UsbConfigurationInfo::New();
+  config->configuration_value = 1;
+  config->interfaces.push_back(std::move(interface));
+
+  std::vector<device::mojom::UsbConfigurationInfoPtr> configs;
+  configs.push_back(std::move(config));
+
+  auto fake_device = base::MakeRefCounted<FakeUsbDeviceInfo>(
+      0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF", std::move(configs));
+
+  auto device_info = device_manager()->AddDevice(fake_device);
+  context->GrantDevicePermission(imprivata_origin, imprivata_origin,
+                                 *device_info);
+
+  NavigateAndCommit(imprivata_url);
+
+  mojo::Remote<WebUsbService> service;
+  ConnectToService(service.BindNewPipeAndPassReceiver());
+  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents());
+  ASSERT_TRUE(tab_helper);
+
+  GetDevicesBlocking(service.get(), {device_info->guid});
+
+  mojo::Remote<device::mojom::UsbDevice> device;
+  service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
+  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+
+  OpenDeviceBlocking(device.get());
+
+  {
+    base::RunLoop loop;
+    device->SetConfiguration(1, base::BindLambdaForTesting([&](bool success) {
+                               EXPECT_TRUE(success);
+                               loop.Quit();
+                             }));
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    device->ClaimInterface(
+        1, base::BindLambdaForTesting([&](UsbClaimInterfaceResult result) {
+          EXPECT_EQ(result, UsbClaimInterfaceResult::kSuccess);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)

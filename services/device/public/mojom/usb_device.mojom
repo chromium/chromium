@@ -7,6 +7,15 @@ module device.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
+// USB interface classes.
+const uint8 kUsbAudioClass = 0x01;
+const uint8 kUsbHidClass = 0x03;
+const uint8 kUsbMassStorageClass = 0x08;
+const uint8 kUsbSmartCardClass = 0x0B;
+const uint8 kUsbVideoClass = 0x0E;
+const uint8 kUsbAudioVideoClass = 0x10;
+const uint8 kUsbWirelessClass = 0xE0;
+
 enum UsbOpenDeviceError {
   // Opening the device succeeded.
   OK,
@@ -16,6 +25,18 @@ enum UsbOpenDeviceError {
 
   // The device is already open.
   ALREADY_OPEN,
+};
+
+enum UsbClaimInterfaceResult {
+  // Claiming the interface succeeded.
+  kSuccess,
+
+  // Claiming the interface failed because the interface implements a protected
+  // class.
+  kProtectedClass,
+
+  // Claiming the interface failed due to another error.
+  kFailure,
 };
 
 // Corresponds to the USBDirection WebIDL type.
@@ -194,7 +215,7 @@ interface UsbDevice {
   SetConfiguration(uint8 value) => (bool success);
 
   // Claims a single interface in the current device configuration.
-  ClaimInterface(uint8 interface_number) => (bool success);
+  ClaimInterface(uint8 interface_number) => (UsbClaimInterfaceResult result);
 
   // Releases a claimed interface in the current device configuration.
   ReleaseInterface(uint8 interface_number) => (bool success);

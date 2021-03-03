@@ -73,8 +73,8 @@ void OnControlTransfer(mojo::Remote<device::mojom::UsbDevice> device,
 // Device ID.
 void OnClaimInterface(mojo::Remote<device::mojom::UsbDevice> device,
                       GetDeviceIdCallback cb,
-                      bool success) {
-  if (!success) {
+                      device::mojom::UsbClaimInterfaceResult result) {
+  if (result != device::mojom::UsbClaimInterfaceResult::kSuccess) {
     return std::move(cb).Run({});
   }
 

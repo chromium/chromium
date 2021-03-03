@@ -51,6 +51,7 @@ class WebUsbServiceImpl
 
   bool HasDevicePermission(
       const device::mojom::UsbDeviceInfo& device_info) const;
+  std::vector<uint8_t> GetProtectedInterfaceClasses() const;
 
   // blink::mojom::WebUsbService implementation:
   void GetDevices(GetDevicesCallback callback) override;

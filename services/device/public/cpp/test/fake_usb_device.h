@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -30,12 +31,14 @@ class FakeUsbDevice : public mojom::UsbDevice,
                       public FakeUsbDeviceInfo::Observer {
  public:
   static void Create(scoped_refptr<FakeUsbDeviceInfo> device,
+                     base::span<const uint8_t> blocked_interface_classes,
                      mojo::PendingReceiver<device::mojom::UsbDevice> receiver,
                      mojo::PendingRemote<mojom::UsbDeviceClient> client);
   ~FakeUsbDevice() override;
 
  protected:
   FakeUsbDevice(scoped_refptr<FakeUsbDeviceInfo> device,
+                base::span<const uint8_t> blocked_interface_classes,
                 mojo::PendingRemote<mojom::UsbDeviceClient> client);
 
   // Device implementation:
@@ -92,6 +95,7 @@ class FakeUsbDevice : public mojom::UsbDevice,
 
  private:
   const scoped_refptr<FakeUsbDeviceInfo> device_;
+  const base::flat_set<uint8_t> blocked_interface_classes_;
 
   ScopedObserver<FakeUsbDeviceInfo, FakeUsbDeviceInfo::Observer> observer_;
 

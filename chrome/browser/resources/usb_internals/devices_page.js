@@ -171,7 +171,8 @@ class DevicePage {
   async initializeDescriptorPanels_(tabPanel, guid) {
     const usbDevice = new UsbDeviceRemote;
     await this.usbManager_.getDevice(
-        guid, usbDevice.$.bindNewPipeAndPassReceiver(), null);
+        guid, /*blocked_interface_classes=*/[],
+        usbDevice.$.bindNewPipeAndPassReceiver(), /*device_client=*/ null);
 
     const deviceDescriptorPanel =
         initialInspectorPanel(tabPanel, 'device-descriptor', usbDevice, guid);

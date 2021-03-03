@@ -525,11 +525,15 @@ void UsbChooserContext::GetDevices(
 
 void UsbChooserContext::GetDevice(
     const std::string& guid,
+    base::span<const uint8_t> blocked_interface_classes,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client) {
   EnsureConnectionWithDeviceManager();
-  device_manager_->GetDevice(guid, std::move(device_receiver),
-                             std::move(device_client));
+  device_manager_->GetDevice(
+      guid,
+      std::vector<uint8_t>(blocked_interface_classes.begin(),
+                           blocked_interface_classes.end()),
+      std::move(device_receiver), std::move(device_client));
 }
 
 const device::mojom::UsbDeviceInfo* UsbChooserContext::GetDeviceInfo(

@@ -21,7 +21,8 @@ interface UsbDeviceManager {
   GetDevices(UsbEnumerationOptions? options) => (array<UsbDeviceInfo> results);
 
   // Requests a device by guid.
-  GetDevice(string guid, pending_receiver<UsbDevice> device_receiver,
+  GetDevice(string guid, array<uint8> blocked_interface_classes,
+            pending_receiver<UsbDevice> device_receiver,
             pending_remote<UsbDeviceClient>? device_client);
 
   // Requests a device by guid. The returned device will be permitted to send

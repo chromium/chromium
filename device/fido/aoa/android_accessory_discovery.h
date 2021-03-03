@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AndroidAccessoryDiscovery
   void OnAccessoryInterfaceClaimed(
       mojo::Remote<device::mojom::UsbDevice> device,
       InterfaceInfo interface_info,
-      bool success);
+      mojom::UsbClaimInterfaceResult result);
 
   mojo::Remote<device::mojom::UsbDeviceManager> device_manager_;
   const std::string request_description_;

@@ -47,7 +47,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   UsbService* GetUsbService() const { return usb_service_.get(); }
 
  private:
-  // DeviceManager implementation:
+  // mojom::UsbDeviceManager implementation
   void EnumerateDevicesAndSetClient(
       mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
       EnumerateDevicesAndSetClientCallback callback) override;
@@ -55,6 +55,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
                   GetDevicesCallback callback) override;
   void GetDevice(
       const std::string& guid,
+      const std::vector<uint8_t>& blocked_interface_classes,
       mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
   void GetSecurityKeyDevice(
@@ -107,6 +108,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
       const std::string& guid,
       mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client,
+      base::span<const uint8_t> blocked_interface_classes,
       bool allow_security_key_requests);
 
   std::unique_ptr<UsbService> usb_service_;

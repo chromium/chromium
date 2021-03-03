@@ -52,6 +52,7 @@ namespace ResetDevice = usb::ResetDevice;
 namespace SetInterfaceAlternateSetting = usb::SetInterfaceAlternateSetting;
 
 using content::BrowserThread;
+using device::mojom::UsbClaimInterfaceResult;
 using device::mojom::UsbControlTransferParams;
 using device::mojom::UsbControlTransferRecipient;
 using device::mojom::UsbControlTransferType;
@@ -1038,12 +1039,13 @@ ExtensionFunction::ResponseAction UsbClaimInterfaceFunction::Run() {
   device->ClaimInterface(
       parameters->interface_number,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&UsbClaimInterfaceFunction::OnComplete, this), false));
+          base::BindOnce(&UsbClaimInterfaceFunction::OnComplete, this),
+          UsbClaimInterfaceResult::kFailure));
   return RespondLater();
 }
 
-void UsbClaimInterfaceFunction::OnComplete(bool success) {
-  if (success) {
+void UsbClaimInterfaceFunction::OnComplete(UsbClaimInterfaceResult result) {
+  if (result == UsbClaimInterfaceResult::kSuccess) {
     Respond(NoArguments());
   } else {
     Respond(Error(kErrorCannotClaimInterface));

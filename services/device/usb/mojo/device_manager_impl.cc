@@ -67,10 +67,11 @@ void DeviceManagerImpl::GetDevices(mojom::UsbEnumerationOptionsPtr options,
 
 void DeviceManagerImpl::GetDevice(
     const std::string& guid,
+    const std::vector<uint8_t>& blocked_interface_classes,
     mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
   return GetDeviceInternal(guid, std::move(device_receiver),
-                           std::move(device_client),
+                           std::move(device_client), blocked_interface_classes,
                            /*allow_security_key_requests=*/false);
 }
 
@@ -80,6 +81,7 @@ void DeviceManagerImpl::GetSecurityKeyDevice(
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
   return GetDeviceInternal(guid, std::move(device_receiver),
                            std::move(device_client),
+                           /*blocked_interface_classes=*/{},
                            /*allow_security_key_requests=*/true);
 }
 
@@ -222,13 +224,15 @@ void DeviceManagerImpl::GetDeviceInternal(
     const std::string& guid,
     mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client,
+    base::span<const uint8_t> blocked_interface_classes,
     bool allow_security_key_requests) {
   scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
   if (!device)
     return;
 
   DeviceImpl::Create(std::move(device), std::move(device_receiver),
-                     std::move(device_client), allow_security_key_requests);
+                     std::move(device_client), blocked_interface_classes,
+                     allow_security_key_requests);
 }
 
 }  // namespace usb
