@@ -64,7 +64,6 @@ import org.chromium.ui.text.SpanApplier;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -592,7 +591,6 @@ public abstract class SigninFragmentBase
     private void selectAccount(String accountName, boolean isDefaultAccount) {
         mSelectedAccountName = accountName;
         mIsDefaultAccountSelected = isDefaultAccount;
-        mProfileDataCache.update(Collections.singletonList(mSelectedAccountName));
         updateProfileData(mSelectedAccountName);
 
         AccountPickerDialogFragment accountPickerFragment = getAccountPickerDialogFragment();

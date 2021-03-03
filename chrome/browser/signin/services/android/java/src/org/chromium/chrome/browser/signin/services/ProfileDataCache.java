@@ -39,13 +39,10 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Fetches and caches Google Account profile images and full names for the accounts on the device.
- * ProfileDataCache doesn't observe account list changes by itself, so account list
- * should be provided by calling {@link #update(List)}
  */
 @MainThread
 public class ProfileDataCache implements ProfileDataSource.Observer, IdentityManager.Observer {
@@ -153,30 +150,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
             Context context, @DimenRes int imageSizeRedId) {
         return new ProfileDataCache(context,
                 context.getResources().getDimensionPixelSize(imageSizeRedId), /*badgeConfig=*/null);
-    }
-
-    /**
-     * Initiate fetching the user accounts data (images and the full name). Fetched data will be
-     * sent to observers of ProfileDownloader. The instance must have at least one observer (see
-     * {@link #addObserver}) when this method is called.
-     *
-     * TODO(crbug/1183296): Don't call this method, the profile data is updated automatically even
-     * when there is no GmsProfileDataSource.
-     */
-    @Deprecated
-    public void update(List<String> accountEmails) {
-        ThreadUtils.assertOnUiThread();
-        assert !mObservers.isEmpty();
-
-        // ProfileDataSource is updated automatically.
-        if (mProfileDataSource != null) return;
-
-        for (String accountEmail : accountEmails) {
-            if (!mCachedProfileData.containsKey(accountEmail)) {
-                AccountInfoService.get().startFetchingAccountInfoFor(
-                        accountEmail, this::onExtendedAccountInfoUpdated);
-            }
-        }
     }
 
     /**
