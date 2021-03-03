@@ -134,7 +134,10 @@ source_set("tests") {
   ]
 
   if (is_posix) {
-    sources += [ "perfetto/system_perfetto_unittest.cc" ]
+    # TODO(crbug.com/1184180): System perfetto tests are flaky on Mac.
+    if (!is_mac) {
+      sources += [ "perfetto/system_perfetto_unittest.cc" ]
+    }
 
     if (!is_android) {
       sources += [ "public/cpp/system_tracing_service_unittest.cc" ]
