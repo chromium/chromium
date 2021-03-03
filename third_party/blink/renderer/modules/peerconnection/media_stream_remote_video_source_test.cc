@@ -353,9 +353,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
   track->RemoveSink(&sink);
 }
 
-// TODO(crbug/1183496): flaky test.
 TEST_F(MediaStreamRemoteVideoSourceTest,
-       DISABLED_PopulateRequestAnimationFrameMetadata) {
+       PopulateRequestAnimationFrameMetadata) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(), false);
@@ -415,10 +414,16 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   EXPECT_FLOAT_EQ(output_frame->metadata().processing_time->InSecondsF(),
                   kProcessingTime);
 
-  EXPECT_FLOAT_EQ(
+  // The NTP offset is estimated both here and in the code that is tested.
+  // Therefore, we cannot exactly determine what capture_begin_time will be set
+  // to.
+  // TODO(kron): Find a lower tolerance without causing the test to be flaky or
+  // make the clock injectable so that a fake clock can be used in the test.
+  constexpr float kNtpOffsetToleranceMs = 40.0;
+  EXPECT_NEAR(
       (*output_frame->metadata().capture_begin_time - kExpectedCaptureTime)
           .InMillisecondsF(),
-      0.0f);
+      0.0f, kNtpOffsetToleranceMs);
 
   EXPECT_FLOAT_EQ(
       (*output_frame->metadata().receive_time - kExpectedReceiveTime)
