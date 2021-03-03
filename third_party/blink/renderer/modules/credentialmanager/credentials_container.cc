@@ -1219,6 +1219,8 @@ ScriptPromise CredentialsContainer::create(
             resolver->GetExecutionContext()) &&
         resolver->GetExecutionContext()->IsFeatureEnabled(
             mojom::blink::FeaturePolicyFeature::kPayment)) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kSecurePaymentConfirmation);
       CreatePublicKeyCredentialForPaymentCredential(options->payment(),
                                                     resolver);
     } else {

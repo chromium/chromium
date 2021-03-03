@@ -1841,7 +1841,7 @@
     },
     {
       name: "SecurePaymentConfirmation",
-      origin_trial_feature_name: "SecurePaymentConfirmation",
+      origin_trial_feature_name: "SecurePaymentConfirmationV2",
       origin_trial_os: ["mac", "win"],
       status: "experimental",
     },
