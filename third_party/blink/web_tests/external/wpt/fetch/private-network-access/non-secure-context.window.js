@@ -1,6 +1,6 @@
 // META: script=resources/support.js
 //
-// Spec: https://wicg.github.io/cors-rfc1918/#integration-fetch
+// Spec: https://wicg.github.io/private-network-access/#integration-fetch
 //
 // This file covers only those tests that must execute in a non secure context.
 // Other tests are defined in: secure-context.window.js

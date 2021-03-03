@@ -5,7 +5,7 @@
 
 'use strict';
 
-// https://wicg.github.io/cors-rfc1918/
+// https://wicg.github.io/private-network-access/
 
 idl_test(
   ['cors-rfc1918'],

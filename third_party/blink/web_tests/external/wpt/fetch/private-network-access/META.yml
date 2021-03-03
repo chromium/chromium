@@ -1,4 +1,4 @@
-spec: https://wicg.github.io/cors-rfc1918/
+spec: https://wicg.github.io/private-network-access/
 suggested_reviewers:
   - letitz
   - hemeryar
