@@ -229,7 +229,9 @@ class PasswordFormMetricsRecorder
     kReauthRequired = 7,
     // Password is already filled
     kPasswordPrefilled = 8,
-    kMaxValue = kPasswordPrefilled,
+    // A credential exists for affiliated website.
+    kAffiliatedWebsite = 9,
+    kMaxValue = kAffiliatedWebsite,
   };
 
   // This metric records the user experience with the passwords filling. The

@@ -186,6 +186,9 @@ LikelyFormFilling SendFillInformationToRenderer(
     wait_for_username_reason = WaitForUsernameReason::kReauthRequired;
   } else if (client->IsIncognito()) {
     wait_for_username_reason = WaitForUsernameReason::kIncognitoMode;
+  } else if (preferred_match->is_affiliation_based_match &&
+             !IsValidAndroidFacetURI(preferred_match->signon_realm)) {
+    wait_for_username_reason = WaitForUsernameReason::kAffiliatedWebsite;
   } else if (preferred_match->is_public_suffix_match) {
     wait_for_username_reason = WaitForUsernameReason::kPublicSuffixMatch;
   } else if (no_sign_in_form) {

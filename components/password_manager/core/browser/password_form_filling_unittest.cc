@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
@@ -376,6 +377,44 @@ TEST_F(PasswordFormFillingTest, TouchToFill) {
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 #endif
+
+TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
+  base::HistogramTester histogram_tester;
+  // Create a match from the database that matches using affiliation.
+  PasswordForm affiliated_match;
+  affiliated_match.url = GURL("https://fooo.com/");
+  affiliated_match.username_value = ASCIIToUTF16("test@gmail.com");
+  affiliated_match.password_value = ASCIIToUTF16("test1");
+  affiliated_match.signon_realm = "https://fooo.com/";
+  affiliated_match.is_affiliation_based_match = true;
+
+  std::vector<const PasswordForm*> best_matches = {&affiliated_match};
+
+  EXPECT_CALL(driver_, InformNoSavedCredentials).Times(0);
+  PasswordFormFillData fill_data;
+  EXPECT_CALL(driver_, FillPasswordForm).WillOnce(SaveArg<0>(&fill_data));
+  EXPECT_CALL(client_, PasswordWasAutofilled);
+
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches_,
+      &affiliated_match, /*blocked_by_user=*/false, metrics_recorder_.get());
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+
+  // Check that the message to the renderer (i.e. |fill_data|) is filled
+  // correctly.
+  EXPECT_EQ(observed_form_.url, fill_data.url);
+  EXPECT_TRUE(fill_data.wait_for_username);
+  EXPECT_EQ(affiliated_match.signon_realm, fill_data.preferred_realm);
+  EXPECT_EQ(observed_form_.username_element, fill_data.username_field.name);
+  EXPECT_EQ(saved_match_.username_value, fill_data.username_field.value);
+  EXPECT_EQ(observed_form_.password_element, fill_data.password_field.name);
+  EXPECT_EQ(saved_match_.password_value, fill_data.password_field.value);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FirstWaitForUsernameReason",
+      PasswordFormMetricsRecorder::WaitForUsernameReason::kAffiliatedWebsite,
+      1);
+}
 
 // Tests that the when there is a single preferred match, and no extra
 // matches, the PasswordFormFillData is filled in correctly.

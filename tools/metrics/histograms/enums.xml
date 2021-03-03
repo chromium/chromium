@@ -59234,6 +59234,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="Password is already filled">
     Password field is already filled in and it doesn't look like a placeholder.
   </int>
+  <int value="9" label="Affiliated website">
+    A credential exists for an affiliated matched site but not for the current
+    security origin.
+  </int>
 </enum>
 
 <enum name="PasswordManagerHttpCredentialType">
