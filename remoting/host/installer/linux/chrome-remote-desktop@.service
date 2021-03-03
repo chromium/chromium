@@ -23,7 +23,7 @@ PAMName=chrome-remote-desktop
 # path seems not to cause issues and long as none of the Standard*= options are
 # set to "tty".
 TTYPath=/dev/chrome-remote-desktop
-ExecStart=/opt/google/chrome-remote-desktop/chrome-remote-desktop --start --systemd
+ExecStart=/opt/google/chrome-remote-desktop/chrome-remote-desktop --start --new-session
 ExecReload=/opt/google/chrome-remote-desktop/chrome-remote-desktop --reload
 ExecStop=/opt/google/chrome-remote-desktop/chrome-remote-desktop --stop
 # Log output to the journal
