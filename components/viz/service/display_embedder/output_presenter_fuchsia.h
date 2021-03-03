@@ -144,6 +144,10 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
   // Used to calculate target presentation time for the frames presented in the
   // future.
   base::Optional<PresentatonState> presentation_state_;
+
+  // Target presentation time of tha last frame sent to ImagePipe. Stored here
+  // to ensure ImagePipe.Present() is not called with decreasing timestamps.
+  base::TimeTicks last_frame_present_time_;
 };
 
 }  // namespace viz

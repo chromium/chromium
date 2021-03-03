@@ -479,6 +479,11 @@ void OutputPresenterFuchsia::PresentNextFrame() {
     present_time = std::max(present_time, now);
   }
 
+  // Ensure that the target timestamp is not decreasing from the previous frame,
+  // since Scenic doesn't allow it (see crbug.com/1181528).
+  present_time = std::max(present_time, last_frame_present_time_);
+  last_frame_present_time_ = present_time;
+
   image_pipe_->PresentImage(
       frame.image_id, present_time.ToZxTime(), std::move(frame.acquire_fences),
       std::move(frame.release_fences),
