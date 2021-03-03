@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -24,8 +23,6 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/client_filterable_state.h"
-#include "components/variations/pref_names.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/cert/cert_verifier.h"
@@ -38,15 +35,6 @@ class SingleThreadTaskRunner;
 }
 
 namespace {
-
-const char* kVariationsRestrictionsByPolicy =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // On Chrome OS the ChromeVariations policy doesn't exist and is replaced by
-    // DeviceChromeVariations.
-    variations::prefs::kDeviceVariationsRestrictionsByPolicy;
-#else
-    variations::prefs::kVariationsRestrictionsByPolicy;
-#endif
 
 // Converts a ListValue of StringValues into a vector of strings. Any Values
 // which cannot be converted will be skipped.
@@ -158,18 +146,6 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
   // cached list of parsed SSL/TLS cipher suites that are disabled.
   void OnDisabledCipherSuitesChange(PrefService* local_state);
 
-  void CacheVariationsPolicy(PrefService* local_state) {
-    const PrefService::Preference* const pref =
-        local_state->FindPreference(kVariationsRestrictionsByPolicy);
-    // kVariationsRestrictionsByPolicy may not be registered in test contexts
-    // therefore that case is handled by assuming that it has the default value
-    // of |NO_RESTRICTIONS|.
-    variations_unrestricted_ =
-        !pref ||
-        pref->GetValue()->GetInt() ==
-            static_cast<int>(variations::RestrictionPolicy::NO_RESTRICTIONS);
-  }
-
   PrefChangeRegistrar local_state_change_registrar_;
 
   // The local_state prefs.
@@ -178,14 +154,9 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
   StringPrefMember ssl_version_min_;
   StringPrefMember ssl_version_max_;
   StringListPrefMember h2_client_cert_coalescing_host_patterns_;
-  BooleanPrefMember cecpq2_enabled_;
 
   // The cached list of disabled SSL cipher suites.
   std::vector<uint16_t> disabled_cipher_suites_;
-
-  // variations_unrestricted_ is true iff the ChromeVariations policy has not
-  // been set to anything more restrictive than the default NO_RESTRICTIONS.
-  bool variations_unrestricted_ = true;
 
   mojo::RemoteSet<network::mojom::SSLConfigClient> ssl_config_client_set_;
 
@@ -211,19 +182,13 @@ SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
                         local_state_callback);
   h2_client_cert_coalescing_host_patterns_.Init(
       prefs::kH2ClientCertCoalescingHosts, local_state, local_state_callback);
-  cecpq2_enabled_.Init(prefs::kCECPQ2Enabled, local_state,
-                       local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
                                     local_state_callback);
-  local_state_change_registrar_.Add(kVariationsRestrictionsByPolicy,
-                                    local_state_callback);
 
   // Populate |disabled_cipher_suites_| with the initial pref value.
   OnDisabledCipherSuitesChange(local_state);
-
-  CacheVariationsPolicy(local_state);
 }
 
 // static
@@ -239,8 +204,6 @@ void SSLConfigServiceManagerPref::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kSSLVersionMax, std::string());
   registry->RegisterListPref(prefs::kCipherSuiteBlacklist);
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
-  registry->RegisterBooleanPref(prefs::kCECPQ2Enabled,
-                                default_context_config.cecpq2_enabled);
 }
 
 void SSLConfigServiceManagerPref::AddToNetworkContextParams(
@@ -262,8 +225,6 @@ void SSLConfigServiceManagerPref::OnPreferenceChanged(
   DCHECK(prefs);
   if (pref_name_in == prefs::kCipherSuiteBlacklist)
     OnDisabledCipherSuitesChange(prefs);
-
-  CacheVariationsPolicy(prefs);
 
   network::mojom::SSLConfigPtr new_config = GetSSLConfigFromPrefs();
   network::mojom::SSLConfig* raw_config = new_config.get();
@@ -307,11 +268,6 @@ SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
   config->disabled_cipher_suites = disabled_cipher_suites_;
   config->client_cert_pooling_policy = CanonicalizeHostnamePatterns(
       h2_client_cert_coalescing_host_patterns_.GetValue());
-  // CECPQ2 is not enabled if ChromeVariations has been set to limit the
-  // applicability of Finch trials. We take that as a signal that the customer
-  // is especially conservative.
-  config->cecpq2_enabled =
-      cecpq2_enabled_.GetValue() && variations_unrestricted_;
 
   return config;
 }

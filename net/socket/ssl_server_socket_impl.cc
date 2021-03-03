@@ -838,12 +838,6 @@ int SSLServerContextImpl::SocketImpl::Init() {
     CHECK(SSL_set_signing_algorithm_prefs(ssl_.get(), &id, 1));
   }
 
-  const std::vector<int>& curves =
-      context_->ssl_server_config_.curves_for_testing;
-  if (!curves.empty()) {
-    CHECK(SSL_set1_curves(ssl_.get(), curves.data(), curves.size()));
-  }
-
   transport_adapter_.reset(new SocketBIOAdapter(
       transport_socket_.get(), kBufferSize, kBufferSize, this));
   BIO* transport_bio = transport_adapter_->bio();

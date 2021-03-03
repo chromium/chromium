@@ -17,11 +17,9 @@ namespace {
 bool SSLContextConfigsAreEqual(const net::SSLContextConfig& config1,
                                const net::SSLContextConfig& config2) {
   return std::tie(config1.version_min, config1.version_min_warn,
-                  config1.version_max, config1.disabled_cipher_suites,
-                  config1.cecpq2_enabled) ==
+                  config1.version_max, config1.disabled_cipher_suites) ==
          std::tie(config2.version_min, config2.version_min_warn,
-                  config2.version_max, config2.disabled_cipher_suites,
-                  config2.cecpq2_enabled);
+                  config2.version_max, config2.disabled_cipher_suites);
 }
 
 }  // namespace
