@@ -57,6 +57,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
   // animation, of all steps (keyframes) with calculatable scale. Returns
   // false if none of the steps can calculate a scale.
   virtual bool MaximumScale(float* max_scale) const;
+
+  // Returns step interval if it's step animation. Returns 0 otherwise.
+  virtual base::TimeDelta TickInterval() const;
 };
 
 #define DECLARE_ANIMATION_CURVE_BODY(T, Name)                                \

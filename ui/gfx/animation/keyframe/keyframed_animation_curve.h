@@ -142,6 +142,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedColorAnimationCurve
   // AnimationCurve implementation
   base::TimeDelta Duration() const override;
   std::unique_ptr<AnimationCurve> Clone() const override;
+  base::TimeDelta TickInterval() const override;
 
   // BackgrounColorAnimationCurve implementation
   SkColor GetValue(base::TimeDelta t) const override;
@@ -187,6 +188,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedFloatAnimationCurve
   // AnimationCurve implementation
   base::TimeDelta Duration() const override;
   std::unique_ptr<AnimationCurve> Clone() const override;
+  base::TimeDelta TickInterval() const override;
 
   // FloatAnimationCurve implementation
   float GetValue(base::TimeDelta t) const override;
@@ -229,6 +231,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedTransformAnimationCurve
   // AnimationCurve implementation
   base::TimeDelta Duration() const override;
   std::unique_ptr<AnimationCurve> Clone() const override;
+  base::TimeDelta TickInterval() const override;
 
   // TransformAnimationCurve implementation
   gfx::TransformOperations GetValue(base::TimeDelta t) const override;
@@ -269,6 +272,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedSizeAnimationCurve
   // AnimationCurve implementation
   base::TimeDelta Duration() const override;
   std::unique_ptr<AnimationCurve> Clone() const override;
+  base::TimeDelta TickInterval() const override;
 
   // SizeAnimationCurve implementation
   gfx::SizeF GetValue(base::TimeDelta t) const override;

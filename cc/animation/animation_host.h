@@ -85,6 +85,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // MutatorHost implementation.
   std::unique_ptr<MutatorHost> CreateImplInstance() const override;
   void ClearMutators() override;
+  base::TimeDelta MinimumTickInterval() const override;
 
   // Processes the current |element_to_animations_map_|, registering animations
   // which can now be animated and unregistering those that can't based on the
