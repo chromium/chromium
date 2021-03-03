@@ -47,8 +47,8 @@ AudioNodeOutput::AudioNodeOutput(AudioHandler* handler,
       rendering_param_fan_out_count_(0) {
   DCHECK_LE(number_of_channels, BaseAudioContext::MaxNumberOfChannels());
 
-  internal_bus_ = AudioBus::Create(number_of_channels,
-                                   audio_utilities::kRenderQuantumFrames);
+  internal_bus_ = AudioBus::Create(
+      number_of_channels, GetDeferredTaskHandler().RenderQuantumFrames());
 }
 
 void AudioNodeOutput::Dispose() {
@@ -82,8 +82,8 @@ void AudioNodeOutput::UpdateInternalBus() {
   if (NumberOfChannels() == internal_bus_->NumberOfChannels())
     return;
 
-  internal_bus_ = AudioBus::Create(NumberOfChannels(),
-                                   audio_utilities::kRenderQuantumFrames);
+  internal_bus_ = AudioBus::Create(
+      NumberOfChannels(), GetDeferredTaskHandler().RenderQuantumFrames());
 }
 
 void AudioNodeOutput::UpdateRenderingState() {

@@ -200,6 +200,11 @@ class MODULES_EXPORT DeferredTaskHandler final
     return &finished_source_handlers_;
   }
 
+  // The number of frames to render each time.  After construction, this value
+  // is only read (never modified), and may be read by both the audio thread and
+  // the main thread.
+  unsigned int RenderQuantumFrames() const { return render_quantum_frames_; }
+
  private:
   explicit DeferredTaskHandler(scoped_refptr<base::SingleThreadTaskRunner>);
   void UpdateAutomaticPullNodes();
@@ -223,6 +228,10 @@ class MODULES_EXPORT DeferredTaskHandler final
 
   // Keeps track if the |automatic_pull_handlers| storage is touched.
   bool automatic_pull_handlers_need_updating_;
+
+  // Number of frames to use when rendering the graph.  This is the frames to
+  // process for each node.
+  unsigned int render_quantum_frames_ = 128;
 
   // Collection of nodes where the channel count mode has changed. We want the
   // channel count mode to change in the pre- or post-rendering phase so as
