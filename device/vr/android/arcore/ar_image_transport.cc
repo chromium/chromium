@@ -25,6 +25,13 @@
 
 namespace device {
 
+bool ArImageTransport::UseSharedBuffer() {
+  // When available (Android O and up), use AHardwareBuffer-based shared
+  // images for frame transport.
+  static bool val = base::AndroidHardwareBufferCompat::IsSupportAvailable();
+  return val;
+}
+
 ArImageTransport::ArImageTransport(
     std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
     : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
@@ -67,11 +74,7 @@ void ArImageTransport::Initialize(WebXrPresentationState* webxr,
 
   glGenFramebuffersEXT(1, &camera_fbo_);
 
-  // When available (Android O and up), use AHardwareBuffer-based shared
-  // images for frame transport.
-  shared_buffer_draw_ = base::AndroidHardwareBufferCompat::IsSupportAvailable();
-
-  if (shared_buffer_draw_) {
+  if (UseSharedBuffer()) {
     DVLOG(2) << __func__ << ": UseSharedBuffer()=true";
   } else {
     DVLOG(2) << __func__ << ": UseSharedBuffer()=false, setting up surface";
