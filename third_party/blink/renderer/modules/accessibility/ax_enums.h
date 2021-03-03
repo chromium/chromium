@@ -119,7 +119,6 @@ enum AXIgnoredReason {
   kAXNotVisible,
   kAXPresentational,
   kAXProbablyPresentational,
-  kAXStaticTextUsedAsNameFor,
   kAXUninteresting
 };
 

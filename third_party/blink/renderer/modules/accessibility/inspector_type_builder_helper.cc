@@ -52,8 +52,6 @@ String IgnoredReasonName(AXIgnoredReason reason) {
       return "presentationalRole";
     case kAXProbablyPresentational:
       return "probablyPresentational";
-    case kAXStaticTextUsedAsNameFor:
-      return "staticTextUsedAsNameFor";
     case kAXUninteresting:
       return "uninteresting";
   }
