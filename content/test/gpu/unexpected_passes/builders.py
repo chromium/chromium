@@ -55,10 +55,6 @@ FAKE_TRY_BUILDERS = {
     'win-angle-rel-32': [
         'Win7 ANGLE Tryserver (AMD)',
     ],
-    'win-angle-rel-64': [
-        'ANGLE GPU Win10 x64 Release (Intel HD 630)',
-        'ANGLE GPU Win10 x64 Release (NVIDIA)',
-    ],
     'win_optional_gpu_tests_rel': [
         'Optional Win10 x64 Release (Intel HD 630)',
         'Optional Win10 x64 Release (NVIDIA)',

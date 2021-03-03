@@ -15,36 +15,36 @@ import sys
 import time
 
 extra_trybots = [
-  {
-    "mastername": "luci.chromium.try",
-    "buildernames": ["win_optional_gpu_tests_rel"]
-  },
-  {
-    "mastername": "luci.chromium.try",
-    "buildernames": ["mac_optional_gpu_tests_rel"]
-  },
-  {
-    "mastername": "luci.chromium.try",
-    "buildernames": ["linux_optional_gpu_tests_rel"]
-  },
-  {
-    "mastername": "luci.chromium.try",
-    "buildernames": ["android_optional_gpu_tests_rel"]
-  },
-  # Include the ANGLE tryservers which run the WebGL conformance tests
-  # in some non-default configurations.
-  {
-    "mastername": "luci.chromium.try",
-    "buildernames": ["linux-angle-rel"]
-  },
-  {
-    "mastername": "luci.chromium.try",
-    "buildernames": ["win-angle-rel-32"]
-  },
-  {
-    "mastername": "luci.chromium.try",
-    "buildernames": ["win-angle-rel-64"]
-  },
+    {
+        "mastername": "luci.chromium.try",
+        "buildernames": ["win_optional_gpu_tests_rel"]
+    },
+    {
+        "mastername": "luci.chromium.try",
+        "buildernames": ["mac_optional_gpu_tests_rel"]
+    },
+    {
+        "mastername": "luci.chromium.try",
+        "buildernames": ["linux_optional_gpu_tests_rel"]
+    },
+    {
+        "mastername": "luci.chromium.try",
+        "buildernames": ["android_optional_gpu_tests_rel"]
+    },
+    # Include the ANGLE tryservers which run the WebGL conformance tests
+    # in some non-default configurations.
+    {
+        "mastername": "luci.chromium.try",
+        "buildernames": ["linux-angle-rel"]
+    },
+    {
+        "mastername": "luci.chromium.try",
+        "buildernames": ["win-angle-rel-32"]
+    },
+    {
+        "mastername": "luci.chromium.try",
+        "buildernames": ["win-angle-chromium-x64-try"]
+    },
 ]
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))

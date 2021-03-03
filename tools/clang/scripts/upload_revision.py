@@ -40,7 +40,8 @@ Cq-Include-Trybots: chromium/try:linux_chromium_chromeos_msan_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_compile_dbg_32_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_msan_rel_ng
 Cq-Include-Trybots: chromium/try:mac-arm64-rel,mac_chromium_asan_rel_ng
-Cq-Include-Trybots: chromium/try:win-angle-deqp-rel-64
+Cq-Include-Trybots: chromium/try:win-angle-x64-try
+Cq-Include-Trybots: chromium/try:mac-angle-try
 Cq-Include-Trybots: chromium/try:win-asan,win7-rel,win-angle-deqp-rel-32
 Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
 Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
