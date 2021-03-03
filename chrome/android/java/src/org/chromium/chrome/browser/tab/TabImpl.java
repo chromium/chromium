@@ -1629,7 +1629,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 : getWebContents().getNavigationController().getUseDesktopUserAgent();
 
         if (!mUserForcedUserAgent && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS,
                         REQUEST_DESKTOP_ENABLED_PARAM, false)) {
