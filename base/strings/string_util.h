@@ -89,7 +89,7 @@ BASE_EXPORT bool IsWprintfFormatPortable(const wchar_t* format);
 template <typename StringT, typename Iter>
 constexpr BasicStringPiece<StringT> MakeBasicStringPiece(Iter begin, Iter end) {
   DCHECK_GE(end - begin, 0);
-  return {base::to_address(begin), end - begin};
+  return {base::to_address(begin), static_cast<size_t>(end - begin)};
 }
 
 // Explicit instantiations of MakeBasicStringPiece for the BasicStringPiece
