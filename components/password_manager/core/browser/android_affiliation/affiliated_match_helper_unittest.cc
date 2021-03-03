@@ -233,15 +233,21 @@ class AffiliatedMatchHelperTest : public testing::Test,
     RemoveLogin(GetTestAndroidCredentials(kTestWebRealmAlpha2));
   }
 
-  void ExpectPrefetchForAndroidTestLogins() {
+  void ExpectPrefetchForTestLogins() {
     mock_affiliation_service()->ExpectCallToPrefetch(
         kTestAndroidFacetURIAlpha3);
     mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIBeta2);
     mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIBeta3);
     mock_affiliation_service()->ExpectCallToPrefetch(kTestAndroidFacetURIGamma);
+
+    if (base::FeatureList::IsEnabled(
+            features::kFillingAcrossAffiliatedWebsites)) {
+      mock_affiliation_service()->ExpectCallToPrefetch(kTestWebFacetURIAlpha1);
+      mock_affiliation_service()->ExpectCallToPrefetch(kTestWebFacetURIAlpha2);
+    }
   }
 
-  void ExpectCancelPrefetchForAndroidTestLogins() {
+  void ExpectCancelPrefetchForTestLogins() {
     mock_affiliation_service()->ExpectCallToCancelPrefetch(
         kTestAndroidFacetURIAlpha3);
     mock_affiliation_service()->ExpectCallToCancelPrefetch(
@@ -250,9 +256,17 @@ class AffiliatedMatchHelperTest : public testing::Test,
         kTestAndroidFacetURIBeta3);
     mock_affiliation_service()->ExpectCallToCancelPrefetch(
         kTestAndroidFacetURIGamma);
+
+    if (base::FeatureList::IsEnabled(
+            features::kFillingAcrossAffiliatedWebsites)) {
+      mock_affiliation_service()->ExpectCallToCancelPrefetch(
+          kTestWebFacetURIAlpha1);
+      mock_affiliation_service()->ExpectCallToCancelPrefetch(
+          kTestWebFacetURIAlpha2);
+    }
   }
 
-  void ExpectTrimCacheForAndroidTestLogins() {
+  void ExpectTrimCacheForTestLogins() {
     mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
         kTestAndroidFacetURIAlpha3);
     mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
@@ -261,6 +275,14 @@ class AffiliatedMatchHelperTest : public testing::Test,
         kTestAndroidFacetURIBeta3);
     mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
         kTestAndroidFacetURIGamma);
+
+    if (base::FeatureList::IsEnabled(
+            features::kFillingAcrossAffiliatedWebsites)) {
+      mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
+          kTestWebFacetURIAlpha1);
+      mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
+          kTestWebFacetURIAlpha2);
+    }
   }
 
   std::vector<std::string> GetAffiliatedAndroidRealms(
@@ -550,7 +572,7 @@ TEST_P(
   match_helper()->Initialize();
   RunUntilIdle();
 
-  ExpectPrefetchForAndroidTestLogins();
+  ExpectPrefetchForTestLogins();
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 }
 
@@ -564,7 +586,7 @@ TEST_P(AffiliatedMatchHelperTest,
 
   AddAndroidAndNonAndroidTestLogins();
 
-  ExpectPrefetchForAndroidTestLogins();
+  ExpectPrefetchForTestLogins();
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 }
 
@@ -575,7 +597,7 @@ TEST_P(AffiliatedMatchHelperTest,
   match_helper()->Initialize();
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 
-  ExpectPrefetchForAndroidTestLogins();
+  ExpectPrefetchForTestLogins();
   AddAndroidAndNonAndroidTestLogins();
 }
 
@@ -583,11 +605,12 @@ TEST_P(AffiliatedMatchHelperTest,
        CancelPrefetchingAffiliationsAndBrandingForRemovedAndroidCredentials) {
   AddAndroidAndNonAndroidTestLogins();
   match_helper()->Initialize();
-  ExpectPrefetchForAndroidTestLogins();
+  ExpectPrefetchForTestLogins();
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 
-  ExpectCancelPrefetchForAndroidTestLogins();
-  ExpectTrimCacheForAndroidTestLogins();
+  ExpectCancelPrefetchForTestLogins();
+  ExpectTrimCacheForTestLogins();
+
   RemoveAndroidAndNonAndroidTestLogins();
 }
 
@@ -599,7 +622,8 @@ TEST_P(AffiliatedMatchHelperTest,
 TEST_P(AffiliatedMatchHelperTest, PrefetchBeforeTrimForPrimaryKeyUpdates) {
   AddAndroidAndNonAndroidTestLogins();
   match_helper()->Initialize();
-  ExpectPrefetchForAndroidTestLogins();
+  ExpectPrefetchForTestLogins();
+
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 
   mock_affiliation_service()->ExpectCallToCancelPrefetch(

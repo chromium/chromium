@@ -17,22 +17,6 @@
 
 namespace password_manager {
 
-namespace {
-
-// Returns whether or not |form| represents a credential for an Android
-// application, and if so, returns the |facet_uri| of that application.
-bool IsAndroidApplicationCredential(const PasswordForm& form,
-                                    FacetURI* facet_uri) {
-  DCHECK(facet_uri);
-  if (form.scheme != PasswordForm::Scheme::kHtml)
-    return false;
-
-  *facet_uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
-  return facet_uri->IsValidAndroidFacetURI();
-}
-
-}  // namespace
-
 // static
 constexpr base::TimeDelta AffiliatedMatchHelper::kInitializationDelayOnStartup;
 
@@ -118,21 +102,19 @@ void AffiliatedMatchHelper::CompleteInjectAffiliationAndBrandingInformation(
     base::OnceClosure barrier_closure,
     const AffiliatedFacets& results,
     bool success) {
-  if (!success) {
+  const FacetURI facet_uri(
+      FacetURI::FromPotentiallyInvalidSpec(form->signon_realm));
+
+  // Facet can also be web URI, in this case we do nothing.
+  if (!success || !facet_uri.IsValidAndroidFacetURI()) {
     std::move(barrier_closure).Run();
     return;
   }
 
-  const FacetURI facet_uri(
-      FacetURI::FromPotentiallyInvalidSpec(form->signon_realm));
-  DCHECK(facet_uri.IsValidAndroidFacetURI());
-
   // Inject branding information into the form (e.g. the Play Store name and
   // icon URL). We expect to always find a matching facet URI in the results.
-  auto facet = std::find_if(results.begin(), results.end(),
-                            [&facet_uri](const Facet& affiliated_facet) {
-                              return affiliated_facet.uri == facet_uri;
-                            });
+  auto facet = base::ranges::find(results, facet_uri, &Facet::uri);
+
   DCHECK(facet != results.end());
   form->app_display_name = facet->branding_info.name;
   form->app_icon_url = facet->branding_info.icon_url;
@@ -190,8 +172,7 @@ void AffiliatedMatchHelper::CompleteGetAffiliatedAndroidAndWebRealms(
         affiliated_realms.push_back(affiliated_facet.uri.canonical_spec() +
                                     "/");
       } else if (base::FeatureList::IsEnabled(
-                     password_manager::features::
-                         kFillingAcrossAffiliatedWebsites) &&
+                     features::kFillingAcrossAffiliatedWebsites) &&
                  affiliated_facet.uri.IsValidWebFacetURI()) {
         DCHECK(!base::EndsWith(affiliated_facet.uri.canonical_spec(), "/"));
         // Facet URIs have no trailing slash, whereas realms do.
@@ -223,9 +204,18 @@ void AffiliatedMatchHelper::OnLoginsChanged(
     const PasswordStoreChangeList& changes) {
   std::vector<FacetURI> facet_uris_to_trim;
   for (const PasswordStoreChange& change : changes) {
-    FacetURI facet_uri;
-    if (!IsAndroidApplicationCredential(change.form(), &facet_uri))
+    FacetURI facet_uri =
+        FacetURI::FromPotentiallyInvalidSpec(change.form().signon_realm);
+
+    if (!facet_uri.is_valid())
       continue;
+    // Require a valid Android Facet if filling across affiliated websites is
+    // disabled.
+    if (!facet_uri.IsValidAndroidFacetURI() &&
+        !base::FeatureList::IsEnabled(
+            features::kFillingAcrossAffiliatedWebsites)) {
+      continue;
+    }
 
     if (change.type() == PasswordStoreChange::ADD) {
       affiliation_service_->Prefetch(facet_uri, base::Time::Max());
@@ -249,8 +239,14 @@ void AffiliatedMatchHelper::OnLoginsChanged(
 void AffiliatedMatchHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   for (const auto& form : results) {
-    FacetURI facet_uri;
-    if (IsAndroidApplicationCredential(*form, &facet_uri))
+    FacetURI facet_uri =
+        FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
+    if (facet_uri.IsValidAndroidFacetURI())
+      affiliation_service_->Prefetch(facet_uri, base::Time::Max());
+
+    if (facet_uri.IsValidWebFacetURI() &&
+        base::FeatureList::IsEnabled(
+            password_manager::features::kFillingAcrossAffiliatedWebsites))
       affiliation_service_->Prefetch(facet_uri, base::Time::Max());
   }
 }
