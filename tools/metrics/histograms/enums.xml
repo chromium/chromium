@@ -80689,7 +80689,7 @@ Called by update_scheduler_enums.py.-->
   <int value="13" label="Cookies deleted for site"/>
   <int value="14" label="Permission dialog opened"/>
   <int value="15" label="Permission deleted for site"/>
-  <int value="16" label="Permission changed for site"/>
+  <int value="16" label="(Deprecated) Permission changed for site"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">
