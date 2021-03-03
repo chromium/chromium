@@ -314,8 +314,8 @@
   },
   {
     "name": "autofill-enable-offers-in-downstream",
-    "owners": [ "fiorito@google.com", "siyua" ],
-    "expiry_milestone": 90
+    "owners": [ "siyua" ],
+    "expiry_milestone": 95
   },
   {
     "name": "autofill-enable-toolbar-status-chip",
@@ -4859,7 +4859,7 @@
   {
     "name": "sync-autofill-wallet-offer-data",
     "owners": ["siyua", "treib"],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "sync-compromised-credentials",
