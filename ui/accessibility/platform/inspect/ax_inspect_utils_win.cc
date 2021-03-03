@@ -12,6 +12,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
@@ -20,10 +21,10 @@
 namespace ui {
 namespace {
 
-const wchar_t kChromeTitle[] = L"Google Chrome";
-const wchar_t kChromiumTitle[] = L"Chromium";
-const wchar_t kEdgeTitle[] = L"Edge";
-const wchar_t kFirefoxTitle[] = L"Firefox";
+constexpr wchar_t kChromeTitle[] = L"Google Chrome";
+constexpr wchar_t kChromiumTitle[] = L"Chromium";
+constexpr wchar_t kEdgeTitle[] = L"Edge";
+constexpr wchar_t kFirefoxTitle[] = L"Mozilla Firefox";
 
 struct PlatformConstantToNameEntry {
   int32_t value;
@@ -700,23 +701,27 @@ AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid) {
 
 struct HWNDSearchInfo {
   std::wstring title;
+  std::wstring pattern;
   HWND matched_hwnd{nullptr};
   std::vector<std::wstring> matched_titles;
 };
 
 BOOL CALLBACK MatchWindow(HWND hwnd, LPARAM lParam) {
-  const auto num_chars = ::GetWindowTextLength(hwnd);
-  if (!num_chars) {
+  int length = ::GetWindowTextLength(hwnd);
+  if (length == 0) {
     return TRUE;
   }
 
-  std::wstring title(num_chars + 1, '\0');
-  if (!::GetWindowText(hwnd, &title.front(), title.size())) {
-    return TRUE;
-  }
+  std::wstring title(length, '\0');
+  int actual_length = ::GetWindowText(hwnd, &title.front(), title.size() + 1);
+  if (length > actual_length)
+    title.erase(actual_length);
 
   auto* info = reinterpret_cast<HWNDSearchInfo*>(lParam);
-  if (title.find(info->title) != std::string::npos) {
+  if (base::EndsWith(title, info->title) &&
+      (info->pattern.empty() ||
+       base::MatchPattern(base::AsStringPiece16(title),
+                          base::AsStringPiece16(info->pattern)))) {
     info->matched_titles.push_back(title);
     info->matched_hwnd = hwnd;
   }
@@ -733,11 +738,21 @@ AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
     info.title = kEdgeTitle;
   } else if (selector.types & AXTreeSelector::Firefox) {
     info.title = kFirefoxTitle;
-  } else {
+  }
+
+  if (!selector.pattern.empty()) {
+    info.pattern = base::UTF8ToWide(selector.pattern);
+  } else if (info.title.empty()) {
     LOG(ERROR) << selector.AppName()
                << " application is not supported on the system";
     return NULL;
   }
+
+  // A match is found when the window title ends with the search title
+  // and matches the search pattern when provided.
+  // Note that both the search title and pattern are optional, but at
+  // least one should be provided.
+  DCHECK(!info.title.empty() || !info.pattern.empty());
 
   ::EnumWindows(MatchWindow, reinterpret_cast<LPARAM>(&info));
 
