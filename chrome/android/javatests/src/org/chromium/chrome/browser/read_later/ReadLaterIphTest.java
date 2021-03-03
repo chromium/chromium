@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +41,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -123,14 +122,14 @@ public class ReadLaterIphTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @DisabledTest(message = "Flaky test, see https://crbug.com/1161737, https://crbug.com/1155085")
     public void testShowBookmarksReadLaterIPH() throws Throwable {
         mActivityTestRule.loadUrl(mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL));
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_read_later);
-        verify(mTracker, times(1)).notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
+        verify(mTracker, timeout(10000L).times(1))
+                .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
