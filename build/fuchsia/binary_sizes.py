@@ -176,6 +176,15 @@ def WriteTestResults(results_path, test_completed, test_status, timestamp):
     json.dump(test_results, results_file)
 
 
+def WriteGerritPluginSizeData(output_path, package_sizes):
+  """Writes a package size dictionary in json format for the Gerrit binary
+  sizes plugin."""
+
+  with open(output_path, 'w') as sizes_file:
+    sizes_data = {name: size.compressed for name, size in package_sizes.items()}
+    json.dump(sizes_data, sizes_file)
+
+
 def GetCompressedSize(file_path):
   """Measures file size after blobfs compression."""
 
@@ -420,6 +429,10 @@ def main():
       'automatically supplied by the recipe infrastructure when this script '
       'is invoked by a recipe call to api.chromium.runtest().')
   parser.add_argument(
+      '--size-plugin-json-path',
+      help='Optional path for json size data for the Gerrit binary size plugin',
+  )
+  parser.add_argument(
       '--sizes-path',
       default=os.path.join('fuchsia', 'release', 'size_tests',
                            'fyi_sizes.json'),
@@ -509,6 +522,9 @@ def main():
     if args.isolated_script_test_output:
       WriteTestResults(args.isolated_script_test_output, test_completed,
                        test_status, timestamp)
+
+    if args.size_plugin_json_path:
+      WriteGerritPluginSizeData(args.size_plugin_json_path, package_sizes)
 
     return 0 if all_tests_passed else 1
 
