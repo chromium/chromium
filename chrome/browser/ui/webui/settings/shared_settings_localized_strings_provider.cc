@@ -299,10 +299,6 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean(
-      "nearbySharingFeatureFlag",
-      base::FeatureList::IsEnabled(features::kNearbySharing));
-
   // To use lottie, the worker-src CSP needs to be updated for the web ui that
   // is using it. Since as of now there are only a couple of webuis using
   // lottie animations, this update has to be performed manually. As the usage

@@ -861,6 +861,12 @@ void PopulateChromeWebUIFrameBinders(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Because Nearby Share is only currently supported for the primary profile,
+  // we should only register binders in that scenario. However, we don't want to
+  // plumb the profile through to this function, so we 1) ensure that
+  // NearbyShareDialogUI will not be created for non-primary profiles, and 2)
+  // rely on the BindInterface implementation of OSSettingsUI to ensure that no
+  // Nearby Share receivers are bound.
   if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
     RegisterWebUIControllerInterfaceBinder<
         nearby_share::mojom::NearbyShareSettings,

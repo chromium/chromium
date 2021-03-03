@@ -38,8 +38,8 @@ namespace nearby_share {
 NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  // Nearby Share is not available to incognito or guest profiles.
-  DCHECK(profile->IsRegularProfile());
+  DCHECK(NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+      profile));
 
   nearby_service_ = NearbySharingServiceFactory::GetForBrowserContext(profile);
 

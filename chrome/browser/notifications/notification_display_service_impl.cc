@@ -37,8 +37,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_handler.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
 
 #if !defined(OS_ANDROID)
@@ -116,7 +116,8 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
+    if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+            profile_)) {
       AddNotificationHandler(NotificationHandler::Type::NEARBY_SHARE,
                              std::make_unique<NearbyNotificationHandler>());
     }

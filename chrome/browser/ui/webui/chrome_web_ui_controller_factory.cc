@@ -169,7 +169,7 @@
 #include "chrome/browser/chromeos/web_applications/chrome_help_app_ui_delegate.h"
 #include "chrome/browser/chromeos/web_applications/chrome_media_app_ui_delegate.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_welcome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_ui.h"
@@ -454,8 +454,7 @@ WebUIController* NewWebUI<chromeos::ConnectivityDiagnosticsUI>(
       /* BindNetworkHealthServiceCallback */
       base::BindRepeating(
           [](mojo::PendingReceiver<
-              chromeos::network_health::mojom::NetworkHealthService>
-                 receiver) {
+              chromeos::network_health::mojom::NetworkHealthService> receiver) {
             chromeos::network_health::NetworkHealthService::GetInstance()
                 ->BindHealthReceiver(std::move(receiver));
           }),
@@ -764,11 +763,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::InternetConfigDialogUI>;
   if (url.host_piece() == chrome::kChromeUIInternetDetailDialogHost)
     return &NewWebUI<chromeos::InternetDetailDialogUI>;
-  if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
-    if (url.host_piece() == chrome::kChromeUINearbyShareHost &&
-        profile->IsRegularProfile()) {
-      return &NewWebUI<nearby_share::NearbyShareDialogUI>;
-    }
+  if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+          profile) &&
+      url.host_piece() == chrome::kChromeUINearbyShareHost &&
+      profile->IsRegularProfile()) {
+    return &NewWebUI<nearby_share::NearbyShareDialogUI>;
   }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
     return &NewWebUI<chromeos::SetTimeUI>;

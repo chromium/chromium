@@ -29,9 +29,17 @@ class NearbySharingServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns singleton instance of NearbySharingServiceFactory.
   static NearbySharingServiceFactory* GetInstance();
 
+  // Returns whether or not Nearby Share is supported for |context|.
+  static bool IsNearbyShareSupportedForBrowserContext(
+      content::BrowserContext* context);
+
   // Returns the NearbySharingService associated with |context|.
   static NearbySharingService* GetForBrowserContext(
       content::BrowserContext* context);
+
+  // Forces IsNearbyShareSupportedForBrowserContext() to return |is_supported|.
+  static void SetIsNearbyShareSupportedForBrowserContextForTesting(
+      bool is_supported);
 
  private:
   friend struct base::DefaultSingletonTraits<NearbySharingServiceFactory>;

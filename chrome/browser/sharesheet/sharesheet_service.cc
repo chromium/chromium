@@ -44,7 +44,8 @@ base::string16& GetSelectedApp() {
 
 SharesheetService::SharesheetService(Profile* profile)
     : profile_(profile),
-      sharesheet_action_cache_(std::make_unique<SharesheetActionCache>()),
+      sharesheet_action_cache_(
+          std::make_unique<SharesheetActionCache>(profile_)),
       app_service_proxy_(
           apps::AppServiceProxyFactory::GetForProfile(profile_)) {}
 
