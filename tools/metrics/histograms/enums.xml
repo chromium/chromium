@@ -4306,6 +4306,7 @@ others/histograms.xml -->
   <int value="14" label="kCodecPCM_ALAW"/>
   <int value="15" label="kCodecALAC"/>
   <int value="16" label="kCodecAC3"/>
+  <int value="17" label="kCodecMpegHAudio"/>
 </enum>
 
 <enum name="AudioCodecProfile">
