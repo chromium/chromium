@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::ContainerEq;
+using PaymentMethodCategory = payments::JourneyLogger::PaymentMethodCategory;
 
 namespace payments {
 
@@ -94,12 +95,10 @@ TEST(JourneyLoggerTest,
   // user completes it.
   logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/false,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
+  logger.SetRequestedPaymentMethods(methods);
   logger.SetPayClicked();
-  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -212,13 +211,11 @@ TEST(JourneyLoggerTest,
   // completed.
   logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/false,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
+  logger.SetRequestedPaymentMethods(methods);
   logger.SetCanMakePaymentValue(false);
   logger.SetPayClicked();
-  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -290,13 +287,11 @@ TEST(JourneyLoggerTest,
   // the checkout.
   logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/false,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
+  logger.SetRequestedPaymentMethods(methods);
   logger.SetCanMakePaymentValue(true);
   logger.SetPayClicked();
-  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -320,13 +315,11 @@ TEST(JourneyLoggerTest,
   // the checkout.
   logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/false,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
+  logger.SetRequestedPaymentMethods(methods);
   logger.SetCanMakePaymentValue(true);
   logger.SetPayClicked();
-  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -350,10 +343,9 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had suggestions for all the requested sections.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
@@ -364,7 +356,7 @@ TEST(JourneyLoggerTest,
 
   // Simulate that the user completes the checkout.
   logger.SetPayClicked();
-  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -398,10 +390,9 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had suggestions for all the requested sections.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
@@ -444,10 +435,9 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had suggestions for all the requested sections.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
@@ -491,10 +481,9 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had suggestions for all the requested sections.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
@@ -505,7 +494,7 @@ TEST(JourneyLoggerTest,
 
   // Simulate that the user completes the checkout.
   logger.SetPayClicked();
-  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -539,10 +528,9 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had suggestions for none of the requested sections.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 0,
@@ -553,7 +541,7 @@ TEST(JourneyLoggerTest,
 
   // Simulate that the user completes the checkout.
   logger.SetPayClicked();
-  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -587,10 +575,9 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had suggestions for none of the requested sections.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 0,
@@ -633,10 +620,9 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had suggestions for none of the requested sections.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 0,
@@ -680,10 +666,9 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had suggestions for none of the requested sections.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 0,
@@ -727,10 +712,9 @@ TEST(
   logger.SetRequestedInformation(
       /*requested_shipping=*/false, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had incomplete suggestions for the requested
   // sections.
@@ -775,10 +759,9 @@ TEST(
   logger.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had incomplete suggestions for one of the requested
   // sections.
@@ -825,10 +808,9 @@ TEST(
   logger.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user had incomplete suggestions for one of the requested
   // sections.
@@ -875,18 +857,18 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
   logger1.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/true,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger1.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/true,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/true);
+
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard,
+                                             PaymentMethodCategory::kGoogle,
+                                             PaymentMethodCategory::kOther};
+  logger1.SetRequestedPaymentMethods(methods);
+
   logger2.SetShown();
   logger2.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger2.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/false, /*requested_method_google=*/false,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/true);
+  std::vector<PaymentMethodCategory> methods2{PaymentMethodCategory::kOther};
+  logger2.SetRequestedPaymentMethods(methods2);
 
   logger1.SetCanMakePaymentValue(true);
 
@@ -897,7 +879,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
 
   // Simulate that the user completes one checkout and aborts the other.
   logger1.SetPayClicked();
-  logger1.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger1.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger1.SetCompleted();
   logger2.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
@@ -959,10 +941,8 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/true,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/false,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user aborts after being shown the Payment Request and
   // clicking pay.
@@ -1011,17 +991,15 @@ TEST(JourneyLoggerTest,
   logger.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/true,
       /*requested_phone=*/false, /*requested_name=*/false);
-  logger.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/true, /*requested_method_google=*/false,
-      /*requested_method_secure_payment_confirmation=*/false,
-      /*requested_method_other=*/false);
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
+  logger.SetRequestedPaymentMethods(methods);
 
   // Simulate that the user aborts after being shown the Payment Request.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
                                      /*has_complete_suggestion=*/true);
   logger.SetShown();
   logger.SetPayClicked();
-  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
+  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   int64_t expected_step_metric =

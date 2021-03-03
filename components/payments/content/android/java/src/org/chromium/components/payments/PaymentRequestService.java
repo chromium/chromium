@@ -535,7 +535,7 @@ public class PaymentRequestService
         }
         mSpec = spec;
         mBrowserPaymentRequest.onSpecValidated(mSpec);
-        logMethodTypes(mSpec.getMethodData());
+        logRequestedMethods(mSpec.getMethodData());
         startPaymentAppService();
         return true;
     }
@@ -602,33 +602,31 @@ public class PaymentRequestService
         return sNativeObserverForTest;
     }
 
-    private void logMethodTypes(Map<String, PaymentMethodData> methodDataMap) {
-        // Log the various types of payment methods that were requested by the merchant.
-        boolean requestedMethodGoogle = false;
-        // Not to record requestedMethodBasicCard because JourneyLogger ignore the case where the
-        // specified networks are unsupported. mPaymentUiService.merchantSupportsAutofillCards()
-        // better captures this group of interest than requestedMethodBasicCard.
-        boolean requestedMethodOther = false;
+    private void logRequestedMethods(Map<String, PaymentMethodData> methodDataMap) {
+        List<Integer> methodTypes = new ArrayList<>();
         for (String methodName : mSpec.getMethodData().keySet()) {
             switch (methodName) {
                 case MethodStrings.ANDROID_PAY:
                 case MethodStrings.GOOGLE_PAY:
-                    requestedMethodGoogle = true;
+                    methodTypes.add(PaymentMethodCategory.GOOGLE);
                     break;
                 case MethodStrings.BASIC_CARD:
-                    // Do not record requestedMethodBasicCard because
-                    // BasicCardUtils.merchantSupportsBasicCard() is used instead.
+                    // Not to record requestedMethodBasicCard because JourneyLogger ignore the case
+                    // where the specified networks are unsupported.
+                    // mPaymentUiService.merchantSupportsAutofillCards() better captures this group
+                    // of interest than requestedMethodBasicCard.
                     break;
                 default:
                     // "Other" includes https url, http url(when certificate check is bypassed) and
                     // the unlisted methods defined in {@link MethodStrings}.
-                    requestedMethodOther = true;
+                    methodTypes.add(PaymentMethodCategory.OTHER);
             }
         }
-        boolean requestedBasicCard = BasicCardUtils.merchantSupportsBasicCard(methodDataMap);
-        mJourneyLogger.setRequestedPaymentMethodTypes(
-                /*requestedBasicCard=*/requestedBasicCard, requestedMethodGoogle,
-                requestedMethodOther);
+        if (BasicCardUtils.merchantSupportsBasicCard(methodDataMap)) {
+            methodTypes.add(PaymentMethodCategory.BASIC_CARD);
+        }
+
+        mJourneyLogger.setRequestedPaymentMethods(methodTypes);
     }
 
     // Implements PaymentResponseHelper.PaymentResponseResultCallback:

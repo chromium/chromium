@@ -240,29 +240,31 @@ void JourneyLogger::SetRequestedInformation(bool requested_shipping,
   }
 }
 
-void JourneyLogger::SetRequestedPaymentMethodTypes(
-    bool requested_basic_card,
-    bool requested_method_google,
-    bool requested_method_secure_payment_confirmation,
-    bool requested_method_other) {
-  if (requested_basic_card) {
-    SetEventOccurred(EVENT_REQUEST_METHOD_BASIC_CARD);
-    SetEvent2Occurred(Event2::kRequestMethodBasicCard);
-  }
-
-  if (requested_method_google) {
-    SetEventOccurred(EVENT_REQUEST_METHOD_GOOGLE);
-    SetEvent2Occurred(Event2::kRequestMethodGoogle);
-  }
-
-  if (requested_method_secure_payment_confirmation) {
-    SetEventOccurred(EVENT_REQUEST_METHOD_SECURE_PAYMENT_CONFIRMATION);
-    SetEvent2Occurred(Event2::kRequestMethodSecurePaymentConfirmation);
-  }
-
-  if (requested_method_other) {
-    SetEventOccurred(EVENT_REQUEST_METHOD_OTHER);
-    SetEvent2Occurred(Event2::kRequestMethodOther);
+void JourneyLogger::SetRequestedPaymentMethods(
+    const std::vector<PaymentMethodCategory>& methods) {
+  for (auto& method : methods) {
+    switch (method) {
+      case PaymentMethodCategory::kBasicCard:
+        SetEventOccurred(EVENT_REQUEST_METHOD_BASIC_CARD);
+        SetEvent2Occurred(Event2::kRequestMethodBasicCard);
+        break;
+      case PaymentMethodCategory::kGoogle:
+        SetEventOccurred(EVENT_REQUEST_METHOD_GOOGLE);
+        SetEvent2Occurred(Event2::kRequestMethodGoogle);
+        break;
+      case PaymentMethodCategory::kPlayBilling:
+        // TODO(crbug.com/1182721): We will record the Play Billing method.
+        NOTREACHED();
+        break;
+      case PaymentMethodCategory::kSecurePaymentConfirmation:
+        SetEventOccurred(EVENT_REQUEST_METHOD_SECURE_PAYMENT_CONFIRMATION);
+        SetEvent2Occurred(Event2::kRequestMethodSecurePaymentConfirmation);
+        break;
+      case PaymentMethodCategory::kOther:
+        SetEventOccurred(EVENT_REQUEST_METHOD_OTHER);
+        SetEvent2Occurred(Event2::kRequestMethodOther);
+        break;
+    }
   }
 }
 

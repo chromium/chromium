@@ -225,16 +225,24 @@ void PaymentRequest::Init(
                    [google_pay_url, android_pay_url](const GURL& url) {
                      return url != google_pay_url && url != android_pay_url;
                    });
-  journey_logger_.SetRequestedPaymentMethodTypes(
-      /*requested_basic_card=*/!spec_->supported_card_networks().empty(),
-      /*requested_method_google=*/
-      base::Contains(spec_->url_payment_method_identifiers(), google_pay_url) ||
-          base::Contains(spec_->url_payment_method_identifiers(),
-                         android_pay_url),
-      /*requested_method_secure_payment_confirmation=*/
-      spec_->IsSecurePaymentConfirmationRequested(),
-      /*requested_method_other=*/non_google_it !=
-          spec_->url_payment_method_identifiers().end());
+  std::vector<JourneyLogger::PaymentMethodCategory> method_categories;
+  if (!spec_->supported_card_networks().empty()) {
+    method_categories.push_back(
+        JourneyLogger::PaymentMethodCategory::kBasicCard);
+  }
+  if (base::Contains(spec_->url_payment_method_identifiers(), google_pay_url) ||
+      base::Contains(spec_->url_payment_method_identifiers(),
+                     android_pay_url)) {
+    method_categories.push_back(JourneyLogger::PaymentMethodCategory::kGoogle);
+  }
+  if (spec_->IsSecurePaymentConfirmationRequested()) {
+    method_categories.push_back(
+        JourneyLogger::PaymentMethodCategory::kSecurePaymentConfirmation);
+  }
+  if (non_google_it != spec_->url_payment_method_identifiers().end()) {
+    method_categories.push_back(JourneyLogger::PaymentMethodCategory::kOther);
+  }
+  journey_logger_.SetRequestedPaymentMethods(method_categories);
 
   payment_handler_host_->set_payment_request_id_for_logs(*spec_->details().id);
 
