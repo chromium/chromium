@@ -5015,7 +5015,6 @@ crbug.com/1025274 http/tests/security/mixedContent/insecure-audio-video-in-main-
 
 # DevTools roll
 crbug.com/1052111 http/tests/devtools/a11y-axe-core/audits-start-view-a11y-test.js [ Skip ]
-crbug.com/1149832 http/tests/devtools/tracing/timeline-network/timeline-network-resource-details.js [ Failure ]
 
 # Sheriff 2020-02-18
 crbug.com/1050893 [ Fuchsia ] virtual/gpu/fast/canvas/feimage-with-foreignobject-taint-canvas-2.html [ Skip ]
