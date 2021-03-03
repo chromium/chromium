@@ -42,11 +42,6 @@ AlwaysOnTopController::~AlwaysOnTopController() {
   DCHECK(!pip_container_);
 }
 
-// static
-void AlwaysOnTopController::SetDisallowReparent(aura::Window* window) {
-  window->SetProperty(kDisallowReparentKey, true);
-}
-
 aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
   DCHECK(always_on_top_container_);
   DCHECK(pip_container_);
@@ -81,6 +76,10 @@ aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
 void AlwaysOnTopController::SetLayoutManagerForTest(
     std::unique_ptr<WorkspaceLayoutManager> layout_manager) {
   always_on_top_container_->SetLayoutManager(layout_manager.release());
+}
+
+void AlwaysOnTopController::SetDisallowReparent(aura::Window* window) {
+  window->SetProperty(kDisallowReparentKey, true);
 }
 
 void AlwaysOnTopController::AddWindow(aura::Window* window) {
