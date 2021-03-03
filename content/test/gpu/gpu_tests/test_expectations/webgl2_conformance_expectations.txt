@@ -272,7 +272,7 @@ crbug.com/1106076 [ angle-d3d11 win nvidia-0x1cb3 ] conformance2/textures/misc/t
 
 # Win / NVIDIA Quadro P400 / D3D11 flaky failures
 crbug.com/680754 [ angle-d3d11 win nvidia-0x1cb3 ] deqp/data/gles3/shaders/functions.html [ Failure ]
-crbug.com/921052 [ angle-d3d11 win nvidia-0x1cb3 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Skip ]
+crbug.com/921052 [ angle-d3d11 win nvidia-0x1cb3 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
 crbug.com/1054795 [ angle-d3d11 win7 nvidia-0x1cb3 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_triangles.html [ Failure ]
 crbug.com/1054795 [ angle-d3d11 win7 nvidia-0x1cb3 ] deqp/functional/gles3/transformfeedback/basic_types_separate_triangles.html [ Failure ]
 crbug.com/1054795 [ angle-d3d11 win7 nvidia-0x1cb3 ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
