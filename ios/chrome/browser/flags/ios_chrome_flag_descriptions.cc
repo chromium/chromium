@@ -233,6 +233,12 @@ const char kInfobarOverlayUIDescription[] =
     "When enabled alongside the Infobar UI Reboot, infobars will be presented "
     "using OverlayPresenter.";
 
+const char kInterestFeedNoticeCardAutoDismissName[] =
+    "New Content Suggestions notice card auto-dismiss";
+const char kInterestFeedNoticeCardAutoDismissDescription[] =
+    "Auto-dismiss the notice card when there are enough clicks or views on the "
+    "notice card.";
+
 const char kSigninNotificationInfobarUsernameInTitleName[] =
     "Sign-in notification infobar title";
 const char kSigninNotificationInfobarUsernameInTitleDescription[] =

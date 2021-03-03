@@ -30,6 +30,7 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_storage.h"
@@ -650,6 +651,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kEnableManualPasswordGeneration)},
+    {"interest-feed-notice-card-auto-dismiss",
+     flag_descriptions::kInterestFeedNoticeCardAutoDismissName,
+     flag_descriptions::kInterestFeedNoticeCardAutoDismissDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(feed::kInterestFeedNoticeCardAutoDismiss)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

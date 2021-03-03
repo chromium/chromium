@@ -3233,7 +3233,7 @@
   },
   {
     "name": "interest-feed-notice-card-auto-dismiss",
-    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
+    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org", "edchin@chromium.org" ],
     "expiry_milestone": 95
   },
   {

@@ -210,6 +210,10 @@ extern const char kIllustratedEmptyStatesDescription[];
 extern const char kInfobarOverlayUIName[];
 extern const char kInfobarOverlayUIDescription[];
 
+// Title and description for the flag to auto-dismiss the privacy notice card.
+extern const char kInterestFeedNoticeCardAutoDismissName[];
+extern const char kInterestFeedNoticeCardAutoDismissDescription[];
+
 // Title and description for the flag to enable feature_engagement::Tracker
 // demo mode.
 extern const char kInProductHelpDemoModeName[];

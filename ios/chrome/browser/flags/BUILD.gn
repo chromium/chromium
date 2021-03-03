@@ -20,6 +20,7 @@ source_set("flags") {
     "//components/dom_distiller/core",
     "//components/enterprise",
     "//components/feature_engagement/public",
+    "//components/feed:feature_list",
     "//components/flags_ui",
     "//components/flags_ui:switches",
     "//components/invalidation/impl:feature_list",
