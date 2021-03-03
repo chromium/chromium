@@ -75,7 +75,6 @@ class PaymentCredentialEnrollmentDialogView
   std::unique_ptr<views::View> CreateHeaderView();
   std::unique_ptr<views::View> CreateBodyView();
   std::unique_ptr<views::View> CreateDescription(const base::string16& text,
-                                                 views::style::TextStyle style,
                                                  DialogViewID view_id);
   std::unique_ptr<views::View> CreateInstrumentRow();
 

@@ -249,7 +249,6 @@ PaymentCredentialEnrollmentDialogView::CreateBodyView() {
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   layout->AddView(CreateDescription(model_->description(),
-                                    views::style::STYLE_SECONDARY,
                                     DialogViewID::DESCRIPTION));
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
@@ -258,7 +257,6 @@ PaymentCredentialEnrollmentDialogView::CreateBodyView() {
   if (!model_->extra_description().empty()) {
     layout->StartRow(views::GridLayout::kFixedSize, 0);
     layout->AddView(CreateDescription(model_->extra_description(),
-                                      views::style::STYLE_SECONDARY,
                                       DialogViewID::EXTRA_DESCRIPTION));
   }
 
@@ -272,7 +270,6 @@ PaymentCredentialEnrollmentDialogView::CreateBodyView() {
 std::unique_ptr<views::View>
 PaymentCredentialEnrollmentDialogView::CreateDescription(
     const base::string16& text,
-    views::style::TextStyle style,
     DialogViewID view_id) {
   auto description = std::make_unique<views::View>();
 
@@ -282,10 +279,11 @@ PaymentCredentialEnrollmentDialogView::CreateDescription(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   auto description_label = std::make_unique<views::Label>(
-      text, views::style::CONTEXT_DIALOG_BODY_TEXT, style);
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   description_label->SetMultiLine(true);
   description_label->SetLineHeight(kDescriptionLineHeight);
-  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   description_label->SetAllowCharacterBreak(true);
   description_label->SetID(static_cast<int>(view_id));
   description->AddChildView(description_label.release());
@@ -311,8 +309,9 @@ PaymentCredentialEnrollmentDialogView::CreateInstrumentRow() {
                      views::GridLayout::ColumnSize::kFixed,
                      kInstrumentIconWidth, kInstrumentIconWidth);
 
-  constexpr int kPaddingAfterIcon = 12;
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize, kPaddingAfterIcon);
+  columns->AddPaddingColumn(views::GridLayout::kFixedSize,
+                            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_RELATED_LABEL_HORIZONTAL));
 
   // Instrument column
   columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
@@ -328,9 +327,14 @@ PaymentCredentialEnrollmentDialogView::CreateInstrumentRow() {
   icon_view->SetID(static_cast<int>(DialogViewID::INSTRUMENT_ICON));
   layout->AddView(std::move(icon_view));
 
-  layout->AddView(CreateDescription(model_->instrument_name(),
-                                    views::style::STYLE_PRIMARY,
-                                    DialogViewID::INSTRUMENT_NAME));
+  std::unique_ptr<views::Label> instrument_name_view =
+      std::make_unique<views::Label>(model_->instrument_name(),
+                                     views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                     views::style::STYLE_PRIMARY);
+  instrument_name_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  instrument_name_view->SetLineHeight(kDescriptionLineHeight);
+  instrument_name_view->SetID(static_cast<int>(DialogViewID::INSTRUMENT_NAME));
+  layout->AddView(std::move(instrument_name_view));
 
   return row;
 }
