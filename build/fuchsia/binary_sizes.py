@@ -171,10 +171,6 @@ def WriteTestResults(results_path, test_completed, test_status, timestamp):
   else:
     WriteSimpleTestResults(results_path, test_completed)
 
-  test_results = CreateTestResults(test_status, timestamp)
-  with open(results_path, 'w') as results_file:
-    json.dump(test_results, results_file)
-
 
 def WriteGerritPluginSizeData(output_path, package_sizes):
   """Writes a package size dictionary in json format for the Gerrit binary
@@ -192,7 +188,12 @@ def GetCompressedSize(file_path):
   try:
     temp_dir = tempfile.mkdtemp()
     compressed_file_path = os.path.join(temp_dir, os.path.basename(file_path))
-    proc = subprocess.Popen([compressor_path, file_path, compressed_file_path],
+    compressor_cmd = [
+        compressor_path,
+        '--source_file=%s' % file_path,
+        '--compressed_file=%s' % compressed_file_path
+    ]
+    proc = subprocess.Popen(compressor_cmd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT)
     proc.wait()
@@ -484,6 +485,7 @@ def main():
   test_completed = False
   all_tests_passed = False
   test_status = {}
+  package_sizes = {}
   sizes_histogram = []
 
   results_directory = None
@@ -502,9 +504,8 @@ def main():
     traceback.print_tb(trace)
     print(str(value))
   finally:
-    if test_completed:
-      all_tests_passed, test_status = GetTestStatus(package_sizes, sizes_config,
-                                                    test_completed)
+    all_tests_passed, test_status = GetTestStatus(package_sizes, sizes_config,
+                                                  test_completed)
 
     if results_directory:
       WriteTestResults(os.path.join(results_directory, 'test_results.json'),
