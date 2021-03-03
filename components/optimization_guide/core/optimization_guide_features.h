@@ -26,6 +26,7 @@ extern const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent;
 extern const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching;
 extern const base::Feature kOptimizationTargetPrediction;
 extern const base::Feature kOptimizationGuideModelDownloading;
+extern const base::Feature kPageContentAnnotations;
 
 // The maximum number of hosts that can be stored in the
 // |kHintsFetcherTopHostBlocklist| dictionary pref when initialized. The top

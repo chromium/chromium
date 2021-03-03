@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_helper.h"
 
 #include "base/bind.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/navigation_handle.h"
 

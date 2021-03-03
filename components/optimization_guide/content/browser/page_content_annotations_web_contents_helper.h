@@ -6,7 +6,6 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_HELPER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/page_text_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -15,6 +14,9 @@ class NavigationHandle;
 }  // namespace content
 
 namespace optimization_guide {
+
+struct HistoryVisit;
+class PageContentAnnotationsService;
 
 // This class is used to dispatch page content to the
 // PageContentAnnotationsService to be annotated.

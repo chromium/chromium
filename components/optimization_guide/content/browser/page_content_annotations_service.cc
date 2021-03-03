@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
+#include "base/metrics/histogram_macros_local.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -43,6 +44,10 @@ void PageContentAnnotationsService::OnPageTopicsModelExecutionCompleted(
     const HistoryVisit& visit,
     const base::Optional<std::vector<tflite::task::core::Category>>& output) {
   // TODO(crbug/1177102): If success, then populate to history service.
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PageContentAnnotationsService.PageTopicsModelExecuted."
+      "HasOutput",
+      output.has_value());
 }
 #endif
 

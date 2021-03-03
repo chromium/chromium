@@ -29,13 +29,18 @@ PageContentAnnotationsServiceFactory::GetInstance() {
 PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "PageContentAnnotationsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+}
 
 PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
     default;
 
 KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (!optimization_guide::features::IsPageContentAnnotationEnabled())
+    return nullptr;
+
   Profile* profile = Profile::FromBrowserContext(context);
   // The optimization guide service must be available for the page content
   // annotations service to work.
