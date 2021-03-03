@@ -254,16 +254,17 @@ class CreateSessionDescriptionRequest
       return;
     }
 
-    if (tracker_ && handler_) {
+    auto tracker = tracker_.Lock();
+    if (tracker && handler_) {
       std::string value;
       if (desc) {
         desc->ToString(&value);
         value = "type: " + desc->type() + ", sdp: " + value;
       }
-      tracker_->TrackSessionDescriptionCallback(
+      tracker->TrackSessionDescriptionCallback(
           handler_.get(), action_, "OnSuccess", String::FromUTF8(value));
-      tracker_->TrackSessionId(handler_.get(),
-                               String::FromUTF8(desc->session_id()));
+      tracker->TrackSessionId(handler_.get(),
+                              String::FromUTF8(desc->session_id()));
     }
     webkit_request_->RequestSucceeded(CreateWebKitSessionDescription(desc));
     webkit_request_ = nullptr;
@@ -280,8 +281,9 @@ class CreateSessionDescriptionRequest
       return;
     }
 
-    if (handler_ && tracker_) {
-      tracker_->TrackSessionDescriptionCallback(
+    auto tracker = tracker_.Lock();
+    if (handler_ && tracker) {
+      tracker->TrackSessionDescriptionCallback(
           handler_.get(), action_, "OnFailure",
           String::FromUTF8(error.message()));
     }
@@ -304,7 +306,7 @@ class CreateSessionDescriptionRequest
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   Persistent<RTCSessionDescriptionRequest> webkit_request_;
   const base::WeakPtr<RTCPeerConnectionHandler> handler_;
-  const WeakPersistent<PeerConnectionTracker> tracker_;
+  const CrossThreadWeakPersistent<PeerConnectionTracker> tracker_;
   PeerConnectionTracker::Action action_;
 };
 
