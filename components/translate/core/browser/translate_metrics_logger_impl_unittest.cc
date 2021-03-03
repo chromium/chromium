@@ -517,6 +517,32 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTriggerDecision) {
 
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadTriggerDecision,
                                          trigger_decisions[0], 1);
+
+  // Make sure that the href trigger decision wasn't logged.
+  histogram_tester()->ExpectTotalCount(kTranslatePageLoadHrefTriggerDecision,
+                                       0);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogHrefTriggerDecision) {
+  // If we log multiple trigger decisions, we expect that only the first one is
+  // recorded.
+  std::vector<TriggerDecision> trigger_decisions = {
+      TriggerDecision::kAutomaticTranslationByLink,
+      TriggerDecision::kDisabledByRanker,
+      TriggerDecision::kDisabledUnsupportedLanguage};
+
+  for (auto trigger_decision : trigger_decisions)
+    translate_metrics_logger()->LogTriggerDecision(trigger_decision);
+
+  translate_metrics_logger()->SetHasHrefTranslateTarget(true);
+  translate_metrics_logger()->RecordMetrics(true);
+
+  // CHeck that the main trigger decision histogram was logged.
+  histogram_tester()->ExpectUniqueSample(kTranslatePageLoadTriggerDecision,
+                                         trigger_decisions[0], 1);
+
+  histogram_tester()->ExpectUniqueSample(kTranslatePageLoadHrefTriggerDecision,
+                                         trigger_decisions[0], 1);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest,

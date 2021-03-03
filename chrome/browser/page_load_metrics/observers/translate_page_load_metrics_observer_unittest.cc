@@ -104,6 +104,11 @@ class MockTranslateMetricsLoggerContainer
     return mock_translate_metrics_logger_->GetNextManualTranslationType();
   }
 
+  void SetHasHrefTranslateTarget(bool has_href_translate_target) override {
+    mock_translate_metrics_logger_->SetHasHrefTranslateTarget(
+        has_href_translate_target);
+  }
+
  private:
   translate::testing::MockTranslateMetricsLogger*
       mock_translate_metrics_logger_;  // Weak.

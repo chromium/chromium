@@ -1083,6 +1083,8 @@ void TranslateManager::FilterForHrefTranslate(
   }
 
   decision->href_translate_target = language_state_.href_translate();
+  GetActiveTranslateMetricsLogger()->SetHasHrefTranslateTarget(
+      !decision->href_translate_target.empty());
   // Can't honor hrefTranslate if there's no specified target, the source or
   // the target aren't supported, or the source and target match.
   if (!IsTranslatableLanguagePair(page_language_code,

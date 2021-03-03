@@ -154,6 +154,8 @@ class TranslateMetricsLogger {
 
   // Returns the translation type of the next manual translation.
   virtual TranslationType GetNextManualTranslationType() = 0;
+
+  virtual void SetHasHrefTranslateTarget(bool has_href_translate_target) = 0;
 };
 
 }  // namespace translate
