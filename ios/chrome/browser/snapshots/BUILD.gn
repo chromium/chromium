@@ -29,6 +29,7 @@ source_set("snapshots") {
     "//base/ios",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web:tab_id_tab_helper",

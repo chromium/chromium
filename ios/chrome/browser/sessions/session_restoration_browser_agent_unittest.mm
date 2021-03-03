@@ -86,10 +86,12 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
         WebUsageEnablerBrowserAgent::FromBrowser(browser_.get());
     web_usage_enabler_->SetWebUsageEnabled(false);
 
+    session_identifier_ = [[NSUUID UUID] UUIDString];
     SessionRestorationBrowserAgent::CreateForBrowser(browser_.get(),
                                                      test_session_service_);
     session_restoration_agent_ =
         SessionRestorationBrowserAgent::FromBrowser(browser_.get());
+    session_restoration_agent_->SetSessionID(session_identifier_);
   }
 
   ~SessionRestorationBrowserAgentTest() override = default;
@@ -100,6 +102,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     }
     PlatformTest::TearDown();
   }
+
+  NSString* session_id() { return session_identifier_; }
 
  protected:
   // Creates a session window with |sessions_count| and mark the
@@ -146,6 +150,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
 
+  __strong NSString* session_identifier_ = nil;
   TestSessionService* test_session_service_;
   WebUsageEnablerBrowserAgent* web_usage_enabler_;
   SessionRestorationBrowserAgent* session_restoration_agent_;
@@ -225,7 +230,8 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
   // Restore, expect that there are no sessions.
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionIOS* session =
-      [test_session_service_ loadSessionWithSessionID:nil directory:state_path];
+      [test_session_service_ loadSessionWithSessionID:session_id()
+                                            directory:state_path];
   ASSERT_EQ(1u, session.sessionWindows.count);
   SessionWindowIOS* session_window = session.sessionWindows[0];
   session_restoration_agent_->RestoreSessionWindow(session_window);
@@ -254,7 +260,8 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
 
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionIOS* session =
-      [test_session_service_ loadSessionWithSessionID:nil directory:state_path];
+      [test_session_service_ loadSessionWithSessionID:session_id()
+                                            directory:state_path];
   ASSERT_EQ(1u, session.sessionWindows.count);
   SessionWindowIOS* session_window = session.sessionWindows[0];
 

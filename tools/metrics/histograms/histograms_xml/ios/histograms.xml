@@ -772,6 +772,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.SessionMigration" enum="IOSSessionMigration"
+    expires_after="2021-12-11">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    Record whether the session (list of tabs, and their snapshots) was migrated
+    from one place to another. This migration can happen when the user update
+    Chrome, their device version of iOS or when they restore a backup. The event
+    is recorded for all Browser creation, so most of the event should be
+    &quot;No Migration&quot;.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ShareExtension.ReceivedEntriesCount" units="files"
     expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>

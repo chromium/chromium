@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/search_engines/extension_search_engine_data_updater.h"
 #include "ios/chrome/browser/search_engines/search_engines_util.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/share_extension/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/share_extension_service_factory.h"
 #include "ios/chrome/browser/signin/authentication_service_delegate.h"
@@ -489,10 +490,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // browser state.
   BOOL needRestoration = NO;
   if (isPostCrashLaunch) {
-    NSSet<NSString*>* sessions =
-        base::ios::IsMultiwindowSupported()
-            ? [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs]
-            : [NSSet setWithArray:@[ @"" ]];
+    NSSet<NSString*>* sessions = nil;
+    if (@available(ios 13, *)) {
+      sessions =
+          [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs];
+    } else {
+      sessions = [NSSet setWithObjects:SessionIdentifierForScene(nil), nil];
+    }
 
     needRestoration = [CrashRestoreHelper moveAsideSessions:sessions
                                             forBrowserState:chromeBrowserState];

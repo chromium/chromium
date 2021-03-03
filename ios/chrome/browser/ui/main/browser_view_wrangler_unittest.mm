@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/test_browser_list_observer.h"
+#import "ios/chrome/browser/sessions/scene_util_test_support.h"
 #include "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -20,17 +21,39 @@
 #import "ios/testing/scoped_block_swizzler.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface SceneStateWithFakeScene : SceneState
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
+
+@end
+
+@implementation SceneStateWithFakeScene
+
+- (instancetype)init {
+  if ((self = [super initWithAppState:nil])) {
+    if (@available(ios 13, *)) {
+      [self setScene:FakeSceneWithIdentifier([[NSUUID UUID] UUIDString])];
+    }
+  }
+  return self;
+}
+
+@end
 
 namespace {
 
 class BrowserViewWranglerTest : public PlatformTest {
  protected:
   BrowserViewWranglerTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]),
+      : scene_state_([[SceneStateWithFakeScene alloc] init]),
         test_session_service_([[TestSessionService alloc] init]) {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
