@@ -44,40 +44,25 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
     WebHeap::CollectAllGarbageForTesting();
   }
 
-  MediaStreamComponent* CreateTrack(ExecutionContext* execution_context) {
+  MediaStreamTrack* CreateTrack(ExecutionContext* execution_context) {
     return MakeGarbageCollected<MediaStreamTrack>(
-               execution_context,
-               MediaStreamVideoTrack::CreateVideoTrack(
-                   pushable_video_source_,
-                   MediaStreamVideoSource::ConstraintsOnceCallback(),
-                   /*enabled=*/true))
-        ->Component();
-  }
-
-  MediaStreamVideoTrackUnderlyingSource* CreateSource(
-      ScriptState* script_state,
-      MediaStreamComponent* track,
-      wtf_size_t buffer_size) {
-    return MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSource>(
-        script_state, track, buffer_size);
-  }
-
-  MediaStreamVideoTrackUnderlyingSource* CreateSource(
-      ScriptState* script_state,
-      MediaStreamComponent* track) {
-    return CreateSource(script_state, track, 1u);
+        execution_context,
+        MediaStreamVideoTrack::CreateVideoTrack(
+            pushable_video_source_,
+            MediaStreamVideoSource::ConstraintsOnceCallback(),
+            /*enabled=*/true));
   }
 
   MediaStreamVideoTrackUnderlyingSource* CreateSource(ScriptState* script_state,
+                                                      MediaStreamTrack* track,
                                                       wtf_size_t buffer_size) {
-    MediaStreamComponent* track =
-        CreateTrack(ExecutionContext::From(script_state));
-    return CreateSource(script_state, track, buffer_size);
+    return MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSource>(
+        script_state, track->Component(), buffer_size);
   }
 
-  MediaStreamVideoTrackUnderlyingSource* CreateSource(
-      ScriptState* script_state) {
-    return CreateSource(script_state, 1u);
+  MediaStreamVideoTrackUnderlyingSource* CreateSource(ScriptState* script_state,
+                                                      MediaStreamTrack* track) {
+    return CreateSource(script_state, track, 1u);
   }
 
  protected:
@@ -100,7 +85,8 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
        VideoFrameFlowsThroughStreamAndCloses) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* source = CreateSource(script_state);
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track);
   auto* stream =
       ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
 
@@ -116,13 +102,15 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   EXPECT_TRUE(read_tester.IsFulfilled());
 
   source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
        CancelStreamDisconnectsFromTrack) {
   V8TestingScope v8_scope;
-  MediaStreamComponent* track = CreateTrack(v8_scope.GetExecutionContext());
-  MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::From(track);
+  MediaStreamTrack* track = CreateTrack(v8_scope.GetExecutionContext());
+  MediaStreamVideoTrack* video_track =
+      MediaStreamVideoTrack::From(track->Component());
   // Initially the track has no sinks.
   EXPECT_EQ(video_track->CountSinks(), 0u);
 
@@ -138,14 +126,16 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
 
   // Canceling the stream disconnects it from the track.
   EXPECT_EQ(video_track->CountSinks(), 0u);
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
        DropOldFramesWhenQueueIsFull) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
   const wtf_size_t buffer_size = 5;
-  auto* source = CreateSource(script_state, buffer_size);
+  auto* source = CreateSource(script_state, track, buffer_size);
   EXPECT_EQ(source->MaxQueueSize(), buffer_size);
   // Create a stream to ensure there is a controller associated to the source.
   ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
@@ -193,13 +183,15 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
 
   source->Close();
   EXPECT_EQ(queue.size(), 0u);
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
        BypassQueueAfterPullWithEmptyBuffer) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* source = CreateSource(script_state);
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track);
   // Create a stream to ensure there is a controller associated to the source.
   ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
 
@@ -231,15 +223,18 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   EXPECT_FALSE(source->IsPendingPullForTesting());
 
   source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, QueueSizeCannotBeZero) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* source = CreateSource(script_state, 0u);
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track, 0u);
   // Queue size is always at least 1, even if 0 is requested.
   EXPECT_EQ(source->MaxQueueSize(), 1u);
   source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 }  // namespace blink

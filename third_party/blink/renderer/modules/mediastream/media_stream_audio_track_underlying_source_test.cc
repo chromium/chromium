@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -30,72 +31,78 @@ namespace blink {
 
 class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
  public:
-  MediaStreamAudioTrackUnderlyingSourceTest()
-      : media_stream_source_(MakeGarbageCollected<MediaStreamSource>(
-            "dummy_source_id",
-            MediaStreamSource::kTypeAudio,
-            "dummy_source_name",
-            false /* remote */)),
-        pushable_audio_source_(new PushableMediaStreamAudioSource(
-            Thread::MainThread()->GetTaskRunner(),
-            Platform::Current()->GetIOTaskRunner())) {
-    media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_audio_source_));
-
-    component_ = MakeGarbageCollected<MediaStreamComponent>(
-        String::FromUTF8("audio_track"), media_stream_source_);
-    pushable_audio_source_->ConnectToTrack(component_);
-  }
-
   ~MediaStreamAudioTrackUnderlyingSourceTest() override {
     platform_->RunUntilIdle();
-    component_ = nullptr;
-    media_stream_source_ = nullptr;
     WebHeap::CollectAllGarbageForTesting();
   }
 
-  MediaStreamComponent* CreateTrack(ExecutionContext* execution_context) {
-    return MakeGarbageCollected<MediaStreamTrack>(execution_context, component_)
-        ->Component();
+  MediaStreamTrack* CreateTrack(ExecutionContext* execution_context) {
+    MediaStreamSource* media_stream_source =
+        MakeGarbageCollected<MediaStreamSource>(
+            "dummy_source_id", MediaStreamSource::kTypeAudio,
+            "dummy_source_name", false /* remote */);
+    PushableMediaStreamAudioSource* pushable_audio_source =
+        new PushableMediaStreamAudioSource(
+            Thread::MainThread()->GetTaskRunner(),
+            Platform::Current()->GetIOTaskRunner());
+    media_stream_source->SetPlatformSource(
+        base::WrapUnique(pushable_audio_source));
+    MediaStreamComponent* component =
+        MakeGarbageCollected<MediaStreamComponent>(
+            String::FromUTF8("audio_track"), media_stream_source);
+    pushable_audio_source->ConnectToTrack(component);
+
+    return MakeGarbageCollected<MediaStreamTrack>(execution_context, component);
   }
 
   MediaStreamAudioTrackUnderlyingSource* CreateSource(ScriptState* script_state,
+                                                      MediaStreamTrack* track,
                                                       wtf_size_t buffer_size) {
-    MediaStreamComponent* track =
-        MakeGarbageCollected<MediaStreamTrack>(
-            ExecutionContext::From(script_state), component_)
-            ->Component();
     return MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSource>(
-        script_state, track, buffer_size);
+        script_state, track->Component(), buffer_size);
   }
 
-  MediaStreamAudioTrackUnderlyingSource* CreateSource(
-      ScriptState* script_state) {
-    return CreateSource(script_state, 1u);
+  MediaStreamAudioTrackUnderlyingSource* CreateSource(ScriptState* script_state,
+                                                      MediaStreamTrack* track) {
+    return CreateSource(script_state, track, 1u);
   }
 
  protected:
+  static const int kSampleRate = 8000;
+  static const int kNumFrames = 10;
+
+  // The timestamp returned by AudioFrame is at the end of the audio data stored
+  // in it, but PushFrame() below takes the time at the beginning. This function
+  // makes it easier to check AudioFrame timestamps for correctness.
+  base::TimeDelta CaptureTimeFromRefTime(base::TimeDelta timestamp) {
+    return timestamp +
+           media::AudioTimestampHelper::FramesToTime(kNumFrames, kSampleRate);
+  }
+
+  // Pushes a frame into |track|. |timestamp| is the reference time at the
+  // beginning of the audio data to be pushed into |track|.
   void PushFrame(
+      MediaStreamTrack* track,
       const base::Optional<base::TimeDelta>& timestamp = base::nullopt) {
     auto data = AudioFrameSerializationData::Wrap(
-        media::AudioBus::Create(/*channels=*/2, /*frames=*/10),
-        /*sample_rate=*/8000,
+        media::AudioBus::Create(/*channels=*/2, kNumFrames), kSampleRate,
         timestamp.value_or(base::TimeDelta::FromSeconds(1)));
-    pushable_audio_source_->PushAudioData(std::move(data));
+    PushableMediaStreamAudioSource* pushable_audio_source =
+        static_cast<PushableMediaStreamAudioSource*>(
+            MediaStreamAudioSource::From(track->Component()->Source()));
+    pushable_audio_source->PushAudioData(std::move(data));
     platform_->RunUntilIdle();
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
-  Persistent<MediaStreamSource> media_stream_source_;
-  Persistent<MediaStreamComponent> component_;
-  PushableMediaStreamAudioSource* const pushable_audio_source_;
 };
 
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
        AudioFrameFlowsThroughStreamAndCloses) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* source = CreateSource(script_state);
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track);
   auto* stream =
       ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
 
@@ -106,18 +113,20 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   ScriptPromiseTester read_tester(script_state,
                                   reader->read(script_state, exception_state));
   EXPECT_FALSE(read_tester.IsFulfilled());
-  PushFrame();
+  PushFrame(track);
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsFulfilled());
 
   source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
        CancelStreamDisconnectsFromTrack) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* source = CreateSource(script_state);
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track);
   auto* stream =
       ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
 
@@ -129,15 +138,17 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
 
   // Canceling the stream disconnects it from the track.
   EXPECT_FALSE(source->Track());
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 // TODO(crbug.com/1174118): Fix and re-enable.
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
-       DISABLED_DropOldFramesWhenQueueIsFull) {
+       DropOldFramesWhenQueueIsFull) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   const wtf_size_t buffer_size = 5;
-  auto* source = CreateSource(script_state, buffer_size);
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track, buffer_size);
   EXPECT_EQ(source->MaxQueueSize(), buffer_size);
   // Create a stream to ensure there is a controller associated to the source.
   ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
@@ -145,14 +156,15 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   // Add a sink to the track to make it possible to wait until a pushed frame
   // is delivered to sinks, including |source|, which is a sink of the track.
   MockMediaStreamAudioSink mock_sink;
-  WebMediaStreamTrack track(source->Track());
-  WebMediaStreamAudioSink::AddToAudioTrack(&mock_sink, track);
+  WebMediaStreamAudioSink::AddToAudioTrack(
+      &mock_sink, WebMediaStreamTrack(track->Component()));
 
-  auto push_frame_sync = [&mock_sink, this](const base::TimeDelta timestamp) {
+  auto push_frame_sync = [&mock_sink, track,
+                          this](const base::TimeDelta timestamp) {
     base::RunLoop sink_loop;
     EXPECT_CALL(mock_sink, OnData(_, _))
         .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
-    PushFrame(timestamp);
+    PushFrame(track, timestamp);
     sink_loop.Run();
   };
 
@@ -161,8 +173,9 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
     EXPECT_EQ(queue.size(), i);
     base::TimeDelta timestamp = base::TimeDelta::FromSeconds(i);
     push_frame_sync(timestamp);
-    EXPECT_EQ(queue.back()->timestamp(), timestamp);
-    EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta());
+    EXPECT_EQ(queue.back()->timestamp(), CaptureTimeFromRefTime(timestamp));
+    EXPECT_EQ(queue.front()->timestamp(),
+              CaptureTimeFromRefTime(base::TimeDelta()));
   }
 
   // Push another frame while the queue is full.
@@ -173,8 +186,9 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   // dropped.
   EXPECT_EQ(queue.size(), buffer_size);
   EXPECT_EQ(queue.back()->timestamp(),
-            base::TimeDelta::FromSeconds(buffer_size));
-  EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta::FromSeconds(1));
+            CaptureTimeFromRefTime(base::TimeDelta::FromSeconds(buffer_size)));
+  EXPECT_EQ(queue.front()->timestamp(),
+            CaptureTimeFromRefTime(base::TimeDelta::FromSeconds(1)));
 
   // Pulling with frames in the queue should move the oldest frame in the queue
   // to the stream's controller.
@@ -184,31 +198,35 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   EXPECT_EQ(source->DesiredSizeForTesting(), -1);
   EXPECT_FALSE(source->IsPendingPullForTesting());
   EXPECT_EQ(queue.size(), buffer_size - 1);
-  EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta::FromSeconds(2));
+  EXPECT_EQ(queue.front()->timestamp(),
+            CaptureTimeFromRefTime(base::TimeDelta::FromSeconds(2)));
 
   source->Close();
   EXPECT_EQ(queue.size(), 0u);
 
-  WebMediaStreamAudioSink::RemoveFromAudioTrack(&mock_sink, track);
+  WebMediaStreamAudioSink::RemoveFromAudioTrack(
+      &mock_sink, WebMediaStreamTrack(track->Component()));
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
        BypassQueueAfterPullWithEmptyBuffer) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* source = CreateSource(script_state);
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track);
   // Create a stream to ensure there is a controller associated to the source.
   ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
 
   MockMediaStreamAudioSink mock_sink;
-  WebMediaStreamTrack track(source->Track());
-  WebMediaStreamAudioSink::AddToAudioTrack(&mock_sink, track);
+  WebMediaStreamAudioSink::AddToAudioTrack(
+      &mock_sink, WebMediaStreamTrack(track->Component()));
 
-  auto push_frame_sync = [&mock_sink, this]() {
+  auto push_frame_sync = [&mock_sink, track, this]() {
     base::RunLoop sink_loop;
     EXPECT_CALL(mock_sink, OnData(_, _))
         .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
-    PushFrame();
+    PushFrame(track);
     sink_loop.Run();
   };
 
@@ -230,16 +248,19 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   EXPECT_FALSE(source->IsPendingPullForTesting());
 
   source->Close();
-  WebMediaStreamAudioSink::RemoveFromAudioTrack(&mock_sink, track);
+  WebMediaStreamAudioSink::RemoveFromAudioTrack(
+      &mock_sink, WebMediaStreamTrack(track->Component()));
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, QueueSizeCannotBeZero) {
   V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  auto* source = CreateSource(script_state, 0u);
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(v8_scope.GetScriptState(), track, 0u);
   // Queue size is always at least 1, even if 0 is requested.
   EXPECT_EQ(source->MaxQueueSize(), 1u);
   source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 }  // namespace blink
