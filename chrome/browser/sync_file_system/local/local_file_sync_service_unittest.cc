@@ -57,7 +57,7 @@ namespace {
 const char kOrigin[] = "http://example.com";
 
 void DidPrepareForProcessRemoteChange(const base::Location& where,
-                                      const base::Closure& oncompleted,
+                                      base::OnceClosure oncompleted,
                                       SyncStatusCode expected_status,
                                       const SyncFileMetadata& expected_metadata,
                                       SyncStatusCode status,
@@ -68,11 +68,11 @@ void DidPrepareForProcessRemoteChange(const base::Location& where,
   ASSERT_EQ(expected_metadata.file_type, metadata.file_type);
   ASSERT_EQ(expected_metadata.size, metadata.size);
   ASSERT_TRUE(changes.empty());
-  oncompleted.Run();
+  std::move(oncompleted).Run();
 }
 
 void OnSyncCompleted(const base::Location& where,
-                     const base::Closure& oncompleted,
+                     base::OnceClosure oncompleted,
                      SyncStatusCode expected_status,
                      const FileSystemURL& expected_url,
                      SyncStatusCode status,
@@ -80,11 +80,11 @@ void OnSyncCompleted(const base::Location& where,
   SCOPED_TRACE(testing::Message() << where.ToString());
   ASSERT_EQ(expected_status, status);
   ASSERT_EQ(expected_url, url);
-  oncompleted.Run();
+  std::move(oncompleted).Run();
 }
 
 void OnGetFileMetadata(const base::Location& where,
-                       const base::Closure& oncompleted,
+                       base::OnceClosure oncompleted,
                        SyncStatusCode* status_out,
                        SyncFileMetadata* metadata_out,
                        SyncStatusCode status,
@@ -92,7 +92,7 @@ void OnGetFileMetadata(const base::Location& where,
   SCOPED_TRACE(testing::Message() << where.ToString());
   *status_out = status;
   *metadata_out = metadata;
-  oncompleted.Run();
+  std::move(oncompleted).Run();
 }
 
 struct PostStatusFunctor {
@@ -181,7 +181,7 @@ class LocalFileSyncServiceTest
     base::RunLoop run_loop;
     local_service_->PrepareForProcessRemoteChange(
         url,
-        base::Bind(&DidPrepareForProcessRemoteChange,
+        base::BindOnce(&DidPrepareForProcessRemoteChange,
                    where,
                    run_loop.QuitClosure(),
                    expected_status,
@@ -394,9 +394,9 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_CreateFile) {
       .WillOnce(WithArg<4>(Invoke(post_ok_status)));
 
   local_service_->SetLocalChangeProcessor(&local_change_processor);
-  local_service_->ProcessLocalChange(
-      base::Bind(&OnSyncCompleted, FROM_HERE, run_loop.QuitClosure(),
-                 SYNC_STATUS_OK, kFile));
+  local_service_->ProcessLocalChange(base::BindOnce(&OnSyncCompleted, FROM_HERE,
+                                                    run_loop.QuitClosure(),
+                                                    SYNC_STATUS_OK, kFile));
 
   run_loop.Run();
 
@@ -433,9 +433,9 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_CreateAndRemoveFile) {
 
   // The sync should succeed anyway.
   local_service_->SetLocalChangeProcessor(&local_change_processor);
-  local_service_->ProcessLocalChange(
-      base::Bind(&OnSyncCompleted, FROM_HERE, run_loop.QuitClosure(),
-                 SYNC_STATUS_OK, kFile));
+  local_service_->ProcessLocalChange(base::BindOnce(&OnSyncCompleted, FROM_HERE,
+                                                    run_loop.QuitClosure(),
+                                                    SYNC_STATUS_OK, kFile));
 
   run_loop.Run();
 
@@ -463,8 +463,8 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_CreateAndRemoveDirectory) {
 
   local_service_->SetLocalChangeProcessor(&local_change_processor);
   local_service_->ProcessLocalChange(
-      base::Bind(&OnSyncCompleted, FROM_HERE, run_loop.QuitClosure(),
-                 SYNC_STATUS_NO_CHANGE_TO_SYNC, FileSystemURL()));
+      base::BindOnce(&OnSyncCompleted, FROM_HERE, run_loop.QuitClosure(),
+                     SYNC_STATUS_NO_CHANGE_TO_SYNC, FileSystemURL()));
 
   run_loop.Run();
 
@@ -513,9 +513,9 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_MultipleChanges) {
   // could be delayed, so AtLeast(0)).
   EXPECT_CALL(status_observer, OnWriteEnabled(kPath)).Times(AtLeast(0));
 
-  local_service_->ProcessLocalChange(
-      base::Bind(&OnSyncCompleted, FROM_HERE, run_loop.QuitClosure(),
-                 SYNC_STATUS_OK, kPath));
+  local_service_->ProcessLocalChange(base::BindOnce(&OnSyncCompleted, FROM_HERE,
+                                                    run_loop.QuitClosure(),
+                                                    SYNC_STATUS_OK, kPath));
 
   run_loop.Run();
 
@@ -548,9 +548,8 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_GetLocalMetadata) {
   SyncStatusCode status = SYNC_STATUS_UNKNOWN;
   SyncFileMetadata metadata;
   local_service_->GetLocalFileMetadata(
-      kURL,
-      base::Bind(&OnGetFileMetadata, FROM_HERE, run_loop.QuitClosure(),
-                 &status, &metadata));
+      kURL, base::BindOnce(&OnGetFileMetadata, FROM_HERE,
+                           run_loop.QuitClosure(), &status, &metadata));
 
   run_loop.Run();
 
@@ -601,8 +600,8 @@ TEST_F(LocalFileSyncServiceTest, RecordFakeChange) {
     base::RunLoop run_loop;
     local_service_->SetLocalChangeProcessor(&local_change_processor);
     local_service_->ProcessLocalChange(
-        base::Bind(&OnSyncCompleted, FROM_HERE, run_loop.QuitClosure(),
-                   SYNC_STATUS_OK, kURL));
+        base::BindOnce(&OnSyncCompleted, FROM_HERE, run_loop.QuitClosure(),
+                       SYNC_STATUS_OK, kURL));
     run_loop.Run();
   }
 
