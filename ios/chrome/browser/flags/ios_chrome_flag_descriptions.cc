@@ -204,11 +204,6 @@ const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
     " or the toolbar";
 
-const char kExtendOpenInFilesSupportName[] =
-    "Extend Open in toolbar files support";
-const char kExtendOpenInFilesSupportDescription[] =
-    "When enabled, the Open in toolbar is displayed on more file types";
-
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "

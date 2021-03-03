@@ -50,7 +50,6 @@ source_set("flags") {
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/crash_report/breadcrumbs:feature_flags",
     "//ios/chrome/browser/drag_and_drop",
-    "//ios/chrome/browser/open_in:features",
     "//ios/chrome/browser/policy:feature_flags",
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/ui:feature_flags",

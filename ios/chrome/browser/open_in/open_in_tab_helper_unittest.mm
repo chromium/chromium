@@ -9,7 +9,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/open_in/features.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper_delegate.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/web/public/navigation/navigation_item.h"
@@ -227,7 +226,6 @@ TEST_F(OpenInTabHelperTest, WebStateObservationDestruction) {
 TEST_P(OpenInTabHelperTest,
        OpenInForExportableFilesWithFileNameFromContentDesposition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kExtendOpenInFilesSupport);
   ASSERT_FALSE(delegate_.openInDisabled);
 
   const std::string file_name =
@@ -251,7 +249,6 @@ TEST_P(OpenInTabHelperTest,
 // doesn't have file name.
 TEST_P(OpenInTabHelperTest, OpenInForExportableFilesWithFileNameFromURL) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kExtendOpenInFilesSupport);
   ASSERT_FALSE(delegate_.openInDisabled);
 
   const std::string file_name =
@@ -273,7 +270,6 @@ TEST_P(OpenInTabHelperTest, OpenInForExportableFilesWithFileNameFromURL) {
 // response headers has a file name.
 TEST_P(OpenInTabHelperTest, OpenInForExportableFilesWithDefaultFileName) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kExtendOpenInFilesSupport);
   ASSERT_FALSE(delegate_.openInDisabled);
 
   GURL url(kInvalidFileNameUrl);
@@ -301,7 +297,6 @@ TEST_P(OpenInTabHelperTest, OpenInForExportableFilesWithDefaultFileName) {
 // Tests that openIn is disabled for non exportable files.
 TEST_F(OpenInTabHelperTest, OpenInDisabledForNonExportableFiles) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kExtendOpenInFilesSupport);
   ASSERT_FALSE(delegate_.openInDisabled);
 
   // Testing PDF.

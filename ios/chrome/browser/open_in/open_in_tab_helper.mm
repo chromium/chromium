@@ -9,7 +9,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/open_in/features.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -105,12 +104,8 @@ OpenInMimeType OpenInTabHelper::GetUmaResult(
 
 void OpenInTabHelper::HandleExportableFile() {
   OpenInMimeType mime_type = GetUmaResult(web_state_->GetContentsMimeType());
-  if (base::FeatureList::IsEnabled(kExtendOpenInFilesSupport)) {
-    if (mime_type == OpenInMimeType::kMimeTypeNotHandled)
-      return;
-  } else if (web_state_->GetContentsMimeType() != "application/pdf") {
+  if (mime_type == OpenInMimeType::kMimeTypeNotHandled)
     return;
-  }
 
   DCHECK_NE(mime_type, OpenInMimeType::kMimeTypeNotHandled);
   base::UmaHistogramEnumeration("IOS.OpenIn.MimeType", mime_type);

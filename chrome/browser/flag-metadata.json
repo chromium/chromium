@@ -2768,11 +2768,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "extend-open-in-files-support",
-    "owners": [ "ewannpv", "gambard" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "extension-apis",
     "owners": [ "rdevlin.cronin" ],
     "expiry_milestone": 76
