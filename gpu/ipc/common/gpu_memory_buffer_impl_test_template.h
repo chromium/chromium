@@ -208,6 +208,12 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
     // Map buffer into user space.
     ASSERT_TRUE(buffer->Map());
 
+    // Map the buffer a second time. This should be a noop and simply allow
+    // multiple clients concurrent read access. Likewise a subsequent Unmap()
+    // shouldn't invalidate the first's Map().
+    ASSERT_TRUE(buffer->Map());
+    buffer->Unmap();
+
     // Copy and compare mapped buffers.
     for (size_t plane = 0; plane < num_planes; ++plane) {
       const size_t row_size_in_bytes =

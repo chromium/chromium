@@ -114,23 +114,27 @@ base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
 }
 
 bool GpuMemoryBufferImplIOSurface::Map() {
-  DCHECK(!mapped_);
+  base::AutoLock auto_lock(map_lock_);
+  if (map_count_++)
+    return true;
+
   IOReturn status = IOSurfaceLock(io_surface_, lock_flags_, nullptr);
   DCHECK_NE(status, kIOReturnCannotLock);
-  mapped_ = true;
   return true;
 }
 
 void* GpuMemoryBufferImplIOSurface::memory(size_t plane) {
-  DCHECK(mapped_);
+  AssertMapped();
   DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
   return IOSurfaceGetBaseAddressOfPlane(io_surface_, plane);
 }
 
 void GpuMemoryBufferImplIOSurface::Unmap() {
-  DCHECK(mapped_);
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+  if (--map_count_)
+    return;
   IOSurfaceUnlock(io_surface_, lock_flags_, nullptr);
-  mapped_ = false;
 }
 
 int GpuMemoryBufferImplIOSurface::stride(size_t plane) const {
