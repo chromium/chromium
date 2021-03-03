@@ -40,6 +40,18 @@ Polymer({
         return this.urlTemplate_.replace('$', 'en_us');
       }
     },
+
+    /**
+     * Whether new OOBE layout is enabled.
+     * @type {boolean}
+     */
+    newLayoutEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('newLayoutEnabled') &&
+            loadTimeData.getBoolean('newLayoutEnabled');
+      }
+    },
   },
 
   setUrlTemplateForTesting(url) {
@@ -69,18 +81,12 @@ Polymer({
   loadingError_: false,
 
   /**
-   * The value prop webview object in vertical mode.
-   * @type {Object}
+   * The value prop webview objects, could be populated with different webview
+   * elements for new/old oobe layout.
+   * @type {Array<Object>}
    * @private
    */
-  valuePropViewVerticalMode_: null,
-
-  /**
-   * The value prop webview object in horizontal mode.
-   * @type {Object}
-   * @private
-   */
-  valuePropViewHorizontalMode_: null,
+  valuePropViewElements_: [],
 
   /**
    * Whether the screen has been initialized.
@@ -206,10 +212,9 @@ Polymer({
     this.loadingError_ = false;
     this.headerReceived_ = false;
     let locale = this.locale.replace('-', '_').toLowerCase();
-    this.valuePropViewVerticalMode_.src =
-        this.urlTemplate_.replace('$', locale);
-    this.valuePropViewHorizontalMode_.src =
-        this.urlTemplate_.replace('$', locale);
+    for (let webviewObj of this.valuePropViewElements_) {
+      webviewObj.src = this.urlTemplate_.replace('$', locale);
+    }
 
     this.buttonsDisabled = true;
   },
@@ -233,8 +238,9 @@ Polymer({
       return;
     }
     if (this.reloadWithDefaultUrl_) {
-      this.valuePropViewVerticalMode_.src = this.defaultUrl;
-      this.valuePropViewHorizontalMode_.src = this.defaultUrl;
+      for (let webviewObj of this.valuePropViewElements_) {
+        webviewObj.src = this.defaultUrl;
+      }
       this.headerReceived_ = false;
       this.reloadWithDefaultUrl_ = false;
       return;
@@ -275,6 +281,8 @@ Polymer({
     this.$['title-text'].textContent = data['valuePropTitle'];
     this.$['intro-title-text'].textContent = data['valuePropIntroTitle'];
     this.$['intro-text'].textContent = data['valuePropIntro'];
+    this.$['user-image'].src = data['valuePropUserImage'];
+    this.$['user-name'].textContent = data['valuePropIdentity'];
     this.$['next-button'].labelForAria = data['valuePropNextButton'];
     this.$['next-button-text'].textContent = data['valuePropNextButton'];
     this.$['skip-button'].labelForAria = data['valuePropSkipButton'];
@@ -307,6 +315,9 @@ Polymer({
           'data:text/html;charset=utf-8,' +
               encodeURIComponent(
                   zippy.getWrappedIcon(data['iconUri'], data['title'])));
+      if (!this.newLayoutEnabled_) {
+        zippy.setAttribute('hide-line', true);
+      }
 
       var title = document.createElement('div');
       title.slot = 'title';
@@ -365,16 +376,22 @@ Polymer({
         this, () => this.$['next-button'].focus());
 
     if (!this.initialized_) {
-      // We show value prop webview element based on orientation of the device.
-      // Horizontal mode element is in subtitle slot and it is shown in bottom
-      // left of the screen in horizontal mode. Vertical mode element is in
-      // content slot and allows scrolling with the rest of the content in
-      // vertical mode.
-      this.valuePropViewVerticalMode_ = this.$['value-prop-view-vertical-mode'];
-      this.valuePropViewHorizontalMode_ =
-          this.$['value-prop-view-horizontal-mode'];
-      this.initializeWebview_(this.valuePropViewVerticalMode_);
-      this.initializeWebview_(this.valuePropViewHorizontalMode_);
+      if (this.newLayoutEnabled_) {
+        // We show value prop webview element based on orientation of the
+        // device. Horizontal mode element is in subtitle slot and it is shown
+        // in bottom left of the screen in horizontal mode. Vertical mode
+        // element is in content slot and allows scrolling with the rest of the
+        // content in vertical mode.
+        this.valuePropViewElements_.push(
+            this.$['value-prop-view-vertical-mode']);
+        this.valuePropViewElements_.push(
+            this.$['value-prop-view-horizontal-mode']);
+      } else {
+        this.valuePropViewElements_.push(this.$['value-prop-view-old']);
+      }
+      for (let webviewObj of this.valuePropViewElements_) {
+        this.initializeWebview_(webviewObj);
+      }
       this.reloadPage();
       this.initialized_ = true;
     }

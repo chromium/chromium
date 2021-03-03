@@ -34,10 +34,20 @@
       </div>
       <div slot="content" id="content-container"
           class="landscape-vertical-centered">
-        <div id="intro-title-text"></div>
+        <div id="intro-title-text" hidden$="[[!newLayoutEnabled_]]"></div>
         <div class="content" id="intro-text"></div>
-        <div class="line"></div>
-        <div id="consents-container"></div>
+        <div class="line" hidden$="[[!newLayoutEnabled_]]"></div>
+        <div id="column-container" class="flex layout horizontal">
+          <div id="value-prop-container" hidden$="[[newLayoutEnabled_]]">
+            <div class="flex layout horizontal center">
+              <img id="user-image"
+                  aria-label$="[[i18nDynamic(locale, 'assistantUserImage')]]">
+              <div class="content" id="user-name"></div>
+            </div>
+            <webview id="value-prop-view-old" tabindex="-1"></webview>
+          </div>
+          <div id="consents-container"></div>
+        </div>
         <div class="content" id="footer-text"></div>
       </div>
       <div slot="bottom-buttons">
