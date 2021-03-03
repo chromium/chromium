@@ -22,12 +22,10 @@ class DataOfferDelegate {
   // Called when |mime_type| is offered by the client.
   virtual void OnOffer(const std::string& mime_type) = 0;
 
-  // Called when possible |source_actions| is offered by the client.
-  virtual void OnSourceActions(
-      const base::flat_set<DndAction>& source_actions) = 0;
-
-  // Called when current |action| is offered by the client.
-  virtual void OnAction(DndAction action) = 0;
+  // Called when possible |source_actions| and current |action| are offered by
+  // the client.
+  virtual void OnActions(const base::flat_set<DndAction>& source_actions,
+                         DndAction action) = 0;
 
  protected:
   virtual ~DataOfferDelegate() {}

@@ -86,10 +86,6 @@ class DataOffer final : public ui::PropertyHandler {
                         const ui::Clipboard& data,
                         ui::EndpointType endpoint_type);
 
-  // Sets the drag and drop actions which is offered by data source to the
-  // DataOffer object.
-  void SetSourceActions(const base::flat_set<DndAction>& source_actions);
-
   DndAction dnd_action() const { return dnd_action_; }
   bool finished() const { return finished_; }
 

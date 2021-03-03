@@ -169,23 +169,24 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
     wl_data_offer_send_offer(data_offer_resource_, mime_type.c_str());
     wl_client_flush(wl_resource_get_client(data_offer_resource_));
   }
-  void OnSourceActions(
-      const base::flat_set<DndAction>& source_actions) override {
+  void OnActions(const base::flat_set<DndAction>& source_actions,
+                 DndAction action) override {
+    bool should_flush = false;
     if (wl_resource_get_version(data_offer_resource_) >=
         WL_DATA_OFFER_SOURCE_ACTIONS_SINCE_VERSION) {
       wl_data_offer_send_source_actions(
           data_offer_resource_,
           WaylandDataDeviceManagerDndActions(source_actions));
-      wl_client_flush(wl_resource_get_client(data_offer_resource_));
+      should_flush = true;
     }
-  }
-  void OnAction(DndAction action) override {
     if (wl_resource_get_version(data_offer_resource_) >=
         WL_DATA_OFFER_ACTION_SINCE_VERSION) {
       wl_data_offer_send_action(data_offer_resource_,
                                 WaylandDataDeviceManagerDndAction(action));
-      wl_client_flush(wl_resource_get_client(data_offer_resource_));
+      should_flush = true;
     }
+    if (should_flush)
+      wl_client_flush(wl_resource_get_client(data_offer_resource_));
   }
 
  private:

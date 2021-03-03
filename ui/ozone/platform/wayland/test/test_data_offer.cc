@@ -90,14 +90,11 @@ void TestDataOffer::SetActions(uint32_t dnd_actions,
                                uint32_t preferred_action) {
   client_supported_actions_ = dnd_actions;
   client_preferred_action_ = preferred_action;
-  OnAction(client_preferred_action_);
+  OnActions(client_supported_actions_, client_preferred_action_);
 }
 
-void TestDataOffer::OnSourceActions(uint32_t source_actions) {
+void TestDataOffer::OnActions(uint32_t source_actions, uint32_t dnd_action) {
   wl_data_offer_send_source_actions(resource(), source_actions);
-}
-
-void TestDataOffer::OnAction(uint32_t dnd_action) {
   wl_data_offer_send_action(resource(), dnd_action);
 }
 

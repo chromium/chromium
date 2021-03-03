@@ -220,14 +220,9 @@ void DataOffer::Finish() {
 
 void DataOffer::SetActions(const base::flat_set<DndAction>& dnd_actions,
                            DndAction preferred_action) {
+  source_actions_ = dnd_actions;
   dnd_action_ = preferred_action;
-  delegate_->OnAction(preferred_action);
-}
-
-void DataOffer::SetSourceActions(
-    const base::flat_set<DndAction>& source_actions) {
-  source_actions_ = source_actions;
-  delegate_->OnSourceActions(source_actions);
+  delegate_->OnActions(dnd_actions, preferred_action);
 }
 
 void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
