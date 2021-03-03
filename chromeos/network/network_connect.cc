@@ -64,7 +64,6 @@ class NetworkConnectImpl : public NetworkConnect {
   void SetTechnologyEnabled(const NetworkTypePattern& technology,
                             bool enabled_state) override;
   void ShowMobileSetup(const std::string& network_id) override;
-  void ShowCarrierAccountDetail(const std::string& network_id) override;
   void ConfigureNetworkIdAndConnect(
       const std::string& network_id,
       const base::DictionaryValue& shill_properties,
@@ -147,7 +146,7 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
       return;
     }
     if (network->cellular_out_of_credits()) {
-      ShowCarrierAccountDetail(network_id);
+      ShowMobileSetup(network_id);
       return;
     }
     // No special configure or setup for |network|, show the settings UI.
@@ -455,17 +454,6 @@ void NetworkConnectImpl::ShowMobileSetup(const std::string& network_id) {
     return;
   }
   delegate_->ShowMobileSetupDialog(network_id);
-}
-
-void NetworkConnectImpl::ShowCarrierAccountDetail(
-    const std::string& network_id) {
-  const NetworkState* cellular = GetNetworkStateFromId(network_id);
-  if (!cellular || cellular->type() != shill::kTypeCellular) {
-    NET_LOG(ERROR) << "ShowCarrierAccountDetail without Cellular network: "
-                   << NetworkGuidId(network_id);
-    return;
-  }
-  delegate_->ShowCarrierAccountDetail(network_id);
 }
 
 void NetworkConnectImpl::ConfigureNetworkIdAndConnect(

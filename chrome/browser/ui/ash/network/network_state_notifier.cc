@@ -310,7 +310,7 @@ void NetworkStateNotifier::UpdateCellularOutOfCredits() {
         NetworkId(primary_network), kNetworkOutOfCreditsNotificationId,
         primary_network->type(),
         l10n_util::GetStringUTF16(IDS_NETWORK_OUT_OF_CREDITS_TITLE), error_msg,
-        base::BindRepeating(&NetworkStateNotifier::ShowCarrierAccountDetail,
+        base::BindRepeating(&NetworkStateNotifier::ShowMobileSetup,
                             weak_ptr_factory_.GetWeakPtr(),
                             primary_network->guid()));
   }
@@ -555,9 +555,8 @@ void NetworkStateNotifier::ShowNetworkSettings(const std::string& network_id) {
   }
 }
 
-void NetworkStateNotifier::ShowCarrierAccountDetail(
-    const std::string& network_id) {
-  NetworkConnect::Get()->ShowCarrierAccountDetail(network_id);
+void NetworkStateNotifier::ShowMobileSetup(const std::string& network_id) {
+  NetworkConnect::Get()->ShowMobileSetup(network_id);
 }
 
 }  // namespace chromeos

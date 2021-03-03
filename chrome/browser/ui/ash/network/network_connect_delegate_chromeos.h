@@ -25,7 +25,6 @@ class NetworkConnectDelegateChromeOS
   void ShowNetworkSettings(const std::string& network_id) override;
   bool ShowEnrollNetwork(const std::string& network_id) override;
   void ShowMobileSetupDialog(const std::string& service_path) override;
-  void ShowCarrierAccountDetail(const std::string& service_path) override;
   void ShowNetworkConnectError(const std::string& error_name,
                                const std::string& network_id) override;
   void ShowMobileActivationError(const std::string& network_id) override;

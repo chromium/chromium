@@ -44,7 +44,6 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
     return false;
   }
   void ShowMobileSetupDialog(const std::string& service_path) override {}
-  void ShowCarrierAccountDetail(const std::string& service_path) override {}
   void ShowNetworkConnectError(const std::string& error_name,
                                const std::string& network_id) override {
     network_state_notifier_->ShowNetworkConnectErrorForGuid(error_name,
