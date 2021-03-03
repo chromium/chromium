@@ -106,6 +106,23 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
       delete;
 
   void SetUpOnMainThread() override {
+    // Wait for the initial publishing of production data that occurs as part of
+    // startup to complete. This is crucial for tests that inject test ruleset
+    // data and wait for it to be published via TestRulesetPublisher: if the
+    // initial publishing is still in process when those tests start running,
+    // they can end up incorrectly proceeding on the publishing of the
+    // production data rather than their test data.
+    auto* ruleset_service =
+        BrowserProcess::GetInstance()->subresource_filter_ruleset_service();
+
+    if (!ruleset_service->GetMostRecentlyIndexedVersion().IsValid()) {
+      base::RunLoop run_loop;
+      ruleset_service->SetRulesetPublishedCallbackForTesting(
+          run_loop.QuitClosure());
+
+      run_loop.Run();
+    }
+
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data");
 
@@ -156,20 +173,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, RulesetService) {
             nullptr);
 }
 
-// Tests that the ruleset is published as part of startup.
+// Tests that the expected ruleset data was published as part of startup.
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, RulesArePublished) {
   auto* ruleset_service =
       BrowserProcess::GetInstance()->subresource_filter_ruleset_service();
-
-  // Publishing might or might not have already finished at this point; wait for
-  // it to finish if necessary.
-  if (!ruleset_service->GetMostRecentlyIndexedVersion().IsValid()) {
-    base::RunLoop run_loop;
-    ruleset_service->SetRulesetPublishedCallbackForTesting(
-        run_loop.QuitClosure());
-
-    run_loop.Run();
-  }
 
   auto ruleset_version = ruleset_service->GetMostRecentlyIndexedVersion();
   EXPECT_TRUE(ruleset_version.IsValid());
@@ -229,16 +236,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
 // Verifies that subframes that are flagged by the subresource filter ruleset
 // are blocked from loading on activated URLs.
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_DisallowedSubframeURLBlockedOnActivatedURL \
-  DISABLED_DisallowedSubframeURLBlockedOnActivatedURL
-#else
-#define MAYBE_DisallowedSubframeURLBlockedOnActivatedURL \
-  DisallowedSubframeURLBlockedOnActivatedURL
-#endif
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       MAYBE_DisallowedSubframeURLBlockedOnActivatedURL) {
+                       DisallowedSubframeURLBlockedOnActivatedURL) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
   content::WebContentsConsoleObserver console_observer(web_contents);
@@ -328,16 +327,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
 }
 
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_ContentSettingsAllowlist_DoNotActivate \
-  DISABLED_ContentSettingsAllowlist_DoNotActivate
-#else
-#define MAYBE_ContentSettingsAllowlist_DoNotActivate \
-  ContentSettingsAllowlist_DoNotActivate
-#endif
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       MAYBE_ContentSettingsAllowlist_DoNotActivate) {
+                       ContentSettingsAllowlist_DoNotActivate) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
   GURL test_url(embedded_test_server()->GetURL(
@@ -367,16 +358,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 }
 
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_ContentSettingsAllowlistGlobal_DoNotActivate \
-  DISABLED_ContentSettingsAllowlistGlobal_DoNotActivate
-#else
-#define MAYBE_ContentSettingsAllowlistGlobal_DoNotActivate \
-  ContentSettingsAllowlistGlobal_DoNotActivate
-#endif
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       MAYBE_ContentSettingsAllowlistGlobal_DoNotActivate) {
+                       ContentSettingsAllowlistGlobal_DoNotActivate) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
   GURL test_url(embedded_test_server()->GetURL(
@@ -454,16 +437,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, InfoBarPresentation) {
 }
 #endif
 
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_ContentSettingsAllowlistViaReload_DoNotActivate \
-  DISABLED_ContentSettingsAllowlistViaReload_DoNotActivate
-#else
-#define MAYBE_ContentSettingsAllowlistViaReload_DoNotActivate \
-  ContentSettingsAllowlistViaReload_DoNotActivate
-#endif
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       MAYBE_ContentSettingsAllowlistViaReload_DoNotActivate) {
+                       ContentSettingsAllowlistViaReload_DoNotActivate) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
   ASSERT_NO_FATAL_FAILURE(
@@ -485,17 +460,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
 }
 
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_ContentSettingsAllowlistViaReload_AllowlistIsByDomain \
-  DISABLED_ContentSettingsAllowlistViaReload_AllowlistIsByDomain
-#else
-#define MAYBE_ContentSettingsAllowlistViaReload_AllowlistIsByDomain \
-  ContentSettingsAllowlistViaReload_AllowlistIsByDomain
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SubresourceFilterBrowserTest,
-    MAYBE_ContentSettingsAllowlistViaReload_AllowlistIsByDomain) {
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
+                       ContentSettingsAllowlistViaReload_AllowlistIsByDomain) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
   ASSERT_NO_FATAL_FAILURE(
@@ -531,16 +497,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
 }
 
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_AdsInterventionEnforced_PageActivated \
-  DISABLED_AdsInterventionEnforced_PageActivated
-#else
-#define MAYBE_AdsInterventionEnforced_PageActivated \
-  AdsInterventionEnforced_PageActivated
-#endif
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       MAYBE_AdsInterventionEnforced_PageActivated) {
+                       AdsInterventionEnforced_PageActivated) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 #if !defined(OS_ANDROID)
   InstallFakeSafeBrowsingDatabaseManagerInWebContents(web_contents);
@@ -631,17 +589,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
        static_cast<int>(AdsInterventionStatus::kExpired)));
 }
 
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_MultipleAdsInterventions_PageActivationClearedAfterFirst \
-  DISABLED_MultipleAdsInterventions_PageActivationClearedAfterFirst
-#else
-#define MAYBE_MultipleAdsInterventions_PageActivationClearedAfterFirst \
-  MultipleAdsInterventions_PageActivationClearedAfterFirst
-#endif
 IN_PROC_BROWSER_TEST_F(
     SubresourceFilterBrowserTest,
-    MAYBE_MultipleAdsInterventions_PageActivationClearedAfterFirst) {
+    MultipleAdsInterventions_PageActivationClearedAfterFirst) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 #if !defined(OS_ANDROID)
   InstallFakeSafeBrowsingDatabaseManagerInWebContents(web_contents);
@@ -753,17 +703,9 @@ class SubresourceFilterBrowserTestWithoutAdsInterventionEnforcement
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_AdsInterventionNotEnforced_NoPageActivation \
-  DISABLED_AdsInterventionNotEnforced_NoPageActivation
-#else
-#define MAYBE_AdsInterventionNotEnforced_NoPageActivation \
-  AdsInterventionNotEnforced_NoPageActivation
-#endif
 IN_PROC_BROWSER_TEST_F(
     SubresourceFilterBrowserTestWithoutAdsInterventionEnforcement,
-    MAYBE_AdsInterventionNotEnforced_NoPageActivation) {
+    AdsInterventionNotEnforced_NoPageActivation) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 #if !defined(OS_ANDROID)
   InstallFakeSafeBrowsingDatabaseManagerInWebContents(web_contents);
@@ -829,15 +771,8 @@ IN_PROC_BROWSER_TEST_F(
 // Test the "smart" UI, aka the logic to hide the UI on subsequent same-domain
 // navigations, until a certain time threshold has been reached. This is an
 // android-only feature.
-// Flaky on Windows. See https://crbug.com/1152429
-#if defined(OS_WIN)
-#define MAYBE_DoNotShowUIUntilThresholdReached \
-  DISABLED_DoNotShowUIUntilThresholdReached
-#else
-#define MAYBE_DoNotShowUIUntilThresholdReached DoNotShowUIUntilThresholdReached
-#endif
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       MAYBE_DoNotShowUIUntilThresholdReached) {
+                       DoNotShowUIUntilThresholdReached) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   auto* settings_manager =
       SubresourceFilterProfileContextFactory::GetForBrowserContext(
