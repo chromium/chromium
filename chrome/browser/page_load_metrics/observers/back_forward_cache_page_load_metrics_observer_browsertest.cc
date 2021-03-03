@@ -406,8 +406,10 @@ return score;
       "PageLoad.LayoutInstability.CumulativeShiftScore", 0, 4);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       RequestAnimationFramesAfterBackForwardCacheRestore) {
+// TODO(crbug.com/1184305): Disabled for being flaky.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    DISABLED_RequestAnimationFramesAfterBackForwardCacheRestore) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
