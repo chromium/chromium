@@ -24,7 +24,7 @@ TEST(JourneyLoggerTest,
   base::HistogramTester histogram_tester;
   JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
 
-  logger.SetEventOccurred(JourneyLogger::EVENT_SKIPPED_SHOW);
+  logger.SetSkippedShow();
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_MERCHANT);
 
   // Make sure the correct events were logged.
@@ -46,7 +46,7 @@ TEST(JourneyLoggerTest,
 
   // The merchant does not query CanMakePayment, show the PaymentRequest and the
   // user aborts it.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
@@ -69,7 +69,7 @@ TEST(JourneyLoggerTest,
 
   // The merchant does not query CanMakePayment, show the PaymentRequest and
   // there is an abort not initiated by the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
 
@@ -92,14 +92,14 @@ TEST(JourneyLoggerTest,
 
   // The merchant does not query CanMakePayment, show the PaymentRequest and the
   // user completes it.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetRequestedPaymentMethodTypes(
       /*requested_basic_card=*/true, /*requested_method_google=*/false,
       /*requested_method_secure_payment_confirmation=*/false,
       /*requested_method_other=*/false);
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger.SetPayClicked();
+  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -163,7 +163,7 @@ TEST(JourneyLoggerTest,
 
   // The user cannot make payment, the Payment Request is shown but is aborted
   // by the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetCanMakePaymentValue(false);
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
@@ -186,7 +186,7 @@ TEST(JourneyLoggerTest,
   JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
 
   // The user cannot make payment, the Payment Request is shown but is aborted.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetCanMakePaymentValue(false);
   logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
@@ -210,15 +210,15 @@ TEST(JourneyLoggerTest,
 
   // The user cannot make payment, the payment request is shown and is
   // completed.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetRequestedPaymentMethodTypes(
       /*requested_basic_card=*/true, /*requested_method_google=*/false,
       /*requested_method_secure_payment_confirmation=*/false,
       /*requested_method_other=*/false);
   logger.SetCanMakePaymentValue(false);
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger.SetPayClicked();
+  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -240,7 +240,7 @@ TEST(JourneyLoggerTest,
 
   // The user can make payment, the Payment Request is shown and aborted by the
   // user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetCanMakePaymentValue(true);
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
@@ -264,7 +264,7 @@ TEST(JourneyLoggerTest,
 
   // The user can make a payment, the request is shown but the transaction is
   // aborted.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetCanMakePaymentValue(true);
   logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
@@ -288,15 +288,15 @@ TEST(JourneyLoggerTest,
 
   // The user can make a payment, the request is shown and the user completes
   // the checkout.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetRequestedPaymentMethodTypes(
       /*requested_basic_card=*/true, /*requested_method_google=*/false,
       /*requested_method_secure_payment_confirmation=*/false,
       /*requested_method_other=*/false);
   logger.SetCanMakePaymentValue(true);
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger.SetPayClicked();
+  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -318,15 +318,15 @@ TEST(JourneyLoggerTest,
 
   // The user can make a payment, the request is shown and the user completes
   // the checkout.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
   logger.SetRequestedInformation(true, false, false, false);
   logger.SetRequestedPaymentMethodTypes(
       /*requested_basic_card=*/true, /*requested_method_google=*/false,
       /*requested_method_secure_payment_confirmation=*/false,
       /*requested_method_other=*/false);
   logger.SetCanMakePaymentValue(true);
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger.SetPayClicked();
+  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -360,11 +360,11 @@ TEST(JourneyLoggerTest,
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the user completes the checkout.
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger.SetPayClicked();
+  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -408,7 +408,7 @@ TEST(JourneyLoggerTest,
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the user aborts the checkout.
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
@@ -454,7 +454,7 @@ TEST(JourneyLoggerTest,
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the checkout is aborted.
   logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
@@ -501,11 +501,11 @@ TEST(JourneyLoggerTest,
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the user completes the checkout.
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger.SetPayClicked();
+  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -549,11 +549,11 @@ TEST(JourneyLoggerTest,
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the user completes the checkout.
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger.SetPayClicked();
+  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -597,7 +597,7 @@ TEST(JourneyLoggerTest,
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the user aborts the checkout.
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
@@ -643,7 +643,7 @@ TEST(JourneyLoggerTest,
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the the checkout is aborted.
   logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
@@ -690,7 +690,7 @@ TEST(JourneyLoggerTest,
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the user aborts the checkout.
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
@@ -738,7 +738,7 @@ TEST(
                                      /*has_complete_suggestion=*/false);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the the checkout is aborted.
   logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
@@ -788,7 +788,7 @@ TEST(
                                      /*has_complete_suggestion=*/true);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the the checkout is aborted.
   logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
@@ -838,7 +838,7 @@ TEST(
                                      /*has_complete_suggestion=*/true);
 
   // Simulate that the Payment Request was shown to the user.
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetShown();
 
   // Simulate that the the checkout is aborted.
   logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
@@ -871,7 +871,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
   JourneyLogger logger2(/*is_incognito=*/false, ukm::kInvalidSourceId);
 
   // Make the two loggers have different data.
-  logger1.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger1.SetShown();
   logger1.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/true,
       /*requested_phone=*/false, /*requested_name=*/false);
@@ -879,7 +879,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
       /*requested_basic_card=*/true, /*requested_method_google=*/true,
       /*requested_method_secure_payment_confirmation=*/false,
       /*requested_method_other=*/true);
-  logger2.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger2.SetShown();
   logger2.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/false,
       /*requested_phone=*/false, /*requested_name=*/false);
@@ -896,8 +896,8 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
                                       /*has_complete_suggestion=*/false);
 
   // Simulate that the user completes one checkout and aborts the other.
-  logger1.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger1.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger1.SetPayClicked();
+  logger1.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger1.SetCompleted();
   logger2.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
@@ -968,8 +968,8 @@ TEST(JourneyLoggerTest,
   // clicking pay.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
                                      /*has_complete_suggestion=*/true);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetShown();
+  logger.SetPayClicked();
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
   int64_t expected_step_metric =
@@ -986,7 +986,7 @@ TEST(JourneyLoggerTest,
   EXPECT_EQ(1u, entries.size());
   for (const auto* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(2U, entry->metrics.size());
+    EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kCompletionStatusName,
         JourneyLogger::COMPLETION_STATUS_USER_ABORTED);
@@ -1019,9 +1019,9 @@ TEST(JourneyLoggerTest,
   // Simulate that the user aborts after being shown the Payment Request.
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
                                      /*has_complete_suggestion=*/true);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
-  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
-  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
+  logger.SetShown();
+  logger.SetPayClicked();
+  logger.SetSelectedMethod(JourneyLogger::PaymentMethodCategory::kBasicCard);
   logger.SetCompleted();
 
   int64_t expected_step_metric =
@@ -1039,7 +1039,7 @@ TEST(JourneyLoggerTest,
   EXPECT_EQ(1u, entries.size());
   for (const auto* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(2U, entry->metrics.size());
+    EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEventsName,

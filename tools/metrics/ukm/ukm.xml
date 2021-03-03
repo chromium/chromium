@@ -11903,6 +11903,14 @@ be describing additional metrics about the same event.
       components/payments/core/journey_logger.h.
     </summary>
   </metric>
+  <metric name="Events2">
+    <summary>
+      The 2.0 version of Events. Bitfield representing the events that occurred
+      during the Payment Request. This metric will only get recorded if a
+      non-autofill payment app gets invoked to handle the request. Values
+      defined in the Event2 enum of components/payments/core/journey_logger.h.
+    </summary>
+  </metric>
 </event>
 
 <event name="PaymentRequest.CheckoutEvents">
@@ -11917,6 +11925,13 @@ be describing additional metrics about the same event.
     <summary>
       Bitfield representing the events that occurred during the Payment Request.
       Values defined in the Event enum of
+      components/payments/core/journey_logger.h.
+    </summary>
+  </metric>
+  <metric name="Events2">
+    <summary>
+      The 2.0 version of Events. Bitfield representing the events that occurred
+      during the Payment Request. Values defined in the Event2 enum of
       components/payments/core/journey_logger.h.
     </summary>
   </metric>
