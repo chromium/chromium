@@ -616,7 +616,7 @@ public class TraceEvent implements AutoCloseable {
             sEnabled = enabled;
             // Android M+ systrace logs this on its own. Only log it if not writing to Android
             // systrace.
-            if (sATrace != null && !sATrace.hasActiveSession()) {
+            if (sATrace == null || !sATrace.hasActiveSession()) {
                 ThreadUtils.getUiThreadLooper().setMessageLogging(
                         enabled ? LooperMonitorHolder.sInstance : null);
             }
