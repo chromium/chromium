@@ -1179,16 +1179,16 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, IndexedDBAccess) {
   PrerenderHost* prerender_host =
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
   ASSERT_TRUE(prerender_host);
-  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
-      prerender_host->GetPrerenderedMainFrameHostForTesting());
+  RenderFrameHostImpl* prerender_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
 
   // Verify the prerendered page can read the object that the initial page
   // wrote.
-  EXPECT_EQ(initial_value, EvalJs(prerender_contents,
+  EXPECT_EQ(initial_value, EvalJs(prerender_render_frame_host,
                                   JsReplace("readData($1);", initial_key)));
 
   // The prerendered page writes another object to Indexed Database.
-  EXPECT_EQ(true, EvalJs(prerender_contents,
+  EXPECT_EQ(true, EvalJs(prerender_render_frame_host,
                          JsReplace("addData($1, $2);", prerender_key,
                                    prerender_value)));
 
@@ -1251,22 +1251,22 @@ IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
   PrerenderHost* prerender_host =
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
   ASSERT_TRUE(prerender_host);
-  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
-      prerender_host->GetPrerenderedMainFrameHostForTesting());
+  RenderFrameHostImpl* prerender_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
 
   // Access `temp_file` on the prerendered page.
-  ExecuteScriptAsync(prerender_contents, "startShowOpenFilePicker();");
+  ExecuteScriptAsync(prerender_render_frame_host, "startShowOpenFilePicker();");
   // Run a event loop so the page can fail the test.
-  EXPECT_TRUE(ExecJs(prerender_contents, "runLoop();"));
+  EXPECT_TRUE(ExecJs(prerender_render_frame_host, "runLoop();"));
 
   // Inform the prerendered page that it will be activated and activate it.
-  EXPECT_TRUE(ExecJs(prerender_contents, "setWillActivate();"));
+  EXPECT_TRUE(ExecJs(prerender_render_frame_host, "setWillActivate();"));
   NavigateWithLocation(kPrerenderingUrl);
 
   // `temp_file` should be selected after `willActivate` was set to true,
   // otherwise the prerendered page will throw an error.
   EXPECT_EQ(temp_file.BaseName().AsUTF8Unsafe(),
-            EvalJs(prerender_contents, "result;"));
+            EvalJs(prerender_render_frame_host, "result;"));
 
   ui::SelectFileDialog::SetFactory(nullptr);
 }
