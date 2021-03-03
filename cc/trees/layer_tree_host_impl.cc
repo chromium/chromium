@@ -2500,11 +2500,30 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       frame->deadline_in_frames.value_or(0u), CurrentBeginFrameArgs().interval,
       frame->use_default_lower_bound_deadline);
 
-  frame_rate_estimator_.WillDraw(CurrentBeginFrameArgs().frame_time);
-
+  constexpr auto kFudgeDelta = base::TimeDelta::FromMilliseconds(1);
+  constexpr auto kTwiceOfDefaultInterval =
+      viz::BeginFrameArgs::DefaultInterval() * 2;
+  constexpr auto kMinDelta = kTwiceOfDefaultInterval - kFudgeDelta;
   if (enable_frame_rate_throttling_) {
     metadata.preferred_frame_interval = viz::BeginFrameArgs::MaxInterval();
+  } else if (mutator_host_->MainThreadAnimationsCount() == 0 &&
+             mutator_host_->MinimumTickInterval() > kMinDelta) {
+    // All animations are impl-thread animations that tick at no more than
+    // half the default display compositing fps.
+    // Here and below with FrameRateEstimator::GetPreferredInterval(), the
+    // meta data's preferred_frame_interval is constrainted to either 0 or
+    // twice the default interval. The reason is because GPU process side
+    // viz::FrameRateDecider is optimized for when all the preferred frame
+    // rates are similar.
+    // In general it may cause an animation to be less smooth if its fps is
+    // less than 30 fps and it updates at 30 fps. However, the frame rate
+    // reduction optimization is only applied when a webpage has two or more
+    // videos, i.e., very likely a video conferencing scene. It doesn't apply
+    // to general webpages.
+    metadata.preferred_frame_interval = kTwiceOfDefaultInterval;
   } else {
+    // There are main-thread or high frequency impl-thread animations.
+    frame_rate_estimator_.WillDraw(CurrentBeginFrameArgs().frame_time);
     metadata.preferred_frame_interval =
         frame_rate_estimator_.GetPreferredInterval();
   }
