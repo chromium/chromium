@@ -56,6 +56,19 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
 #endif
 }
 
+void OnDidGetDefaultPrinterName(
+    PrinterHandler::DefaultPrinterCallback callback,
+    const base::Optional<std::string>& printer_name) {
+  if (!printer_name.has_value()) {
+    LOG(WARNING) << "Failure getting default printer";
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  VLOG(1) << "Default Printer: " << printer_name.value();
+  std::move(callback).Run(printer_name.value());
+}
+
 void OnDidEnumeratePrinters(
     PrinterHandler::AddedPrintersCallback added_printers_callback,
     PrinterHandler::GetPrintersDoneCallback done_callback,
@@ -174,11 +187,20 @@ void LocalPrinterHandlerDefault::Reset() {}
 void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&GetDefaultPrinterAsync,
-                     g_browser_process->GetApplicationLocale()),
-      std::move(cb));
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    VLOG(1) << "Getting default printer via service";
+    GetPrintBackendService(g_browser_process->GetApplicationLocale(),
+                           /*printer_name=*/std::string())
+        ->GetDefaultPrinterName(
+            base::BindOnce(&OnDidGetDefaultPrinterName, std::move(cb)));
+  } else {
+    VLOG(1) << "Getting default printer in-process";
+    base::PostTaskAndReplyWithResult(
+        task_runner_.get(), FROM_HERE,
+        base::BindOnce(&GetDefaultPrinterAsync,
+                       g_browser_process->GetApplicationLocale()),
+        std::move(cb));
+  }
 }
 
 void LocalPrinterHandlerDefault::StartGetPrinters(

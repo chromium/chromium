@@ -27,6 +27,15 @@ namespace printing {
 
 namespace {
 
+// Used as a callback to `GetDefaultPrinter` in tests.
+// Increases `call_count` and records value returned by `GetDefaultPrinter`.
+void RecordGetDefaultPrinter(bool& default_printer_set,
+                             std::string& default_printer_out,
+                             const std::string& default_printer) {
+  default_printer_out = default_printer;
+  default_printer_set = true;
+}
+
 // Used as a callback to `StartGetPrinters` in tests.
 // Increases `call_count` and records values returned by `StartGetPrinters`.
 // TODO(crbug.com/1171579) Get rid of use of base::ListValue.
@@ -126,6 +135,39 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
 };
 
 INSTANTIATE_TEST_SUITE_P(All, LocalPrinterHandlerDefaultTest, testing::Bool());
+
+// Tests that getting default printer is successful.
+TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinter) {
+  AddPrinter("printer1", "default1", "description1", true);
+  AddPrinter("printer2", "non-default2", "description2", false);
+  AddPrinter("printer3", "non-default3", "description3", false);
+
+  bool did_get_default_printer = false;
+  std::string default_printer;
+  local_printer_handler_->GetDefaultPrinter(base::BindOnce(
+      &RecordGetDefaultPrinter, std::ref(did_get_default_printer),
+      std::ref(default_printer)));
+
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(did_get_default_printer);
+  EXPECT_EQ(default_printer, "printer1");
+}
+
+// Tests that getting default printer gives empty string when no printers are
+// installed.
+TEST_P(LocalPrinterHandlerDefaultTest, GetDefaultPrinterNoneInstalled) {
+  bool did_get_default_printer = false;
+  std::string default_printer;
+  local_printer_handler_->GetDefaultPrinter(base::BindOnce(
+      &RecordGetDefaultPrinter, std::ref(did_get_default_printer),
+      std::ref(default_printer)));
+
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(did_get_default_printer);
+  EXPECT_TRUE(default_printer.empty());
+}
 
 TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
   AddPrinter("printer1", "default1", "description1", true);
