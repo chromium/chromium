@@ -54,6 +54,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -656,6 +657,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1183594")
     public void testExternalAddExpiredCreditCard() throws Exception {
         // Add address for card.
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@google.com");
