@@ -258,10 +258,12 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.clear` appears to be unused"/>
     <!-- 1: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1169845. -->
     <ignore regexp="The resource `R.string.notification_category_price_drop` appears to be unused"/>
-    <!-- 3: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1166702 -->
+    <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1166702 -->
     <ignore regexp="The resource `R.string.price_drop_alerts_card_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_content` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings_content` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings` appears to be unused"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
