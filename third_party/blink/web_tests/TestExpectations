@@ -1621,7 +1621,7 @@ crbug.com/518987 http/tests/xmlhttprequest/navigation-abort-detaches-frame.html 
 crbug.com/538717 [ Win ] http/tests/permissions/chromium/test-request-worker.html [ Pass Timeout ]
 crbug.com/802029 [ Mac10.13 Debug ] fast/dom/shadow/focus-controller-recursion-crash.html [ Pass Timeout ]
 crbug.com/829740 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
-crbug.com/836783 fast/peerconnection/RTCRtpSender-setParameters.html [ Pass Timeout ]
+crbug.com/836783 crbug.com/1183911 fast/peerconnection/RTCRtpSender-setParameters.html [ Pass Timeout Crash ]
 crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Pass Timeout ]
 
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
