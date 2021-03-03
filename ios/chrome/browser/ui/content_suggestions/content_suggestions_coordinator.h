@@ -79,9 +79,6 @@ class WebState;
 // Constrains the named layout guide for the Discover header menu button.
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide;
 
-// YES if the Discover feed is currently visible.
-- (BOOL)isDiscoverFeedVisible;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COORDINATOR_H_
