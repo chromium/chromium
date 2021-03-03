@@ -9,15 +9,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/infobars/infobar_service.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
@@ -57,20 +49,6 @@ void SubresourceFilterTestHarness::SetUp() {
 
   NavigateAndCommit(GURL("https://example.first"));
 
-  // Set up safe browsing service with the fake database manager.
-  //
-  // TODO(csharrison): This is a bit ugly. See if the instructions in
-  // test_safe_browsing_service.h can be adapted to be used in unit tests.
-  safe_browsing::TestSafeBrowsingServiceFactory sb_service_factory;
-  fake_safe_browsing_database_ = new FakeSafeBrowsingDatabaseManager();
-  sb_service_factory.SetTestDatabaseManager(fake_safe_browsing_database_.get());
-  safe_browsing::SafeBrowsingService::RegisterFactory(&sb_service_factory);
-  auto* safe_browsing_service = sb_service_factory.CreateSafeBrowsingService();
-  safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
-  TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
-      safe_browsing_service);
-  g_browser_process->safe_browsing_service()->Initialize();
-
   // Set up the ruleset service.
   ASSERT_TRUE(ruleset_service_dir_.CreateUniqueTempDir());
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(
@@ -85,11 +63,9 @@ void SubresourceFilterTestHarness::SetUp() {
   // 2. Navigation simulator uses this knowledge. It knows that
   //    |AsyncDocumentSubresourceFilter| posts core initialization tasks on
   //    blocking task runner and this it is the current thread task runner.
-  auto ruleset_service = std::make_unique<subresource_filter::RulesetService>(
+  ruleset_service_ = std::make_unique<subresource_filter::RulesetService>(
       &pref_service_, base::ThreadTaskRunnerHandle::Get(),
       ruleset_service_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get());
-  TestingBrowserProcess::GetGlobal()->SetRulesetService(
-      std::move(ruleset_service));
 
   // Publish the test ruleset.
   subresource_filter::testing::TestRulesetCreator ruleset_creator;
@@ -100,32 +76,25 @@ void SubresourceFilterTestHarness::SetUp() {
            kDefaultAllowedSuffix)},
       &test_ruleset_pair);
   subresource_filter::testing::TestRulesetPublisher test_ruleset_publisher(
-      g_browser_process->subresource_filter_ruleset_service());
+      ruleset_service_.get());
   ASSERT_NO_FATAL_FAILURE(
       test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
 
-  // Set up the tab helpers.
-  InfoBarService::CreateForWebContents(web_contents());
-  content_settings::PageSpecificContentSettings::CreateForWebContents(
-      web_contents(),
-      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-          web_contents()));
-  ChromeSubresourceFilterClient::CreateThrottleManagerWithClientForWebContents(
-      web_contents());
+  subresource_filter::VerifiedRulesetDealer::Handle* dealer =
+      ruleset_service_.get()->GetRulesetDealer();
+  auto client =
+      std::make_unique<subresource_filter::TestSubresourceFilterClient>(
+          web_contents());
+  client_ = client.get();
+  client_->CreateSafeBrowsingDatabaseManager();
+  subresource_filter::ContentSubresourceFilterThrottleManager::
+      CreateForWebContents(web_contents(), std::move(client), dealer);
 
   base::RunLoop().RunUntilIdle();
 }
 
 void SubresourceFilterTestHarness::TearDown() {
-  fake_safe_browsing_database_ = nullptr;
-  TestingBrowserProcess::GetGlobal()->safe_browsing_service()->ShutDown();
-
-  // Must explicitly set these to null and pump the run loop to ensure that
-  // all cleanup related to these classes actually happens.
-  TestingBrowserProcess::GetGlobal()->SetRulesetService(nullptr);
-  TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
-
-  base::RunLoop().RunUntilIdle();
+  ruleset_service_.reset();
 
   ChromeRenderViewHostTestHarness::TearDown();
 }
@@ -156,19 +125,17 @@ SubresourceFilterTestHarness::CreateAndNavigateDisallowedSubframe(
 
 void SubresourceFilterTestHarness::ConfigureAsSubresourceFilterOnlyURL(
     const GURL& url) {
-  fake_safe_browsing_database_->AddBlocklistedUrl(
+  fake_safe_browsing_database()->AddBlocklistedUrl(
       url, safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
 }
 
 void SubresourceFilterTestHarness::RemoveURLFromBlocklist(const GURL& url) {
-  fake_safe_browsing_database_->RemoveBlocklistedUrl(url);
+  fake_safe_browsing_database()->RemoveBlocklistedUrl(url);
 }
 
 subresource_filter::SubresourceFilterContentSettingsManager*
 SubresourceFilterTestHarness::GetSettingsManager() {
-  return SubresourceFilterProfileContextFactory::GetForProfile(
-             static_cast<Profile*>(profile()))
-      ->settings_manager();
+  return client_->profile_context()->settings_manager();
 }
 
 void SubresourceFilterTestHarness::TagSubframeAsAd(

@@ -8,7 +8,6 @@
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
@@ -56,8 +55,7 @@ TestSubresourceFilterClient::GetProfileInteractionManager() {
 }
 
 void TestSubresourceFilterClient::CreateSafeBrowsingDatabaseManager() {
-  database_manager_ =
-      base::MakeRefCounted<safe_browsing::TestSafeBrowsingDatabaseManager>();
+  database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
 }
 
 void TestSubresourceFilterClient::SetShouldUseSmartUI(bool enabled) {

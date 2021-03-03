@@ -10,6 +10,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
+#include "components/subresource_filter/content/browser/test_subresource_filter_client.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 
@@ -20,11 +21,11 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace subresource_filter {
+class RulesetService;
 class SubresourceFilterContentSettingsManager;
 }
 
-// End to end unit test harness of (most of) the browser process portions of the
-// subresource filtering code.
+// Unit test harness for the subresource filtering component.
 class SubresourceFilterTestHarness : public ChromeRenderViewHostTestHarness {
  public:
   // Allowlist rules must prefix a disallowed rule in order to work correctly.
@@ -65,7 +66,7 @@ class SubresourceFilterTestHarness : public ChromeRenderViewHostTestHarness {
   }
 
   FakeSafeBrowsingDatabaseManager* fake_safe_browsing_database() {
-    return fake_safe_browsing_database_.get();
+    return client_->fake_safe_browsing_database_manager();
   }
 
   void TagSubframeAsAd(content::RenderFrameHost* render_frame_host);
@@ -75,8 +76,8 @@ class SubresourceFilterTestHarness : public ChromeRenderViewHostTestHarness {
   TestingPrefServiceSimple pref_service_;
   subresource_filter::testing::ScopedSubresourceFilterConfigurator
       scoped_configuration_;
-
-  scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
+  subresource_filter::TestSubresourceFilterClient* client_;
+  std::unique_ptr<subresource_filter::RulesetService> ruleset_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterTestHarness);
 };
