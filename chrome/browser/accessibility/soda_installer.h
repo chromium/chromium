@@ -39,6 +39,11 @@ class SodaInstaller {
   // instance.
   static SodaInstaller* GetInstance();
 
+  // Initialize SODA. Called by ChromeBrowserMainParts during browser startup.
+  // Checks whether SODA is due for uninstallation, and if so, triggers
+  // uninstallation.
+  void Init(PrefService* prefs);
+
   // Gets the directory path of the installed SODA lib bundle, or an empty path
   // if not installed. Currently Chrome OS only, returns empty path on other
   // platforms.

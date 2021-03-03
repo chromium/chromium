@@ -185,6 +185,7 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_client.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #else
+#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -192,6 +193,7 @@
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/usb/web_usb_detector.h"
+#include "media/base/media_switches.h"
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1603,6 +1605,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
     component_updater::RegisterComponentsForUpdate(
         profile_->IsOffTheRecord(), profile_->GetPrefs(), profile_->GetPath());
+#if !defined(OS_ANDROID)
+    if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
+        base::FeatureList::IsEnabled(media::kLiveCaption)) {
+      speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs());
+    }
+#endif  // !defined(OS_ANDROID)
   }
 
   variations::VariationsService* variations_service =

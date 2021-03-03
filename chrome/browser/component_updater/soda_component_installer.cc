@@ -212,14 +212,6 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
               std::move(on_ready_callback)));
 
       installer->Register(cus, std::move(on_registered_callback));
-    } else {
-      base::Time deletion_time =
-          global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
-      if (!deletion_time.is_null() && deletion_time < base::Time::Now()) {
-        base::DeletePathRecursively(speech::GetSodaDirectory());
-        base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
-        global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
-      }
     }
   }
 }

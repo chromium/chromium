@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/update_client/crx_update_item.h"
 #include "media/base/media_switches.h"
 
@@ -110,9 +112,9 @@ bool SodaInstallerImpl::IsSodaInstalled() const {
 }
 
 void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
-  // TODO(crbug.com/1055150): Refactor uninstallation code from elsewhere to
-  // here.
-  NOTREACHED();
+  base::DeletePathRecursively(speech::GetSodaDirectory());
+  base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
+  global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
 }
 
 void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
