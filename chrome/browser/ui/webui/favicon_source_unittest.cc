@@ -80,7 +80,11 @@ class TestFaviconSource : public FaviconSource {
   MOCK_METHOD2(LoadIconBytes, base::RefCountedMemory*(float, int));
 
  protected:
-  ui::NativeTheme* GetNativeTheme() override { return theme_; }
+  // FaviconSource:
+  ui::NativeTheme* GetNativeTheme(
+      const content::WebContents::Getter& wc_getter) override {
+    return theme_;
+  }
 
  private:
   ui::NativeTheme* const theme_;

@@ -93,7 +93,7 @@ void ThemeSource::StartDataRequest(
     NTPResourceCache::WindowType type =
         NTPResourceCache::GetWindowType(profile_, /*render_host=*/nullptr);
     NTPResourceCache* cache = NTPResourceCacheFactory::GetForProfile(profile_);
-    std::move(callback).Run(cache->GetNewTabCSS(type));
+    std::move(callback).Run(cache->GetNewTabCSS(type, wc_getter));
     return;
   }
 

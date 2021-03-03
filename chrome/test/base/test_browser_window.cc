@@ -96,6 +96,10 @@ bool TestBrowserWindow::DoBrowserControlsShrinkRendererSize(
   return false;
 }
 
+ui::NativeTheme* TestBrowserWindow::GetNativeTheme() {
+  return nullptr;
+}
+
 int TestBrowserWindow::GetTopControlsHeight() const {
   return 0;
 }
