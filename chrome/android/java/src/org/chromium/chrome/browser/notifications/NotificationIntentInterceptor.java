@@ -17,6 +17,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -131,7 +132,7 @@ public class NotificationIntentInterceptor {
             int intentId, NotificationMetadata metadata,
             @Nullable PendingIntentProvider pendingIntentProvider) {
         PendingIntent pendingIntent = null;
-        int flags = 0;
+        int flags = IntentUtils.getPendingIntentMutabilityFlag(false /* mutable */);
         if (pendingIntentProvider != null) {
             pendingIntent = pendingIntentProvider.getPendingIntent();
             flags = pendingIntentProvider.getFlags();
