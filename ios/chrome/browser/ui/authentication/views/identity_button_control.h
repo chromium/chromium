@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_UNIFIED_CONSENT_IDENTITY_PICKER_VIEW_H_
-#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_UNIFIED_CONSENT_IDENTITY_PICKER_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_VIEWS_IDENTITY_BUTTON_CONTROL_H_
+#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_VIEWS_IDENTITY_BUTTON_CONTROL_H_
 
 #import <UIKit/UIKit.h>
 
@@ -11,12 +11,12 @@
 // An down arrow is also displayed on the right of the control, to invite the
 // user to tap and select another chrome identity. To get the tap event, see:
 // -[UIControl addTarget:action:forControlEvents:].
-@interface IdentityPickerView : UIControl
+@interface IdentityButtonControl : UIControl
 
-// Initialises IdentityPickerView.
+// Initialises IdentityButtonControl.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 
-// See -[IdentityPickerView initWithFrame:].
+// See -[IdentityButtonControl initWithFrame:].
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
@@ -28,4 +28,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_UNIFIED_CONSENT_IDENTITY_PICKER_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_VIEWS_IDENTITY_BUTTON_CONTROL_H_

@@ -8,9 +8,9 @@
 #include "components/google/core/common/google_util.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_picker_view.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -51,13 +51,13 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 // Main view.
 @property(nonatomic, strong) UIScrollView* scrollView;
 // Identity picker to change the identity to sign-in.
-@property(nonatomic, strong) IdentityPickerView* identityPickerView;
+@property(nonatomic, strong) IdentityButtonControl* identityButtonControl;
 // Vertical constraint on imageBackgroundView to have it over non-safe area.
 @property(nonatomic, strong)
     NSLayoutConstraint* imageBackgroundViewHeightConstraint;
-// Constraint when identityPickerView is hidden.
+// Constraint when identityButtonControl is hidden.
 @property(nonatomic, strong) NSLayoutConstraint* noIdentityConstraint;
-// Constraint when identityPickerView is visible.
+// Constraint when identityButtonControl is visible.
 @property(nonatomic, strong) NSLayoutConstraint* withIdentityConstraint;
 // Constraint for the maximum height of the header view (also used to hide the
 // the header view if needed).
@@ -71,38 +71,27 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 
 @implementation UnifiedConsentViewController
 
-@synthesize delegate = _delegate;
-@synthesize identityPickerView = _identityPickerView;
-@synthesize imageBackgroundViewHeightConstraint =
-    _imageBackgroundViewHeightConstraint;
-@synthesize noIdentityConstraint = _noIdentityConstraint;
-@synthesize openSettingsStringId = _openSettingsStringId;
-@synthesize scrollView = _scrollView;
-@synthesize settingsLinkController = _settingsLinkController;
-@synthesize withIdentityConstraint = _withIdentityConstraint;
-@synthesize customizeSyncLabel = _customizeSyncLabel;
-
 - (const std::vector<int>&)consentStringIds {
   return _consentStringIds;
 }
 
-- (void)updateIdentityPickerViewWithUserFullName:(NSString*)fullName
-                                           email:(NSString*)email {
+- (void)updateIdentityButtonControlWithUserFullName:(NSString*)fullName
+                                              email:(NSString*)email {
   DCHECK(email);
-  self.identityPickerView.hidden = NO;
+  self.identityButtonControl.hidden = NO;
   self.noIdentityConstraint.active = NO;
   self.withIdentityConstraint.active = YES;
-  [self.identityPickerView setIdentityName:fullName email:email];
+  [self.identityButtonControl setIdentityName:fullName email:email];
   [self setSettingsLinkURLShown:YES];
 }
 
-- (void)updateIdentityPickerViewWithAvatar:(UIImage*)avatar {
-  DCHECK(!self.identityPickerView.hidden);
-  [self.identityPickerView setIdentityAvatar:avatar];
+- (void)updateIdentityButtonControlWithAvatar:(UIImage*)avatar {
+  DCHECK(!self.identityButtonControl.hidden);
+  [self.identityButtonControl setIdentityAvatar:avatar];
 }
 
-- (void)hideIdentityPickerView {
-  self.identityPickerView.hidden = YES;
+- (void)hideIdentityButtonControl {
+  self.identityButtonControl.hidden = YES;
   self.withIdentityConstraint.active = NO;
   self.noIdentityConstraint.active = YES;
   [self setSettingsLinkURLShown:NO];
@@ -169,13 +158,14 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
                       parentView:container];
 
   // Identity picker view.
-  self.identityPickerView =
-      [[IdentityPickerView alloc] initWithFrame:CGRectZero];
-  self.identityPickerView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.identityPickerView addTarget:self
-                              action:@selector(identityPickerAction:forEvent:)
-                    forControlEvents:UIControlEventTouchUpInside];
-  [container addSubview:self.identityPickerView];
+  self.identityButtonControl =
+      [[IdentityButtonControl alloc] initWithFrame:CGRectZero];
+  self.identityButtonControl.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.identityButtonControl addTarget:self
+                                 action:@selector(identityButtonControlAction:
+                                                                     forEvent:)
+                       forControlEvents:UIControlEventTouchUpInside];
+  [container addSubview:self.identityButtonControl];
 
   // Sync title and subtitle.
   UILabel* syncTitleLabel =
@@ -208,7 +198,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   NSDictionary* views = @{
     @"header" : headerImageView,
     @"title" : title,
-    @"picker" : self.identityPickerView,
+    @"picker" : self.identityButtonControl,
     @"container" : container,
     @"scrollview" : self.scrollView,
     @"separator" : separator,
@@ -264,7 +254,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
       [syncTitleLabel.topAnchor constraintEqualToAnchor:title.bottomAnchor
                                                constant:kVerticalTextMargin];
   self.withIdentityConstraint = [syncTitleLabel.topAnchor
-      constraintEqualToAnchor:self.identityPickerView.bottomAnchor
+      constraintEqualToAnchor:self.identityButtonControl.bottomAnchor
                      constant:kVerticalTextMargin];
 
   // Adding constraints for the container.
@@ -285,7 +275,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
       .active = YES;
 
   // Update UI.
-  [self hideIdentityPickerView];
+  [self hideIdentityButtonControl];
   [self updateScrollViewAndImageBackgroundView];
 }
 
@@ -336,13 +326,13 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 
 #pragma mark - UI actions
 
-- (void)identityPickerAction:(id)sender forEvent:(UIEvent*)event {
+- (void)identityButtonControlAction:(id)sender forEvent:(UIEvent*)event {
   UITouch* touch = event.allTouches.anyObject;
   [self.delegate
-      unifiedConsentViewControllerDidTapIdentityPickerView:self
-                                                   atPoint:
-                                                       [touch
-                                                           locationInView:nil]];
+      unifiedConsentViewControllerDidTapIdentityButtonControl:self
+                                                      atPoint:
+                                                          [touch locationInView:
+                                                                     nil]];
 }
 
 #pragma mark - Private

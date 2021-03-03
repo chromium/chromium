@@ -27,8 +27,6 @@ source_set("unified_consent") {
 source_set("unified_consent_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "identity_picker_view.h",
-    "identity_picker_view.mm",
     "unified_consent_view_controller.h",
     "unified_consent_view_controller.mm",
     "unified_consent_view_controller_delegate.h",
@@ -43,12 +41,12 @@ source_set("unified_consent_ui") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:identity_chooser_ui",
+    "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   public_deps = [ ":constants" ]

@@ -44,8 +44,6 @@ source_set("identity_chooser_ui") {
     "identity_chooser_view_controller.h",
     "identity_chooser_view_controller.mm",
     "identity_chooser_view_controller_presentation_delegate.h",
-    "identity_view.h",
-    "identity_view.mm",
   ]
   deps = [
     "resources:identity_chooser_add_account",
@@ -55,6 +53,7 @@ source_set("identity_chooser_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/list_model",

@@ -85,12 +85,12 @@
     return;
   if (self.selectedIdentity) {
     [self.unifiedConsentViewController
-        updateIdentityPickerViewWithUserFullName:self.selectedIdentity
-                                                     .userFullName
-                                           email:self.selectedIdentity
-                                                     .userEmail];
+        updateIdentityButtonControlWithUserFullName:self.selectedIdentity
+                                                        .userFullName
+                                              email:self.selectedIdentity
+                                                        .userEmail];
     [self.unifiedConsentViewController
-        updateIdentityPickerViewWithAvatar:self.selectedIdentityAvatar];
+        updateIdentityButtonControlWithAvatar:self.selectedIdentityAvatar];
     ChromeIdentity* selectedIdentity = self.selectedIdentity;
     __weak UnifiedConsentMediator* weakSelf = self;
     ios::GetChromeBrowserProvider()
@@ -101,7 +101,7 @@
           [weakSelf identityAvatarUpdated:identityAvatar];
         });
   } else {
-    [self.unifiedConsentViewController hideIdentityPickerView];
+    [self.unifiedConsentViewController hideIdentityButtonControl];
   }
 }
 
@@ -110,7 +110,7 @@
     return;
   _selectedIdentityAvatar = identityAvatar;
   [self.unifiedConsentViewController
-      updateIdentityPickerViewWithAvatar:self.selectedIdentityAvatar];
+      updateIdentityButtonControlWithAvatar:self.selectedIdentityAvatar];
 }
 
 #pragma mark - ChromeBrowserProviderObserver

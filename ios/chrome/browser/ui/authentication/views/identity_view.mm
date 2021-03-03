@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_view.h"
+#import "ios/chrome/browser/ui/authentication/views/identity_view.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -42,13 +42,6 @@ const CGFloat kVerticalMargin = 12.;
 @end
 
 @implementation IdentityView
-
-@synthesize avatarView = _avatarView;
-@synthesize title = _title;
-@synthesize subtitle = _subtitle;
-@synthesize titleConstraintForNameAndEmail = _titleConstraintForNameAndEmail;
-@synthesize titleConstraintForEmailOnly = _titleConstraintForEmailOnly;
-@synthesize verticalConstraints = _verticalConstraints;
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];

@@ -16,11 +16,11 @@
 - (void)unifiedConsentViewControllerDidTapSettingsLink:
     (UnifiedConsentViewController*)controller;
 
-// Called when the user taps at |point| on the IdentityPickerView. |point| is in
-// the window coordinates.
-- (void)unifiedConsentViewControllerDidTapIdentityPickerView:
+// Called when the user taps at |point| on the IdentityButtonControl. |point| is
+// in the window coordinates.
+- (void)unifiedConsentViewControllerDidTapIdentityButtonControl:
             (UnifiedConsentViewController*)controller
-                                                     atPoint:(CGPoint)point;
+                                                        atPoint:(CGPoint)point;
 
 // Called when the user scrolls down to the bottom (or when the view controller
 // is loaded with no scroll needed).

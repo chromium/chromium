@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_picker_view.h"
+#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 
 #import <MaterialComponents/MaterialRipple.h>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_view.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
+#import "ios/chrome/browser/ui/authentication/views/identity_view.h"
+#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -22,7 +22,7 @@
 
 namespace {
 
-const CGFloat kIdentityPickerViewRadius = 8.;
+const CGFloat kIdentityButtonControlRadius = 8.;
 // Sizes.
 const CGFloat kArrowDownSize = 24.;
 // Distances/margins.
@@ -30,7 +30,7 @@ const CGFloat kArrowDownMargin = 12.;
 
 }  // namespace
 
-@interface IdentityPickerView ()
+@interface IdentityButtonControl ()
 
 @property(nonatomic, strong) IdentityView* identityView;
 // Ripple effect when the user starts or stop a touch in the view.
@@ -41,18 +41,18 @@ const CGFloat kArrowDownMargin = 12.;
 
 @end
 
-@implementation IdentityPickerView
+@implementation IdentityButtonControl
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.accessibilityIdentifier = kIdentityPickerViewIdentifier;
-    self.layer.cornerRadius = kIdentityPickerViewRadius;
+    self.accessibilityIdentifier = kIdentityButtonControlIdentifier;
+    self.layer.cornerRadius = kIdentityButtonControlRadius;
     self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
     // Adding view elements inside.
     // Ink view.
     _rippleView = [[MDCRippleView alloc] initWithFrame:CGRectZero];
-    _rippleView.layer.cornerRadius = kIdentityPickerViewRadius;
+    _rippleView.layer.cornerRadius = kIdentityButtonControlRadius;
     _rippleView.rippleStyle = MDCRippleStyleBounded;
     _rippleView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_rippleView];
@@ -93,7 +93,7 @@ const CGFloat kArrowDownMargin = 12.;
     ApplyVisualConstraintsWithMetrics(constraints, views, metrics);
 
     if (@available(iOS 13.4, *)) {
-        [self addInteraction:[[ViewPointerInteraction alloc] init]];
+      [self addInteraction:[[ViewPointerInteraction alloc] init]];
     }
 
     // Accessibility.
