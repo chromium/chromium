@@ -528,6 +528,9 @@ def _ParseOptions(argv):
   build_utils.AddDepfileOption(parser)
 
   parser.add_option('--target-name', help='Fully qualified GN target name.')
+  parser.add_option('--skip-build-server',
+                    action='store_true',
+                    help='Avoid using the build server.')
   parser.add_option(
       '--java-srcjars',
       action='append',
@@ -638,8 +641,10 @@ def main(argv):
   options, java_files = _ParseOptions(argv)
 
   # Only use the build server for errorprone runs.
-  if options.enable_errorprone and server_utils.MaybeRunCommand(
-      name=options.target_name, argv=sys.argv, stamp_file=options.jar_path):
+  if (options.enable_errorprone and not options.skip_build_server
+      and server_utils.MaybeRunCommand(name=options.target_name,
+                                       argv=sys.argv,
+                                       stamp_file=options.jar_path)):
     return
 
   colorama.init()

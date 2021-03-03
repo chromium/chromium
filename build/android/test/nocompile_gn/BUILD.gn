@@ -32,6 +32,9 @@ template("lint_test") {
     build_config_dep = "$_apk_target$build_config_target_suffix"
     build_config = get_label_info(_apk_target, "target_gen_dir") + "/" +
                    get_label_info(_apk_target, "name") + ".build_config"
+    if (enable_android_nocompile_tests) {
+      skip_build_server = true
+    }
   }
 }
 

@@ -14,6 +14,7 @@ android_library("no_redundant_field_init_check_int_test_java") {
   sources = [ empty_java ]
   if (enable_android_nocompile_tests) {
     sources += no_redundant_field_init_check_int_test_nocompile_sources
+    skip_build_server = true
   }
 }
 
@@ -23,6 +24,7 @@ android_library("test_class_name_check_test_java") {
   sources = [ empty_java ]
   if (enable_android_nocompile_tests) {
     sources += test_class_name_check_test_nocompile_sources
+    skip_build_server = true
   }
   deps = [
     "//base:base_java_test_support",

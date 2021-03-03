@@ -358,6 +358,9 @@ def _ParseArgs(argv):
   parser = argparse.ArgumentParser()
   build_utils.AddDepfileOption(parser)
   parser.add_argument('--target-name', help='Fully qualified GN target name.')
+  parser.add_argument('--skip-build-server',
+                      action='store_true',
+                      help='Avoid using the build server.')
   parser.add_argument('--lint-binary-path',
                       required=True,
                       help='Path to lint executable.')
@@ -437,8 +440,9 @@ def main():
   #              invocations.
   # Avoid parallelizing cache creation since lint runs without the cache defeat
   # the purpose of creating the cache in the first place.
-  if not args.create_cache and server_utils.MaybeRunCommand(
-      name=args.target_name, argv=sys.argv, stamp_file=args.stamp):
+  if (not args.create_cache and not args.skip_build_server
+      and server_utils.MaybeRunCommand(
+          name=args.target_name, argv=sys.argv, stamp_file=args.stamp)):
     return
 
   sources = []
