@@ -185,6 +185,7 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2239812875700136898">Controlla le notizie utilizzando il pulsante Opzioni per Discover</translation>
 <translation id="2259659629660284697">Esporta password…</translation>
 <translation id="2276696007612801991">Accedi al tuo Account Google per controllare le tue password</translation>
+<translation id="2278052315791335171">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Indirizzo di fatturazione</translation>
 <translation id="230115972905494466">Nessun dispositivo compatibile trovato</translation>
 <translation id="230155349749732438">Per utilizzare questa impostazione, l'opzione <ph name="BEGIN_LINK" />Migliora le ricerche e le attività di navigazione<ph name="END_LINK" /> deve essere attivata</translation>
@@ -355,6 +356,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3398320232533725830">Apri Gestione Preferiti</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
+<translation id="3440975416244667276">Tocca e tieni premuto per altre informazioni pertinenti</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
 <translation id="3451542610083122179">Privacy Sandbox è un'iniziativa in corso per preservare il Web aperto che contribuirà a proteggerti dai meccanismi di tracciamento.
 
@@ -946,6 +948,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7475688122056506577">Scheda SD non trovata. Potrebbero mancare alcuni dei tuoi file.</translation>
 <translation id="7479104141328977413">Gestione schede</translation>
 <translation id="7481312909269577407">Avanti</translation>
+<translation id="7481864133709957613">Per cercare da questa pagina, tocca e tieni premute le parole anziché toccarle</translation>
 <translation id="7482656565088326534">Scheda di anteprima</translation>
 <translation id="7484997419527351112">Discover - Disattivato</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ultimo aggiornamento: <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7514365320538308">Scarica</translation>
 <translation id="751961395872307827">Impossibile connettersi al sito</translation>
 <translation id="752220631458524187">Scollegati quando hai finito</translation>
+<translation id="7523960634226602883">Cerca con la fotocamera usando Google Lens</translation>
 <translation id="753225086557513863">Programmato più tardi</translation>
 <translation id="7559975015014302720">La modalità Lite non è attiva</translation>
 <translation id="7562080006725997899">Cancellazione dei dati di navigazione in corso</translation>

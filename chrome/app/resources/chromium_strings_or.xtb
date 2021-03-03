@@ -51,6 +51,7 @@
 <translation id="2770231113462710648">ଏଠାକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌କୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ:</translation>
 <translation id="2799223571221894425">ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2816712596130903444">Chromium ପ୍ରୋଫାଇଲକୁ ଅଲଗା କରିବେ?</translation>
+<translation id="2837693172913560447">ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="2847479871509788944">Chromiumରୁ କାଢ଼ିଦିଅନ୍ତୁ...</translation>
 <translation id="2885378588091291677">ଟାସ୍କ ପରିଚାଳକ</translation>
 <translation id="2910007522516064972">&amp;Chromium ବିଷୟରେ</translation>
@@ -125,6 +126,7 @@
 <translation id="4987820182225656817">କିଛି ପଛରେ ନଛାଡ଼ି ଅତିଥି Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="4994636714258228724">Chromium ସହ ନିଜକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5224391634244552924">ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ। ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ୍ କଲେ Chromium ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" /> ଏହି Chromium ପ୍ରୋଫାଇଲରେ ପୂର୍ବରୁ ସାଇନ୍ ଇନ୍ କରିସାରିଛନ୍ତି। ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="5277894862589591112">ଆପଣ କରିଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକୁ ଲାଗୁ କରିବା ପାଇଁ Chromiumକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="5358375970380395591">ଆପଣ ଏକ ପରିଚାଳିତ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି ଏବଂ ଏହାର ବ୍ୟବସ୍ଥାପକଙ୍କୁ ଆପଣଙ୍କ Chromium ପ୍ରୋଫାଇଲ୍‌ର ନିୟନ୍ତ୍ରଣ ଦେଇଛନ୍ତି। ଆପଣଙ୍କର Chromium ଡାଟା ଯେପରିକି, ଆପଣଙ୍କର ଆପ୍ସ, ବୁକ୍‌ମାର୍କଗୁଡ଼ିକ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ଏବଂ ଅନ୍ୟାନ୍ୟ ସେଟିଂସ୍ ସ୍ଥାୟୀରୂପେ <ph name="USER_NAME" />କୁ ଯୋଡ଼ି ହୋଇଯିବ। ଆପଣ ଏହି ଡାଟାକୁ Google ଆକାଉଣ୍ଟ ଡ୍ୟାସ୍‌ବୋର୍ଡ ମାଧ୍ୟମରେ ଡିଲିଟ୍ କରିପାରିବେ, କିନ୍ତୁ ଆପଣ ଏହି ଡାଟାକୁ ଅନ୍ୟ ଆକାଉଣ୍ଟ ସହିତ ଜଡ଼ିତ କରିପାରିବେ ନାହିଁ। <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium ଅପ୍‌ଡେଟ୍ ହେଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -233,6 +235,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7773960292263897147">ଚେତାବନୀ: ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ରେକର୍ଡିଂ କରିବାରୁ Chromium ଏକ୍ସଟେନ୍‍ସନ୍‌‌କୁ ରୋକିପାରିବ ନାହିଁ। ଇନ୍‌କଗ୍‌ନିଟୋ ମୋଡ୍‌ରେ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅକ୍ଷମ କରିବାକୁ, ଏହି ବିକଳ୍ପକୁ ବାଛନ୍ତୁ ନାହିଁ।</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium କେନେରୀ</translation>
 <translation id="7827169012280634081">ଆପଣ Chromiumରୁ ବାହାରିବା ସମୟରେ କୁକୀ ଏବଂ ସାଇଟ୍ ଡାଟାଗୁଡ଼ିକୁ ଖାଲି କରନ୍ତୁ</translation>
+<translation id="7828947555739565424">ଏହି ଡିଭାଇସରେ ଏହି ଆକାଉଣ୍ଟ ସହ ଏକ Chromium ପ୍ରୋଫାଇଲ୍ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="7857220146454061152">Chromiumର ଭବିଷ୍ୟତର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ OS X 10.11 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ OS X 10.10 ସଂସ୍କରଣ ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="7867198900892795913">Chromium ନବୀନତମ ସଂସ୍କରଣକୁ ଅପ୍‌ଡେଟ୍ ହୋଇପାରିବନାହିଁ, ତେଣୁ ଆପଣ ନୂତନ ବୈଶିଷ୍ଟ୍ୟ ଏବଂ ସୁରକ୍ଷା ସମାଧାନରୁ ବଞ୍ଚିତ ହୋଇଛନ୍ତି।</translation>
 <translation id="7898472181347242998">ଆପଣଙ୍କ ଡିଭାଇସ୍ ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି କି ନାହିଁ, ତାହା ଦେଖିବାକୁ <ph name="LINK_BEGIN" />Chromium OS ସେଟିଂସ୍‌<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ</translation>

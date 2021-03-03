@@ -295,6 +295,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2053111141626950936">Ez dira itzuliko <ph name="LANGUAGE" /> darabilten orriak.</translation>
 <translation id="2053553514270667976">Posta-kodea</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 iradokizun}other{# iradokizun}}</translation>
+<translation id="2071692954027939183">Automatikoki blokeatu dira jakinarazpenak, normalean ez dituzulako onartzen</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="20817612488360358">Erabiltzeko ezarri dira sistemaren proxy-ezarpenak, baina proxy-konfigurazio esplizitu bat ere zehaztu da.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /> emaitza</translation>
@@ -780,6 +781,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" tekla: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (gutun-azala)</translation>
 <translation id="4067947977115446013">Gehitu balio duen helbide bat</translation>
+<translation id="4072193657607981494">Gidalerroak kargatzen</translation>
 <translation id="4072486802667267160">Errore bat gertatu da eskaera prozesatzean. Saiatu berriro.</translation>
 <translation id="4075732493274867456">Bezeroak eta zerbitzariak ez dute onartzen SSL protokoloaren bertsio edo enkriptatze multzo arrunta.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -914,6 +916,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4510487217173779431">Chou4 (gutun-azala)</translation>
 <translation id="4515275063822566619">Chrome-tik eta zure Google-ko kontutik (<ph name="ACCOUNT_EMAIL" />) hartu dira txartelak eta helbideak. Kudeatu nahi badituzu, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="4517607026994743406">Comm-10 (gutun-azala)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4524138615196389145">Aurrerantzean, berretsi txartelak bizkorrago WebAuthn erabilita</translation>
 <translation id="4524805452350978254">Kudeatu txartelak</translation>
@@ -1335,6 +1338,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="614940544461990577">Konpontzeko, hauek egin ditzakezu:</translation>
 <translation id="6150036310511284407">Hiru zulo ezkerrean</translation>
 <translation id="6151417162996330722">Zerbitzariaren ziurtagiriak balio-aldi luzeegia du.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> hazbete (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Bidalketa-metodoak eta -eskakizunak ikusteko, hautatu helbide bat</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6169916984152623906">Modu pribatuan arakatu ahal izango duzu sarea, gailua erabiltzen duten gainerakoek zure jardueren berririk izan ez dezaten. Hala ere, deskargak eta laster-markak gordeta geratuko dira.</translation>
@@ -1883,6 +1887,7 @@ Xehetasun gehiago:
 <translation id="8364627913115013041">Ez da ezarri.</translation>
 <translation id="8368476060205742148">Google Play-ren zerbitzuak</translation>
 <translation id="8371889962595521444">Erroko ziurtagiri pertsonalizatuak</translation>
+<translation id="8374636051559112948">Aldakorra</translation>
 <translation id="8380941800586852976">Arriskutsua</translation>
 <translation id="8381674639488873545">Behin edo gehiagotan kobratzen saia liteke, eta baliteke zordunketa horiek begien bistakoak ez izatea. <ph name="BEGIN_LINK" />Erakutsi hala ere<ph name="END_LINK" />.</translation>
 <translation id="8390725133630534698">Administratzailearen gidalerroek blokeatu egin dute <ph name="ORIGIN_NAME" /> domeinuko edukia <ph name="VM_NAME" /> makinara partekatzeko aukera</translation>
@@ -2064,6 +2069,7 @@ Xehetasun gehiago:
 <translation id="9114524666733003316">Txartela berresten…</translation>
 <translation id="9114581008513152754">Arakatzailea ez du enpresa edo erakunde batek kudeatzen. Baliteke gailu honetako jarduerak Chrome-tik kanpo kudeatzea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Kargatuta</translation>
+<translation id="9128016270925453879">Kargatu dira gidalerroak</translation>
 <translation id="9128870381267983090">Konektatu sarera</translation>
 <translation id="9137013805542155359">Ikusi jatorrizkoa</translation>
 <translation id="9141013498910525015">Kudeatu helbideak</translation>

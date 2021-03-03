@@ -299,6 +299,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2053111141626950936">Sider på <ph name="LANGUAGE" /> oversettes ikke.</translation>
 <translation id="2053553514270667976">Postnummer</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}other{# forslag}}</translation>
+<translation id="2071692954027939183">Varsler ble blokkert automatisk fordi du vanligvis ikke tillater dem</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="20817612488360358">Innstillinger for systemmellomtjener er stilt inn på å brukes, men en uttrykkelig mellomtjenerkonfigurasjon er også angitt.</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
@@ -791,6 +792,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4058922952496707368">Nøkkel – «<ph name="SUBKEY" />»: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (konvolutt)</translation>
 <translation id="4067947977115446013">Du må angi en gyldig adresse</translation>
+<translation id="4072193657607981494">Laster inn regler</translation>
 <translation id="4072486802667267160">Det oppsto en feil under behandlingen av bestillingen din. Prøv på nytt.</translation>
 <translation id="4075732493274867456">Klienten og tjeneren støtter ingen felles SSL-protokollversjon eller -chifferserie.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -929,6 +931,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4510487217173779431">Chou4 (konvolutt)</translation>
 <translation id="4515275063822566619">Kortene og adressene er fra Chrome og Google-kontoen din (<ph name="ACCOUNT_EMAIL" />). Du kan administrere dem i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (konvolutt)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4524138615196389145">Bekreft kortene dine raskere ved å bruke WebAuthn fra nå av</translation>
 <translation id="4524805452350978254">Administrer kort</translation>
@@ -1351,6 +1354,7 @@ brukere av denne nettleseren.</translation>
 <translation id="614940544461990577">Prøv dette:</translation>
 <translation id="6150036310511284407">Tre hull venstre</translation>
 <translation id="6151417162996330722">Tjenersertifikatet har en gyldighetsperiode som er for lang.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tommer (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">For å se fraktmetoder og -krav, velg en adresse</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6169916984152623906">Nå kan du surfe privat. Andre som bruker denne enheten, ser ikke aktiviteten din, men nedlastinger og bokmerker blir lagret.</translation>
@@ -1898,6 +1902,7 @@ brukere av denne nettleseren.</translation>
 <translation id="8364627913115013041">Ikke angitt.</translation>
 <translation id="8368476060205742148">Google Play-tjenester</translation>
 <translation id="8371889962595521444">Tilpassede rotsertifikater</translation>
+<translation id="8374636051559112948">Varierer</translation>
 <translation id="8380941800586852976">Farlig</translation>
 <translation id="8381674639488873545">Disse belastningene kan skje én gang eller være gjentakende, og det er ikke sikkert de er åpenbare. <ph name="BEGIN_LINK" />Vis likevel<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME" /> er blokkert av en administratorregel</translation>
@@ -2079,6 +2084,7 @@ Mer informasjon:
 <translation id="9114524666733003316">Bekrefter kortet …</translation>
 <translation id="9114581008513152754">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chrome. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Opplastet</translation>
+<translation id="9128016270925453879">Regler er lastet inn</translation>
 <translation id="9128870381267983090">Koble til nettverk</translation>
 <translation id="9137013805542155359">Vis original</translation>
 <translation id="9141013498910525015">Administrer adresser</translation>

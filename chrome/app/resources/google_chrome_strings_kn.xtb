@@ -20,6 +20,7 @@
 <translation id="147727933880789532">ಈ ವಿಸ್ತರಣೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ ಏಕೆಂದರೆ ಇದು ಪ್ರಸ್ತುತ ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಮಾನದಂಡಗಳನ್ನು ಪೂರೈಸುತ್ತಿಲ್ಲ.</translation>
 <translation id="1516530951338665275">ಜೋಡಣೆಯನ್ನು ಮುಂದುವರಿಸಲು Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
+<translation id="1583073672411044740">ಈ Chrome ಪ್ರೊಫೈಲ್‌ಗೆ ಈಗಾಗಲೇ <ph name="EXISTING_USER" /> ಅವರು ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದಾರೆ. ಇದು <ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಹೊಸ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುತ್ತದೆ</translation>
 <translation id="1587223624401073077">Google Chrome ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ಅಪಾಯಕಾರಿಯಾಗಿದೆ, ಹಾಗಾಗಿ Chrome ಅದನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
 <translation id="1597911401261118146">ನಿಮ್ಮ ಇತರ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಡೇಟಾ ಉಲ್ಲಂಘನೆ ಮತ್ತು ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿವೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು, <ph name="BEGIN_LINK" />Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
@@ -114,6 +115,7 @@
 <translation id="3735758079232443276">ನೀವು Chrome ಪ್ರಾರಂಭಿಸಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆಯು ಬದಲಾಯಿಸಿದೆ.</translation>
 <translation id="3779473566290487688">ಭವಿಷ್ಯದ Google Chrome ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನಿಮಗೆ OS X 10.11 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಗಳ ಅಗತ್ಯವಿದೆ. ಈ ಕಂಪ್ಯೂಟರ್ OS X 10.10 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">ಇದು <ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಹೊಸ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುತ್ತದೆ</translation>
 <translation id="386202838227397562">ದಯವಿಟ್ಟು ಎಲ್ಲಾ Google Chrome ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3865754807470779944">Chrome ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3873044882194371212">ಲಿಂಕ್‌ ಅನ್ನು Chrome ಅ&amp;ದೃಶ್ಯ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -180,6 +182,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 ಸೆಕೆಂಡ್‌ನಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}one{Google Chrome # ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}other{Google Chrome # ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}}</translation>
 <translation id="573759479754913123">Chrome OS ಕುರಿತು</translation>
+<translation id="5756509061973259733">ಈ ಸಾಧನದಲ್ಲಿ ಈ ಖಾತೆಯೊಂದಿಗಿನ Chrome ಪ್ರೊಫೈಲ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5867197326698922595">Google Chrome, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>

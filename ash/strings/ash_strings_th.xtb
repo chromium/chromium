@@ -305,6 +305,7 @@
 <translation id="3571734092741541777">ตั้งค่า</translation>
 <translation id="3573179567135747900">เปลี่ยนกลับเป็น "<ph name="FROM_LOCALE" />" (จำเป็นต้องรีสตาร์ต)</translation>
 <translation id="3576141592585647168">เปลี่ยนแปลงเขตเวลา</translation>
+<translation id="3593039967545720377">เข้าถึงประวัติคลิปบอร์ดโดยกด <ph name="SHORTCUT_KEY_NAME" /> + V เพื่อดูคลิปบอร์ด คัดลอกรายการเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="3593646411856133110">เลื่อนขึ้นค้างไว้เพื่อดูแอปที่เปิดอยู่</translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="3604801046548457007">สร้างเดสก์ <ph name="DESK_TITILE" /> แล้ว</translation>
@@ -608,6 +609,7 @@
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6179832488876878285">คุณตรึงไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="622484624075952240">ลง</translation>
+<translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
 <translation id="6236290670123303279">จัดการการตั้งค่า</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">ล็อกไว้ที่แนวนอนแล้ว</translation>
@@ -731,6 +733,7 @@
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>
+<translation id="7360036564632145207">การเปลี่ยนการตั้งค่าการป้องกันการเข้าถึงข้อมูลของอุปกรณ์ต่อพ่วงช่วยเพิ่มประสิทธิภาพได้</translation>
 <translation id="7371404428569700291">หน้าต่างการบันทึก</translation>
 <translation id="7377169924702866686">Caps Lock เปิดอยู่</translation>
 <translation id="7378203170292176219">ลากเพื่อเลือกพื้นที่ที่จะบันทึก</translation>
@@ -789,6 +792,7 @@
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
 <translation id="7796353162336583443">แตะปุ่มสไตลัสในชั้นวางเพื่อจดโน้ต บันทึกภาพหน้าจอ ตลอดจนใช้ Google Assistant ตัวชี้เลเซอร์ หรือแว่นขยาย</translation>
 <translation id="7798302898096527229">กด Search หรือ Shift เพื่อยกเลิก</translation>
+<translation id="7807966291075028781">โหมดผู้มาเยือนไม่รองรับอุปกรณ์ต่อพ่วงเพื่อเหตุผลด้านความปลอดภัย</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> กับ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">สัญญาณแรง</translation>
 <translation id="7837740436429729974">หมดเวลา</translation>
@@ -857,6 +861,7 @@
 <translation id="8345019317483336363">เลือกหน้าต่าง <ph name="WINDOW_TITLE" /> ไว้</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>
 <translation id="8371779926711439835">ไปข้างหน้าทีละตัวอักษร</translation>
+<translation id="8371991222807690464">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัดเมื่อใช้โหมดผู้มาเยือน</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> นี้และโทรศัพท์จะเชื่อมต่อกันโดยอัตโนมัติ</translation>
 <translation id="8380784334203145311">ราตรีสวัสดิ์</translation>
 <translation id="8388750414311082622">นำพื้นที่ทำงานสุดท้ายออกไม่ได้</translation>

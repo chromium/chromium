@@ -22,6 +22,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="147727933880789532">Chrome-k luzapena desgaitzea gomendatzen du; izan ere, ez ditu betetzen Arakatze seguru hobetua eginbidearen arauak.</translation>
 <translation id="1516530951338665275">Google Chrome-k Bluetooth-a erabiltzeko baimena behar du parekatzen jarraitzeko. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Eguneratu Chrome</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> erabiltzaileak Chrome-ko profil honetan hasi du saioa dagoeneko. Chrome-ko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako.</translation>
 <translation id="1587223624401073077">Google Chrome kamera erabiltzen ari da.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> arriskutsua da; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="1597911401261118146">Pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chrome-n<ph name="END_LINK" />.</translation>
@@ -116,6 +117,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3735758079232443276"><ph name="EXTENSION_NAME" /> luzapenak aldatu egin du Chrome abiarazten duzunean agertzen den orria.</translation>
 <translation id="3779473566290487688">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, OS X 10.11 edo berriago bat beharko duzu. Ordenagailu hau OS X 10.10 erabiltzen ari da.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">Chrome-ko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
 <translation id="386202838227397562">Itxi Google Chrome leiho guztiak eta saiatu berriro.</translation>
 <translation id="3865754807470779944">Chrome-ren <ph name="PRODUCT_VERSION" /> bertsioa dago instalatuta</translation>
 <translation id="3873044882194371212">Ireki esteka Chrome-ko &amp;ezkutuko moduko leiho batean</translation>
@@ -187,6 +189,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{1 segundo barru berrabiaraziko da Google Chrome}other{# segundo barru berrabiaraziko da Google Chrome}}</translation>
 <translation id="573759479754913123">Chrome OS-i buruz</translation>
+<translation id="5756509061973259733">Badago kontu honen Chrome-ko profil bat gailu honetan</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Ezin izan da abiarazi Chrome. Saiatu berriro.</translation>
 <translation id="5867197326698922595">Pasahitzak editatzen saiatzen ari da Google Chrome.</translation>

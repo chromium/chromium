@@ -277,6 +277,7 @@
 <translation id="1393485621820363363">Stampanti aziendali associate ai dispositivi attive</translation>
 <translation id="1397855852561539316">URL di suggerimento del provider di ricerca predefinito</translation>
 <translation id="1413936351612032792">Segnala informazioni sull'utilizzo delle app Linux</translation>
+<translation id="1417888712677507140">Blocca le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="1418387035898607074">Salta i controlli di Navigazione sicura per i file scaricati da fonti attendibili</translation>
 <translation id="142346659686073702">Consenti agli utenti non affiliati di usare Crostini</translation>
 <translation id="1425551776320718592">Impedisci agli utenti di questo dispositivo di utilizzare il processo sideload ADB senza forzare la funzione Powerwash, che potrebbe lasciare il dispositivo in uno stato di sicurezza discutibile</translation>
@@ -377,6 +378,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1514888685242892912">Attiva <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">Attiva il menu Accessibilità mobile</translation>
 <translation id="1515824657887788963">Consenti a una pagina di fare richieste XHR sincrone durante l'uscita dalla pagina</translation>
+<translation id="1516486219683984217">Non consentire l'uso delle notifiche di sistema</translation>
 <translation id="1522425503138261032">Consenti ai siti di monitorare la posizione fisica degli utenti</translation>
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
@@ -2311,6 +2313,13 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="4121350739760194865">Impedisci la visualizzazione delle promozioni di applicazioni nella pagina Nuova scheda</translation>
 <translation id="4122473079291425973">La pagina Nuova scheda mostra le schede se sono disponibili contenuti, ma consente all'utente di modificare l'impostazione</translation>
+<translation id="4122565688998751716">Questo criterio è deprecato. Utilizza il criterio "<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />".
+
+Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche native su Linux.
+
+Se questo criterio viene impostato su Vero o se non viene impostato, <ph name="PRODUCT_NAME" /> potrà utilizzare notifiche native.
+
+Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non utilizzerà notifiche native. Il Centro messaggi di <ph name="PRODUCT_NAME" /> verrà utilizzato come riserva.</translation>
 <translation id="412697421478384751">Consenti agli utenti di impostare PIN non sicuri per la schermata di blocco</translation>
 <translation id="4138655880188755661">Limite di tempo</translation>
 <translation id="4147818922357566987">Attiva solo le varianti relative alle correzioni critiche</translation>
@@ -2819,6 +2828,12 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'audio in formato mono è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
+<translation id="4933301190614090397">Consente di controllare la durata (in secondi) consentita per le richieste keepalive alla chiusura del browser.
+
+      Se specificato, è possibile bloccare la chiusura del browser per un massimo di secondi specificati
+      al fine di elaborare le richieste keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
+
+      Il valore predefinito (0) significa che questa funzionalità è disattivata.</translation>
 <translation id="4942681160308347946">Se il criterio è impostato su True, la funzione di lettura vocale viene attivata nella schermata di accesso. Se il criterio è impostato su False, la funzione di lettura vocale viene disattivata nella schermata.
 
       Se imposti il criterio, gli utenti possono attivare o disattivare temporaneamente la funzione di lettura vocale. Quando la schermata di accesso viene ricaricata o rimane inattiva per un minuto, viene ripristinato lo stato originale della funzione.
@@ -2992,6 +3007,11 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="519247340330463721">Configura le norme relative alla Navigazione sicura.</translation>
 <translation id="5196520640744454600">Attiva i tasti permanenti nella schermata di accesso</translation>
 <translation id="5206454085187851382">Se per il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="5207543664699568887">Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche di sistema su Linux.
+
+Se questo criterio viene impostato su Vero o se non viene impostato, <ph name="PRODUCT_NAME" /> potrà utilizzare notifiche di sistema.
+
+Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non utilizzerà notifiche di sistema. Il Centro messaggi di <ph name="PRODUCT_NAME" /> verrà utilizzato come riserva.</translation>
 <translation id="5208675398826212411">Questo criterio consente di configurare il comportamento del reindirizzamento Intranet tramite controlli dell'intercettazione DNS. Lo scopo dei controlli è cercare di scoprire se il browser è protetto da un proxy che reindirizza i nomi host sconosciuti.
 
       Se questo criterio non viene impostato, il browser usa il comportamento predefinito dei controlli dell'intercettazione DNS e dei suggerimenti di reindirizzamento Intranet. In M88, queste funzionalità sono attive per impostazione predefinita, ma nella release futura saranno disattivate per impostazione predefinita.
@@ -3239,6 +3259,15 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
       Se il criterio viene attivato o non viene configurato, la funzionalità <ph name="PRODUCT_NAME" /> verrà attivata. Se il criterio viene disattivato, la funzionalità non sarà disponibile.
 
       Questo criterio aziendale è finalizzato al periodo di transizione e sarà disponibile almeno fino alla versione 93 di Chrome.</translation>
+<translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
+
+      Se viene selezionata l'opzione "Attiva" o se il criterio non viene impostato, è possibile aprire le pagine in modalità di navigazione in incognito.
+
+      Se viene selezionata l'opzione "Non attiva", non è possibile aprire le pagine in modalità di navigazione in incognito.
+
+      Se viene selezionata l'opzione "Forzata", è possibile aprire le pagine SOLTANTO in modalità di navigazione in incognito. Tieni presente che l'opzione "Forzata" non funziona per Android-on-Chrome.
+
+      Nota: su iOS, se il criterio viene modificato durante una sessione, avrà effetto solamente al riavvio.</translation>
 <translation id="5497565614013170656">Espressione regolare per trovare corrispondenze con l'ID stampante.</translation>
 <translation id="5499375345075963939">Questa norma è attiva soltanto in modalità retail.
 
@@ -3325,6 +3354,15 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5620392548325769024">Attiva la visualizzazione della pagina di benvenuto al primo avvio del browser successivo all'upgrade del sistema operativo</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
 <translation id="5633871703004128675">Attiva la funzione di accessibilità di evidenziazione del cursore di testo</translation>
+<translation id="5636088574608432506">Questo criterio consente di stabilire il comportamento di accesso del browser. Consente di specificare se l'utente può accedere a <ph name="PRODUCT_NAME" /> con il proprio account e usare i servizi correlati all'account come Sincronizzazione <ph name="PRODUCT_NAME" />.
+
+      Se il criterio viene impostato su "Disattiva accesso al browser", l'utente non potrà accedere al browser e usare i servizi basati sull'account. In questo caso, le funzionalità a livello di browser come Sincronizzazione <ph name="PRODUCT_NAME" /> non potranno essere usate e non saranno disponibili. Su <ph name="IOS_NAME" />, se il criterio viene impostato su "Disattivato" dopo che l'utente ha eseguito l'accesso, l'utente verrà scollegato immediatamente. Su altre piattaforme, l'utente verrà scollegato alla successiva esecuzione di <ph name="PRODUCT_NAME" />. Su tutte le piattaforme, i dati locali del profilo, come preferiti, password ecc., verranno mantenuti e potranno essere utilizzati. L'utente potrà comunque accedere e usare i servizi web di Google come Gmail.
+
+      Se il criterio viene impostato su "Attiva accesso al browser", l'utente potrà accedere al browser. Su tutte le piattaforme, tranne su <ph name="IOS_NAME" />, l'utente accede automaticamente al browser dopo che ha eseguito l'accesso a servizi web di Google come Gmail. Se viene eseguito l'accesso al browser, i dati dell'account dell'utente vengono memorizzati dal browser, ma la funzione Sincronizzazione <ph name="PRODUCT_NAME" /> non viene attivata per impostazione predefinita; per poter utilizzare questa funzionalità, l'utente deve attivarla separatamente. Se attivi questo criterio, l'utente non potrà disattivare l'impostazione che consente l'accesso al browser. Per gestire la disponibilità della funzione Sincronizzazione <ph name="PRODUCT_NAME" />, usa il criterio <ph name="SYNC_POLICY_NAME" />.
+
+      Se il criterio viene impostato su "Forza accesso al browser", all'utente verrà mostrata una finestra di dialogo di selezione dell'account, da cui dovrà scegliere un account a cui accedere per usare il browser. Questa misura garantisce l'applicazione, nell'ambito degli account gestiti, dei criteri associati all'account. La funzione Sincronizzazione <ph name="PRODUCT_NAME" /> viene attivata per impostazione predefinita per l'account, ad eccezione del caso in cui Sincronizzazione <ph name="PRODUCT_NAME" /> sia stata disattivata dall'amministratore di dominio o tramite il criterio <ph name="SYNC_POLICY_NAME" />. Il valore predefinito del criterio <ph name="GUEST_MODE_POLICY_NAME" /> sarà disattivato. Tieni presente che i profili esistenti a cui non viene eseguito l'accesso saranno bloccati e inaccessibili dopo l'attivazione di questo criterio. Per scoprire di più, leggi il seguente articolo del Centro assistenza: https://support.google.com/chrome/a/answer/7572556. Questa opzione non è supportata su <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> o <ph name="IOS_NAME" /> e, se utilizzata in tali ambienti, imposterà "Attiva accesso al browser".
+
+      Se questo criterio non è impostato, l'utente potrà decidere se attivare o meno l'opzione di accesso al browser nelle impostazioni di <ph name="PRODUCT_NAME" /> e di usarla in base alle necessità.</translation>
 <translation id="5641279111657132737">Questo criterio è deprecato. Usa il criterio "<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di specificare i server consentiti per l'autenticazione integrata. L'autenticazione integrata viene attivata soltanto quando <ph name="PRODUCT_NAME" /> riceve una richiesta di autenticazione da un proxy o da un server presente nell'elenco dei server consentiti.
@@ -4561,6 +4599,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Questo criterio può essere impostato soltanto dalla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Consenti l'attivazione delle notifiche Phone Hub</translation>
 <translation id="7249828445670652637">Attiva i certificati CA <ph name="PRODUCT_OS_NAME" /> per le app ARC</translation>
+<translation id="7251825257294351251">Consente le notifiche di sistema</translation>
 <translation id="7252681704926980614">Invia nome utente e nome file al server delle stampanti native per ogni processo di stampa. L'impostazione predefinita non prevede l'invio.
 
       Se imposti questa norma su true disattivi le stampanti che usano protocolli diversi da IPPS, USB o IPP-over-USB poiché il nome utente e il nome file non devono essere inviati nella rete in modo esplicito.</translation>
@@ -4815,6 +4854,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio viene impostato su Disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
+<translation id="7638764766629234761">Consenti l'uso delle notifiche di sistema</translation>
 <translation id="7643883929273267746">Limita gli account visibili in <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
 <translation id="7657261947024629645">Ottimizza per ottenere il massimo rendimento.</translation>
@@ -4912,6 +4952,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="776110834126722255">Deprecata</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
+<translation id="7774451488719504808">Come descritto alla pagina https://www.chromestatus.com/feature/5148698084376576, le finestre di dialogo modali JavaScript, attivate da <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> e <ph name="JS_PROMPT" /> saranno bloccate in <ph name="PRODUCT_NAME" /> se attivate da un frame secondario la cui origine è diversa dall'origine del frame principale.
+       Questo criterio consente di eseguire l'override di tale modifica.
+       Se il criterio viene impostato su attivato o non viene impostato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa vengono bloccate.
+       Se il criterio viene impostato su disattivato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa non vengono bloccate.</translation>
 <translation id="7774768074957326919">Utilizza le impostazioni proxy di sistema</translation>
 <translation id="777734450201217641">Consente di attivare le scorciatoie delle funzioni di accessibilità nella schermata di accesso.
 
@@ -5029,6 +5073,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7904177352786629708">Impostando il criterio su Attivato, la ricerca CNAME viene saltata. Il nome del server viene utilizzato come valore inserito durante la generazione del Kerberos SPN.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la ricerca CNAME determina il nome canonico del server durante la generazione del Kerberos SPN.</translation>
+<translation id="7906983682927840536">Recupera la durata del keepalive alla chiusura</translation>
 <translation id="7908384265697653397">Il periodo di tempo, in giorni, trascorso il quale l'utente viene disconnesso dall'account se la versione di <ph name="PRODUCT_OS_NAME" /> è precedente a quella specificata nel criterio <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="7912255076272890813">Configura tipi di app/estensioni consentiti</translation>
 <translation id="791267408364877739">Mostra avvisi di sicurezza quando vengono usati flag della riga di comando potenzialmente pericolosi</translation>
@@ -5276,6 +5321,7 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Attiva l'interfaccia utente relativa alla connessione sul computer desktop host quando è attiva una connessione</translation>
 <translation id="8274603902181597201">Cancella la home directory ecryptfs dell'utente e inizia con una nuova home directory criptata tramite ext4</translation>
+<translation id="8278133379873210419">Elimina le finestre di dialogo JavaScript attivate da frame secondari di origine diversa</translation>
 <translation id="8284296539558710573">Prompt di autenticazione HTTP multiorigine</translation>
 <translation id="8284527236880877730">Se il criterio <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> è impostato su Disattivato, la configurazione del criterio <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> consente di specificare la percentuale di regolazione del ritardo di oscuramento dello schermo quando il dispositivo è in modalità di presentazione. Quando il ritardo di oscuramento dello schermo viene regolato, i ritardi di spegnimento, blocco e inattività dello schermo vengono regolati per mantenere gli stessi distacchi dal ritardo di oscuramento dello schermo impostato in origine.
 
@@ -5554,6 +5600,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8705895771006864851">Se il criterio viene impostato su True, agli utenti viene fornita una funzionalità di traduzione, quando opportuno, tramite una barra degli strumenti di traduzione integrata in <ph name="PRODUCT_NAME" /> e un'opzione di traduzione nel menu contestuale visualizzabile facendo clic con il pulsante destro del mouse. Se il criterio viene impostato su False, tutte le funzionalità di traduzione integrate vengono disattivate.
 
       Se imposti il criterio, gli utenti non possono modificare questa funzione. Se non viene impostato, gli utenti possono cambiare l'impostazione.</translation>
+<translation id="8715885991031124968">Consenti le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="8720547069538712402">Consenti all'utente di attivare o disattivare il controllo ortografico</translation>
 <translation id="8736538322216687231">Imponi livello minimo della Modalità con restrizioni di YouTube</translation>
 <translation id="8745669971728319820">Questo criterio consente di stabilire se segnalare o meno le informazioni relative a estensioni e plug-in.

@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Portal Terbolot</translation>
 <translation id="2008685064673031089">Carian nombor perdana</translation>
 <translation id="2080070583977670716">Lagi tetapan</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB daripada <ph name="TOTAL_MEMORY" /> GB tersedia</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">BERBARIS GILIR</translation>
 <translation id="2161394479394250669">Batalkan tugas cetak</translation>
+<translation id="2217935453350629363">Kelajuan semasa</translation>
 <translation id="2224337661447660594">Tiada Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Status pengaktifan</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4429881212383817840">Tiket Kerberos akan tamat tempoh tidak lama lagi</translation>
+<translation id="4431821876790500265">Lihat laporan</translation>
 <translation id="445059817448385655">Kata laluan lama</translation>
 <translation id="4453205916657964690">Topeng subnet</translation>
 <translation id="4454245904991689773">Imbas dan simpan pada</translation>
@@ -175,6 +178,8 @@
 <translation id="4932733599132424254">Tarikh</translation>
 <translation id="498186245079027698">Periksa pengimbas dan cuba lagi. Pastikan terdapat ruang setempat yang mencukupi untuk menyimpan fail yang diimbas.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
+<translation id="4987769320337599931">Tembok api</translation>
+<translation id="4999333166442584738">Sembunyikan laporan</translation>
 <translation id="500920857929044050">Hentikan ujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Nama kumpulan</translation>

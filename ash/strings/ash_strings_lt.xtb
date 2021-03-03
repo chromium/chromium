@@ -609,6 +609,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6179832488876878285">Čia galite prisegti svarbius failus. Jei norite pradėti, atidarykite Failų programą.</translation>
 <translation id="622484624075952240">Žemiau</translation>
+<translation id="6231419273573514727">Išorinių įrenginių našumas gali būti apribotas</translation>
 <translation id="6236290670123303279">Tvarkyti nustatymus</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Užrakinta horizontali padėtis</translation>
@@ -732,6 +733,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7346909386216857016">Gerai, supratau</translation>
 <translation id="7348093485538360975">Ekraninė klaviatūra</translation>
 <translation id="735745346212279324">VPN atjungtas</translation>
+<translation id="7360036564632145207">Našumą gali pavykti optimizuoti pakeičiant duomenų prieigos apsaugos išoriniams įrenginiams nustatymą</translation>
 <translation id="7371404428569700291">Įrašymo langas</translation>
 <translation id="7377169924702866686">Įjungtas didžiųjų raidžių klavišas.</translation>
 <translation id="7378203170292176219">Vilkdami pasirinkite norimą įrašyti vietą</translation>
@@ -790,6 +792,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7780159184141939021">Ekrano pasukimas</translation>
 <translation id="7796353162336583443">Palieskite rašiklio mygtuką lentynoje, kad galėtumėte sukurti užrašą, ekrano kopiją, naudoti „Google“ padėjėją, lazerinį žymeklį arba didinamąjį stiklą.</translation>
 <translation id="7798302898096527229">Jei norite atšaukti, paspauskite paieškos klavišą arba „Shift“.</translation>
+<translation id="7807966291075028781">Saugumo sumetimais išorinis įrenginys nepalaikomas svečio režimu</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />:<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Stiprus signalas</translation>
 <translation id="7837740436429729974">Laikas baigėsi</translation>
@@ -858,6 +861,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8345019317483336363">Pasirinktas langas „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="8351131234907093545">Sukurti užrašą</translation>
 <translation id="8371779926711439835">Eiti pirmyn per vieną raidę</translation>
+<translation id="8371991222807690464">Svečio režimu išorinio įrenginio našumas gali būti apribotas</translation>
 <translation id="8375916635258623388">Šis „<ph name="DEVICE_NAME" />“ įrenginys ir telefonas bus susieti automatiškai</translation>
 <translation id="8380784334203145311">Labanakt,</translation>
 <translation id="8388750414311082622">Negalima pašalinti paskutinio pulto.</translation>

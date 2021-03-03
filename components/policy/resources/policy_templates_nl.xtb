@@ -277,6 +277,7 @@
 <translation id="1393485621820363363">Zakelijke apparaatprinters ingeschakeld</translation>
 <translation id="1397855852561539316">Voorgestelde URL voor standaardzoekprovider</translation>
 <translation id="1413936351612032792">Informatie over gebruik van Linux-apps rapporteren</translation>
+<translation id="1417888712677507140">JavaScript-dialoogvensters blokkeren als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
 <translation id="1418387035898607074">Safe Browsing-checks overslaan voor bestanden die worden gedownload van vertrouwde bronnen</translation>
 <translation id="142346659686073702">Toestaan dat niet-gelieerde gebruikers Crostini gebruiken</translation>
 <translation id="1425551776320718592">Voorkomen dat gebruikers van dit apparaat ADB-sideloading gebruiken zonder een Powerwash af te dwingen, waardoor het apparaat een twijfelachtige beveiligingsstatus kan krijgen</translation>
@@ -377,6 +378,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="1514888685242892912"><ph name="PRODUCT_NAME" /> inschakelen</translation>
 <translation id="1515230621229117540">Hiermee wordt het zwevende toegankelijkheidsmenu ingeschakeld</translation>
 <translation id="1515824657887788963">Hiermee wordt toegestaan dat een pagina synchrone XHR-verzoeken verstuurt tijdens de afwijzing van de pagina.</translation>
+<translation id="1516486219683984217">Systeemmeldingen niet toestaan</translation>
 <translation id="1522425503138261032">Sites toestaan de fysieke locatie van gebruikers bij te houden</translation>
 <translation id="1523774894176285446">Alternatieve browser die wordt gestart voor geconfigureerde websites.</translation>
 <translation id="152657506688053119">Lijst met alternatieve URL's voor de standaardzoekprovider</translation>
@@ -2301,6 +2303,13 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="4121350739760194865">Voorkomen dat app-promoties worden weergegeven op de pagina 'Nieuw tabblad'</translation>
 <translation id="4122473079291425973">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is, maar gebruikers mogen deze instelling wijzigen</translation>
+<translation id="4122565688998751716">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />.
+
+Bepaalt of <ph name="PRODUCT_NAME" /> op Linux systeemeigen meldingen gebruikt.
+
+Als dit beleid is ingesteld op True of niet is ingesteld, mag <ph name="PRODUCT_NAME" /> systeemeigen meldingen gebruiken.
+
+Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen systeemeigen meldingen. Het berichtencentrum van <ph name="PRODUCT_NAME" /> wordt gebruikt als reserve.</translation>
 <translation id="412697421478384751">Gebruikers toestaan om zwakke pincodes in te stellen als pincode voor het vergrendelscherm</translation>
 <translation id="4138655880188755661">Tijdslimiet</translation>
 <translation id="4147818922357566987">Varianten alleen inschakelen voor essentiële oplossingen</translation>
@@ -2806,6 +2815,11 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
           Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, is monogeluid in eerste instantie uitgeschakeld op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment inschakelen.</translation>
+<translation id="4933301190614090397">Beheert hoelang (in seconden) keepalive-verzoeken toegestaan blijven als de browser wordt afgesloten.
+
+      Als hiervoor een waarde is opgegeven, wordt gedurende het opgegeven aantal seconden voorkomen dat de browser afsluit, zodat keepalive-verzoeken (https://fetch.spec.whatwg.org/#request-keepalive-flag) kunnen worden verwerkt.
+
+      De standaardwaarde (0) betekent dat deze functie niet wordt gebruikt.</translation>
 <translation id="4942681160308347946">Als je het beleid instelt op True, wordt gesproken feedback ingeschakeld op het inlogscherm. Als je het beleid instelt op False, wordt gesproken feedback uitgeschakeld op het scherm.
 
       Als je dit beleid instelt, kunnen gebruikers gesproken feedback tijdelijk in- of uitschakelen. Als het inlogscherm opnieuw wordt geladen of een minuut lang niet wordt gebruikt, wordt de oorspronkelijke status hersteld.
@@ -2980,6 +2994,11 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="519247340330463721">Beleid met betrekking tot Safe Browsing configureren.</translation>
 <translation id="5196520640744454600">Plaktoetsen op het inlogscherm inschakelen</translation>
 <translation id="5206454085187851382">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID's overeenkomen met de waarden in dit beleid, zijn beschikbaar voor de gebruiker. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="5207543664699568887">Bepaalt of <ph name="PRODUCT_NAME" /> op Linux systeemmeldingen gebruikt.
+
+Als dit beleid is ingesteld op True of niet is ingesteld, mag <ph name="PRODUCT_NAME" /> systeemmeldingen gebruiken.
+
+Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen systeemmeldingen. Het berichtencentrum van <ph name="PRODUCT_NAME" /> wordt gebruikt als reserve.</translation>
 <translation id="5208675398826212411">Met dit beleid configureer je het gedrag voor intranetomleiding via controles voor DNS-onderschepping. Deze controles proberen te achterhalen of er een proxy achter de browser zit die als omleiding naar onbekende hostnamen dient.
 
       Als je dit beleid niet instelt, gebruikt de browser het standaardgedrag voor controles voor DNS-onderschepping en suggesties voor intranetomleidingen. In M88 zijn ze standaard aangezet, maar ze worden standaard uitgezet in een toekomstige release.
@@ -3229,6 +3248,15 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je dit beleid toepast of niet instelt, wordt de <ph name="PRODUCT_NAME" />-functie uitgezet. Als je het beleid niet hebt toegepast, is de functie ook niet beschikbaar.
 
       Dit bedrijfsbeleid is voor kortdurende aanpassing en is ten minste beschikbaar tot Chrome 93.</translation>
+<translation id="5494322570831642650">Specificeert of de gebruiker pagina's mag openen in de incognitomodus in <ph name="PRODUCT_NAME" />.
+
+      Als dit beleid wordt toegepast of niet is ingesteld, kunnen pagina's worden geopend in de incognitomodus.
+
+      Als dit beleid niet wordt toegepast, kunnen pagina's niet worden geopend in de incognitomodus.
+
+      Als dit beleid wordt afgedwongen, kunnen pagina's UITSLUITEND worden geopend in de incognitomodus. De optie Afgedwongen werkt niet voor Android in Chrome.
+
+Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sessie, treedt de aanpassing pas in werking na een herstart.</translation>
 <translation id="5497565614013170656">Reguliere expressie die moet overeenkomen met de printer-ID.</translation>
 <translation id="5499375345075963939">Dit beleid is alleen actief in de commerciële modus.
 
@@ -3315,6 +3343,15 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="5620392548325769024">Inschakelen dat de welkomstpagina wordt weergegeven bij de eerste keer opstarten van de browser na een upgrade van het besturingssysteem</translation>
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
 <translation id="5633871703004128675">De toegankelijkheidsfunctie voor markering van het caret-teken inschakelen</translation>
+<translation id="5636088574608432506">Dit beleid bepaalt het inloggedrag van de browser. Je kunt instellen of de gebruiker met het eigen account kan inloggen bij <ph name="PRODUCT_NAME" /> en accountgerelateerde services kan gebruiken, zoals <ph name="PRODUCT_NAME" />-synchronisatie.
+
+      Als het beleid is ingesteld op 'Inloggen bij browser uitschakelen', kan de gebruiker niet inloggen bij de browser en geen accountgebaseerde services gebruiken. Functies op browserniveau (zoals <ph name="PRODUCT_NAME" />-synchronisatie) kunnen in dit geval niet worden gebruikt en zijn niet beschikbaar. Voor <ph name="IOS_NAME" /> geldt dat als de gebruiker was ingelogd en het beleid niet wordt toegepast, de gebruiker meteen wordt uitgelogd. Op andere platforms wordt de gebruiker uitgelogd zodra deze <ph name="PRODUCT_NAME" /> weer gebruikt. Op alle platforms blijven de lokale profielgegevens van de gebruiker (zoals bookmarks en wachtwoorden) behouden en kan de gebruiker deze blijven gebruiken. De gebruiker kan nog steeds inloggen bij en gebruikmaken van Google-webservices zoals Gmail.
+
+      Als het beleid is ingesteld op 'Inloggen bij browser inschakelen', mag de gebruiker inloggen bij de browser. Op alle platforms behalve <ph name="IOS_NAME" /> wordt automatisch ingelogd bij de browser als de gebruiker is ingelogd bij Google-webservices zoals Gmail. Als een gebruiker wordt ingelogd bij de browser, betekent dit dat de accountgegevens van de gebruiker worden bewaard door de browser. Het betekent niet dat <ph name="PRODUCT_NAME" />-synchronisatie standaard wordt toegepast. De gebruiker moet zich afzonderlijk aanmelden voor gebruik van deze functie. Als dit beleid wordt toegepast, kan de gebruiker de instelling die inloggen bij de browser toestaat, niet uitzetten. Gebruik het beleid <ph name="SYNC_POLICY_NAME" /> om de beschikbaarheid van <ph name="PRODUCT_NAME" />-synchronisatie te beheren.
+
+      Als het beleid is ingesteld op 'Gebruikers dwingen in te loggen om de browser te gebruiken', krijgt de gebruiker een dialoogvenster voor accountselectie te zien en moet deze een account kiezen en inloggen om de browser te gebruiken. Dit zorgt ervoor dat voor beheerde accounts de aan het account gekoppelde beleidsregels worden toegepast en afgedwongen. Hiermee wordt <ph name="PRODUCT_NAME" />-synchronisatie standaard toegepast op het account, behalve als <ph name="PRODUCT_NAME" />-synchronisatie is uitgezet door de domeinbeheerder of via het beleid <ph name="SYNC_POLICY_NAME" />. <ph name="GUEST_MODE_POLICY_NAME" /> wordt standaard niet toegepast. Bestaande, niet-ingelogde profielen worden vergrendeld en zijn niet meer toegankelijk als dit beleid wordt toegepast. Bekijk dit Helpcentrum-artikel voor meer informatie: https://support.google.com/chrome/a/answer/7572556. Deze optie wordt niet ondersteund voor <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> of <ph name="IOS_NAME" />. Als deze optie toch wordt gebruikt, wordt de reserveoptie 'Inloggen bij browser inschakelen' toegepast.
+
+      Als dit beleid niet is ingesteld, kan de gebruiker naar eigen inzicht via de instellingen van <ph name="PRODUCT_NAME" /> bepalen of deze de optie voor inloggen bij de browser wil toepassen.</translation>
 <translation id="5641279111657132737">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid '<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />'.
 
       Als je het beleid instelt, geef je aan welke servers op de toelatingslijst voor geïntegreerde verificatie moeten worden gezet. Geïntegreerde verificatie is alleen ingeschakeld als <ph name="PRODUCT_NAME" /> een verificatie-uitdaging ontvangt van een proxy of een server die op deze toelatingslijst staat.
@@ -4546,6 +4583,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Toestaan dat Phone Hub-meldingen worden aangezet.</translation>
 <translation id="7249828445670652637">CA-certificaten van <ph name="PRODUCT_OS_NAME" /> voor ARC-apps inschakelen</translation>
+<translation id="7251825257294351251">Systeemmeldingen toestaan</translation>
 <translation id="7252681704926980614">Gebruikersnaam en bestandsnaam bij elke afdruktaak naar systeemeigen printerserver verzenden. De standaardinstelling is om deze gegevens niet te verzenden.
 
       Als je dit beleid instelt op 'true', worden printers die andere protocollen dan IPPS, USB of IPP-over-USB ondersteunen, ook uitgeschakeld omdat gebruikersnaam en bestandsnaam niet openbaar moeten worden verzonden via het netwerk.</translation>
@@ -4801,6 +4839,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
       Als je het beleid uitschakelt, wordt er in plaats daarvan altijd een bericht weergegeven als gebruikers acties uitvoeren die een dialoogvenster voor het selecteren van bestanden aanroepen, zoals bookmarks importeren, bestanden uploaden en links opslaan. Er wordt vanuit gegaan dat de gebruiker op Annuleren heeft geklikt in het dialoogvenster voor het selecteren van bestanden.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
+<translation id="7638764766629234761">Systeemmeldingen toestaan</translation>
 <translation id="7643883929273267746">Accounts die zichtbaar zijn in <ph name="PRODUCT_NAME" /> beperken</translation>
 <translation id="7648907905084499629">Gedrag van <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> voor cookies op alle sites gebruiken</translation>
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
@@ -4897,6 +4936,10 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="776110834126722255">Beëindigd</translation>
 <translation id="7763614521440615342">Contentsuggesties weergeven op de nieuwe tabbladpagina</translation>
 <translation id="7765879851993224640">Toestaan dat Smart Lock Signin wordt gebruikt</translation>
+<translation id="7774451488719504808">Zoals wordt beschreven in https://www.chromestatus.com/feature/5148698084376576, worden modulaire JavaScript-dialoogvensters die worden geactiveerd door <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> en <ph name="JS_PROMPT" />, geblokkeerd in <ph name="PRODUCT_NAME" /> als ze worden geactiveerd vanuit een subframe waarvan de oorsprong verschilt van de oorsprong van de hoofdframe.
+       Met dit beleid kun je die wijziging overschrijven.
+       Als je het beleid toepast of niet instelt, worden JavaScript-dialoogvensters geblokkeerd als ze afkomstig zijn van een subframe met een andere oorsprong.
+       Als je het beleid niet toepast, worden JavaScript-dialoogvensters niet geblokkeerd, zelfs niet als ze afkomstig zijn van een subframe met een andere oorsprong.</translation>
 <translation id="7774768074957326919">Proxyinstellingen van het systeem gebruiken</translation>
 <translation id="777734450201217641">Schakel snelkoppelingen voor toegankelijkheidsfuncties in op het inlogscherm.
 
@@ -5014,6 +5057,7 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="7904177352786629708">Als je het beleid inschakelt, wordt CNAME-lookup overgeslagen. De servernaam wordt gebruikt zoals deze is opgegeven tijdens het genereren van de Kerberos SPN.
 
       Als je het beleid uitschakelt of niet instelt, wordt de canonieke naam van de server bepaald tijdens het genereren van de Kerberos SPN.</translation>
+<translation id="7906983682927840536">Keepalive-duur bij afsluiten ophalen</translation>
 <translation id="7908384265697653397">Tijd in dagen waarna de gebruiker wordt uitgelogd als de <ph name="PRODUCT_OS_NAME" />-versie lager is dan de opgegeven <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /></translation>
 <translation id="7912255076272890813">Toegestane typen apps/extensies configureren</translation>
 <translation id="791267408364877739">Beveiligingswaarschuwingen weergeven als er mogelijk schadelijke opdrachtregelmarkeringen worden gebruikt</translation>
@@ -5266,6 +5310,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Verbindingsgerelateerde UI inschakelen op de hostdesktop als er een verbinding actief is</translation>
 <translation id="8274603902181597201">De eCryptfs-hoofdmap van de gebruiker wissen en beginnen met een nieuwe hoofdmap die is versleuteld met ext4</translation>
+<translation id="8278133379873210419">JavaScript-dialoogvensters onderdrukken als deze worden geactiveerd vanaf een subframe met een andere oorsprong</translation>
 <translation id="8284296539558710573">Cross-origin-prompts voor HTTP-verificatie</translation>
 <translation id="8284527236880877730">Als <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> is uitgeschakeld, stel je met <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> het percentage in waarmee de dimperiode van het scherm wordt geschaald als met het apparaat wordt gepresenteerd. Als de dimperiode van het scherm wordt geschaald, blijven de perioden tot het scherm uitgaat, het scherm wordt vergrendeld en inactiviteit wordt geactiveerd, gelijk aan de periode voor het dimmen van het scherm die je oorspronkelijk had ingesteld.
 
@@ -5544,6 +5589,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8705895771006864851">Als je het beleid instelt op True, wordt gebruikers vertaalfunctionaliteit geboden als dit gepast is. Hiervoor wordt een geïntegreerde vertaalwerkbalk weergegeven in <ph name="PRODUCT_NAME" /> en een vertaaloptie in het contextmenu als je klikt met de rechtermuisknop. Als je het beleid instelt op False, worden alle ingebouwde vertaalfuncties uitgeschakeld.
 
       Als je het beleid instelt, kunnen gebruikers deze functie niet wijzigen. Als je het niet instelt, kunnen ze de instelling wel wijzigen.</translation>
+<translation id="8715885991031124968">JavaScript-dialoogvensters toestaan als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
 <translation id="8720547069538712402">Toestaan dat gebruikers de spellingcontrole in- of uitschakelen</translation>
 <translation id="8736538322216687231">Minimale 'Beperkte modus' op YouTube afdwingen</translation>
 <translation id="8745669971728319820">Met dit beleid wordt bepaald of informatie over extensies en plug-ins moet worden gerapporteerd.

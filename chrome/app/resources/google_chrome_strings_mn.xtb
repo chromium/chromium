@@ -23,6 +23,7 @@
 <translation id="1516530951338665275">Үргэлжлүүлэн хослуулахын тулд Google Chrome-д Bluetooth-н 
 хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome-г шинэчлэх</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> Chrome-н энэ профайлд аль хэдийн нэвтэрсэн байна. Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
 <translation id="1587223624401073077">Google Chrome нь таны камерыг ашиглаж байна.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> аюултай тул үүнийг Chrome блок хийсэн.</translation>
 <translation id="1597911401261118146">Нууц үгнүүддээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
@@ -117,6 +118,7 @@
 <translation id="3735758079232443276">"<ph name="EXTENSION_NAME" />" өргөтгөл нь таныг Chrome-г эхлүүлэх үед хуудсанд харагдах зүйлийг өөрчилсөн.</translation>
 <translation id="3779473566290487688">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд OS X 10.11 буюу түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер OS X 10.10 хувилбарыг ашиглаж байна.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
 <translation id="386202838227397562">Бүх Google Chrome-ын цонхнуудыг хааж дахин оролдоно уу.</translation>
 <translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> хувилбарыг суулгасан</translation>
 <translation id="3873044882194371212">Холбоосыг Chrome-н нууцлалтай цонхонд нээх</translation>
@@ -188,6 +190,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5690427481109656848">Google ХХК</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 секундийн дараа дахин эхэлнэ}other{Google Chrome # секундийн дараа дахин эхэлнэ}}</translation>
 <translation id="573759479754913123">Chrome үйлдлийн системийн тухай</translation>
+<translation id="5756509061973259733">Энэ бүртгэлтэй Chrome-н профайл аль хэдийн энэ төхөөрөмж дээр байна</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Канари</translation>
 <translation id="5804318322022881572">Chrome-г эхлүүлж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="5867197326698922595">Google Chrome нь нууц үгсийг засах гэж оролдож байна.</translation>

@@ -305,6 +305,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3573179567135747900">Endre tilbake til <ph name="FROM_LOCALE" /> (krever omstart)</translation>
 <translation id="3576141592585647168">Endre tidssonen</translation>
+<translation id="3593039967545720377">Åpne utklippstavleloggen ved å trykke på <ph name="SHORTCUT_KEY_NAME" /> + V for å se utklippstavlen. Kopiér et element for å komme i gang.</translation>
 <translation id="3593646411856133110">Sveip opp og hold for å se åpne apper</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="3604801046548457007">Opprettet skrivebord <ph name="DESK_TITILE" /></translation>
@@ -608,6 +609,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6179832488876878285">Du kan feste viktige filer her. Åpne Filer-appen for å komme i gang.</translation>
 <translation id="622484624075952240">Ned</translation>
+<translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>
 <translation id="6236290670123303279">Administrer innstillinger</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Låst til horisontal</translation>
@@ -731,6 +733,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7346909386216857016">Greit</translation>
 <translation id="7348093485538360975">Skjermtastatur</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
+<translation id="7360036564632145207">Hvis du endrer innstillingen for datatilgangsbeskyttelse for eksterne enheter, kan det optimalisere ytelsen</translation>
 <translation id="7371404428569700291">Ta opp vinduet</translation>
 <translation id="7377169924702866686">Caps Lock er på.</translation>
 <translation id="7378203170292176219">Dra for å velge området du vil ta opp</translation>
@@ -789,6 +792,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7780159184141939021">Rotér skjermen</translation>
 <translation id="7796353162336583443">Trykk på pekepenn-knappen på hyllen for å gjøre et notat, ta en skjermdump eller bruke Google-assistenten, laserpekeren eller forstørrelsesglasset.</translation>
 <translation id="7798302898096527229">Trykk på Søk eller Shift for å avbryte</translation>
+<translation id="7807966291075028781">Av sikkerhetsårsaker støttes ikke den eksterne enheten i Gjestemodus</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterkt signal</translation>
 <translation id="7837740436429729974">Tiden er ute</translation>
@@ -857,6 +861,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
 <translation id="8351131234907093545">Opprett et notat</translation>
 <translation id="8371779926711439835">Én bokstav frem</translation>
+<translation id="8371991222807690464">Ytelsen til den eksterne enheten kan være begrenset i Gjestemodus</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> og telefonen din kobles sammen automatisk</translation>
 <translation id="8380784334203145311">God natt</translation>
 <translation id="8388750414311082622">Det siste skrivebordet kan ikke fjernes.</translation>

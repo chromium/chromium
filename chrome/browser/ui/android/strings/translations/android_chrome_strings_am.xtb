@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">ከአማራጮች ለምርምር አዝራሩ ሆነው የእርስዎን ዘገባዎች ይቆጣጠሩ</translation>
 <translation id="2259659629660284697">የይለፍ ቃላትን ወደ ውጭ ላክ...</translation>
 <translation id="2276696007612801991">የይለፍ ቃላትዎን ለመፈተሽ ወደ Google መለያዎ ይግቡ</translation>
+<translation id="2278052315791335171">ይህን የይለፍ ቃል መሰረዝ <ph name="SITE" /> ላይ መለያዎን አይሰርዘውም</translation>
 <translation id="2286841657746966508">የመላኪያ አድራሻ</translation>
 <translation id="230115972905494466">ምንም ተኳሃኝ መሣሪያዎች አልተገኙም</translation>
 <translation id="230155349749732438">ይህን ቅንብር ለመጠቀም <ph name="BEGIN_LINK" />ፍለጋዎችን እና አሰሳን የተሻለ አድርግ<ph name="END_LINK" /> መብራት አለበት</translation>
@@ -355,6 +356,7 @@
 <translation id="3398320232533725830">የዕልባቶች አስተዳዳሪን ክፈት</translation>
 <translation id="3414952576877147120">መጠን፦</translation>
 <translation id="3429160811076349561">የሙከራ ባህሪዎች ጠፍተዋል</translation>
+<translation id="3440975416244667276">ተጨማሪ ተዛማጅ መረጃ ለማግኘት ይንኩ እና ይያዙ</translation>
 <translation id="3443221991560634068">የአሁኑን ገጽ ዳግም ጫን</translation>
 <translation id="3451542610083122179">የግላዊነት ማጠሪያ እርስዎን ከመከታተያ ዘዴዎች ለመጠበቅ የሚያግዝ ክፍት ድርን ለመጠበቅ ቀጣይነት ያለው ተነሳሽነት ነው።
 
@@ -946,6 +948,7 @@
 <translation id="7475688122056506577">ኤስዲ ካርድ አልተገኘም። አንዳንዶቹ ፋይሎችዎ ሊጎድሉ ይችላሉ።</translation>
 <translation id="7479104141328977413">የትር አስተዳደር</translation>
 <translation id="7481312909269577407">ወደ ፊት</translation>
+<translation id="7481864133709957613">ከዚህ ገጽ ለመፈለግ ቃላትን መታ ከማድረግ ይልቅ ይንኩ እና ይያዙ</translation>
 <translation id="7482656565088326534">የቅድመ-እይታ ትር</translation>
 <translation id="7484997419527351112">ምርምር - ጠፍቷል</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (የተዘመነው በ<ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="751961395872307827">ከበይነመረቡ ጋር መገናኘት አልተቻለም</translation>
 <translation id="752220631458524187">ሲጨርሱ ግንኙነቱን ያቋርጡ</translation>
+<translation id="7523960634226602883">Google ሌንስን በመጠቀም በካሜራዎ ይፈልጉ</translation>
 <translation id="753225086557513863">ለበኋላ መርሐግብር ተይዞለታል</translation>
 <translation id="7559975015014302720">ቀላል ሁነታ ጠፍቷል</translation>
 <translation id="7562080006725997899">የአሰሳ ውሂብን በማጽዳት ላይ</translation>

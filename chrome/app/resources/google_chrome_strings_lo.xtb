@@ -23,6 +23,7 @@
 <translation id="1516530951338665275">Google Chrome ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
  ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບໂປຣໄຟລ໌ Chrome ນີ້ຢູ່ກ່ອນແລ້ວ. ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chrome ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ກໍາລັງໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
 <translation id="1597911401261118146">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
@@ -117,6 +118,7 @@
 <translation id="3735758079232443276">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນສິ່ງທີ່ໜ້າສະແດງຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນ Chrome​.</translation>
 <translation id="3779473566290487688">ເພື່ອຮັບການອັບເດດ Google Chrome ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ OS X 10.11 ຫຼື ໃໝ່ກວ່າ. ຄອມພິວເຕີນີ້ກຳລັງໃຊ້ OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chrome ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">ກະລຸນາປິດທຸກວິນໂດ Google Chrome ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="3865754807470779944">ຕິດຕັ້ງ Chrome ເວີຊັນ <ph name="PRODUCT_VERSION" /> ແລ້ວ</translation>
 <translation id="3873044882194371212">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chrome</translation>
@@ -188,6 +190,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ຈະປິດແລ້ວເປີດໃໝ່ໃນ 1 ວິນາທີ}other{Google Chrome ຈະປິດແລ້ວເປີດໃໝ່ໃນ # ວິນາທີ}}</translation>
 <translation id="573759479754913123">ກ່ຽວ​ກັບ Chrome OS</translation>
+<translation id="5756509061973259733">ມີໂປຣໄຟລ໌ Chrome ກັບບັນຊີນີ້ຢູ່ອຸປະກອນນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">ບໍ່ສາມາດເປີດໃຊ້ Chrome. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="5867197326698922595">Google Chrome ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ.</translation>

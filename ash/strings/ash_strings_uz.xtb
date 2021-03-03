@@ -609,6 +609,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6179832488876878285">Bu yerga muhim fayllarni mahkamlash mumkin. Boshlash uchun Files ilovasini oching.</translation>
 <translation id="622484624075952240">Pastga</translation>
+<translation id="6231419273573514727">Tashqi qurilmalar samaradorligi cheklanishi mumkin</translation>
 <translation id="6236290670123303279">Sozlamalarni boshqarish</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Gorizontal holatda qulflangan</translation>
@@ -732,6 +733,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Ekran klaviaturasi</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
+<translation id="7360036564632145207">Samaradorlikni oshirish uchun tashqi qurilmalarga maʼlumotlaringizga kirish huquqlarini oʻzgartiring</translation>
 <translation id="7371404428569700291">Yozib olish oynasi</translation>
 <translation id="7377169924702866686">Caps Lock yoniq.</translation>
 <translation id="7378203170292176219">Yozib olinadigan hududni tanlash uchun suring</translation>
@@ -790,6 +792,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7780159184141939021">Ekranni burish</translation>
 <translation id="7796353162336583443">Eslatma va skrinshotlar olish hamda assistent, lazerli kursor yoki lupadan foydalanish uchun javondagi stilus tugmasini bosing.</translation>
 <translation id="7798302898096527229">Bekor qilish uchun Qidiruv yoki Shift tugmasini bosing.</translation>
+<translation id="7807966291075028781">Xavfsizlik sabablariga koʻra mehmon rejimida tashqi qurilmalar ishlamaydi</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal kuchli</translation>
 <translation id="7837740436429729974">Vaqt tugadi</translation>
@@ -858,6 +861,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> oynasi tanlandi</translation>
 <translation id="8351131234907093545">Qayd yaratish</translation>
 <translation id="8371779926711439835">Bitta harf oldinga</translation>
+<translation id="8371991222807690464">Mehmon rejimida tashqi qurilmalar samaradorligi cheklanishi mumkin</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> telefonga avtomatik ulanadi</translation>
 <translation id="8380784334203145311">Xayrli tun,</translation>
 <translation id="8388750414311082622">Oxirgi qolgan ish stolini olib tashlash mumkin emas.</translation>

@@ -609,6 +609,7 @@
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6179832488876878285">აქ შეგიძლიათ მნიშვნელოვანი ფაილების ჩამაგრება. დასაწყებად გახსენით ფაილების აპი.</translation>
 <translation id="622484624075952240">ქვემოთ</translation>
+<translation id="6231419273573514727">შესაძლოა, პერიფერიული მოწყობილობების წარმადობა შეზღუდული იყოს</translation>
 <translation id="6236290670123303279">პარამეტრების მართვა</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">ჩაკეტილია ჰორიზონტალურზე</translation>
@@ -732,6 +733,7 @@
 <translation id="7346909386216857016">კარგი, გასაგებია</translation>
 <translation id="7348093485538360975">ეკრანული კლავიატურა</translation>
 <translation id="735745346212279324">VPN გამორთულია</translation>
+<translation id="7360036564632145207">პერიფერიული მოწყობილობებისთვის მონაცემებზე წვდომის დაცვის პარამეტრების შეცვლით შესაძლებელია წარმადობის ოპტიმიზაცია</translation>
 <translation id="7371404428569700291">ფანჯრის ჩაწერა</translation>
 <translation id="7377169924702866686">Caps Lock ჩართულია.</translation>
 <translation id="7378203170292176219">ჩავლებით გადაიტანეთ, ჩასაწერი არე რომ აირჩიოთ</translation>
@@ -790,6 +792,7 @@
 <translation id="7780159184141939021">ეკრანის ბრუნვა</translation>
 <translation id="7796353162336583443">რაიმეს ჩასანიშნად, ეკრანის ანაბეჭდის გადასაღებად, ასევე Google ასისტენტის, ლაზერული მიმთითებლის ან გამადიდებელი შუშის გამოსაყენებლად შეეხეთ სტილუსის ღილაკს.</translation>
 <translation id="7798302898096527229">გასაუქმებლად დააჭირეთ Search ან Shift კლავიშს.</translation>
+<translation id="7807966291075028781">პერიფერიული მოწყობილობა მხარდაუჭერელია სტუმრის რეჟიმში, უსაფრთხოების მოსაზრებებიდან გამომდინარე</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> და <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">სიგნალი ძლიერია</translation>
 <translation id="7837740436429729974">დრო ამოიწურა</translation>
@@ -858,6 +861,7 @@
 <translation id="8345019317483336363">არჩეულია ფანჯარა „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="8351131234907093545">ჩანიშვნის შექმნა</translation>
 <translation id="8371779926711439835">ერთი ასოთი წინ</translation>
+<translation id="8371991222807690464">პერიფერიული მოწყობილობების წარმადობა, შესაძლოა, შეზღუდული იყოს სტუმრის რეჟიმში</translation>
 <translation id="8375916635258623388">ეს <ph name="DEVICE_NAME" /> და თქვენი ტელეფონი ავტომატურად დაკავშირდება</translation>
 <translation id="8380784334203145311">ღამე მშვიდობის,</translation>
 <translation id="8388750414311082622">ბოლო სამუშაო მაგიდის ამოშლა ვერ მოხერხდა.</translation>

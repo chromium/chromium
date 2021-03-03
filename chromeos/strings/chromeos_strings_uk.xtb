@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Адаптивний портал</translation>
 <translation id="2008685064673031089">Пошук Prime</translation>
 <translation id="2080070583977670716">Більше налаштувань</translation>
+<translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">У ЧЕРЗІ</translation>
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
+<translation id="2217935453350629363">Поточна швидкість</translation>
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус активації</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мій диск</translation>
 <translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
+<translation id="4431821876790500265">Переглянути звіт</translation>
 <translation id="445059817448385655">Старий пароль</translation>
 <translation id="4453205916657964690">Маска підмережі</translation>
 <translation id="4454245904991689773">Зберегти зіскановані файли в</translation>
@@ -175,6 +178,8 @@
 <translation id="4932733599132424254">Дата</translation>
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4985509611418653372">Виконати</translation>
+<translation id="4987769320337599931">Брандмауер</translation>
+<translation id="4999333166442584738">Сховати звіт</translation>
 <translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Назва групи</translation>

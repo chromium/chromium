@@ -185,6 +185,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2239812875700136898">Über die Schaltfläche "Optionen für Discover" können Sie festlegen, welche Meldungen Ihnen angezeigt werden</translation>
 <translation id="2259659629660284697">Passwörter exportieren…</translation>
 <translation id="2276696007612801991">Melden Sie sich in Ihrem Google-Konto an, um Ihre Passwörter zu prüfen</translation>
+<translation id="2278052315791335171">Durch das Entfernen dieses Passworts wird Ihr <ph name="SITE" />-Konto nicht gelöscht</translation>
 <translation id="2286841657746966508">Rechnungsadresse</translation>
 <translation id="230115972905494466">Keine kompatiblen Geräte gefunden</translation>
 <translation id="230155349749732438">Für diese Einstellung muss <ph name="BEGIN_LINK" />Suchanfragen und das Surfen verbessern<ph name="END_LINK" /> aktiviert sein</translation>
@@ -355,6 +356,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3398320232533725830">Lesezeichen-Manager öffnen</translation>
 <translation id="3414952576877147120">Größe:</translation>
 <translation id="3429160811076349561">Testfunktionen sind deaktiviert</translation>
+<translation id="3440975416244667276">Für relevantere Informationen berühren und halten</translation>
 <translation id="3443221991560634068">Aktuelle Seite neu laden</translation>
 <translation id="3451542610083122179">Privacy Sandbox ist eine fortlaufende Initiative zum Erhalt des offenen Webs, um Sie vor Tracking-Mechanismen zu schützen.
 
@@ -946,6 +948,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7475688122056506577">SD-Karte nicht gefunden. Einige Ihrer Dateien fehlen möglicherweise.</translation>
 <translation id="7479104141328977413">Tab-Verwaltung</translation>
 <translation id="7481312909269577407">Vorwärts</translation>
+<translation id="7481864133709957613">Wenn Sie auf dieser Seite ein Wort suchen möchten, berühren und halten Sie es, statt darauf zu tippen</translation>
 <translation id="7482656565088326534">Vorschau-Tab</translation>
 <translation id="7484997419527351112">Discover – aus</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (aktualisiert <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="751961395872307827">Keine Verbindung zur Website möglich</translation>
 <translation id="752220631458524187">Wenn Sie fertig sind, können Sie die Verbindung trennen</translation>
+<translation id="7523960634226602883">Mit Ihrer Kamera über Google Lens suchen</translation>
 <translation id="753225086557513863">Für später geplant</translation>
 <translation id="7559975015014302720">Lite-Modus ist deaktiviert</translation>
 <translation id="7562080006725997899">Browserdaten werden gelöscht</translation>

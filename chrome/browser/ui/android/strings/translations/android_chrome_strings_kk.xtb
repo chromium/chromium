@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">Жаңалықтарды "Discover опциялары" түймесі арқылы басқарыңыз</translation>
 <translation id="2259659629660284697">Құпия сөздерді экспорттау...</translation>
 <translation id="2276696007612801991">Құпия сөзіңізді тексеру үшін Google есептік жазбаңызға кіріңіз.</translation>
+<translation id="2278052315791335171">Құпия сөзді жойсаңыз да, <ph name="SITE" /> сайтындағы есептік жазбаңыз жойылмайды.</translation>
 <translation id="2286841657746966508">Төлем мекенжайы</translation>
 <translation id="230115972905494466">Үйлесімді құрылғылар табылмады</translation>
 <translation id="230155349749732438">Осы параметрді пайдалану үшін <ph name="BEGIN_LINK" />Іздеу мен браузерді пайдалану мүмкіндігін жақсартуға көмектесу<ph name="END_LINK" /> параметрі қосулы болуы қажет.</translation>
@@ -355,6 +356,7 @@
 <translation id="3398320232533725830">Бетбелгі менеджерін ашу</translation>
 <translation id="3414952576877147120">Көлемі:</translation>
 <translation id="3429160811076349561">Сынақ нұсқасының функциялары өшірулі</translation>
+<translation id="3440975416244667276">Басқа сәйкес ақпарат алу үшін түртіп ұстап тұрыңыз.</translation>
 <translation id="3443221991560634068">Ағымдағы бетті жаңарту</translation>
 <translation id="3451542610083122179">Privacy Sandbox — сізді бақылау механизмдерінен қорғауға көмектесетін әрі интернетті ашық қолдануға мүмкіндік беретін технология.
 
@@ -946,6 +948,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7475688122056506577">SD картасы табылмады. Кейбір файлдарыңыз жоқ болуы мүмкін.</translation>
 <translation id="7479104141328977413">Қойындыны басқару</translation>
 <translation id="7481312909269577407">Басқаға жіберу</translation>
+<translation id="7481864133709957613">Бұл беттен іздеу үшін сөздерді түртудің орнына басып ұстап тұрыңыз.</translation>
 <translation id="7482656565088326534">"Алдын ала қарау" қойындысы</translation>
 <translation id="7484997419527351112">Discover – өшірулі</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Жаңартылған <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="751961395872307827">Сайтқа қосылу мүмкін емес</translation>
 <translation id="752220631458524187">Дайын болғанда, ажыратыңыз.</translation>
+<translation id="7523960634226602883">Google Lens арқылы камерамен іздеу</translation>
 <translation id="753225086557513863">Кейінірекке жоспарлау</translation>
 <translation id="7559975015014302720">Lite режимі өшірулі</translation>
 <translation id="7562080006725997899">Шолу деректерін тазалау</translation>

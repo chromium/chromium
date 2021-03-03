@@ -299,6 +299,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2053111141626950936">Halaman dalam <ph name="LANGUAGE" /> tidak akan diterjemah.</translation>
 <translation id="2053553514270667976">Poskod</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 cadangan}other{# cadangan}}</translation>
+<translation id="2071692954027939183">Pemberitahuan disekat secara automatik kerana biasanya anda tidak membenarkan pemberitahuan</translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="20817612488360358">Tetapan proksi sistem telah sedia untuk digunakan tetapi konfigurasi proksi jelas juga telah ditentukan.</translation>
 <translation id="2082238445998314030">Hasil carian <ph name="RESULT_NUMBER" /> daripada <ph name="TOTAL_RESULTS" /></translation>
@@ -792,6 +793,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4058922952496707368">Kekunci "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Sampul Surat)</translation>
 <translation id="4067947977115446013">Tambahkan Alamat yang Sah</translation>
+<translation id="4072193657607981494">Memuatkan dasar</translation>
 <translation id="4072486802667267160">Ralat berlaku semasa memproses pesanan anda. Sila cuba lagi.</translation>
 <translation id="4075732493274867456">Pelanggan dan pelayan tidak menyokong versi protokol SSL atau set sifer biasa.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -930,6 +932,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4510487217173779431">Chou4 (Sampul Surat)</translation>
 <translation id="4515275063822566619">Kad dan alamat adalah daripada Chrome dan Akaun Google anda (<ph name="ACCOUNT_EMAIL" />). Anda boleh mengurus kad dan alamat ini dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (Sampul Surat)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Butiran</translation>
 <translation id="4524138615196389145">Sahkan kad anda dengan lebih cepat dengan menggunakan WebAuthn mulai sekarang</translation>
 <translation id="4524805452350978254">Urus kad</translation>
@@ -1352,6 +1355,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="614940544461990577">Cuba:</translation>
 <translation id="6150036310511284407">Tiga tebukan kiri</translation>
 <translation id="6151417162996330722">Sijil pelayan mempunyai tempoh sah yang terlalu panjang.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> dalam (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Pilih alamat untuk melihat kaedah dan syarat penghantaran</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6169916984152623906">Kini, anda boleh menyemak imbas secara sulit dan orang lain yang menggunakan peranti ini tidak akan melihat aktiviti anda. Namun begitu, muat turun dan penanda halaman akan disimpan.</translation>
@@ -1900,6 +1904,7 @@ Butiran tambahan:
 <translation id="8364627913115013041">Tidak ditetapkan.</translation>
 <translation id="8368476060205742148">Perkhidmatan Google Play</translation>
 <translation id="8371889962595521444">Sijil akar tersuai</translation>
+<translation id="8374636051559112948">Berbeza-beza</translation>
 <translation id="8380941800586852976">Berbahaya</translation>
 <translation id="8381674639488873545">Caj ini mungkin caj sekali atau caj berulang dan mungkin tidak ketara. <ph name="BEGIN_LINK" />Tunjukkan juga<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Perkongsian daripada <ph name="ORIGIN_NAME" /> kepada <ph name="VM_NAME" /> telah disekat oleh dasar pentadbir</translation>
@@ -2082,6 +2087,7 @@ Butiran tambahan:
 <translation id="9114524666733003316">Mengesahkan kad...</translation>
 <translation id="9114581008513152754">Penyemak imbas ini tidak diurus oleh syarikat atau organisasi lain. Aktiviti pada peranti ini mungkin diurus di luar Chrome. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Dimuat naik</translation>
+<translation id="9128016270925453879">Dasar dimuatkan</translation>
 <translation id="9128870381267983090">Sambung ke rangkaian</translation>
 <translation id="9137013805542155359">Paparkan asal</translation>
 <translation id="9141013498910525015">Urus alamat</translation>

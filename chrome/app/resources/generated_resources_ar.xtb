@@ -257,7 +257,6 @@
 <translation id="1275718070701477396">محدد</translation>
 <translation id="1276994519141842946">تعذّر إلغاء تثبيت <ph name="APP_NAME" />.</translation>
 <translation id="1277020343994096713">يجب إنشاء رقم تعريف شخصي جديد يختلف عن رقم التعريف الشخصي الحالي.</translation>
-<translation id="1278703349931574538">إدارة جهات الاتصال</translation>
 <translation id="127946606521051357">هناك جهاز قريب يشارك محتوى</translation>
 <translation id="1280820357415527819">جارٍ البحث عن شبكات الجوّال</translation>
 <translation id="1280965841156951489">تعديل الملفات</translation>
@@ -1142,7 +1141,6 @@
 <translation id="2256115617011615191">إعادة التشغيل الآن</translation>
 <translation id="2257053455312861282">تتيح إضافة حساب مؤسسة تعليمية للطلاب سهولة تسجيل الدخول إلى المواقع الإلكترونية والإضافات والتطبيقات حتى إذا كانت أدوات الرقابة الأبوية مفعَّلة.</translation>
 <translation id="2261323523305321874">أجرى المشرف تغييرًا عبر النظام بأكمله يعمل على إيقاف بعض الملفات الشخصية القديمة.</translation>
-<translation id="2262332168014443534">‏يعمل الوضع البسيط الآن على جعل التصفُّح أسرع في جميع الصفحات، بما في ذلك HTTPS.</translation>
 <translation id="2262477216570151239">تأخير قبل التكرار</translation>
 <translation id="2262888617381992508">المواقع الإلكترونية التي لا يُسمح لها بتشغيل المحتوى المحمي</translation>
 <translation id="2263189956353037928">الخروج وإعادة تسجيل الدخول</translation>
@@ -1497,7 +1495,6 @@
 <translation id="265390580714150011">قيمة الحقل</translation>
 <translation id="2654166010170466751">السماح للمواقع الإلكترونية بتثبيت معالجات الدفع</translation>
 <translation id="2654553774144920065">طلب طباعة</translation>
-<translation id="2657807507504044638">‏ما مِن ملفات شخصية متوفِّرة لشريحة eSIM. يمكنك تنزيل ملف شخصي جديد <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />تختلف الميزات حسب الجهاز</translation>
 <translation id="2659971421398561408">‏تغيير حجم قرص نظام التشغيل Crostini</translation>
 <translation id="2660779039299703961">حدث</translation>
@@ -3039,7 +3036,6 @@
 <translation id="4416582610654027550">‏يُرجى كتابة عنوان URL صالح</translation>
 <translation id="4419409365248380979">السماح للموقع <ph name="HOST" /> بتعيين ملفات تعريف الارتباط دومًا</translation>
 <translation id="4419610272958564173">جهاز غير معروف (المورّد: <ph name="VENDOR_ID" />، المنتج: <ph name="PRODUCT_ID" />)</translation>
-<translation id="4421167684395067330">حدثت مشكلة أثناء الاتصال. يُرجى التواصل مع <ph name="CARRIER_NAME" /> للحصول على المساعدة.</translation>
 <translation id="4421932782753506458">الانتفاش</translation>
 <translation id="4423376891418188461">استعادة الإعدادات</translation>
 <translation id="442397852638519243">يا <ph name="USER_NAME" />، يطلب منك مشرفك تغيير كلمة المرور.</translation>
@@ -3051,7 +3047,6 @@
 <translation id="4434045419905280838">النوافذ المنبثقة وإعادة التوجيه</translation>
 <translation id="443454694385851356">قديم (غير آمن)</translation>
 <translation id="443475966875174318">تحديث التطبيقات غير المتوافقة أو إزالتها</translation>
-<translation id="4436063104263971834">‏ما مِن ملفات شخصية متوفِّرة لشريحة SIM. يمكنك إنشاء ملف شخصي جديد <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
 <translation id="4438043733494739848">شفاف</translation>
 <translation id="4438639467177774583">‏سيتم حفظ كلمة مرور <ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> في حسابك على Google، <ph name="ACCOUNT" />.</translation>
 <translation id="4439427728133035643">اتصال الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، الاتصال</translation>
@@ -5927,7 +5922,6 @@
 <translation id="7775694664330414886">تم نقل علامة التبويب إلى مجموعة لم تتم تسميتها وتحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="7776156998370251340">سيتمكّن <ph name="ORIGIN" /> من الاطّلاع على الملفات في <ph name="FOLDERNAME" /> إلى أن يتم إغلاق جميع علامات تبويب هذا الموقع الإلكتروني.</translation>
 <translation id="7776701556330691704">لم يتم العثور على الإعدادات الصوتية في ميزة "تحويل النص إلى كلام"</translation>
-<translation id="7780252971640011240">حدثت مشكلة أثناء الاتصال. يُرجى الاتصال بمشغّل شبكة الجوّال للحصول على المساعدة.</translation>
 <translation id="7781335840981796660">ستتم إزالة جميع حسابات المستخدمين والبيانات المحلية.</translation>
 <translation id="7782102568078991263">‏ليس هناك المزيد من الاقتراحات من Google</translation>
 <translation id="7782717250816686129">يمكنك تخزين البيانات الثابتة في شاشة تسجيل الدخول وإدخال بيانات الاعتماد في الجلسة.</translation>

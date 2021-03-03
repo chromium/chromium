@@ -295,6 +295,7 @@
 <translation id="2053111141626950936"><ph name="LANGUAGE" />ରେ ଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକ ଅନୁବାଦ କରାଯିବ ନାହିଁ।</translation>
 <translation id="2053553514270667976">ZIP କୋଡ୍</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1ଟି ପରାମର୍ଶ}other{#ଟି ପରାମର୍ଶ}}</translation>
+<translation id="2071692954027939183">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦେଉନଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକୁ ସ୍ୱଚାଳିତ ଭାବରେ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2079545284768500474">ପୂର୍ବବତ୍</translation>
 <translation id="20817612488360358">ସିଷ୍ଟମ୍ ପ୍ରକ୍ସି ସେଟିଂସ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ ଅଛି କିନ୍ତୁ ଏକ ସୁନିର୍ଦ୍ଦିଷ୍ଟ ପ୍ରକ୍ସି କନ୍‌ଫିଗ୍‌ରେସନ୍ ମଧ୍ୟ ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />ର <ph name="RESULT_NUMBER" />ଟି ଫଳାଫଳ</translation>
@@ -781,6 +782,7 @@
 <translation id="4058922952496707368">କୀ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ଏନଭଲପ୍)</translation>
 <translation id="4067947977115446013">ବୈଧ ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="4072193657607981494">ନୀତିଗୁଡ଼ିକ ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="4072486802667267160">ଆପଣଙ୍କର ଅର୍ଡର୍ ପ୍ରକ୍ରିୟାକରଣ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ହୋଇଛି। ଦୟାକରି ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4075732493274867456">କ୍ଲାଏଣ୍ଟ ଓ ସର୍ଭର୍ ଏକ ସାଧାରଣ SSL ପ୍ରୋଟୋକଲ୍ ସଂସ୍କରଣ କିମ୍ବା ସାଇଫର୍ ସୁଟ୍‍ର ସମର୍ଥନ କରନ୍ତି ନାହିଁ।</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -915,6 +917,7 @@
 <translation id="4510487217173779431">Chou4 (ଏନଭଲପ୍)</translation>
 <translation id="4515275063822566619">କାର୍ଡ ଓ ଠିକଣାଗୁଡ଼ିକ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ (<ph name="ACCOUNT_EMAIL" />)ରୁ ଆସିଛି। ଆପଣ ସେଗୁଡ଼ିକୁ <ph name="BEGIN_LINK" />ସେଟିଂସ୍‍<ph name="END_LINK" />ରେ ପରିଚାଳନ କରିପାରିବେ।</translation>
 <translation id="4517607026994743406">Comm-10 (ଏନଭଲପ୍)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ମି.ମି. (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">ବିବରଣୀ</translation>
 <translation id="4524138615196389145">ବର୍ତ୍ତମାନ ଠାରୁ WebAuthn ବ୍ୟବହାର କରି ଆପଣଙ୍କର କାର୍ଡଗୁଡ଼ିକୁ ଅତି ଶୀଘ୍ର ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="4524805452350978254">କାର୍ଡଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -1336,6 +1339,7 @@
 <translation id="614940544461990577">ଏହାକୁ ପରଖନ୍ତୁ:</translation>
 <translation id="6150036310511284407">ବାମ ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
 <translation id="6151417162996330722">ସର୍ଭର ସାର୍ଟିଫିକେଟ୍‌ର ବୈଧତା ଅବଧି ବହୁତ ଲମ୍ବା ଅଟେ।</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ଇଞ୍ଚ (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">ସିପିଂ ପଦ୍ଧତି ଏବଂ ଆବଶ୍ୟକତାଗୁଡ଼ିକ ଦେଖିବାକୁ, ଗୋଟିଏ ଠିକଣା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6169916984152623906">ଏବେ ଆପଣ ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ଏହି ଡିଭାଇସ୍‍କୁ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟ ଲୋକମାନେ ଆପଣଙ୍କର ଗତିବିଧି ଦେଖିପାରିବେ ନାହିଁ। ତେବେ, ଡାଉନ୍‍‍ଲୋଡ୍ ଓ ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ସେଭ୍ କରାଯିବ।</translation>
@@ -1884,6 +1888,7 @@
 <translation id="8364627913115013041">ସେଟ୍ ହୋଇନାହିଁ।</translation>
 <translation id="8368476060205742148">Google Play ସେବା</translation>
 <translation id="8371889962595521444">କଷ୍ଟମ୍ ରୁଟ୍ ସାର୍ଟିଫିକେଟ୍</translation>
+<translation id="8374636051559112948">ଭିନ୍ନ ହୋଇଥାଏ</translation>
 <translation id="8380941800586852976">ବିପଜ୍ଜନକ</translation>
 <translation id="8381674639488873545">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ହୋ‍ଇନପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା <ph name="ORIGIN_NAME" />ରୁ <ph name="VM_NAME" />କୁ ସେୟାର୍ କରିବା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -2065,6 +2070,7 @@
 <translation id="9114524666733003316">କାର୍ଡ ସୁନିଶ୍ଚିତ କରାଯାଉଛି...</translation>
 <translation id="9114581008513152754">ଏହି ବ୍ରାଉଜର୍ ଏକ କମ୍ପାନୀ କିମ୍ବା ଅନ୍ୟ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ ହେଉନାହିଁ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପକୁ Chromeର ବାହାରେ ପରିଚାଳନା କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">ଅପଲୋଡ୍ କରାଯାଇଛି</translation>
+<translation id="9128016270925453879">ନୀତିଗୁଡ଼ିକ ଲୋଡ୍ ହୋଇଛି</translation>
 <translation id="9128870381267983090">ନେଟ୍‌ୱର୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9137013805542155359">ମୂଳ ଲେଖା ଦେଖାନ୍ତୁ</translation>
 <translation id="9141013498910525015">ଠିକଣାଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>

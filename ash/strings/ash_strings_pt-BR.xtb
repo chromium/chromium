@@ -609,6 +609,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6179832488876878285">Fixe seus arquivos importantes aqui. Abra o app Arquivos para começar.</translation>
 <translation id="622484624075952240">Seta para baixo</translation>
+<translation id="6231419273573514727">O desempenho dos periféricos pode ser limitado</translation>
 <translation id="6236290670123303279">Gerenciar configurações</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Bloqueado na horizontal</translation>
@@ -732,6 +733,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="7346909386216857016">Ok, entendi.</translation>
 <translation id="7348093485538360975">Teclado virtual</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
+<translation id="7360036564632145207">Mudar sua configuração de proteção de acesso a dados para periféricos pode otimizar o desempenho</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7377169924702866686">O Caps Lock está ativado.</translation>
 <translation id="7378203170292176219">Arraste para selecionar uma área para a gravação</translation>
@@ -790,6 +792,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="7780159184141939021">Girar tela</translation>
 <translation id="7796353162336583443">Toque no botão da stylus na estante para criar uma nota, uma captura de tela, usar o Google Assistente, o apontador laser ou a lupa.</translation>
 <translation id="7798302898096527229">Pressione Pesquisar ou Shift para cancelar.</translation>
+<translation id="7807966291075028781">Por questões de segurança, o periférico não é compatível com o modo visitante</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Tempo esgotado</translation>
@@ -858,6 +861,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
+<translation id="8371991222807690464">O desempenho dos periféricos pode ser limitado no modo visitante</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e seu smartphone serão conectados automaticamente</translation>
 <translation id="8380784334203145311">Boa noite,</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>

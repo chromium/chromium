@@ -253,7 +253,6 @@
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ஆப்ஸை நிறுவல் நீக்க முடியவில்லை</translation>
 <translation id="1277020343994096713">உங்களின் தற்போதைய பின்னிலிருந்து (PIN) மாறுபட்ட புதிய பின்னை (PIN) உருவாக்கவும்</translation>
-<translation id="1278703349931574538">தொடர்புகளை நிர்வகியுங்கள்</translation>
 <translation id="127946606521051357">அருகிலுள்ள சாதனம் பகிர்கிறது</translation>
 <translation id="1280820357415527819">மொபைல் நெட்வொர்க்குகளைத் தேடுகிறது</translation>
 <translation id="1280965841156951489">கோப்புகளைத் திருத்து</translation>
@@ -1140,7 +1139,6 @@
 <translation id="2256115617011615191">இப்போது மீண்டும் தொடங்கு</translation>
 <translation id="2257053455312861282">பள்ளிக் கணக்கைச் சேர்ப்பதன் மூலம் மாணவர் என்ற முறையில் இணையதளங்களிலும் நீட்டிப்புகளிலும் ஆப்ஸிலும் எளிதாக உள்நுழைய முடியும், ஆனாலும் இவை பெற்றோர் கட்டுப்பாடுகளின் கீழ் இருக்கும்.</translation>
 <translation id="2261323523305321874">உங்கள் நிர்வாகி, சில பழைய சுயவிவரங்களை முடக்கும்படியான கணினி அளவிலான மாற்றத்தைச் செய்துள்ளார்.</translation>
-<translation id="2262332168014443534">'லைட்' பயன்முறை மூலம் இப்போது HTTPS உட்பட அனைத்துப் பக்கங்களிலும் வேகமாக உலாவலாம்.</translation>
 <translation id="2262477216570151239">மீண்டும் இயக்கப்படுவதற்கு முந்தைய தாமதம்</translation>
 <translation id="2262888617381992508">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைப் பிளே செய்ய அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="2263189956353037928">வெளியேறி, உள்நுழைக</translation>
@@ -1497,7 +1495,6 @@
 <translation id="265390580714150011">புல மதிப்பு</translation>
 <translation id="2654166010170466751">பேமண்ட் ஹேண்ட்லர்களை நிறுவுவதற்குத் தளங்களை அனுமதிக்கும்</translation>
 <translation id="2654553774144920065">பிரிண்ட் செய்வதற்கான கோரிக்கை</translation>
-<translation id="2657807507504044638">eSIM சுயவிவரங்கள் கிடைக்கவில்லை. புதிய சுயவிவரத்தை <ph name="BEGIN_LINK" />இங்கே<ph name="END_LINK" /> பதிவிறக்குங்கள்</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />சாதனத்திற்கேற்ப அம்சங்கள் மாறுபடலாம்</translation>
 <translation id="2659971421398561408">Crostini டிஸ்க் அளவை மாற்று</translation>
 <translation id="2660779039299703961">நிகழ்வு</translation>
@@ -3047,7 +3044,6 @@
 <translation id="4416582610654027550">சரியான URLஐ உள்ளிடவும்</translation>
 <translation id="4419409365248380979">குக்கீகளை அமைக்க <ph name="HOST" /> ஐ எப்போதும் அனுமதி</translation>
 <translation id="4419610272958564173">தெரியாத சாதனம் (விற்பனையாளர்: <ph name="VENDOR_ID" />, தயாரிப்பு: <ph name="PRODUCT_ID" />)</translation>
-<translation id="4421167684395067330">இணைப்பதில் சிக்கல் உள்ளது. உதவிக்கு <ph name="CARRIER_NAME" /> நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="4421932782753506458">ஃபளஃபி</translation>
 <translation id="4423376891418188461">அமைப்புகளை மீட்டெடு</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, உங்கள் கடவுச்சொல்லை மாற்றும்படி நிர்வாகி கோருகிறார்.</translation>
@@ -3059,7 +3055,6 @@
 <translation id="4434045419905280838">பாப்-அப்கள் &amp; திசைதிருப்புதல்கள்</translation>
 <translation id="443454694385851356">லெகஸி (பாதுகாப்பற்றது)</translation>
 <translation id="443475966875174318">இணங்காத பயன்பாடுகளைப் புதுப்பிக்கவும் அல்லது அகற்றவும்</translation>
-<translation id="4436063104263971834">சிம் சுயவிவரங்கள் கிடைக்கவில்லை. புதிய சுயவிவரத்தை <ph name="BEGIN_LINK" />இங்கே<ph name="END_LINK" /> அமைத்திடுங்கள்.</translation>
 <translation id="4438043733494739848">ஒளிபுகு தன்மை</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> பயனரின் கடவுச்சொல்<ph name="MASKED_PASSWORD" /> உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) சேமிக்கப்படும்</translation>
 <translation id="4439427728133035643">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, இணை</translation>
@@ -5941,7 +5936,6 @@
 <translation id="7775694664330414886">தாவல் பெயரிடப்படாத இந்தக் குழுவிற்கு நகர்த்தப்பட்டது - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">இந்தத் தளத்தின் தாவல்கள் அனைத்தையும் மூடும் வரை <ph name="ORIGIN" /> தளத்தால் <ph name="FOLDERNAME" /> இல் உள்ள கோப்புகளைப் பார்க்க முடியும்</translation>
 <translation id="7776701556330691704">குரல்கள் எதுவும் இல்லை</translation>
-<translation id="7780252971640011240">இணைப்பதில் சிக்கல் உள்ளது. உதவிக்கு மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7781335840981796660">எல்லா பயனர்களின் கணக்குகளும், அகத் தரவும் அகற்றப்படும்.</translation>
 <translation id="7782102568078991263">Google இலிருந்து மேலும் பரிந்துரைகள் இல்லை</translation>
 <translation id="7782717250816686129">உள்நுழையும் திரையில் நிலையான தரவைச் சேமித்து அமர்வினுள் அனுமதிச் சான்றுகளை உள்ளிடு.</translation>

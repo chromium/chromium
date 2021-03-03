@@ -20,6 +20,7 @@
 <translation id="147727933880789532">Chrome 建議停用這項擴充功能，因為擴充功能目前不符合安全瀏覽強化防護功能標準。</translation>
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用你的攝影機。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 並不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="1597911401261118146">如要檢查你的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chrome<ph name="END_LINK" />。</translation>
@@ -112,6 +113,7 @@
 <translation id="3735758079232443276">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="3779473566290487688">你將需要 OS X 10.11 以上版本，才能在日後取得 Google Chrome 更新。這台電腦使用的是 OS X 10.10。</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="386202838227397562">請關閉所有 Google Chrome 視窗，並再試一次</translation>
 <translation id="3865754807470779944">已安裝 Chrome <ph name="PRODUCT_VERSION" /> 版</translation>
 <translation id="3873044882194371212">在 Chrome 無痕式視窗中開啟連結(&amp;G)</translation>
@@ -181,6 +183,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 將於 1 秒後重新啟動}other{Google Chrome 將於 # 秒後重新啟動}}</translation>
 <translation id="573759479754913123">關於 Chrome 作業系統</translation>
+<translation id="5756509061973259733">這部裝置已有與此帳戶相關聯的 Chrome 設定檔</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary 版</translation>
 <translation id="5804318322022881572">無法啟動 Chrome，請再試一次。</translation>
 <translation id="5867197326698922595">Google Chrome 正在嘗試編輯密碼。</translation>

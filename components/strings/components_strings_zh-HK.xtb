@@ -295,6 +295,7 @@
 <translation id="2053111141626950936">系統將不會翻譯<ph name="LANGUAGE" />網頁。</translation>
 <translation id="2053553514270667976">郵遞區號</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 個建議}other{# 個建議}}</translation>
+<translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="20817612488360358">雖然系統 Proxy 設定已設為使用，不過也指定了明確的 Proxy 設定。</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 項結果 (共 <ph name="TOTAL_RESULTS" /> 項)</translation>
@@ -783,6 +784,7 @@
 <translation id="4058922952496707368">金鑰「<ph name="SUBKEY" />」：<ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (信封)</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
+<translation id="4072193657607981494">載入緊政策</translation>
 <translation id="4072486802667267160">處理您的訂單時發生錯誤，請再試一次。</translation>
 <translation id="4075732493274867456">用戶端和伺服器不支援共通 SSL 通訊協定版本或加密套件。</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -917,6 +919,7 @@
 <translation id="4510487217173779431">Chou4 (信封)</translation>
 <translation id="4515275063822566619">信用卡和地址選項均來自 Chrome 和您的 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。您可在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中管理這些選項。</translation>
 <translation id="4517607026994743406">Comm-10 (信封)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 毫米 (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">詳情</translation>
 <translation id="4524138615196389145">使用 WebAuthn 即可加快確認付款卡。</translation>
 <translation id="4524805452350978254">管理付款卡</translation>
@@ -1339,6 +1342,7 @@
 <translation id="614940544461990577">建議做法：</translation>
 <translation id="6150036310511284407">三孔 (左側)</translation>
 <translation id="6151417162996330722">這個伺服器憑證的有效期過長。</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 吋 (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">如要查看運送方式和要求，請選取一個地址</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6169916984152623906">現在您可私下瀏覽了。共用此裝置的其他使用者將無法看到您的活動，但您下載的檔案和加入的書籤仍會儲存在裝置上。</translation>
@@ -1887,6 +1891,7 @@
 <translation id="8364627913115013041">未設定。</translation>
 <translation id="8368476060205742148">Google Play 服務</translation>
 <translation id="8371889962595521444">自訂根憑證</translation>
+<translation id="8374636051559112948">不定</translation>
 <translation id="8380941800586852976">不安全</translation>
 <translation id="8381674639488873545">這些費用可能是一次性或會重複收取，而收費時亦可能難以察覺。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">管理員政策已禁止將資料由 <ph name="ORIGIN_NAME" /> 分享到 <ph name="VM_NAME" /></translation>
@@ -2068,6 +2073,7 @@
 <translation id="9114524666733003316">正在驗證信用卡…</translation>
 <translation id="9114581008513152754">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">已上載</translation>
+<translation id="9128016270925453879">載入咗政策</translation>
 <translation id="9128870381267983090">連線至網路</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9141013498910525015">管理地址</translation>

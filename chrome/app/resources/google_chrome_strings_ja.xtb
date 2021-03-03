@@ -20,6 +20,7 @@
 <translation id="147727933880789532">この拡張機能は、現在、セーフ ブラウジング保護強化機能の基準を満たしていないため、無効にすることをおすすめします。</translation>
 <translation id="1516530951338665275">Google Chrome でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。<ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chrome プロファイルが作成されます。</translation>
 <translation id="1587223624401073077">Google Chrome がカメラを使用しています。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> は危険なファイルであるため、Chrome でブロックしました。</translation>
 <translation id="1597911401261118146">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chrome にログイン<ph name="END_LINK" />してください。</translation>
@@ -112,6 +113,7 @@
 <translation id="3735758079232443276">拡張機能「<ph name="EXTENSION_NAME" />」により、Chrome の起動時に表示されるページが変更されました。</translation>
 <translation id="3779473566290487688">今後、Google Chrome のアップデートを受信するには、OS X 10.11 以降が必要となります。このパソコンでは OS X 10.10 が実行されています。</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chrome プロファイルが作成されます。</translation>
 <translation id="386202838227397562">すべての Google Chrome ウィンドウを閉じてからもう一度お試しください。</translation>
 <translation id="3865754807470779944">Chrome のバージョン <ph name="PRODUCT_VERSION" /> がインストールされています</translation>
 <translation id="3873044882194371212">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
@@ -179,6 +181,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome は 1 秒後に再起動します}other{Google Chrome は # 秒後に再起動します}}</translation>
 <translation id="573759479754913123">Chrome OS について</translation>
+<translation id="5756509061973259733">このアカウントの Chrome プロファイルは、このデバイスにすでに存在します</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome を起動できませんでした。もう一度お試しください。</translation>
 <translation id="5867197326698922595">Google Chrome でパスワードを編集しようとしています。</translation>

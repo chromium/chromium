@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Страница входа</translation>
 <translation id="2008685064673031089">Поиск простых чисел</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
+<translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> из <ph name="TOTAL_MEMORY" /> ГБ.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">В ОЧЕРЕДИ</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
+<translation id="2217935453350629363">Текущая скорость</translation>
 <translation id="2224337661447660594">Нет подключения к Интернету</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус активации</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мой диск</translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
+<translation id="4431821876790500265">Посмотреть отчет</translation>
 <translation id="445059817448385655">Старый пароль</translation>
 <translation id="4453205916657964690">Маска подсети</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
@@ -175,6 +178,8 @@
 <translation id="4932733599132424254">Дата</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4985509611418653372">Проверить</translation>
+<translation id="4987769320337599931">Брандмауэр</translation>
+<translation id="4999333166442584738">Скрыть отчет</translation>
 <translation id="500920857929044050">Прекратить проверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Название группы</translation>

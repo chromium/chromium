@@ -185,6 +185,7 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <translation id="2239812875700136898">Hallake oma lugusid funktsiooni Discover nupuga Valikud</translation>
 <translation id="2259659629660284697">Paroolide eksportimine …</translation>
 <translation id="2276696007612801991">Paroolide kontrollimiseks logige sisse oma Google'i kontole</translation>
+<translation id="2278052315791335171">Selle parooli kustutamisel ei kustutata teie kontot saidil <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Arveldusaadress</translation>
 <translation id="230115972905494466">Ühilduvaid seadmeid ei leitud</translation>
 <translation id="230155349749732438">Selle seade kasutamiseks peab seade <ph name="BEGIN_LINK" />Otsingute ja sirvimise paremaks muutmine<ph name="END_LINK" /> olema sisse lülitatud</translation>
@@ -355,6 +356,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3398320232533725830">Järjehoidjate halduri avamine</translation>
 <translation id="3414952576877147120">Suurus:</translation>
 <translation id="3429160811076349561">Prooviversiooni funktsioonid on välja lülitatud</translation>
+<translation id="3440975416244667276">Asjakohasema teabe nägemiseks puudutage pikalt</translation>
 <translation id="3443221991560634068">Praeguse lehe uuesti laadimine</translation>
 <translation id="3451542610083122179">Privaatsuse liivakast on käimasolev initsiatiiv säilitada avatud veebi, mis aitab teid jälgimismehhanismide eest kaitsta.
 
@@ -946,6 +948,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7475688122056506577">SD-kaarti ei leitud. Mõned failid võivad puududa.</translation>
 <translation id="7479104141328977413">Vahelehtede haldamine</translation>
 <translation id="7481312909269577407">Edasta</translation>
+<translation id="7481864133709957613">Sellelt lehelt otsimiseks puudutage sõnu tavalise puudutamise asemel pikalt</translation>
 <translation id="7482656565088326534">Eelvaate vaheleht</translation>
 <translation id="7484997419527351112">Discover – väljas</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (värskendati <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="751961395872307827">Saidiga ei saa ühendust luua</translation>
 <translation id="752220631458524187">Kui olete lõpetanud, katkestage ühendus</translation>
+<translation id="7523960634226602883">Otsige Google Lensi abil oma kaameraga</translation>
 <translation id="753225086557513863">Ajastatud hilisemaks</translation>
 <translation id="7559975015014302720">Lihtsustatud režiim on väljas</translation>
 <translation id="7562080006725997899">Sirvimisandmete kustutamine</translation>

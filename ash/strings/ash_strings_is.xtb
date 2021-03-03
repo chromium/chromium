@@ -609,6 +609,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6179832488876878285">Hér geturðu fest mikilvægar skrár. Opnaðu forritið Skrár til að hefjast handa.</translation>
 <translation id="622484624075952240">Niður</translation>
+<translation id="6231419273573514727">Afköst jaðartækja gætu verið takmörkuð</translation>
 <translation id="6236290670123303279">Stjórna stillingum</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Læst á lárétt</translation>
@@ -732,6 +733,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7346909386216857016">Ég skil</translation>
 <translation id="7348093485538360975">Skjályklaborð</translation>
 <translation id="735745346212279324">VPN ótengt</translation>
+<translation id="7360036564632145207">Hægt er að auka afköst með því að breyta stillingunni „gagnaaðgangsvörn jaðartækja“</translation>
 <translation id="7371404428569700291">Upptökugluggi</translation>
 <translation id="7377169924702866686">Kveikt er á hástafalás.</translation>
 <translation id="7378203170292176219">Dragðu til að velja svæðið sem á að taka upp</translation>
@@ -790,6 +792,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7780159184141939021">Snúa skjánum</translation>
 <translation id="7796353162336583443">Ýttu á pennahnappinn á hillunni til að skrifa niður glósu, taka skjámynd, nota Google hjálparann, leysigeislabendilinn eða stækkunarglerið.</translation>
 <translation id="7798302898096527229">Ýttu á leitar- eða Shift-lykil til að hætta við.</translation>
+<translation id="7807966291075028781">Jaðartæki eru ekki studd í gestastillingu af öryggisástæðum</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Mikill sendistyrkur</translation>
 <translation id="7837740436429729974">Tíminn er liðinn</translation>
@@ -858,6 +861,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> gluggi valinn</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>
 <translation id="8371779926711439835">Áfram um staf</translation>
+<translation id="8371991222807690464">Afköst jaðartækja gætu verið takmörkuð í gestastillingu</translation>
 <translation id="8375916635258623388">Þetta <ph name="DEVICE_NAME" /> og síminn þinn tengjast sjálfkrafa</translation>
 <translation id="8380784334203145311">Gott kvöld,</translation>
 <translation id="8388750414311082622">Ekki er hægt að fjarlægja fyrra skjáborð.</translation>

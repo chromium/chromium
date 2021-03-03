@@ -610,6 +610,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6179832488876878285">Podes fixar aquí os ficheiros importantes. Para comezar a utilizar esta función, abre a aplicación Ficheiros.</translation>
 <translation id="622484624075952240">Frecha abaixo</translation>
+<translation id="6231419273573514727">É posible que os periféricos teñan un rendemento limitado</translation>
 <translation id="6236290670123303279">Xestionar configuración</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Pantalla bloqueada en posición horizontal</translation>
@@ -733,6 +734,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
+<translation id="7360036564632145207">Para optimizar o rendemento, podes cambiar a opción de configuración da protección para periféricos contra o acceso aos datos</translation>
 <translation id="7371404428569700291">Ventá de gravación</translation>
 <translation id="7377169924702866686">O bloqueo de maiúsculas está activado.</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar a zona que queiras gravar</translation>
@@ -791,6 +793,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>
 <translation id="7796353162336583443">Toca o botón do lapis óptico no estante para escribir unha nota, facer unha captura de pantalla, usar o Asistente de Google, utilizar o punteiro láser ou aplicar a lupa.</translation>
 <translation id="7798302898096527229">Preme Buscar ou Maiúsculas para cancelar.</translation>
+<translation id="7807966291075028781">Por motivos de seguranza, o periférico non está dispoñible no modo de invitado</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Acabouse o tempo</translation>
@@ -859,6 +862,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8345019317483336363">Ventá seleccionada: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8371779926711439835">Avanzar unha letra</translation>
+<translation id="8371991222807690464">É posible que os periféricos teñan un rendemento limitado no modo de invitado</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o teu teléfono conectaranse automaticamente</translation>
 <translation id="8380784334203145311">Boas noites!</translation>
 <translation id="8388750414311082622">O último escritorio non se pode quitar.</translation>

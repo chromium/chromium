@@ -51,6 +51,7 @@
 <translation id="2770231113462710648">Демейки серепчини төмөнкүгө өзгөртүү:</translation>
 <translation id="2799223571221894425">Кайра ишке киргизүү</translation>
 <translation id="2816712596130903444">Өзүнчө Chromium профили түзүлсүнбү?</translation>
+<translation id="2837693172913560447">Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chromium профили түзүлөт</translation>
 <translation id="2847479871509788944">Chromium'дан чыгарып салуу…</translation>
 <translation id="2885378588091291677">Тапшырмаларды башкаргыч</translation>
 <translation id="2910007522516064972">&amp;Chromium жөнүндө</translation>
@@ -125,6 +126,7 @@
 <translation id="4987820182225656817">Коноктор Chromium'ду артында эч нерсе калтырбай колдоно алышат.</translation>
 <translation id="4994636714258228724">Өзүңүздү Chromium'га кошуңуз</translation>
 <translation id="5224391634244552924">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Chromium аларды текшере алат.</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" /> ушул Chromium профилине мурунтан эле кирип турат. Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chromium профили түзүлөт</translation>
 <translation id="5277894862589591112">Өзгөртүүлөрдү киргизүү үчүн Chromium'ду кайра иштетиңиз</translation>
 <translation id="5358375970380395591">Башкарылган аккаунт менен кирип, анын администраторуна Chromiun профилиңизди көзөмөлдөө мүмкүнчүлүгүн берип жатасыз. Колдонмолоруңуз, кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр сыяктуу Chromium дайын-даректериңиз эми биротоло <ph name="USER_NAME" /> менен байланып калат. Бул дайындарды Google Каттоо эсептеринин Жеке кеңсеси аркылуу жок кылсаңыз болот, бирок башка аккаунтка байланыштыра албайсыз.<ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium жаңыртылууда (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -235,6 +237,7 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="7773960292263897147">Эскертүү: Chromium кеңейтүүлөргө серептөө таржымалыңызды жазып алууга тыюу сала албайт. Бул колдонмону жашыруун режимде өчүрүү үчүн, бул параметрди тандоодон чыгарыңыз.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7827169012280634081">Chromium'дан чыкканда cookie файлдары жана сайттын дайындары тазалансын</translation>
+<translation id="7828947555739565424">Бул түзмөктөгү аккаунт менен Chromium профили мурунтан эле түзүлгөн</translation>
 <translation id="7857220146454061152">Chromium жаңыртууларын алып туруу үчүн OS X 10.11 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде OS X 10.10 версиясы колдонулууда.</translation>
 <translation id="7867198900892795913">Chromium акыркы версиясына жаңыртылбай койду, андыктан жаңы функциялар менен коопсуздук оңдоолорун пайдалана албай калдыңыз.</translation>
 <translation id="7898472181347242998">Түзмөгүңүздүн жаңыртылганын текшерүү үчүн <ph name="LINK_BEGIN" />Chromium OS Жөндөөлөрүнө<ph name="LINK_END" /> өтүңүз</translation>

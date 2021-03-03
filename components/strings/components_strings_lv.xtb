@@ -299,6 +299,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2053111141626950936">Lapas netiks tulkotas no šīs valodas: <ph name="LANGUAGE" /></translation>
 <translation id="2053553514270667976">Pasta indekss</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ieteikums}zero{# ieteikumi}one{# ieteikums}other{# ieteikumi}}</translation>
+<translation id="2071692954027939183">Paziņojumi tika automātiski bloķēti, jo jūs tos parasti neatļaujat.</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="20817612488360358">Ir iestatīta datora starpniekserveru iestatījumu lietošana, bet ir norādīta arī atklāta starpniekservera konfigurācija.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultāts no <ph name="TOTAL_RESULTS" /></translation>
@@ -788,6 +789,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4058922952496707368">Atslēga <ph name="SUBKEY" />: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (aploksne)</translation>
 <translation id="4067947977115446013">Derīgas adreses pievienošana</translation>
+<translation id="4072193657607981494">Notiek politiku ielāde</translation>
 <translation id="4072486802667267160">Apstrādājot pasūtījumu, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="4075732493274867456">Klients un serveris neatbalsta bieži lietoto SSL protokola versiju vai šifra komplektu.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -926,6 +928,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4510487217173779431">Chou4 (aploksne)</translation>
 <translation id="4515275063822566619">Kartes un adreses tiek iegūtas no Chrome un jūsu Google konta (<ph name="ACCOUNT_EMAIL" />). Varat tās pārvaldīt <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (aploksne)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Informācija</translation>
 <translation id="4524138615196389145">Turpmāk, izmantojot WebAuthn, apstipriniet kartes ātrāk</translation>
 <translation id="4524805452350978254">Pārvaldīt kartītes</translation>
@@ -1348,6 +1351,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="614940544461990577">Veiciet tālāk norādītās darbības.</translation>
 <translation id="6150036310511284407">Trīs caurumi kreisajā pusē</translation>
 <translation id="6151417162996330722">Šī servera sertifikāta derīguma periods ir pārāk ilgs.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> collas (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Lai skatītu nosūtīšanas veidus un prasības, atlasiet adresi.</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6169916984152623906">Tagad varat privāti pārlūkot saturu, un citas personas, kas izmanto šo ierīci, nevarēs redzēt jūsu darbības. Tomēr lejupielādes un grāmatzīmes tiks saglabātas.</translation>
@@ -1896,6 +1900,7 @@ Papildu informācija:
 <translation id="8364627913115013041">Nav iestatīta.</translation>
 <translation id="8368476060205742148">Google Play pakalpojumi</translation>
 <translation id="8371889962595521444">Pielāgoti saknes sertifikāti</translation>
+<translation id="8374636051559112948">Atšķiras</translation>
 <translation id="8380941800586852976">Bīstama</translation>
 <translation id="8381674639488873545">Maksa var tikt pieprasīta vienreiz vai atkārtoti; iespējams, pieprasījums nebūs skaidri pamanāms. <ph name="BEGIN_LINK" />Tik un tā rādīt<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Saskaņā ar administratora iestatīto politiku kopīgošana no <ph name="ORIGIN_NAME" /> uz <ph name="VM_NAME" /> ir bloķēta.</translation>
@@ -2078,6 +2083,7 @@ Papildu informācija:
 <translation id="9114524666733003316">Notiek kartes apstiprināšana...</translation>
 <translation id="9114581008513152754">Šo pārlūku nepārvalda uzņēmums vai cita organizācija. Darbību šajā ierīcē var pārvaldīt ārpus pārlūka Chrome. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Augšupielādēts</translation>
+<translation id="9128016270925453879">Politikas ir ielādētas</translation>
 <translation id="9128870381267983090">Izveidot savienojumu ar tīklu</translation>
 <translation id="9137013805542155359">Rādīt oriģinālo</translation>
 <translation id="9141013498910525015">Pārvaldīt adreses</translation>

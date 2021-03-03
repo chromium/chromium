@@ -297,6 +297,7 @@
 <translation id="2053111141626950936"><ph name="LANGUAGE" />ಭಾಷೆಯಲ್ಲಿರುವ ಪುಟಗಳು ಅನುವಾದಕ್ಕೊಳಪಡುವುದಿಲ್ಲ.</translation>
 <translation id="2053553514270667976">ಪಿನ್ ಕೋಡ್</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ಸಲಹೆ}one{# ಸಲಹೆಗಳು}other{# ಸಲಹೆಗಳು}}</translation>
+<translation id="2071692954027939183">ಅಧಿಸೂಚನೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ ಏಕೆಂದರೆ ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಅವುಗಳನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
 <translation id="20817612488360358">ಸಿಸ್ಟಂ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸಲು ಹೊಂದಿಸಲಾಗಿದೆ ಆದರೆ ಬಹಿರಂಗವಾದ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಸಹ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ರಲ್ಲಿ <ph name="RESULT_NUMBER" /> ಫಲಿತಾಂಶಗಳು</translation>
@@ -783,6 +784,7 @@
 <translation id="4058922952496707368">ಕೀ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">ಮಾನ್ಯವಾದ ವಿಳಾಸ ಸೇರಿಸಿ</translation>
+<translation id="4072193657607981494">ನೀತಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4072486802667267160">ನಿಮ್ಮ ಆರ್ಡ‌ರ್ ಅನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4075732493274867456">ಸಾಮಾನ್ಯ SSL ಪ್ರೊಟೋಕಾಲ್ ಆವೃತ್ತಿ ಅಥವಾ ಸೈಫರ್ ಸ್ಯೂಟ್ ಅನ್ನು ಕ್ಲೈಂಟ್ ಮತ್ತು ಸರ್ವರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="4075941231477579656">ಸ್ಪರ್ಶ ID</translation>
@@ -917,6 +919,7 @@
 <translation id="4510487217173779431">Chou4 (Envelope)</translation>
 <translation id="4515275063822566619">ಕಾರ್ಡ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ Chrome ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ (<ph name="ACCOUNT_EMAIL" />) ಪಡೆಯಲಾಗಿದೆ. ನೀವು ಅವುಗಳನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="4517607026994743406">Comm-10 (Envelope)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ಮಿಮಿ (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
 <translation id="4524138615196389145">ಇನ್ನು ಮುಂದೆ WebAuthn ಅನ್ನು ಬಳಸುವ ಮೂಲಕ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="4524805452350978254">ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -1338,6 +1341,7 @@
 <translation id="614940544461990577">ಪ್ರಯತ್ನಿಸಿ:</translation>
 <translation id="6150036310511284407">ಎಡಭಾಗದಲ್ಲಿ ಮೂರು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="6151417162996330722">ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವು ತುಂಬಾ ಉದ್ದವಾದ ವಾಯಿದೆ ಅವಧಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ಇಂಚು (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">ಶಿಪ್ಪಿಂಗ್ ವಿಧಾನಗಳು ಹಾಗೂ ಆವಶ್ಯಕತೆಗಳನ್ನು ನೋಡಲು, ಒಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6169916984152623906">ನೀವೀಗ ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು. ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಬೇರೆ ಯಾರಿಗೂ ನಿಮ್ಮ ಚಟುವಟಿಕೆ ಕಾಣಿಸುವುದಿಲ್ಲ. ಆದರೂ, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಉಳಿದಿರುತ್ತವೆ.</translation>
@@ -1885,6 +1889,7 @@
 <translation id="8364627913115013041">ಹೊಂದಿಸಿಲ್ಲ.</translation>
 <translation id="8368476060205742148">Google Play ಸೇವೆಗಳು</translation>
 <translation id="8371889962595521444">ಕಸ್ಟಮ್ ರೂಟ್ ಪ್ರಮಾಣಪತ್ರಗಳು</translation>
+<translation id="8374636051559112948">ಬದಲಾಗುತ್ತದೆ</translation>
 <translation id="8380941800586852976">ಅಪಾಯಕಾರಿ</translation>
 <translation id="8381674639488873545">ಈ ಶುಲ್ಕವು ಒಂದು ಬಾರಿ ಪಾವತಿಯದಾಗಿರಬಹುದು ಅಥವಾ ಮರುಕಳಿಸುವುದಾಗಿರಬಹುದು, ಮತ್ತು ಸ್ಪಷ್ಟವಾಗಿಲ್ಲದೇ ಇರಬಹುದು. <ph name="BEGIN_LINK" />ಹೇಗಿದ್ದರೂ ತೋರಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ನಿರ್ವಾಹಕರ ನೀತಿಯು, <ph name="ORIGIN_NAME" /> ನಿಂದ <ph name="VM_NAME" /> ಗೆ ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ</translation>
@@ -2067,6 +2072,7 @@
 <translation id="9114524666733003316">ಕಾರ್ಡ್‌ ದೃಢೀಕರಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="9114581008513152754">ಈ ಬ್ರೌಸರ್ ಅನ್ನು ಕಂಪನಿ ಅಥವಾ ಇತರ ಸಂಸ್ಥೆಯು ನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chrome ನಿಂದ ಹೊರಗೆ ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="9128016270925453879">ನೀತಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="9128870381267983090">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸು</translation>
 <translation id="9137013805542155359">ಮೂಲವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="9141013498910525015">ವಿಳಾಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

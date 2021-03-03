@@ -185,6 +185,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2239812875700136898">Kiểm soát các tin bài của bạn bằng các Tùy chọn của nút Khám phá</translation>
 <translation id="2259659629660284697">Xuất mật khẩu...</translation>
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
+<translation id="2278052315791335171">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Địa chỉ thanh toán</translation>
 <translation id="230115972905494466">Không tìm thấy thiết bị tương thích</translation>
 <translation id="230155349749732438">Để sử dụng chế độ cài đặt này, bạn phải bật tùy chọn <ph name="BEGIN_LINK" />Cải thiện tính năng tìm kiếm và duyệt web<ph name="END_LINK" /></translation>
@@ -355,6 +356,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3398320232533725830">Mở trình quản lý dấu trang</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
 <translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
+<translation id="3440975416244667276">Chạm và giữ để biết thêm thông tin liên quan</translation>
 <translation id="3443221991560634068">Tải lại trang hiện tại</translation>
 <translation id="3451542610083122179">Hộp cát về quyền riêng tư là một sáng kiến đang được thực hiện nhằm bảo vệ web mở. Sáng kiến này sẽ giúp bảo vệ bạn khỏi các cơ chế theo dõi.
 
@@ -946,6 +948,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7475688122056506577">Không tìm thấy thẻ SD. Một số tệp của bạn có thể bị thiếu.</translation>
 <translation id="7479104141328977413">Quản lý thẻ</translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
+<translation id="7481864133709957613">Để tìm kiếm trên trang này, hãy chạm và giữ các từ thay vì nhấn vào các từ đó</translation>
 <translation id="7482656565088326534">Thẻ xem trước</translation>
 <translation id="7484997419527351112">Khám phá – đang tắt</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Đã cập nhật <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="751961395872307827">Không thể kết nối với trang web</translation>
 <translation id="752220631458524187">Hãy ngắt kết nối điện thoại khi bạn đã hoàn tất</translation>
+<translation id="7523960634226602883">Tìm kiếm bằng máy ảnh thông qua Google Ống kính</translation>
 <translation id="753225086557513863">Đã lên lịch tải xuống</translation>
 <translation id="7559975015014302720">Chế độ thu gọn đang tắt</translation>
 <translation id="7562080006725997899">Xóa dữ liệu duyệt web</translation>

@@ -51,6 +51,7 @@
 <translation id="2770231113462710648">ડિફૉલ્ટ બ્રાઉઝરને આના પર બદલો:</translation>
 <translation id="2799223571221894425">ફરીથી લોંચ કરો</translation>
 <translation id="2816712596130903444">Chromium પ્રોફાઇલ અલગ કરીએ?</translation>
+<translation id="2837693172913560447">આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chromium પ્રોફાઇલ બનશે</translation>
 <translation id="2847479871509788944">Chromium માંથી દૂર કરો...</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2910007522516064972">&amp;Chromium વિશે</translation>
@@ -125,6 +126,7 @@
 <translation id="4987820182225656817">અતિથિઓ કંઈપણ પાછળ છોડ્યાં વિના Chromium નો ઉપયોગ કરી શકે છે.</translation>
 <translation id="4994636714258228724">સ્વયંને Chromium માં ઉમેરો</translation>
 <translation id="5224391634244552924">કોઈ સાચવેલા પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chromium તેને ચેક કરી શકે છે.</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" /> આ Chromium પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chromium પ્રોફાઇલ બનશે</translation>
 <translation id="5277894862589591112">તમારા ફેરફારો લાગુ કરવા માટે, Chromiumને ફરી લૉન્ચ કરો</translation>
 <translation id="5358375970380395591">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Chromium પ્રોફાઇલ પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો Chromium ડેટા, જેમ કે ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" /> થી બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -235,6 +237,7 @@ Chromium તમારી સેટિંગ્સને પુનઃપ્રા
 <translation id="7773960292263897147">ચેતવણી: એક્સ્ટેંશનને તમારો બ્રાઉઝિંગ ઇતિહાસ રેકોર્ડ કરવાથી Chromium અટકાવી શકતું નથી. છૂપા મોડમાં આ એક્સ્ટેંશનને બંધ કરવા માટે, આ વિકલ્પની પસંદગી નાપસંદ કરો.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">જ્યારે તમે Chromiumમાંથી બહાર નીકળો ત્યારે કુકી અને સાઇટનો ડેટા સાફ કરો</translation>
+<translation id="7828947555739565424">આ એકાઉન્ટ સાથેની Chromium પ્રોફાઇલ પહેલેથી જ આ ડિવાઇસ પર અસ્તિત્વમાં છે</translation>
 <translation id="7857220146454061152">Chromiumની ભાવિ અપડેટ મેળવા માટે, તમારે OS X 10.11 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર OS X 10.10નો ઉપયોગ કરે છે.</translation>
 <translation id="7867198900892795913">Chromium નવીનતમ વર્ઝન પર અપડેટ ન થઈ શક્યું, તેથી તમે નવી સુવિધાઓ અને સુરક્ષાના સુધારા ચૂકી રહ્યા છો.</translation>
 <translation id="7898472181347242998">તમારું ડિવાઇસ અપ ટૂ ડેટ છે કે નહીં, તે જાણવા માટે <ph name="LINK_BEGIN" />Chromium OS સેટિંગ<ph name="LINK_END" /> પર જાઓ</translation>

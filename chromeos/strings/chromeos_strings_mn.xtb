@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Дамжих портал</translation>
 <translation id="2008685064673031089">Үндсэн хайлт</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ЖАГСААСАН</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
+<translation id="2217935453350629363">Одоогийн хурд</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Идэвхжүүлэх статус</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
 <translation id="4429881212383817840">Kerberos тасалбарын хугацаа удахгүй дуусна</translation>
+<translation id="4431821876790500265">Тайланг харах</translation>
 <translation id="445059817448385655">Хуучин нууц үг</translation>
 <translation id="4453205916657964690">Дэд сүлжээний маск</translation>
 <translation id="4454245904991689773">Дараах руу скан хийх</translation>
@@ -175,6 +178,8 @@
 <translation id="4932733599132424254">Огноо</translation>
 <translation id="498186245079027698">Сканнерыг шалгаад дахин оролдоно уу. Скан хийсэн файлуудыг хадгалах хангалттай дотоод зай байгаа эсэхийг шалгана уу.</translation>
 <translation id="4985509611418653372">Ажиллуулах</translation>
+<translation id="4987769320337599931">Галт хана</translation>
+<translation id="4999333166442584738">Тайланг нуух</translation>
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Бүлгийн нэр</translation>

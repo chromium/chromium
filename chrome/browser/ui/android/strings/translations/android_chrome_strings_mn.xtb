@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">Мэдээ, нийтлэлээ Discover-н сонголтуудын товчлуураас хянана уу</translation>
 <translation id="2259659629660284697">Нууц үгийг экспортлох...</translation>
 <translation id="2276696007612801991">Нууц үгээ шалгахын тулд Google Бүртгэлдээ нэвтэрнэ үү</translation>
+<translation id="2278052315791335171">Энэ нууц үгийг устгаснаар таны бүртгэлийг <ph name="SITE" /> дээрээс устгахгүй</translation>
 <translation id="2286841657746966508">Тооцооны хаяг</translation>
 <translation id="230115972905494466">Тохирох төхөөрөмж олдсонгүй</translation>
 <translation id="230155349749732438">Энэ тохиргоог ашиглахын тулд <ph name="BEGIN_LINK" />Хайлт болон үзэх явцыг сайжруулах<ph name="END_LINK" /> онцлогийг асаасан байх ёстой</translation>
@@ -355,6 +356,7 @@
 <translation id="3398320232533725830">Хавчуургын менежерийг нээх</translation>
 <translation id="3414952576877147120">Хэмжээ:</translation>
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
+<translation id="3440975416244667276">Илүү хамааралтай мэдээлэл авах бол удаан дарна уу</translation>
 <translation id="3443221991560634068">Одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="3451542610083122179">Privacy Sandbox нь таныг хянах механизмаас хамгаалахад туслах нээлттэй вебийг хадгалахын тулд явагдаж буй санаачилга юм.
 
@@ -945,6 +947,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7475688122056506577">SD карт олдсонгүй. Таны зарим файл алга болсон байж болзошгүй.</translation>
 <translation id="7479104141328977413">Табын менежмент</translation>
 <translation id="7481312909269577407">Forward</translation>
+<translation id="7481864133709957613">Энэ хуудаснаас хайхын тулд үгнүүдийг товшихын оронд удаан дарна уу</translation>
 <translation id="7482656565088326534">Урьдчилан үзэх таб</translation>
 <translation id="7484997419527351112">Discover - унтраасан</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Шинэчилсэн <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -954,6 +957,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="751961395872307827">Сайтад холбогдох боломжгүй байна</translation>
 <translation id="752220631458524187">Дууссан үедээ салгана уу</translation>
+<translation id="7523960634226602883">Google Дуран ашиглан камераараа хайгаарай</translation>
 <translation id="753225086557513863">Дараа эхлэхээр хуваарилсан</translation>
 <translation id="7559975015014302720">Lite горим унтраалттай байна</translation>
 <translation id="7562080006725997899">Хөтөчийн мэдээллийг арилгаж байна</translation>

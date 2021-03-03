@@ -22,6 +22,7 @@
 <translation id="147727933880789532">Chrome рэкамендуе адключыць гэта пашырэнне, бо зараз яно не адпавядае стандартам Палепшанага Бяспечнага прагляду.</translation>
 <translation id="1516530951338665275">Каб працягнуць спалучэнне, Google Chrome патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
+<translation id="1583073672411044740">Уваход у гэты профіль Chrome ужо выкананы карыстальнікам <ph name="EXISTING_USER" />. Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome выкарыстоўвае камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небяспечны, таму Chrome заблакіраваў яго.</translation>
 <translation id="1597911401261118146">Каб праверыць, ці не пагражае вашым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chrome<ph name="END_LINK" />.</translation>
@@ -116,6 +117,7 @@
 <translation id="3735758079232443276">Пашырэнне "<ph name="EXTENSION_NAME" />" змяніла старонку, якая паказваецца пры запуску Chrome.</translation>
 <translation id="3779473566290487688">Каб атрымліваць наступныя абнаўленні Google Chrome, вам патрэбна версія OS X 10.11 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Закрыйце ўсе вокны Google Chrome і паўтарыце спробу.</translation>
 <translation id="3865754807470779944">Усталявана версія Chrome <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Адкрыць спасылку ў акне &amp;інкогніта Chrome</translation>
@@ -187,6 +189,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Перазапуск Google Chrome адбудзецца праз 1 секунду}one{Перазапуск Google Chrome адбудзецца праз # секунду}few{Перазапуск Google Chrome адбудзецца праз # секунды}many{Перазапуск Google Chrome адбудзецца праз # секунд}other{Перазапуск Google Chrome адбудзецца праз # секунды}}</translation>
 <translation id="573759479754913123">Пра Chrome OS</translation>
+<translation id="5756509061973259733">Профіль Chrome з такім уліковым запісам ужо існуе на гэтай прыладзе</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не ўдалося запусціць Chrome. Паўтарыце спробу.</translation>
 <translation id="5867197326698922595">Google Chrome спрабуе змяніць паролі.</translation>

@@ -185,6 +185,7 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 <translation id="2239812875700136898">Controla tus historias desde las opciones del botón Descubre</translation>
 <translation id="2259659629660284697">Exportar contraseñas…</translation>
 <translation id="2276696007612801991">Para verificar las contraseñas, accede a tu Cuenta de Google</translation>
+<translation id="2278052315791335171">Si borras esta contraseña, no se quitará tu cuenta de <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
 <translation id="230115972905494466">No se encontraron dispositivos compatibles</translation>
 <translation id="230155349749732438">Para usar esta configuración, debes activar <ph name="BEGIN_LINK" />Mejorar las búsquedas y la navegación<ph name="END_LINK" />.</translation>
@@ -355,6 +356,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3398320232533725830">Abrir el administrador de favoritos</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas</translation>
+<translation id="3440975416244667276">Mantén presionado para ver información más relevante</translation>
 <translation id="3443221991560634068">Volver a cargar la página actual</translation>
 <translation id="3451542610083122179">Privacy Sandbox es una iniciativa en curso para preservar la Web abierta que ayudará a protegerte de mecanismos de seguimiento.
 
@@ -946,6 +948,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7475688122056506577">No se encontró la tarjeta SD. Es posible que falten algunos archivos.</translation>
 <translation id="7479104141328977413">Administración de pestañas</translation>
 <translation id="7481312909269577407">Reenviar</translation>
+<translation id="7481864133709957613">Para realizar una búsqueda desde esta página, mantén presionadas las palabras en lugar de tocarlas.</translation>
 <translation id="7482656565088326534">Pestaña de vista previa</translation>
 <translation id="7484997419527351112">Descubre (desactivado)</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualización: <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7514365320538308">Descargar</translation>
 <translation id="751961395872307827">No se puede conectar al sitio</translation>
 <translation id="752220631458524187">Desconéctalo cuando termines.</translation>
+<translation id="7523960634226602883">Buscar con la cámara mediante Google Lens</translation>
 <translation id="753225086557513863">Programadas para más tarde</translation>
 <translation id="7559975015014302720">El modo lite está desactivado</translation>
 <translation id="7562080006725997899">Borrando datos de navegación</translation>

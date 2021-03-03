@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">종속 포털</translation>
 <translation id="2008685064673031089">Prime 검색</translation>
 <translation id="2080070583977670716">설정 더보기</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />GB 중 <ph name="AVAILABLE_MEMORY" />GB를 사용할 수 있습니다.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">대기 중</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
+<translation id="2217935453350629363">현재 속도</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">활성화 상태</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
 <translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
+<translation id="4431821876790500265">보고서 보기</translation>
 <translation id="445059817448385655">이전 비밀번호</translation>
 <translation id="4453205916657964690">서브넷 마스크</translation>
 <translation id="4454245904991689773">스캔 파일 저장 위치</translation>
@@ -175,6 +178,8 @@
 <translation id="4932733599132424254">날짜</translation>
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
 <translation id="4985509611418653372">실행</translation>
+<translation id="4987769320337599931">방화벽</translation>
+<translation id="4999333166442584738">보고서 숨기기</translation>
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">그룹 이름</translation>
@@ -212,7 +217,7 @@
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">가족</translation>
 <translation id="5760715441271661976">포털 상태</translation>
-<translation id="5797428682393400134">완료</translation>
+<translation id="5797428682393400134">성공</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="583281660410589416">알 수 없음</translation>
 <translation id="5849570051105887917">홈 공급자 코드</translation>

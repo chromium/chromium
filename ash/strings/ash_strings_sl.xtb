@@ -609,6 +609,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6179832488876878285">Tukaj lahko pripnete pomembne datoteke. Če želite začeti, odprite aplikacijo Datoteke.</translation>
 <translation id="622484624075952240">Dol</translation>
+<translation id="6231419273573514727">Delovanje zunanje dodatne opreme bo morda omejeno</translation>
 <translation id="6236290670123303279">Upravljanje nastavitev</translation>
 <translation id="6237231532760393653">1x</translation>
 <translation id="6254629735336163724">Zaklenjeno na ležeče</translation>
@@ -732,6 +733,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7346909386216857016">V redu, razumem</translation>
 <translation id="7348093485538360975">Zaslonska tipkovnica</translation>
 <translation id="735745346212279324">Povezava z navideznim zasebnim omrežjem je prekinjena</translation>
+<translation id="7360036564632145207">S spremembo nastavitve zaščite dostopa do podatkov za zunanje dodatne opreme lahko optimizirate delovanje.</translation>
 <translation id="7371404428569700291">Okno za snemanje</translation>
 <translation id="7377169924702866686">Tipka Caps Lock je vklopljena.</translation>
 <translation id="7378203170292176219">Povlecite, če želite izbrati območje za posnetek</translation>
@@ -790,6 +792,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7780159184141939021">Zasuk zaslona</translation>
 <translation id="7796353162336583443">Dotaknite se gumba pisala na polici, če želite ustvariti zapisek, posneti posnetek zaslona ali uporabiti Pomočnika Google, laserski kazalnik ali povečevalno steklo.</translation>
 <translation id="7798302898096527229">Za preklic pritisnite tipko za iskanje ali Shift.</translation>
+<translation id="7807966291075028781">Zunanja dodatna oprema v načinu za goste ni podprta zaradi varnostnih razlogov.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> in <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Močan signal</translation>
 <translation id="7837740436429729974">Čas je potekel</translation>
@@ -858,6 +861,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8345019317483336363">Izbrano je okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Ustvarjanje zapiska</translation>
 <translation id="8371779926711439835">Naprej po črko</translation>
+<translation id="8371991222807690464">Delovanje zunanje dodatne opreme je v načinu za goste morda omejeno.</translation>
 <translation id="8375916635258623388">Ta naprava <ph name="DEVICE_NAME" /> in telefon se bosta samodejno povezala</translation>
 <translation id="8380784334203145311">Lahko noč,</translation>
 <translation id="8388750414311082622">Zadnjega namizja ni mogoče odstraniti.</translation>

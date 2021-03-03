@@ -20,6 +20,7 @@
 <translation id="147727933880789532">Chrome рекомендует отключить это расширение, так как оно не отвечает стандартам улучшенного Безопасного просмотра.</translation>
 <translation id="1516530951338665275">Чтобы продолжить подключение, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
+<translation id="1583073672411044740">Пользователь <ph name="EXISTING_USER" /> уже вошел в этот профиль Chrome. Вы можете создать новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
 <translation id="1587325591171447154">Chrome заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
 <translation id="1597911401261118146">Чтобы проверить, защищены ли ваши пароли от утечки данных и прочих проблем с безопасностью, <ph name="BEGIN_LINK" />войдите в Chrome<ph name="END_LINK" />.</translation>
@@ -112,6 +113,7 @@
 <translation id="3735758079232443276">Расширение "<ph name="EXTENSION_NAME" />" изменило стартовую страницу Chrome.</translation>
 <translation id="3779473566290487688">На вашем компьютере используется OS X 10.10. Чтобы получать обновления Google Chrome, установите на устройство OS X 10.11 или более поздней версии.</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">Будет создан новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="386202838227397562">Закройте все окна Chrome и повторите попытку снова.</translation>
 <translation id="3865754807470779944">Установлен браузер Chrome версии <ph name="PRODUCT_VERSION" />.</translation>
 <translation id="3873044882194371212">Открыть ссылку в режиме инкогнито браузера Chrome</translation>
@@ -178,6 +180,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome перезапустится через 1 секунду}one{Google Chrome перезапустится через # секунду}few{Google Chrome перезапустится через # секунды}many{Google Chrome перезапустится через # секунд}other{Google Chrome перезапустится через # секунды}}</translation>
 <translation id="573759479754913123">О Chrome OS</translation>
+<translation id="5756509061973259733">На данном устройстве уже есть профиль Chrome для этого аккаунта.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не удалось запустить Chrome. Повторите попытку.</translation>
 <translation id="5867197326698922595">Google Chrome пытается изменить пароли</translation>

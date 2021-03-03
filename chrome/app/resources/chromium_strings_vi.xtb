@@ -49,6 +49,7 @@
 <translation id="2770231113462710648">Thay đổi trình duyệt mặc định thành:</translation>
 <translation id="2799223571221894425">Chạy lại</translation>
 <translation id="2816712596130903444">Tách biệt hồ sơ trên Chromium?</translation>
+<translation id="2837693172913560447">Thao tác này sẽ tạo một hồ sơ mới trên Chromium cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Xóa khỏi Chromium...</translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
 <translation id="2910007522516064972">Giới thiệu về &amp;Chromium</translation>
@@ -123,6 +124,7 @@
 <translation id="4987820182225656817">Khách có thể sử dụng Chromium mà không phải thoát khỏi bất cứ nội dung nào.</translation>
 <translation id="4994636714258228724">Thêm chính bạn vào Chromium</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" /> đã đăng nhập vào hồ sơ này trên Chromium. Thao tác này sẽ tạo một hồ sơ mới trên Chromium cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Để áp dụng các mục thay đổi của bạn, hãy chạy lại Chromium</translation>
 <translation id="5358375970380395591">Bạn đang đăng nhập bằng tài khoản được quản lý và cấp cho quản trị viên của tài khoản quyền kiểm soát cấu hình Chromium của bạn. Dữ liệu Chromium của bạn, chẳng hạn như ứng dụng, dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ vĩnh viễn được liên kết với <ph name="USER_NAME" />. Bạn có thể xóa dữ liệu này thông qua Trang tổng quan của tài khoản Google nhưng không thể liên kết dữ liệu này với tài khoản khác. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Đang cập nhật Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -233,6 +235,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7773960292263897147">Cảnh báo: Chromium không thể ngăn các tiện ích ghi lại lịch sử duyệt web của bạn. Để vô hiệu hóa tiện ích này trong chế độ ẩn danh, hãy bỏ chọn tiện ích này.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">Xóa cookie và dữ liệu trang web khi bạn thoát khỏi Chromium</translation>
+<translation id="7828947555739565424">Thiết bị này đã có một hồ sơ trên Chromium sử dụng tài khoản này</translation>
 <translation id="7857220146454061152">Để nhận được các bản cập nhật Chromium trong tương lai, bạn cần dùng OS X 10.11 trở lên. Máy tính này đang dùng OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium không thể cập nhật lên phiên bản mới nhất nên bạn đang bỏ lỡ các tính năng và bản vá bảo mật mới.</translation>
 <translation id="7898472181347242998">Để kiểm tra xem thiết bị của bạn đã cập nhật hay chưa, hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt Chromium OS<ph name="LINK_END" /></translation>

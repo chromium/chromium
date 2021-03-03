@@ -305,6 +305,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3571734092741541777">Iestatīt</translation>
 <translation id="3573179567135747900">Mainīt atpakaļ uz <ph name="FROM_LOCALE" /> (nepieciešama restartēšana)</translation>
 <translation id="3576141592585647168">Mainīt laika joslu</translation>
+<translation id="3593039967545720377">Lai skatītu starpliktuvi un piekļūtu starpliktuves vēsturei, nospiediet taustiņu kombināciju <ph name="SHORTCUT_KEY_NAME" />+V. Lai sāktu darbu, kopējiet kādu vienumu.</translation>
 <translation id="3593646411856133110">Velciet augšup un turiet, lai skatītu atvērtās lietotnes.</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
 <translation id="3604801046548457007">Darbvirsma <ph name="DESK_TITILE" /> ir izveidota</translation>
@@ -608,6 +609,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6179832488876878285">Šeit varat piespraust svarīgos failus. Lai sāktu, atveriet lietotni Faili.</translation>
 <translation id="622484624075952240">Lejup</translation>
+<translation id="6231419273573514727">Perifēro ierīču veiktspēja var būt ierobežota</translation>
 <translation id="6236290670123303279">Pārvaldīt iestatījumus</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Bloķēts horizontāli</translation>
@@ -731,6 +733,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7346909386216857016">Labi, sapratu</translation>
 <translation id="7348093485538360975">Ekrāntastatūra</translation>
 <translation id="735745346212279324">VPN ir atvienots</translation>
+<translation id="7360036564632145207">Mainot datu piekļuves aizsardzības iestatījumu perifērajām ierīcēm, var tikt optimizēta veiktspēja.</translation>
 <translation id="7371404428569700291">Ierakstīt logu</translation>
 <translation id="7377169924702866686">Funkcija Caps Lock ir ieslēgta.</translation>
 <translation id="7378203170292176219">Velciet, lai atlasītu apgabalu, kura saturs jāieraksta</translation>
@@ -789,6 +792,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7780159184141939021">Ekrāna pagriešana</translation>
 <translation id="7796353162336583443">Pieskarieties skārienekrāna pildspalvas pogai plauktā, lai veiktu piezīmes vai ekrānuzņēmumus, izmantotu Google asistentu, lāzera rādītāju vai lupu.</translation>
 <translation id="7798302898096527229">Lai atceltu, nospiediet meklēšanas vai pārslēgšanas taustiņu.</translation>
+<translation id="7807966291075028781">Drošības apsvērumu dēļ perifērā ierīce netiek atbalstīta viesa režīmā.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> un <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Spēcīgs signāls</translation>
 <translation id="7837740436429729974">Laiks ir beidzies!</translation>
@@ -857,6 +861,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8345019317483336363">Atlasīts logs “<ph name="WINDOW_TITLE" />”</translation>
 <translation id="8351131234907093545">Izveidot piezīmi</translation>
 <translation id="8371779926711439835">Pāriet uz priekšu pa burtam</translation>
+<translation id="8371991222807690464">Perifēro ierīču veiktspēja var būt ierobežota viesa režīmā.</translation>
 <translation id="8375916635258623388">Tiks automātiski izveidots šīs ierīces <ph name="DEVICE_NAME" /> un jūsu tālruņa savienojums</translation>
 <translation id="8380784334203145311">Arlabunakti!</translation>
 <translation id="8388750414311082622">Pēdējo darbvietu nevar noņemt.</translation>

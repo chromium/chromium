@@ -51,6 +51,7 @@
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2816712596130903444">要建立另一個 Chromium 設定檔嗎？</translation>
+<translation id="2837693172913560447">此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chromium 設定檔</translation>
 <translation id="2847479871509788944">從 Chromium 中移除…</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2910007522516064972">關於 Chromium(&amp;C)</translation>
@@ -125,6 +126,7 @@
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" />已登入此 Chromium 設定檔。此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chromium 設定檔</translation>
 <translation id="5277894862589591112">如要套用變更，請重新啟動 Chromium</translation>
 <translation id="5358375970380395591">您已登入受管理的帳戶，並將管理控制權授予您的 Chromium 設定檔。您的 Chromium 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -233,6 +235,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7773960292263897147">警告：Chromium 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7827169012280634081">在您離開 Chromium 時清除 Cookie 和網站資料</translation>
+<translation id="7828947555739565424">此裝置上已有此帳戶的 Chromium 設定檔</translation>
 <translation id="7857220146454061152">如要取得日後的 Chromium 更新，您將需要 OS X 10.11 或以上版本。此電腦正在使用 OS X 10.10。</translation>
 <translation id="7867198900892795913">由於 Chromium 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>
 <translation id="7898472181347242998">如要查看裝置是否已更新，請前往 <ph name="LINK_BEGIN" />Chromium 作業系統設定<ph name="LINK_END" /></translation>

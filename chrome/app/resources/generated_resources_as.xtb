@@ -254,7 +254,6 @@
 <translation id="1275718070701477396">বাছনি কৰা আছে</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ইনষ্টল কৰিব পৰা নগ’ল</translation>
 <translation id="1277020343994096713">আপোনাৰ বৰ্তমান পিনটোতকৈ পৃথক এটা নতুন পিন সৃষ্টি কৰক</translation>
-<translation id="1278703349931574538">সম্পৰ্ক পৰিচালনা কৰক</translation>
 <translation id="127946606521051357">ওচৰৰ ডিভাইচে শ্বেয়াৰ কৰি আছে</translation>
 <translation id="1280820357415527819">ম’বাইল নেটৱৰ্ক বিচাৰি থকা হৈছে</translation>
 <translation id="1280965841156951489">ফাইলসমূহ সম্পাদনা কৰক</translation>
@@ -1138,7 +1137,6 @@
 <translation id="2256115617011615191">এতিয়াই ৰিষ্টার্ট কৰক</translation>
 <translation id="2257053455312861282">এটা বিদ্যালয়ৰ একাউণ্ট যোগ দিয়া কাৰ্যই এগৰাকী শিক্ষাৰ্থী হিচাপে অভিভাৱকীয় নিয়ন্ত্ৰণসমূহৰ অধীনত কাৰ্য সম্পাদন কৰিও ৱেবছাইট আৰু এক্সটেনশ্বনসমূহত তথা এপ্‌সমূহত ছাইন ইন কৰাটো সহজ কৰি তোলে।</translation>
 <translation id="2261323523305321874">আপোনাৰ প্ৰশাসকে কৰা সমগ্ৰ ছিষ্টেমতে প্ৰভাৱ পেলোৱা কোনো সলনি কার্যয়ে কিছুমান পুৰণি প্ৰ'ফাইল অক্ষম কৰিছে।</translation>
-<translation id="2262332168014443534">বর্তমান লাইট ম'ডে HTTPSৰ লগতে সকলো পৃষ্ঠাতে ব্ৰাউজিং ক্ষিপ্ৰ কৰে।</translation>
 <translation id="2262477216570151239">পুনৰাবৃত্তিৰ পূর্বে হোৱা বিলম্ব</translation>
 <translation id="2262888617381992508">সুৰক্ষিত সমল প্লে’ কৰাৰ অনুমতি নাই</translation>
 <translation id="2263189956353037928">ছাইন আউট হৈ আকৌ ছাইন ইন কৰক</translation>
@@ -1495,7 +1493,6 @@
 <translation id="265390580714150011">ক্ষেত্ৰৰ মান</translation>
 <translation id="2654166010170466751">পৰিশোধ হেণ্ডেলাৰ ইনষ্টল কৰিবলৈ ছাইটবোৰক অনুমতি দিয়ক</translation>
 <translation id="2654553774144920065">প্ৰিণ্টৰ অনুৰোধ</translation>
-<translation id="2657807507504044638">কোনো ই-ছিমৰ প্ৰ'ফাইল উপলব্ধ নহয়। <ph name="BEGIN_LINK" />ইয়াত<ph name="END_LINK" /> এটা নতুন প্ৰ'ফাইল ডাউনল'ড কৰক</translation>
 <translation id="2659381484350128933">ডিভাইচ অনুসৰি <ph name="FOOTNOTE_POINTER" /> সুবিধাসমূহ বিভিন্ন হয়</translation>
 <translation id="2659971421398561408">Crostini ডিস্কৰ আকাৰ সলনি কৰা</translation>
 <translation id="2660779039299703961">অনুষ্ঠান</translation>
@@ -3042,7 +3039,6 @@
 <translation id="4416582610654027550">কোনো মান্য URL টাইপ কৰক</translation>
 <translation id="4419409365248380979">সদায় <ph name="HOST" />ক কুকিসমূহ ছেট কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="4419610272958564173">অজ্ঞাত ডিভাইচ (বিক্ৰেতা: <ph name="VENDOR_ID" />, প্ৰডাক্ট: <ph name="PRODUCT_ID" />)</translation>
-<translation id="4421167684395067330">সংযোগ কৰোঁতে সমস্যাৰ সৃষ্টি হৈছে। অনুগ্ৰহ কৰি সহায়ৰ বাবে <ph name="CARRIER_NAME" />ৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="4421932782753506458">নোমাল</translation>
 <translation id="4423376891418188461">ছেটিংসমূহ পুনঃস্থাপন কৰক</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, আপোনাৰ প্ৰশাসকে আপুনি নিজৰ পাছৱৰ্ডটো সলনি কৰাটো বিচাৰে।</translation>
@@ -3054,7 +3050,6 @@
 <translation id="4434045419905280838">পপ-আপ আৰু পুনৰ নির্দেশ</translation>
 <translation id="443454694385851356">লিগেচী (অসুৰক্ষিত)</translation>
 <translation id="443475966875174318">অমিল এপ্লিকেশ্বনসমূহ আপডে’ট কৰক বা আঁতৰাওক</translation>
-<translation id="4436063104263971834">কোনো ছিমৰ প্ৰ'ফাইল উপলব্ধ নহয়। <ph name="BEGIN_LINK" />ইয়াত<ph name="END_LINK" /> এটা নতুন প্ৰ’ফাইল ছেট আপ কৰক।</translation>
 <translation id="4438043733494739848">স্বচ্ছ</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" />ক আপোনাৰ Google একাউণ্টত ছেভ কৰা হ'ব, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সংযোগ কৰক</translation>
@@ -5926,7 +5921,6 @@
 <translation id="7775694664330414886">নামবিহীন গোটলৈ টেবটো নিয়া হৈছে - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">আপুনি এই ছাইটটোৰ বাবে সকলো টেব বন্ধ নকৰা পর্যন্ত <ph name="ORIGIN" />এ <ph name="FOLDERNAME" />ত ফাইলসমূহ চাব পাৰিব</translation>
 <translation id="7776701556330691704">কোনো কণ্ঠধ্বনি পোৱা নগ'ল</translation>
-<translation id="7780252971640011240">সংযোগ কৰোঁতে সমস্যাৰ সৃষ্টি হৈছে। অনুগ্ৰহ কৰি সহায়ৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="7781335840981796660">সকলো ব্যৱহাৰকাৰী একাউণ্ট আৰু স্থানীয় ডেটা আঁতৰোৱা হ’ব।</translation>
 <translation id="7782102568078991263">Googleৰ পৰা আৰু কোনো প্ৰস্তাৱ নাই</translation>
 <translation id="7782717250816686129">লগ ইন স্ক্ৰীণত স্থিৰ ডেটা ষ্ট'ৰ কৰক আৰু ছেশ্বনটোৰত ক্ৰেডেনশ্বিয়েলসমূহ দিয়ক।</translation>

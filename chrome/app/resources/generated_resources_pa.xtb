@@ -254,7 +254,6 @@
 <translation id="1275718070701477396">ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ਨੂੰ ਅਣਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1277020343994096713">ਆਪਣੇ ਮੌਜੂਦਾ ਪਿੰਨ ਨਾਲੋਂ ਕੋਈ ਵੱਖਰਾ ਨਵਾਂ ਪਿੰਨ ਬਣਾਓ</translation>
-<translation id="1278703349931574538">ਸੰਪਰਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="127946606521051357">ਨਜ਼ਦੀਕੀ ਡੀਵਾਈਸ ਡਾਟਾ ਸਾਂਝਾ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="1280820357415527819">ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਦੀ ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1280965841156951489">ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
@@ -1139,7 +1138,6 @@
 <translation id="2256115617011615191">ਹੁਣ ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="2257053455312861282">ਸਕੂਲੀ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨ ਨਾਲ ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲ ਅਧੀਨ ਕੰਮ ਕਰਦਿਆਂ ਇੱਕ ਵਿਦਿਆਰਥੀ ਵਜੋਂ ਵੈੱਬਸਾਈਟਾਂ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਆਸਾਨ ਹੋ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2261323523305321874">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਮੁੱਚੇ ਸਿਸਟਮ ਵਿੱਚ ਅਜਿਹਾ ਬਦਲਾਅ ਕੀਤਾ ਹੈ ਜੋ ਕੁਝ ਪੁਰਾਣੇ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ।</translation>
-<translation id="2262332168014443534">ਲਾਈਟ ਮੋਡ ਹੁਣ HTTPS ਸਮੇਤ ਸਾਰੇ ਪੰਨਿਆਂ 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵਧੇਰੇ ਤੇਜ਼ ਬਣਾਉਂਦਾ ਹੈ।</translation>
 <translation id="2262477216570151239">ਦੁਹਰਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਦੇਰੀ</translation>
 <translation id="2262888617381992508">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਨੂੰ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="2263189956353037928">ਸਾਈਨ-ਆਊਟ ਅਤੇ ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -1493,7 +1491,6 @@
 <translation id="265390580714150011">ਖੇਤਰ ਦਾ ਮੁੱਲ</translation>
 <translation id="2654166010170466751">ਸਾਈਟਾਂ ਨੂੰ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਨ ਦਿਓ</translation>
 <translation id="2654553774144920065">ਪ੍ਰਿੰਟ ਦੀ ਬੇਨਤੀ</translation>
-<translation id="2657807507504044638">ਕੋਈ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਇੱਥੇ<ph name="END_LINK" /> ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਡੀਵਾਈਸ ਮੁਤਾਬਕ ਵੱਖ-ਵੱਖ ਹੁੰਦੀਆਂ ਹਨ</translation>
 <translation id="2659971421398561408">Crostini ਡਿਸਕ ਦਾ ਆਕਾਰ ਬਦਲਣਾ</translation>
 <translation id="2660779039299703961">ਇਵੈਂਟ</translation>
@@ -3035,7 +3032,6 @@
 <translation id="4416582610654027550">ਕੋਈ ਵੈਧ URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="4419409365248380979">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਨੂੰ ਕੁਕੀਜ਼ ਸੈਟ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="4419610272958564173">ਅਗਿਆਤ ਡੀਵਾਈਸ (ਵਿਕਰੇਤਾ: <ph name="VENDOR_ID" />, ਉਤਪਾਦ: <ph name="PRODUCT_ID" />)</translation>
-<translation id="4421167684395067330">ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਸਮੱਸਿਆ ਆਈ। ਕਿਰਪਾ ਕਰਕੇ ਸਹਾਇਤਾ ਲਈ <ph name="CARRIER_NAME" /> ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਲਈ ਤੁਹਾਡੀ ਲੋੜ ਹੈ।</translation>
@@ -3047,7 +3043,6 @@
 <translation id="4434045419905280838">ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ</translation>
 <translation id="443454694385851356">ਵਿਰਾਸਤੀ (ਅਸੁਰੱਖਿਅਤ)</translation>
 <translation id="443475966875174318">ਗੈਰ-ਅਨੁਰੂਪ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਜਾਂ ਹਟਾਓ</translation>
-<translation id="4436063104263971834">ਕੋਈ ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਇੱਥੇ<ph name="END_LINK" /> ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ।</translation>
 <translation id="4438043733494739848">ਪਾਰਦਰਸ਼ੀ</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ <ph name="ACCOUNT" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="4439427728133035643">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਕਨੈਕਟ ਕਰੋ</translation>
@@ -5923,7 +5918,6 @@
 <translation id="7775694664330414886">ਟੈਬ ਨੂੰ ਬੇਨਾਮ ਗਰੁੱਪ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> ਇਸ ਸਾਈਟ ਲਈ ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੰਦ ਨਾ ਕੀਤੇ ਜਾਣ ਤੱਕ <ph name="FOLDERNAME" /> ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖ ਸਕੇਗੀ</translation>
 <translation id="7776701556330691704">ਕੋਈ ਅਵਾਜ਼ਾਂ ਨਹੀਂ ਮਿਲੀਆਂ</translation>
-<translation id="7780252971640011240">ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਸਮੱਸਿਆ ਆਈ। ਕਿਰਪਾ ਕਰਕੇ ਸਹਾਇਤਾ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="7781335840981796660">ਸਾਰੇ ਵਰਤੋਂਕਾਰ ਖਾਤੇ ਅਤੇ ਸਥਾਨਕ ਡਾਟਾ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7782102568078991263">Google ਤੋਂ ਕੋਈ ਹੋਰ ਸੁਝਾਅ ਨਹੀਂ</translation>
 <translation id="7782717250816686129">ਲੌਗ-ਇਨ ਸਕ੍ਰੀਨ 'ਤੇ ਸਥਿਰ ਡਾਟਾ ਸਟੋਰ ਕਰਕੇ ਸੈਸ਼ਨ ਵਿੱਚ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਲਿਆਓ।</translation>

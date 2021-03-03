@@ -305,6 +305,7 @@
 <translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">改回「<ph name="FROM_LOCALE" />」(需要重新啟動)</translation>
 <translation id="3576141592585647168">變更時區</translation>
+<translation id="3593039967545720377">按下 <ph name="SHORTCUT_KEY_NAME" /> + V 鍵查看剪貼簿，藉此存取剪貼簿歷史記錄。複製任一項目即可開始。</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕即可查看開啟的應用程式</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
@@ -608,6 +609,7 @@
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6179832488876878285">你可以將重要的檔案固定在這裡，只要開啟「檔案」應用程式即可開始使用。</translation>
 <translation id="622484624075952240">向下鍵</translation>
+<translation id="6231419273573514727">周邊裝置效能可能受到限制</translation>
 <translation id="6236290670123303279">管理設定</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">已鎖定為水平畫面</translation>
@@ -731,6 +733,7 @@
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
+<translation id="7360036564632145207">變更周邊裝置的資料存取權防護設定可以改善效能</translation>
 <translation id="7371404428569700291">錄製視窗畫面</translation>
 <translation id="7377169924702866686">大寫鍵已啟用。</translation>
 <translation id="7378203170292176219">拖曳選取要錄影的區域</translation>
@@ -789,6 +792,7 @@
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796353162336583443">輕觸檔案櫃的觸控筆圖示即可寫筆記、擷取螢幕畫面，以及使用 Google 助理、雷射筆和放大鏡。</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
+<translation id="7807966291075028781">基於安全考量，訪客模式不支援使用周邊裝置</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> 小時 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="7829386189513694949">訊號穩定</translation>
 <translation id="7837740436429729974">時間到</translation>
@@ -857,6 +861,7 @@
 <translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8351131234907093545">寫筆記</translation>
 <translation id="8371779926711439835">移至下一個字母</translation>
+<translation id="8371991222807690464">在訪客模式下，周邊裝置效能可能受到限制</translation>
 <translation id="8375916635258623388">這部 <ph name="DEVICE_NAME" /> 會自動連結到你的手機</translation>
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>

@@ -295,6 +295,7 @@
 <translation id="2053111141626950936">በ<ph name="LANGUAGE" /> ያሉ ገጾች አይተረጎሙም።</translation>
 <translation id="2053553514270667976">ዚፕ ኮድ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 የአስተያየት ጥቆማ}one{# የአስተያየት ጥቆማዎች}other{# የአስተያየት ጥቆማዎች}}</translation>
+<translation id="2071692954027939183">ማሳወቂያዎች ብዙውን ጊዜ ስለማይፈቅዱሏቸው በራስ-ሰር ታግደዋል</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="20817612488360358">የስርዓት ተኪ ቅንብሮች ስራ ላይ እንዲውሉ ተቀናብረዋል ግን ግልጽ የሆነ የተኪ ውቅርም ተገልጿል።</translation>
 <translation id="2082238445998314030">ውጤት <ph name="RESULT_NUMBER" /> ከ<ph name="TOTAL_RESULTS" /></translation>
@@ -784,6 +785,7 @@
 <translation id="4058922952496707368">ቁልፍ «<ph name="SUBKEY" />»፦ <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (የደብዳቤ ፖስታ)</translation>
 <translation id="4067947977115446013">የሚሰራ አድራሻ ያስገቡ</translation>
+<translation id="4072193657607981494">መመሪያዎችን በመጫን ላይ</translation>
 <translation id="4072486802667267160">የእርስዎን ትዕዛዝ መሥራት ላይ የሆነ ስህተት ነበር። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="4075732493274867456">ደንበኛው እና አገልጋዩ የተለመደ የኤስኤስኤል ፕሮቶኮል ስሪት ወይም የስነ መሰውር ጥቅል አይደግፉም።</translation>
 <translation id="4075941231477579656">የንክኪ መታወቂያ</translation>
@@ -919,6 +921,7 @@
 <translation id="4510487217173779431">Chou4 (የደብዳቤ ፖስታ)</translation>
 <translation id="4515275063822566619">ካርዶች እና አድራሻዎች ከChrome እና ከGoogle መለያዎ (<ph name="ACCOUNT_EMAIL" />) የተገኙ ናቸው። በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ ሊያቀናብሯቸው ይችላሉ።</translation>
 <translation id="4517607026994743406">Comm-10 (የደብዳቤ ፖስታ)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> በ <ph name="HEIGHT" /> ሚሜ (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
 <translation id="4524138615196389145">ከአሁን በኋላ WebAuthnን በመጠቀም የእርስዎን ካርዶች በበለጠ ፍጥነት ያረጋግጡ</translation>
 <translation id="4524805452350978254">ካርዶችን አቀናብር</translation>
@@ -1341,6 +1344,7 @@
 <translation id="614940544461990577">ይሞክሩ፦</translation>
 <translation id="6150036310511284407">ሦስቴ ብስ ግራ</translation>
 <translation id="6151417162996330722">የአገልጋይ እውቅና ማረጋገጫው በጣም ረጅም የሆነ የማረጋገጫ ጊዜ አለው።</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> በ<ph name="HEIGHT" /> (<ph name="ORIENTATION" />)ውስጥ</translation>
 <translation id="6157877588268064908">የመላኪያ ዘዴዎችን እና መስፈርቶችን ለመመልከት አድራሻ ይምረጡ</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6169916984152623906">አሁን በግል ማሰስ ይችላሉ፣ እና ይህን መሣሪያ የሚጠቀሙ ሰዎች የእርስዎን እንቅስቃሴ አይመለከቱም። ይሁንና፣ ውርዶች እና ዕልባቶች ይቀመጣሉ።</translation>
@@ -1889,6 +1893,7 @@
 <translation id="8364627913115013041">አልተዋቀረም።</translation>
 <translation id="8368476060205742148">Google Play አገልግሎቶች</translation>
 <translation id="8371889962595521444">ብጁ የስር ቅንብሮች</translation>
+<translation id="8374636051559112948">ይለያያል</translation>
 <translation id="8380941800586852976">አደገኛ</translation>
 <translation id="8381674639488873545">እነዚህ ክፍያዎች የአንድ ጊዜ ወይም ተደጋጋሚ፣ እና የማያስታውቁ ሊሆኑ ይችላሉ። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ከ<ph name="ORIGIN_NAME" />ወደ <ph name="VM_NAME" /> ማጋራት በአስተዳዳሪ መመሪያ ታግዷል</translation>
@@ -2071,6 +2076,7 @@
 <translation id="9114524666733003316">ካርድን በማረጋገጥ ላይ...</translation>
 <translation id="9114581008513152754">ይህ አሳሽ በኩባንያ ወይም ሌላ ድርጅት አይተዳደርም። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChrome ውጭ ሊተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">ተሰቅሏል</translation>
+<translation id="9128016270925453879">መመሪያዎች ተጭነዋል</translation>
 <translation id="9128870381267983090">ከአውታረ መረብ ጋር ይገናኙ</translation>
 <translation id="9137013805542155359">የመጀመሪያውን አሳይ</translation>
 <translation id="9141013498910525015">አድራሻዎችን ያቀናብሩ</translation>

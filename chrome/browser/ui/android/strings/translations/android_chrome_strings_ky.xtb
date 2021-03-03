@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">Сунуштардын параметрлери баскычынан окуяларыңызды башкарыңыз</translation>
 <translation id="2259659629660284697">Сырсөздөрдү экспорттоо…</translation>
 <translation id="2276696007612801991">Сырсөздөрүңүздү текшерүү үчүн Google аккаунтуңузга кириңиз</translation>
+<translation id="2278052315791335171">Бул сырсөздү жок кылуу менен <ph name="SITE" /> аккаунтуңуз жок кылынбайт</translation>
 <translation id="2286841657746966508">Төлөмдүн дареги</translation>
 <translation id="230115972905494466">Шайкеш түзмөктөр табылган жок</translation>
 <translation id="230155349749732438">Бул жөндөөнү колдонуу үчүн <ph name="BEGIN_LINK" />Барактарды издөө жана карап чыгууну жакшыртуу<ph name="END_LINK" /> параметрин күйгүзүшүңүз керек</translation>
@@ -355,6 +356,7 @@
 <translation id="3398320232533725830">Кыстармаларды башкаргычты ачуу</translation>
 <translation id="3414952576877147120">Өлчөм:</translation>
 <translation id="3429160811076349561">Сыноонун функциялары өчүк</translation>
+<translation id="3440975416244667276">Тийиштүү маалыматты көрүү үчүн коё бербей басып туруңуз</translation>
 <translation id="3443221991560634068">Учурдагы баракты кайра жүктөө</translation>
 <translation id="3451542610083122179">Privacy Sandbox көз салуучу механизмдерден коргоого жардам бере турган веб үчүн улануучу демилге.
 
@@ -946,6 +948,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7475688122056506577">SD-карта табылган жок. Айрым файлдарыңыз жок болушу мүмкүн.</translation>
 <translation id="7479104141328977413">Өтмөк башкаруучу</translation>
 <translation id="7481312909269577407">Багыттоо</translation>
+<translation id="7481864133709957613">Бул баракта издөө үчүн сөздөрдү таптоонун ордуна коё бербей басып туруңуз</translation>
 <translation id="7482656565088326534">Алдын ала көрүү өтмөгү</translation>
 <translation id="7484997419527351112">Сунуштар- өчүк</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Жаңырган <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="751961395872307827">Сайтка туташпай жатат</translation>
 <translation id="752220631458524187">Бүтүргөндө ажыратыңыз</translation>
+<translation id="7523960634226602883">Google Lens'ти колдонуп, камераңыз менен издеңиз</translation>
 <translation id="753225086557513863">Кийинкиге графикке киргизүү</translation>
 <translation id="7559975015014302720">Жөнөкөй режим өчүк</translation>
 <translation id="7562080006725997899">Серептөө дайындары тазаланууда</translation>

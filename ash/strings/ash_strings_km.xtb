@@ -305,6 +305,7 @@
 <translation id="3571734092741541777">តំឡើង</translation>
 <translation id="3573179567135747900">ប្តូរទៅ "<ph name="FROM_LOCALE" />" (តម្រូវឲ្យចាប់ផ្តើមឡើងវិញ)</translation>
 <translation id="3576141592585647168">ប្ដូរល្វែងម៉ោង</translation>
+<translation id="3593039967545720377">ចូលប្រើប្រវត្តិឃ្លីបបតរបស់អ្នកដោយចុច <ph name="SHORTCUT_KEY_NAME" /> + V ដើម្បីមើលឃ្លីបបតរបស់អ្នក។ សូមចម្លងធាតុណាមួយ ដើម្បីចាប់ផ្ដើម។</translation>
 <translation id="3593646411856133110">អូសឡើងលើ រួចសង្កត់ឱ្យជាប់ ដើម្បីមើល​កម្មវិធីដែលបើក</translation>
 <translation id="3595596368722241419">ថ្មពេញ</translation>
 <translation id="3604801046548457007">បានបង្កើតតុទី <ph name="DESK_TITILE" /></translation>
@@ -608,6 +609,7 @@
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
 <translation id="6179832488876878285">អ្នកអាចខ្ទាស់ឯកសារសំខាន់ៗរបស់អ្នកនៅទីនេះ។ សូមបើកកម្មវិធី Files ដើម្បីចាប់ផ្ដើម។</translation>
 <translation id="622484624075952240">ចុះក្រោម</translation>
+<translation id="6231419273573514727">ប្រតិបត្តិការរបស់​ឧបករណ៍សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រអាចមានកម្រិត</translation>
 <translation id="6236290670123303279">គ្រប់គ្រង​ការកំណត់</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">បាន​ចាក់សោ​ឱ្យ​ស្ថិត​ក្នុងទិសដៅផ្ដេក</translation>
@@ -731,6 +733,7 @@
 <translation id="7346909386216857016">យល់ព្រម ខ្ញុំយល់ហើយ</translation>
 <translation id="7348093485538360975">ក្តារចុចលើអេក្រង់</translation>
 <translation id="735745346212279324">VPN ត្រូវបានផ្តាច់</translation>
+<translation id="7360036564632145207">ការផ្លាស់ប្ដូរការការពារការចូលប្រើទិន្នន័យរបស់អ្នកសម្រាប់ការកំណត់ឧបករណ៍សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រអាចជំរុញឱ្យប្រតិបត្តិការមានប្រសិទ្ធភាពបំផុត</translation>
 <translation id="7371404428569700291">ថតវីដេអូ​វិនដូ</translation>
 <translation id="7377169924702866686">Caps Lock ត្រូវបានបើក។</translation>
 <translation id="7378203170292176219">អូសដើម្បីជ្រើសរើសផ្នែកណាមួយ ដើម្បីថតវីដេអូ</translation>
@@ -789,6 +792,7 @@
 <translation id="7780159184141939021">បង្វិល​អេក្រង់</translation>
 <translation id="7796353162336583443">ចុច​ប៊ូតុងប៊ិច​នៅលើ​ធ្នើដើម្បី​កត់ចំណាំ ថត​អេក្រង់ ប្រើ​ Google ជំនួយការ សញ្ញា​ព្រួញ​ឡាស៊ែរ ឬ​កែវ​ពង្រីក។</translation>
 <translation id="7798302898096527229">ចុច Search ឬ Shift ដើម្បី​បោះបង់។</translation>
+<translation id="7807966291075028781">ឧបករណ៍សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រមិនអាចប្រើនៅក្នុងមុខងារភ្ញៀវបានទេ ដោយសារបញ្ហាពាក់ព័ន្ធនឹងសុវត្ថិភាព</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> និង <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">សេវាខ្លាំង</translation>
 <translation id="7837740436429729974">ដល់​ម៉ោង</translation>
@@ -857,6 +861,7 @@
 <translation id="8345019317483336363">បានជ្រើសរើស​វិនដូ <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">បង្កើត​កំណត់​ចំណាំ</translation>
 <translation id="8371779926711439835">ទៅមុខមួយតួអក្សរ</translation>
+<translation id="8371991222807690464">ប្រតិបត្តិការរបស់​ឧបករណ៍សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រអាចមានកម្រិតនៅក្នុងមុខងារភ្ញៀវ</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> នេះ និងទូរសព្ទរបស់អ្នក​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8380784334203145311">រាត្រីសួស្ដី</translation>
 <translation id="8388750414311082622">មិនអាច​លុបតុចុងក្រោយ​បានទេ។</translation>

@@ -185,6 +185,7 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2239812875700136898">Beheer je artikelen met de knop 'Opties voor Discover'</translation>
 <translation id="2259659629660284697">Wachtwoorden exporteren…</translation>
 <translation id="2276696007612801991">Log in met je Google-account om je wachtwoorden te checken</translation>
+<translation id="2278052315791335171">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd</translation>
 <translation id="2286841657746966508">Factuuradres</translation>
 <translation id="230115972905494466">Geen geschikte apparaten gevonden</translation>
 <translation id="230155349749732438">Als je deze instelling wilt gebruiken, moet je <ph name="BEGIN_LINK" />Zoekopdrachten en browsefunctionaliteit verbeteren<ph name="END_LINK" /> inschakelen</translation>
@@ -355,6 +356,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3398320232533725830">Bookmarkbeheer openen</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="3429160811076349561">Proeffuncties staan uit</translation>
+<translation id="3440975416244667276">Tik en houd vast voor meer relevante informatie</translation>
 <translation id="3443221991560634068">De huidige pagina opnieuw laden</translation>
 <translation id="3451542610083122179">Privacy Sandbox is een lopend initiatief voor behoud van het open web dat je beschermt tegen mechanismen voor tracking.
 
@@ -946,6 +948,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7475688122056506577">SD-kaart niet gevonden. Sommige van je bestanden kunnen ontbreken.</translation>
 <translation id="7479104141328977413">Tabbladbeheer</translation>
 <translation id="7481312909269577407">Vooruit</translation>
+<translation id="7481864133709957613">Als je wilt zoeken vanaf deze pagina, moet je op woorden tikken en deze vasthouden in plaats van erop te tikken</translation>
 <translation id="7482656565088326534">Voorbeeldtabblad</translation>
 <translation id="7484997419527351112">Discover - uit</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (geüpdatet: <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="751961395872307827">Kan geen verbinding maken met de site</translation>
 <translation id="752220631458524187">Koppel je telefoon los als je klaar bent</translation>
+<translation id="7523960634226602883">Zoeken met je camera via Google Lens</translation>
 <translation id="753225086557513863">Gepland voor later</translation>
 <translation id="7559975015014302720">Lite-versie is uitgeschakeld</translation>
 <translation id="7562080006725997899">Browsegegevens wissen</translation>

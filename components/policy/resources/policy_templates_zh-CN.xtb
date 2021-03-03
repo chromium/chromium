@@ -275,6 +275,7 @@
 <translation id="1393485621820363363">已启用企业设备打印机</translation>
 <translation id="1397855852561539316">默认搜索服务提供商建议网址</translation>
 <translation id="1413936351612032792">报告有关 Linux 应用使用情况的信息</translation>
+<translation id="1417888712677507140">屏蔽从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="1418387035898607074">不对从可信来源下载的文件执行安全浏览检查</translation>
 <translation id="142346659686073702">允许独立用户使用 Crostini</translation>
 <translation id="1425551776320718592">禁止此设备的用户使用 ADB 旁加载，但不对设备强制执行 Powerwash。使用此设置可能会导致设备处于不安全的状态。</translation>
@@ -374,6 +375,7 @@
 <translation id="1514888685242892912">启用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">启用悬浮无障碍功能菜单</translation>
 <translation id="1515824657887788963">允许页面在关闭过程中执行同步 XHR 请求。</translation>
+<translation id="1516486219683984217">不允许使用系统通知</translation>
 <translation id="1522425503138261032">允许网站跟踪用户的地理位置</translation>
 <translation id="1523774894176285446">对于配置的网站要启动的替代浏览器。</translation>
 <translation id="152657506688053119">默认搜索服务提供商的备选网址列表</translation>
@@ -2293,6 +2295,13 @@
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="4121350739760194865">阻止在新标签页上显示应用宣传信息</translation>
 <translation id="4122473079291425973">“新标签页”页面会显示卡片（若有可用内容），但用户可以更改此设置</translation>
+<translation id="4122565688998751716">此政策已被弃用，请改用“<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />”政策。
+
+配置 Linux 上的 <ph name="PRODUCT_NAME" /> 是否会使用原生通知。
+
+如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 将可以使用原生通知。
+
+如果此政策设为 False，<ph name="PRODUCT_NAME" /> 将不会使用原生通知。<ph name="PRODUCT_NAME" /> 的消息中心将被用作后备方案。</translation>
 <translation id="412697421478384751">允许用户设置安全性较低的锁定屏幕 PIN 码</translation>
 <translation id="4138655880188755661">时限</translation>
 <translation id="4147818922357566987">仅启用与重要修复程序有关的变体</translation>
@@ -2798,6 +2807,11 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果此政策未设置，“单声道音频”在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
+<translation id="4933301190614090397">控制在浏览器关闭时系统对 keepalive 请求的处理时长（以秒为单位）。
+
+      如果您指定了此政策，系统在关闭浏览器时便可延迟所设秒数之久，以处理 keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag) 请求。
+
+      默认值 (0) 表示此功能已停用。</translation>
 <translation id="4942681160308347946">将此政策设为 True 时，系统会在登录屏幕上开启语音反馈。将此政策设为 False 时，系统会在登录屏幕上关闭语音反馈。
 
       如果您设置了此政策，用户便可暂时开启或关闭语音反馈。当登录屏幕重新加载或闲置了 1 分钟后，语音反馈就会还原为初始状态。
@@ -2971,6 +2985,11 @@
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5196520640744454600">在登录屏幕上启用粘滞键</translation>
 <translation id="5206454085187851382">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
+<translation id="5207543664699568887">配置 Linux 上的 <ph name="PRODUCT_NAME" /> 是否会使用系统通知。
+
+如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 将可以使用系统通知。
+
+如果此政策设为 False，<ph name="PRODUCT_NAME" /> 将不会使用系统通知。<ph name="PRODUCT_NAME" /> 的消息中心将被用作后备方案。</translation>
 <translation id="5208675398826212411">借助此政策，您可以配置通过 DNS 拦截检查功能进行内网重定向的行为。该检查功能旨在尝试检测浏览器是否使用了会重定向不明主机名的代理。
 
       如果此政策未设置，浏览器会使用 DNS 拦截检查功能和内网重定向建议功能的默认行为。在 M88 中，这些功能默认处于启用状态，但在未来的版本中，它们将会默认处于停用状态。
@@ -3217,6 +3236,15 @@
       如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 功能会处于启用状态。如果此政策已停用，该功能将不可用。
 
       这项企业政策只是短期内（至少会持续到 Chrome 93）可用的适应性措施。</translation>
+<translation id="5494322570831642650">此政策旨在指定用户可否在 <ph name="PRODUCT_NAME" /> 中以无痕模式打开网页。
+
+      如果您选择了“Enabled”或未设置此政策，用户将能够以无痕模式打开网页。
+
+      如果您选择了“Disabled”，用户将无法以无痕模式打开网页。
+
+      如果您选择了“Forced”，用户将只能以无痕模式打开网页。请注意，“Forced”不适用于 Android 版 Chrome
+
+      另请注意：在 iOS 上，如果此政策在会话期间发生更改，相应更改要等到重新启动浏览器时才会生效。</translation>
 <translation id="5497565614013170656">用于匹配打印机 ID 的正则表达式。</translation>
 <translation id="5499375345075963939">此策略仅在零售模式下有效。
 
@@ -3303,6 +3331,15 @@
 <translation id="5620392548325769024">在操作系统升级后，允许该浏览器首次启动时显示欢迎页面</translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
+<translation id="5636088574608432506">此政策旨在控制浏览器的登录行为。通过设置此政策，您可以指定用户能否使用其帐号登录 <ph name="PRODUCT_NAME" /> 并使用帐号相关服务（如 <ph name="PRODUCT_NAME" /> 同步）。
+
+      如果此政策设为“禁止登录浏览器”，用户便无法登录浏览器，也无法使用帐号相关服务。在这种情况下，用户将无法使用浏览器级功能（如 <ph name="PRODUCT_NAME" /> 同步），这些功能会处于不可用状态。在 <ph name="IOS_NAME" /> 上，如果在用户登录后将此政策设为“Disabled”，用户将会立即退出登录。在其他平台上，用户将会在下次运行 <ph name="PRODUCT_NAME" /> 时退出登录。在所有平台上，用户的本地个人资料数据（如书签、密码等）会被予以保留并且依然可用。用户仍能登录并使用 Google 网络服务（如 Gmail）。
+
+      如果此政策设为“允许登录浏览器”，用户将可以登录浏览器。在除 <ph name="IOS_NAME" /> 之外的所有其他平台上，用户会在登录 Google 网络服务（如 Gmail）时自动登录浏览器。登录浏览器意味着浏览器将会保存用户的帐号信息，但并不意味着 <ph name="PRODUCT_NAME" /> 同步功能会默认开启；用户必须另行选择使用此功能。启用此政策会阻止用户关闭用于允许登录浏览器的设置。若要控制 <ph name="PRODUCT_NAME" /> 同步功能的可用性，请使用 <ph name="SYNC_POLICY_NAME" /> 政策。
+
+      如果此政策设为“强制登录浏览器”，系统将会向用户显示帐号选择对话框，而且用户必须选择并登录某个帐号才能使用浏览器。这样可确保针对受管理的帐号应用并强制执行与该帐号关联的政策。默认情况下，此设置会为帐号开启 <ph name="PRODUCT_NAME" /> 同步功能，除非 <ph name="PRODUCT_NAME" /> 同步功能已被网域管理员停用或已通过 <ph name="SYNC_POLICY_NAME" /> 政策停用。<ph name="GUEST_MODE_POLICY_NAME" /> 的默认值将会设为“Disabled”。请注意，启用此政策后，现有的未登录个人资料都会处于锁定且不可访问的状态。有关详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/a/answer/7572556。<ph name="LINUX_OS_NAME" />、<ph name="ANDROID_NAME" /> 或 <ph name="IOS_NAME" /> 不支持此选项。如果您在 Linux、Android 和 iOS 上使用此选项，系统将改用“允许登录浏览器”。
+
+      如果此政策未设置，用户可以自行决定是否要在 <ph name="PRODUCT_NAME" /> 设置中启用浏览器登录选项并酌情使用该选项。</translation>
 <translation id="5641279111657132737">此政策已被弃用，请改用“<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定应允许哪些服务器进行集成身份验证。仅当收到由此许可名单中的代理服务器或服务器发出的身份验证请求时，<ph name="PRODUCT_NAME" /> 才会启用集成式身份验证机制。
@@ -4533,6 +4570,7 @@
       此政策只能通过 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />进行设置。</translation>
 <translation id="7246767840750730334">允许启用 Phone Hub 通知。</translation>
 <translation id="7249828445670652637">允许 ARC 应用使用 <ph name="PRODUCT_OS_NAME" /> CA 证书</translation>
+<translation id="7251825257294351251">允许使用系统通知</translation>
 <translation id="7252681704926980614">每次执行打印任务时都向原生打印机服务器发送用户名和文件名。默认设置是不发送。
 
       将此政策设为 true 也会停用那些使用 IPPS、USB 和 USB 型 IPP 以外协议的打印机，因为用户名和文件名不应通过网络公开发送。</translation>
@@ -4786,6 +4824,7 @@
 
       如果此政策已停用，那么只要用户执行了会触发文件选择对话框的操作（例如导入书签、上传文件、保存链接，等等），系统就会显示一条消息，并会假定用户已在文件选择对话框中点击了“取消”。</translation>
 <translation id="7638300388094655454">Google Cast</translation>
+<translation id="7638764766629234761">允许使用系统通知</translation>
 <translation id="7643883929273267746">限制可在<ph name="PRODUCT_NAME" />中显示的帐号</translation>
 <translation id="7648907905084499629">让所有网站上的 Cookie 都采用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行为</translation>
 <translation id="7657261947024629645">针对性能进行优化。</translation>
@@ -4882,6 +4921,10 @@
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7763614521440615342">在“打开新的标签页”页面上显示内容建议</translation>
 <translation id="7765879851993224640">允许使用 Smart Lock 登录功能。</translation>
+<translation id="7774451488719504808">如 https://www.chromestatus.com/feature/5148698084376576 中所述，倘若 JavaScript 模态对话框（由 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 触发）是从非主框架来源的子框架触发的，<ph name="PRODUCT_NAME" /> 会屏蔽这些对话框。
+       此政策允许覆盖这项更改。
+       如果此政策已启用或未设置，系统将会屏蔽从其他来源的子框架触发的 JavaScript 对话框。
+       如果此政策已停用，系统将不会屏蔽从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="7774768074957326919">使用系统代理设置</translation>
 <translation id="777734450201217641">在登录屏幕上启用无障碍功能快捷方式。
 
@@ -4999,6 +5042,7 @@
 <translation id="7904177352786629708">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
 
       如果此政策已停用或未设置，当生成 Kerberos SPN 时，CNAME 查找会决定服务器的规范名称。</translation>
+<translation id="7906983682927840536">在浏览器关闭时提取 keepalive 时长</translation>
 <translation id="7908384265697653397">如果 <ph name="PRODUCT_OS_NAME" />版本低于指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />，系统会在多少天后强制用户退出登录</translation>
 <translation id="7912255076272890813">配置允许的应用/扩展程序类型</translation>
 <translation id="791267408364877739">使用可能不安全的命令行标记时显示安全警告</translation>
@@ -5246,6 +5290,7 @@
 <translation id="8270320981823560179">云端硬盘</translation>
 <translation id="827054846390793641">允许主机桌面在处于已连接状态时显示与连接相关的界面</translation>
 <translation id="8274603902181597201">清空用户的 ecryptfs 主目录，并改用全新的 ext4 加密主目录。</translation>
+<translation id="8278133379873210419">禁止显示从其他来源的子框架触发的 JavaScript 对话框</translation>
 <translation id="8284296539558710573">跨域 HTTP 身份验证提示</translation>
 <translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 已停用，您可以通过设置 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 来指定：当设备处于演示模式时，系统应该对屏幕变暗延迟时间采取的调整幅度（百分比）。调整屏幕变暗延迟时间时，系统会随之调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
 
@@ -5524,6 +5569,7 @@
 <translation id="8705895771006864851">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 将会显示一个集成式翻译工具栏，并且在用户点击鼠标右键时，出现的上下文菜单中会显示翻译选项，以便适时地向用户提供翻译功能。将此政策设为 False 会关闭所有内置的翻译功能。
 
       如果您设置了此政策，用户将无法更改这项功能。如果此政策未设置，用户便可以更改此设置。</translation>
+<translation id="8715885991031124968">允许显示从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="8720547069538712402">允许用户启用或停用拼写检查</translation>
 <translation id="8736538322216687231">强制启用最低级别的 YouTube 受限模式</translation>
 <translation id="8745669971728319820">此政策旨在控制是否报告扩展程序和插件信息。

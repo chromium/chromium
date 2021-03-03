@@ -299,6 +299,7 @@
 <translation id="2053111141626950936">Старонкі на мове <ph name="LANGUAGE" /> не будуць перакладацца.</translation>
 <translation id="2053553514270667976">Паштовы індэкс</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 прапанова}one{# прапанова}few{# прапановы}many{# прапаноў}other{# прапановы}}</translation>
+<translation id="2071692954027939183">Апавяшчэнні былі заблакіраваны аўтаматычна, бо звычайна вы не даяце дазволу на іх паказ</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="20817612488360358">Сістэмныя налады проксі зададзены для выкарыстання, але яўная канфігурацыя проксі таксама вызначана.</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
@@ -790,6 +791,7 @@
 <translation id="4058922952496707368">Ключ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (канверт)</translation>
 <translation id="4067947977115446013">Дадайце сапраўдны адрас</translation>
+<translation id="4072193657607981494">Ідзе загрузка палітык</translation>
 <translation id="4072486802667267160">Адбылася памылка апрацоўкi вашага заказу. Паўтарыце спробу.</translation>
 <translation id="4075732493274867456">Кліент і сервер не падтрымліваюць агульную версію пратакола SLL або набор шыфраў.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -928,6 +930,7 @@
 <translation id="4510487217173779431">Chou4 (канверт)</translation>
 <translation id="4515275063822566619">Карткі і адрасы паходзяць з Chrome і вашага Уліковага запісу Google (<ph name="ACCOUNT_EMAIL" />). Кіраваць імі можна ў <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (канверт)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4524138615196389145">Калі выкарыстоўваць WebAuthn, пацвярджаць карткі можна будзе хутчэй</translation>
 <translation id="4524805452350978254">Кіраваць карткамі</translation>
@@ -1350,6 +1353,7 @@
 <translation id="614940544461990577">Паспрабуйце наступнае:</translation>
 <translation id="6150036310511284407">Тры дзіркі злева</translation>
 <translation id="6151417162996330722">Сертыфікат сервера мае занадта доўгі тэрмін дзеяння.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (у цалях) (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Выберыце адрас, каб убачыць спосабы дастаўкі і патрабаванні для дастаўкі</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6169916984152623906">Цяпер вы можаце праглядаць вэб-старонкі ў прыватным рэжыме, іншыя карыстальнікі гэтай прылады не будуць бачыць вашы дзеянні. Аднак спампоўкі і закладкі будуць захоўвацца.</translation>
@@ -1899,6 +1903,7 @@
 <translation id="8364627913115013041">Не зададзена</translation>
 <translation id="8368476060205742148">Сэрвісы Google Play</translation>
 <translation id="8371889962595521444">Карыстальніцкія каранёвыя сертыфікаты</translation>
+<translation id="8374636051559112948">Бывае рознай</translation>
 <translation id="8380941800586852976">Небяспечна</translation>
 <translation id="8381674639488873545">Плацяжы могуць быць аднаразовыя або рэгулярныя, і інфармацыю пра іх можа быць цяжка заўважыць. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Палітыка, зададзеная адміністратарам, блакіруе абагульванне змесціва з сайта <ph name="ORIGIN_NAME" /> з віртуальнай машынай <ph name="VM_NAME" /></translation>
@@ -2080,6 +2085,7 @@
 <translation id="9114524666733003316">Пацвярджаюцца даныя карткі...</translation>
 <translation id="9114581008513152754">Гэты браўзер не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі. Аднак сама прылада можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Запампавана</translation>
+<translation id="9128016270925453879">Палітыкі загружаны</translation>
 <translation id="9128870381267983090">Падключыцеся да сеткі</translation>
 <translation id="9137013805542155359">Паказаць арыгінал</translation>
 <translation id="9141013498910525015">Кіраваць адрасамі</translation>

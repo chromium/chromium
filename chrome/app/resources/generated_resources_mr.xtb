@@ -253,7 +253,6 @@
 <translation id="1275718070701477396">निवडलेले</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइंस्टॉल करता आले नाही</translation>
 <translation id="1277020343994096713">तुमच्या सध्याच्या पिनपेक्षा वेगळा नवीन पिन तयार करा</translation>
-<translation id="1278703349931574538">संपर्क व्यवस्थापित करा</translation>
 <translation id="127946606521051357">जवळपासचे डिव्हाइस शेअर करत आहे</translation>
 <translation id="1280820357415527819">मोबाइल नेटवर्क शोधत आहे</translation>
 <translation id="1280965841156951489">फाइल संपादित करा</translation>
@@ -1137,7 +1136,6 @@
 <translation id="2256115617011615191">आता रीस्टार्ट करा</translation>
 <translation id="2257053455312861282">शाळा खाते जोडल्याने, पालकांच्या नियंत्रणाखाली ऑपरेट करत असतानादेखील विद्यार्थी म्हणून वेबसाइट, एक्स्टेंशन आणि अ‍ॅप्समध्ये सहजपणे साइन इन करता येते.</translation>
 <translation id="2261323523305321874">तुमच्या ॲडमिनिस्ट्रेटरने संपूर्ण सिस्टममध्ये बदल केले आहेत, ज्‍यामुळे काही जुन्या प्रोफाइल बंद झाल्या आहेत.</translation>
-<translation id="2262332168014443534">लाइट मोड आता HTTPS सह सर्व पेजवर ब्राउझिंग अधिक जलद करतो.</translation>
 <translation id="2262477216570151239">पुनरावृत्तीपूर्वी विलंब</translation>
 <translation id="2262888617381992508">Play संरक्षण आशयाला अनुमती नाही</translation>
 <translation id="2263189956353037928">साइन आउट करून परत साइन इन करा</translation>
@@ -1492,7 +1490,6 @@
 <translation id="265390580714150011">फील्ड मूल्य</translation>
 <translation id="2654166010170466751">पेमेंट हँडलर इंस्टॉल करण्यासाठी साइटना अनुमती द्या</translation>
 <translation id="2654553774144920065">प्रिंटची विनंती</translation>
-<translation id="2657807507504044638">कोणत्याही उपलब्ध eSIM प्रोफाइल नाहीत. नवीन प्रोफाइल <ph name="BEGIN_LINK" />येथे<ph name="END_LINK" /> डाउनलोड करा</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />वैशिष्ट्ये डिव्हाइसनुसार बदलतात</translation>
 <translation id="2659971421398561408">Crostini डिस्कचा आकार बदला</translation>
 <translation id="2660779039299703961">इव्‍हेंट</translation>
@@ -3033,7 +3030,6 @@
 <translation id="4416582610654027550">योग्य URL टाइप करा</translation>
 <translation id="4419409365248380979">कुकी सेट करण्यासाठी <ph name="HOST" />ना नेहमी परवानगी द्या </translation>
 <translation id="4419610272958564173">अज्ञात डिव्हाइस (विक्रेता: <ph name="VENDOR_ID" />, उत्पादन: <ph name="PRODUCT_ID" />)</translation>
-<translation id="4421167684395067330">कनेक्ट करताना समस्या आली. कृपया मदतीसाठी <ph name="CARRIER_NAME" /> शी संपर्क साधा.</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">सेटिंग्ज पुनर्संचयित करा</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, तुम्ही तुमचा पासवर्ड बदलणे तुमच्या ॲडमिनिस्ट्रेटरलााठी आवश्यक आहे.</translation>
@@ -3045,7 +3041,6 @@
 <translation id="4434045419905280838">पॉप-अप आणि रीडिरेक्ट</translation>
 <translation id="443454694385851356">लेगसी (असुरक्षित)</translation>
 <translation id="443475966875174318">कंपॅटिबल नसलेली ॲप्लिकेशन अपडेट करा किंवा काढून टाका</translation>
-<translation id="4436063104263971834">कोणत्याही उपलब्ध सिम प्रोफाइल नाहीत. नवीन प्रोफाइल <ph name="BEGIN_LINK" />येथे<ph name="END_LINK" /> सेट करा.</translation>
 <translation id="4438043733494739848">पारदर्शक</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> तुमच्या Google खाते <ph name="ACCOUNT" /> मध्ये सेव्ह केले जाईल</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
@@ -5922,7 +5917,6 @@
 <translation id="7775694664330414886">टॅब अनामित गटामध्ये हलवला आहे - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">तुम्ही या साइटसाठी सर्व टॅब बंद करेपर्यंत <ph name="ORIGIN" /> ला <ph name="FOLDERNAME" /> मधील फाइल पाहता येतील</translation>
 <translation id="7776701556330691704">कोणतेही व्हॉइस सापडले नाहीत</translation>
-<translation id="7780252971640011240">कनेक्ट करताना समस्या आली. कृपया मदतीसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="7781335840981796660">सर्व वापरकर्ता खाती आणि स्थानिक डेटा काढला जाईल.</translation>
 <translation id="7782102568078991263">Google कडून कोणत्याही आणखी सूचना नाहीत</translation>
 <translation id="7782717250816686129">लॉगिन स्क्रीनवर सतत वापरात असलेला डेटा स्टोअर करा आणि सेशनमध्ये क्रेडेंशियल घाला.</translation>

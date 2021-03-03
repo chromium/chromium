@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">ควบคุมเรื่องราวของคุณจากปุ่ม "ตัวเลือกสำหรับ Discover"</translation>
 <translation id="2259659629660284697">ส่งออกรหัสผ่าน…</translation>
 <translation id="2276696007612801991">ลงชื่อเข้าใช้บัญชี Google เพื่อตรวจสอบรหัสผ่าน</translation>
+<translation id="2278052315791335171">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="SITE" /></translation>
 <translation id="2286841657746966508">ที่อยู่สำหรับเรียกเก็บเงิน</translation>
 <translation id="230115972905494466">ไม่พบอุปกรณ์ที่เข้ากันได้</translation>
 <translation id="230155349749732438">หากต้องการใช้การตั้งค่านี้ ฟีเจอร์<ph name="BEGIN_LINK" />ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น<ph name="END_LINK" />ต้องเปิดอยู่</translation>
@@ -355,6 +356,7 @@
 <translation id="3398320232533725830">เปิดตัวจัดการบุ๊กมาร์ก</translation>
 <translation id="3414952576877147120">ขนาด:</translation>
 <translation id="3429160811076349561">ฟีเจอร์ช่วงทดลองใช้ปิดอยู่</translation>
+<translation id="3440975416244667276">แตะค้างไว้เพื่อดูข้อมูลที่เกี่ยวข้องเพิ่มเติม</translation>
 <translation id="3443221991560634068">โหลดหน้าปัจจุบันอีกครั้ง</translation>
 <translation id="3451542610083122179">แซนด์บ็อกซ์ความเป็นส่วนตัวคือโครงการริเริ่มที่ดำเนินอยู่ในการปกป้องเว็บแบบเปิดซึ่งจะช่วยป้องกันคุณจากกลไกการติดตามต่างๆ
 
@@ -946,6 +948,7 @@
 <translation id="7475688122056506577">ไม่พบการ์ด SD ไฟล์บางไฟล์อาจหายไป</translation>
 <translation id="7479104141328977413">การจัดการแท็บ</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
+<translation id="7481864133709957613">หากต้องการค้นหาจากหน้านี้ ให้แตะคำค้างไว้แทนการแตะเฉยๆ</translation>
 <translation id="7482656565088326534">แท็บแสดงตัวอย่าง</translation>
 <translation id="7484997419527351112">Discover - ปิดอยู่</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (อัปเดตเมื่อ <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="751961395872307827">เชื่อมต่อเว็บไซต์ไม่ได้</translation>
 <translation id="752220631458524187">เลิกเชื่อมต่อเมื่อดำเนินการเสร็จแล้ว</translation>
+<translation id="7523960634226602883">ค้นหาด้วยกล้องโดยใช้ Google Lens</translation>
 <translation id="753225086557513863">ตั้งเวลาไว้ให้เริ่มภายหลัง</translation>
 <translation id="7559975015014302720">โหมด Lite ปิดอยู่</translation>
 <translation id="7562080006725997899">กำลังล้างข้อมูลการท่องเว็บ</translation>

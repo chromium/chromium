@@ -305,6 +305,7 @@
 <translation id="3571734092741541777">הגדרה</translation>
 <translation id="3573179567135747900">לשינוי בחזרה ל"<ph name="FROM_LOCALE" />" (נדרשת הפעלה מחדש)</translation>
 <translation id="3576141592585647168">שינוי אזור הזמן</translation>
+<translation id="3593039967545720377">‏כדי להיכנס להיסטוריית הלוח, יש ללחוץ על <ph name="SHORTCUT_KEY_NAME" /> + V לצפייה בלוח. כדי להתחיל, צריך להעתיק פריט.</translation>
 <translation id="3593646411856133110">כדי להציג את האפליקציות הפתוחות, מחליקים כלפי מעלה ולוחצים לחיצה ארוכה</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="3604801046548457007">שולחן העבודה <ph name="DESK_TITILE" /> נוצר</translation>
@@ -608,6 +609,7 @@
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6179832488876878285">כאן אפשר להצמיד את הקבצים החשובים. יש לפתוח את אפליקציית 'קבצים' כדי להתחיל.</translation>
 <translation id="622484624075952240">למטה</translation>
+<translation id="6231419273573514727">ייתכן שהביצועים של הציוד ההיקפי יוגבלו</translation>
 <translation id="6236290670123303279">ניהול ההגדרות</translation>
 <translation id="6237231532760393653">‎1X‎</translation>
 <translation id="6254629735336163724">נעול במצב אופקי</translation>
@@ -731,6 +733,7 @@
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="7348093485538360975">מקלדת על המסך</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
+<translation id="7360036564632145207">הביצועים עשויים להשתפר אם ההגדרות של הגנת הגישה לנתונים עבור ציוד היקפי ישונו</translation>
 <translation id="7371404428569700291">חלון ההקלטה</translation>
 <translation id="7377169924702866686">‏Caps Lock מופעל.</translation>
 <translation id="7378203170292176219">יש לגרור כדי לבחור אזור להקלטה</translation>
@@ -791,6 +794,7 @@
 <translation id="7780159184141939021">סיבוב המסך</translation>
 <translation id="7796353162336583443">‏כדי לרשום הערה או לצלם צילום מסך, או כדי להשתמש ב-Google Assistant, בסמן הלייזר או בזכוכית המגדלת, צריך להקיש על לחצן הסטיילוס במדף.</translation>
 <translation id="7798302898096527229">‏יש להקיש על Search או על Shift כדי לבטל.</translation>
+<translation id="7807966291075028781">מטעמי אבטחה, אין תמיכה בציוד היקפי כשנמצאים במצב אורח.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ו-<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">אות חזק</translation>
 <translation id="7837740436429729974">עבר הזמן</translation>
@@ -859,6 +863,7 @@
 <translation id="8345019317483336363">נבחר החלון <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">יצירת הערה</translation>
 <translation id="8371779926711439835">אות אחת קדימה</translation>
+<translation id="8371991222807690464">במצב אורח, ביצועי הציוד ההיקפי עשויים להיות מוגבלים.</translation>
 <translation id="8375916635258623388">מכשיר <ph name="DEVICE_NAME" /> זה והטלפון יחוברו באופן אוטומטי</translation>
 <translation id="8380784334203145311">לילה טוב,</translation>
 <translation id="8388750414311082622">לא ניתן להסיר את שולחן העבודה האחרון.</translation>

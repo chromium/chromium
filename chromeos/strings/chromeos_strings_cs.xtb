@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Captive portál</translation>
 <translation id="2008685064673031089">Vyhledávání prvočísel</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
+<translation id="2126937207024182736">K dispozici je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">VE FRONTĚ</translation>
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
+<translation id="2217935453350629363">Aktuální rychlost</translation>
 <translation id="2224337661447660594">Nejste připojeni k internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stav aktivace</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Můj disk</translation>
 <translation id="4429881212383817840">Platnost lístku Kerberos brzy vyprší</translation>
+<translation id="4431821876790500265">Zobrazit přehled</translation>
 <translation id="445059817448385655">Staré heslo</translation>
 <translation id="4453205916657964690">Maska podsítě</translation>
 <translation id="4454245904991689773">Uložit do</translation>
@@ -175,6 +178,7 @@
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
 <translation id="4985509611418653372">Spustit</translation>
+<translation id="4999333166442584738">Skrýt přehled</translation>
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Název skupiny</translation>

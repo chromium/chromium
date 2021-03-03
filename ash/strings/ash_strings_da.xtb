@@ -609,6 +609,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
 <translation id="622484624075952240">Ned</translation>
+<translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>
 <translation id="6236290670123303279">Administrer indstillinger</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Altid vandret</translation>
@@ -732,6 +733,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Skærmtastatur</translation>
 <translation id="735745346212279324">VPN afbrudt</translation>
+<translation id="7360036564632145207">Du kan forbedre ydeevnen ved at ændre indstillingen Beskyttelse af dataadgang for eksterne enheder</translation>
 <translation id="7371404428569700291">Optag vindue</translation>
 <translation id="7377169924702866686">Caps Lock er slået til.</translation>
 <translation id="7378203170292176219">Træk for at vælge et område, der skal optages</translation>
@@ -790,6 +792,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7780159184141939021">Roter skærm</translation>
 <translation id="7796353162336583443">Tryk på knappen for styluspen på hylden for at skrive en note, tage et screenshot eller bruge Google Assistent, laserpegepinden eller luppen.</translation>
 <translation id="7798302898096527229">Tryk på Søg eller Shift for at annullere.</translation>
+<translation id="7807966291075028781">Af sikkerhedshensyn understøttes eksterne enheder ikke i Gæstetilstand</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Stærkt signal</translation>
 <translation id="7837740436429729974">Tiden er gået</translation>
@@ -858,6 +861,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
 <translation id="8351131234907093545">Opret note</translation>
 <translation id="8371779926711439835">Et bogstav frem</translation>
+<translation id="8371991222807690464">Din eksterne enheds ydeevne kan være begrænset i Gæstetilstand</translation>
 <translation id="8375916635258623388">Denne <ph name="DEVICE_NAME" /> og din telefon forbindes automatisk</translation>
 <translation id="8380784334203145311">Hej</translation>
 <translation id="8388750414311082622">Det seneste skrivebord kan ikke fjernes.</translation>

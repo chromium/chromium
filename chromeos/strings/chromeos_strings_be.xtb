@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Партал узаемадзеяння</translation>
 <translation id="2008685064673031089">Пошук простых лікаў</translation>
 <translation id="2080070583977670716">Іншыя налады</translation>
+<translation id="2126937207024182736">Даступна: <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">У ЧАРЗЕ</translation>
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
+<translation id="2217935453350629363">Бягучая хуткасць</translation>
 <translation id="2224337661447660594">Няма падключэння да інтэрнэту</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Стан актывацыі</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
 <translation id="4429881212383817840">Дзеянне білета Kerberos хутка скончыцца</translation>
+<translation id="4431821876790500265">Паглядзець справаздачу</translation>
 <translation id="445059817448385655">Стары пароль</translation>
 <translation id="4453205916657964690">Маска падсеткі</translation>
 <translation id="4454245904991689773">Сканіраваць у</translation>
@@ -160,6 +163,7 @@
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="4773299976671772492">Спынена</translation>
 <translation id="4808449224298348341">Заданне друку "<ph name="DOCUMENT_TITLE" />" скасавана</translation>
+<translation id="4813345808229079766">Падключэнне</translation>
 <translation id="4832079907277790330">Выбраць папку ў праграме "Файлы"...</translation>
 <translation id="4835901797422965222">Няма актыўных сетак</translation>
 <translation id="4848429997038228357">ВЫКОНВАЕЦЦА</translation>
@@ -174,6 +178,8 @@
 <translation id="4932733599132424254">Дата</translation>
 <translation id="498186245079027698">Праверце сканер і паўтарыце спробу. Упэўніцеся, што на прыладзе дастаткова месца для захавання файлаў адсканіраваных відарысаў.</translation>
 <translation id="4985509611418653372">Запусціць</translation>
+<translation id="4987769320337599931">Брандмаўар</translation>
+<translation id="4999333166442584738">Схаваць справаздачу</translation>
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Назва групы</translation>

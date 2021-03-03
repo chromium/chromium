@@ -185,6 +185,7 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 <translation id="2239812875700136898">Kontrol artikel Anda dengan tombol Opsi untuk Discover</translation>
 <translation id="2259659629660284697">Ekspor sandi…</translation>
 <translation id="2276696007612801991">Login ke Akun Google Anda untuk memeriksa sandi</translation>
+<translation id="2278052315791335171">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Alamat penagihan</translation>
 <translation id="230115972905494466">Tidak ada perangkat yang kompatibel</translation>
 <translation id="230155349749732438">Untuk menggunakan setelan ini, <ph name="BEGIN_LINK" />Jadikan penelusuran dan penjelajahan lebih baik<ph name="END_LINK" /> harus diaktifkan</translation>
@@ -355,6 +356,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3398320232533725830">Membuka pengelola bookmark</translation>
 <translation id="3414952576877147120">Ukuran:</translation>
 <translation id="3429160811076349561">Fitur uji coba nonaktif</translation>
+<translation id="3440975416244667276">Sentuh lama untuk mendapatkan info yang lebih relevan</translation>
 <translation id="3443221991560634068">Memuat ulang halaman saat ini</translation>
 <translation id="3451542610083122179">Privacy Sandbox adalah inisiatif berkelanjutan untuk mempertahankan ekosistem internet saat ini yang akan membantu mengamankan Anda dari mekanisme pelacakan.
 
@@ -946,6 +948,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7475688122056506577">Kartu SD tidak ditemukan. Beberapa file Anda mungkin tidak tersimpan.</translation>
 <translation id="7479104141328977413">Pengelolaan tab</translation>
 <translation id="7481312909269577407">Maju</translation>
+<translation id="7481864133709957613">Sentuh lama kata untuk menelusurinya dari halaman ini, bukan dengan mengetuknya</translation>
 <translation id="7482656565088326534">Tab pratinjau</translation>
 <translation id="7484997419527351112">Discover - nonaktif</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Diperbarui <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7514365320538308">Download</translation>
 <translation id="751961395872307827">Tidak dapat terhubung ke situs</translation>
 <translation id="752220631458524187">Putuskan koneksi saat Anda selesai</translation>
+<translation id="7523960634226602883">Telusuri dengan kamera Anda menggunakan Google Lens</translation>
 <translation id="753225086557513863">Dijadwalkan untuk nanti</translation>
 <translation id="7559975015014302720">Mode Ringan nonaktif</translation>
 <translation id="7562080006725997899">Menghapus data penjelajahan</translation>

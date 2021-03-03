@@ -305,6 +305,7 @@
 <translation id="3571734092741541777">አዋቅር</translation>
 <translation id="3573179567135747900">ወደ «<ph name="FROM_LOCALE" />» መልሰህ ቀይር (ዳግም ማስጀመር ይፈልጋል)</translation>
 <translation id="3576141592585647168">የጊዜ ሰቅ ይለውጡ</translation>
+<translation id="3593039967545720377">የእርስዎን የቅንጥብ ሰሌዳ ለመመልከት <ph name="SHORTCUT_KEY_NAME" /> + Vን በመጫን የቅንጥብ ሰሌዳዎን ይድረሱ። ለመጀመር አንድ ንጥል ይቅዱ።</translation>
 <translation id="3593646411856133110">ክፍት መተግበሪያዎችን ለመመልከት ወደ ላይ በጣት ጠርገው ይያዙ</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
 <translation id="3604801046548457007">ዴስክ <ph name="DESK_TITILE" /> ተፈጥሯል</translation>
@@ -608,6 +609,7 @@
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6179832488876878285">እዚህ አስፈላጊ ፋይሎችዎን መሰካት ይችላሉ። ለመጀመር የፋይሎች መተግበሪያን ይክፈቱ።</translation>
 <translation id="622484624075952240">ታች</translation>
+<translation id="6231419273573514727">የተቀጥላዎች አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
 <translation id="6236290670123303279">ቅንብሮችን ያቀናብሩ</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">ወደ አግድም ተቆልፏል</translation>
@@ -731,6 +733,7 @@
 <translation id="7346909386216857016">እሺ፣ ገባኝ</translation>
 <translation id="7348093485538360975">የታይታ የቁልፍ ሰሌዳ</translation>
 <translation id="735745346212279324">የቪ ፒ ኤን ግንኙነት ተቋርጧል</translation>
+<translation id="7360036564632145207">ለተቀጥላ ክፍሎች ቅንብሮች የውሂብ መዳረሻ ጥበቃን መለወጥ አፈጻጸሙን ሊያተባ ይችላል</translation>
 <translation id="7371404428569700291">መስኮትን ቅዳ</translation>
 <translation id="7377169924702866686">Caps Lock በርቷል።</translation>
 <translation id="7378203170292176219">ለመቅዳት አካባቢ ለመምረጥ ይጎትቱ</translation>
@@ -789,6 +792,7 @@
 <translation id="7780159184141939021">ማያ ገጹን አሽከርክር</translation>
 <translation id="7796353162336583443">ማስታወሻ ለመያዝ፣ ቅጽበታዊ ገጽ እይታን ለማንሳት፣ Google ረዳቱን፣ ሌዘር ጠቋሚውን ወይም ማጉያ መነጽሩን ለመጠቀም በመደርደሪያው ላይ ያለውን የስታይለስ አዝራሩን መታ ያድርጉ።</translation>
 <translation id="7798302898096527229">ለመሰረዝ Search ወይም Shift ይጫኑ።</translation>
+<translation id="7807966291075028781">ለደህንነት ሲባል በእንግዳ ሁኔታ ላይ ለተቀጥላ ክፍል አይደገፍም</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> እና <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ጠንካራ ሲግናል</translation>
 <translation id="7837740436429729974">ጊዜው አብቅቷል</translation>
@@ -857,6 +861,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> መስኮት ተመርጧል</translation>
 <translation id="8351131234907093545">ማስታወሻን ይፍጠሩ</translation>
 <translation id="8371779926711439835">በየፊደሉ ወደፊት</translation>
+<translation id="8371991222807690464">የተቀጥላ ክፍል አፈጻጸም በእንግዳ ሁኔታ ውስጥ ውስን ሊሆን ይችላል።</translation>
 <translation id="8375916635258623388">ይህ <ph name="DEVICE_NAME" /> እና የእርስዎ ስልክ በራስ-ሰር ይገናኛሉ</translation>
 <translation id="8380784334203145311">ደህና አመሹ፣</translation>
 <translation id="8388750414311082622">የመጨረሻ ዴስክ ሊወገድ አይችልም።</translation>

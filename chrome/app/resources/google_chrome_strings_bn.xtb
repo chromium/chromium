@@ -21,6 +21,7 @@
 <translation id="1516530951338665275">অন্য ডিভাইসের সাথে কানেক্ট করার জন্য Google Chrome-কে ব্লুটুথের অ্যাক্সেস দিতে 
 হবে। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> আগে থেকেই এই Chrome প্রোফাইলে সাইন-ইন করে আছেন। <ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chrome প্রোফাইল তৈরি করবে</translation>
 <translation id="1587223624401073077">Google Chrome আপনার ক্যামেরা ব্যবহার করছে৷</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> বিপজ্জনক, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
 <translation id="1597911401261118146">আপনার পাসওয়ার্ড ডেটার নিরাপত্তা লঙ্ঘন এবং অন্যান্য নিরাপত্তা সংক্রান্ত সমস্যা থেকে সুরক্ষিত কিনা তা চেক করতে <ph name="BEGIN_LINK" />Chrome-এ সাইন-ইন করুন<ph name="END_LINK" />।</translation>
@@ -115,6 +116,7 @@
 <translation id="3735758079232443276">আপনি Chrome চালু করলে কোন পৃষ্ঠাটি দেখানো হবে তা "<ph name="EXTENSION_NAME" />" এক্সটেনশনটি পরিবর্তন করেছে।</translation>
 <translation id="3779473566290487688">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে OS X 10.11 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে OS X 10.10 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chrome প্রোফাইল তৈরি করবে</translation>
 <translation id="386202838227397562">দয়া করে সকল Google Chrome উইন্ডো বন্ধ করুন ও আবার চেষ্টা করুন৷</translation>
 <translation id="3865754807470779944">Chrome ভার্সন <ph name="PRODUCT_VERSION" /> ইনস্টল করা আছে</translation>
 <translation id="3873044882194371212">Chrome-এ ছদ্মবেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
@@ -184,6 +186,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ১ সেকেন্ডের মধ্যে রিস্টার্ট হবে}one{Google Chrome # সেকেন্ডের মধ্যে রিস্টার্ট হবে}other{Google Chrome # সেকেন্ডের মধ্যে রিস্টার্ট হবে}}</translation>
 <translation id="573759479754913123">Chrome OS সম্পর্কে </translation>
+<translation id="5756509061973259733">এই ডিভাইসে এই অ্যাকাউন্টের সাথে Chrome প্রোফাইল আগে থেকেই আছে</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome লঞ্চ করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="5867197326698922595">Google Chrome আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে।</translation>

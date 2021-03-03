@@ -185,6 +185,7 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="2239812875700136898">Pārvaldiet ziņas, izmantojot opciju pogu lapā Discover.</translation>
 <translation id="2259659629660284697">Paroļu eksportēšana…</translation>
 <translation id="2276696007612801991">Lai pārbaudītu paroles, pierakstieties Google kontā</translation>
+<translation id="2278052315791335171">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Norēķinu adrese</translation>
 <translation id="230115972905494466">Netika atrastas saderīgas ierīces.</translation>
 <translation id="230155349749732438">Lai izmantotu šo iestatījumu, jāieslēdz opcija <ph name="BEGIN_LINK" />Uzlabot meklēšanu un pārlūkošanu<ph name="END_LINK" />.</translation>
@@ -355,6 +356,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3398320232533725830">Atvērt grāmatzīmju pārvaldnieku</translation>
 <translation id="3414952576877147120">Lielums:</translation>
 <translation id="3429160811076349561">Izmēģinājuma versijas funkcijas ir izslēgtas</translation>
+<translation id="3440975416244667276">Pieskarieties un turiet, lai iegūtu atbilstošāku informāciju</translation>
 <translation id="3443221991560634068">Atkārtoti ielādēt pašreizējo lapu</translation>
 <translation id="3451542610083122179">Privacy Sandbox ir aktīva iniciatīva atvērta tīmekļa saglabāšanai, kas palīdz aizsargāt jūs no izsekošanas mehānismiem.
 
@@ -946,6 +948,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7475688122056506577">SD karte nav atrasta. Iespējams, trūkst kādi jūsu faili.</translation>
 <translation id="7479104141328977413">Ciļņu pārvaldība</translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>
+<translation id="7481864133709957613">Lai izmantotu meklēšanu šajā lapā, pieskarieties vārdiem un turiet tos, nevis tikai pieskarieties.</translation>
 <translation id="7482656565088326534">Priekšskatījuma cilne</translation>
 <translation id="7484997419527351112">Funkcija Discover — izslēgta</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (atjaunināts: <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -955,6 +958,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="751961395872307827">Nevar izveidot savienojumu ar vietni.</translation>
 <translation id="752220631458524187">Kad esat pabeidzis darbu, atvienojiet tālruni</translation>
+<translation id="7523960634226602883">Meklēt ar kameru, izmantojot Google Lens</translation>
 <translation id="753225086557513863">Ieplānota vēlāk</translation>
 <translation id="7559975015014302720">Vienkāršotais režīms ir izslēgts</translation>
 <translation id="7562080006725997899">Notiek pārlūkošanas datu notīrīšana</translation>

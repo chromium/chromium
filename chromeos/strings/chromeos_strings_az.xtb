@@ -51,9 +51,11 @@
 <translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2008685064673031089">Əsas axtarış</translation>
 <translation id="2080070583977670716">Digər ayarlar</translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB əlçatandır</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NÖVBƏDƏDİR</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
+<translation id="2217935453350629363">Cari sürət</translation>
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivləşdirmə statusu</translation>
@@ -137,6 +139,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4429881212383817840">Kerberos biletinin vaxtı tezliklə başa çatacaq</translation>
+<translation id="4431821876790500265">Hesabata baxın</translation>
 <translation id="445059817448385655">Köhnə parol</translation>
 <translation id="4453205916657964690">Alt şəbəkə maskası</translation>
 <translation id="4454245904991689773">Skanı burada saxlayın</translation>
@@ -175,6 +178,8 @@
 <translation id="4932733599132424254">Tarix</translation>
 <translation id="498186245079027698">Skaneri yoxlayın və yenidən cəhd edin. Skan edilmiş faylları saxlamaq üçün diskdə kifayət qədər yer olduğuna əmin olun.</translation>
 <translation id="4985509611418653372">İşə salın</translation>
+<translation id="4987769320337599931">Qoruyucu divar</translation>
+<translation id="4999333166442584738">Hesabatı gizlədin</translation>
 <translation id="500920857929044050">Testi dayandırın</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5050042263972837708">Qrup adı</translation>

@@ -609,6 +609,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6179832488876878285">Pode fixar os seus ficheiros importantes aqui. Abra a app Files para começar.</translation>
 <translation id="622484624075952240">Para baixo</translation>
+<translation id="6231419273573514727">O desempenho do periférico pode estar limitado</translation>
 <translation id="6236290670123303279">Gerir definições</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Bloqueado na horizontal</translation>
@@ -732,6 +733,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7346909386216857016">OK, compreendi</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
 <translation id="735745346212279324">VPN desligado</translation>
+<translation id="7360036564632145207">A alteração da proteção do acesso aos dados para a definição dos periféricos pode otimizar o desempenho.</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7377169924702866686">Caps Lock ativado.</translation>
 <translation id="7378203170292176219">Arraste para selecionar uma área a gravar.</translation>
@@ -790,6 +792,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796353162336583443">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã ou utilizar o Assistente Google, o ponteiro de laser ou a lupa.</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
+<translation id="7807966291075028781">O periférico não é suportado no Modo convidado por motivos de segurança.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Acabou o tempo</translation>
@@ -858,6 +861,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
+<translation id="8371991222807690464">O desempenho periférico pode estar limitado no Modo convidado.</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o telemóvel serão associados automaticamente.</translation>
 <translation id="8380784334203145311">Boa noite,</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>

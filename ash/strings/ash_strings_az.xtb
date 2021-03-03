@@ -305,6 +305,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3571734092741541777">Quraşdırın</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" qaytarın (yenidən başlanmanı tələb edir)</translation>
 <translation id="3576141592585647168">Saat qurşağını dəyişin</translation>
+<translation id="3593039967545720377">Mübadilə buferinə baxmaq üçün <ph name="SHORTCUT_KEY_NAME" /> + V düyməsinə basaraq mübadilə buferi tarixçəsinə giriş edin. Başlamaq üçün bir elementi kopyalayın.</translation>
 <translation id="3593646411856133110">Açıq tətbiqləri görmək üçün yuxarı çəkib saxlayın</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
 <translation id="3604801046548457007">Masa <ph name="DESK_TITILE" /> yaradıldı</translation>
@@ -608,6 +609,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6179832488876878285">Vacib fayllarınızı buraya bərkidə bilərsiniz. Başlamaq üçün Fayllar tətbiqini açın.</translation>
 <translation id="622484624075952240">Aşağı</translation>
+<translation id="6231419273573514727">Periferik cihaz performansı məhdud ola bilər</translation>
 <translation id="6236290670123303279">Ayarları idarə edin</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Horizontal formada kilidləndi</translation>
@@ -731,6 +733,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7346909386216857016">Ok, anladım</translation>
 <translation id="7348093485538360975">Ekran klaviaturası</translation>
 <translation id="735745346212279324">VPN bağlantısı kəsildi</translation>
+<translation id="7360036564632145207">Periferik cihazlar ayarı üçün data giriş qorumasını dəyişsəniz, performans optimallaşa bilər</translation>
 <translation id="7371404428569700291">Çəkiliş pəncərəsi</translation>
 <translation id="7377169924702866686">Caps Lock aktivdir.</translation>
 <translation id="7378203170292176219">Çəkmək üçün sahə seçmək məqsədilə sürüşdürün</translation>
@@ -789,6 +792,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7780159184141939021">Ekranı fırladın</translation>
 <translation id="7796353162336583443">Qeyd etmək, skrinşot çəkmək Google Assistentdən, lazer işarəsindən və ya lupadan istifadə etmək üçün fırça düyməsinə klikləyin.</translation>
 <translation id="7798302898096527229">Ləğv etmək üçün Search və ya Shift düyməsini basın.</translation>
+<translation id="7807966291075028781">Təhlükəsizlik səbəbi ilə Qonaq Rejimində periferik cihaz dəstəklənmir</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> və <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Güclü siqnal</translation>
 <translation id="7837740436429729974">Vaxt bitdi</translation>
@@ -857,6 +861,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> pəncərəsi seçilib</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>
 <translation id="8371779926711439835">Hərf üzrə irəli keçin</translation>
+<translation id="8371991222807690464">Qonaq rejimində periferik cihaz performansı məhdud ola bilər</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> və telefon avtomatik qoşulacaq</translation>
 <translation id="8380784334203145311">Gecəniz xeyir,</translation>
 <translation id="8388750414311082622">Sonuncu masa silinə bilməz.</translation>

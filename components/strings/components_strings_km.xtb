@@ -301,6 +301,7 @@
 <translation id="2053111141626950936">ទំព័រជា <ph name="LANGUAGE" /> នឹងមិនត្រូវ​បានបកប្រែទេ។</translation>
 <translation id="2053553514270667976">លេខកូដតំបន់</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{ការផ្តល់យោបល់ 1}other{ការផ្តល់យោបល់ #}}</translation>
+<translation id="2071692954027939183">ការជូនដំណឹងត្រូវបានទប់ស្កាត់ដោយស្វ័យប្រវត្តិ ដោយសារជាធម្មតា អ្នកមិនអនុញ្ញាតការជូនដំណឹងទេ</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="20817612488360358">ការកំណត់ប្រូកស៊ីប្រព័ន្ធត្រូវបានកំណត់ដើម្បីប្រើ ប៉ុន្តែការកំណត់ប្រូកស៊ីជាក់លាក់ក៏ត្រូវបានបញ្ជាក់ផងដែរ។</translation>
 <translation id="2082238445998314030">លទ្ធផល <ph name="RESULT_NUMBER" /> នៃ <ph name="TOTAL_RESULTS" /></translation>
@@ -794,6 +795,7 @@
 <translation id="4058922952496707368">សោ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ស្រោម​សំបុត្រ)</translation>
 <translation id="4067947977115446013">បញ្ចូល​អាសយដ្ឋានដែល​ត្រឹមត្រូវ</translation>
+<translation id="4072193657607981494">កំពុងផ្ទុកគោលការណ៍</translation>
 <translation id="4072486802667267160">មាន​បញ្ហា​ក្នុងការដំណើរការ​ការ​បញ្ជា​ទិញ​របស់​អ្នក។ សូម​ព្យាយាម​ម្ដង​ទៀត។</translation>
 <translation id="4075732493274867456">ម៉ាស៊ីនកូន និងម៉ាស៊ីនមេមិនគាំទ្រកំណែប្រូតូកូល SSL ទូទៅ ឬសៃភ័រស៊ូត (cipher suite) ទេ។</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -933,6 +935,7 @@
 <translation id="4510487217173779431">Chou4 (ស្រោម​សំបុត្រ)</translation>
 <translation id="4515275063822566619">បណ្ណ និងអាសយដ្ឋានគឺបានមកពី Chrome និងគណនី Google របស់អ្នក (<ph name="ACCOUNT_EMAIL" />)។ អ្នកអាចគ្រប់គ្រងពួកវាបាននៅក្នុង <ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="4517607026994743406">Comm-10 (ស្រោម​សំបុត្រ)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">ព័ត៌មានលំអិត</translation>
 <translation id="4524138615196389145">បញ្ជាក់​បណ្ណរបស់អ្នក​រហ័ស​ជាងមុន​ដោយប្រើ WebAuthn ចាប់ពី​ពេលនេះ​តទៅ</translation>
 <translation id="4524805452350978254">គ្រប់គ្រង​កាត</translation>
@@ -1355,6 +1358,7 @@
 <translation id="614940544461990577">សាកល្បង៖</translation>
 <translation id="6150036310511284407">ចោះ​បីរន្ធ​ខាងឆ្វេង</translation>
 <translation id="6151417162996330722">វិញ្ញាបនបត្រម៉ាស៊ីនមេមានសុពលភាពយូរពេក។</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">ដើម្បីមើលមធ្យោបាយ និងលក្ខខណ្ឌតម្រូវនៃការដឹកជញ្ជូនតាមប្រៃសណីយ៍ សូមជ្រើសរើសអាសយដ្ឋាន</translation>
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
 <translation id="6169916984152623906">ឥឡូវនេះ អ្នកអាចធ្វើការរុករកជាលក្ខណៈឯកជនបានហើយ ដូច្នេះអ្នកផ្សេងទៀតដែលប្រើឧបករណ៍នេះនឹងមើលមិនឃើញសកម្មភាពរបស់អ្នកទេ។ ទោះជាយ៉ាងណាក្តី ឯកសារទាញយក និងចំណាំនឹងត្រូវបានរក្សាទុក។</translation>
@@ -1904,6 +1908,7 @@
 <translation id="8364627913115013041">មិនបានកំណត់។</translation>
 <translation id="8368476060205742148">សេវាកម្ម Google Play</translation>
 <translation id="8371889962595521444">វិញ្ញាបនបត្រគោល​ផ្ទាល់ខ្លួន</translation>
+<translation id="8374636051559112948">ខុស​គ្នា</translation>
 <translation id="8380941800586852976">គ្រោះថ្នាក់</translation>
 <translation id="8381674639488873545">ការគិតថ្លៃទាំងនេះ​អាច​ជាការគិតថ្លៃមួយលើក ឬបន្តបន្ទាប់ ហើយអាច​នឹងមិន​ច្បាស់លាស់នោះទេ។ <ph name="BEGIN_LINK" />បង្ហាញចុះ​មិនអីទេ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ការចែករំលែកពី <ph name="ORIGIN_NAME" /> ទៅ <ph name="VM_NAME" /> ត្រូវបានទប់ស្កាត់ដោយគោលការណ៍របស់អ្នកគ្រប់គ្រង</translation>
@@ -2085,6 +2090,7 @@
 <translation id="9114524666733003316">កំពុង​បញ្ជាក់​បណ្ណ​ឥណទាន...</translation>
 <translation id="9114581008513152754">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​នេះ​មិនស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ក្រុមហ៊ុន ឬ​ស្ថាប័នផ្សេងទេ​។ សកម្មភាព​នៅលើឧបករណ៍នេះ​អាចនឹងត្រូវបាន​គ្រប់គ្រងក្រៅពី Chrome។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">បាន​បង្ហោះ</translation>
+<translation id="9128016270925453879">គោលការណ៍ត្រូវបានផ្ទុក</translation>
 <translation id="9128870381267983090">ភ្ជាប់ទៅបណ្តាញ</translation>
 <translation id="9137013805542155359">បង្ហាញប្រភពដើម</translation>
 <translation id="9141013498910525015">គ្រប់គ្រង​អាសយដ្ឋាន</translation>

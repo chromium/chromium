@@ -299,6 +299,7 @@
 <translation id="2053111141626950936">Paginile în <ph name="LANGUAGE" /> nu vor fi traduse.</translation>
 <translation id="2053553514270667976">Cod zip</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestie}few{# sugestii}other{# de sugestii}}</translation>
+<translation id="2071692954027939183">Notificările au fost blocate automat deoarece nu le permiți de obicei</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="20817612488360358">Setările proxy de sistem sunt setate pentru a fi utilizate, dar o configurație explicită pentru proxy este, de asemenea, specificată.</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
@@ -789,6 +790,7 @@
 <translation id="4058922952496707368">Cheie „<ph name="SUBKEY" />”: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Plic)</translation>
 <translation id="4067947977115446013">Adaugă o adresă validă</translation>
+<translation id="4072193657607981494">Se încarcă politicile</translation>
 <translation id="4072486802667267160">A apărut o eroare la procesarea comenzii. Încearcă din nou.</translation>
 <translation id="4075732493274867456">Clientul și serverul nu acceptă o versiune a protocolului SSL sau o suită de codificare obișnuită.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -927,6 +929,7 @@
 <translation id="4510487217173779431">Chou4 (Plic)</translation>
 <translation id="4515275063822566619">Cardurile și adresele sunt din Chrome și din Contul Google (<ph name="ACCOUNT_EMAIL" />). Poți să le gestionezi în <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (Plic)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Detalii</translation>
 <translation id="4524138615196389145">Confirmă cardurile mai rapid, folosind WebAuthn</translation>
 <translation id="4524805452350978254">Gestionează cardurile</translation>
@@ -1349,6 +1352,7 @@
 <translation id="614940544461990577">Încearcă:</translation>
 <translation id="6150036310511284407">Perforare triplă în stânga</translation>
 <translation id="6151417162996330722">Certificatul de server are o perioadă de validitate prea lungă.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Pentru a vedea metodele de expediere și cerințele, selectează o adresă</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6169916984152623906">Acum poți naviga în mod privat, iar celelalte persoane care folosesc acest dispozitiv nu îți vor vedea activitatea. Cu toate acestea, descărcările și marcajele vor fi salvate.</translation>
@@ -1897,6 +1901,7 @@ Detalii suplimentare:
 <translation id="8364627913115013041">Nesetată.</translation>
 <translation id="8368476060205742148">Servicii Google Play</translation>
 <translation id="8371889962595521444">Certificate rădăcină personalizate</translation>
+<translation id="8374636051559112948">Variază</translation>
 <translation id="8380941800586852976">Periculos</translation>
 <translation id="8381674639488873545">Aceste costuri pot fi unice sau recurente și ascunse. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Permiterea accesului de pe <ph name="ORIGIN_NAME" /> la <ph name="VM_NAME" /> a fost blocată de politica implementată de administrator</translation>
@@ -2079,6 +2084,7 @@ Detalii suplimentare:
 <translation id="9114524666733003316">Se confirmă cardul…</translation>
 <translation id="9114581008513152754">Browserul nu este gestionat de o companie sau o altă organizație. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată în afara Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Încărcat</translation>
+<translation id="9128016270925453879">Politicile s-au încărcat</translation>
 <translation id="9128870381267983090">Conectați-vă la rețea</translation>
 <translation id="9137013805542155359">Afișează originalul</translation>
 <translation id="9141013498910525015">Gestionează adresele</translation>

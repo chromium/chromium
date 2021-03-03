@@ -609,6 +609,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6179832488876878285">Mund t'i gozhdosh skedarët e tu të rëndësishëm këtu. Hap aplikacionin "Skedarët" për të filluar.</translation>
 <translation id="622484624075952240">Poshtë</translation>
+<translation id="6231419273573514727">Cilësia e funksionimit të pajisjeve periferike mund të jetë e kufizuar</translation>
 <translation id="6236290670123303279">Menaxho cilësimet</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Kyçur horizontalisht</translation>
@@ -732,6 +733,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7346909386216857016">Në rregull, kuptova</translation>
 <translation id="7348093485538360975">Tastiera në ekran</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
+<translation id="7360036564632145207">Ndryshimi i mbrojtjes së qasjes te të dhënat e tua për pajisjet periferike mund të optimizojë cilësinë e funksionimit</translation>
 <translation id="7371404428569700291">Regjistro dritaren</translation>
 <translation id="7377169924702866686">Kyçja e kapitaleve është aktive.</translation>
 <translation id="7378203170292176219">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
@@ -790,6 +792,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7780159184141939021">Rrotullo ekranin</translation>
 <translation id="7796353162336583443">Trokit te butoni i stilolapsit në raft për të mbajtur një shënim, për të nxjerrë një pamje të ekranit, për të përdorur "Asistentin e Google", treguesin me lazer ose xhamin zmadhues.</translation>
 <translation id="7798302898096527229">Shtyp "Kërko" ose "Shift" për të anuluar</translation>
+<translation id="7807966291075028781">Pajisja periferike nuk mbështetet në modalitetin "vizitor" për arsye sigurie</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dhe <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinjal i fortë</translation>
 <translation id="7837740436429729974">Koha mbaroi</translation>
@@ -858,6 +861,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8345019317483336363">U zgjodh dritarja <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
 <translation id="8371779926711439835">Përpara një shkronjë</translation>
+<translation id="8371991222807690464">Performanca e pajisjes periferike mund të jetë e kufizuar në modalitetin "vizitor"</translation>
 <translation id="8375916635258623388">Kjo pajisje <ph name="DEVICE_NAME" /> dhe telefoni yt do të lidhen automatikisht</translation>
 <translation id="8380784334203145311">Natën e mirë,</translation>
 <translation id="8388750414311082622">Tavolina e fundit e punës nuk mund të hiqet.</translation>

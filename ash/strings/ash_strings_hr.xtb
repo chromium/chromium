@@ -609,6 +609,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6179832488876878285">Ovdje možete prikvačiti svoje važne datoteke. Da biste započeli, otvorite aplikaciju Datoteke.</translation>
 <translation id="622484624075952240">Dolje</translation>
+<translation id="6231419273573514727">Rad perifernih uređaja može biti ograničen</translation>
 <translation id="6236290670123303279">Upravljaj postavkama</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Zaključan vodoravni prikaz</translation>
@@ -732,6 +733,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7346909386216857016">Dobro, shvaćam</translation>
 <translation id="7348093485538360975">Tipkovnica na zaslonu</translation>
 <translation id="735745346212279324">Veza s VPN-om prekinuta</translation>
+<translation id="7360036564632145207">Promjenom postavke zaštite pristupa podacima za periferne uređaje možete optimizirati rad</translation>
 <translation id="7371404428569700291">Snimanje prozora</translation>
 <translation id="7377169924702866686">Uključena je opcija Caps Lock.</translation>
 <translation id="7378203170292176219">Povucite da biste odabrali područje za snimanje</translation>
@@ -790,6 +792,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7780159184141939021">Zakretanje zaslona</translation>
 <translation id="7796353162336583443">Dodirnite gumb pisaljke na polici da biste napisali bilješku, izradili snimku zaslona ili upotrijebili Google asistent, laserski pokazivač ili povećalo.</translation>
 <translation id="7798302898096527229">Pritisnite Pretraživanje ili Shift da biste otkazali.</translation>
+<translation id="7807966291075028781">Periferni uređaj nije podržan u načinu rada za goste zbog sigurnosnih razloga</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>
 <translation id="7837740436429729974">Vrijeme je isteklo</translation>
@@ -858,6 +861,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Izrada bilješke</translation>
 <translation id="8371779926711439835">Slovo unaprijed</translation>
+<translation id="8371991222807690464">Rad perifernog uređaja može biti ograničen u načinu rada za goste</translation>
 <translation id="8375916635258623388">Ovaj uređaj <ph name="DEVICE_NAME" /> i vaš telefon povezat će se automatski</translation>
 <translation id="8380784334203145311">Laku noć</translation>
 <translation id="8388750414311082622">Zadnja radna površina ne može se ukloniti.</translation>

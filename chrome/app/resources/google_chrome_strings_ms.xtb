@@ -21,6 +21,7 @@
 <translation id="1516530951338665275">Google Chrome memerlukan akses Bluetooth untuk meneruskan 
  penggandingan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Kemas Kini Chrome</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chrome ini. Tindakan ini akan membuat profil Chrome baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome menggunakan kamera anda.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> berbahaya, jadi Chrome telah menyekat fail itu.</translation>
 <translation id="1597911401261118146">Untuk menyemak sama ada kata laluan anda selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chrome<ph name="END_LINK" />.</translation>
@@ -113,6 +114,7 @@
 <translation id="3735758079232443276">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar halaman yang ditunjukkan apabila anda memulakan Chrome.</translation>
 <translation id="3779473566290487688">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan OS X 10.11 atau yang lebih baharu. Komputer ini menggunakan OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">Tindakan ini akan membuat profil Chrome baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Sila tutup semua tetingkap Google Chrome dan cuba semula.</translation>
 <translation id="3865754807470779944">Chrome versi <ph name="PRODUCT_VERSION" /> dipasang</translation>
 <translation id="3873044882194371212">Buka pautan dalam tetingkap inko&amp;gnito Chrome</translation>
@@ -180,6 +182,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome akan dimulakan semula dalam 1 saat}other{Google Chrome akan dimulakan semula dalam # saat}}</translation>
 <translation id="573759479754913123">Mengenai Chrome OS</translation>
+<translation id="5756509061973259733">Profil Chrome dengan akaun ini telah pun wujud pada peranti ini</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Tidak dapat melancarkan Chrome. Cuba lagi.</translation>
 <translation id="5867197326698922595">Google Chrome cuba mengedit kata laluan.</translation>

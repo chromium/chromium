@@ -253,7 +253,6 @@
 <translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> konnte nicht deinstalliert werden</translation>
 <translation id="1277020343994096713">Legen Sie eine neue PIN fest, die sich von Ihrer aktuellen PIN unterscheidet</translation>
-<translation id="1278703349931574538">Kontakte verwalten</translation>
 <translation id="127946606521051357">Gerät in der Nähe möchte Inhalte teilen</translation>
 <translation id="1280820357415527819">Nach Mobilfunknetzen wird gesucht</translation>
 <translation id="1280965841156951489">Dateien bearbeiten</translation>
@@ -960,6 +959,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2060375639911876205">eSIM-Profil entfernen</translation>
 <translation id="2065405795449409761">Chrome wird von automatisierter Testsoftware gesteuert.</translation>
 <translation id="2071393345806050157">Keine lokale Protokolldatei vorhanden</translation>
+<translation id="2071692954027939183">Benachrichtigungen wurden automatisch blockiert, da Sie sie normalerweise nicht zulassen</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Zum Installieren der Erweiterung klicken}other{Zum Installieren dieser Erweiterungen klicken}}</translation>
 <translation id="2073505299004274893">Bitte höchstens <ph name="CHARACTER_LIMIT" /> Zeichen verwenden</translation>
 <translation id="2075474481720804517">Akkustand <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -1125,6 +1125,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2241634353105152135">Nur einmal</translation>
 <translation id="2242687258748107519">Dateiinformationen</translation>
 <translation id="2246549592927364792">Bildbeschreibungen von Google verwenden?</translation>
+<translation id="2247738527273549923">Ihr Gerät wird von Ihrer Organisation verwaltet</translation>
 <translation id="2249111429176737533">Als Tab-Fenster öffnen</translation>
 <translation id="2249605167705922988">z. B. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Mit System Viewer öffnen</translation>
@@ -1135,7 +1136,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2256115617011615191">Jetzt neu starten</translation>
 <translation id="2257053455312861282">Das Hinzufügen eines Kontos einer Bildungseinrichtung ermöglicht Schülern eine einfache Anmeldung bei Websites, Erweiterungen und Apps bei gleichzeitig aktivierten Jugendschutzeinstellungen.</translation>
 <translation id="2261323523305321874">Ihr Administrator hat eine systemweite Änderung vorgenommen, durch die einige alte Profile deaktiviert werden.</translation>
-<translation id="2262332168014443534">Mit dem Lite-Modus surfen Sie noch schneller im Internet – auch auf HTTPS-Seiten.</translation>
 <translation id="2262477216570151239">Verzögerung vor Wiederholung</translation>
 <translation id="2262888617381992508">Dürfen keine geschützten Inhalte wiedergeben</translation>
 <translation id="2263189956353037928">Abmelden und wieder anmelden</translation>
@@ -1233,6 +1233,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2359345697448000899">Klicken Sie zum Verwalten Ihrer Erweiterungen im Menü "Tools" auf "Erweiterungen".</translation>
 <translation id="2359556993567737338">Bluetooth-Gerät verbinden</translation>
 <translation id="2359808026110333948">Weiter</translation>
+<translation id="2361100938102002520">Sie fügen diesem Browser ein verwaltetes Profil hinzu. Ihr Administrator hat die Kontrolle über das Profil und Zugriff auf die Daten.</translation>
 <translation id="236117173274098341">Optimieren</translation>
 <translation id="236141728043665931">Zugriff auf das Mikrofon immer blockieren</translation>
 <translation id="2364498172489649528">Bestanden</translation>
@@ -1480,6 +1481,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2641065435954454414">Download wird vorbereitet</translation>
 <translation id="2642111877055905627">Fußball</translation>
 <translation id="2643698698624765890">Klicken Sie zum Verwalten Ihrer Erweiterungen im Menü "Fenster" auf "Erweiterungen".</translation>
+<translation id="2645047101481282803">Ihr Gerät wird von <ph name="PROFILE_NAME" /> verwaltet</translation>
 <translation id="264810637653812429">Es wurden keine kompatiblen Geräte gefunden.</translation>
 <translation id="2649045351178520408">Base64-codierter ASCII-Code, Zertifikatkette</translation>
 <translation id="2653033005692233957">Fehler bei der Suche</translation>
@@ -1489,7 +1491,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="265390580714150011">Feldwert</translation>
 <translation id="2654166010170466751">Installation von Zahlungs-Handlern auf Websites zulassen</translation>
 <translation id="2654553774144920065">Druckanfrage</translation>
-<translation id="2657807507504044638">Keine verfügbaren eSIM-Profile. <ph name="BEGIN_LINK" />Neues Profil herunterladen<ph name="END_LINK" /></translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> Die Funktionen variieren je nach Gerät</translation>
 <translation id="2659971421398561408">Crostini-Laufwerkgröße anpassen</translation>
 <translation id="2660779039299703961">Ereignis</translation>
@@ -1655,6 +1656,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2822910719211888134">Fehler beim Sichern von Linux</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> verwendet Proxy-Einstellungen von Ihrem Administrator</translation>
 <translation id="2825758591930162672">Öffentlicher Schlüssel des Antragstellers</translation>
+<translation id="2828375943530438449">Zurück von Anmeldung</translation>
 <translation id="2828650939514476812">Mit WLAN verbinden</translation>
 <translation id="2835547721736623118">Spracherkennungsservice</translation>
 <translation id="2836269494620652131">Absturz</translation>
@@ -1674,6 +1676,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2850541429955027218">Design hinzufügen</translation>
 <translation id="2851634818064021665">Du benötigst eine Berechtigung, um auf diese Website zuzugreifen</translation>
 <translation id="2851728849045278002">Ein Problem ist aufgetreten. Klicken Sie hier, um weitere Details zu sehen.</translation>
+<translation id="285241945869362924">Erstellt automatisch Untertitel für Audioinhalte und Videos. Audioinhalte und Untertitel werden ausschließlich auf dem Gerät gespeichert.</translation>
 <translation id="2854896010770911740">Cookies von Drittanbietern entfernen</translation>
 <translation id="2858138569776157458">Top-Websites</translation>
 <translation id="2861301611394761800">Systemupdate abgeschlossen. Starten Sie das System jetzt neu.</translation>
@@ -1695,6 +1698,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2875698561019555027">(Chrome-Fehlerseiten)</translation>
 <translation id="2876336351874743617">Finger 2</translation>
 <translation id="2876369937070532032">URLs einiger von mir besuchter Seiten an Google senden, wenn meine Sicherheit gefährdet ist</translation>
+<translation id="2877467134191447552">Sie können Ihre zusätzlichen Konten für den Zugriff auf Websites und Apps hinzufügen.</translation>
 <translation id="2878782256107578644">Scan wird erstellt. Jetzt öffnen?</translation>
 <translation id="2878889940310164513">Mobilfunknetz hinzufügen...</translation>
 <translation id="288042212351694283">Auf Ihre Universal 2nd Factor-Geräte zugreifen</translation>
@@ -2270,6 +2274,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3550915441744863158">Chrome wird automatisch aktualisiert, sodass Sie immer über die neueste Version verfügen.</translation>
 <translation id="3551320343578183772">Tab schließen</translation>
 <translation id="3552780134252864554">Wird beim Beenden gelöscht</translation>
+<translation id="3554493885489666172">Ihr Gerät wird von <ph name="PROFILE_NAME" /> verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="3555812735919707620">Erweiterung entfernen</translation>
 <translation id="3556000484321257665">Ihre Suchmaschine wurde in <ph name="URL" /> geändert.</translation>
 <translation id="3556433843310711081">Dein Administrator kann die Blockierung aufheben</translation>
@@ -2444,6 +2449,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3732530910372558017">PIN darf maximal 63 Zeichen lang sein</translation>
 <translation id="3732857534841813090">Informationen zu Google Assistant</translation>
 <translation id="3733127536501031542">SSL-Server mit Step-up</translation>
+<translation id="3733296813637058299">Wir installieren diese Apps für Sie. Im Play Store finden Sie weitere Apps für Ihr <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3735740477244556633">Sortieren nach</translation>
 <translation id="3738632186060045350">Die <ph name="DEVICE_TYPE" />-Daten werden in 24 Stunden gelöscht</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -2724,6 +2730,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4025039777635956441">Ausgewählte Website stummschalten</translation>
 <translation id="4027804175521224372">(Keine Synchronisierung Ihrer Daten – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Eingabemethoden hinzufügen</translation>
+<translation id="4029556917477724407">Zurück von Seite „<ph name="PAGE_TITLE" />“</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
 <translation id="4031527940632463547">Sensoren blockiert</translation>
 <translation id="4033471457476425443">Neuen Ordner hinzufügen</translation>
@@ -2939,6 +2946,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4307992518367153382">Grundeinstellungen</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
 <translation id="4310139701823742692">Die Datei hat das falsche Format. Prüfen Sie die PPD-Datei und versuchen Sie es noch einmal.</translation>
+<translation id="43106757207292366">Sie können angemeldete Google-Konten in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwalten. Berechtigungen, die Sie Websites und Apps gewährt haben, gelten möglicherweise für alle Konten. Wenn Sie nicht möchten, dass Websites oder Apps Zugriff auf Ihre Kontoinformationen haben, können Sie sich auf <ph name="DEVICE_TYPE" /> als Gast anmelden oder in einem <ph name="LINK_2_BEGIN" />Inkognitofenster<ph name="LINK_2_END" /> im Web surfen.</translation>
 <translation id="431076611119798497">&amp;Details</translation>
 <translation id="4312866146174492540">Blockieren (Standard)</translation>
 <translation id="4314815835985389558">Synchronisierung verwalten</translation>
@@ -3032,7 +3040,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4416582610654027550">Geben Sie eine gültige URL ein</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> darf immer Cookies setzen</translation>
 <translation id="4419610272958564173">Unbekanntes Gerät (Anbieter: <ph name="VENDOR_ID" />, Produkt: <ph name="PRODUCT_ID" />)</translation>
-<translation id="4421167684395067330">Fehler bei der Verbindung. Bitte wenden Sie sich an <ph name="CARRIER_NAME" />.</translation>
 <translation id="4421932782753506458">Miez</translation>
 <translation id="4423376891418188461">Einstellungen wiederherstellen</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, Ihr Administrator fordert Sie zum Ändern Ihres Passworts auf.</translation>
@@ -3044,7 +3051,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4434045419905280838">Pop-ups und Weiterleitungen</translation>
 <translation id="443454694385851356">Veraltet (nicht sicher)</translation>
 <translation id="443475966875174318">Nicht kompatible Anwendungen aktualisieren oder entfernen</translation>
-<translation id="4436063104263971834">Keine verfügbaren SIM-Profile. <ph name="BEGIN_LINK" />Neues Profil einrichten<ph name="END_LINK" /></translation>
 <translation id="4438043733494739848">Transparent</translation>
 <translation id="4438639467177774583">Das Passwort <ph name="MASKED_PASSWORD" /> von <ph name="USERNAME" /> wird in Ihrem Google-Konto gespeichert (<ph name="ACCOUNT" />)</translation>
 <translation id="4439427728133035643">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
@@ -3485,6 +3491,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4936042273057045735">Benachrichtigungssynchronisierung wird nicht unterstützt, wenn auf einem Smartphone aktuell ein Arbeitsprofil verwendet wird</translation>
 <translation id="4939805055470675027">Verbindung mit <ph name="CARRIER_NAME" /> konnte nicht hergestellt werden</translation>
 <translation id="4940364377601827259">Es sind <ph name="PRINTER_COUNT" /> Drucker verfügbar, die gespeichert werden können.</translation>
+<translation id="4940448324259979830">Dieses Konto wird von <ph name="PROFILE_NAME" /> verwaltet</translation>
 <translation id="4940845626435830013">Speicherplatz reservieren</translation>
 <translation id="4941074198479265146">Websites stellen normalerweise eine Verbindung mit MIDI-Geräten her, um Funktionen wie das Komponieren oder Bearbeiten von Musik umzusetzen</translation>
 <translation id="4941246025622441835">Diese Geräteanforderung beim Registrieren des Geräts für die Unternehmensverwaltung verwenden:</translation>
@@ -3764,6 +3771,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5288678174502918605">Geschlossenen Tab wieder öffn&amp;en</translation>
 <translation id="52895863590846877">Diese Seite ist nicht auf <ph name="LANGUAGE" /></translation>
 <translation id="52912272896845572">Private Schlüsseldatei ist ungültig.</translation>
+<translation id="5291739252352359682">Erstellt automatisch Untertitel für Medien in Chrome (zurzeit nur auf Englisch verfügbar). Audioinhalte und Untertitel werden ausschließlich auf dem Gerät verarbeitet und gespeichert.</translation>
 <translation id="529175790091471945">Gerät formatieren</translation>
 <translation id="5293170712604732402">Einstellungen auf ursprüngliche Standardwerte zurücksetzen</translation>
 <translation id="5294097441441645251">Muss mit einem Kleinbuchstaben oder Unterstrich beginnen</translation>
@@ -5016,6 +5024,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> angehalten</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Ihr Administrator<ph name="END_LINK" /> hat Safe Browsing deaktiviert</translation>
 <translation id="6742339027238151589">Zugänglich für Skript</translation>
+<translation id="6742629250739345159">Erstellt automatisch Untertitel für Medien im Chrome-Browser. Audioinhalte und Untertitel werden ausschließlich auf dem Gerät verarbeitet und gespeichert.</translation>
 <translation id="6745592621698551453">Jetzt aktualisieren</translation>
 <translation id="6746124502594467657">Nach unten</translation>
 <translation id="674632704103926902">Antippen und Ziehen aktivieren</translation>
@@ -5175,8 +5184,10 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6922128026973287222">Mit dem Google-Datensparmodus verbrauchen Sie weniger Daten und surfen schneller. Klicken Sie hier, um mehr zu erfahren.</translation>
 <translation id="6922570474772078053">Wird ausgeschaltet</translation>
 <translation id="6922745772873733498">Geben Sie zum Ausdrucken eine PIN ein</translation>
+<translation id="6922763095098248079">Ihr Gerät wird von Ihrer Organisation verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="6923132443355966645">Scrollen/Klicken</translation>
 <translation id="6923633482430812883">Fehler beim Bereitstellen der Freigabe. Der Dateiserver, zu dem Sie eine Verbindung herstellen, muss SMBv2 oder höher unterstützen.</translation>
+<translation id="6925127338315966709">Sie fügen diesem Browser ein verwaltetes Profil hinzu. Ihr Administrator hat die Kontrolle über das Profil und Zugriff auf die Daten. Lesezeichen, Verlauf, Passwörter und andere Einstellungen können mit Ihrem Konto synchronisiert und von Ihrem Administrator verwaltet werden.</translation>
 <translation id="6929126689972602640">Jugendschutzeinstellungen werden für Konten einer Bildungseinrichtung nicht unterstützt. Wenn du ein Konto einer Bildungseinrichtung für den Zugriff auf Google Classroom oder auf andere Websites für Schulaufgaben hinzufügen möchtest, melde dich zuerst im privaten Konto des Kindes an. Du kannst das Konto einer Bildungseinrichtung später in den Einstellungen hinzufügen.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930036377490597025">Externer Sicherheitsschlüssel oder integrierter Sensor</translation>
@@ -5920,7 +5931,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7775694664330414886">Tab wurde in unbenannte Gruppe verschoben – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> kann dann Dateien im Ordner <ph name="FOLDERNAME" /> lesen, solange Tabs dieser Website geöffnet sind</translation>
 <translation id="7776701556330691704">Keine Stimmen gefunden</translation>
-<translation id="7780252971640011240">Fehler bei der Verbindung. Wenden Sie sich bitte an Ihren Mobilfunkanbieter.</translation>
 <translation id="7781335840981796660">Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
 <translation id="7782102568078991263">Keine weiteren Vorschläge von Google</translation>
 <translation id="7782717250816686129">Vom Nutzer auf dem Anmeldebildschirm angegebene Daten speichern und mit anderen Erweiterungen in der Nutzersitzung teilen.</translation>
@@ -6173,6 +6183,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8047242494569930800">In Google-Konto verschieben</translation>
 <translation id="804786196054284061">Endnutzer-Lizenzvereinbarung</translation>
 <translation id="8048977114738515028">Erstellen Sie auf Ihrem Gerät eine Desktopverknüpfung, um direkt auf dieses Profil zuzugreifen</translation>
+<translation id="8049029041626250638">Verbinden Sie eine Tastatur oder Maus. Achten Sie bei Verwendung eines Bluetooth-Geräts darauf, ob es bereit zur Kopplung ist.</translation>
 <translation id="8049705080247101012">"<ph name="EXTENSION_NAME" />" wurde von Google als schädlich eingestuft und die Installation wurde blockiert</translation>
 <translation id="8049948037269924837">Gegenläufiges Scrollen für Touchpad</translation>
 <translation id="8050038245906040378">Kommerzielle Microsoft-Codesignatur</translation>
@@ -6733,6 +6744,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8716931980467311658">Alle Linux-Anwendungen und Daten im Ordner "Linux-Dateien" von diesem <ph name="DEVICE_TYPE" /> löschen?</translation>
 <translation id="8717145295869185525">Dürfen keine Virtual-Reality-Geräte und ‑Daten verwenden</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
+<translation id="8718994464069323380">Touchscreen erkannt</translation>
 <translation id="8719472795285728850">Auf Erweiterungsaktivitäten wird gewartet…</translation>
 <translation id="8719653885894320876">Fehler beim Download von <ph name="PLUGIN_NAME" /></translation>
 <translation id="8720200012906404956">Suche nach einem mobilen Netzwerk läuft. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -7111,6 +7123,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9109283579179481106">Verbindung mit Mobilfunknetz herstellen</translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
+<translation id="9111668656364922873">Willkommen in Ihrem neuen Profil</translation>
 <translation id="9112748030372401671">Hintergrundbild ändern</translation>
 <translation id="9112987648460918699">Suchen...</translation>
 <translation id="9114663181201435112">Einfach anmelden</translation>

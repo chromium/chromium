@@ -295,6 +295,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2053111141626950936">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt.</translation>
 <translation id="2053553514270667976">Postleitzahl</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
+<translation id="2071692954027939183">Benachrichtigungen wurden automatisch blockiert, da Sie sie normalerweise nicht zulassen</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="20817612488360358">Die System-Proxy-Einstellungen sind zur Verwendung angegeben, gleichzeitig wurde aber auch eine explizite Proxy-Konfiguration festgelegt.</translation>
 <translation id="2082238445998314030">Ergebnis <ph name="RESULT_NUMBER" /> von <ph name="TOTAL_RESULTS" /></translation>
@@ -782,6 +783,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4058922952496707368">Schlüssel "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Umschlag)</translation>
 <translation id="4067947977115446013">Gültige Adresse hinzufügen</translation>
+<translation id="4072193657607981494">Richtlinien werden geladen</translation>
 <translation id="4072486802667267160">Bei der Verarbeitung Ihrer Bestellung ist ein Fehler aufgetreten. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="4075732493274867456">Client und Server unterstützen keine gemeinsame SSL-Protokollversion oder Verschlüsselungssammlung.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -916,6 +918,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4510487217173779431">Chou4 (Umschlag)</translation>
 <translation id="4515275063822566619">Karten und Adressen stammen aus Chrome und aus Ihrem Google-Konto (<ph name="ACCOUNT_EMAIL" />). Sie können sie in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="4517607026994743406">Comm-10 (Umschlag)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4524138615196389145">Karten mithilfe von WebAuthn ab sofort schneller bestätigen</translation>
 <translation id="4524805452350978254">Karten verwalten</translation>
@@ -1338,6 +1341,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="614940544461990577">Versuchen Sie Folgendes:</translation>
 <translation id="6150036310511284407">Dreifache Lochung links</translation>
 <translation id="6151417162996330722">Die Gültigkeitsdauer des Serverzertifikats ist zu lang.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Wählen Sie eine Adresse aus, um Versandoptionen und -anforderungen zu sehen</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6169916984152623906">Sie können jetzt privat surfen. Für andere Personen, die dieses Gerät nutzen, sind Ihre Aktivitäten nicht sichtbar. Ihre Downloads und Lesezeichen werden jedoch gespeichert.</translation>
@@ -1886,6 +1890,7 @@ Weitere Details:
 <translation id="8364627913115013041">Nicht eingerichtet</translation>
 <translation id="8368476060205742148">Google Play-Dienste</translation>
 <translation id="8371889962595521444">Benutzerdefinierte Root-Zertifikate</translation>
+<translation id="8374636051559112948">Variiert</translation>
 <translation id="8380941800586852976">Schädlich</translation>
 <translation id="8381674639488873545">Diese Kosten können einmalig oder wiederkehrend sein und sind vielleicht nicht klar zu erkennen. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Die Administratorrichtlinie blockiert das Teilen von <ph name="ORIGIN_NAME" /> mit <ph name="VM_NAME" /></translation>
@@ -2069,6 +2074,7 @@ Weitere Details:
 <translation id="9114524666733003316">Karte wird bestätigt…</translation>
 <translation id="9114581008513152754">Dieser Browser wird nicht von einem Unternehmen oder einer anderen Organisation verwaltet. Aktivitäten auf diesem Gerät werden eventuell außerhalb von Chrome verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Hochgeladen</translation>
+<translation id="9128016270925453879">Richtlinien wurden geladen</translation>
 <translation id="9128870381267983090">Mit Netzwerk verbinden</translation>
 <translation id="9137013805542155359">Original anzeigen</translation>
 <translation id="9141013498910525015">Adressen verwalten</translation>

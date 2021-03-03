@@ -253,7 +253,6 @@
 <translation id="1275718070701477396">ఎంపికైంది</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1277020343994096713">మీ ప్రస్తుత PINకు భిన్నంగా ఉన్న ఒక కొత్త PINను క్రియేట్ చేయండి</translation>
-<translation id="1278703349931574538">కాంటాక్ట్‌లను మేనేజ్ చేయి</translation>
 <translation id="127946606521051357">సమీపంలోని పరికరం షేర్ చేస్తోంది</translation>
 <translation id="1280820357415527819">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="1280965841156951489">ఎడిటింగ్‌ను అనుమతించు</translation>
@@ -1140,7 +1139,6 @@
 <translation id="2256115617011615191">ఇప్పుడే పునఃప్రారంభించు</translation>
 <translation id="2257053455312861282">పాఠశాల ఖాతాను యాడ్ చేయడం వలన తల్లిదండ్రుల నియంత్రణల కింద ఆపరేట్ చేస్తున్నప్పుడు కూడా విద్యార్థిగా వెబ్‌సైట్‌లు, ఎక్స్‌టెన్షన్‌లు, యాప్‌లకు సులభంగా సైన్-ఇన్ చేయడాన్ని ఎనేబుల్ చేస్తుంది.</translation>
 <translation id="2261323523305321874">మీ నిర్వాహకులు కొన్ని పాత ప్రొఫైల్‌లను నిలిపివేసేలా వ్యవస్థాగత మార్పు చేశారు.</translation>
-<translation id="2262332168014443534">ఇప్పుడు లైట్ మోడ్‌లో HTTPSతో పాటు అన్ని పేజీలలో మరింత వేగంగా బ్రౌజ్ చేయవచ్చు.</translation>
 <translation id="2262477216570151239">పునరావృతానికి ముందు జాప్యం</translation>
 <translation id="2262888617381992508">సురక్షితమైన కంటెంట్‌ను ప్లే చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="2263189956353037928">సైన్ అవుట్ చేసి, తిరిగి సైన్ ఇన్ చేయి</translation>
@@ -1497,7 +1495,6 @@
 <translation id="265390580714150011">ఫీల్డ్ విలువ</translation>
 <translation id="2654166010170466751">చెల్లింపు హ్యాండ్లర్‌లను ఇన్‌స్టాల్ చేయడానికి సైట్‌లను అనుమతించండి</translation>
 <translation id="2654553774144920065">ప్రింట్ అభ్యర్థన</translation>
-<translation id="2657807507504044638">అందుబాటులో ఎలాంటి eSIM ప్రొఫైల్‌లు లేవు. కొత్త ప్రొఫైల్‌ను <ph name="BEGIN_LINK" />ఇక్కడ<ph name="END_LINK" /> డౌన్‌లోడ్ చేయండి</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />పరికరాన్ని బట్టి ఫీచర్‌లు మారతాయి</translation>
 <translation id="2659971421398561408">Crostini డిస్క్ పరిమాణం మార్పు</translation>
 <translation id="2660779039299703961">ఈవెంట్</translation>
@@ -3047,7 +3044,6 @@
 <translation id="4416582610654027550">చెల్లుబాటు అయ్యే URLను టైప్ చేయండి</translation>
 <translation id="4419409365248380979">కుకీలను సెట్ చేయడానికి <ph name="HOST" />ని ఎల్లపుడు అనుమతించండి</translation>
 <translation id="4419610272958564173">తెలియని పరికరం (విక్రేత: <ph name="VENDOR_ID" />, ఉత్పత్తి: <ph name="PRODUCT_ID" />)</translation>
-<translation id="4421167684395067330">కనెక్ట్ చేయడంలో సమస్య ఉంది. సహాయం కోసం దయచేసి <ph name="CARRIER_NAME" />ను సంప్రదించండి.</translation>
 <translation id="4421932782753506458">ఫ్లఫ్ఫీ</translation>
 <translation id="4423376891418188461">సెట్టింగ్‌లను పునరుద్ధరించు</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, మీ నిర్వాహకులకు మీరు మీ పాస్‌వర్డ్‌ను మార్చడం అవసరం.</translation>
@@ -3059,7 +3055,6 @@
 <translation id="4434045419905280838">పాప్-అప్‌లు మరియు మళ్లింపులు</translation>
 <translation id="443454694385851356">లెగసీ (అసురక్షితం)</translation>
 <translation id="443475966875174318">అనుకూలంగా లేని అప్లికేషన్‌లను అప్‌డేట్ చేయండి లేదా తీసివేయండి</translation>
-<translation id="4436063104263971834">అందుబాటులో ఏ SIM ప్రొఫైల్‌లు లేవు కొత్త ప్రొఫైల్‌ను <ph name="BEGIN_LINK" />ఇక్కడ<ph name="END_LINK" /> సెటప్ చేయండి.</translation>
 <translation id="4438043733494739848">పారదర్శకత</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" />, మీ <ph name="ACCOUNT" /> Google ఖాతాలో సేవ్ చేయబడుతుంది</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, కనెక్ట్ చేయండి</translation>
@@ -5940,7 +5935,6 @@
 <translation id="7775694664330414886">పేరులేని గ్రూప్‌కు ట్యాబ్ తరలించబడింది - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">మీరు ఈ సైట్‌లోని అన్ని ట్యాబ్‌లను మూసివేసే వరకు <ph name="ORIGIN" />, <ph name="FOLDERNAME" />లో ఉన్న ఫైల్స్‌ను చూడగలదు</translation>
 <translation id="7776701556330691704">వాయిస్‌లు ఏవీ కనుగొనబడలేదు</translation>
-<translation id="7780252971640011240">కనెక్ట్ చేయడంలో సమస్య ఉంది. సహాయం కోసం, దయచేసి మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="7781335840981796660">అన్ని వినియోగదారు ఖాతాలు మరియు స్థానిక డేటా తీసివేయబడతాయి.</translation>
 <translation id="7782102568078991263">ఇక Google నుండి సూచనలు లేవు</translation>
 <translation id="7782717250816686129">లాగిన్ స్క్రీన్‌లో డేటాను నిరంతరం సేవ్ చేయండి, సెషన్‌లోకి ఆధారాలను ఇంజెక్ట్ చేయండి.</translation>

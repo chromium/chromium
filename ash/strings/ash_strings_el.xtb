@@ -609,6 +609,7 @@
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6179832488876878285">Μπορείτε να καρφιτσώσετε εδώ σημαντικά αρχεία. Ανοίξτε την εφαρμογή Αρχεία για να ξεκινήσετε.</translation>
 <translation id="622484624075952240">Κάτω</translation>
+<translation id="6231419273573514727">Η απόδοση των περιφερειακών ενδέχεται να είναι περιορισμένη</translation>
 <translation id="6236290670123303279">Διαχείριση Ρυθμίσεων</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Κλειδωμένη σε οριζόντια</translation>
@@ -732,6 +733,7 @@
 <translation id="7346909386216857016">OK, το κατάλαβα</translation>
 <translation id="7348093485538360975">Πληκτρολόγιο οθόνης</translation>
 <translation id="735745346212279324">Το VPN αποσυνδέθηκε</translation>
+<translation id="7360036564632145207">Η αλλαγή της ρύθμισης προστασίας πρόσβασης δεδομένων για περιφερειακά μπορεί να βελτιστοποιήσει την απόδοση</translation>
 <translation id="7371404428569700291">Εγγραφή παραθύρου</translation>
 <translation id="7377169924702866686">Το Caps Lock είναι ενεργοποιημένο.</translation>
 <translation id="7378203170292176219">Σύρετε, για να επιλέξετε μια περιοχή για εγγραφή</translation>
@@ -790,6 +792,7 @@
 <translation id="7780159184141939021">Περιστροφή οθόνης</translation>
 <translation id="7796353162336583443">Πατήστε το κουμπί με τη γραφίδα στο ράφι, για να δημιουργήσετε μια σημείωση, ένα στιγμιότυπο οθόνης, να χρησιμοποιήσετε τον Βοηθό Google, τον δείκτη λέιζερ ή τον μεγεθυντικό φακό.</translation>
 <translation id="7798302898096527229">Πατήστε Search ή Shift για ακύρωση.</translation>
+<translation id="7807966291075028781">Τα περιφερειακά δεν υποστηρίζονται στη λειτουργία επισκέπτη για λόγους ασφαλείας</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> και <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Ισχυρό σήμα</translation>
 <translation id="7837740436429729974">Ο χρόνος τελείωσε</translation>
@@ -858,6 +861,7 @@
 <translation id="8345019317483336363">Επιλέχτηκε το παράθυρο <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8371779926711439835">Προώθηση ανά γράμμα</translation>
+<translation id="8371991222807690464">Η απόδοση των περιφερειακών ενδέχεται να περιορίζεται στη Λειτουργία επισκέπτη</translation>
 <translation id="8375916635258623388">Η συσκευή <ph name="DEVICE_NAME" /> και το τηλέφωνό σας θα συνδεθούν αυτόματα</translation>
 <translation id="8380784334203145311">Καληνύχτα,</translation>
 <translation id="8388750414311082622">Δεν είναι δυνατή η κατάργηση του τελευταίου γραφείου.</translation>

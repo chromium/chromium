@@ -299,6 +299,7 @@
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> тилиндеги барактар которулбайт.</translation>
 <translation id="2053553514270667976">Почта индекси</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 сунуш}other{# сунуш}}</translation>
+<translation id="2071692954027939183">Билдирмелер автоматтык түрдө бөгөттөлдү, анткени, адатта, аларга уруксат бербейсиз</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="20817612488360358">Тутумдун прокси жөндөөлөрү коюлду жана ошону менен катар, айкын прокси конфигурайиясы да белгиленди.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ичинен <ph name="RESULT_NUMBER" /> натыйжа</translation>
@@ -790,6 +791,7 @@
 <translation id="4058922952496707368">Ачкыч "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Конверт)</translation>
 <translation id="4067947977115446013">Дарегин туура көрсөтүңүз</translation>
+<translation id="4072193657607981494">Саясаттар жүктөлүүдө</translation>
 <translation id="4072486802667267160">Буйрутмаңызды иштетүү учурунда ката кетти. Кайталап көрүңүз.</translation>
 <translation id="4075732493274867456">Кардар менен серверде ар кандай SSL протоколунун версиялары же шифрлер топтому колдоого алынат.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -928,6 +930,7 @@
 <translation id="4510487217173779431">Chou4 (Конверт)</translation>
 <translation id="4515275063822566619">Карточкалар жана даректер Chrome’дон жана Google аккаунтуңуздан (<ph name="ACCOUNT_EMAIL" />) алынган. Аларды <ph name="BEGIN_LINK" />Жөндөөлөрдөн<ph name="END_LINK" /> башкарсаңыз болот.</translation>
 <translation id="4517607026994743406">Comm-10 (Конверт)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм. (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Чоо-жайлары</translation>
 <translation id="4524138615196389145">Мындан ары WebAuthn функциясын колдонуп карталарды тезирээк ырастаңыз</translation>
 <translation id="4524805452350978254">Карталарды башкаруу</translation>
@@ -1350,6 +1353,7 @@
 <translation id="614940544461990577">Төмөнкүлөрдү кылып көрүңүз:</translation>
 <translation id="6150036310511284407">Сол жагын үч жолу тешүү</translation>
 <translation id="6151417162996330722">Сервер уруксаттамасынын жарактуу мөөнөтү өтө узун.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Жөнөтүү ыкмаларын жана талаптарын көрүү үчүн дарегин тандаңыз</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6169916984152623906">Жашыруун режимдеги аракеттериңиз ушул түзмөктүн башка колдонуучуларына көрүнбөйт. Бирок жүктөп алынган файлдар жана кыстармалар сакталып кала берет.</translation>
@@ -1898,6 +1902,7 @@
 <translation id="8364627913115013041">Коюлган эмес.</translation>
 <translation id="8368476060205742148">Google Play кызматтары</translation>
 <translation id="8371889962595521444">Ыңгайлаштырылган негизги тастыктамалар</translation>
+<translation id="8374636051559112948">Ар кандай</translation>
 <translation id="8380941800586852976">Коркунучтуу</translation>
 <translation id="8381674639488873545">Алар бир жолу төлөнүүчү же кайталануучу төлөмдөр болушу мүмкүн, бирок алар ачык көрүнбөйт. <ph name="BEGIN_LINK" />Баары бир көрсөтүү<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> сайтынан <ph name="VM_NAME" /> тутуму менен бөлүшүү аракети администратордун саясатына ылайык бөгөттөлгөн</translation>
@@ -2079,6 +2084,7 @@
 <translation id="9114524666733003316">Карта текшерилүүдө…</translation>
 <translation id="9114581008513152754">Бул серепчи компанияңыз же башка уюм тарабынан башкарылбайт. Бул түзмөктө аткарылган аракеттер Chrome'дон тышкары башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Жүктөлүп берилди</translation>
+<translation id="9128016270925453879">Саясаттар жүктөлдү</translation>
 <translation id="9128870381267983090">Тармакка туташуу</translation>
 <translation id="9137013805542155359">Түпверсиясын көрсөтүү</translation>
 <translation id="9141013498910525015">Даректерди башкаруу</translation>

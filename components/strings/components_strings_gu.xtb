@@ -299,6 +299,7 @@
 <translation id="2053111141626950936"><ph name="LANGUAGE" />માં લખાયેલાં પેજનો અનુવાદ થશે નહીં.</translation>
 <translation id="2053553514270667976">પિન કોડ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 સૂચન}one{# સૂચન}other{# સૂચન}}</translation>
+<translation id="2071692954027939183">નોટિફિકેશન ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવ્યા હતા કારણ કે તમે સામાન્ય રીતે તેમને મંજૂરી આપતા નથી</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="20817612488360358">સિસ્ટમ પ્રૉક્સી સેટિંગ ઉપયોગમાં લેવા માટે સેટ છે પણ એક સ્પષ્ટ પ્રૉક્સી ગોઠવણીનો પણ ઉલ્લેખ કરાયેલો છે.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> માંથી <ph name="RESULT_NUMBER" /> પરિણામ</translation>
@@ -790,6 +791,7 @@
 <translation id="4058922952496707368">કી "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (એન્વલપ)</translation>
 <translation id="4067947977115446013">માન્ય સરનામું ઉમેરો</translation>
+<translation id="4072193657607981494">પૉલિસી લોડ થઈ રહી છે</translation>
 <translation id="4072486802667267160">તમારા ઑર્ડરની પ્રક્રિયા કરતી વખતે એક ભૂલ આવી હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="4075732493274867456">ક્લાઇન્ટ અને સર્વર સામાન્ય SSL પ્રોટોકોલ વર્ઝન અથવા સાઇફર સ્યૂટની સહાય કરતા નથી.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -928,6 +930,7 @@
 <translation id="4510487217173779431">Chou4 (એન્વલપ)</translation>
 <translation id="4515275063822566619">કાર્ડ અને સરનામા Chrome અને Google એકાઉન્ટ (<ph name="ACCOUNT_EMAIL" />)માંથી છે. તમે તેને <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને મેનેજ કરી શકો છો.</translation>
 <translation id="4517607026994743406">Comm-10 (એન્વલપ)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> મિ.મી. (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">વિગતો</translation>
 <translation id="4524138615196389145">હવેથી WebAuthnનો ઉપયોગ કરીને તમારા કાર્ડ વધુ ઝડપથી કન્ફર્મ કરો</translation>
 <translation id="4524805452350978254">કાર્ડ મેનેજ કરો</translation>
@@ -1350,6 +1353,7 @@
 <translation id="614940544461990577">પ્રયાસ કરો:</translation>
 <translation id="6150036310511284407">ડાબી બાજુએ ત્રણ કાણાં પાડો</translation>
 <translation id="6151417162996330722">સર્વર પ્રમાણપત્ર પાસે ખૂબ લાંબી હોય એવી માન્યતા અવધિ છે.</translation>
+<translation id="6153243098246946146">(<ph name="ORIENTATION" />)માં <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="6157877588268064908">વિતરણ પદ્ધતિ અને આવશ્યકતાઓ જોવા માટે, એક સરનામું પસંદ કરો</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6169916984152623906">હવે તમે ખાનગીમાં બ્રાઉઝ કરી શકો છો અને અન્ય લોકો જે આ ઉપકરણનો ઉપયોગ કરે છે તે પણ તમારી પ્રવૃત્તિ જોઇ શકશે નહીં. જો કે ડાઉનલોડ અને બુકમાર્ક સાચવવામાં આવશે.</translation>
@@ -1898,6 +1902,7 @@
 <translation id="8364627913115013041">સેટ નથી.</translation>
 <translation id="8368476060205742148">Google Play સેવાઓ</translation>
 <translation id="8371889962595521444">કસ્ટમ રૂટ પ્રમાણપત્રો</translation>
+<translation id="8374636051559112948">બદલાતી રહે છે</translation>
 <translation id="8380941800586852976">જોખમી</translation>
 <translation id="8381674639488873545">આ શુલ્ક એક વખત લાગે અથવા પુનરાવર્તિત હોઈ શકે અને તેનો સ્પષ્ટ ખ્યાલ ન આવે તેમ પણ બને. <ph name="BEGIN_LINK" />તો પણ બતાવો<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">વ્યવસ્થાપકની નીતિને કારણે <ph name="ORIGIN_NAME" />થી <ph name="VM_NAME" />માં પેસ્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
@@ -2079,6 +2084,7 @@
 <translation id="9114524666733003316">કાર્ડ કન્ફર્મ કરી રહ્યાં છીએ...</translation>
 <translation id="9114581008513152754">આ બ્રાઉઝર કંપની દ્વારા અથવા અન્ય સંસ્થા દ્વારા મેનેજ કરવામાં આવતું નથી. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહાર મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">અપલોડ કર્યો</translation>
+<translation id="9128016270925453879">પૉલિસી લોડ કરવામાં આવી છે</translation>
 <translation id="9128870381267983090">નેટવર્કથી કનેક્ટ કરો</translation>
 <translation id="9137013805542155359">મૂળ બતાવો</translation>
 <translation id="9141013498910525015">ઍડ્રેસ મેનેજ કરો</translation>

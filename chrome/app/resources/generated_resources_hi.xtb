@@ -254,7 +254,6 @@
 <translation id="1275718070701477396">चयनित</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइंस्टॉल नहीं हो सका</translation>
 <translation id="1277020343994096713">ऐसा नया पिन बनाएं जो आपके मौजूदा पिन से अलग हो</translation>
-<translation id="1278703349931574538">संपर्कों को प्रबंधित करें</translation>
 <translation id="127946606521051357">आस-पास मौजूद कोई डिवाइस, डेटा शेयर कर रहा है</translation>
 <translation id="1280820357415527819">मोबाइल नेटवर्क खोजे जा रहे हैं</translation>
 <translation id="1280965841156951489">फ़ाइलों में बदलाव करें</translation>
@@ -1141,7 +1140,6 @@
 <translation id="2256115617011615191">अभी पुनः प्रारंभ करें</translation>
 <translation id="2257053455312861282">स्कूल वाला खाता जोड़ने से वेबसाइटों, एक्सटेंशन, और ऐप्लिकेशन में एक छात्र/छात्रा के तौर पर साइन-इन करने में आसानी होगी. हालांकि, वे अब भी इन्हें 'माता-पिता का कंट्रोल' सुविधा की मदद से ही इस्तेमाल कर सकेंगे.</translation>
 <translation id="2261323523305321874">आपके एडमिन ने पूरे सिस्टम में ऐसा बदलाव किया है जो कुछ पुरानी प्रोफ़ाइल बंद कर देता है.</translation>
-<translation id="2262332168014443534">लाइट मोड अब HTTPS के साथ ही, सभी पेज पर ब्राउज़िंग को तेज़ बनाता है.</translation>
 <translation id="2262477216570151239">दोहराने से पहले विलंब</translation>
 <translation id="2262888617381992508">सुरक्षित कॉन्टेंट चलाने की अनुमति नहीं है</translation>
 <translation id="2263189956353037928">साइन आउट करें और वापस प्रवेश करें</translation>
@@ -1498,7 +1496,6 @@
 <translation id="265390580714150011">फ़ील्ड मान</translation>
 <translation id="2654166010170466751">साइटों को भुगतान हैंडलर इंस्टॉल करने की अनुमति दें</translation>
 <translation id="2654553774144920065">प्रिंट करने का अनुरोध</translation>
-<translation id="2657807507504044638">कोई भी eSIM प्रोफ़ाइल उपलब्ध नहीं है. नई प्रोफ़ाइल <ph name="BEGIN_LINK" />यहां<ph name="END_LINK" /> डाउनलोड करें</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />डिवाइस के हिसाब से सुविधाएं अलग-अलग हो सकती हैं</translation>
 <translation id="2659971421398561408">Crostini में डिस्क का साइज़ बदलना</translation>
 <translation id="2660779039299703961">इवेंट</translation>
@@ -3047,7 +3044,6 @@
 <translation id="4416582610654027550">एक मान्य यूआरएल टाइप करें</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> को हमेशा कुकी सेट करने की अनुमति दें</translation>
 <translation id="4419610272958564173">अज्ञात डिवाइस (विक्रेता: <ph name="VENDOR_ID" />, प्रॉडक्ट: <ph name="PRODUCT_ID" />)</translation>
-<translation id="4421167684395067330">कनेक्ट करने में समस्या है. कृपया सहायता के लिए अपनी <ph name="CARRIER_NAME" /> से संपर्क करें.</translation>
 <translation id="4421932782753506458">फ्लफ़ी</translation>
 <translation id="4423376891418188461">सेटिंग फिर से स्थापित करें</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, आपके व्यवस्थापक के लिए ज़रूरी है कि आप अपना पासवर्ड बदलें.</translation>
@@ -3059,7 +3055,6 @@
 <translation id="4434045419905280838">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="443454694385851356">विरासती (असुरक्षित)</translation>
 <translation id="443475966875174318">उन ऐप्लिकेशन को अपडेट करें या हटाएं, जो मेल नहीं खाती हैं</translation>
-<translation id="4436063104263971834">कोई भी सिम प्रोफ़ाइल उपलब्ध नहीं है. नई प्रोफ़ाइल <ph name="BEGIN_LINK" />यहां<ph name="END_LINK" /> सेट अप करें.</translation>
 <translation id="4438043733494739848">पारदर्शी</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> को आपके Google खाते <ph name="ACCOUNT" /> में सेव किया जाएगा</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
@@ -5940,7 +5935,6 @@
 <translation id="7775694664330414886">टैब को बिना नाम वाले ग्रुप में ले जाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">जब तक आप इस साइट के लिए सभी टैब बंद नहीं कर देते, <ph name="ORIGIN" /> तब तक फाइलों को <ph name="FOLDERNAME" /> में देख पाएगी</translation>
 <translation id="7776701556330691704">कोई आवाज़ नहीं मिली</translation>
-<translation id="7780252971640011240">कनेक्ट करने में समस्या है. कृपया सहायता के लिए अपनी मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="7781335840981796660">सभी 'उपयोगकर्ता खातों' और 'स्थानीय डेटा' को हटा दिया जाएगा.</translation>
 <translation id="7782102568078991263">Google की ओर से कोई और सुझाव नहीं</translation>
 <translation id="7782717250816686129">लॉगिन स्क्रीन पर लगातार दिख रहे डेटा को स्टोर करें और सेशन में क्रेडेंशियल डालें.</translation>

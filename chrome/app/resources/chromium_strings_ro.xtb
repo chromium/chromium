@@ -49,6 +49,7 @@
 <translation id="2770231113462710648">Schimbă browserul prestabilit la:</translation>
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2816712596130903444">Creezi un profil Chromium separat?</translation>
+<translation id="2837693172913560447">Astfel, se va crea un nou profil Chromium pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Elimină din Chromium...</translation>
 <translation id="2885378588091291677">Manager de activități</translation>
 <translation id="2910007522516064972">Despre &amp;Chromium</translation>
@@ -123,6 +124,7 @@
 <translation id="4987820182225656817">Invitații pot folosi Chromium fără a lăsa nicio urmă.</translation>
 <translation id="4994636714258228724">Adăugați-vă la Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chromium. Astfel, se va crea un nou profil Chromium pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Pentru a aplica modificările, relansează Chromium</translation>
 <translation id="5358375970380395591">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Chromium. Datele Chromium, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium se actualizează (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -232,6 +234,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7773960292263897147">Avertisment: Chromium nu poate împiedica extensiile să înregistreze istoricul de navigare. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7827169012280634081">Șterge cookie-urile și datele privind site-urile când închizi Chromium</translation>
+<translation id="7828947555739565424">Există deja un profil Chromium asociat acestui cont pe dispozitiv</translation>
 <translation id="7857220146454061152">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de OS X 10.11 sau o versiune ulterioară. Acest computer folosește OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium nu s-a putut actualiza la cea mai recentă versiune. Astfel, pierzi noi funcții și remedieri de securitate.</translation>
 <translation id="7898472181347242998">Pentru a verifica dacă dispozitivul este actualizat, accesează <ph name="LINK_BEGIN" />Setările sistemului de operare Chromium<ph name="LINK_END" /></translation>

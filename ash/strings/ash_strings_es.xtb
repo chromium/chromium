@@ -305,6 +305,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Cambiar de nuevo por "<ph name="FROM_LOCALE" />" (requiere reiniciar)</translation>
 <translation id="3576141592585647168">Cambiar zona horaria</translation>
+<translation id="3593039967545720377">Pulsa <ph name="SHORTCUT_KEY_NAME" /> + V para ver el historial del portapapeles. Copia un elemento para empezar.</translation>
 <translation id="3593646411856133110">Desliza el dedo hacia arriba y no lo levantes para ver las aplicaciones abiertas</translation>
 <translation id="3595596368722241419">Batería al máximo</translation>
 <translation id="3604801046548457007">Se ha creado el escritorio <ph name="DESK_TITILE" /></translation>
@@ -609,6 +610,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Abre la aplicación Archivos para empezar.</translation>
 <translation id="622484624075952240">Flecha hacia abajo</translation>
+<translation id="6231419273573514727">Es posible que el rendimiento de los periféricos esté limitado</translation>
 <translation id="6236290670123303279">Gestionar configuración</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Bloqueada en horizontal</translation>
@@ -732,6 +734,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
+<translation id="7360036564632145207">Si cambias la protección de acceso a datos desde periféricos, puedes optimizar el rendimiento</translation>
 <translation id="7371404428569700291">Grabar ventana</translation>
 <translation id="7377169924702866686">El bloqueo de mayúsculas está activado.</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar un área de grabación</translation>
@@ -790,6 +793,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7796353162336583443">Toca el botón del lápiz óptico situado en la estantería para tomar una nota, hacer una captura de pantalla o utilizar el Asistente de Google, el puntero láser o la lupa.</translation>
 <translation id="7798302898096527229">Pulsa la tecla de búsqueda o Mayús para cancelarlo.</translation>
+<translation id="7807966291075028781">Periférico no compatible en el Modo invitados por motivos de seguridad</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
 <translation id="7837740436429729974">Tiempo agotado</translation>
@@ -858,6 +862,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8345019317483336363">Ventana <ph name="WINDOW_TITLE" /> seleccionada</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8371779926711439835">Avanzar por carácter</translation>
+<translation id="8371991222807690464">Es posible que el rendimiento de los periféricos esté limitado en el Modo invitados</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> y tu teléfono se conectarán automáticamente</translation>
 <translation id="8380784334203145311">Buenas noches,</translation>
 <translation id="8388750414311082622">No se puede quitar el último escritorio.</translation>

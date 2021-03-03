@@ -295,6 +295,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2053111141626950936">No se traducirán las páginas en <ph name="LANGUAGE" />.</translation>
 <translation id="2053553514270667976">Código Postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugerencia}other{# sugerencias}}</translation>
+<translation id="2071692954027939183">Se bloquearon las notificaciones de forma automática porque no sueles permitirlas.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración de proxy del sistema, pero también se ha especificado una configuración explícita de proxy.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -785,6 +786,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
+<translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Se produjo un error al procesar tu pedido. Vuelve a intentarlo.</translation>
 <translation id="4075732493274867456">El cliente y el servidor no admiten un conjunto de cifrado o una versión de protocolo SSL en común.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
@@ -919,6 +921,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4510487217173779431">Chou4 (Envelope)</translation>
 <translation id="4515275063822566619">Las tarjetas y direcciones provienen de Chrome y de tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />). Puedes administrar esta información en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (Envelope)</translation>
+<translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4522570452068850558">Detalles</translation>
 <translation id="4524138615196389145">De ahora en más, usa WebAuthn para verificar las tarjetas más rápido</translation>
 <translation id="4524805452350978254">Administrar tarjetas</translation>
@@ -1341,6 +1344,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="614940544461990577">Intenta:</translation>
 <translation id="6150036310511284407">Perforación triple a la izquierda</translation>
 <translation id="6151417162996330722">El certificado de servidor tiene un período de validez demasiado extenso.</translation>
+<translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> pulgadas (<ph name="ORIENTATION" />)</translation>
 <translation id="6157877588268064908">Para ver los requisitos y métodos de envío, selecciona una dirección</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6169916984152623906">Ahora puedes navegar con privacidad. Si otras personas usan este dispositivo, no verán tu actividad. Sin embargo, se guardarán las descargas y los favoritos.</translation>
@@ -1889,6 +1893,7 @@ Detalles adicionales:
 <translation id="8364627913115013041">Sin establecer</translation>
 <translation id="8368476060205742148">Servicios de Google Play</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
+<translation id="8374636051559112948">Variable</translation>
 <translation id="8380941800586852976">Peligrosa</translation>
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Una política del administrador no permite compartir contenido de <ph name="ORIGIN_NAME" /> con <ph name="VM_NAME" /></translation>
@@ -2071,6 +2076,7 @@ Detalles adicionales:
 <translation id="9114524666733003316">Confirmando tarjeta…</translation>
 <translation id="9114581008513152754">Este navegador no está administrado por una empresa ni por otra organización. Es posible que la actividad de este dispositivo se administre fuera de Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Subido</translation>
+<translation id="9128016270925453879">Se cargaron las políticas</translation>
 <translation id="9128870381267983090">Conectarse a una red</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9141013498910525015">Administrar direcciones</translation>

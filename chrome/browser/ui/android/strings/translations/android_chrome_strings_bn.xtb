@@ -185,6 +185,7 @@
 <translation id="2239812875700136898">'Discover-এর বিকল্প' বোতামে ক্লিক করে আপনার ফিডের কন্টেন্ট নিয়ন্ত্রণ করুন</translation>
 <translation id="2259659629660284697">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
 <translation id="2276696007612801991">আপনার পাসওয়ার্ড চেক করতে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
+<translation id="2278052315791335171">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না</translation>
 <translation id="2286841657746966508">বিলিং ঠিকানা</translation>
 <translation id="230115972905494466">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="230155349749732438">এই সেটিং ব্যবহার করতে <ph name="BEGIN_LINK" />সার্চ ও ব্রাউজিং আরও উন্নত করুন<ph name="END_LINK" /> বিকল্পটি চালু করা আবশ্যক</translation>
@@ -355,6 +356,7 @@
 <translation id="3398320232533725830">বুকমার্কস ম্যানেজার খুলুন</translation>
 <translation id="3414952576877147120">মাপ:</translation>
 <translation id="3429160811076349561">ট্রায়াল ফিচার বন্ধ করা আছে</translation>
+<translation id="3440975416244667276">আরও প্রাসঙ্গিক তথ্যের জন্য টাচ করে ধরে থাকুন</translation>
 <translation id="3443221991560634068">বর্তমান পৃষ্ঠাটি রিলোড করুন</translation>
 <translation id="3451542610083122179">Privacy Sandbox ওপেন ওয়েব সংরক্ষণের একটি লাগাতার উদ্যোগ যা আপনাকে ট্র্যাকিং মেকানিজম থেকে নিরাপদে থাকতে সাহায্য করে।
 
@@ -948,6 +950,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="7475688122056506577">এসডি কার্ড পাওয়া যায়নি। আপনার কিছু ফাইল নাও থাকতে পারে।</translation>
 <translation id="7479104141328977413">ট্যাব ম্যানেজমেন্ট</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>
+<translation id="7481864133709957613">এই পৃষ্ঠা থেকে সার্চ করার জন্য, শব্দগুলির উপর ট্যাপ না করে বরং সেগুলিকে টাচ করে ধরে থাকুন</translation>
 <translation id="7482656565088326534">প্রিভিউ ট্যাব</translation>
 <translation id="7484997419527351112">ডিসকভার - বন্ধ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (আপডেট করা হয়েছে <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -957,6 +960,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="751961395872307827">সাইটের সাথে সংযোগ করা যাচ্ছে না</translation>
 <translation id="752220631458524187">আপনার হয়ে গেলে ডিসকানেক্ট করে দিন</translation>
+<translation id="7523960634226602883">Google Lens ব্যবহার করে আপনার ক্যামেরার সাহায্যে সার্চ করুন</translation>
 <translation id="753225086557513863">পরে শুরু করার জন্য শিডিউল করা হয়েছে</translation>
 <translation id="7559975015014302720">লাইট মোড বন্ধ আছে</translation>
 <translation id="7562080006725997899">ব্রাউজিং ইতিহাস সাফ করা হচ্ছে</translation>
