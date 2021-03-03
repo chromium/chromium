@@ -19,7 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
-#include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/logging_chrome.h"
@@ -95,7 +95,7 @@ bool NaClBrowserDelegateImpl::GetUserDirectory(base::FilePath* user_dir) {
 }
 
 std::string NaClBrowserDelegateImpl::GetVersionString() const {
-  return chrome::GetVersionString();
+  return chrome::kChromeVersion;
 }
 
 ppapi::host::HostFactory* NaClBrowserDelegateImpl::CreatePpapiHostFactory(
