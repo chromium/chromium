@@ -39146,6 +39146,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="SuspiciousModule"/>
 </enum>
 
+<enum name="IncognitoCCTCallerId">
+  <int value="0" label="Other Apps"/>
+  <int value="1" label="Google Apps"/>
+  <int value="2" label="Chrome - Other features"/>
+  <int value="3" label="Chrome - Reader mode"/>
+</enum>
+
 <enum name="Inconsistencies">
   <int value="1" label="RangeChecksum"/>
   <int value="2" label="BucketOrder"/>

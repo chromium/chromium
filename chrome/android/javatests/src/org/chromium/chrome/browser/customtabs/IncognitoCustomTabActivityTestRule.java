@@ -26,6 +26,8 @@ import java.util.concurrent.TimeoutException;
  * CustomTabActivity}.
  */
 public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRule {
+    private boolean mRemoveFirstPartyOverride;
+
     @Rule
     private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
             AppHooksModule.Factory.class, AppHooksModuleForTest::new);
@@ -40,6 +42,7 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
             return new ExternalAuthUtils() {
                 @Override
                 public boolean isGoogleSigned(String packageName) {
+                    if (mRemoveFirstPartyOverride) return false;
                     return true;
                 }
             };
@@ -68,6 +71,10 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
             }
         }
         super.startCustomTabActivityWithIntent(intent);
+    }
+
+    public void setRemoveFirstPartyOverride() {
+        mRemoveFirstPartyOverride = true;
     }
 
     @Override

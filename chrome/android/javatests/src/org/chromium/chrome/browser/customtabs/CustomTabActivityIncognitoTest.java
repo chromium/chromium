@@ -51,6 +51,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -401,6 +402,8 @@ public class CustomTabActivityIncognitoTest {
     public void ensureAddCustomMenuItemIsEnabledForReaderMode() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
+        IncognitoCustomTabIntentDataProvider.addIncongitoExtrasForChromeFeatures(
+                intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
 

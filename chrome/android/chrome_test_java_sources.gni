@@ -132,6 +132,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/crash/PureJavaExceptionReporterTest.java",
   "javatests/src/org/chromium/chrome/browser/crypto/CipherFactoryTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/ClientManagerTest.java",
+  "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityIncognitoMetricTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityIncognitoTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityTest.java",
