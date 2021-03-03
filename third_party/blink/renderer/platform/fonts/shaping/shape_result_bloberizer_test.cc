@@ -58,7 +58,7 @@ class ShapeResultBloberizerTest : public testing::Test {
 
 TEST_F(ShapeResultBloberizerTest, StartsEmpty) {
   Font font;
-  ShapeResultBloberizer bloberizer(font, 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
             nullptr);
@@ -77,7 +77,7 @@ TEST_F(ShapeResultBloberizerTest, StartsEmpty) {
 
 TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {
   Font font;
-  ShapeResultBloberizer bloberizer(font, 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
 
   scoped_refptr<SimpleFontData> font1 = CreateTestSimpleFontData();
   scoped_refptr<SimpleFontData> font2 = CreateTestSimpleFontData();
@@ -137,7 +137,7 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {
 
 TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
   Font font;
-  ShapeResultBloberizer bloberizer(font, 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
 
   scoped_refptr<SimpleFontData> font1 = CreateTestSimpleFontData();
   scoped_refptr<SimpleFontData> font2 = CreateTestSimpleFontData();
@@ -203,7 +203,7 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
 
 TEST_F(ShapeResultBloberizerTest, MixedBlobRotation) {
   Font font;
-  ShapeResultBloberizer bloberizer(font, 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
 
   scoped_refptr<SimpleFontData> test_font = CreateTestSimpleFontData();
 
@@ -259,7 +259,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   TextRunPaintInfo run_info(text_run);
   run_info.to = 3;
 
-  ShapeResultBloberizer bloberizer(font, 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
@@ -268,8 +268,9 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   Font reference_font(font_description);
   reference_font.SetCanShapeWordByWordForTesting(false);
 
-  ShapeResultBloberizer reference_bloberizer(reference_font, 1);
-  CachingWordShaper reference_word_shaper(font);
+  ShapeResultBloberizer reference_bloberizer(
+      reference_font.GetFontDescription(), 1);
+  CachingWordShaper reference_word_shaper(reference_font);
   ShapeResultBuffer reference_buffer;
   reference_word_shaper.FillResultBuffer(run_info, &reference_buffer);
   reference_bloberizer.FillGlyphs(run_info, reference_buffer);
@@ -296,7 +297,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
   TextRunPaintInfo run_info(text_run);
   run_info.from = 1;
 
-  ShapeResultBloberizer bloberizer(font, 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
@@ -305,8 +306,9 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
   Font reference_font(font_description);
   reference_font.SetCanShapeWordByWordForTesting(false);
 
-  ShapeResultBloberizer reference_bloberizer(reference_font, 1);
-  CachingWordShaper reference_word_shaper(font);
+  ShapeResultBloberizer reference_bloberizer(
+      reference_font.GetFontDescription(), 1);
+  CachingWordShaper reference_word_shaper(reference_font);
   ShapeResultBuffer reference_buffer;
   reference_word_shaper.FillResultBuffer(run_info, &reference_buffer);
   reference_bloberizer.FillGlyphs(run_info, reference_buffer);
@@ -337,7 +339,7 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
   FloatRect glyph_bounds;
   ASSERT_GT(shaper.Width(text_run, nullptr, &glyph_bounds), 0);
 
-  ShapeResultBloberizer bloberizer(font, 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
   TextRunPaintInfo run_info(text_run);
   run_info.to = 8;
 

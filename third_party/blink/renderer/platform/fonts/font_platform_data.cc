@@ -283,7 +283,7 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
 
 void FontPlatformData::SetupSkFont(SkFont* font,
                                    float device_scale_factor,
-                                   const Font*) const {
+                                   const FontDescription*) const {
   style_.ApplyToSkFont(font, device_scale_factor);
 
   const float ts = text_size_ >= 0 ? text_size_ : 12;

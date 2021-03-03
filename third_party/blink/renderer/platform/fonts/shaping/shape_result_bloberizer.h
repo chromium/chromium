@@ -26,7 +26,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
  public:
   enum class Type { kNormal, kTextIntercepts };
 
-  ShapeResultBloberizer(const Font&,
+  ShapeResultBloberizer(const FontDescription&,
                         float device_scale_factor,
                         Type = Type::kNormal);
 
@@ -119,7 +119,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
   bool HasPendingVerticalOffsets() const;
 
-  const Font& font_;
+  const FontDescription& font_description_;
   const float device_scale_factor_;
   const Type type_;
 

@@ -15,10 +15,13 @@
 
 namespace blink {
 
-ShapeResultBloberizer::ShapeResultBloberizer(const Font& font,
-                                             float device_scale_factor,
-                                             Type type)
-    : font_(font), device_scale_factor_(device_scale_factor), type_(type) {}
+ShapeResultBloberizer::ShapeResultBloberizer(
+    const FontDescription& font_description,
+    float device_scale_factor,
+    Type type)
+    : font_description_(font_description),
+      device_scale_factor_(device_scale_factor),
+      type_(type) {}
 
 bool ShapeResultBloberizer::HasPendingVerticalOffsets() const {
   // We exclusively store either horizontal/x-only ofssets -- in which case
@@ -41,8 +44,8 @@ void ShapeResultBloberizer::CommitPendingRun() {
   }
 
   SkFont run_font;
-  pending_font_data_->PlatformData().SetupSkFont(&run_font,
-                                                 device_scale_factor_, &font_);
+  pending_font_data_->PlatformData().SetupSkFont(
+      &run_font, device_scale_factor_, &font_description_);
 
   const auto run_size = pending_glyphs_.size();
   const auto& buffer = HasPendingVerticalOffsets()

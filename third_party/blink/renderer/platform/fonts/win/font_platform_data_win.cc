@@ -39,7 +39,9 @@
 
 namespace blink {
 
-void FontPlatformData::SetupSkFont(SkFont* font, float, const Font*) const {
+void FontPlatformData::SetupSkFont(SkFont* font,
+                                   float,
+                                   const FontDescription*) const {
   font->setSize(SkFloatToScalar(text_size_));
   font->setTypeface(typeface_);
   font->setEmbolden(synthetic_bold_);
