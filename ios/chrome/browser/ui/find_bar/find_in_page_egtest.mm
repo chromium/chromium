@@ -40,7 +40,6 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 }  // namespace
 
 // Tests for Find in Page.
-// Disabled all tests due to https://crbug.com/1107877.
 @interface FindInPageTestCase : WebHttpServerChromeTestCase
 
 // URL for a test page with |kFindInPageResponse|.
@@ -102,7 +101,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 // Tests that find in page allows iteration between search results and displays
 // correct number of results.
-- (void)DISABLED_testFindInPage {
+- (void)testFindInPage {
   // Type "find".
   [self typeFindInPageText:@"find"];
   // Should be highlighting result 1 of 2.
@@ -119,7 +118,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 // Tests that Find In Page search term retention is working as expected, e.g.
 // the search term is persisted between FIP runs, but in incognito search term
 // is not retained and not autofilled.
-- (void)DISABLED_testFindInPageRetainsSearchTerm {
+- (void)testFindInPageRetainsSearchTerm {
   // Type "find".
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
@@ -159,9 +158,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 }
 
 // Tests accessibility of the Find in Page screen.
-//
-// Disabled due to https://crbug.com/1107877.
-- (void)DISABLED_testAccessibilityOnFindInPage {
+- (void)testAccessibilityOnFindInPage {
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
 
@@ -190,6 +187,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 - (void)typeFindInPageText:(NSString*)text {
   [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]
       performAction:grey_typeText(text)];
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 - (id<GREYMatcher>)findInPageInputField {
