@@ -60,7 +60,7 @@ def _CheckNoTraceEventInclude(input_api, output_api):
   to maintain compatibility with the gn flag "enable_base_tracing = false".
   """
   discouraged_includes = [
-    r'^#include "base/trace_event/(?!base_tracing\.h)',
+    r'^#include "base/trace_event/(?!base_tracing\.h|base_tracing_forward\.h)',
     r'^#include "third_party/perfetto/include/',
   ]
 

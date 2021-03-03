@@ -172,4 +172,52 @@ class BASE_EXPORT MemoryDumpProvider {
 }  // namespace trace_event
 }  // namespace base
 
+// Stub implementation for perfetto::TracedValue/TracedDictionary/TracedArray.
+namespace perfetto {
+
+class TracedArray;
+class TracedDictionary;
+
+class TracedValue {
+ public:
+  void WriteInt64(int64_t) && {}
+  void WriteUInt64(uint64_t) && {}
+  void WriteDouble(double) && {}
+  void WriteBoolean(bool) && {}
+  void WriteString(const char*) && {}
+  void WriteString(const char*, size_t) && {}
+  void WriteString(const std::string&) && {}
+  void WritePointer(const void*) && {}
+
+  TracedDictionary WriteDictionary() &&;
+  TracedArray WriteArray() &&;
+};
+
+class TracedDictionary {
+ public:
+  TracedValue AddItem(const char*) { return TracedValue(); }
+
+  template <typename T>
+  void Add(const char*, T&&) {}
+
+  TracedDictionary AddDictionary(const char*);
+  TracedArray AddArray(const char*);
+};
+
+class TracedArray {
+ public:
+  TracedValue AppendItem() { return TracedValue(); }
+
+  template <typename T>
+  void Append(T&&) {}
+
+  TracedDictionary AppendDictionary();
+  TracedArray AppendArray();
+};
+
+template <class T>
+void WriteIntoTracedValue(TracedValue, T&&) {}
+
+}  // namespace perfetto
+
 #endif  // BASE_TRACE_EVENT_TRACE_EVENT_STUB_H_

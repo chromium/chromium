@@ -326,12 +326,10 @@ const char* TaskQueue::GetName() const {
   return name_;
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 void TaskQueue::WriteIntoTracedValue(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("name", name_);
 }
-#endif
 
 void TaskQueue::SetObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);

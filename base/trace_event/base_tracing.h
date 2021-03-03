@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #else  // BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/trace_event_stub.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)

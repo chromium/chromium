@@ -855,6 +855,7 @@ component("base") {
     "token.cc",
     "token.h",
     "trace_event/base_tracing.h",
+    "trace_event/base_tracing_forward.h",
     "trace_event/common/trace_event_common.h",
     "trace_event/heap_profiler_allocation_context.cc",
     "trace_event/heap_profiler_allocation_context.h",
