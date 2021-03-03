@@ -1046,7 +1046,14 @@ class ClearNetworkErrorLoggingTester {
 
 class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
  public:
-  ChromeBrowsingDataRemoverDelegateTest() {
+  ChromeBrowsingDataRemoverDelegateTest() = default;
+  ~ChromeBrowsingDataRemoverDelegateTest() override = default;
+
+  void SetUp() override {
+    // This needs to be done after the test constructor, so that subclasses
+    // that initialize a ScopedFeatureList in their constructors can do so
+    // before the code below potentially kicks off tasks on other threads that
+    // check if a feature is enabled, to avoid tsan data races.
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         StatefulSSLHostStateDelegateFactory::GetInstance(),
@@ -1124,8 +1131,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
-
-  ~ChromeBrowsingDataRemoverDelegateTest() override = default;
 
   // Returns the set of data types for which the deletion failed.
   uint64_t BlockUntilBrowsingDataRemoved(const base::Time& delete_begin,
