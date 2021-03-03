@@ -323,7 +323,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '9b9e7b293e674bc62af385ed543f8775c9ee9f05',
+  'dawn_revision': 'f9d75ead9e2de4258fd7120d7d6b6c7f9b211b84',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -362,7 +362,7 @@ vars = {
   'ukey2_revision': '0275885d8e6038c39b8a8ca55e75d1d4d1727f47',
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'tint_revision': '5cfd4f5a073e5e0979008d479c91ed347fc66c81',
+  'tint_revision': 'e879143801a16018a63c0cfed91d406f8a6bc91e',
 
   # TODO(crbug.com/941824): The values below need to be kept in sync
   # between //DEPS and //buildtools/DEPS, so if you're updating one,
