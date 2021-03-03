@@ -238,6 +238,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_INCOGNITO_REAUTH_SET_UP_SYSTEM_DIALOG_REASON" desc="Text for system biometric authentication dialog to explain why authentication is required when the user attempts to enable the setting to protect incognito tabs with biometric auth. [iOS only]">
        Let Chrome lock your Incognito tabs.
       </message>
+      <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
+       Lock Incognito Tabs When You Close Chrome
+      </message>
       <message name="IDS_IOS_LOCATION_AUTHORIZATION_ALERT" desc="Specifies the reason for sending the user's location to Google [Length: unlimited] [iOS only].">
           Get a better Google experience in Chrome based on your location.
       </message>
