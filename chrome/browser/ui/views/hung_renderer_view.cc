@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "chrome/browser/hang_monitor/hang_crash_dump.h"
 #include "chrome/browser/platform_util.h"
@@ -58,15 +59,13 @@
 
 using content::WebContents;
 
-HungRendererDialogView* HungRendererDialogView::g_instance_ = nullptr;
-
 ///////////////////////////////////////////////////////////////////////////////
 // HungPagesTableModel, public:
 
 HungPagesTableModel::HungPagesTableModel(Delegate* delegate)
     : delegate_(delegate) {}
 
-HungPagesTableModel::~HungPagesTableModel() {}
+HungPagesTableModel::~HungPagesTableModel() = default;
 
 content::RenderWidgetHost* HungPagesTableModel::GetRenderWidgetHost() {
   return render_widget_host_;
@@ -81,8 +80,8 @@ void HungPagesTableModel::InitForWebContents(
   DCHECK(!hang_monitor_restarter.is_null());
 
   DCHECK(!render_widget_host_);
-  DCHECK(!process_observer_.IsObservingSources());
-  DCHECK(!widget_observer_.IsObservingSources());
+  DCHECK(!process_observation_.IsObserving());
+  DCHECK(!widget_observation_.IsObserving());
   DCHECK(tab_observers_.empty());
 
   render_widget_host_ = render_widget_host;
@@ -94,8 +93,8 @@ void HungPagesTableModel::InitForWebContents(
         std::make_unique<WebContentsObserverImpl>(this, hung_contents));
   }
 
-  process_observer_.Add(render_widget_host_->GetProcess());
-  widget_observer_.Add(render_widget_host_);
+  process_observation_.Observe(render_widget_host_->GetProcess());
+  widget_observation_.Observe(render_widget_host_);
 
   // The world is different.
   if (observer_)
@@ -103,8 +102,8 @@ void HungPagesTableModel::InitForWebContents(
 }
 
 void HungPagesTableModel::Reset() {
-  process_observer_.RemoveAll();
-  widget_observer_.RemoveAll();
+  process_observation_.Reset();
+  widget_observation_.Reset();
   tab_observers_.clear();
   render_widget_host_ = nullptr;
 
@@ -159,8 +158,8 @@ void HungPagesTableModel::RenderProcessExited(
 
 void HungPagesTableModel::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  DCHECK(widget_observer_.IsObserving(render_widget_host_));
-  widget_observer_.Remove(widget_host);
+  DCHECK(widget_observation_.IsObservingSource(render_widget_host_));
+  widget_observation_.Reset();
   render_widget_host_ = nullptr;
 
   // Notify the delegate.
@@ -190,10 +189,9 @@ void HungPagesTableModel::TabUpdated(WebContentsObserverImpl* tab) {
 }
 
 HungPagesTableModel::WebContentsObserverImpl::WebContentsObserverImpl(
-    HungPagesTableModel* model, WebContents* tab)
-    : content::WebContentsObserver(tab),
-      model_(model) {
-}
+    HungPagesTableModel* model,
+    WebContents* tab)
+    : content::WebContentsObserver(tab), model_(model) {}
 
 void HungPagesTableModel::WebContentsObserverImpl::RenderViewHostChanged(
     content::RenderViewHost* old_host,
@@ -224,20 +222,15 @@ constexpr int kTableViewHeight = 80;
 ///////////////////////////////////////////////////////////////////////////////
 // HungRendererDialogView, public:
 
-// static
-HungRendererDialogView* HungRendererDialogView::Create(
-    gfx::NativeWindow context) {
-  if (!g_instance_) {
-    g_instance_ = new HungRendererDialogView;
-    views::DialogDelegate::CreateDialogWidget(g_instance_, context, nullptr);
-  }
-  return g_instance_;
-}
+namespace {
 
-// static
-HungRendererDialogView* HungRendererDialogView::GetInstance() {
-  return g_instance_;
-}
+constexpr int kDialogHolderUserDataKey = 0;
+
+struct DialogHolder : public base::SupportsUserData::Data {
+  HungRendererDialogView* dialog = nullptr;
+};
+
+}  // namespace
 
 // static
 void HungRendererDialogView::Show(
@@ -245,6 +238,9 @@ void HungRendererDialogView::Show(
     content::RenderWidgetHost* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
   if (logging::DialogsAreSuppressed())
+    return;
+
+  if (IsShowingForWebContents(contents))
     return;
 
   gfx::NativeWindow window =
@@ -256,7 +252,8 @@ void HungRendererDialogView::Show(
   if (!window->GetRootWindow())
     return;
 #endif
-  HungRendererDialogView* view = HungRendererDialogView::Create(window);
+
+  HungRendererDialogView* view = CreateInstance(contents, window);
   view->ShowForWebContents(contents, render_widget_host,
                            std::move(hang_monitor_restarter));
 }
@@ -265,9 +262,18 @@ void HungRendererDialogView::Show(
 void HungRendererDialogView::Hide(
     WebContents* contents,
     content::RenderWidgetHost* render_widget_host) {
-  if (!logging::DialogsAreSuppressed() && HungRendererDialogView::GetInstance())
-    HungRendererDialogView::GetInstance()->EndForWebContents(
-        contents, render_widget_host);
+  if (logging::DialogsAreSuppressed())
+    return;
+
+  DialogHolder* dialog_holder = reinterpret_cast<DialogHolder*>(
+      contents->GetUserData(&kDialogHolderUserDataKey));
+  if (dialog_holder)
+    dialog_holder->dialog->EndForWebContents(contents, render_widget_host);
+}
+
+// static
+bool HungRendererDialogView::IsShowingForWebContents(WebContents* contents) {
+  return contents->GetUserData(&kDialogHolderUserDataKey);
 }
 
 // static
@@ -277,7 +283,8 @@ bool HungRendererDialogView::IsFrameActive(WebContents* contents) {
   return platform_util::IsWindowActive(window);
 }
 
-HungRendererDialogView::HungRendererDialogView() {
+HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
+    : web_contents_(web_contents) {
 #if defined(OS_WIN)
   // Never use the custom frame when Aero Glass is disabled. See
   // https://crbug.com/323278
@@ -337,6 +344,30 @@ HungRendererDialogView::HungRendererDialogView() {
 
 HungRendererDialogView::~HungRendererDialogView() {
   hung_pages_table_->SetModel(nullptr);
+}
+
+// static
+HungRendererDialogView* HungRendererDialogView::CreateInstance(
+    WebContents* contents,
+    gfx::NativeWindow window) {
+  HungRendererDialogView* view = new HungRendererDialogView(contents);
+  views::DialogDelegate::CreateDialogWidget(view, window, nullptr);
+  auto dialog_holder = std::make_unique<DialogHolder>();
+  dialog_holder->dialog = view;
+  contents->SetUserData(&kDialogHolderUserDataKey, std::move(dialog_holder));
+
+  return view;
+}
+
+// static
+HungRendererDialogView*
+HungRendererDialogView::GetInstanceForWebContentsForTests(
+    WebContents* contents) {
+  DialogHolder* dialog_holder = reinterpret_cast<DialogHolder*>(
+      contents->GetUserData(&kDialogHolderUserDataKey));
+  if (dialog_holder)
+    return dialog_holder->dialog;
+  return nullptr;
 }
 
 void HungRendererDialogView::ShowForWebContents(
@@ -415,11 +446,6 @@ bool HungRendererDialogView::ShouldShowCloseButton() const {
   return false;
 }
 
-void HungRendererDialogView::WindowClosing() {
-  // We are going to be deleted soon, so make sure our instance is destroyed.
-  g_instance_ = nullptr;
-}
-
 void HungRendererDialogView::ForceCrashHungRenderer() {
   content::RenderProcessHost* rph =
       hung_pages_table_model_->GetRenderWidgetHost()->GetProcess();
@@ -474,6 +500,7 @@ void HungRendererDialogView::CloseDialogWithNoAction() {
   // - While the dialog is active, [X] maps to restarting the hang timer, but
   //   while closing we don't want that action.
   hung_pages_table_model_->Reset();
+  web_contents_->RemoveUserData(&kDialogHolderUserDataKey);
   GetWidget()->Close();
 }
 
