@@ -109,9 +109,8 @@ class ASH_PUBLIC_EXPORT SystemTray {
   virtual void ShowVolumeSliderBubble() = 0;
 
   // Shows the network detailed view bubble at the right bottom of the primary
-  // display. Set |show_by_click| to true if bubble is shown by mouse or gesture
-  // click (it is used e.g. for timing histograms).
-  virtual void ShowNetworkDetailedViewBubble(bool show_by_click) = 0;
+  // display.
+  virtual void ShowNetworkDetailedViewBubble() = 0;
 
   // Provides Phone Hub functionality to the system tray.
   virtual void SetPhoneHubManager(

@@ -51,10 +51,10 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void Initialize() override;
-  bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
+  views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
 
   // PhoneStatusView::Delegate:

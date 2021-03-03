@@ -115,13 +115,13 @@ void SystemTrayModel::ShowVolumeSliderBubble() {
   }
 }
 
-void SystemTrayModel::ShowNetworkDetailedViewBubble(bool show_by_click) {
+void SystemTrayModel::ShowNetworkDetailedViewBubble() {
   // Show the bubble on the primary display.
   UnifiedSystemTray* system_tray = Shell::GetPrimaryRootWindowController()
                                        ->GetStatusAreaWidget()
                                        ->unified_system_tray();
   if (system_tray)
-    system_tray->ShowNetworkDetailedViewBubble(show_by_click);
+    system_tray->ShowNetworkDetailedViewBubble();
 }
 
 void SystemTrayModel::SetPhoneHubManager(

@@ -132,7 +132,7 @@ TEST_F(SwitchAccessMenuBubbleControllerTest, AvoidsShelfBubble) {
     GetSessionControllerClient()->SetSessionState(test.session_state);
     // Set up the switch access menu and the shelf
     auto* system_tray = GetPrimaryUnifiedSystemTray();
-    system_tray->ShowBubble(true /* show_by_click */);
+    system_tray->ShowBubble();
     gfx::Rect tray_bubble_bounds = system_tray->GetBubbleBoundsInScreen();
 
     // Try to show the menu in the center of the tray bubble.

@@ -62,8 +62,9 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
   void ClickedOutsideBubble() override;
   bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
+  views::Widget* GetBubbleWidget() const override;
 
   // IMEObserver:
   void OnIMERefresh() override;
@@ -83,9 +84,8 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
  private:
   friend class ImeMenuTrayTest;
 
-  // Show the IME menu bubble immediately. Set |show_by_click| to true if bubble
-  // is shown by mouse or gesture click.
-  void ShowImeMenuBubbleInternal(bool show_by_click);
+  // Show the IME menu bubble immediately.
+  void ShowImeMenuBubbleInternal();
 
   // Updates the text of the label on the tray.
   void UpdateTrayLabel();

@@ -178,6 +178,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
+  bubble_view_->SetCanActivate(false);
   UnifiedSliderView* slider_view =
       static_cast<UnifiedSliderView*>(slider_controller_->CreateView());
   ConfigureSliderViewStyle(slider_view);

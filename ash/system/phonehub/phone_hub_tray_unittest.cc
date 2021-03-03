@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/shell.h"
 #include "ash/system/phonehub/notification_opt_in_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -203,7 +204,12 @@ TEST_F(PhoneHubTrayTest, FocusBubbleWhenOpenedByKeyboard) {
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
   PressReturnKeyOnTrayButton();
 
-  // The bubble widget should get focus when it's opened by keyboard.
+  // Generate a tab key press.
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
+
+  // The bubble widget should get focus when it's opened by keyboard and the tab
+  // key is pressed.
   EXPECT_TRUE(phone_hub_tray_->is_active());
   EXPECT_TRUE(phone_hub_tray_->GetBubbleView()->GetWidget()->IsActive());
 }

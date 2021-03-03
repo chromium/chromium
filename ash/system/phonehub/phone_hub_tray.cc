@@ -135,15 +135,7 @@ void PhoneHubTray::Initialize() {
   UpdateVisibility();
 }
 
-bool PhoneHubTray::PerformAction(const ui::Event& event) {
-  if (bubble_)
-    CloseBubble();
-  else
-    ShowBubble(event.IsMouseEvent() || event.IsGestureEvent());
-  return true;
-}
-
-void PhoneHubTray::ShowBubble(bool show_by_click) {
+void PhoneHubTray::ShowBubble() {
   if (bubble_)
     return;
 
@@ -160,8 +152,8 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   init_params.close_on_deactivate = true;
   init_params.has_shadow = false;
   init_params.translucent = true;
+  init_params.reroute_event_handler = true;
   init_params.corner_radius = kTrayItemCornerRadius;
-  init_params.show_by_click = show_by_click;
 
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
@@ -185,20 +177,16 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
 
   SetIsActive(true);
 
-  // Only focus the widget if it's opened by the keyboard.
-  if (!show_by_click) {
-    views::Widget* widget = bubble_->GetBubbleWidget();
-    widget->widget_delegate()->SetCanActivate(true);
-    Shell::Get()->focus_cycler()->FocusWidget(widget);
-    widget->Activate();
-  }
-
   phone_hub_metrics::LogScreenOnBubbleOpen(
       content_view_->GetScreenForMetrics());
 }
 
 TrayBubbleView* PhoneHubTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
+}
+
+views::Widget* PhoneHubTray::GetBubbleWidget() const {
+  return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
 const char* PhoneHubTray::GetClassName() const {

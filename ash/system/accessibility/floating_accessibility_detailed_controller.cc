@@ -79,7 +79,6 @@ void FloatingAccessibilityDetailedController::Show(
   init_params.corner_radius = kUnifiedTrayCornerRadius;
   init_params.has_shadow = false;
   init_params.translucent = true;
-  init_params.show_by_click = true;
 
   bubble_view_ = new DetailedBubbleView(init_params);
   bubble_view_->SetArrowWithoutResizing(alignment);

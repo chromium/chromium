@@ -63,8 +63,7 @@ MinimumVersionPolicyHandler::NetworkStatus GetCurrentNetworkStatus() {
 }
 
 void OpenNetworkSettings() {
-  ash::SystemTray::Get()->ShowNetworkDetailedViewBubble(
-      true /* show_by_click */);
+  ash::SystemTray::Get()->ShowNetworkDetailedViewBubble();
 }
 
 void OpenEnterpriseInfoPage() {

@@ -28,8 +28,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
                                           public ShelfObserver,
                                           public TabletModeObserver {
  public:
-  HoldingSpaceTrayBubble(HoldingSpaceTray* holding_space_tray,
-                         bool show_by_click);
+  explicit HoldingSpaceTrayBubble(HoldingSpaceTray* holding_space_tray);
   HoldingSpaceTrayBubble(const HoldingSpaceTrayBubble&) = delete;
   HoldingSpaceTrayBubble& operator=(const HoldingSpaceTrayBubble&) = delete;
   ~HoldingSpaceTrayBubble() override;

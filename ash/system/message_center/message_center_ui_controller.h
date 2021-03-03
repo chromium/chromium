@@ -30,11 +30,10 @@ class ASH_EXPORT MessageCenterUiController
   explicit MessageCenterUiController(MessageCenterUiDelegate* delegate);
   ~MessageCenterUiController() override;
 
-  // Shows or updates the message center bubble and hides the popup bubble. Set
-  // |show_by_click| to true if bubble is shown by mouse or gesture click.
+  // Shows or updates the message center bubble and hides the popup bubble.
   // Returns whether the message center is visible after the call, whether or
   // not it was visible before.
-  bool ShowMessageCenterBubble(bool show_by_click);
+  bool ShowMessageCenterBubble();
 
   // Hides the message center if visible and returns whether the message center
   // was visible before.

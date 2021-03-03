@@ -48,7 +48,7 @@ bool SystemTrayTestApi::IsTrayBubbleExpanded() {
 }
 
 void SystemTrayTestApi::ShowBubble() {
-  GetTray()->ShowBubble(false /* show_by_click */);
+  GetTray()->ShowBubble();
 }
 
 void SystemTrayTestApi::CloseBubble() {
@@ -64,18 +64,18 @@ void SystemTrayTestApi::ExpandBubble() {
 }
 
 void SystemTrayTestApi::ShowAccessibilityDetailedView() {
-  GetTray()->ShowBubble(false /* show_by_click */);
+  GetTray()->ShowBubble();
   GetTray()->bubble_->controller_->ShowAccessibilityDetailedView();
 }
 
 void SystemTrayTestApi::ShowNetworkDetailedView() {
-  GetTray()->ShowBubble(false /* show_by_click */);
+  GetTray()->ShowBubble();
   GetTray()->bubble_->controller_->ShowNetworkDetailedView(true /* force */);
 }
 
 bool SystemTrayTestApi::IsBubbleViewVisible(int view_id, bool open_tray) {
   if (open_tray)
-    GetTray()->ShowBubble(false /* show_by_click */);
+    GetTray()->ShowBubble();
   views::View* view = GetBubbleView(view_id);
   return view && view->GetVisible();
 }

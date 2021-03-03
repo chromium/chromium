@@ -369,7 +369,7 @@ TEST_F(ArcNotificationContentViewTest, CloseButtonInMessageCenterView) {
   // Show MessageCenterView and activate its widget.
   auto* unified_system_tray =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->unified_system_tray();
-  unified_system_tray->ShowBubble(false /* show_by_click */);
+  unified_system_tray->ShowBubble();
   unified_system_tray->ActivateBubble();
 
   auto notification_item =

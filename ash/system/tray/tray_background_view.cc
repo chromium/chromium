@@ -51,6 +51,7 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -329,9 +330,13 @@ TrayBubbleView* TrayBackgroundView::GetBubbleView() {
   return nullptr;
 }
 
+views::Widget* TrayBackgroundView::GetBubbleWidget() const {
+  return nullptr;
+}
+
 void TrayBackgroundView::CloseBubble() {}
 
-void TrayBackgroundView::ShowBubble(bool show_by_click) {}
+void TrayBackgroundView::ShowBubble() {}
 
 void TrayBackgroundView::CalculateTargetBounds() {
   tray_container_->CalculateTargetBounds();
@@ -515,6 +520,14 @@ gfx::Rect TrayBackgroundView::GetBackgroundBounds() const {
   return bounds;
 }
 
+bool TrayBackgroundView::PerformAction(const ui::Event& event) {
+  if (GetBubbleWidget())
+    CloseBubble();
+  else
+    ShowBubble();
+  return true;
+}
+
 void TrayBackgroundView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateBackground();
 
@@ -526,10 +539,6 @@ bool TrayBackgroundView::ShouldEnterPushedState(const ui::Event& event) {
     return false;
 
   return ActionableView::ShouldEnterPushedState(event);
-}
-
-bool TrayBackgroundView::PerformAction(const ui::Event& event) {
-  return false;
 }
 
 void TrayBackgroundView::HandlePerformActionResult(bool action_performed,

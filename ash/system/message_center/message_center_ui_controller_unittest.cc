@@ -46,7 +46,7 @@ class MockDelegate : public MessageCenterUiDelegate {
     EXPECT_TRUE(popups_visible_);
     popups_visible_ = false;
   }
-  bool ShowMessageCenter(bool show_by_click) override {
+  bool ShowMessageCenter() override {
     EXPECT_FALSE(popups_visible_);
     return show_popups_success_;
   }
@@ -117,8 +117,7 @@ TEST_F(MessageCenterUiControllerTest, BasicMessageCenter) {
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
-  bool shown =
-      ui_controller_->ShowMessageCenterBubble(false /* show_by_click */);
+  bool shown = ui_controller_->ShowMessageCenterBubble();
   EXPECT_TRUE(shown);
 
   ASSERT_FALSE(ui_controller_->popups_visible());
@@ -129,7 +128,7 @@ TEST_F(MessageCenterUiControllerTest, BasicMessageCenter) {
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
-  ui_controller_->ShowMessageCenterBubble(false /* show_by_click */);
+  ui_controller_->ShowMessageCenterBubble();
 
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_TRUE(ui_controller_->message_center_visible());
@@ -169,8 +168,7 @@ TEST_F(MessageCenterUiControllerTest, MessageCenterClosesPopups) {
   ASSERT_TRUE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
-  bool shown =
-      ui_controller_->ShowMessageCenterBubble(false /* show_by_click */);
+  bool shown = ui_controller_->ShowMessageCenterBubble();
   EXPECT_TRUE(shown);
 
   ASSERT_FALSE(ui_controller_->popups_visible());
@@ -190,7 +188,7 @@ TEST_F(MessageCenterUiControllerTest, MessageCenterClosesPopups) {
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
-  ui_controller_->ShowMessageCenterBubble(false /* show_by_click */);
+  ui_controller_->ShowMessageCenterBubble();
   ui_controller_->HideMessageCenterBubble();
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
@@ -211,8 +209,7 @@ TEST_F(MessageCenterUiControllerTest, ShowBubbleFails) {
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
-  bool shown =
-      ui_controller_->ShowMessageCenterBubble(false /* show_by_click */);
+  bool shown = ui_controller_->ShowMessageCenterBubble();
   EXPECT_FALSE(shown);
 
   ASSERT_FALSE(ui_controller_->popups_visible());
@@ -223,7 +220,7 @@ TEST_F(MessageCenterUiControllerTest, ShowBubbleFails) {
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
-  ui_controller_->ShowMessageCenterBubble(false /* show_by_click */);
+  ui_controller_->ShowMessageCenterBubble();
 
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());

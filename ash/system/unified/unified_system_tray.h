@@ -96,7 +96,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   void ShowAudioDetailedViewBubble();
 
   // Shows main bubble with network settings detailed view.
-  void ShowNetworkDetailedViewBubble(bool show_by_click);
+  void ShowNetworkDetailedViewBubble();
 
   // Return the bounds of the bubble in the screen.
   gfx::Rect GetBubbleBoundsInScreen() const;
@@ -139,8 +139,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   void MaybeRecordFirstInteraction(FirstInteractionType type);
 
   // TrayBackgroundView:
-  bool PerformAction(const ui::Event& event) override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   void CloseBubble() override;
   base::string16 GetAccessibleNameForBubble() override;
   base::string16 GetAccessibleNameForTray() override;
@@ -151,6 +150,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   void UpdateLayout() override;
   void UpdateAfterLoginStatusChange() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
+  views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
 
   // ShelfConfig::Observer:
@@ -175,7 +175,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   class UiDelegate;
 
   // Forwarded from UiDelegate.
-  void ShowBubbleInternal(bool show_by_click);
+  void ShowBubbleInternal();
   void HideBubbleInternal();
   void UpdateNotificationInternal();
   void UpdateNotificationAfterDelay();

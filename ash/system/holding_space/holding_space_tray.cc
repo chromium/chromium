@@ -231,26 +231,6 @@ void HoldingSpaceTray::UpdateAfterLoginStatusChange() {
   UpdateVisibility();
 }
 
-bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
-  if (bubble_) {
-    CloseBubble();
-    return true;
-  }
-
-  ShowBubble(event.IsMouseEvent() || event.IsGestureEvent());
-
-  // Activate the bubble for a11y or if it was shown via keypress. Otherwise
-  // focus will remain on the tray when it should enter the bubble.
-  if (event.IsKeyEvent() ||
-      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
-    DCHECK(bubble_ && bubble_->GetBubbleWidget());
-    bubble_->GetBubbleWidget()->widget_delegate()->SetCanActivate(true);
-    bubble_->GetBubbleWidget()->Activate();
-  }
-
-  return true;
-}
-
 void HoldingSpaceTray::CloseBubble() {
   if (!bubble_)
     return;
@@ -264,7 +244,7 @@ void HoldingSpaceTray::CloseBubble() {
   SetIsActive(false);
 }
 
-void HoldingSpaceTray::ShowBubble(bool show_by_click) {
+void HoldingSpaceTray::ShowBubble() {
   if (bubble_)
     return;
 
@@ -273,7 +253,7 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
 
   DCHECK(tray_container());
 
-  bubble_ = std::make_unique<HoldingSpaceTrayBubble>(this, show_by_click);
+  bubble_ = std::make_unique<HoldingSpaceTrayBubble>(this);
 
   // Observe the bubble widget so that we can do proper clean up when it is
   // being destroyed. If destruction is due to a call to `CloseBubble()` we will
@@ -286,6 +266,10 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
 
 TrayBubbleView* HoldingSpaceTray::GetBubbleView() {
   return bubble_ ? bubble_->GetBubbleView() : nullptr;
+}
+
+views::Widget* HoldingSpaceTray::GetBubbleWidget() const {
+  return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
 void HoldingSpaceTray::SetVisiblePreferred(bool visible_preferred) {

@@ -62,7 +62,7 @@ TEST_F(CollisionDetectionUtilsTest,
 TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsUnifiedSystemTray) {
   UpdateDisplay("1000x1000");
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
-  unified_system_tray->ShowBubble(/*show_by_click=*/false);
+  unified_system_tray->ShowBubble();
 
   auto display = GetPrimaryDisplay();
   gfx::Rect area = CollisionDetectionUtils::GetMovementArea(display);

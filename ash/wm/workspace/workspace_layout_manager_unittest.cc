@@ -1949,7 +1949,7 @@ TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
   EXPECT_FALSE(unified_system_tray->IsBubbleShown());
   EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
 
-  unified_system_tray->ShowBubble(/*show_by_click=*/false);
+  unified_system_tray->ShowBubble();
   EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
   test_state()->reset_num_system_ui_area_changes();
 

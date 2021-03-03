@@ -829,7 +829,7 @@ void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
   if (tray->IsBubbleShown()) {
     tray->CloseBubble();
   } else {
-    tray->ShowBubble(false /* show_by_click */);
+    tray->ShowBubble();
     tray->ActivateBubble();
 
     if (focus_message_center)
@@ -1013,7 +1013,7 @@ void HandleShowImeMenuBubble() {
     ImeMenuTray* ime_menu_tray = status_area_widget->ime_menu_tray();
     if (ime_menu_tray && ime_menu_tray->GetVisible() &&
         !ime_menu_tray->GetBubbleView()) {
-      ime_menu_tray->ShowBubble(false /* show_by_click */);
+      ime_menu_tray->ShowBubble();
     }
   }
 }
@@ -1069,7 +1069,7 @@ PaletteTray* GetPaletteTray() {
 
 void HandleShowStylusTools() {
   base::RecordAction(UserMetricsAction("Accel_Show_Stylus_Tools"));
-  GetPaletteTray()->ShowBubble(false /* show_by_click */);
+  GetPaletteTray()->ShowBubble();
 }
 
 bool CanHandleShowStylusTools() {

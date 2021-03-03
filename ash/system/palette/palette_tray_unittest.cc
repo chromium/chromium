@@ -607,14 +607,14 @@ TEST_F(PaletteTrayTestWithInternalStylus, ToolDeactivatesWhenOpeningBubble) {
 
   ASSERT_TRUE(palette_tray_->GetVisible());
 
-  palette_tray_->ShowBubble(false /* show_by_click */);
+  palette_tray_->ShowBubble();
   EXPECT_TRUE(test_api_->tray_bubble_wrapper());
   PaletteToolManager* manager = test_api_->palette_tool_manager();
   manager->ActivateTool(PaletteToolId::LASER_POINTER);
   EXPECT_TRUE(manager->IsToolActive(PaletteToolId::LASER_POINTER));
   EXPECT_FALSE(test_api_->tray_bubble_wrapper());
 
-  palette_tray_->ShowBubble(false /* show_by_click */);
+  palette_tray_->ShowBubble();
   EXPECT_TRUE(test_api_->tray_bubble_wrapper());
   EXPECT_FALSE(manager->IsToolActive(PaletteToolId::LASER_POINTER));
 }

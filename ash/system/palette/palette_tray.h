@@ -81,8 +81,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   void Initialize() override;
   bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
+  views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
 
   // PaletteToolManager::Delegate:

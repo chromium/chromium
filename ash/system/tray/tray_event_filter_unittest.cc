@@ -69,9 +69,7 @@ class TrayEventFilterTest : public AshTestBase {
     return notification_id;
   }
 
-  void ShowSystemTrayMainView() {
-    GetPrimaryUnifiedSystemTray()->ShowBubble(false /* show_by_click */);
-  }
+  void ShowSystemTrayMainView() { GetPrimaryUnifiedSystemTray()->ShowBubble(); }
 
   bool IsBubbleShown() {
     return GetPrimaryUnifiedSystemTray()->IsBubbleShown();

@@ -1375,7 +1375,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>gzadina@google.com</owner>
   <summary>
     The amount of time a user took from clicking on the button in status area,
-    to clicking on an item in the system tray bubble.
+    to clicking on an item in the system tray bubble. (Obsolete M90 onwards).
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.TimeToClick2" units="ms"
+    expires_after="2021-08-22">
+  <owner>tengs@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    The amount of time a user took after opening the system tray bubble, to
+    clicking on an item in the system tray bubble.
   </summary>
 </histogram>
 

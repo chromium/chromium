@@ -403,7 +403,7 @@ void PaletteTray::OnStylusStateChanged(ui::StylusState stylus_state) {
           prefs::kLaunchPaletteOnEjectEvent)) {
     if (stylus_state == ui::StylusState::REMOVED && !bubble_) {
       is_bubble_auto_opened_ = true;
-      ShowBubble(false /* show_by_click */);
+      ShowBubble();
     } else if (stylus_state == ui::StylusState::INSERTED && bubble_) {
       HidePalette();
     }
@@ -528,7 +528,7 @@ bool PaletteTray::PerformAction(const ui::Event& event) {
     return true;
   }
 
-  ShowBubble(event.IsMouseEvent() || event.IsGestureEvent());
+  ShowBubble();
   return true;
 }
 
@@ -536,7 +536,7 @@ void PaletteTray::CloseBubble() {
   HidePalette();
 }
 
-void PaletteTray::ShowBubble(bool show_by_click) {
+void PaletteTray::ShowBubble() {
   if (bubble_)
     return;
 
@@ -553,10 +553,10 @@ void PaletteTray::ShowBubble(bool show_by_click) {
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kPaletteWidth;
   init_params.close_on_deactivate = true;
-  init_params.show_by_click = show_by_click;
   init_params.translucent = true;
   init_params.has_shadow = false;
   init_params.corner_radius = kTrayItemCornerRadius;
+  init_params.reroute_event_handler = true;
 
   // TODO(tdanderson): Refactor into common row layout code.
   // TODO(tdanderson|jdufault): Add material design ripple effects to the menu
@@ -605,6 +605,10 @@ void PaletteTray::ShowBubble(bool show_by_click) {
 
 TrayBubbleView* PaletteTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
+}
+
+views::Widget* PaletteTray::GetBubbleWidget() const {
+  return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
 const char* PaletteTray::GetClassName() const {

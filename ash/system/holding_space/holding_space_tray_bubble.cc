@@ -301,8 +301,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
 // HoldingSpaceTrayBubble ------------------------------------------------------
 
 HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
-    HoldingSpaceTray* holding_space_tray,
-    bool show_by_click)
+    HoldingSpaceTray* holding_space_tray)
     : holding_space_tray_(holding_space_tray) {
   TrayBubbleView::InitParams init_params;
   init_params.delegate = holding_space_tray;
@@ -315,8 +314,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   init_params.shelf_alignment = holding_space_tray->shelf()->alignment();
   init_params.preferred_width = kHoldingSpaceBubbleWidth;
   init_params.close_on_deactivate = true;
-  init_params.show_by_click = show_by_click;
   init_params.has_shadow = false;
+  init_params.reroute_event_handler = true;
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);

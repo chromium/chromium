@@ -1876,6 +1876,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfFlickerOnTrayActivation) {
   // Show the status menu. That should make the shelf visible again.
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       TOGGLE_SYSTEM_TRAY_BUBBLE, {});
+  GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
@@ -2490,6 +2491,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfItemRespondToGestureEvent) {
   // after triggering the accelerator.
   generator->PressKey(ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
   generator->ReleaseKey(ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
   // Tap on the shelf button. Expect that the shelf button responds to gesture

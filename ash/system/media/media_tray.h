@@ -60,7 +60,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void UpdateAfterLoginStatusChange() override;
   void HandleLocaleChange() override;
   bool PerformAction(const ui::Event& event) override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   void CloseBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;

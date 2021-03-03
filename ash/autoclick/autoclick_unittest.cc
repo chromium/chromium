@@ -1045,7 +1045,7 @@ TEST_F(AutoclickTest, AvoidsShelfBubble) {
     ASSERT_TRUE(menu);
     gfx::Rect menu_bounds = menu->GetBoundsInScreen();
 
-    unified_system_tray->ShowBubble(true /* show_by_click */);
+    unified_system_tray->ShowBubble();
     gfx::Rect new_menu_bounds = menu->GetBoundsInScreen();
     // Y is unchanged when the bubble shows.
     EXPECT_TRUE(abs(menu_bounds.y() - new_menu_bounds.y()) < 5);

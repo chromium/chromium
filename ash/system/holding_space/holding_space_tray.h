@@ -65,10 +65,10 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void UpdateAfterLoginStatusChange() override;
-  bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
+  views::Widget* GetBubbleWidget() const override;
   void SetVisiblePreferred(bool visible_preferred) override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;

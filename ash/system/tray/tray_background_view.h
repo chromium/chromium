@@ -57,13 +57,17 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // nullptr.
   virtual TrayBubbleView* GetBubbleView();
 
+  // Returns the associated tray bubble widget, if a bubble exists. Otherwise
+  // returns nullptr.
+  virtual views::Widget* GetBubbleWidget() const;
+
   // Closes the associated tray bubble view if it exists and is currently
   // showing.
   virtual void CloseBubble();
 
   // Shows the associated tray bubble if one exists. |show_by_click| indicates
   // whether the showing operation is initiated by mouse or gesture click.
-  virtual void ShowBubble(bool show_by_click);
+  virtual void ShowBubble();
 
   // Calculates the ideal bounds that this view should have depending on the
   // constraints.
@@ -135,6 +139,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // based on background insets returned from GetBackgroundInsets().
   gfx::Rect GetBackgroundBounds() const;
 
+  // ActionableView:
+  bool PerformAction(const ui::Event& event) override;
+
   // Sets whether the tray item should be shown by default (e.g. it is
   // activated). The effective visibility of the tray item is determined by the
   // current state of the status tray (i.e. whether the virtual keyboard is
@@ -146,7 +153,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // ActionableView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool ShouldEnterPushedState(const ui::Event& event) override;
-  bool PerformAction(const ui::Event& event) override;
   void HandlePerformActionResult(bool action_performed,
                                  const ui::Event& event) override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
