@@ -474,6 +474,15 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
 
     const t = evt.target;
     const fromDesktop = t.root.role === RoleType.DESKTOP;
+    const onDesktop =
+        ChromeVoxState.instance.currentRange.start.node.root.role ===
+        RoleType.DESKTOP;
+    if (fromDesktop && !onDesktop && t.role !== RoleType.SLIDER) {
+      // Only respond to value changes from the desktop if it's coming from a
+      // slider e.g. the volume slider. Do this to avoid responding to frequent
+      // updates from UI e.g. download progress bars.
+      return;
+    }
     if (t.state.focused || fromDesktop ||
         AutomationUtil.isDescendantOf(
             ChromeVoxState.instance.currentRange.start.node, t)) {
