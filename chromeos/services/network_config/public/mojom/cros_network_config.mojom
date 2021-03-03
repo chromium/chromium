@@ -839,6 +839,8 @@ struct NetworkCertificate {
   // This will be used in the appropriate ConfigProperties dictionary.
   // TODO(1006901): Use a union here instead once the issue is fixed.
   string pem_or_id;
+  // Whether the certificate is available for network authentication.
+  bool available_for_network_auth;
   // Whether the certificate is hardware backed.
   bool hardware_backed;
   // Whether the certificate is device wide (i.e. stored in a shared profile,

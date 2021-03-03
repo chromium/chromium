@@ -122,7 +122,7 @@ class ClientCertResolverTest : public testing::Test,
 
     NetworkCertLoader::Initialize();
     network_cert_loader_ = NetworkCertLoader::Get();
-    NetworkCertLoader::ForceHardwareBackedForTesting();
+    NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
   }
 
   void TearDown() override {

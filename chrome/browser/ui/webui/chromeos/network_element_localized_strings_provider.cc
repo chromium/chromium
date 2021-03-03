@@ -394,8 +394,8 @@ void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
       {NetworkConnectionHandler::kErrorPassphraseRequired,
        IDS_NETWORK_ERROR_PASSPHRASE_REQUIRED},
       {"networkErrorUnknown", IDS_NETWORK_ERROR_UNKNOWN},
-      {"networkErrorNotHardwareBacked",
-       IDS_SETTINGS_INTERNET_NETWORK_REQUIRE_HARDWARE_BACKED},
+      {"networkErrorNotAvailableForNetworkAuth",
+       IDS_SETTINGS_INTERNET_NETWORK_NOT_AVAILABLE_FOR_NETWORK_AUTH},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

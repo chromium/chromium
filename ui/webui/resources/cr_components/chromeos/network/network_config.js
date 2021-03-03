@@ -507,9 +507,9 @@ Polymer({
       this.set('serverCaCerts_', caCerts);
 
       let userCerts = response.userCerts.slice();
-      // Only hardware backed user certs are supported.
+      // Only certs available for network authentication can be used.
       userCerts.forEach(function(cert) {
-        if (!cert.hardwareBacked) {
+        if (!cert.availableForNetworkAuth) {
           cert.hash = '';
         }  // Clear the hash to invalidate the certificate.
       });
@@ -545,6 +545,7 @@ Polymer({
       issuedBy: desc,
       issuedTo: '',
       pemOrId: '',
+      availableForNetworkAuth: false,
       hardwareBacked: false,
       // Default cert entries should always be shown, even in the login UI,
       // so treat thiem as device-wide.
@@ -1076,7 +1077,8 @@ Polymer({
     // If |this.error| was set to something other than a cert error, do not
     // change it.
     /** @const */ const noCertsError = 'networkErrorNoUserCertificate';
-    /** @const */ const noValidCertsError = 'networkErrorNotHardwareBacked';
+    /** @const */ const noValidCertsError =
+        'networkErrorNotAvailableForNetworkAuth';
     if (this.error && this.error !== noCertsError &&
         this.error !== noValidCertsError) {
       return;

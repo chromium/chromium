@@ -1788,8 +1788,8 @@
   <message name="IDS_SETTINGS_INTERNET_NETWORK_CERTIFICATE_NONE_INSTALLED" desc="Settings > Internet > Network configuration: Label when no certificates are installed.">
     None installed
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_REQUIRE_HARDWARE_BACKED" desc="In the network connect dialog, when creating a VPN or enterprise Wi-Fi connection, error message to display when a non hardware-backed user certificate is selected.">
-    User certificate must be hardware-backed.
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_NOT_AVAILABLE_FOR_NETWORK_AUTH" desc="In the network connect dialog, when creating a VPN or enterprise Wi-Fi connection, error message to display when a certificate is selected which is not available for network authentication .">
+    User certificate is not available for network authentication.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_ACCESS_POINT" desc="Settings > Internet > Network details: Access Point section label.">
     Access Point

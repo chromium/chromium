@@ -14,9 +14,10 @@ namespace chromeos {
 
 namespace {
 
-NetworkCertificateHandler::Certificate GetCertificate(CERTCertificate* cert,
-                                                      net::CertType type,
-                                                      bool is_device_wide) {
+NetworkCertificateHandler::Certificate GetCertificate(
+    const NetworkCertLoader::NetworkCert& network_cert,
+    net::CertType type) {
+  CERTCertificate* cert = network_cert.cert();
   NetworkCertificateHandler::Certificate result;
 
   result.hash =
@@ -40,8 +41,10 @@ NetworkCertificateHandler::Certificate GetCertificate(CERTCertificate* cert,
     NOTREACHED();
   }
 
-  result.hardware_backed = NetworkCertLoader::IsCertificateHardwareBacked(cert);
-  result.device_wide = is_device_wide;
+  result.available_for_network_auth =
+      network_cert.is_available_for_network_auth();
+  result.hardware_backed = network_cert.IsHardwareBacked();
+  result.device_wide = network_cert.is_device_wide();
 
   return result;
 }
@@ -100,12 +103,12 @@ void NetworkCertificateHandler::ProcessCertificates(
 
   // Add certificates to the appropriate list.
   for (const auto& network_cert : authority_certs) {
-    server_ca_certificates_.push_back(GetCertificate(
-        network_cert.cert(), net::CA_CERT, network_cert.is_device_wide()));
+    server_ca_certificates_.push_back(
+        GetCertificate(network_cert, net::CA_CERT));
   }
   for (const auto& network_cert : client_certs) {
-    client_certificates_.push_back(GetCertificate(
-        network_cert.cert(), net::USER_CERT, network_cert.is_device_wide()));
+    client_certificates_.push_back(
+        GetCertificate(network_cert, net::USER_CERT));
   }
 
   for (auto& observer : observer_list_)

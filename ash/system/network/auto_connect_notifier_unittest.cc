@@ -41,7 +41,7 @@ class AutoConnectNotifierTest : public AshTestBase {
 
   void SetUp() override {
     chromeos::NetworkCertLoader::Initialize();
-    chromeos::NetworkCertLoader::ForceHardwareBackedForTesting();
+    chromeos::NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
     chromeos::shill_clients::InitializeFakes();
     chromeos::NetworkHandler::Initialize();
     CHECK(chromeos::NetworkHandler::Get()->auto_connect_handler());

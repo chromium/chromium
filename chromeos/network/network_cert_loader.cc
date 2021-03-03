@@ -32,6 +32,9 @@ namespace chromeos {
 
 namespace {
 
+bool g_force_available_for_network_auth_for_test = false;
+NetworkCertLoader* g_cert_loader = nullptr;
+
 enum class NetworkCertType {
   kAuthorityCertificate,
   kClientCertificate,
@@ -46,6 +49,12 @@ NetworkCertType GetNetworkCertType(CERTCertificate* cert) {
     return NetworkCertType::kAuthorityCertificate;
   VLOG(2) << "Ignoring cert type: " << type;
   return NetworkCertType::kOther;
+}
+
+bool IsAvailableForNetworkAuth(CERTCertificate* cert) {
+  if (g_force_available_for_network_auth_for_test)
+    return true;
+  return crypto::IsSlotProvidedByChaps(cert->slot);
 }
 
 // Returns all authority certificates with default (not restricted) scope
@@ -66,8 +75,9 @@ NetworkCertLoader::NetworkCertList GetPolicyProvidedAuthorities(
       LOG(ERROR) << "Unable to create CERTCertificate";
       continue;
     }
-    result.push_back(
-        NetworkCertLoader::NetworkCert(std::move(x509_cert), device_wide));
+    result.push_back(NetworkCertLoader::NetworkCert(
+        std::move(x509_cert), /*available_for_network_auth=*/false,
+        device_wide));
   }
   return result;
 }
@@ -229,10 +239,12 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
       NetworkCertType type = GetNetworkCertType(cert.get());
       if (type == NetworkCertType::kAuthorityCertificate) {
         authority_certs_.push_back(
-            NetworkCert(std::move(cert), is_slot_device_wide_));
+            NetworkCert(std::move(cert), /*available_for_network_auth=*/false,
+                        is_slot_device_wide_));
       } else if (type == NetworkCertType::kClientCertificate) {
-        client_certs_.push_back(
-            NetworkCert(std::move(cert), is_slot_device_wide_));
+        bool available_for_network_auth = IsAvailableForNetworkAuth(cert.get());
+        client_certs_.push_back(NetworkCert(
+            std::move(cert), available_for_network_auth, is_slot_device_wide_));
       }
     }
 
@@ -278,23 +290,27 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
 };
 
 NetworkCertLoader::NetworkCert::NetworkCert(net::ScopedCERTCertificate cert,
+                                            bool available_for_network_auth,
                                             bool device_wide)
-    : cert_(std::move(cert)), device_wide_(device_wide) {}
-
-NetworkCertLoader::NetworkCert::NetworkCert(NetworkCert&& other) = default;
+    : cert_(std::move(cert)),
+      available_for_network_auth_(available_for_network_auth),
+      device_wide_(device_wide) {}
 
 NetworkCertLoader::NetworkCert::~NetworkCert() = default;
+
+NetworkCertLoader::NetworkCert::NetworkCert(NetworkCert&& other) = default;
 
 NetworkCertLoader::NetworkCert& NetworkCertLoader::NetworkCert::operator=(
     NetworkCert&& other) = default;
 
-NetworkCertLoader::NetworkCert NetworkCertLoader::NetworkCert::Clone() const {
-  return NetworkCert(net::x509_util::DupCERTCertificate(cert_.get()),
-                     device_wide_);
+bool NetworkCertLoader::NetworkCert::IsHardwareBacked() const {
+  return net::NSSCertDatabase::IsHardwareBacked(cert_.get());
 }
 
-static NetworkCertLoader* g_cert_loader = nullptr;
-static bool g_force_hardware_backed_for_test = false;
+NetworkCertLoader::NetworkCert NetworkCertLoader::NetworkCert::Clone() const {
+  return NetworkCert(net::x509_util::DupCERTCertificate(cert_.get()),
+                     available_for_network_auth_, device_wide_);
+}
 
 // static
 void NetworkCertLoader::Initialize() {
@@ -397,14 +413,6 @@ void NetworkCertLoader::RemoveObserver(NetworkCertLoader::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-// static
-// TODO(https://crbug.com/1179239): Rename this to match what it does.
-bool NetworkCertLoader::IsCertificateHardwareBacked(CERTCertificate* cert) {
-  if (g_force_hardware_backed_for_test)
-    return true;
-  return crypto::IsSlotProvidedByChaps(cert->slot);
-}
-
 bool NetworkCertLoader::initial_load_of_any_database_running() const {
   return system_slot_cert_cache_->initial_load_running() ||
          user_private_slot_cert_cache_->initial_load_running() ||
@@ -459,8 +467,8 @@ NetworkCertLoader::NetworkCertList NetworkCertLoader::CloneNetworkCertList(
 }
 
 // static
-void NetworkCertLoader::ForceHardwareBackedForTesting() {
-  g_force_hardware_backed_for_test = true;
+void NetworkCertLoader::ForceAvailableForNetworkAuthForTesting() {
+  g_force_available_for_network_auth_for_test = true;
 }
 
 // static

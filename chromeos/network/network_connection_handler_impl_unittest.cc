@@ -157,7 +157,7 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot()))));
 
     NetworkCertLoader::Initialize();
-    NetworkCertLoader::ForceHardwareBackedForTesting();
+    NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
 
     LoginState::Initialize();
 

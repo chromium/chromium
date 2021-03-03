@@ -306,8 +306,18 @@ suite('network-config', function() {
           chromeos.networkConfig.mojom.SecurityType.kWpaEap);
       setAuthenticated();
       mojoApi_.setCertificatesForTest(
-          [{hash: kCaHash, hardwareBacked: true, deviceWide: true}],
-          [{hash: kUserHash1, hardwareBacked: true, deviceWide: false}]);
+          [{
+            hash: kCaHash,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: true
+          }],
+          [{
+            hash: kUserHash1,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: false
+          }]);
       initNetworkConfig();
       networkConfig.shareNetwork_ = false;
       networkConfig.set('eapProperties_.outer', 'EAP-TLS');
@@ -326,9 +336,25 @@ suite('network-config', function() {
           chromeos.networkConfig.mojom.SecurityType.kWpaEap);
       setAuthenticated();
       mojoApi_.setCertificatesForTest(
-          [{hash: kCaHash, hardwareBacked: true, deviceWide: true}], [
-            {hash: kUserHash1, hardwareBacked: true, deviceWide: false},
-            {hash: kUserHash2, hardwareBacked: true, deviceWide: true}
+          [{
+            hash: kCaHash,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: true
+          }],
+          [
+            {
+              hash: kUserHash1,
+              availableForNetworkAuth: true,
+              hardwareBacked: true,
+              deviceWide: false
+            },
+            {
+              hash: kUserHash2,
+              availableForNetworkAuth: true,
+              hardwareBacked: true,
+              deviceWide: true
+            }
           ]);
       initNetworkConfig();
       networkConfig.shareNetwork_ = true;

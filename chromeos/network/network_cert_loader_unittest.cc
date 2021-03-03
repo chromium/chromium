@@ -560,8 +560,6 @@ TEST_F(NetworkCertLoaderTest, UpdateCertListOnNewCert) {
   // The certificate list should be updated now, as the message loop's been run.
   EXPECT_TRUE(IsCertInCertificateList(certs[0].get(), false /* device_wide */,
                                       cert_loader_->authority_certs()));
-
-  EXPECT_FALSE(cert_loader_->IsCertificateHardwareBacked(certs[0].get()));
 }
 
 TEST_F(NetworkCertLoaderTest, NoUpdateOnSecondaryDbChanges) {
@@ -596,6 +594,25 @@ TEST_F(NetworkCertLoaderTest, ClientLoaderUpdateOnNewClientCert) {
 
   EXPECT_TRUE(IsCertInCertificateList(cert.get(), false /* device_wide */,
                                       cert_loader_->client_certs()));
+}
+
+// In tests, the client certs are provided by NSS softoken, so they are not
+// hardware-backed or available for network authentication.
+TEST_F(NetworkCertLoaderTest,
+       ClientCertNotHwBackedOrAvailableForNetworkAuthInTests) {
+  StartCertLoaderWithPrimaryDB();
+
+  net::ScopedCERTCertificate cert(
+      ImportClientCertAndKey(primary_certdb_.get()));
+  ASSERT_TRUE(cert);
+  task_environment_.RunUntilIdle();
+
+  const std::vector<NetworkCertLoader::NetworkCert>& client_certs =
+      cert_loader_->client_certs();
+  ASSERT_EQ(1U, client_certs.size());
+
+  EXPECT_FALSE(client_certs[0].IsHardwareBacked());
+  EXPECT_FALSE(client_certs[0].is_available_for_network_auth());
 }
 
 TEST_F(NetworkCertLoaderTest, ClientLoaderUpdateOnNewClientCertInSystemToken) {

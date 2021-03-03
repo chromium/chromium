@@ -1804,7 +1804,7 @@ mojom::NetworkCertificatePtr GetMojoCert(
   result->hash = cert.hash;
   result->issued_by = cert.issued_by;
   result->issued_to = cert.issued_to;
-  result->hardware_backed = cert.hardware_backed;
+  result->available_for_network_auth = cert.available_for_network_auth;
   result->device_wide = cert.device_wide;
   if (type == mojom::CertificateType::kServerCA)
     result->pem_or_id = cert.pem;

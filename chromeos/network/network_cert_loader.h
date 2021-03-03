@@ -51,22 +51,39 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // additional information.
   class NetworkCert final {
    public:
-    NetworkCert(net::ScopedCERTCertificate cert, bool device_wide);
-    NetworkCert(NetworkCert&& other);
+    NetworkCert(net::ScopedCERTCertificate cert,
+                bool available_for_network_auth,
+                bool device_wide);
     ~NetworkCert();
+
+    // Not copyable
+    NetworkCert(const NetworkCert& other) = delete;
+    NetworkCert& operator=(const NetworkCert& other) = delete;
+
+    // Movable
+    NetworkCert(NetworkCert&& other);
     NetworkCert& operator=(NetworkCert&& other);
 
     CERTCertificate* cert() const { return cert_.get(); }
+    // Returns true if this is a client certificate that is available for
+    // network authentication. authentication. See also
+    // NetworkCertLoader::ForceAvailableForNetworkAuthForTesting().
+    bool is_available_for_network_auth() const {
+      return available_for_network_auth_;
+    }
     // Returns true if this certificate is available device-wide (so it can be
     // used in shared network configs).
     bool is_device_wide() const { return device_wide_; }
+
+    // Returns true if this certificate is hardware-backed.
+    bool IsHardwareBacked() const;
+
     NetworkCert Clone() const;
 
    private:
     net::ScopedCERTCertificate cert_;
+    bool available_for_network_auth_;
     bool device_wide_;
-
-    DISALLOW_COPY_AND_ASSIGN(NetworkCert);
   };
 
   // A list of NetworkCerts.
@@ -140,10 +157,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   void AddObserver(NetworkCertLoader::Observer* observer);
   void RemoveObserver(NetworkCertLoader::Observer* observer);
 
-  // Returns true if |cert| is hardware backed. See also
-  // ForceHardwareBackedForTesting().
-  static bool IsCertificateHardwareBacked(CERTCertificate* cert);
-
   // Returns true when the certificate list has been requested but not loaded.
   // When two databases are in use (SetSystemNSSDB and SetUserNSSDB have both
   // been called), this returns true when at least one of them is currently
@@ -192,9 +205,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   static NetworkCertList CloneNetworkCertList(
       const NetworkCertList& network_cert_list);
 
-  // Called in tests if |IsCertificateHardwareBacked()| should always return
-  // true.
-  static void ForceHardwareBackedForTesting();
+  // Called in tests if |NetworkCert::is_available_for_network_auth()| should
+  // always return true.
+  static void ForceAvailableForNetworkAuthForTesting();
 
  private:
   class CertCache;

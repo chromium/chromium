@@ -289,11 +289,13 @@ void CreateSortedCertAndIssuerList(
     if (!all_cert_and_issuers && !network_cert.is_device_wide())
       continue;
 
+    if (!network_cert.is_available_for_network_auth())
+      continue;
+
     CERTCertificate* cert = network_cert.cert();
     base::Time not_after;
     if (!net::x509_util::GetValidityTimes(cert, nullptr, &not_after) ||
-        now > not_after ||
-        !NetworkCertLoader::IsCertificateHardwareBacked(cert)) {
+        now > not_after) {
       continue;
     }
     // GetPrivateKeyNickname should be invoked after the checks above for
