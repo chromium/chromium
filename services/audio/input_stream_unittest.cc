@@ -200,8 +200,8 @@ class AudioServiceInputStreamTest : public testing::Test {
   base::test::TaskEnvironment scoped_task_env_;
   media::MockAudioManager audio_manager_;
   StreamFactory stream_factory_;
-  mojo::Remote<mojom::StreamFactory> remote_stream_factory_;
-  mojo::Receiver<mojom::StreamFactory> stream_factory_receiver_;
+  mojo::Remote<media::mojom::AudioStreamFactory> remote_stream_factory_;
+  mojo::Receiver<media::mojom::AudioStreamFactory> stream_factory_receiver_;
   StrictMock<MockStreamClient> client_;
   StrictMock<MockStreamObserver> observer_;
   NiceMock<MockLog> log_;

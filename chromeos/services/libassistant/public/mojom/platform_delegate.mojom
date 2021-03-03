@@ -7,15 +7,16 @@ module chromeos.libassistant.mojom;
 import "ash/public/mojom/assistant_volume_control.mojom";
 import "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom";
 import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
-import "services/audio/public/mojom/stream_factory.mojom";
+import "media/mojo/mojom/audio_stream_factory.mojom";
 import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/wake_lock_provider.mojom";
 
 // Delegate that exposes methods to bind platform related functionality.
 interface PlatformDelegate {
 
-  // Requests an Audio Service StreamFactory from the browser.
-  BindAudioStreamFactory(pending_receiver<audio.mojom.StreamFactory> receiver);
+  // Requests an Audio Service AudioStreamFactory from the browser.
+  BindAudioStreamFactory(
+    pending_receiver<media.mojom.AudioStreamFactory> receiver);
 
   // Requests an audio decoder interface from the Assistant Audio Decoder
   // service, via the browser.

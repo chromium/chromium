@@ -78,7 +78,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
                void(const base::UnguessableToken& input_stream_id,
                     const std::string& output_device_id));
 
-  mojo::PendingRemote<audio::mojom::StreamFactory> MakeRemote() {
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> MakeRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 

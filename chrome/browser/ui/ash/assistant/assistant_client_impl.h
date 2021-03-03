@@ -63,7 +63,8 @@ class AssistantClientImpl : public ash::AssistantClient,
   void RequestWakeLockProvider(
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
   void RequestAudioStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
+      override;
   void RequestAudioDecoderFactory(
       mojo::PendingReceiver<
           chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)

@@ -7,6 +7,7 @@ include_rules = [
   "+google_apis/gaia",
   "+libassistant",
   "+media/base",
+  "+media/mojo/mojom",
   "+mojo/public",
   "+services/audio/public",
   "+services/device/public",

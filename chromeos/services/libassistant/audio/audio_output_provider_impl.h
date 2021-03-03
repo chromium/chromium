@@ -21,9 +21,9 @@
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_output.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace chromeos {
 
@@ -57,7 +57,7 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
 
  private:
   void BindStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver);
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver);
 
   // Owned by |AssistantManagerServiceImpl|.
   mojom::PlatformDelegate* platform_delegate_ = nullptr;

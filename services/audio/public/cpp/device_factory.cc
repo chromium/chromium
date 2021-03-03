@@ -14,7 +14,7 @@
 namespace audio {
 
 scoped_refptr<media::AudioCapturerSource> CreateInputDevice(
-    mojo::PendingRemote<mojom::StreamFactory> stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     const std::string& device_id,
     DeadStreamDetection detect_dead_stream,
     mojo::PendingRemote<media::mojom::AudioLog> log) {
@@ -26,7 +26,7 @@ scoped_refptr<media::AudioCapturerSource> CreateInputDevice(
 }
 
 scoped_refptr<media::AudioCapturerSource> CreateInputDevice(
-    mojo::PendingRemote<mojom::StreamFactory> stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     const std::string& device_id,
     DeadStreamDetection detect_dead_stream) {
   return CreateInputDevice(std::move(stream_factory), device_id,

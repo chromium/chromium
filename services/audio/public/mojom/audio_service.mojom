@@ -4,10 +4,10 @@
 
 module audio.mojom;
 
+import "media/mojo/mojom/audio_stream_factory.mojom";
 import "services/audio/public/mojom/debug_recording.mojom";
 import "services/audio/public/mojom/device_notifications.mojom";
 import "services/audio/public/mojom/log_factory_manager.mojom";
-import "services/audio/public/mojom/stream_factory.mojom";
 import "services/audio/public/mojom/system_info.mojom";
 import "services/audio/public/mojom/testing_api.mojom";
 
@@ -21,7 +21,7 @@ interface AudioService {
   BindDebugRecording(pending_receiver<DebugRecording> receiver);
 
   // Binds a StreamFactory interface receiver.
-  BindStreamFactory(pending_receiver<StreamFactory> receiver);
+  BindStreamFactory(pending_receiver<media.mojom.AudioStreamFactory> receiver);
 
   // Binds a DeviceNotifier interface receiver.
   BindDeviceNotifier(pending_receiver<DeviceNotifier> receiver);

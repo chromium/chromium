@@ -11,7 +11,7 @@ FakePlatformDelegate::FakePlatformDelegate() = default;
 FakePlatformDelegate::~FakePlatformDelegate() = default;
 
 void FakePlatformDelegate::BindAudioStreamFactory(
-    mojo::PendingReceiver<::audio::mojom::StreamFactory> receiver) {
+    mojo::PendingReceiver<::media::mojom::AudioStreamFactory> receiver) {
   stream_factory_receiver_ = std::move(receiver);
 }
 

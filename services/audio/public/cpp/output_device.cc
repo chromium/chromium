@@ -18,7 +18,7 @@
 namespace audio {
 
 OutputDevice::OutputDevice(
-    mojo::PendingRemote<mojom::StreamFactory> stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     const media::AudioParameters& params,
     media::AudioRendererSink::RenderCallback* render_callback,
     const std::string& device_id)

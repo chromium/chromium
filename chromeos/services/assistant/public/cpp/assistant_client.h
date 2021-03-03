@@ -11,8 +11,8 @@
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
@@ -48,9 +48,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantClient {
   virtual void RequestWakeLockProvider(
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) = 0;
 
-  // Requests an Audio Service StreamFactory from the browser.
+  // Requests an Audio Service AudioStreamFactory from the browser.
   virtual void RequestAudioStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) = 0;
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) = 0;
 
   // Requests an audio decoder interface from the Assistant Audio Decoder
   // service, via the browser.

@@ -23,8 +23,8 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "services/audio/public/cpp/device_factory.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace chromeos {
 namespace libassistant {

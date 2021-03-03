@@ -82,7 +82,7 @@ void BindSystemInfoFromAnySequence(
 }
 
 void BindStreamFactoryFromAnySequence(
-    mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+    mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,

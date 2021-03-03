@@ -17,7 +17,7 @@ void PlatformDelegateImpl::Bind(
 }
 
 void PlatformDelegateImpl::BindAudioStreamFactory(
-    mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+    mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   AssistantClient::Get()->RequestAudioStreamFactory(std::move(receiver));
 }
 
