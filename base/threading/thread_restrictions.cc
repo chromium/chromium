@@ -12,6 +12,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/lazy_instance.h"
 #include "base/threading/thread_local.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -237,9 +238,12 @@ ScopedAllowBlocking::ScopedAllowBlocking(const Location& from_here)
     : was_disallowed_(g_blocking_disallowed.Get().Get())
 #endif
 {
-  TRACE_EVENT_BEGIN2("base", "ScopedAllowBlocking", "file_name",
-                     from_here.file_name(), "function_name",
-                     from_here.function_name());
+  TRACE_EVENT_BEGIN(
+      "base", "ScopedAllowBlocking", [&](perfetto::EventContext ctx) {
+        ctx.event()->set_source_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+      });
 
 #if DCHECK_IS_ON()
   g_blocking_disallowed.Get().Set(false);
@@ -261,9 +265,13 @@ ScopedAllowBaseSyncPrimitivesOutsideBlockingScope::
     : was_disallowed_(g_base_sync_primitives_disallowed.Get().Get())
 #endif
 {
-  TRACE_EVENT_BEGIN2(
-      "base", "ScopedAllowBaseSyncPrimitivesOutsideBlockingScope", "file_name",
-      from_here.file_name(), "function_name", from_here.function_name());
+  TRACE_EVENT_BEGIN(
+      "base", "ScopedAllowBaseSyncPrimitivesOutsideBlockingScope",
+      [&](perfetto::EventContext ctx) {
+        ctx.event()->set_source_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+      });
 
 #if DCHECK_IS_ON()
   g_base_sync_primitives_disallowed.Get().Set(false);
@@ -285,9 +293,11 @@ ThreadRestrictions::ScopedAllowIO::ScopedAllowIO(const Location& from_here)
     : was_allowed_(SetIOAllowed(true))
 #endif
 {
-  TRACE_EVENT_BEGIN2("base", "ScopedAllowIO", "file_name",
-                     from_here.file_name(), "function_name",
-                     from_here.function_name());
+  TRACE_EVENT_BEGIN("base", "ScopedAllowIO", [&](perfetto::EventContext ctx) {
+    ctx.event()->set_source_location_iid(
+        base::trace_event::InternedSourceLocation::Get(
+            &ctx, base::trace_event::TraceSourceLocation(from_here)));
+  });
 }
 
 ThreadRestrictions::ScopedAllowIO::~ScopedAllowIO() {
