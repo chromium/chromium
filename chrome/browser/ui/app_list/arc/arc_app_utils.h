@@ -126,7 +126,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
                          const base::Optional<std::string>& launch_intent,
                          int event_flags,
                          UserInteractionType user_action,
-                         int64_t display_id);
+                         arc::mojom::WindowInfoPtr window_info);
 
 // Launches App Shortcut that was published by Android's ShortcutManager.
 bool LaunchAppShortcutItem(content::BrowserContext* context,

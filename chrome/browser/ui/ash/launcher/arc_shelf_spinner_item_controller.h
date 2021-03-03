@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
+#include "components/arc/mojom/app.mojom.h"
 
 // ArcShelfSpinnerItemController displays the icon of the ARC app that
 // cannot be launched immediately (due to ARC not being ready) on Chrome OS'
@@ -27,7 +28,7 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
   ArcShelfSpinnerItemController(const std::string& arc_app_id,
                                 int event_flags,
                                 arc::UserInteractionType user_interaction_type,
-                                int64_t display_id);
+                                arc::mojom::WindowInfoPtr window_info);
 
   ~ArcShelfSpinnerItemController() override;
 
@@ -50,7 +51,7 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
   // Stores how this action was initiated.
   const arc::UserInteractionType user_interaction_type_;
 
-  const int64_t display_id_;
+  arc::mojom::WindowInfoPtr window_info_;
 
   // Unowned
   Profile* observed_profile_ = nullptr;
