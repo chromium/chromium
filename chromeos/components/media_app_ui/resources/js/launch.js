@@ -326,7 +326,13 @@ guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
  * @return {!Promise<!FileSystemFileHandle>}
  */
 function pickWritableFile(suggestedName, mimeType) {
-  const extension = '.' + suggestedName.split('.').reverse()[0];
+  // Cast to expose (draft) string.replaceAll() - available since Chrome 85.
+  const suffix = /** @type{{replaceAll: function(*,*): string}} */ (
+      suggestedName.split('.').reverse()[0]);
+  // Strip non-alphnumeric characters: showSaveFilePicker() will reject them if
+  // they appear in the extension. See b/175625372. This regex should be
+  // consistent with IsValidSuffixCodePoint() in global_file_system_access.cc.
+  const extension = '.' + suffix.replaceAll(/[^A-Za-z0-9.+]+/g, '');
   // TODO(b/161087799): Add a default filename when it's supported by the
   // File System Access API.
   /** @type {!FilePickerOptions} */

@@ -571,6 +571,36 @@ TEST_F('MediaAppUIBrowserTest', 'OverwriteOriginalPickerFallback', async () => {
   testDone();
 });
 
+// Tests that invalid characters in file extensions are stripped before being
+// passed to showSaveFilePicker.
+TEST_F('MediaAppUIBrowserTest', 'FilePickerValidateExtension', async () => {
+  function pick(suggestedName, mimeType = 'image/jpeg') {
+    return new Promise(resolve => {
+      window.showSaveFilePicker = options => {
+        resolve(options.types.map(t => Object.values(t.accept || {})));
+        // The handle is unused in the test, but needed to keep closure happy.
+        return Promise.resolve(/** @type {!FileSystemFileHandle}*/ (null));
+      };
+      pickWritableFile(suggestedName, mimeType);
+    });
+  }
+
+  assertDeepEquals(await pick('foo.jpg'), [[['.jpg']]]);
+  assertDeepEquals(await pick('foo.jfif'), [[['.jfif']]]);
+  assertDeepEquals(await pick('foo'), [[['.foo']]]);
+  assertDeepEquals(await pick('foo.png'), [[['.png']]]);
+  assertDeepEquals(await pick('foo.jpg.jpg'), [[['.jpg']]]);
+  assertDeepEquals(await pick('jpg.jpg (1)'), [[['.jpg1']]]);
+  assertDeepEquals(await pick(''), [[['.']]]);
+  assertDeepEquals(await pick('foo.bar.jpg (1) - _baz'), [[['.jpg1baz']]]);
+  assertDeepEquals(await pick('foo.svg+xml'), [[['.svg+xml']]]);
+
+  // Ideally, double-barrelled extensions like this would be handled better. But
+  // the only way to do that is with a hardcoded list of exceptions.
+  assertDeepEquals(await pick('foo.tar.gz'), [[['.gz']]]);
+  testDone();
+});
+
 // Tests `MessagePipe.sendMessage()` properly propagates errors.
 TEST_F('MediaAppUIBrowserTest', 'CrossContextErrors', async () => {
   // Prevent the trusted context throwing errors resulting JS errors.
