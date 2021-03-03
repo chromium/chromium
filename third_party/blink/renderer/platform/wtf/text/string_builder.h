@@ -206,6 +206,10 @@ class WTF_EXPORT StringBuilder {
 
   bool Is8Bit() const { return is_8bit_; }
   void Ensure16Bit();
+  // This is analogous to |Ensure16Bit| and |ReserveCapacity|, but can avoid two
+  // reallocations when the current buffer is 8 bits and is smaller than
+  // |new_capacity|.
+  void Ensure16Bit(unsigned new_capacity);
 
   void Clear();
   void Swap(StringBuilder&);

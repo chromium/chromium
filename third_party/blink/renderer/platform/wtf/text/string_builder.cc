@@ -120,6 +120,13 @@ void StringBuilder::Ensure16Bit() {
   EnsureBuffer16(0);
 }
 
+void StringBuilder::Ensure16Bit(unsigned new_capacity) {
+  if (is_8bit_ || !HasBuffer())
+    CreateBuffer16(new_capacity);
+  else
+    buffer16_.ReserveCapacity(new_capacity);
+}
+
 void StringBuilder::Clear() {
   ClearBuffer();
   string_ = String();
@@ -136,10 +143,17 @@ unsigned StringBuilder::Capacity() const {
 }
 
 void StringBuilder::ReserveCapacity(unsigned new_capacity) {
+  if (!HasBuffer()) {
+    if (is_8bit_)
+      CreateBuffer8(new_capacity);
+    else
+      CreateBuffer16(new_capacity);
+    return;
+  }
   if (is_8bit_)
-    EnsureBuffer8(new_capacity);
+    buffer8_.ReserveCapacity(new_capacity);
   else
-    EnsureBuffer16(new_capacity);
+    buffer16_.ReserveCapacity(new_capacity);
 }
 
 void StringBuilder::Resize(unsigned new_size) {
