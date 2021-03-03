@@ -23,6 +23,7 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
     private final ModelList mModelList;
     private final Callback<Boolean> mSetLayoutVisibility;
     private Tab mCurrentTab;
+    private boolean mOnSrp;
     private SearchResultUserData mCurrentSearchUserData;
 
     ContinuousSearchListMediator(ModelList modelList, Callback<Boolean> setLayoutVisibility) {
@@ -63,10 +64,11 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
     public void onInvalidate() {
         mModelList.clear();
         mSetLayoutVisibility.onResult(false);
+        mOnSrp = false;
     }
 
     @Override
-    public void onUpdate(SearchResultMetadata metadata, GURL currentUrl) {
+    public void onUpdate(SearchResultMetadata metadata) {
         mModelList.clear();
 
         for (SearchResultGroup group : metadata.getGroups()) {
@@ -80,11 +82,11 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
                         itemType, generateListItem(result.getTitle(), result.getUrl())));
             }
         }
-        mSetLayoutVisibility.onResult(mModelList.size() > 0);
     }
 
     @Override
-    public void onUrlChanged(GURL currentUrl) {
+    public void onUrlChanged(GURL currentUrl, boolean onSrp) {
+        mOnSrp = onSrp;
         for (ListItem listItem : mModelList) {
             if (listItem.type == ListItemType.GROUP_LABEL) continue;
 
@@ -92,6 +94,7 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
                     && currentUrl.equals(listItem.model.get(ContinuousSearchListProperties.URL));
             listItem.model.set(ContinuousSearchListProperties.IS_SELECTED, isSelected);
         }
+        mSetLayoutVisibility.onResult(mModelList.size() > 0 && !mOnSrp);
     }
 
     private PropertyModel generateListItem(String text, GURL url) {

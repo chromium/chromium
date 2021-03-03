@@ -21,6 +21,12 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     }
 
     @Override
+    public void onPageLoadStarted(Tab tab, GURL url) {
+        SearchResultUserData searchResultUserData = SearchResultUserData.getOrCreateForTab(tab);
+        searchResultUserData.updateCurrentUrl(url);
+    }
+
+    @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
         SearchResultUserData searchResultUserData = SearchResultUserData.getOrCreateForTab(tab);
         searchResultUserData.updateCurrentUrl(url);

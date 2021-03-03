@@ -49,7 +49,8 @@ public class SearchResultUserData implements UserData {
     void addObserver(SearchResultUserDataObserver observer) {
         mObservers.add(observer);
         if (isValid()) {
-            observer.onUpdate(mData, mCurrentUrl);
+            observer.onUpdate(mData);
+            observer.onUrlChanged(mCurrentUrl, isMatchingSrp(mCurrentUrl));
         }
     }
 
@@ -67,9 +68,11 @@ public class SearchResultUserData implements UserData {
             }
         }
         updateCurrentUrlInternal(currentUrl, false);
+        if (mData == null) return;
 
         for (SearchResultUserDataObserver observer : mObservers) {
-            observer.onUpdate(mData, mCurrentUrl);
+            observer.onUpdate(mData);
+            observer.onUrlChanged(mCurrentUrl, isMatchingSrp(mCurrentUrl));
         }
     }
 
@@ -97,7 +100,7 @@ public class SearchResultUserData implements UserData {
 
         mCurrentUrl = url;
         boolean urlInResults = isUrlInResults(mCurrentUrl);
-        boolean onSrp = mCurrentUrl.equals(mData.getResultUrl());
+        boolean onSrp = isMatchingSrp(url);
         if (!urlInResults && !onSrp) {
             invalidateData();
             return;
@@ -106,8 +109,14 @@ public class SearchResultUserData implements UserData {
         if (!notify) return;
 
         for (SearchResultUserDataObserver observer : mObservers) {
-            observer.onUrlChanged(url);
+            observer.onUrlChanged(url, onSrp);
         }
+    }
+
+    private boolean isMatchingSrp(GURL url) {
+        String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
+        return query != null && query.equals(mData.getQuery())
+                && SearchUrlHelper.getResultCategoryFromUrl(url) == mData.getCategory();
     }
 
     @VisibleForTesting

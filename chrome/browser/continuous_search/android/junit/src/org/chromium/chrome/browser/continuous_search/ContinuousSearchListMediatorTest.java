@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchListPropert
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 
@@ -76,24 +77,42 @@ public class ContinuousSearchListMediatorTest {
                 mLayoutVisibilityFalse.getCallCount());
 
         // 1 result available. UI should be shown.
-        SearchResult searchResult = new SearchResult(Mockito.mock(GURL.class), "result 1");
+        SearchResult searchResult =
+                new SearchResult(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), "result 1");
         SearchResultGroup searchResultGroup =
                 new SearchResultGroup("result", false, Arrays.asList(searchResult));
-        SearchResultMetadata searchResultMetadata = new SearchResultMetadata(
-                Mockito.mock(GURL.class), "query", 1, Arrays.asList(searchResultGroup));
-        mMediator.onUpdate(searchResultMetadata, Mockito.mock(GURL.class));
+        SearchResultMetadata searchResultMetadata =
+                new SearchResultMetadata(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), "query",
+                        1, Arrays.asList(searchResultGroup));
+        mMediator.onUpdate(searchResultMetadata);
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
         Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 1,
                 mLayoutVisibilityTrue.getCallCount());
         Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 2,
                 mLayoutVisibilityFalse.getCallCount());
 
-        // 0 results available. UI should be hidden.
-        searchResultMetadata =
-                new SearchResultMetadata(Mockito.mock(GURL.class), "query", 1, Arrays.asList());
-        mMediator.onUpdate(searchResultMetadata, Mockito.mock(GURL.class));
+        // Back to SRP. UI should be hidden.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), true);
         Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 1,
                 mLayoutVisibilityTrue.getCallCount());
         Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 3,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Back to result. UI should be shown.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
+        Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 2,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 3,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // 0 results available. UI should be hidden.
+        searchResultMetadata = new SearchResultMetadata(
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), "query", 1, Arrays.asList());
+        mMediator.onUpdate(searchResultMetadata);
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), true);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 2,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 4,
                 mLayoutVisibilityFalse.getCallCount());
     }
 
@@ -120,7 +139,7 @@ public class ContinuousSearchListMediatorTest {
         SearchResultMetadata searchResultMetadata =
                 new SearchResultMetadata(Mockito.mock(GURL.class), "query", 1,
                         Arrays.asList(searchResultGroup1, searchResultGroup2, searchResultGroup3));
-        mMediator.onUpdate(searchResultMetadata, Mockito.mock(GURL.class));
+        mMediator.onUpdate(searchResultMetadata);
 
         // Each non-ad SearchResultGroup will add a group label as an item. So in total we should
         // have 8 items in the model list.
