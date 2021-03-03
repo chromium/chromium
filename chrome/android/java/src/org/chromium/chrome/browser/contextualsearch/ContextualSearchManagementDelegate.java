@@ -96,6 +96,14 @@ public interface ContextualSearchManagementDelegate {
     void onPanelHelpOkClicked();
 
     /**
+     * Notifies that a Related Searches suggestion has been clicked.
+     * @param suggestionIndex The 0-based index into the list of suggestions provided by the
+     *        panel and presented in the UI. E.g. if the user clicked the second chip this value
+     *        would be 1.
+     */
+    void onRelatedSearchesSuggestionClicked(int suggestionIndex);
+
+    /**
      * @return A {@link ScrimCoordinator} to fade the status bar in and out.
      */
     ScrimCoordinator getScrimCoordinator();

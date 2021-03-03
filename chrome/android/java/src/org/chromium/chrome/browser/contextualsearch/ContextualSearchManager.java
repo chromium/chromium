@@ -190,6 +190,9 @@ public class ContextualSearchManager
     private ContextualSearchRequest mSearchRequest;
     private ContextualSearchRequest mLastSearchRequestLoaded;
 
+    @NonNull
+    private String[] mRelatedSearches = new String[] {};
+
     /** Whether the Accessibility Mode is enabled. */
     private boolean mIsAccessibilityModeEnabled;
 
@@ -441,6 +444,7 @@ public class ContextualSearchManager
         mWereSearchResultsSeen = false;
 
         mSearchRequest = null;
+        mRelatedSearches = new String[] {};
 
         mInProductHelp.onCloseContextualSearch();
 
@@ -724,6 +728,7 @@ public class ContextualSearchManager
 
         boolean receivedCaptionOrThumbnail = !TextUtils.isEmpty(resolvedSearchTerm.caption())
                 || !TextUtils.isEmpty(resolvedSearchTerm.thumbnailUrl());
+        mRelatedSearches = resolvedSearchTerm.relatedSearches();
 
         assert mSearchPanel != null;
 
@@ -1295,6 +1300,16 @@ public class ContextualSearchManager
     @Override
     public void onPanelHelpOkClicked() {
         mPolicy.onPanelHelpOkClicked();
+    }
+
+    @Override
+    public void onRelatedSearchesSuggestionClicked(int suggestionIndex) {
+        // TODO(donnd): update metrics and the stamp for Related Searches (use params).
+        assert suggestionIndex < mRelatedSearches.length;
+        String searchQuery = mRelatedSearches[suggestionIndex];
+        mSearchRequest = new ContextualSearchRequest(searchQuery);
+        mSearchPanel.setSearchTerm(searchQuery);
+        loadSearchUrl();
     }
 
     /** @return The {@link SelectionClient} used by Contextual Search. */

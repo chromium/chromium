@@ -65,7 +65,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         void onPanelHelpOkClicked();
     }
 
-    /** The interface that the Relates Searches section uses to communicate with this Panel. */
+    /** The interface that the Related Searches section uses to communicate with this Panel. */
     interface RelatedSearchesSectionHost extends ContextualSearchPanelSectionHost {
         /**
          * Notifies that the user has clicked on a suggestions in this section of the panel.
@@ -497,7 +497,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /**
      * @return The visible Related Search suggestions.
      */
-
     @VisibleForTesting
     @Nullable
     public String[] getRelatedSearches() {
@@ -631,6 +630,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum, @Nullable String[] relatedSearches) {
+        getRelatedSearchesControl().setRelatedSearchesSuggestions(relatedSearches);
         mPanelMetrics.onSearchTermResolved();
         if (cardTagEnum == CardTag.CT_DEFINITION
                 || cardTagEnum == CardTag.CT_CONTEXTUAL_DEFINITION) {
@@ -645,7 +645,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getSearchBarControl().setQuickAction(quickActionUri, quickActionCategory,
                 mActivity.getToolbarManager().getPrimaryColor());
         getImageControl().setThumbnailUrl(thumbnailUrl);
-        getRelatedSearchesControl().setRelatedSearchesSuggestions(relatedSearches);
     }
 
     /**
@@ -950,7 +949,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 @Override
                 public float getYPositionPx() {
                     // Needs to enumerate anything that can appear above it in the panel.
-                    // Currently it includes the Help section etc those heights.
                     return Math.round((getOffsetY() + getBarContainerHeight()
                                               + getRelatedSearchesHeight() + getPanelHelpHeight())
                             / mPxToDp);
@@ -1099,9 +1097,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
                 @Override
                 public void onSuggestionClicked(int selectionIndex) {
-                    // Tell the manager about the click.
-                    // TODO(donnd): pipe the click back to the manager so we can load the URL.
-                    //     mManagementDelegate.onSuggestionClicked(selectionIndex);
+                    mManagementDelegate.onRelatedSearchesSuggestionClicked(selectionIndex);
                 }
             };
         }

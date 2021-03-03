@@ -5,25 +5,31 @@
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.RelatedSearchesSectionHost;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.widget.chips.Chip;
+import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
+import org.chromium.components.browser_ui.widget.chips.ChipsProvider;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.widget.ChipView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Controls a section of the Panel that provides Related Searches chits.
+ * Controls a section of the Panel that provides Related Searches chips.
  * This class is implemented along the lines of {@code ContextualSearchPanelHelp}.
  * TODO(donnd): consider further extracting the common pattern used for this class
  * and the Help and Promo classes.
@@ -47,6 +53,7 @@ public class RelatedSearchesControl {
 
     /** The query suggestions for this feature, or {@code null} if we don't have any. */
     private @Nullable String[] mRelatedSearchesSuggestions;
+    private List<Chip> mChips;
 
     /** Whether the view is visible. */
     private boolean mIsVisible;
@@ -123,7 +130,6 @@ public class RelatedSearchesControl {
         }
 
         // Invalidates the View in order to generate a snapshot, but do not show the View yet.
-        // The View should only be displayed when in the expanded state.
         if (mControlView != null) mControlView.invalidate();
 
         mIsVisible = true;
@@ -226,6 +232,12 @@ public class RelatedSearchesControl {
         if (percentage == 1.f) {
             showView();
         } else {
+            // If the View is still showing capture a new snapshot in case anything changed.
+            // TODO(donnd): grab snapshots when the view changes instead.
+            // See https://crbug.com/1184308 for details.
+            if (mIsShowingView) {
+                invalidate(false);
+            }
             hideView();
         }
     }
@@ -291,7 +303,6 @@ public class RelatedSearchesControl {
         }
 
         view.setVisibility(View.INVISIBLE);
-
         mIsShowingView = false;
     }
 
@@ -323,11 +334,56 @@ public class RelatedSearchesControl {
     /**
      * Notifies that the user has clicked on a suggestions in this section of the panel.
      * @param suggestionIndex The 0-based index into the list of suggestions provided by the panel
-     *        and presented in the UI. E.g. if the user clicked the second chit this
+     *        and presented in the UI. E.g. if the user clicked the second chip this
      *        value would be 1.
      */
     private void onSuggestionClicked(int suggestionIndex) {
         mPanelSectionHost.onSuggestionClicked(suggestionIndex);
+    }
+
+    // ============================================================================================
+    // Chips
+    // ============================================================================================
+
+    private class RelatedSearchesChipsProvider implements ChipsProvider {
+        private static final int NO_SELECTED_CHIP = -1;
+        private final ObserverList<Observer> mObservers = new ObserverList<>();
+        private int mSelectedChip = NO_SELECTED_CHIP;
+
+        @Override
+        public void addObserver(Observer observer) {
+            mObservers.addObserver(observer);
+        }
+
+        @Override
+        public void removeObserver(Observer observer) {
+            mObservers.removeObserver(observer);
+        }
+
+        @Override
+        public List<Chip> getChips() {
+            mChips = new ArrayList<>();
+            if (mRelatedSearchesSuggestions != null && mRelatedSearchesSuggestions.length > 0) {
+                for (String suggestion : mRelatedSearchesSuggestions) {
+                    final int index = mChips.size();
+                    Chip chip = new Chip(index, suggestion, ChipView.INVALID_ICON_ID,
+                            () -> handleChipTapped(index));
+                    chip.enabled = true;
+                    mChips.add(chip);
+                }
+            }
+
+            return mChips;
+        }
+
+        private void handleChipTapped(int tappedChipIndex) {
+            onSuggestionClicked(tappedChipIndex);
+            if (mSelectedChip != NO_SELECTED_CHIP) mChips.get(mSelectedChip).selected = false;
+            mSelectedChip = tappedChipIndex;
+            mChips.get(tappedChipIndex).selected = true;
+            // TODO(donnd): force the check icon to be shown and removed from these chips.
+            // See https://crbug.com/1184308 for details.
+        }
     }
 
     // ============================================================================================
@@ -337,10 +393,14 @@ public class RelatedSearchesControl {
     /**
      * The {@code RelatedSearchesControlView} is an {@link OverlayPanelInflater} controlled view
      * that renders the actual View and can be created and destroyed under the control of the
-     * enclosing Panel section class. The enclosing class delegates several public mehthods to this
+     * enclosing Panel section class. The enclosing class delegates several public methods to this
      * class, e.g. {@link #invalidate}.
      */
     private class RelatedSearchesControlView extends OverlayPanelInflater {
+        private final ChipsCoordinator mChipsCoordinator;
+        private final RelatedSearchesChipsProvider mChipsProvider;
+        private float mLastOffset;
+
         /**
          * Constructs a view that can be shown in the panel.
          * @param panel             The panel.
@@ -353,6 +413,10 @@ public class RelatedSearchesControl {
             super(panel, R.layout.contextual_search_related_searches_view,
                     R.id.contextual_search_related_searches_layout, context, container,
                     resourceLoader);
+
+            // Setup Chips handling
+            mChipsProvider = new RelatedSearchesChipsProvider();
+            mChipsCoordinator = new ChipsCoordinator(context, mChipsProvider);
         }
 
         /** Returns the view for this control. */
@@ -369,11 +433,18 @@ public class RelatedSearchesControl {
         void setRelatedSearches(String[] suggestionsToShow) {
             if (suggestionsToShow.length > 0) {
                 View relatedSearchesView = getControlView();
-                TextView textView = (TextView) relatedSearchesView.findViewById(
-                        R.id.related_searches_text_view);
-                String searches = String.valueOf(suggestionsToShow.length) + ": "
-                        + TextUtils.join(", ", suggestionsToShow);
-                textView.setText(searches);
+                ViewGroup relatedSearchesViewGroup = (ViewGroup) relatedSearchesView;
+                if (relatedSearchesViewGroup == null) return;
+
+                // Notify the coordinator that the chips need to change
+                mChipsCoordinator.onChipsChanged();
+                View coordinatorView = mChipsCoordinator.getView();
+                if (coordinatorView == null) return;
+
+                ViewGroup parent = (ViewGroup) coordinatorView.getParent();
+                if (parent != null) parent.removeView(coordinatorView);
+                relatedSearchesViewGroup.addView(coordinatorView);
+                invalidate(false);
             } else {
                 hide();
             }
@@ -400,7 +471,6 @@ public class RelatedSearchesControl {
 
             View view = getControlView();
 
-            // TODO(donnd): wire up the click handlers.
             calculateHeight();
         }
 
