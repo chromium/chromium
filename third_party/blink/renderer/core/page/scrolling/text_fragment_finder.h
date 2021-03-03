@@ -52,6 +52,8 @@ class CORE_EXPORT TextFragmentFinder final
   // Begins searching in the given top-level document.
   void FindMatch();
 
+  void Cancel();
+
   void Trace(Visitor*) const;
 
  private:
@@ -117,7 +119,9 @@ class CORE_EXPORT TextFragmentFinder final
   Member<Range> search_range_;
   // Range used for search for |potential_match_|.
   // https://wicg.github.io/scroll-to-text-fragment/#ref-for-range-collapsed:~:text=Let-,matchRange
-  Member<Range> match_range_;
+  // Member<Range> match_range_;
+  PositionInFlatTree match_range_start_;
+  PositionInFlatTree match_range_end_;
   // Used for running FindBuffer tasks.
   Member<FindBufferRunner> find_buffer_runner_;
 };

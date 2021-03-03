@@ -995,8 +995,4 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Enables link to text to be generated in advance.
-const base::Feature kPreemtiveLinkToTextGeneration{
-    "PreemtiveLinkToTextGeneration", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace features

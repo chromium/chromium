@@ -1552,8 +1552,8 @@ extern const char kEnableVulkanDescription[];
 extern const char kSharedHighlightingUseBlocklistName[];
 extern const char kSharedHighlightingUseBlocklistDescription[];
 
-extern const char kPreemtiveLinkToTextGenerationName[];
-extern const char kPreemtiveLinkToTextGenerationDescription[];
+extern const char kPreemptiveLinkToTextGenerationName[];
+extern const char kPreemptiveLinkToTextGenerationDescription[];
 
 // Android --------------------------------------------------------------------
 

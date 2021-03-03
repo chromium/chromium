@@ -4173,7 +4173,7 @@
     "expiry_milestone": 100
   },
   {
-    "name": "preemtive-link-to-text-generation",
+    "name": "preemptive-link-to-text-generation",
     "owners": [ "cheickcisse@google.com" ],
     "expiry_milestone": 92
   },

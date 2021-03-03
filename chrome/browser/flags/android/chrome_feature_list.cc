@@ -44,6 +44,7 @@
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_state/core/features.h"
+#include "components/shared_highlighting/core/common/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -103,7 +104,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,
     &features::kPredictivePrefetchingAllowedOnAllConnectionTypes,
-    &features::kPreemtiveLinkToTextGeneration,
+    &features::kPreemptiveLinkToTextGeneration,
     &features::kPrivacyReorderedAndroid,
     &features::kPrivacySandboxSettings,
     &features::kPrioritizeBootstrapTasks,

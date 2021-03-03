@@ -90,10 +90,13 @@ class ContextMenuControllerTest : public testing::Test {
 
   bool ShowContextMenu(const PhysicalOffset& location,
                        WebMenuSourceType source) {
-    return web_view_helper_.GetWebView()
-        ->GetPage()
-        ->GetContextMenuController()
-        .ShowContextMenu(GetDocument()->GetFrame(), location, source);
+    bool success =
+        web_view_helper_.GetWebView()
+            ->GetPage()
+            ->GetContextMenuController()
+            .ShowContextMenu(GetDocument()->GetFrame(), location, source);
+    base::RunLoop().RunUntilIdle();
+    return success;
   }
 
   bool ShowContextMenuForElement(Element* element, WebMenuSourceType source) {

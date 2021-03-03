@@ -131,7 +131,7 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures({ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION})
+    @Features.DisableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     public void onSelectorReadyTest() {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
                 mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
@@ -142,7 +142,7 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures({ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION})
+    @Features.DisableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     public void onSelectorReadyTest_EmptySelector() {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
                 mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
@@ -153,8 +153,8 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION})
-    public void onSelectorReadyTest_PreemtiveLinkToTextGeneration() {
+    @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    public void onSelectorReadyTest_PreemptiveLinkToTextGeneration() {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
                 mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         // OnSelectorReady should call back the share sheet.
@@ -164,8 +164,8 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION})
-    public void onSelectorReadyTest_EmptySelector_PreemtiveLinkToTextGeneration() {
+    @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    public void onSelectorReadyTest_EmptySelector_PreemptiveLinkToTextGeneration() {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
                 mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         // OnSelectorReady should call back the share sheet.
@@ -175,8 +175,8 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION})
-    public void showShareSheetTest_PreemtiveLinkToTextGeneration_LinkGeneration() {
+    @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    public void showShareSheetTest_PreemptiveLinkToTextGeneration_LinkGeneration() {
         ShareParams shareParams = new ShareParams.Builder(/*window=*/null, "", VISIBLE_URL)
                                           .setText(SELECTED_TEXT)
                                           .build();
@@ -189,8 +189,8 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION})
-    public void showShareSheetTest_EmptySelector_PreemtiveLinkToTextGeneration() {
+    @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    public void showShareSheetTest_EmptySelector_PreemptiveLinkToTextGeneration() {
         ShareParams shareParams = new ShareParams.Builder(/*window=*/null, "", VISIBLE_URL)
                                           .setText(SELECTED_TEXT)
                                           .build();

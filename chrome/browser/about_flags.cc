@@ -123,6 +123,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
+#include "components/shared_highlighting/core/common/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -3311,10 +3312,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionContentVerificationName,
      flag_descriptions::kExtensionContentVerificationDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kExtensionContentVerificationChoices)},
-    {"preemtive-link-to-text-generation",
-     flag_descriptions::kPreemtiveLinkToTextGenerationName,
-     flag_descriptions::kPreemtiveLinkToTextGenerationDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPreemtiveLinkToTextGeneration)},
+    {"preemptive-link-to-text-generation",
+     flag_descriptions::kPreemptiveLinkToTextGenerationName,
+     flag_descriptions::kPreemptiveLinkToTextGenerationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPreemptiveLinkToTextGeneration)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"keyboard-based-display-arrangement-in-settings",
      flag_descriptions::kKeyboardBasedDisplayArrangementInSettingsName,
