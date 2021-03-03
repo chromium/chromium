@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/canvas_image_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern.h"
+#include "third_party/blink/renderer/bindings/modules/v8/string_or_object.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
@@ -72,8 +73,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   String globalCompositeOperation() const;
   void setGlobalCompositeOperation(const String&);
 
-  String filter() const;
-  void setFilter(const ExecutionContext*, const String&);
+  void filter(StringOrObject&) const;
+  void setFilter(const ExecutionContext*, StringOrObject input);
 
   void save();
   void restore();

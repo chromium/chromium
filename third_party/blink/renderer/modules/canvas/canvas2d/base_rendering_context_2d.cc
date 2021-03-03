@@ -467,27 +467,31 @@ void BaseRenderingContext2D::setGlobalCompositeOperation(
   ModifiableState().SetGlobalComposite(sk_blend_mode);
 }
 
-String BaseRenderingContext2D::filter() const {
-  return GetState().UnparsedFilter();
+void BaseRenderingContext2D::filter(StringOrObject& filter) const {
+  filter.SetString(GetState().UnparsedFilter());
 }
 
 void BaseRenderingContext2D::setFilter(
     const ExecutionContext* execution_context,
-    const String& filter_string) {
-  if (filter_string == GetState().UnparsedFilter())
-    return;
+    StringOrObject input) {
+  if (input.IsString()) {
+    String filter_string = input.GetAsString();
 
-  const CSSValue* filter_value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kFilter, filter_string,
-      MakeGarbageCollected<CSSParserContext>(
-          kHTMLStandardMode, execution_context->GetSecureContextMode()));
+    if (filter_string == GetState().UnparsedFilter())
+      return;
 
-  if (!filter_value || filter_value->IsCSSWideKeyword())
-    return;
+    const CSSValue* filter_value = CSSParser::ParseSingleValue(
+        CSSPropertyID::kFilter, filter_string,
+        MakeGarbageCollected<CSSParserContext>(
+            kHTMLStandardMode, execution_context->GetSecureContextMode()));
 
-  ModifiableState().SetUnparsedFilter(filter_string);
-  ModifiableState().SetFilter(filter_value);
-  SnapshotStateForFilter();
+    if (!filter_value || filter_value->IsCSSWideKeyword())
+      return;
+
+    ModifiableState().SetUnparsedFilter(filter_string);
+    ModifiableState().SetFilter(filter_value);
+    SnapshotStateForFilter();
+  }
 }
 
 void BaseRenderingContext2D::scale(double sx, double sy) {
