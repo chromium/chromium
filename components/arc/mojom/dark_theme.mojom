@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Next method ID: 1
+interface DarkThemeInstance {
+  // Notifies ARC whether the Chrome dark theme is on/off.
+  DarkThemeStatus@0(bool active);
+};

@@ -19,6 +19,7 @@ import "components/arc/mojom/cast_receiver.mojom";
 import "components/arc/mojom/cert_store.mojom";
 import "components/arc/mojom/clipboard.mojom";
 import "components/arc/mojom/crash_collector.mojom";
+import "components/arc/mojom/dark_theme.mojom";
 import "components/arc/mojom/digital_goods.mojom";
 import "components/arc/mojom/disk_quota.mojom";
 import "components/arc/mojom/enterprise_reporting.mojom";
@@ -60,9 +61,9 @@ import "components/arc/mojom/volume_mounter.mojom";
 import "components/arc/mojom/wake_lock.mojom";
 import "components/arc/mojom/wallpaper.mojom";
 
-// Next MinVersion: 55
+// Next MinVersion: 56
 // Deprecated method IDs: 101, 105, 121
-// Next method ID: 160
+// Next method ID: 161
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -126,6 +127,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the CrashCollectorInstance interface is ready.
   [MinVersion=7] OnCrashCollectorInstanceReady@112(
       pending_remote<CrashCollectorInstance> instance_remote);
+
+  // Notifies Chrome that the DarkThemeInstance interface is ready.
+  [MinVersion=55] OnDarkThemeInstanceReady@160(
+      pending_remote<DarkThemeInstance> instance_remote);
 
   // Notifies Chrome that the DigitalGoodsInstance interface is ready.
   [MinVersion=51] OnDigitalGoodsInstanceReady@156(

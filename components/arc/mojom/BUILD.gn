@@ -28,6 +28,7 @@ if (is_chromeos_ash) {
       "cert_store.mojom",
       "clipboard.mojom",
       "crash_collector.mojom",
+      "dark_theme.mojom",
       "digital_goods.mojom",
       "disk_quota.mojom",
       "enterprise_reporting.mojom",

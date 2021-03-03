@@ -27,6 +27,7 @@
 #include "components/arc/mojom/cert_store.mojom.h"
 #include "components/arc/mojom/clipboard.mojom.h"
 #include "components/arc/mojom/crash_collector.mojom.h"
+#include "components/arc/mojom/dark_theme.mojom.h"
 #include "components/arc/mojom/digital_goods.mojom.h"
 #include "components/arc/mojom/disk_quota.mojom.h"
 #include "components/arc/mojom/enterprise_reporting.mojom.h"
@@ -170,6 +171,12 @@ void ArcBridgeHostImpl::OnCrashCollectorInstanceReady(
     mojo::PendingRemote<mojom::CrashCollectorInstance> crash_collector_remote) {
   OnInstanceReady(arc_bridge_service_->crash_collector(),
                   std::move(crash_collector_remote));
+}
+
+void ArcBridgeHostImpl::OnDarkThemeInstanceReady(
+    mojo::PendingRemote<mojom::DarkThemeInstance> dark_theme_remote) {
+  OnInstanceReady(arc_bridge_service_->dark_theme(),
+                  std::move(dark_theme_remote));
 }
 
 void ArcBridgeHostImpl::OnDigitalGoodsInstanceReady(
