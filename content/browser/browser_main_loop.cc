@@ -96,6 +96,7 @@
 #include "content/browser/webui/content_web_ui_controller_factory.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/skia_utils.h"
 #include "content/common/thread_pool_util.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -719,10 +720,17 @@ void BrowserMainLoop::PostMainMessageLoopStart() {
       base::trace_event::CPUFreqMonitor::GetInstance());
 #endif
 
-  // Enable memory-infra dump providers.
-  InitSkiaEventTracer();
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      skia::SkiaMemoryDumpProvider::GetInstance(), "Skia", nullptr);
+  if (UsingInProcessGpu()) {
+    // Make sure to limits for skia font cache are applied for in process
+    // gpu setup (crbug.com/1183230).
+    InitializeSkia();
+  } else {
+    // Just enable memory-infra dump providers
+    InitSkiaEventTracer();
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        skia::SkiaMemoryDumpProvider::GetInstance(), "Skia", nullptr);
+  }
+
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       sql::SqlMemoryDumpProvider::GetInstance(), "Sql", nullptr);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
