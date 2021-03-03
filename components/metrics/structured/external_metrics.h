@@ -32,7 +32,8 @@ class ExternalMetricsTest;
 // read/writes.
 class ExternalMetrics {
  public:
-  using MetricsCollectedCallback = base::RepeatingCallback<void(EventsProto)>;
+  using MetricsCollectedCallback =
+      base::RepeatingCallback<void(const EventsProto&)>;
 
   ExternalMetrics(const base::FilePath& events_directory,
                   const base::TimeDelta& collection_interval,
@@ -47,7 +48,6 @@ class ExternalMetrics {
   void ScheduleCollector();
   void CollectEventsAndReschedule();
   void CollectEvents();
-  void OnEventsCollected(EventsProto events);
 
   const base::FilePath events_directory_;
   const base::TimeDelta collection_interval_;

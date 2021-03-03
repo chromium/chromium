@@ -22,6 +22,7 @@ namespace metrics {
 namespace structured {
 
 class EventsProto;
+class ExternalMetrics;
 
 // StructuredMetricsProvider is responsible for filling out the
 // |structured_metrics_event| section of the UMA proto. This class should not be
@@ -85,6 +86,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void OnKeyDataInitialized();
   void OnRead(ReadStatus status);
   void OnWrite(WriteStatus status);
+  void OnExternalMetricsCollected(const EventsProto& events);
 
   // Recorder::Observer:
   void OnProfileAdded(const base::FilePath& profile_path) override;
@@ -134,6 +136,9 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // indicate events should be deleted from disk when |events_| is initialized.
   // See OnRecordingDisabled for more information.
   bool wipe_events_on_init_ = false;
+
+  // Periodically reports metrics from cros.
+  std::unique_ptr<ExternalMetrics> external_metrics_;
 
   // On-device storage within the user's cryptohome for unsent logs.
   std::unique_ptr<PersistentProto<EventsProto>> events_;

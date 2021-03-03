@@ -10,7 +10,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/task/current_thread.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -49,16 +48,16 @@ EventsProto ReadAndDeleteEvents(const base::FilePath& directory) {
 
     bool read_ok = base::ReadFileToString(path, &proto_str) &&
                    proto.ParseFromString(proto_str);
-    base::DeleteFile(path);
     file.Unlock();
+    base::DeleteFile(path);
 
     if (!read_ok)
       continue;
 
     // MergeFrom performs a copy that could be a move if done manually. But all
     // the protos here are expected to be small, so let's keep it simple.
-    result.mutable_uma_events()->MergeFrom(*proto.mutable_uma_events());
-    result.mutable_non_uma_events()->MergeFrom(*proto.mutable_non_uma_events());
+    result.mutable_uma_events()->MergeFrom(proto.uma_events());
+    result.mutable_non_uma_events()->MergeFrom(proto.non_uma_events());
   }
 
   return result;
@@ -86,8 +85,8 @@ void ExternalMetrics::CollectEventsAndReschedule() {
 }
 
 void ExternalMetrics::ScheduleCollector() {
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&ExternalMetrics::CollectEventsAndReschedule,
                      weak_factory_.GetWeakPtr()),
       collection_interval_);
@@ -96,13 +95,7 @@ void ExternalMetrics::ScheduleCollector() {
 void ExternalMetrics::CollectEvents() {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ReadAndDeleteEvents, events_directory_),
-      base::BindOnce(&ExternalMetrics::OnEventsCollected,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void ExternalMetrics::OnEventsCollected(EventsProto events) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback_, std::move(events)));
+      base::BindOnce(callback_));
 }
 
 }  // namespace structured

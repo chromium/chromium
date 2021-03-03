@@ -435,5 +435,7 @@ TEST_F(StructuredMetricsProviderTest,
   EXPECT_EQ(GetSessionData().events_size(), 0);
 }
 
+// TODO(crbug.com/1148168): Add a unit test for external metrics.
+
 }  // namespace structured
 }  // namespace metrics

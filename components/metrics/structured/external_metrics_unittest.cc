@@ -71,7 +71,9 @@ class ExternalMetricsTest : public testing::Test {
     CHECK(proto_.has_value());
   }
 
-  void OnEventsCollected(EventsProto proto) { proto_ = std::move(proto); }
+  void OnEventsCollected(const EventsProto& proto) {
+    proto_ = std::move(proto);
+  }
 
   void WriteToDisk(const std::string& name, const EventsProto& proto) {
     CHECK(base::WriteFile(temp_dir_.GetPath().Append(name),

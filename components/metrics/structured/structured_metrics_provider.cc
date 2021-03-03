@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
+#include "components/metrics/structured/external_metrics.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -21,6 +22,12 @@ using ::metrics::ChromeUserMetricsExtension;
 
 // The delay period for the PersistentProto.
 constexpr int kSaveDelayMs = 1000;
+
+// The interval between chrome's collection of metrics logged from cros.
+constexpr int kExternalMetricsIntervalMins = 10;
+
+// Directory containing serialized event protos to read.
+constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/";
 
 }  // namespace
 
@@ -35,6 +42,14 @@ StructuredMetricsProvider::StructuredMetricsProvider() {
 StructuredMetricsProvider::~StructuredMetricsProvider() {
   Recorder::GetInstance()->RemoveObserver(this);
   DCHECK(!IsInObserverList());
+}
+
+void StructuredMetricsProvider::OnExternalMetricsCollected(
+    const EventsProto& events) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  events_.get()->get()->mutable_uma_events()->MergeFrom(events.uma_events());
+  events_.get()->get()->mutable_non_uma_events()->MergeFrom(
+      events.non_uma_events());
 }
 
 void StructuredMetricsProvider::OnKeyDataInitialized() {
@@ -118,6 +133,13 @@ void StructuredMetricsProvider::OnProfileAdded(
                      weak_factory_.GetWeakPtr()),
       base::BindRepeating(&StructuredMetricsProvider::OnWrite,
                           weak_factory_.GetWeakPtr()));
+
+  external_metrics_ = std::make_unique<ExternalMetrics>(
+      base::FilePath(kExternalMetricsDir),
+      base::TimeDelta::FromMinutes(kExternalMetricsIntervalMins),
+      base::BindRepeating(
+          &StructuredMetricsProvider::OnExternalMetricsCollected,
+          weak_factory_.GetWeakPtr()));
 
   // See OnRecordingDisabled for more information.
   if (wipe_events_on_init_) {
