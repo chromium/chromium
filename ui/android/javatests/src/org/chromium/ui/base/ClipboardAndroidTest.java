@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -44,6 +45,7 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1184226 ClipboardManager#setPrimaryClip not applying.")
     public void internalClipboardInvalidation() {
         // Write to the clipboard in native and ensure that is propagated to the platform clipboard.
         final String originalText = "foo";
