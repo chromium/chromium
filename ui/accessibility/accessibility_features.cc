@@ -95,7 +95,7 @@ bool IsMagnifierNewFocusFollowingEnabled() {
 }
 
 const base::Feature kMagnifierPanningImprovements{
-    "MagnifierPanningImprovements", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MagnifierPanningImprovements", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsMagnifierPanningImprovementsEnabled() {
   return base::FeatureList::IsEnabled(
