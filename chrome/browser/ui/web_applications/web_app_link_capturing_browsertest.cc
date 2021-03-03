@@ -84,14 +84,34 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
                      LinkTarget::SELF, "");
   }
 
-  void ExpectTabs(Browser* browser, std::vector<GURL> urls) {
-    TabStripModel& tab_strip = *browser->tab_strip_model();
+  void ExpectTabs(Browser* test_browser, std::vector<GURL> urls) {
+    std::string debug_info = "\nOpen browsers:\n";
+    for (Browser* open_browser : *BrowserList::GetInstance()) {
+      debug_info += "  ";
+      if (open_browser == browser())
+        debug_info += "Main browser";
+      else if (open_browser->app_controller())
+        debug_info += "App browser";
+      else
+        debug_info += "Browser";
+      debug_info += ":\n";
+      for (int i = 0; i < open_browser->tab_strip_model()->count(); ++i) {
+        debug_info += "   - " +
+                      open_browser->tab_strip_model()
+                          ->GetWebContentsAt(i)
+                          ->GetVisibleURL()
+                          .spec() +
+                      "\n";
+      }
+    }
+    SCOPED_TRACE(debug_info);
+    TabStripModel& tab_strip = *test_browser->tab_strip_model();
     ASSERT_EQ(static_cast<size_t>(tab_strip.count()), urls.size());
     for (int i = 0; i < tab_strip.count(); ++i) {
       SCOPED_TRACE(base::StringPrintf("is app browser: %d, tab index: %d",
-                                      bool(browser->app_controller()), i));
+                                      bool(test_browser->app_controller()), i));
       EXPECT_EQ(
-          browser->tab_strip_model()->GetWebContentsAt(i)->GetVisibleURL(),
+          test_browser->tab_strip_model()->GetWebContentsAt(i)->GetVisibleURL(),
           urls[i]);
     }
   }
