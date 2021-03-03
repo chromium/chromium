@@ -96,9 +96,6 @@ constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
 // Attachments (Plugin -> Page)
 constexpr char kJSAttachmentsType[] = "attachments";
 constexpr char kJSAttachmentsData[] = "attachmentsData";
-// Bookmarks (Plugin -> Page)
-constexpr char kJSBookmarksType[] = "bookmarks";
-constexpr char kJSBookmarksData[] = "bookmarksData";
 // Metadata (Plugin -> Page)
 constexpr char kJSMetadataType[] = "metadata";
 constexpr char kJSMetadataData[] = "metadataData";
@@ -1769,19 +1766,6 @@ void OutOfProcessInstance::SendAttachments() {
   attachments_message.Set(pp::Var(kJSAttachmentsData), attachments);
 
   PostMessage(attachments_message);
-}
-
-void OutOfProcessInstance::SendBookmarks() {
-  base::Value bookmarks = engine()->GetBookmarks();
-  DCHECK(bookmarks.is_list());
-  if (bookmarks.GetList().empty())
-    return;
-
-  pp::VarDictionary bookmarks_message;
-  bookmarks_message.Set(pp::Var(kType), pp::Var(kJSBookmarksType));
-  bookmarks_message.Set(pp::Var(kJSBookmarksData), VarFromValue(bookmarks));
-
-  PostMessage(bookmarks_message);
 }
 
 void OutOfProcessInstance::SendMetadata() {

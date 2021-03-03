@@ -247,6 +247,17 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
   (this->*handler)(message);
 }
 
+void PdfViewPluginBase::SendBookmarks() {
+  base::Value bookmarks = engine()->GetBookmarks();
+  if (bookmarks.GetList().empty())
+    return;
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "bookmarks");
+  message.SetKey("bookmarksData", std::move(bookmarks));
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::SendLoadingProgress(double percentage) {
   DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
 

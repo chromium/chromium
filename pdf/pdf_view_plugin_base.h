@@ -136,6 +136,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // non-blocking.
   virtual void SendMessage(base::Value message) = 0;
 
+  // Sends the bookmarks data.
+  void SendBookmarks();
+
   // Sends the loading progress, where `percentage` represents the progress, or
   // -1 for loading error.
   void SendLoadingProgress(double percentage);

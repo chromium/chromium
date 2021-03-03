@@ -231,9 +231,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Send attachments.
   void SendAttachments();
 
-  // Send bookmarks.
-  void SendBookmarks();
-
   // Send document metadata.
   void SendMetadata();
 
