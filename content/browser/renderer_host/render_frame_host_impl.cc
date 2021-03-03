@@ -195,6 +195,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
@@ -2908,9 +2909,7 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     if (top_frame_site != cur_site) {
       party_context.insert(cur_site);
     }
-    if (!candidate_site_for_cookies.IsEquivalent(net::SiteForCookies(cur_site)))
-      candidate_site_for_cookies = net::SiteForCookies();
-    candidate_site_for_cookies.MarkIfCrossScheme(cur_origin);
+    candidate_site_for_cookies.CompareWithFrameTreeSiteAndRevise(cur_site);
   }
 
   return net::IsolationInfo::Create(request_type, top_frame_origin,
