@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/peripheral_battery_listener.h"
+#include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -17,6 +18,8 @@ namespace ash {
 class ASH_EXPORT StylusBatteryDelegate
     : public PeripheralBatteryListener::Observer {
  public:
+  using Callback = base::RepeatingCallback<void()>;
+
   StylusBatteryDelegate();
   StylusBatteryDelegate(const StylusBatteryDelegate& other) = delete;
   StylusBatteryDelegate& operator=(const StylusBatteryDelegate& other) = delete;
@@ -25,6 +28,8 @@ class ASH_EXPORT StylusBatteryDelegate
   SkColor GetColorForBatteryLevel() const;
   gfx::ImageSkia GetBatteryImage() const;
   gfx::ImageSkia GetBatteryStatusUnknownImage() const;
+  void SetBatteryUpdateCallback(Callback battery_update_callback);
+  bool IsBatteryCharging() const;
   bool IsBatteryLevelLow() const;
   bool IsBatteryStatusStale() const;
   bool ShouldShowBatteryStatus() const;
@@ -45,6 +50,7 @@ class ASH_EXPORT StylusBatteryDelegate
   base::Optional<uint8_t> battery_level_;
   base::Optional<base::TimeTicks> last_update_timestamp_;
 
+  Callback battery_update_callback_;
   base::ScopedObservation<PeripheralBatteryListener,
                           PeripheralBatteryListener::Observer>
       battery_observation_{this};

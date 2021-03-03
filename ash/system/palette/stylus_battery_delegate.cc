@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/power/peripheral_battery_listener.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/strings/string16.h"
@@ -32,7 +33,7 @@ StylusBatteryDelegate::StylusBatteryDelegate() {
 StylusBatteryDelegate::~StylusBatteryDelegate() = default;
 
 SkColor StylusBatteryDelegate::GetColorForBatteryLevel() const {
-  if (battery_level_ <= kStylusLowBatteryThreshold) {
+  if (battery_level_ <= kStylusLowBatteryThreshold && !IsBatteryCharging()) {
     return AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorAlert);
   }
@@ -44,12 +45,8 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
   PowerStatus::BatteryImageInfo info;
   info.charge_percent = battery_level_.value_or(0);
 
-  if (battery_charge_status_ ==
-          PeripheralBatteryListener::BatteryInfo::ChargeStatus::kCharging ||
-      battery_charge_status_ ==
-          PeripheralBatteryListener::BatteryInfo::ChargeStatus::kFull) {
+  if (IsBatteryCharging())
     info.icon_badge = &kUnifiedMenuBatteryBoltIcon;
-  }
 
   const SkColor icon_fg_color = GetColorForBatteryLevel();
   const SkColor icon_bg_color = AshColorProvider::Get()->GetBackgroundColor();
@@ -63,6 +60,18 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryStatusUnknownImage() const {
       AshColorProvider::ContentLayerType::kIconColorPrimary);
 
   return gfx::CreateVectorIcon(kStylusBatteryStatusUnknownIcon, icon_color);
+}
+
+void StylusBatteryDelegate::SetBatteryUpdateCallback(
+    Callback battery_update_callback) {
+  battery_update_callback_ = std::move(battery_update_callback);
+}
+
+bool StylusBatteryDelegate::IsBatteryCharging() const {
+  return battery_charge_status_ ==
+             PeripheralBatteryListener::BatteryInfo::ChargeStatus::kCharging ||
+         battery_charge_status_ ==
+             PeripheralBatteryListener::BatteryInfo::ChargeStatus::kFull;
 }
 
 bool StylusBatteryDelegate::IsBatteryLevelLow() const {
@@ -86,6 +95,7 @@ void StylusBatteryDelegate::OnAddingBattery(
   battery_level_ = battery.level;
   battery_charge_status_ = battery.charge_status;
   last_update_timestamp_ = battery.last_update_timestamp;
+  battery_update_callback_.Run();
 }
 
 void StylusBatteryDelegate::OnRemovingBattery(
@@ -96,6 +106,7 @@ void StylusBatteryDelegate::OnUpdatedBatteryLevel(
   battery_level_ = battery.level;
   battery_charge_status_ = battery.charge_status;
   last_update_timestamp_ = battery.last_update_timestamp;
+  battery_update_callback_.Run();
 }
 
 }  // namespace ash
