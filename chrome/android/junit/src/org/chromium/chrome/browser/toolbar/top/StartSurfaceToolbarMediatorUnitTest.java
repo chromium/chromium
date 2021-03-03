@@ -713,6 +713,11 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
         assertEquals(mPropertyModel.get(TAB_SWITCHER_BUTTON_IS_VISIBLE), true);
+
+        mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
+        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+        assertEquals(mPropertyModel.get(TAB_SWITCHER_BUTTON_IS_VISIBLE), false);
     }
 
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs) {
