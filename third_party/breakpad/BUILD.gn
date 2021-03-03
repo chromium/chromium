@@ -278,7 +278,7 @@ if (!is_win) {
 
 if (is_mac) {
   if (current_toolchain == host_toolchain) {
-    executable("dump_syms") {
+    source_set("common") {
       sources = [
         "breakpad/src/common/dwarf/bytereader.cc",
         "breakpad/src/common/dwarf/dwarf2diehandler.cc",
@@ -307,24 +307,31 @@ if (is_mac) {
         "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/common/stabs_reader.cc",
         "breakpad/src/common/stabs_to_module.cc",
-        "breakpad/src/tools/mac/dump_syms/dump_syms_tool.cc",
       ]
-
-      # For breakpad/src/common/stabs_reader.h.
-      defines = [ "HAVE_MACH_O_NLIST_H" ]
       include_dirs = [ "breakpad/src/common/mac" ]
+
+      configs += [ ":internal_config" ]
 
       # The DWARF utilities require -funsigned-char.
       cflags = [ "-funsigned-char" ]
 
-      configs += [ ":internal_config" ]
+      # dwarf2reader.cc uses dynamic_cast.
+      configs -= [ "//build/config/compiler:no_rtti" ]
+      configs += [ "//build/config/compiler:rtti" ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
 
-      # dwarf2reader.cc uses dynamic_cast.
-      configs -= [ "//build/config/compiler:no_rtti" ]
-      configs += [ "//build/config/compiler:rtti" ]
+      # For breakpad/src/common/stabs_reader.h.
+      defines = [ "HAVE_MACH_O_NLIST_H" ]
+    }
+
+    executable("dump_syms") {
+      sources = [ "breakpad/src/tools/mac/dump_syms/dump_syms_tool.cc" ]
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+
+      configs += [ ":internal_config" ]
 
       frameworks = [ "Foundation.framework" ]
 
@@ -334,8 +341,10 @@ if (is_mac) {
         # at -O0 until this can be sorted out.
         # https://crbug.com/google-breakpad/329
         configs -= [ "//build/config/compiler:default_optimization" ]
-        cflags += [ "-O0" ]
+        cflags = [ "-O0" ]
       }
+
+      deps = [ ":common" ]
     }
 
     executable("symupload") {
@@ -347,15 +356,19 @@ if (is_mac) {
         "breakpad/src/common/mac/HTTPSimplePostRequest.m",
         "breakpad/src/common/mac/SymbolCollectorClient.m",
         "breakpad/src/common/mac/encoding_util.m",
-        "breakpad/src/tools/mac/symupload/symupload.m",
+        "breakpad/src/tools/mac/symupload/symupload.mm",
       ]
 
       include_dirs = [ "breakpad/src/common/mac" ]
+
+      configs += [ ":internal_config" ]
 
       frameworks = [ "Foundation.framework" ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
+
+      deps = [ ":common" ]
     }
   } else {
     binary_symlink("dump_syms") {
