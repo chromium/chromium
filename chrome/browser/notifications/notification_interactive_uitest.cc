@@ -11,12 +11,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -96,10 +94,7 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
 // selects it when requesting one via navigator.mediaDevices.getDisplayMedia().
 class NotificationsTestWithFakeMediaStream : public NotificationsTest {
  public:
-  NotificationsTestWithFakeMediaStream() {
-    feature_list_.InitAndEnableFeature(
-        features::kMuteNotificationsDuringScreenShare);
-  }
+  NotificationsTestWithFakeMediaStream() = default;
   ~NotificationsTestWithFakeMediaStream() override = default;
 
   // InProcessBrowserTest:
@@ -111,9 +106,6 @@ class NotificationsTestWithFakeMediaStream : public NotificationsTest {
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Entire screen");
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 #endif  // !defined(OS_ANDROID)
 

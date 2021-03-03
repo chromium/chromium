@@ -6872,14 +6872,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSeparatePointingStickSettings)},
 #endif
 
-#if !defined(OS_ANDROID)
-    {"mute-notifications-during-screen-share",
-     flag_descriptions::kMuteNotificationsDuringScreenShareName,
-     flag_descriptions::kMuteNotificationsDuringScreenShareDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kMuteNotificationsDuringScreenShare)},
-#endif  // !defined(OS_ANDROID)
-
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \

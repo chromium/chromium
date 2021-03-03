@@ -41,11 +41,6 @@ const base::Feature kDoubleTapToZoomInTabletMode{
 // selected text highlighted.
 const base::Feature kCopyLinkToText{"CopyLinkToText",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables notification muting during screen share sessions.
-const base::Feature kMuteNotificationsDuringScreenShare{
-    "MuteNotificationsDuringScreenShare", base::FEATURE_ENABLED_BY_DEFAULT};
-
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
