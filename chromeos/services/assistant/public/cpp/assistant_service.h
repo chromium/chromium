@@ -96,9 +96,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
   virtual void OnSuggestionsResponse(
       const std::vector<AssistantSuggestion>& response) {}
 
-  // Assistant got text response from server.
-  virtual void OnTextResponse(const std::string& response) {}
-
   // Assistant got open URL response from server. |in_background| refers to
   // being in background of Assistant UI, not in background of browser.
   virtual void OnOpenUrlResponse(const GURL& url, bool in_background) {}

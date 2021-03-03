@@ -18,6 +18,9 @@ interface ConversationObserver{
   // Assistant got Html response with fallback text from server.
   // Note that fallback message is always empty since it has been deprecated.
   OnHtmlResponse(string response, string fallback);
+
+  // Assistant received text response from Libassistant.
+  OnTextResponse(string response);
 };
 
 enum AssistantInteractionResolution {

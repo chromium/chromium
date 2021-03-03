@@ -13,8 +13,10 @@
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/service_controller.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -162,6 +164,22 @@ void ConversationController::OnShowHtml(const std::string& html_content,
 
   for (auto& observer : observers_)
     observer->OnHtmlResponse(html_content, fallback);
+}
+
+// Called from Libassistant thread.
+void ConversationController::OnShowText(const std::string& text) {
+  ENSURE_MOJOM_THREAD(&ConversationController::OnShowText, text);
+
+  for (auto& observer : observers_)
+    observer->OnTextResponse(text);
+}
+
+// Called from Libassistant thread.
+// Note that we should deprecate this API when the server provides a fallback.
+void ConversationController::OnShowContextualQueryFallback() {
+  // Show fallback message.
+  OnShowText(l10n_util::GetStringUTF8(
+      IDS_ASSISTANT_SCREEN_CONTEXT_QUERY_FALLBACK_TEXT));
 }
 
 void ConversationController::SendVoicelessInteraction(

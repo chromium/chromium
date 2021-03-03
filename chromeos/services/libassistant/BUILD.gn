@@ -83,6 +83,7 @@ source_set("internal") {
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/assistant/public/proto",
     "//chromeos/services/libassistant/public/mojom",
+    "//chromeos/strings:strings_grit",
     "//libassistant/shared/internal_api:assistant_manager_internal",
     "//libassistant/shared/internal_api:fuchsia_api_helper",
     "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",

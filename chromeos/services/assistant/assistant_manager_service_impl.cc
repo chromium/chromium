@@ -569,6 +569,10 @@ void AssistantManagerServiceImpl::OnHtmlResponse(const std::string& html,
   receive_inline_response_ = true;
 }
 
+void AssistantManagerServiceImpl::OnTextResponse(const std::string& reponse) {
+  receive_inline_response_ = true;
+}
+
 void AssistantManagerServiceImpl::OnScheduleWait(int id, int time_ms) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnScheduleWait, id, time_ms);
   DCHECK(features::IsWaitSchedulingEnabled());
@@ -593,13 +597,6 @@ void AssistantManagerServiceImpl::OnScheduleWait(int id, int time_ms) {
     it.OnWaitStarted();
 }
 
-// TODO(b/113541754): Deprecate this API when the server provides a fallback.
-void AssistantManagerServiceImpl::OnShowContextualQueryFallback() {
-  // Show fallback text.
-  OnShowText(l10n_util::GetStringUTF8(
-      IDS_ASSISTANT_SCREEN_CONTEXT_QUERY_FALLBACK_TEXT));
-}
-
 void AssistantManagerServiceImpl::OnShowSuggestions(
     const std::vector<action::Suggestion>& suggestions) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnShowSuggestions,
@@ -617,15 +614,6 @@ void AssistantManagerServiceImpl::OnShowSuggestions(
 
   for (auto& it : interaction_subscribers_)
     it.OnSuggestionsResponse(result);
-}
-
-void AssistantManagerServiceImpl::OnShowText(const std::string& text) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnShowText, text);
-
-  receive_inline_response_ = true;
-
-  for (auto& it : interaction_subscribers_)
-    it.OnTextResponse(text);
 }
 
 void AssistantManagerServiceImpl::OnOpenUrl(const std::string& url,

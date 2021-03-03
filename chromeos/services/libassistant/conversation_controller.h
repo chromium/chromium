@@ -62,9 +62,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void AddRemoteObserver(
       mojo::PendingRemote<mojom::ConversationObserver> observer) override;
 
-  // ::chromeos::assistant::action::AssistantActionObserver
+  // chromeos::assistant::action::AssistantActionObserver:
   void OnShowHtml(const std::string& html_content,
                   const std::string& fallback) override;
+  void OnShowText(const std::string& text) override;
+  void OnShowContextualQueryFallback() override;
 
   const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
     return &observers_;

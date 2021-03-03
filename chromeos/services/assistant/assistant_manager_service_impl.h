@@ -178,10 +178,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   // AssistantActionObserver overrides:
   void OnScheduleWait(int id, int time_ms) override;
-  void OnShowContextualQueryFallback() override;
   void OnShowSuggestions(
       const std::vector<action::Suggestion>& suggestions) override;
-  void OnShowText(const std::string& text) override;
   void OnOpenUrl(const std::string& url, bool in_background) override;
   void OnShowNotification(const action::Notification& notification) override;
   void OnOpenAndroidApp(const AndroidAppInfo& app_info,
@@ -199,6 +197,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       AssistantInteractionResolution resolution) override;
   void OnHtmlResponse(const std::string& response,
                       const std::string& fallback) override;
+  void OnTextResponse(const std::string& reponse) override;
 
   // AssistantManagerDelegate overrides:
   void OnConversationTurnStartedInternal(

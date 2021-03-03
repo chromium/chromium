@@ -35,6 +35,11 @@ class CrosActionModuleHelper {
       observer->OnShowHtml(html, /*fallback=*/"");
   }
 
+  void ShowText(const std::string& text) {
+    for (auto* observer : action_observers())
+      observer->OnShowText(text);
+  }
+
  private:
   const std::vector<assistant::action::AssistantActionObserver*>&
   action_observers() {
@@ -59,6 +64,7 @@ class ConversationObserverMock : public mojom::ConversationObserver {
   MOCK_METHOD(void,
               OnHtmlResponse,
               (const std::string& response, const std::string& fallback));
+  MOCK_METHOD(void, OnTextResponse, (const std::string& text));
 
   mojo::PendingRemote<mojom::ConversationObserver> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -153,6 +159,14 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnHtmlResponse) {
 
   // Fallback is always empty since it has been deprecated.
   action_module_helper().ShowHtml(/*html=*/fake_html);
+  observer_mock().FlushForTesting();
+}
+
+TEST_F(ConversationObserverTest, ShouldReceiveOnTextResponse) {
+  const std::string fake_text = "I'm a text response";
+  EXPECT_CALL(observer_mock(), OnTextResponse(fake_text));
+
+  action_module_helper().ShowText(fake_text);
   observer_mock().FlushForTesting();
 }
 
