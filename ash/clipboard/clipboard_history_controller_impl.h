@@ -19,6 +19,10 @@
 #include "base/optional.h"
 #include "base/timer/timer.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -128,8 +132,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // clipboard data should be pasted.
   void PasteMenuItemData(int command_id, bool paste_plain_text);
 
-  // Pastes the specified clipboard history item.
-  void PasteClipboardHistoryItem(const ClipboardHistoryItem& item,
+  // Pastes the specified clipboard history item, if |intended_window| matches
+  // the active window.
+  void PasteClipboardHistoryItem(aura::Window* intended_window,
+                                 ClipboardHistoryItem item,
                                  bool paste_plain_text);
 
   // Delete the menu item being selected and its corresponding data. If no item
