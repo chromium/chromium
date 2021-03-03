@@ -5751,3 +5751,6 @@ crbug.com/1145610 virtual/portals/http/tests/devtools/portals/portals-elements-n
 
 # Temporarily disabled for https://crrev.com/c/2713104
 crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass Failure ]
+
+# Sheriff 2021-03-03
+crbug.com/1181007 [ Linux ] http/tests/serviceworker/window-close-during-registration.html [ Pass Failure ]
