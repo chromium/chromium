@@ -209,9 +209,6 @@ extern const char kPaymentMethodsLearnMoreURL[];
 // "Learn more" URL for the Privacy section under Options.
 extern const char kPrivacyLearnMoreURL[];
 
-// "Learn more" URL for the privacy sandbox.
-extern const char kPrivacySandboxURL[];
-
 // The URL for the Learn More link of the non-CWS bubble.
 extern const char kRemoveNonCWSExtensionURL[];
 

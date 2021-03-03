@@ -1468,13 +1468,15 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
     };
     html_source->AddLocalizedStrings(kLocalizedStringsBehindFlag);
 
-    html_source->AddString("privacySandboxURL", chrome::kPrivacySandboxURL);
-
-    // TODO(crbug/1152336): Replace with the target URL once it's available.
-    html_source->AddString("privacySandboxPageExplanation4",
-                           l10n_util::GetStringFUTF16(
-                               IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION4,
-                               base::ASCIIToUTF16(chrome::kPrivacySandboxURL)));
+    // TODO(crbug/1152336): Solidify the final URL in code once the website is
+    // launched.
+    html_source->AddString("privacySandboxURL",
+                           features::kPrivacySandboxSettingsURL.Get());
+    html_source->AddString(
+        "privacySandboxPageExplanation4",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION4,
+            base::ASCIIToUTF16(features::kPrivacySandboxSettingsURL.Get())));
   }
 }
 
