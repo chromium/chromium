@@ -232,7 +232,9 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
                           /* onboarding_shown = */ true,
                           /* is_direct_action = */ true,
                           /* caller_account_hash = */
-                          "account_hash"));
+                          "account_hash",
+                          /* initial_url = */ "https://www.example.com",
+                          /* username = */ "fake_username"));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, StopOnBackendRequestFailed) {

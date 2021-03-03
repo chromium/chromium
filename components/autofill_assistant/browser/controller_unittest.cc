@@ -419,16 +419,14 @@ TEST_F(ControllerTest, RunDirectActionWithArguments) {
         std::move(callback).Run(true, "");
       }));
 
+  TriggerContext::Options options;
+  options.is_direct_action = true;
   EXPECT_TRUE(controller_->PerformUserActionWithContext(
       0, std::make_unique<TriggerContext>(
              /* parameters = */ std::make_unique<ScriptParameters>(
                  std::map<std::string, std::string>{{"required", "value"},
                                                     {"arg0", "value0"}}),
-             /* experiment_ids = */ std::string(),
-             /* is_cct = */ false,
-             /* onboarding_shown = */ false,
-             /* is_direct_action = */ true,
-             /* caller_account_hash = */ std::string())));
+             options)));
 }
 
 TEST_F(ControllerTest, NoScripts) {

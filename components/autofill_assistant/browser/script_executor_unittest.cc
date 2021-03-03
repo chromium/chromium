@@ -57,13 +57,15 @@ class ScriptExecutorTest : public testing::Test,
     delegate_.SetWebController(&mock_web_controller_);
     delegate_.SetCurrentURL(GURL("http://example.com/"));
 
+    TriggerContext::Options options;
+    options.experiment_ids = "additional_exp";
     executor_ = std::make_unique<ScriptExecutor>(
         kScriptPath,
         std::make_unique<TriggerContext>(
             std::make_unique<ScriptParameters>(
                 std::map<std::string, std::string>{
                     {"additional_param", "additional_param_value"}}),
-            TriggerContext::Options{.experiment_ids = "additional_exp"}),
+            options),
         /* global_payload= */ "initial global payload",
         /* script_payload= */ "initial payload",
         /* listener= */ this, &scripts_state_, &ordered_interrupts_,
@@ -191,10 +193,12 @@ TEST_F(ScriptExecutorTest, GetActionsFails) {
 }
 
 TEST_F(ScriptExecutorTest, ForwardParameters) {
+  TriggerContext::Options options;
+  options.experiment_ids = "exp";
   delegate_.SetTriggerContext(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
           std::map<std::string, std::string>{{"param", "value"}}),
-      TriggerContext::Options{.experiment_ids = "exp"}));
+      options));
   EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
       .WillOnce(Invoke([](const std::string& script_path, const GURL& url,
                           const TriggerContext& trigger_context,
@@ -2005,13 +2009,10 @@ TEST_F(ScriptExecutorTest, ReportDirectActionsChoices) {
 
   ASSERT_NE(nullptr, delegate_.GetUserActions());
   ASSERT_THAT(*delegate_.GetUserActions(), SizeIs(1));
+  TriggerContext::Options options;
+  options.is_direct_action = true;
   (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>(
-      /* parameters = */ std::make_unique<ScriptParameters>(),
-      /* experiment_ids = */ std::string(),
-      /* is_cct = */ false,
-      /* onboarding_shown = */ false,
-      /* is_direct_action = */ true,
-      /* caller_account_hash = */ std::string()));
+      std::make_unique<ScriptParameters>(), options));
 
   ASSERT_THAT(processed_actions_capture, SizeIs(1));
   EXPECT_TRUE(processed_actions_capture[0].direct_action());

@@ -35,8 +35,10 @@ class StaticTriggerConditionsTest : public testing::Test {
 };
 
 TEST_F(StaticTriggerConditionsTest, Init) {
+  TriggerContext::Options options;
+  options.experiment_ids = "1,2,4";
   TriggerContext trigger_context = {std::make_unique<ScriptParameters>(),
-                                    {.experiment_ids = "1,2,4"}};
+                                    options};
   EXPECT_CALL(mock_is_first_time_user_callback_, Run).WillOnce(Return(true));
   EXPECT_CALL(mock_website_login_manager_, OnGetLoginsForUrl(GURL(kFakeUrl), _))
       .WillOnce(RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{

@@ -75,6 +75,14 @@ const std::map<std::string, std::string> kBase64TriggerScript = {
     {"START_IMMEDIATELY", "false"},
     {"TRIGGER_SCRIPTS_BASE64", "abc"}};
 
+const TriggerContext::Options kDefaultCCTOptions = {
+    std::string(), /* is_cct = */ true, false,        false,
+    std::string(), std::string(),       std::string()};
+
+const TriggerContext::Options kDefaultNonCCTOptions = {
+    std::string(), /* is_cct = */ false, false,        false,
+    std::string(), std::string(),        std::string()};
+
 // The set of feature combinations to test.
 const TestFeatureConfig kTestFeatureConfigs[] = {
     // All features are disabled.
@@ -170,7 +178,7 @@ TEST_P(StartupUtilTest, StartRegularScript) {
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{std::make_unique<ScriptParameters>(kRegularScript),
-                         {.is_cct = true}},
+                         kDefaultCCTOptions},
           {.feature_module_installed = false}),
       MatchingStartupMode(IsFeatureEnabled(kAutofillAssistant)
                               ? StartupMode::START_REGULAR
@@ -180,7 +188,7 @@ TEST_P(StartupUtilTest, StartRegularScript) {
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{std::make_unique<ScriptParameters>(kRegularScript),
-                         {.is_cct = false}},
+                         kDefaultNonCCTOptions},
           {.feature_module_installed = false}),
       MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant,
                                               kAutofillAssistantChromeEntry})
@@ -191,7 +199,7 @@ TEST_P(StartupUtilTest, StartRegularScript) {
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{std::make_unique<ScriptParameters>(kRegularScript),
-                         {.is_cct = false}},
+                         kDefaultNonCCTOptions},
           {.feature_module_installed = true}),
       MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant,
                                               kAutofillAssistantChromeEntry})
@@ -205,7 +213,7 @@ TEST_P(StartupUtilTest, StartRpcTriggerScript) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(kRequestTriggerScript),
-              {.is_cct = true}},
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = true,
            .feature_module_installed = true}),
@@ -219,7 +227,7 @@ TEST_P(StartupUtilTest, StartRpcTriggerScript) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(kRequestTriggerScript),
-              {.is_cct = false}},
+              kDefaultNonCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = true,
            .feature_module_installed = false}),
@@ -234,7 +242,7 @@ TEST_P(StartupUtilTest, StartRpcTriggerScript) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(kRequestTriggerScript),
-              {.is_cct = true}},
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = false,
            .proactive_help_setting_enabled = true,
            .feature_module_installed = true}),
@@ -248,7 +256,7 @@ TEST_P(StartupUtilTest, StartRpcTriggerScript) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(kRequestTriggerScript),
-              {.is_cct = true}},
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = false,
            .feature_module_installed = true}),
@@ -264,7 +272,7 @@ TEST_P(StartupUtilTest, StartBase64TriggerScript) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(kBase64TriggerScript),
-              {.is_cct = true}},
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = true,
            .feature_module_installed = true}),
@@ -277,7 +285,7 @@ TEST_P(StartupUtilTest, StartBase64TriggerScript) {
   EXPECT_THAT(StartupUtil().ChooseStartupModeForIntent(
                   TriggerContext{
                       std::make_unique<ScriptParameters>(kBase64TriggerScript),
-                      {.is_cct = true}},
+                      kDefaultCCTOptions},
                   {.msbb_setting_enabled = true,
                    .proactive_help_setting_enabled = true,
                    .feature_module_installed = false}),
@@ -293,7 +301,7 @@ TEST_P(StartupUtilTest, StartBase64TriggerScript) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(kBase64TriggerScript),
-              {.is_cct = true}},
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = false,
            .proactive_help_setting_enabled = true,
            .feature_module_installed = true}),
@@ -307,7 +315,7 @@ TEST_P(StartupUtilTest, StartBase64TriggerScript) {
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
               std::make_unique<ScriptParameters>(kBase64TriggerScript),
-              {.is_cct = true}},
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = false,
            .feature_module_installed = true}),
@@ -326,7 +334,7 @@ TEST_P(StartupUtilTest, InvalidParameterCombinationsShouldFail) {
               std::make_unique<ScriptParameters>(
                   std::map<std::string, std::string>{
                       {"ENABLED", "true"}, {"START_IMMEDIATELY", "false"}}),
-              {.is_cct = true}},
+              kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = false,
            .feature_module_installed = true}),
@@ -343,7 +351,7 @@ TEST_P(StartupUtilTest, InvalidParameterCombinationsShouldFail) {
                                  {"ENABLED", "true"},
                                  {"START_IMMEDIATELY", "false"},
                                  {"REQUEST_TRIGGER_SCRIPT", "false"}}),
-                         {.is_cct = true}},
+                         kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = false,
            .feature_module_installed = true}),
@@ -360,7 +368,7 @@ TEST_P(StartupUtilTest, InvalidParameterCombinationsShouldFail) {
                                  {"ENABLED", "true"},
                                  {"START_IMMEDIATELY", "false"},
                                  {"TRIGGER_SCRIPTS_BASE64", ""}}),
-                         {.is_cct = true}},
+                         kDefaultCCTOptions},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = false,
            .feature_module_installed = true}),

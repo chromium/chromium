@@ -80,7 +80,7 @@ void ShowJavaInfoPopup(JNIEnv* env,
 // Converts a java string to native. Returns an empty string if input is null.
 std::string SafeConvertJavaStringToNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jstring);
+    const base::android::JavaRef<jstring>& jstring);
 
 // Creates a BottomSheetState from the Android SheetState enum defined in
 // components/browser_ui/bottomsheet/BottomSheetController.java.
@@ -110,13 +110,15 @@ std::map<std::string, std::string> CreateStringMapFromJava(
 // Creates a C++ trigger context for the specified java inputs.
 std::unique_ptr<TriggerContext> CreateTriggerContext(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jexperiment_ids,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_values,
+    const base::android::JavaRef<jstring>& jexperiment_ids,
+    const base::android::JavaRef<jobjectArray>& jparameter_names,
+    const base::android::JavaRef<jobjectArray>& jparameter_values,
     jboolean is_cct,
     jboolean onboarding_shown,
     jboolean is_direct_action,
-    const base::android::JavaParamRef<jstring>& jcaller_account_hash);
+    const base::android::JavaRef<jstring>& jcaller_account_hash,
+    const base::android::JavaRef<jstring>& jinitial_url,
+    const base::android::JavaRef<jstring>& jusername);
 
 }  // namespace ui_controller_android_utils
 }  //  namespace autofill_assistant

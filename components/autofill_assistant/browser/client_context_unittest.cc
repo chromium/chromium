@@ -80,7 +80,9 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
                          /* is_cct = */ true,
                          /* onboarding_shown = */ true,
                          /* is_direct_action = */ true,
-                         /* caller_account_hash = */ "some_value"});
+                         /* caller_account_hash = */ "account_hash",
+                         /* initial_url = */ "https://www.example.com",
+                         /* username = */ "fake_username"});
 
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
@@ -111,7 +113,9 @@ TEST_F(ClientContextTest, AccountMatching) {
        /* onboarding_shown = */ false,
        /* is_direct_action = */ false,
        /* caller_account_hash = */
-       "2c8fa87717fab622bb5cc4d18135fe30dae339efd274b450022d361be92b48c3"});
+       "2c8fa87717fab622bb5cc4d18135fe30dae339efd274b450022d361be92b48c3",
+       /* initial_url = */ "https://www.example.com",
+       /* username = */ "fake_username"});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_MATCHING));
 
@@ -121,7 +125,9 @@ TEST_F(ClientContextTest, AccountMatching) {
                          /* onboarding_shown = */ false,
                          /* is_direct_action = */ false,
                          /* caller_account_hash = */
-                         "different"});
+                         "different",
+                         /* initial_url = */ "https://www.example.com",
+                         /* username = */ "fake_username"});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));
 }

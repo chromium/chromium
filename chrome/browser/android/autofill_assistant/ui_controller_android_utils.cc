@@ -390,10 +390,10 @@ void ShowJavaInfoPopup(JNIEnv* env,
 
 std::string SafeConvertJavaStringToNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jstring) {
+    const base::android::JavaRef<jstring>& jstring) {
   std::string native_string;
   if (jstring) {
-    base::android::ConvertJavaStringToUTF8(env, jstring, &native_string);
+    native_string = base::android::ConvertJavaStringToUTF8(env, jstring);
   }
   return native_string;
 }
@@ -490,19 +490,23 @@ std::map<std::string, std::string> CreateStringMapFromJava(
 
 std::unique_ptr<TriggerContext> CreateTriggerContext(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jexperiment_ids,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_values,
+    const base::android::JavaRef<jstring>& jexperiment_ids,
+    const base::android::JavaRef<jobjectArray>& jparameter_names,
+    const base::android::JavaRef<jobjectArray>& jparameter_values,
     jboolean is_cct,
     jboolean onboarding_shown,
     jboolean is_direct_action,
-    const base::android::JavaParamRef<jstring>& jcaller_account_hash) {
+    const base::android::JavaRef<jstring>& jcaller_account_hash,
+    const base::android::JavaRef<jstring>& jinitial_url,
+    const base::android::JavaRef<jstring>& jusername) {
   return std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
           CreateStringMapFromJava(env, jparameter_names, jparameter_values)),
       SafeConvertJavaStringToNative(env, jexperiment_ids), is_cct,
       onboarding_shown, is_direct_action,
-      SafeConvertJavaStringToNative(env, jcaller_account_hash));
+      SafeConvertJavaStringToNative(env, jcaller_account_hash),
+      SafeConvertJavaStringToNative(env, jinitial_url),
+      SafeConvertJavaStringToNative(env, jusername));
 }
 
 }  // namespace ui_controller_android_utils

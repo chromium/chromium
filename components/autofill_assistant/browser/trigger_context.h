@@ -21,11 +21,22 @@ class TriggerContext {
  public:
   // Helper struct to facilitate instantiating this class.
   struct Options {
+    Options(const std::string& experiment_ids,
+            bool is_cct,
+            bool onboarding_shown,
+            bool is_direct_action,
+            const std::string& caller_account_hash,
+            const std::string& initial_url,
+            const std::string& username);
+    Options();
+    ~Options();
     std::string experiment_ids;
     bool is_cct = false;
     bool onboarding_shown = false;
     bool is_direct_action = false;
     std::string caller_account_hash;
+    std::string initial_url;
+    std::string username;
   };
 
   // Creates an empty trigger context.
@@ -46,7 +57,9 @@ class TriggerContext {
                  bool is_cct,
                  bool onboarding_shown,
                  bool is_direct_action,
-                 const std::string& caller_account_hash);
+                 const std::string& caller_account_hash,
+                 const std::string& initial_url,
+                 const std::string& username);
 
   // Creates a trigger context that contains the merged contents of all input
   // instances at the time of calling (does not reference |contexts| after
@@ -62,6 +75,11 @@ class TriggerContext {
   // Returns a comma-separated set of experiment ids.
   virtual std::string GetExperimentIds() const;
 
+  // Returns the initial url. Use with care and prefer the original deeplink
+  // where possible, since the initial url might point to a redirect link
+  // instead of the target domain.
+  virtual std::string GetInitialUrl() const;
+
   // Returns whether an experiment is contained in |experiment_ids|.
   virtual bool HasExperimentId(const std::string& experiment_id) const;
 
@@ -74,10 +92,16 @@ class TriggerContext {
   // autofill assistant flow got triggered.
   virtual bool GetOnboardingShown() const;
 
+  // Sets whether an onboarding was shown.
+  virtual void SetOnboardingShown(bool onboarding_shown);
+
   // Returns true if the current action was triggered by a direct action.
   virtual bool GetDirectAction() const;
 
   virtual std::string GetCallerAccountHash() const;
+
+  // Returns the username, as specified by the caller. May be empty.
+  virtual std::string GetUsername() const;
 
  private:
   std::unique_ptr<ScriptParameters> script_parameters_;
@@ -91,6 +115,12 @@ class TriggerContext {
   bool direct_action_ = false;
 
   std::string caller_account_hash_;
+
+  // The initial url at the time of triggering.
+  std::string initial_url_;
+
+  // The username, as specified by the caller.
+  std::string username_;
 };
 
 }  // namespace autofill_assistant

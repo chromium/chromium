@@ -129,7 +129,8 @@ bool ClientAndroid::Start(JNIEnv* env,
   GURL initial_url(base::android::ConvertJavaStringToUTF8(env, jinitial_url));
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
       env, jexperiment_ids, jparameter_names, jparameter_values, jis_cct,
-      jonboarding_shown, /* is_direct_action = */ false, jcaller_account);
+      jonboarding_shown, /* is_direct_action = */ false, jcaller_account,
+      jinitial_url, /* jusername = */ nullptr);
 
   if (VLOG_IS_ON(2)) {
     std::string experiment_ids =
@@ -166,7 +167,8 @@ void ClientAndroid::StartTriggerScript(
           env, jexperiment_ids, jparameter_names, jparameter_values,
           /* is_cct = */ false, /* onboarding_shown = */ false,
           /* is_direct_action = */ false,
-          /* caller_account_hash = */ nullptr),
+          /* caller_account_hash = */ nullptr, jinitial_url,
+          /* jusername = */ nullptr),
       jservice_request_sender);
 }
 
@@ -236,7 +238,9 @@ void ClientAndroid::FetchWebsiteActions(
           env, jexperiment_ids, jparameter_names, jparameter_values,
           /* is_cct = */ false, /* onboarding_shown = */ false,
           /* is_direct_action = */ true,
-          /* caller_account_hash = */ nullptr),
+          /* caller_account_hash = */ nullptr,
+          /* jinitial_url = */ nullptr,
+          /* jusername = */ nullptr),
       base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
                      weak_ptr_factory_.GetWeakPtr(), scoped_jcallback));
 }
@@ -355,7 +359,9 @@ bool ClientAndroid::PerformDirectAction(
       env, jexperiment_ids, jparameter_names, jparameter_values,
       /* is_cct = */ false, /* onboarding_shown = */ false,
       /* is_direct_action = */ true,
-      /* caller_account_hash = */ nullptr);
+      /* caller_account_hash = */ nullptr,
+      /* jinitial_url = */ nullptr,
+      /* jusername = */ nullptr);
 
   // Cancel through the UI if it is up. This allows the user to undo. This is
   // always available, even if no action was found and action_index == -1.
