@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 2,
-  "data_version": 15750708,
+  "data_version": 15756354,
   "tokenize_each_character": false,
   "dictionary": [
     "chrome",
@@ -60,7 +60,8 @@
     "വിൻഡോ",
     "സംരക്ഷിക്കുക",
     "സൃഷ്‌ടിക്കുക",
-    "സ്വകാര്യ"
+    "സ്വകാര്യ",
+    "一時的踏板placeholder"
   ],
   "pedals": [
     {

@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 2,
-  "data_version": 15750708,
+  "data_version": 15756354,
   "tokenize_each_character": false,
   "dictionary": [
     "chrome",
@@ -62,7 +62,8 @@
     "โหมดไม่ระบุตัวตน",
     "ใน",
     "ไปยัง",
-    "ไม่ระบุตัวตน"
+    "ไม่ระบุตัวตน",
+    "一時的踏板placeholder"
   ],
   "pedals": [
     {

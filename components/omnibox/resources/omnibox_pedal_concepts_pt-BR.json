@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 2,
-  "data_version": 15750708,
+  "data_version": 15756354,
   "tokenize_each_character": false,
   "dictionary": [
     "abrir",
@@ -66,7 +66,8 @@
     "traduzir",
     "um",
     "upgrade",
-    "ver"
+    "ver",
+    "一時的踏板placeholder"
   ],
   "pedals": [
     {
