@@ -534,6 +534,11 @@ void CaptureModeController::OnRecordingEnded(bool success) {
 void CaptureModeController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   EndSessionOrRecording(EndRecordingReason::kActiveUserChange);
+
+  // Remove the previous notification when switching to another user.
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->RemoveNotification(kScreenCaptureNotificationId,
+                                     /*by_user=*/false);
 }
 
 void CaptureModeController::OnSessionStateChanged(
