@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_H_
 
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sensor_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_spatial_sensor_options.h"

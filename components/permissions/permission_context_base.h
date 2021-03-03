@@ -16,7 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 class GURL;
 

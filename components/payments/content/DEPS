@@ -26,7 +26,7 @@ include_rules = [
   "+sql",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom/devtools/console_message.mojom.h",
-  "+third_party/blink/public/mojom/feature_policy",
+  "+third_party/blink/public/mojom/permissions_policy",
   "+third_party/blink/public/mojom/payments",
   "+third_party/blink/public/mojom/webauthn",
   "+third_party/blink/public/platform/modules/payments",

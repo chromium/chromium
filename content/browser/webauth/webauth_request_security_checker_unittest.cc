@@ -15,7 +15,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "device/fido/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

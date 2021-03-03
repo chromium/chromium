@@ -59,11 +59,6 @@ mojom("mojom_platform") {
     "disk_allocator.mojom",
     "favicon/favicon_url.mojom",
     "feature_observer/feature_observer.mojom",
-    "feature_policy/document_policy_feature.mojom",
-    "feature_policy/feature_policy.mojom",
-    "feature_policy/feature_policy_feature.mojom",
-    "feature_policy/policy_disposition.mojom",
-    "feature_policy/policy_value.mojom",
     "federated_learning/floc.mojom",
     "fetch/fetch_api_request.mojom",
     "fetch/fetch_api_response.mojom",
@@ -140,6 +135,11 @@ mojom("mojom_platform") {
     "permissions/permission.mojom",
     "permissions/permission_automation.mojom",
     "permissions/permission_status.mojom",
+    "permissions_policy/document_policy_feature.mojom",
+    "permissions_policy/permissions_policy.mojom",
+    "permissions_policy/permissions_policy_feature.mojom",
+    "permissions_policy/policy_disposition.mojom",
+    "permissions_policy/policy_value.mojom",
     "picture_in_picture/picture_in_picture.mojom",
     "plugins/plugin_registry.mojom",
     "prerender/prerender.mojom",
@@ -327,8 +327,8 @@ mojom("mojom_platform") {
           cpp = "::blink::ParsedFeaturePolicyDeclaration"
         },
       ]
-      traits_headers = [ "//third_party/blink/public/common/feature_policy/feature_policy_forward.h" ]
-      traits_private_headers = [ "//third_party/blink/common/feature_policy/feature_policy_mojom_traits.h" ]
+      traits_headers = [ "//third_party/blink/public/common/permissions_policy/permissions_policy_forward.h" ]
+      traits_private_headers = [ "//third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h" ]
     },
     {
       types = [
@@ -590,10 +590,8 @@ mojom("mojom_platform") {
           cpp = "::blink::PolicyValue"
         },
       ]
-      traits_headers = [
-        "//third_party/blink/common/feature_policy/policy_value_mojom_traits.h",
-      ]
-      traits_sources = [ "//third_party/blink/common/feature_policy/policy_value_mojom_traits.cc" ]
+      traits_headers = [ "//third_party/blink/common/permissions_policy/policy_value_mojom_traits.h" ]
+      traits_sources = [ "//third_party/blink/common/permissions_policy/policy_value_mojom_traits.cc" ]
     },
     {
       types = [

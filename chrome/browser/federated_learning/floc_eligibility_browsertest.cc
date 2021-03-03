@@ -235,7 +235,8 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
       {subresource_filter::testing::CreateSuffixRule("maybe_ad_script.js")});
 
   GURL main_page_url = https_server_.GetURL(
-      "a.test", "/federated_learning/feature_policy_interest_cohort_none.html");
+      "a.test",
+      "/federated_learning/permissions_policy_interest_cohort_none.html");
 
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
@@ -363,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
                        ApiNotAllowedDueToFeaturePolicy) {
   GURL main_page_url(https_server_.GetURL(
       "a.test",
-      "/federated_learning/feature_policy_interest_cohort_none.html"));
+      "/federated_learning/permissions_policy_interest_cohort_none.html"));
 
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
@@ -385,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
                        ApiNotAllowedInSubframeDueToFeaturePolicySelf) {
   GURL main_page_url(https_server_.GetURL(
       "a.test",
-      "/federated_learning/feature_policy_interest_cohort_self.html"));
+      "/federated_learning/permissions_policy_interest_cohort_self.html"));
 
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
@@ -451,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
 
   GURL main_page_url(https_server_.GetURL(
       "a.test",
-      "/federated_learning/feature_policy_interest_cohort_none.html"));
+      "/federated_learning/permissions_policy_interest_cohort_none.html"));
 
   // Three resources in the main frame and one favicon.
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);

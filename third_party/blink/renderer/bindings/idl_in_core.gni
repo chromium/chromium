@@ -237,7 +237,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/events/ui_event_init.idl",
           "//third_party/blink/renderer/core/events/wheel_event.idl",
           "//third_party/blink/renderer/core/events/wheel_event_init.idl",
-          "//third_party/blink/renderer/core/feature_policy/feature_policy.idl",
+          "//third_party/blink/renderer/core/permissions_policy/feature_policy.idl",
           "//third_party/blink/renderer/core/fetch/body.idl",
           "//third_party/blink/renderer/core/fetch/headers.idl",
           "//third_party/blink/renderer/core/fetch/request.idl",

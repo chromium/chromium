@@ -17,11 +17,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
-#include "third_party/blink/public/mojom/feature_policy/policy_value.mojom.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 
 namespace IPC {

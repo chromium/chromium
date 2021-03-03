@@ -177,7 +177,7 @@ core_interface_idl_files_core_only =
                     "events/transition_event.idl",
                     "events/ui_event.idl",
                     "events/wheel_event.idl",
-                    "feature_policy/feature_policy.idl",
+                    "permissions_policy/feature_policy.idl",
                     "fetch/headers.idl",
                     "fetch/request.idl",
                     "fetch/response.idl",

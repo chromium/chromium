@@ -21,7 +21,7 @@
 #include "content/test/test_render_view_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"

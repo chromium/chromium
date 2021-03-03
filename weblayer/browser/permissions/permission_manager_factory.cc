@@ -13,7 +13,7 @@
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/permission_type.h"
 #include "device/vr/buildflags/buildflags.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/permissions/geolocation_permission_context_delegate.h"
 

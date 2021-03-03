@@ -18779,7 +18779,7 @@ metrics consent we also won't be able to send UMA metrics. -->
 </enum>
 
 <enum name="DocumentPolicyFeature">
-<!-- Generated from third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom.
+<!-- Generated from third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom.
 Called by update_document_policy_enum.py.-->
 
   <int value="0" label="Default"/>
@@ -31731,8 +31731,8 @@ Called by update_use_counter_feature_enum.py.-->
 </enum>
 
 <enum name="FeaturePolicyFeature">
-<!-- Generated from third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom.
-Called by update_feature_policy_enum.py.-->
+<!-- Generated from third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.
+Called by update_permissions_policy_enum.py.-->
 
 <!-- Obsolete / deprecated features in this enum should be prefixed with
 "Deprecated: " -->

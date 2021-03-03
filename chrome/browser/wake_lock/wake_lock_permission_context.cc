@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 WakeLockPermissionContext::WakeLockPermissionContext(
     content::BrowserContext* browser_context,

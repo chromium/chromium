@@ -8,7 +8,7 @@
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/usb/web_usb_chooser_android.h"

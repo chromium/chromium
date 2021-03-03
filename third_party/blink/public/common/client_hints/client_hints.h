@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 class GURL;
 

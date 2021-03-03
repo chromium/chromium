@@ -14,8 +14,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
 
 using blink::mojom::MediaDeviceType;

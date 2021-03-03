@@ -17,7 +17,7 @@
 #include "components/payments/core/url_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "ui/gfx/image/image.h"
 
 namespace payments {

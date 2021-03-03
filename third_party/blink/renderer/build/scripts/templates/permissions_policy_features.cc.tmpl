@@ -1,0 +1,25 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{ source_files_for_generated_file(template_file, input_files) }}
+
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
+
+#include "base/no_destructor.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+
+namespace blink {
+
+const FeaturePolicyFeatureList& GetFeaturePolicyFeatureList() {
+  static const base::NoDestructor<FeaturePolicyFeatureList> feature_list({
+    {%- for feature in features %}
+      {
+        mojom::FeaturePolicyFeature::k{{feature.name}},
+        FeaturePolicyFeatureDefault::{{feature.feature_default}}
+      },
+    {%- endfor %}
+  });
+  return *feature_list;
+}
+
+} // namespace blink

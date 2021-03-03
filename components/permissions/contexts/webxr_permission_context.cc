@@ -5,7 +5,7 @@
 #include "components/permissions/contexts/webxr_permission_context.h"
 
 #include "base/check.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"

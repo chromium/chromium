@@ -6,22 +6,22 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 
-blink_python_runner("make_generated_feature_policy_features") {
-  script = "../renderer/build/scripts/make_feature_policy_features.py"
+blink_python_runner("make_generated_permissions_policy_features") {
+  script = "../renderer/build/scripts/make_permissions_policy_features.py"
 
-  inputs =
-      scripts_for_json5_files + [
-        "../renderer/build/scripts/make_feature_policy_features.py",
-        "../renderer/core/feature_policy/feature_policy_features.json5",
-        "../renderer/build/scripts/templates/feature_policy_features.cc.tmpl",
-      ]
-  outputs = [ "$root_gen_dir/third_party/blink/common/feature_policy/feature_policy_features.cc" ]
+  inputs = scripts_for_json5_files + [
+             "../renderer/build/scripts/make_permissions_policy_features.py",
+             "../renderer/core/permissions_policy/permissions_policy_features.json5",
+             "../renderer/build/scripts/templates/permissions_policy_features.cc.tmpl",
+           ]
+  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features.cc" ]
 
   args = [
-    rebase_path("../renderer/core/feature_policy/feature_policy_features.json5",
-                root_build_dir),
+    rebase_path(
+        "../renderer/core/permissions_policy/permissions_policy_features.json5",
+        root_build_dir),
     "--output_dir",
-    rebase_path("$root_gen_dir/third_party/blink/common/feature_policy",
+    rebase_path("$root_gen_dir/third_party/blink/common/permissions_policy",
                 root_build_dir),
   ]
 }
@@ -33,17 +33,17 @@ blink_python_runner("make_generated_document_policy_features") {
       scripts_for_json5_files + [
         "../renderer/build/scripts/make_document_policy_features.py",
         "../renderer/build/scripts/make_document_policy_features_util.py",
-        "../renderer/core/feature_policy/document_policy_features.json5",
+        "../renderer/core/permissions_policy/document_policy_features.json5",
         "../renderer/build/scripts/templates/document_policy_features.cc.tmpl",
       ]
-  outputs = [ "$root_gen_dir/third_party/blink/common/feature_policy/document_policy_features.cc" ]
+  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/document_policy_features.cc" ]
 
   args = [
     rebase_path(
-        "../renderer/core/feature_policy/document_policy_features.json5",
+        "../renderer/core/permissions_policy/document_policy_features.json5",
         root_build_dir),
     "--output_dir",
-    rebase_path("$root_gen_dir/third_party/blink/common/feature_policy",
+    rebase_path("$root_gen_dir/third_party/blink/common/permissions_policy",
                 root_build_dir),
   ]
 }
@@ -84,10 +84,6 @@ source_set("common") {
     "device_memory/approximated_device_memory.cc",
     "dom_storage/session_storage_namespace_id.cc",
     "experiments/memory_ablation_experiment.cc",
-    "feature_policy/document_policy.cc",
-    "feature_policy/feature_policy.cc",
-    "feature_policy/feature_policy_mojom_traits.cc",
-    "feature_policy/policy_value.cc",
     "features.cc",
     "fetch/fetch_api_request_body_mojom_traits.cc",
     "frame/frame_policy.cc",
@@ -163,6 +159,10 @@ source_set("common") {
     "page_state/page_state_serialization.cc",
     "peerconnection/webrtc_ip_handling_policy.cc",
     "permissions/permission_utils.cc",
+    "permissions_policy/document_policy.cc",
+    "permissions_policy/permissions_policy.cc",
+    "permissions_policy/permissions_policy_mojom_traits.cc",
+    "permissions_policy/policy_value.cc",
     "renderer_preferences/renderer_preferences.cc",
     "renderer_preferences/renderer_preferences_mojom_traits.cc",
     "scheduler/web_scheduler_tracked_feature.cc",
@@ -187,11 +187,11 @@ source_set("common") {
   ]
 
   sources += get_target_outputs(":make_generated_document_policy_features")
-  sources += get_target_outputs(":make_generated_feature_policy_features")
+  sources += get_target_outputs(":make_generated_permissions_policy_features")
 
   public_deps = [
     ":make_generated_document_policy_features",
-    ":make_generated_feature_policy_features",
+    ":make_generated_permissions_policy_features",
     "//third_party/blink/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/common:common_export",
     "//third_party/blink/public/common:headers",
@@ -263,9 +263,6 @@ source_set("common_unittests_sources") {
     "bluetooth/web_bluetooth_device_id_unittest.cc",
     "client_hints/client_hints_unittest.cc",
     "device_memory/approximated_device_memory_unittest.cc",
-    "feature_policy/document_policy_unittest.cc",
-    "feature_policy/feature_policy_unittest.cc",
-    "feature_policy/policy_value_unittest.cc",
     "frame/transient_allow_fullscreen_unittest.cc",
     "frame/user_activation_state_unittest.cc",
     "indexeddb/indexeddb_key_unittest.cc",
@@ -287,6 +284,9 @@ source_set("common_unittests_sources") {
     "origin_trials/trial_token_validator_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",
     "page_state/page_state_serialization_unittest.cc",
+    "permissions_policy/document_policy_unittest.cc",
+    "permissions_policy/permissions_policy_unittest.cc",
+    "permissions_policy/policy_value_unittest.cc",
     "scheduler/web_scheduler_tracked_feature_unittest.cc",
     "service_worker/service_worker_scope_match_unittest.cc",
     "test/run_all_unittests.cc",
