@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"

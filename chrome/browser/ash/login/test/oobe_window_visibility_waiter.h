@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -40,4 +40,4 @@ class OobeWindowVisibilityWaiter : public aura::WindowObserver {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_
