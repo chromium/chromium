@@ -12,7 +12,6 @@
 
 namespace base {
 
-#if defined(BASE_STRING16_IS_STD_U16STRING)
 namespace internal {
 
 template <>
@@ -54,6 +53,5 @@ std::vector<WStringPiece> SplitStringPieceUsingSubstr(
   return internal::SplitStringUsingSubstrT<WStringPiece>(
       input, delimiter, whitespace, result_type);
 }
-#endif
 
 }  // namespace base

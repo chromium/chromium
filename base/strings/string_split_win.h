@@ -17,12 +17,7 @@
 namespace base {
 
 // The following section contains overloads of the cross-platform APIs for
-// std::wstring and base::WStringPiece. These are only enabled if std::wstring
-// and base::string16 are distinct types, as otherwise this would result in an
-// ODR violation.
-// TODO(crbug.com/911896): Remove those guards once base::string16 is
-// std::u16string.
-#if defined(BASE_STRING16_IS_STD_U16STRING)
+// std::wstring and base::WStringPiece.
 BASE_EXPORT std::vector<std::wstring> SplitString(WStringPiece input,
                                                   WStringPiece separators,
                                                   WhitespaceHandling whitespace,
@@ -46,7 +41,6 @@ BASE_EXPORT std::vector<WStringPiece> SplitStringPieceUsingSubstr(
     WStringPiece delimiter,
     WhitespaceHandling whitespace,
     SplitResult result_type) WARN_UNUSED_RESULT;
-#endif
 
 }  // namespace base
 

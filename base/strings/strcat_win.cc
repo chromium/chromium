@@ -12,8 +12,6 @@
 
 namespace base {
 
-#if defined(BASE_STRING16_IS_STD_U16STRING)
-
 std::wstring StrCat(span<const WStringPiece> pieces) {
   return internal::StrCatT(pieces);
 }
@@ -29,7 +27,5 @@ void StrAppend(std::wstring* dest, span<const WStringPiece> pieces) {
 void StrAppend(std::wstring* dest, span<const std::wstring> pieces) {
   internal::StrAppendT(*dest, pieces);
 }
-
-#endif
 
 }  // namespace base

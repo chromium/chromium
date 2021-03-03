@@ -8,7 +8,6 @@
 
 namespace base {
 
-#if defined(BASE_STRING16_IS_STD_U16STRING)
 bool IsStringASCII(WStringPiece str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
@@ -139,7 +138,5 @@ std::wstring ReplaceStringPlaceholders(WStringPiece format_string,
                                        std::vector<size_t>* offsets) {
   return internal::DoReplaceStringPlaceholders(format_string, subst, offsets);
 }
-
-#endif
 
 }  // namespace base

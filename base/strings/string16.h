@@ -31,8 +31,4 @@ using char16 = char16_t;
 using string16 = std::u16string;
 }  // namespace base
 
-#ifndef BASE_STRING16_IS_STD_U16STRING
-#define BASE_STRING16_IS_STD_U16STRING
-#endif  // BASE_STRING16_IS_STD_U16STRING
-
 #endif  // BASE_STRINGS_STRING16_H_

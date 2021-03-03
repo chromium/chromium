@@ -108,12 +108,7 @@ inline string16 AsString16(WStringPiece str) {
 }
 
 // The following section contains overloads of the cross-platform APIs for
-// std::wstring and base::WStringPiece. These are only enabled if std::wstring
-// and base::string16 are distinct types, as otherwise this would result in an
-// ODR violation.
-// TODO(crbug.com/911896): Remove those guards once base::string16 is
-// std::u16string.
-#if defined(BASE_STRING16_IS_STD_U16STRING)
+// std::wstring and base::WStringPiece.
 BASE_EXPORT bool IsStringASCII(WStringPiece str);
 
 BASE_EXPORT std::wstring ToLowerASCII(WStringPiece str);
@@ -194,7 +189,6 @@ BASE_EXPORT std::wstring ReplaceStringPlaceholders(
     WStringPiece format_string,
     const std::vector<std::wstring>& subst,
     std::vector<size_t>* offsets);
-#endif
 
 }  // namespace base
 

@@ -346,7 +346,7 @@ struct ParamTraits<base::string16> {
   COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_WIN) && defined(BASE_STRING16_IS_STD_U16STRING)
+#if defined(OS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<std::wstring> {
   typedef std::wstring param_type;

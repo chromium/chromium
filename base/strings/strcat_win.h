@@ -16,12 +16,7 @@
 namespace base {
 
 // The following section contains overloads of the cross-platform APIs for
-// std::wstring and base::WStringPiece. These are only enabled if std::wstring
-// and base::string16 are distinct types, as otherwise this would result in an
-// ODR violation.
-// TODO(crbug.com/911896): Remove those guards once base::string16 is
-// std::u16string.
-#if defined(BASE_STRING16_IS_STD_U16STRING)
+// std::wstring and base::WStringPiece.
 BASE_EXPORT void StrAppend(std::wstring* dest, span<const WStringPiece> pieces);
 BASE_EXPORT void StrAppend(std::wstring* dest, span<const std::wstring> pieces);
 
@@ -38,7 +33,6 @@ BASE_EXPORT std::wstring StrCat(span<const std::wstring> pieces)
 inline std::wstring StrCat(std::initializer_list<WStringPiece> pieces) {
   return StrCat(make_span(pieces));
 }
-#endif  // defined(BASE_STRING16_IS_STD_U16STRING)
 
 }  // namespace base
 

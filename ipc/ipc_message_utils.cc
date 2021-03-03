@@ -414,7 +414,7 @@ void ParamTraits<base::string16>::Log(const param_type& p, std::string* l) {
   l->append(base::UTF16ToUTF8(p));
 }
 
-#if defined(OS_WIN) && defined(BASE_STRING16_IS_STD_U16STRING)
+#if defined(OS_WIN)
 bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
                                      param_type* r) {
