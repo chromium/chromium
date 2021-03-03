@@ -143,10 +143,6 @@ constexpr char kJSPrintPreviewPageCount[] = "pageCount";
 constexpr char kJSLoadPreviewPageType[] = "loadPreviewPage";
 constexpr char kJSPreviewPageUrl[] = "url";
 constexpr char kJSPreviewPageIndex[] = "index";
-// Navigate to the given URL (Plugin -> Page)
-constexpr char kJSNavigateType[] = "navigate";
-constexpr char kJSNavigateUrl[] = "url";
-constexpr char kJSNavigateWindowOpenDisposition[] = "disposition";
 // Navigate to the given destination (Plugin -> Page)
 constexpr char kJSNavigateToDestinationType[] = "navigateToDestination";
 constexpr char kJSNavigateToDestinationPage[] = "page";
@@ -1037,16 +1033,6 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data().drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
-}
-
-void OutOfProcessInstance::NavigateTo(const std::string& url,
-                                      WindowOpenDisposition disposition) {
-  pp::VarDictionary message;
-  message.Set(kType, kJSNavigateType);
-  message.Set(kJSNavigateUrl, url);
-  message.Set(kJSNavigateWindowOpenDisposition,
-              pp::Var(static_cast<int32_t>(disposition)));
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::NavigateToDestination(int page,
