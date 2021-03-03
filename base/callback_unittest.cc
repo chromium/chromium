@@ -233,6 +233,47 @@ TEST_F(CallbackTest, ThenCanConvertRepeatingToOnce) {
   }
 }
 
+// `Then()` should should allow a return value of type `R` to be passed to a
+// callback with one parameter of type `const R&` or type `R&&`.
+TEST_F(CallbackTest, ThenWithCompatibleButNotSameType) {
+  {
+    OnceCallback<std::string()> once_callback =
+        BindOnce([] { return std::string("hello"); });
+    EXPECT_EQ("hello",
+              std::move(once_callback)
+                  .Then(BindOnce([](const std::string& s) { return s; }))
+                  .Run());
+  }
+
+  class NotCopied {
+   public:
+    NotCopied() = default;
+    NotCopied(NotCopied&&) = default;
+    NotCopied& operator=(NotCopied&&) = default;
+
+    NotCopied(const NotCopied&) {
+      ADD_FAILURE() << "should not have been copied";
+    }
+
+    NotCopied& operator=(const NotCopied&) {
+      ADD_FAILURE() << "should not have been copied";
+      return *this;
+    }
+  };
+
+  {
+    OnceCallback<NotCopied()> once_callback =
+        BindOnce([] { return NotCopied(); });
+    std::move(once_callback).Then(BindOnce([](const NotCopied&) {})).Run();
+  }
+
+  {
+    OnceCallback<NotCopied()> once_callback =
+        BindOnce([] { return NotCopied(); });
+    std::move(once_callback).Then(BindOnce([](NotCopied&&) {})).Run();
+  }
+}
+
 // A factory class for building an outer and inner callback for calling
 // Then() on either a OnceCallback or RepeatingCallback with combinations of
 // void return types, non-void, and move-only return types.
