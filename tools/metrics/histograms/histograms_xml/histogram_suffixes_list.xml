@@ -13947,6 +13947,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Request is completed using Google payment instrument."/>
   <suffix name="Other"
       label="Request is completed using other payment instruments."/>
+  <suffix name="PlayBilling"
+      label="Request is completed using Google Play Billing instrument."/>
   <suffix name="SecurePaymentConfirmation"
       label="Request is completed using secure payment confirmation
              instrument."/>

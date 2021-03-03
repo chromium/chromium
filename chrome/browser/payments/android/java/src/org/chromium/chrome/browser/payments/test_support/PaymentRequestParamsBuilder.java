@@ -53,11 +53,11 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     private final PaymentMethodData[] mMethodData;
     private final PaymentDetails mDetails;
     private final WebContents mWebContents;
-    private final JourneyLogger mJourneyLogger;
     private final PaymentRequestSpec mSpec;
     private final PaymentUiService mPaymentUiService;
     private final boolean mGoogleBridgeEligible;
     private final PaymentOptions mOptions;
+    private JourneyLogger mJourneyLogger;
     private String mSupportedMethod = "https://www.chromium.org";
 
     public static PaymentRequestParamsBuilder defaultBuilder(
@@ -120,6 +120,11 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
 
     public PaymentRequestParamsBuilder setRequestShipping(boolean requestShipping) {
         mOptions.requestShipping = requestShipping;
+        return this;
+    }
+
+    public PaymentRequestParamsBuilder setJourneyLogger(JourneyLogger journeyLogger) {
+        mJourneyLogger = journeyLogger;
         return this;
     }
 

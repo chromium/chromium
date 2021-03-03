@@ -179,7 +179,7 @@ void JourneyLogger::SetSelectedMethod(PaymentMethodCategory category) {
       SetEvent2Occurred(Event2::kSelectedGoogle);
       break;
     case PaymentMethodCategory::kPlayBilling:
-      NOTREACHED();
+      SetEvent2Occurred(Event2::kSelectedPlayBilling);
       break;
     case PaymentMethodCategory::kSecurePaymentConfirmation:
       SetEventOccurred(EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION);
@@ -253,8 +253,7 @@ void JourneyLogger::SetRequestedPaymentMethods(
         SetEvent2Occurred(Event2::kRequestMethodGoogle);
         break;
       case PaymentMethodCategory::kPlayBilling:
-        // TODO(crbug.com/1182721): We will record the Play Billing method.
-        NOTREACHED();
+        SetEvent2Occurred(Event2::kRequestMethodPlayBilling);
         break;
       case PaymentMethodCategory::kSecurePaymentConfirmation:
         SetEventOccurred(EVENT_REQUEST_METHOD_SECURE_PAYMENT_CONFIRMATION);
@@ -501,14 +500,16 @@ void JourneyLogger::RecordTimeToCheckout(
       // Record time to checkout for completed requests separated by payment
       // sheet shown status and selected method.
       std::string selected_method_suffix;
-      if (events_ & EVENT_SELECTED_CREDIT_CARD) {
+      if (WasOccurred(Event2::kSelectedCreditCard)) {
         selected_method_suffix = ".BasicCard";
-      } else if (events_ & EVENT_SELECTED_GOOGLE) {
+      } else if (WasOccurred(Event2::kSelectedGoogle)) {
         selected_method_suffix = ".Google";
-      } else if (events_ & EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION) {
+      } else if (WasOccurred(Event2::kSelectedPlayBilling)) {
+        selected_method_suffix = ".PlayBilling";
+      } else if (WasOccurred(Event2::kSelectedSecurePaymentConfirmation)) {
         selected_method_suffix = ".SecurePaymentConfirmation";
       } else {
-        DCHECK(events_ & EVENT_SELECTED_OTHER);
+        DCHECK(WasOccurred(Event2::kSelectedOther));
         selected_method_suffix = ".Other";
       }
       RecordTimeToCheckoutUmaHistograms(histogram_name + ".Completed" +
@@ -540,6 +541,10 @@ void JourneyLogger::RecordTimeToCheckout(
                                     time_to_checkout);
 }
 
+bool JourneyLogger::WasOccurred(Event2 event) const {
+  return events2_ & static_cast<int>(event);
+}
+
 void JourneyLogger::ValidateEventBits() const {
   std::vector<bool> bit_vector;
 
@@ -554,11 +559,13 @@ void JourneyLogger::ValidateEventBits() const {
     DCHECK(events_ & EVENT_PAY_CLICKED);
 
   // Validate the user selected method.
-  if (events_ & EVENT_COMPLETED) {
-    bit_vector.push_back(events_ & EVENT_SELECTED_CREDIT_CARD);
-    bit_vector.push_back(events_ & EVENT_SELECTED_GOOGLE);
-    bit_vector.push_back(events_ & EVENT_SELECTED_OTHER);
-    bit_vector.push_back(events_ & EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION);
+  if (WasOccurred(Event2::kCompleted)) {
+    bit_vector.push_back(WasOccurred(Event2::kSelectedCreditCard));
+    bit_vector.push_back(WasOccurred(Event2::kSelectedGoogle));
+    bit_vector.push_back(
+        WasOccurred(Event2::kSelectedSecurePaymentConfirmation));
+    bit_vector.push_back(WasOccurred(Event2::kSelectedPlayBilling));
+    bit_vector.push_back(WasOccurred(Event2::kSelectedOther));
     DCHECK(ValidateExclusiveBitVector(bit_vector));
     bit_vector.clear();
   }

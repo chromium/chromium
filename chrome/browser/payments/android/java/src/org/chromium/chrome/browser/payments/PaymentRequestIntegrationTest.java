@@ -24,15 +24,20 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.payments.test_support.MockPaymentUiServiceBuilder;
 import org.chromium.chrome.browser.payments.test_support.PaymentRequestParamsBuilder;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
+import org.chromium.components.payments.AndroidPaymentApp;
 import org.chromium.components.payments.ErrorMessageUtil;
 import org.chromium.components.payments.ErrorMessageUtilJni;
+import org.chromium.components.payments.JourneyLogger;
+import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentApp.InstrumentDetailsCallback;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
+import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.payments.PaymentMethodCategory;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.payments.mojom.PaymentErrorReason;
@@ -40,8 +45,10 @@ import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,10 +58,11 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPaymentFeatureList.class})
 public class PaymentRequestIntegrationTest {
-    private static final String METHOD_NAME = "https://www.chromium.org";
     private static final String STRINGIFIED_DETAILS = "test stringifiedDetails";
     private final ArgumentCaptor<InstrumentDetailsCallback> mPaymentAppCallbackCaptor =
             ArgumentCaptor.forClass(InstrumentDetailsCallback.class);
+    private String mInstrumentMethodName = "https://www.chromium.org";
+    private int mPaymentAppType = PaymentAppType.SERVICE_WORKER_APP;
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
@@ -87,17 +95,6 @@ public class PaymentRequestIntegrationTest {
         PaymentAppService.getInstance().resetForTest();
 
         mClient = Mockito.mock(PaymentRequestClient.class);
-        mPaymentApp = mockPaymentApp();
-        mFactory = Mockito.mock(PaymentAppFactoryInterface.class);
-        Mockito.doAnswer((args) -> {
-                   PaymentAppFactoryDelegate delegate = args.getArgument(0);
-                   delegate.onCanMakePaymentCalculated(true);
-                   delegate.onPaymentAppCreated(mPaymentApp);
-                   delegate.onDoneCreatingPaymentApps(mFactory);
-                   return null;
-               })
-                .when(mFactory)
-                .create(Mockito.any());
     }
 
     @After
@@ -107,10 +104,13 @@ public class PaymentRequestIntegrationTest {
     }
 
     private PaymentApp mockPaymentApp() {
-        PaymentApp app = Mockito.mock(PaymentApp.class);
+        PaymentApp app = mPaymentAppType == PaymentAppType.NATIVE_MOBILE_APP
+                ? Mockito.mock(AndroidPaymentApp.class)
+                : Mockito.mock(PaymentApp.class);
         Set<String> methodNames = new HashSet<>();
-        methodNames.add(METHOD_NAME);
+        methodNames.add(mInstrumentMethodName);
         Mockito.doReturn(methodNames).when(app).getInstrumentMethodNames();
+        Mockito.doReturn(mPaymentAppType).when(app).getPaymentAppType();
         Mockito.doReturn("testPaymentApp").when(app).getIdentifier();
         Mockito.doReturn(true).when(app).handlesShippingAddress();
         return app;
@@ -131,7 +131,7 @@ public class PaymentRequestIntegrationTest {
         Mockito.verify(mClient, Mockito.times(1)).onPaymentResponse(responseCaptor.capture());
         PaymentResponse response = responseCaptor.getValue();
         Assert.assertNotNull(response);
-        Assert.assertEquals(METHOD_NAME, response.methodName);
+        Assert.assertEquals(mInstrumentMethodName, response.methodName);
         Assert.assertEquals(STRINGIFIED_DETAILS, response.stringifiedDetails);
     }
 
@@ -144,6 +144,17 @@ public class PaymentRequestIntegrationTest {
     }
 
     private PaymentRequestParamsBuilder defaultBuilder(PaymentUiService uiService) {
+        mPaymentApp = mockPaymentApp();
+        mFactory = Mockito.mock(PaymentAppFactoryInterface.class);
+        Mockito.doAnswer((args) -> {
+                   PaymentAppFactoryDelegate delegate = args.getArgument(0);
+                   delegate.onCanMakePaymentCalculated(true);
+                   delegate.onPaymentAppCreated(mPaymentApp);
+                   delegate.onDoneCreatingPaymentApps(mFactory);
+                   return null;
+               })
+                .when(mFactory)
+                .create(Mockito.any());
         PaymentRequestParamsBuilder builder =
                 PaymentRequestParamsBuilder.defaultBuilder(mClient, uiService);
         PaymentAppService.getInstance().addUniqueFactory(mFactory, "testFactoryId");
@@ -164,7 +175,15 @@ public class PaymentRequestIntegrationTest {
 
     private void simulatePaymentAppRespond() {
         mPaymentAppCallbackCaptor.getValue().onInstrumentDetailsReady(
-                METHOD_NAME, STRINGIFIED_DETAILS, new PayerData());
+                mInstrumentMethodName, STRINGIFIED_DETAILS, new PayerData());
+    }
+
+    void setInstrumentMethodName(String methodName) {
+        mInstrumentMethodName = methodName;
+    }
+
+    private void setAndroidPaymentApp() {
+        mPaymentAppType = PaymentAppType.NATIVE_MOBILE_APP;
     }
 
     @Test
@@ -207,5 +226,24 @@ public class PaymentRequestIntegrationTest {
         show(request);
         assertError("(Mock) Not supported error: [https://www.chromium.org]",
                 PaymentErrorReason.NOT_SUPPORTED);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testPlayBillingRequestAndSelectionAreLogged() {
+        setInstrumentMethodName(MethodStrings.GOOGLE_PLAY_BILLING);
+        setAndroidPaymentApp();
+        JourneyLogger journeyLogger = Mockito.mock(JourneyLogger.class);
+        PaymentRequest request = defaultBuilder()
+                                         .setJourneyLogger(journeyLogger)
+                                         .setSupportedMethod(MethodStrings.GOOGLE_PLAY_BILLING)
+                                         .buildAndInit();
+        show(request);
+        List<Integer> expectedMethods = new ArrayList<>();
+        expectedMethods.add(PaymentMethodCategory.PLAY_BILLING);
+        Mockito.verify(journeyLogger, Mockito.times(1))
+                .setRequestedPaymentMethods(Mockito.eq(expectedMethods));
+        Mockito.verify(journeyLogger, Mockito.times(1))
+                .setSelectedMethod(Mockito.eq(PaymentMethodCategory.PLAY_BILLING));
     }
 }

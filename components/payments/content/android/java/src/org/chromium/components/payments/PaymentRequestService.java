@@ -610,6 +610,9 @@ public class PaymentRequestService
                 case MethodStrings.GOOGLE_PAY:
                     methodTypes.add(PaymentMethodCategory.GOOGLE);
                     break;
+                case MethodStrings.GOOGLE_PLAY_BILLING:
+                    methodTypes.add(PaymentMethodCategory.PLAY_BILLING);
+                    break;
                 case MethodStrings.BASIC_CARD:
                     // Not to record requestedMethodBasicCard because JourneyLogger ignore the case
                     // where the specified networks are unsupported.
@@ -693,23 +696,33 @@ public class PaymentRequestService
                 /*callback=*/this);
         mInvokedPaymentApp = paymentApp;
         mJourneyLogger.setPayClicked();
-        boolean isAutofillCard = paymentApp.isAutofillInstrument();
-        // Record what type of app was selected when "Pay" was clicked.
-        boolean isGooglePaymentApp = false;
-        for (String paymentMethodName : paymentApp.getInstrumentMethodNames()) {
-            if (paymentMethodName.equals(MethodStrings.ANDROID_PAY)
-                    || paymentMethodName.equals(MethodStrings.GOOGLE_PAY)) {
-                isGooglePaymentApp = true;
-                break;
+        logSelectedMethod(paymentApp);
+    }
+
+    private void logSelectedMethod(PaymentApp invokedPaymentApp) {
+        @PaymentMethodCategory
+        int category = PaymentMethodCategory.OTHER;
+        if (invokedPaymentApp.isAutofillInstrument()) {
+            assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL;
+            category = PaymentMethodCategory.BASIC_CARD;
+        } else {
+            for (String method : invokedPaymentApp.getInstrumentMethodNames()) {
+                if (method.equals(MethodStrings.ANDROID_PAY)
+                        || method.equals(MethodStrings.GOOGLE_PAY)) {
+                    // TODO(crbug.com/1183977): assert the type after correcting
+                    // GooglePayPaymentApp's app type.
+                    category = PaymentMethodCategory.GOOGLE;
+                    break;
+                } else if (method.equals(MethodStrings.GOOGLE_PLAY_BILLING)) {
+                    assert invokedPaymentApp.getPaymentAppType()
+                            == PaymentAppType.NATIVE_MOBILE_APP;
+                    category = PaymentMethodCategory.PLAY_BILLING;
+                    break;
+                }
             }
         }
-        if (isAutofillCard) {
-            mJourneyLogger.setSelectedMethod(PaymentMethodCategory.BASIC_CARD);
-        } else if (isGooglePaymentApp) {
-            mJourneyLogger.setSelectedMethod(PaymentMethodCategory.GOOGLE);
-        } else {
-            mJourneyLogger.setSelectedMethod(PaymentMethodCategory.OTHER);
-        }
+
+        mJourneyLogger.setSelectedMethod(category);
     }
 
     // Implements PaymentAppFactoryDelegate:

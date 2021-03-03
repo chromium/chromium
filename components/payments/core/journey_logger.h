@@ -150,6 +150,8 @@ class JourneyLogger {
     // requestPayerEmail, requestPayerPhone.
     kRequestShipping = 1 << 11,
 
+    // The merchant requested a Play Billing payment method.
+    kRequestMethodPlayBilling = 1 << 14,
     // The merchant requested at least one basic-card method.
     kRequestMethodBasicCard = 1 << 15,
     // The merchant requested a Google payment method.
@@ -162,6 +164,7 @@ class JourneyLogger {
     kSelectedCreditCard = 1 << 18,
     kSelectedGoogle = 1 << 19,
     kSelectedOther = 1 << 20,
+    kSelectedPlayBilling = 1 << 21,
 
     // True when a NotShownReason is set.
     kCouldNotShow = 1 << 23,
@@ -332,6 +335,9 @@ class JourneyLogger {
 
   // Records that an event occurred.
   void SetEvent2Occurred(Event2 event);
+
+  // Whether the given event was occurred.
+  bool WasOccurred(Event2 event) const;
 
   static const int NUMBER_OF_SECTIONS = 3;
 
