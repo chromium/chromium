@@ -202,15 +202,15 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
             new ObserverList<>();
 
     /**
-     * @param context The application context.
+     * @param context The application {@link Context}.
      */
     public WindowAndroid(Context context) {
         this(context, DisplayAndroid.getNonMultiDisplay(context));
     }
 
     /**
-     * @param context The application context.
-     * @param display
+     * @param context The application {@link Context}.
+     * @param display The application {@link DisplayAndroid}.
      */
     @SuppressLint("UseSparseArrays")
     protected WindowAndroid(Context context, DisplayAndroid display) {

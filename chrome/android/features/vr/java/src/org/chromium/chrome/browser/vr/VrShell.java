@@ -205,7 +205,8 @@ public class VrShell extends GvrLayout
         mContentVirtualDisplay = VirtualDisplayAndroid.createVirtualDisplay();
         mContentVirtualDisplay.setTo(primaryDisplay);
 
-        mContentVrWindowAndroid = new VrWindowAndroid(mActivity, mContentVirtualDisplay);
+        mContentVrWindowAndroid = new VrWindowAndroid(
+                mActivity, mContentVirtualDisplay, mActivity.getModalDialogManagerSupplier());
         reparentAllTabs(mContentVrWindowAndroid);
 
         mCompositorView = mActivity.getCompositorViewHolder().getCompositorView();
