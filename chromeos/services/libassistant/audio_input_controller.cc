@@ -48,14 +48,7 @@ void AudioInputController::OnConversationTurnStarted() {
   audio_input().OnConversationTurnStarted();
 }
 
-void AudioInputController::OnInteractionFinished(Resolution resolution) {
-  // TODO(b/179924068): Find a better way to handle the edge cases.
-  if (resolution != Resolution::NORMAL_WITH_FOLLOW_ON &&
-      resolution != Resolution::CANCELLED &&
-      resolution != Resolution::BARGE_IN) {
-    SetMicOpen(false);
-  }
-
+void AudioInputController::OnConversationTurnFinished() {
   audio_input().OnConversationTurnFinished();
 }
 

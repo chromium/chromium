@@ -12,7 +12,6 @@ mojom("mojom") {
     "audio_input_controller.mojom",
     "audio_output_delegate.mojom",
     "conversation_controller.mojom",
-    "conversation_observer.mojom",
     "display_controller.mojom",
     "media_controller.mojom",
     "platform_delegate.mojom",
@@ -50,10 +49,6 @@ mojom("mojom") {
         {
           mojom = "chromeos.libassistant.mojom.AssistantFeedback"
           cpp = "::chromeos::assistant::AssistantFeedback"
-        },
-        {
-          mojom = "chromeos.libassistant.mojom.AssistantInteractionResolution"
-          cpp = "::chromeos::assistant::AssistantInteractionResolution"
         },
       ]
 

@@ -33,9 +33,7 @@ LibassistantService::LibassistantService(
           std::make_unique<ConversationController>(service_controller_.get())),
       conversation_state_listener_(
           std::make_unique<ConversationStateListenerImpl>(
-              &speech_recognition_observers_,
-              conversation_controller_->conversation_observers(),
-              audio_input_controller_.get())),
+              &speech_recognition_observers_)),
       display_controller_(
           std::make_unique<DisplayController>(&speech_recognition_observers_)),
       media_controller_(std::make_unique<MediaController>()),

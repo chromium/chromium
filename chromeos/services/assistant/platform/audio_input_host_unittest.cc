@@ -52,6 +52,7 @@ class AudioInputControllerMock : public MojomAudioInputController {
               SetLidState,
               (chromeos::libassistant::mojom::LidState new_state));
   MOCK_METHOD(void, OnConversationTurnStarted, ());
+  MOCK_METHOD(void, OnConversationTurnFinished, ());
 
  private:
   mojo::Receiver<MojomAudioInputController> receiver_{this};
@@ -138,6 +139,11 @@ class AssistantAudioInputHostTest : public testing::Test {
 
   void OnConversationTurnStarted() {
     audio_input_host().OnConversationTurnStarted();
+    FlushPendingMojomCalls();
+  }
+
+  void OnConversationTurnFinished() {
+    audio_input_host().OnConversationTurnFinished();
     FlushPendingMojomCalls();
   }
 
@@ -237,6 +243,12 @@ TEST_F(AssistantAudioInputHostTest,
        ShouldSendOnConversationTurnStartedToMojom) {
   EXPECT_CALL(mojom_audio_input_controller(), OnConversationTurnStarted);
   OnConversationTurnStarted();
+}
+
+TEST_F(AssistantAudioInputHostTest,
+       ShouldSendOnConversationTurnFinishedToMojom) {
+  EXPECT_CALL(mojom_audio_input_controller(), OnConversationTurnFinished);
+  OnConversationTurnFinished();
 }
 
 }  // namespace assistant

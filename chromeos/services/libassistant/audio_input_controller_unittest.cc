@@ -22,7 +22,6 @@ namespace libassistant {
 
 namespace {
 using mojom::LidState;
-using Resolution = assistant_client::ConversationStateListener::Resolution;
 
 class FakeAudioInputObserver : public assistant_client::AudioInput::Observer {
  public:
@@ -96,8 +95,6 @@ class AssistantAudioInputControllerTest : public testing::Test {
     return audio_input().GetOpenDeviceIdForTesting().value_or("<none>");
   }
 
-  bool IsMicOpen() { return audio_input().IsMicOpenForTesting(); }
-
   void SetLidState(LidState new_state) {
     client()->SetLidState(new_state);
     client().FlushForTesting();
@@ -129,8 +126,8 @@ class AssistantAudioInputControllerTest : public testing::Test {
 
   void OnConversationTurnStarted() { controller().OnConversationTurnStarted(); }
 
-  void OnConversationTurnFinished(Resolution resolution = Resolution::NORMAL) {
-    controller().OnInteractionFinished(resolution);
+  void OnConversationTurnFinished() {
+    controller().OnConversationTurnFinished();
   }
 
  private:
@@ -286,40 +283,6 @@ TEST_F(AssistantAudioInputControllerTest,
   // hotword device.
   OnConversationTurnFinished();
   EXPECT_EQ("hotword-device-id", GetOpenDeviceId());
-}
-
-TEST_F(AssistantAudioInputControllerTest,
-       ShouldCloseMicWhenConversationIsFinishedNormally) {
-  InitializeForTestOfType(kDeviceIdTest);
-  SetMicOpen(true);
-  SetDeviceId("normal-device-id");
-  SetHotwordDeviceId("hotword-device-id");
-
-  // Mic should keep opened during the conversation.
-  OnConversationTurnStarted();
-  EXPECT_EQ(true, IsMicOpen());
-
-  // Once the conversation has finished normally without needing mic to keep
-  // opened, we should close it.
-  OnConversationTurnFinished();
-  EXPECT_EQ(false, IsMicOpen());
-}
-
-TEST_F(AssistantAudioInputControllerTest,
-       ShouldKeepMicOpenedIfNeededWhenConversationIsFinished) {
-  InitializeForTestOfType(kDeviceIdTest);
-  SetMicOpen(true);
-  SetDeviceId("normal-device-id");
-  SetHotwordDeviceId("hotword-device-id");
-
-  // Mic should keep opened during the conversation.
-  OnConversationTurnStarted();
-  EXPECT_EQ(true, IsMicOpen());
-
-  // If the conversation is finished where mic should still be kept opened
-  // (i.e. there's a follow-up interaction), we should keep mic opened.
-  OnConversationTurnFinished(Resolution::NORMAL_WITH_FOLLOW_ON);
-  EXPECT_EQ(true, IsMicOpen());
 }
 
 }  // namespace libassistant

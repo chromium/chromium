@@ -28,7 +28,6 @@
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
@@ -108,8 +107,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       public assistant_client::ConversationStateListener,
       public assistant_client::AssistantManagerDelegate,
       public AppListEventSubscriber,
-      private libassistant::mojom::StateObserver,
-      public ConversationObserver {
+      private libassistant::mojom::StateObserver {
  public:
   static void ResetIsFirstInitFlagForTesting();
 
@@ -174,7 +172,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void PauseTimer(const std::string& id) override;
   void RemoveAlarmOrTimer(const std::string& id) override;
   void ResumeTimer(const std::string& id) override;
-  void AddRemoteConversationObserver(ConversationObserver* observer) override;
 
   // AssistantActionObserver overrides:
   void OnScheduleWait(int id, int time_ms) override;
@@ -196,9 +193,11 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       int interaction_id,
       const ::assistant::api::client_op::GetDeviceSettingsArgs& args) override;
 
-  // chromeos::assistant::ConversationObserver overrides:
-  void OnInteractionFinished(
-      AssistantInteractionResolution resolution) override;
+  // assistant_client::ConversationStateListener overrides:
+  void OnConversationTurnFinished(
+      assistant_client::ConversationStateListener::Resolution resolution)
+      override;
+  void OnRespondingStarted(bool is_error_response) override;
 
   // AssistantManagerDelegate overrides:
   void OnConversationTurnStartedInternal(

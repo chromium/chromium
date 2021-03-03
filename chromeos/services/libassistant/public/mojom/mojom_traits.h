@@ -8,15 +8,11 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
-#include "base/notreached.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom-shared.h"
-#include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom-shared.h"
-#include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {
 
@@ -77,18 +73,6 @@ struct StructTraits<chromeos::libassistant::mojom::AssistantFeedbackDataView,
   static bool Read(
       chromeos::libassistant::mojom::AssistantFeedbackDataView data,
       AssistantFeedback* output);
-};
-
-template <>
-struct EnumTraits<chromeos::libassistant::mojom::AssistantInteractionResolution,
-                  chromeos::assistant::AssistantInteractionResolution> {
-  using AssistantResolution =
-      chromeos::assistant::AssistantInteractionResolution;
-  using MojoResolution =
-      chromeos::libassistant::mojom::AssistantInteractionResolution;
-
-  static MojoResolution ToMojom(AssistantResolution input);
-  static bool FromMojom(MojoResolution input, AssistantResolution* output);
 };
 
 }  // namespace mojo

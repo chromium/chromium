@@ -26,6 +26,7 @@ class FakeAudioInputHost : public AudioInputHost {
   void SetMicState(bool mic_open) override {}
   void OnHotwordEnabled(bool enable) override {}
   void OnConversationTurnStarted() override {}
+  void OnConversationTurnFinished() override {}
 };
 
 }  // namespace

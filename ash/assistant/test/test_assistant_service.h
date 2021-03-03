@@ -92,8 +92,6 @@ class TestAssistantService : public chromeos::assistant::Assistant {
       chromeos::assistant::AssistantInteractionSubscriber* subscriber) override;
   void RemoveAssistantInteractionSubscriber(
       chromeos::assistant::AssistantInteractionSubscriber* subscriber) override;
-  void AddRemoteConversationObserver(
-      chromeos::assistant::ConversationObserver* observer) override {}
   void RetrieveNotification(
       const chromeos::assistant::AssistantNotification& notification,
       int action_index) override;

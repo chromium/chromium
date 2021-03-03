@@ -70,6 +70,10 @@ void AudioInputHostImpl::OnConversationTurnStarted() {
   power_manager_client_->NotifyWakeNotification();
 }
 
+void AudioInputHostImpl::OnConversationTurnFinished() {
+  remote_->OnConversationTurnFinished();
+}
+
 void AudioInputHostImpl::OnHotwordEnabled(bool enable) {
   remote_->SetHotwordEnabled(enable);
 }

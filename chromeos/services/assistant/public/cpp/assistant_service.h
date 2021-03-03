@@ -12,7 +12,6 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
-#include "chromeos/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
@@ -78,8 +77,7 @@ struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantSuggestion {
 // from the assistant may contain untrusted third-party content. Subscriber
 // implementations must be sure to handle the response data appropriately.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
-    : public base::CheckedObserver,
-      public ConversationObserver {
+    : public base::CheckedObserver {
  public:
   AssistantInteractionSubscriber() = default;
   AssistantInteractionSubscriber(const AssistantInteractionSubscriber&) =
@@ -91,6 +89,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
   // Assistant interaction has started.
   virtual void OnInteractionStarted(
       const AssistantInteractionMetadata& metadata) {}
+
+  // Assistant interaction has ended with the specified |resolution|.
+  virtual void OnInteractionFinished(
+      AssistantInteractionResolution resolution) {}
 
   // Assistant got Html response with fallback text from server.
   virtual void OnHtmlResponse(const std::string& response,
@@ -128,6 +130,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
 
   // Assistant got an instantaneous speech level update in dB.
   virtual void OnSpeechLevelUpdated(float speech_level) {}
+
+  // Assistant has started speaking. When TTS is started due to an error that
+  // occurred during the interaction, |due_to_error| is true.
+  virtual void OnTtsStarted(bool due_to_error) {}
 
   // Assistant has started waiting. This occur during execution of a routine to
   // give the user time to digest a response before continuing execution.
@@ -177,8 +183,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
       AssistantInteractionSubscriber* subscriber) = 0;
   virtual void RemoveAssistantInteractionSubscriber(
       AssistantInteractionSubscriber* subscriber) = 0;
-  virtual void AddRemoteConversationObserver(
-      ConversationObserver* observer) = 0;
 
   // Retrieves a notification. A voiceless interaction will be sent to server to
   // retrieve the notification of |action_index|, which can trigger other

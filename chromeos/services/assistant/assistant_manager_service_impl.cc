@@ -39,7 +39,6 @@
 #include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
@@ -253,7 +252,6 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       state_observer_receiver_.BindNewPipeAndPassRemote());
   assistant_proxy_->AddSpeechRecognitionObserver(
       speech_recognition_observer_->BindNewPipeAndPassRemote());
-  AddRemoteConversationObserver(this);
 
   audio_output_delegate_->Bind(assistant_proxy_->ExtractAudioOutputDelegate());
   platform_delegate_->Bind(assistant_proxy_->ExtractPlatformDelegate());
@@ -489,12 +487,7 @@ void AssistantManagerServiceImpl::StartTextInteraction(
 
 void AssistantManagerServiceImpl::AddAssistantInteractionSubscriber(
     AssistantInteractionSubscriber* subscriber) {
-  // For now, this function is handling events registration for both Mojom
-  // side and Assistant service side. All native AssistantInteractionSubscriber
-  // should be deprecated and replaced with |ConversationObserver| once the
-  // migration is done.
   interaction_subscribers_.AddObserver(subscriber);
-  AddRemoteConversationObserver(subscriber);
 }
 
 void AssistantManagerServiceImpl::RemoveAssistantInteractionSubscriber(
@@ -542,25 +535,65 @@ void AssistantManagerServiceImpl::OnConversationTurnStartedInternal(
     it.OnInteractionStarted(*metadata_ptr);
 }
 
-void AssistantManagerServiceImpl::OnInteractionFinished(
-    AssistantInteractionResolution resolution) {
+void AssistantManagerServiceImpl::OnConversationTurnFinished(
+    Resolution resolution) {
+  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnConversationTurnFinished,
+                     resolution);
+
   stop_interaction_closure_.reset();
 
+  // TODO(updowndota): Find a better way to handle the edge cases.
+  if (resolution != Resolution::NORMAL_WITH_FOLLOW_ON &&
+      resolution != Resolution::CANCELLED &&
+      resolution != Resolution::BARGE_IN) {
+    audio_input_host_->SetMicState(false);
+  }
+
+  audio_input_host_->OnConversationTurnFinished();
+
   switch (resolution) {
-    case AssistantInteractionResolution::kNormal:
+    // Interaction ended normally.
+    case Resolution::NORMAL:
+    case Resolution::NORMAL_WITH_FOLLOW_ON:
+    case Resolution::NO_RESPONSE:
+      for (auto& it : interaction_subscribers_)
+        it.OnInteractionFinished(AssistantInteractionResolution::kNormal);
+
       RecordQueryResponseTypeUMA();
-      return;
-    case AssistantInteractionResolution::kInterruption:
+      break;
+    // Interaction ended due to interruption.
+    case Resolution::BARGE_IN:
+    case Resolution::CANCELLED:
+      for (auto& it : interaction_subscribers_)
+        it.OnInteractionFinished(AssistantInteractionResolution::kInterruption);
+
       if (receive_inline_response_ || receive_modify_settings_proto_response_ ||
           !receive_url_response_.empty()) {
         RecordQueryResponseTypeUMA();
       }
-      return;
-    case AssistantInteractionResolution::kMicTimeout:
-    case AssistantInteractionResolution::kError:
-    case AssistantInteractionResolution::kMultiDeviceHotwordLoss:
-      // No action needed.
-      return;
+      break;
+    // Interaction ended due to mic timeout.
+    case Resolution::TIMEOUT:
+      for (auto& it : interaction_subscribers_)
+        it.OnInteractionFinished(AssistantInteractionResolution::kMicTimeout);
+      break;
+    // Interaction ended due to error.
+    case Resolution::COMMUNICATION_ERROR:
+      for (auto& it : interaction_subscribers_)
+        it.OnInteractionFinished(AssistantInteractionResolution::kError);
+      break;
+    // Interaction ended because the device was not selected to produce a
+    // response. This occurs due to multi-device hotword loss.
+    case Resolution::DEVICE_NOT_SELECTED:
+      for (auto& it : interaction_subscribers_) {
+        it.OnInteractionFinished(
+            AssistantInteractionResolution::kMultiDeviceHotwordLoss);
+      }
+      break;
+    // This is only applicable in longform barge-in mode, which we do not use.
+    case Resolution::LONGFORM_KEEP_MIC_OPEN:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -730,6 +763,14 @@ void AssistantManagerServiceImpl::OnVerifyAndroidApp(
       [](auto) {});
 }
 
+void AssistantManagerServiceImpl::OnRespondingStarted(bool is_error_response) {
+  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnRespondingStarted,
+                     is_error_response);
+
+  for (auto& it : interaction_subscribers_)
+    it.OnTtsStarted(is_error_response);
+}
+
 void AssistantManagerServiceImpl::OnModifyDeviceSetting(
     const api::client_op::ModifySettingArgs& modify_setting_args) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnModifyDeviceSetting,
@@ -804,7 +845,8 @@ void AssistantManagerServiceImpl::InitAssistant(
   bootup_config->hotword_enabled = assistant_state()->hotword_enabled().value();
 
   service_controller().Start(
-      /*assistant_manager_delegate=*/this, std::move(bootup_config),
+      /*assistant_manager_delegate=*/this,
+      /*conversation_state_listener=*/this, std::move(bootup_config),
       ToAuthTokensOrEmpty(user));
 }
 
@@ -920,12 +962,6 @@ void AssistantManagerServiceImpl::RemoveAlarmOrTimer(const std::string& id) {
 
 void AssistantManagerServiceImpl::ResumeTimer(const std::string& id) {
   timer_host_->ResumeTimer(id);
-}
-
-void AssistantManagerServiceImpl::AddRemoteConversationObserver(
-    ConversationObserver* observer) {
-  conversation_controller_proxy().AddConversationObserver(
-      observer->BindNewPipeAndPassRemote());
 }
 
 void AssistantManagerServiceImpl::NotifyEntryIntoAssistantUi(

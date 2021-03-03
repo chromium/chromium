@@ -172,7 +172,6 @@ source_set("unit_tests") {
   sources = [
     "audio/audio_output_provider_impl_unittest.cc",
     "audio_input_controller_unittest.cc",
-    "conversation_observer_unittest.cc",
     "media_controller_unittest.cc",
     "network_provider_impl_unittest.cc",
     "power_manager_provider_impl_unittest.cc",

@@ -438,10 +438,6 @@ bool AudioInputImpl::IsUsingHotwordDeviceForTesting() const {
          && GetOpenDeviceId() == hotword_device_id_ && IsHotwordAvailable();
 }
 
-bool AudioInputImpl::IsMicOpenForTesting() const {
-  return mic_open_;
-}
-
 base::Optional<std::string> AudioInputImpl::GetOpenDeviceIdForTesting() const {
   return GetOpenDeviceId();
 }

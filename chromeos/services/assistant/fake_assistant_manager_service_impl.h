@@ -63,7 +63,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   void StopActiveInteraction(bool cancel_conversation) override;
   void AddAssistantInteractionSubscriber(
       AssistantInteractionSubscriber* subscriber) override;
-  void AddRemoteConversationObserver(ConversationObserver* observer) override {}
   void RemoveAssistantInteractionSubscriber(
       AssistantInteractionSubscriber* subscriber) override;
   void RetrieveNotification(const AssistantNotification& notification,

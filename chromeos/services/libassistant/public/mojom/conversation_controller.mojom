@@ -4,8 +4,6 @@
 
 module chromeos.libassistant.mojom;
 
-import "chromeos/services/libassistant/public/mojom/conversation_observer.mojom";
-
 // Interface for controller supporting conversation related functionalities.
 interface ConversationController {
   // Sends the specific text query to Libassistant. |conversation_id| is an
@@ -35,10 +33,6 @@ interface ConversationController {
 
   // Sends Assistant feedback to Assistant server.
   SendAssistantFeedback(AssistantFeedback feedback);
-
-  // Add a remote observer, which will be informed of set of events
-  // related to the ongoing conversation.
-  AddRemoteObserver(pending_remote<ConversationObserver> observer);
 };
 
 // Models an Assistant notification. This should be kept in sync with

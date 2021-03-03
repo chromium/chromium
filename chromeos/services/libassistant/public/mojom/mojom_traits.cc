@@ -8,9 +8,6 @@ namespace mojo {
 
 using AppStatus = chromeos::assistant::AppStatus;
 using AndroidAppStatus = chromeos::libassistant::mojom::AndroidAppStatus;
-using AssistantResolution = chromeos::assistant::AssistantInteractionResolution;
-using MojoResolution =
-    chromeos::libassistant::mojom::AssistantInteractionResolution;
 using chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::AssistantFeedback;
 using chromeos::assistant::AssistantNotification;
@@ -194,52 +191,6 @@ bool StructTraits<AssistantFeedbackDataView, AssistantFeedback>::Read(
   if (!data.ReadScreenshotPng(&output->screenshot_png))
     return false;
   return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AssistantInteractionResolution
-////////////////////////////////////////////////////////////////////////////////
-
-MojoResolution EnumTraits<MojoResolution, AssistantResolution>::ToMojom(
-    AssistantResolution input) {
-  switch (input) {
-    case AssistantResolution::kNormal:
-      return MojoResolution::kNormal;
-    case AssistantResolution::kInterruption:
-      return MojoResolution::kInterruption;
-    case AssistantResolution::kError:
-      return MojoResolution::kError;
-    case AssistantResolution::kMicTimeout:
-      return MojoResolution::kMicTimeout;
-    case AssistantResolution::kMultiDeviceHotwordLoss:
-      return MojoResolution::kMultiDeviceHotwordLoss;
-  }
-  NOTREACHED();
-  return MojoResolution::kNormal;
-}
-
-bool EnumTraits<MojoResolution, AssistantResolution>::FromMojom(
-    MojoResolution input,
-    AssistantResolution* output) {
-  switch (input) {
-    case MojoResolution::kNormal:
-      *output = AssistantResolution::kNormal;
-      return true;
-    case MojoResolution::kInterruption:
-      *output = AssistantResolution::kInterruption;
-      return true;
-    case MojoResolution::kError:
-      *output = AssistantResolution::kError;
-      return true;
-    case MojoResolution::kMicTimeout:
-      *output = AssistantResolution::kMicTimeout;
-      return true;
-    case MojoResolution::kMultiDeviceHotwordLoss:
-      *output = AssistantResolution::kMultiDeviceHotwordLoss;
-      return true;
-  }
-  NOTREACHED();
-  return false;
 }
 
 }  // namespace mojo

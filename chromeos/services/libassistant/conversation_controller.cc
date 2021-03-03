@@ -133,11 +133,6 @@ void ConversationController::SendAssistantFeedback(
                            /*is_user_initiated=*/false);
 }
 
-void ConversationController::AddRemoteObserver(
-    mojo::PendingRemote<mojom::ConversationObserver> observer) {
-  observers_.Add(std::move(observer));
-}
-
 void ConversationController::SendVoicelessInteraction(
     const std::string& interaction,
     const std::string& description,

@@ -10,7 +10,6 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -29,9 +28,6 @@ class ConversationControllerProxy {
   ConversationControllerProxy& operator=(const ConversationControllerProxy&) =
       delete;
   ~ConversationControllerProxy();
-
-  void AddConversationObserver(
-      mojo::PendingRemote<libassistant::mojom::ConversationObserver> observer);
 
   // Starts a new Assistant text interaction. If |allow_tts| is true, the
   // result will contain TTS. |conversation_id| is a unique identifier of

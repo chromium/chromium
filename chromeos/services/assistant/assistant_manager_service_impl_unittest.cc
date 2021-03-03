@@ -1036,6 +1036,8 @@ TEST_F(AssistantManagerServiceImplTest,
 
   StrictMock<SpeakerIdEnrollmentClientMock> client_mock;
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
+  RunUntilIdle();
+
   mojom_mock.Bind(mojom_libassistant_service());
 
   EXPECT_CALL(mojom_mock, GetSpeakerIdEnrollmentStatus)

@@ -11,7 +11,6 @@
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace assistant_client {
 class AssistantManagerInternal;
@@ -58,12 +57,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
                             int32_t action_index) override;
   void DismissNotification(const AssistantNotification& notification) override;
   void SendAssistantFeedback(const AssistantFeedback& feedback) override;
-  void AddRemoteObserver(
-      mojo::PendingRemote<mojom::ConversationObserver> observer) override;
-
-  const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
-    return &observers_;
-  }
 
  private:
   void SendVoicelessInteraction(const std::string& interaction,
@@ -73,7 +66,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
   mojo::Receiver<mojom::ConversationController> receiver_;
-  mojo::RemoteSet<mojom::ConversationObserver> observers_;
 
   // Owned by |LibassistantService|.
   ServiceController* const service_controller_;

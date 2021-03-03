@@ -17,6 +17,7 @@
 namespace assistant_client {
 
 class AssistantManagerDelegate;
+class ConversationStateListener;
 
 }  // namespace assistant_client
 
@@ -55,6 +56,7 @@ class ServiceControllerProxy {
   // Start() can only be called when the service is stopped.
   void Start(
       assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
+      assistant_client::ConversationStateListener* conversation_state_listener,
       BootupConfigPtr bootup_config,
       const AuthTokens& auth_tokens);
   // Stop and destroy the |AssistantManager| and all related objects.
