@@ -20,10 +20,12 @@ found in the LICENSE file. -->
         --radio-button-height: 120px;
       }
 
+      div[slot='content'] {
+        margin: auto 0;
+      }
+
       cr-radio-group {
         display: flex;
-        margin-bottom: auto;
-        margin-top: auto;
       }
 
       :host-context(html:not([new-layout])) cr-radio-group {
@@ -152,7 +154,7 @@ found in the LICENSE file. -->
       <div slot="subtitle">
         [[i18nDynamic(locale, subtitleKey_)]]
       </div>
-      <div slot="content" class="flex layout vertical">
+      <div slot="content" class="layout vertical">
         <cr-radio-group id="userType" selected="{{selectedUserType}}">
           <cr-card-radio-button id="selfButton" class="flex" name="self">
             <div class="card-container">
@@ -213,7 +215,7 @@ found in the LICENSE file. -->
           [[i18nDynamic(locale, 'childSignInLearnMore')]]
         </a>
       </div>
-      <div slot="content" class="flex layout vertical">
+      <div slot="content" class="layout vertical">
         <cr-radio-group id="childSignInMethod"
             selected="{{selectedSignInMethod}}">
           <cr-card-radio-button id="childCreateButton" name="create"
