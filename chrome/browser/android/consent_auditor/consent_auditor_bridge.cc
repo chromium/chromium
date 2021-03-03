@@ -14,17 +14,15 @@
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 using base::android::JavaParamRef;
 
-// TODO(crbug.com/1028580) Pass |j_account_id| as a
-// org.chromium.components.signin.identitymanager.CoreAccountId and convert it
-// to CoreAccountId using ConvertFromJavaCoreAccountId.
 static void JNI_ConsentAuditorBridge_RecordConsent(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jstring>& j_account_id,
+    const JavaParamRef<jobject>& j_account_id,
     jint j_feature,
     const JavaParamRef<jintArray>& j_consent_description,
     jint j_consent_confirmation) {
@@ -45,7 +43,6 @@ static void JNI_ConsentAuditorBridge_RecordConsent(
   }
   ConsentAuditorFactory::GetForProfile(
       ProfileAndroid::FromProfileAndroid(j_profile))
-      ->RecordSyncConsent(
-          CoreAccountId::FromString(ConvertJavaStringToUTF8(j_account_id)),
-          sync_consent);
+      ->RecordSyncConsent(ConvertFromJavaCoreAccountId(env, j_account_id),
+                          sync_consent);
 }

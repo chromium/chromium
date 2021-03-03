@@ -14,6 +14,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorBridge;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
+import org.chromium.components.signin.base.CoreAccountId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -162,7 +163,7 @@ public class ConsentTextTracker {
      * @param confirmationView The view that the user clicked when consenting
      * @param consentViews View hierarchies that implement the consent screen
      */
-    public void recordConsent(String accountId, @ConsentAuditorFeature int feature,
+    public void recordConsent(CoreAccountId accountId, @ConsentAuditorFeature int feature,
             TextView confirmationView, View... consentViews) {
         int consentConfirmation = getConsentStringResource(confirmationView);
 
