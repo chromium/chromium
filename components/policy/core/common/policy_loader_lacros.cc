@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -105,15 +104,6 @@ base::Time PolicyLoaderLacros::LastModificationTime() {
 }
 
 void PolicyLoaderLacros::NotifyPolicyUpdate(
-    const std::vector<uint8_t>& policy_fetch_response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PolicyLoaderLacros::UpdatePolicyData,
-                     weak_factory_.GetWeakPtr(), policy_fetch_response));
-}
-
-void PolicyLoaderLacros::UpdatePolicyData(
     const std::vector<uint8_t>& policy_fetch_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   policy_fetch_response_ = policy_fetch_response;

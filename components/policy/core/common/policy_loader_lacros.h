@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -48,14 +47,11 @@ class POLICY_EXPORT PolicyLoaderLacros
   base::Time LastModificationTime() override;
 
   // LacrosChromeServiceDelegateImpl::Observer implementation.
-  // Update and reload the policy with new data in the background thread.
+  // Update and reload the policy with new data.
   void NotifyPolicyUpdate(
       const std::vector<uint8_t>& policy_fetch_response) override;
 
  private:
-  // Update and reload the policy with new data.
-  void UpdatePolicyData(const std::vector<uint8_t>& policy_fetch_response);
-
   // Task runner for running background jobs.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -67,8 +63,6 @@ class POLICY_EXPORT PolicyLoaderLacros
 
   // Checks that the method is called on the right sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<PolicyLoaderLacros> weak_factory_{this};
 };
 
 }  // namespace policy
