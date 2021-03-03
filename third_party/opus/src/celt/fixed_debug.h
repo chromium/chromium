@@ -410,6 +410,51 @@ static OPUS_INLINE short MULT16_16_16(int a, int b)
    return res;
 }
 
+/* result fits in 32 bits */
+static OPUS_INLINE int MULT32_32_32(opus_int64 a, opus_int64 b)
+{
+   opus_int64 res;
+   if (!VERIFY_INT(a) || !VERIFY_INT(b))
+   {
+      fprintf (stderr, "MULT32_32_32: inputs are not int: %d %d\n", a, b);
+#ifdef FIXED_DEBUG_ASSERT
+      celt_assert(0);
+#endif
+   }
+   res = a*b;
+   if (!VERIFY_INT(res))
+   {
+      fprintf (stderr, "MULT32_32_32: output is not int: %d\n", res);
+#ifdef FIXED_DEBUG_ASSERT
+      celt_assert(0);
+#endif
+   }
+   celt_mips+=5;
+   return res;
+}
+
+static OPUS_INLINE int MULT32_32_Q16(opus_int64 a, opus_int64 b)
+{
+   opus_int64 res;
+   if (!VERIFY_INT(a) || !VERIFY_INT(b))
+   {
+      fprintf (stderr, "MULT32_32_Q16: inputs are not int: %d %d\n", a, b);
+#ifdef FIXED_DEBUG_ASSERT
+      celt_assert(0);
+#endif
+   }
+   res = ((opus_int64)(a)*(opus_int64)(b)) >> 16;
+   if (!VERIFY_INT(res))
+   {
+      fprintf (stderr, "MULT32_32_Q16: output is not int: %d*%d=%d\n", a, b, (int)res);
+#ifdef FIXED_DEBUG_ASSERT
+      celt_assert(0);
+#endif
+   }
+   celt_mips+=5;
+   return res;
+}
+
 #define MULT16_16(a, b) MULT16_16_(a, b, __FILE__, __LINE__)
 static OPUS_INLINE int MULT16_16_(int a, int b, char *file, int line)
 {
