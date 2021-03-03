@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
 #include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
@@ -74,6 +75,8 @@ class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
           ReceiveMessagesExpressRequest& request,
       const std::string& oauth_token);
 
+  void OnFastPathReadyTimeout();
+
   // network::SimpleURLLoaderStreamConsumer:
   void OnDataReceived(base::StringPiece string_piece,
                       base::OnceClosure resume) override;
@@ -98,6 +101,7 @@ class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   StreamParser stream_parser_;
+  base::OneShotTimer fast_path_ready_timeout_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

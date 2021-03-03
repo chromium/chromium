@@ -25,6 +25,17 @@
 
 namespace {
 
+const base::TimeDelta kFastPathReadyTimeout =
+    base::TimeDelta::FromMilliseconds(2500);
+
+// Timeout for the receive messages stream, from when the stream first opens.
+// This timeout applies to the Tachyon signaling process, so once we establish
+// the peer-to-peer connection this stream and timeout will be canceled. There
+// are other timeouts in the WebRTC medium that will cancel the signaling
+// process sooner than 60s, so this is just a failsafe to make sure we clean up
+// the ReceiveMessagesExpress if something goes wrong.
+const base::TimeDelta kStreamTimeout = base::TimeDelta::FromSeconds(60);
+
 // TODO(crbug.com/1123164) - Add nearby sharing policy when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("receive_messages_express", R"(
@@ -141,6 +152,8 @@ ReceiveMessagesExpress::~ReceiveMessagesExpress() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NS_LOG(VERBOSE) << __func__ << ": Receive messages session going down";
 
+  fast_path_ready_timeout_timer_.Stop();
+
   if (start_receiving_messages_callback_) {
     std::move(start_receiving_messages_callback_)
         .Run(false, mojo::NullRemote());
@@ -200,14 +213,30 @@ void ReceiveMessagesExpress::DoStartReceivingMessages(
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);
-  url_loader_->SetTimeoutDuration(kNetworkTimeout);
+  url_loader_->SetTimeoutDuration(kStreamTimeout);
   url_loader_->AttachStringForUpload(request.SerializeAsString(),
                                      "application/x-protobuf");
   url_loader_->DownloadAsStream(url_loader_factory_.get(), this);
+
+  // We are safe to use base::Unretained() here because if
+  // ReceiveMessagesExpress is destroyed the timer will go out of scope first
+  // which will cancel it.
+  fast_path_ready_timeout_timer_.Start(
+      FROM_HERE, kFastPathReadyTimeout,
+      base::BindOnce(&ReceiveMessagesExpress::OnFastPathReadyTimeout,
+                     base::Unretained(this)));
+}
+
+void ReceiveMessagesExpress::OnFastPathReadyTimeout() {
+  NS_LOG(WARNING) << __func__;
+  FailSessionAndDestruct("Timeout before receiving fast path ready");
+  // |this| will be destroyed here.
+  return;
 }
 
 void ReceiveMessagesExpress::StopReceivingMessages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  fast_path_ready_timeout_timer_.Stop();
 
   // Cancel any pending calls into this object.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -237,6 +266,7 @@ void ReceiveMessagesExpress::OnDataReceived(base::StringPiece data,
 
 void ReceiveMessagesExpress::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  fast_path_ready_timeout_timer_.Stop();
   base::Optional<NearbyShareHttpStatus> http_status =
       HttpStatusFromUrlLoader(url_loader_.get());
 
@@ -267,6 +297,7 @@ void ReceiveMessagesExpress::OnRetry(base::OnceClosure start_retry) {
 
 void ReceiveMessagesExpress::OnFastPathReady() {
   NS_LOG(VERBOSE) << __func__;
+  fast_path_ready_timeout_timer_.Stop();
   if (start_receiving_messages_callback_) {
     LogReceiveResult(/*success=*/true, /*http_status=*/base::nullopt);
     std::move(start_receiving_messages_callback_)
