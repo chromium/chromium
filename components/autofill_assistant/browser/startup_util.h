@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTUP_UTIL_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTUP_UTIL_H_
 
+#include "base/optional.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "url/gurl.h"
 
 namespace autofill_assistant {
 
@@ -50,6 +52,12 @@ class StartupUtil {
   // |options|.
   StartupMode ChooseStartupModeForIntent(const TriggerContext& trigger_context,
                                          const Options& options) const;
+
+  // Determines the startup URL. Preferably, the caller has passed this in
+  // via ORIGINAL_DEEPLINK. If they have not, we try to guess the url from the
+  // initial url. If this fails, this will return base::nullopt.
+  base::Optional<GURL> ChooseStartupUrlForIntent(
+      const TriggerContext& trigger_context);
 };
 
 }  //  namespace autofill_assistant

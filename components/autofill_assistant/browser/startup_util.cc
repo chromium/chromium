@@ -42,7 +42,7 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
 
   for (const auto& feature : features_to_check) {
     if (!base::FeatureList::IsEnabled(feature)) {
-      VLOG(1) << "Autofill Assistant not starting: feature "
+      VLOG(1) << "Invalid Autofill Assistant intent: feature "
               << feature.get().name << " required but disabled.";
       return StartupMode::FEATURE_DISABLED;
     }
@@ -50,8 +50,9 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
 
   if (!script_parameters.GetStartImmediately().has_value() ||
       !script_parameters.GetEnabled().value_or(false)) {
-    VLOG(1) << "Autofill Assistant not starting: a mandatory startup parameter "
-               "(START_IMMEDIATELY or ENABLED) was missing or invalid.";
+    VLOG(1)
+        << "Invalid Autofill Assistant intent: a mandatory startup parameter "
+           "(START_IMMEDIATELY or ENABLED) was missing or invalid.";
     return StartupMode::MANDATORY_PARAMETERS_MISSING;
   }
 
@@ -65,13 +66,13 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
              .value_or(std::string())
              .empty())) {
     VLOG(1)
-        << "Autofill Assistant not starting: START_IMMEDIATELY=false requires "
-           "either REQUEST_TRIGGER_SCRIPT or TRIGGER_SCRIPTS_BASE64.";
+        << "Invalid Autofill Assistant intent: START_IMMEDIATELY=false "
+           "requires either REQUEST_TRIGGER_SCRIPT or TRIGGER_SCRIPTS_BASE64.";
     return StartupMode::MANDATORY_PARAMETERS_MISSING;
   }
 
   if (!options.proactive_help_setting_enabled) {
-    VLOG(1) << "Autofill Assistant not starting: The 'Proactive help' Chrome "
+    VLOG(1) << "Invalid Autofill Assistant intent: The 'Proactive help' Chrome "
                "setting was turned off.";
     return StartupMode::SETTING_DISABLED;
   }
@@ -84,12 +85,29 @@ StartupUtil::StartupMode StartupUtil::ChooseStartupModeForIntent(
 
   DCHECK(script_parameters.GetRequestsTriggerScript().value_or(false));
   if (!options.msbb_setting_enabled) {
-    VLOG(1) << "Autofill Assistant not starting: REQUEST_TRIGGER_SCRIPT "
+    VLOG(1) << "Invalid Autofill Assistant intent: REQUEST_TRIGGER_SCRIPT "
                "requires MSBB, but was turned off.";
     return StartupMode::SETTING_DISABLED;
   }
 
   return StartupMode::START_RPC_TRIGGER_SCRIPT;
+}
+
+base::Optional<GURL> StartupUtil::ChooseStartupUrlForIntent(
+    const TriggerContext& trigger_context) {
+  GURL url =
+      GURL(trigger_context.GetScriptParameters().GetOriginalDeeplink().value_or(
+          std::string()));
+  if (url.is_valid()) {
+    return url;
+  }
+
+  url = GURL(trigger_context.GetInitialUrl());
+  if (url.is_valid()) {
+    return url;
+  }
+
+  return base::nullopt;
 }
 
 }  // namespace autofill_assistant

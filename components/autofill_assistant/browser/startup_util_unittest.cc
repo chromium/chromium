@@ -133,9 +133,17 @@ MATCHER_P(MatchingStartupMode,
   return arg == expected_result;
 }
 
-class StartupUtilTest : public testing::TestWithParam<TestFeatureConfig> {
+// Regular test fixture for non-parametrized tests.
+class StartupUtilTest : public testing::Test {};
+
+// Parametrized test fixture for tests that should be run against a variety of
+// different feature configurations.
+class StartupUtilParametrizedTest
+    : public StartupUtilTest,
+      public testing::WithParamInterface<TestFeatureConfig> {
  public:
   void SetUp() override {
+    StartupUtilTest::SetUp();
     std::vector<base::Feature> disabled_features;
     for (const auto& feature : kFullFeatureSet) {
       if (!IsFeatureEnabled(feature)) {
@@ -171,9 +179,9 @@ class StartupUtilTest : public testing::TestWithParam<TestFeatureConfig> {
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-};  // namespace
+};
 
-TEST_P(StartupUtilTest, StartRegularScript) {
+TEST_P(StartupUtilParametrizedTest, StartRegularScript) {
   // CCT, DFM installation required.
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
@@ -207,7 +215,7 @@ TEST_P(StartupUtilTest, StartRegularScript) {
                               : StartupMode::FEATURE_DISABLED));
 }
 
-TEST_P(StartupUtilTest, StartRpcTriggerScript) {
+TEST_P(StartupUtilParametrizedTest, StartRpcTriggerScript) {
   // Everything true, DFM already installed.
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
@@ -266,7 +274,7 @@ TEST_P(StartupUtilTest, StartRpcTriggerScript) {
                               : StartupMode::FEATURE_DISABLED));
 }
 
-TEST_P(StartupUtilTest, StartBase64TriggerScript) {
+TEST_P(StartupUtilParametrizedTest, StartBase64TriggerScript) {
   // Everything true, DFM already installed.
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
@@ -325,7 +333,7 @@ TEST_P(StartupUtilTest, StartBase64TriggerScript) {
                               : StartupMode::FEATURE_DISABLED));
 }
 
-TEST_P(StartupUtilTest, InvalidParameterCombinationsShouldFail) {
+TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
   // START_IMMEDIATELY=false requires either REQUEST_TRIGGER_SCRIPT or
   // TRIGGER_SCRIPTS_BASE64.
   EXPECT_THAT(
@@ -379,7 +387,40 @@ TEST_P(StartupUtilTest, InvalidParameterCombinationsShouldFail) {
 }
 
 INSTANTIATE_TEST_SUITE_P(StartupParamTestSuite,
-                         StartupUtilTest,
+                         StartupUtilParametrizedTest,
                          ValuesIn(kTestFeatureConfigs));
+
+TEST_F(StartupUtilTest, ChooseStartupUrlForIntentPrefersOriginalDeeplink) {
+  std::map<std::string, std::string> script_parameters = {
+      {"ORIGINAL_DEEPLINK", "https://www.original-deeplink.com"}};
+
+  EXPECT_THAT(StartupUtil().ChooseStartupUrlForIntent(
+                  {std::make_unique<ScriptParameters>(script_parameters),
+                   TriggerContext::Options{}}),
+              Eq(GURL("https://www.original-deeplink.com")));
+
+  TriggerContext::Options options;
+  options.initial_url = "https://www.initial-url.com";
+  EXPECT_THAT(
+      StartupUtil().ChooseStartupUrlForIntent(
+          {std::make_unique<ScriptParameters>(script_parameters), options}),
+      Eq(GURL("https://www.original-deeplink.com")));
+}
+
+TEST_F(StartupUtilTest, ChooseStartupUrlForIntentFallsBackToInitialUrl) {
+  TriggerContext::Options options;
+  options.initial_url = "https://www.initial-url.com";
+  EXPECT_THAT(StartupUtil().ChooseStartupUrlForIntent(
+                  {std::make_unique<ScriptParameters>(), options}),
+              Eq(GURL("https://www.initial-url.com")));
+}
+
+TEST_F(StartupUtilTest, ChooseStartupUrlForIntentFailsIfNotSpecified) {
+  EXPECT_THAT(
+      StartupUtil().ChooseStartupUrlForIntent(
+          {std::make_unique<ScriptParameters>(), TriggerContext::Options{}}),
+      Eq(base::nullopt));
+}
+
 }  // namespace
 }  // namespace autofill_assistant
