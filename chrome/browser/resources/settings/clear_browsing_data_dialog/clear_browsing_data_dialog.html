@@ -275,7 +275,7 @@
 
     <cr-dialog id="installedAppsDialog" close-text="$i18n{close}"
                ignore-popstate show-scroll-borders
-               on-close="hideInstalledApps_">
+               on-cancel="hideInstalledApps_">
       <div slot="title">
         $i18n{installedAppsTitle}
       </div>
@@ -293,7 +293,7 @@
         <paper-spinner-lite active="[[clearingInProgress_]]">
         </paper-spinner-lite>
         <cr-button class="cancel-button" disabled="[[clearingInProgress_]]"
-            on-click="hideInstalledApps_">
+            on-click="onCancelInstalledApps_">
           $i18n{cancel}
         </cr-button>
         <cr-button id="installedAppsConfirm" class="action-button"

@@ -617,10 +617,6 @@ Polymer({
   onClearBrowsingDataClick_: async function() {
     await this.getInstalledApps_();
     if (this.shouldShowInstalledApps_()) {
-      chrome.metricsPrivate.recordEnumerationValue(
-          'History.ClearBrowsingData.InstalledAppsDialogAction',
-          InstalledAppsDialogActions.CLEAR_BUTTON,
-          Object.keys(InstalledAppsDialogActions).length);
       replaceDialog(
           /** @type {!CrDialogElement} */ (this.$.clearBrowsingDataDialog),
           /** @type {!CrDialogElement} */ (this.$.installedAppsDialog));
@@ -656,6 +652,10 @@ Polymer({
    * @private
    */
   onInstalledAppsConfirmClick_: async function() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'History.ClearBrowsingData.InstalledAppsDialogAction',
+        InstalledAppsDialogActions.CLEAR_BUTTON,
+        Object.keys(InstalledAppsDialogActions).length);
     this.recordInstalledAppsInteractions_();
     await this.clearBrowsingData_();
   }
