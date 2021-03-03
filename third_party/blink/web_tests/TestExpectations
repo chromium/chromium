@@ -5731,15 +5731,6 @@ crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.h
 crbug.com/1011762 http/tests/inspector-protocol/page/page-produceCompilationCache.js [ Pass Failure Timeout ]
 crbug.com/1011762 http/tests/inspector-protocol/page/page-setProduceCompilationCache.js [ Pass Failure Timeout ]
 
-# Something is wrong when interpreting UTF-8 as Windows-1252 when streaming.
-crbug.com/1183350 external/wpt/fetch/content-type/script.window.html [ Pass Failure ]
-crbug.com/1183350 external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams-audio.https.html [ Pass Failure ]
-crbug.com/1183350 external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams-errors.https.html [ Pass Failure ]
-crbug.com/1183350 external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams-legacy.https.html [ Pass Failure ]
-crbug.com/1183350 external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams-video-frames.https.html [ Pass Failure ]
-crbug.com/1183350 external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams-video.https.html [ Pass Failure ]
-crbug.com/1183350 external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams-worker.https.html [ Pass Failure ]
-
 # Temporarily disabled to allow a WebRTC roll fixing the test.
 crbug.com/614958 external/wpt/webrtc/RTCPeerConnection-addIceCandidate.html [ Pass Failure ]
 crbug.com/614958 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-addIceCandidate.html [ Pass Failure ]

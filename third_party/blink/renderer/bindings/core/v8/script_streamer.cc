@@ -371,7 +371,7 @@ bool ScriptStreamer::ConvertEncoding(
   if (strcmp(encoding_name, "windows-1252") == 0 ||
       strcmp(encoding_name, "ISO-8859-1") == 0 ||
       strcmp(encoding_name, "US-ASCII") == 0) {
-    *encoding = v8::ScriptCompiler::StreamedSource::ONE_BYTE;
+    *encoding = v8::ScriptCompiler::StreamedSource::WINDOWS_1252;
     return true;
   }
   if (strcmp(encoding_name, "UTF-8") == 0) {
