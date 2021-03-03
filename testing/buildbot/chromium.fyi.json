@@ -30525,7 +30525,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "11e146",
+          "12d4e",
           "--xctest"
         ],
         "isolate_name": "cronet_test",
@@ -30553,7 +30553,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_11e146",
+              "name": "xcode_ios_12d4e",
               "path": "Xcode.app"
             }
           ],
@@ -30566,11 +30566,11 @@
           "--platform",
           "iPhone X",
           "--version",
-          "13.4",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "11e146",
+          "12d4e",
           "--xctest"
         ],
         "isolate_name": "cronet_test",
@@ -30578,7 +30578,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "cronet_test_iPhone X 13.4",
+        "name": "cronet_test_iPhone X 13.6",
         "resultdb": {
           "enable": true
         },
@@ -30598,7 +30598,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_11e146",
+              "name": "xcode_ios_12d4e",
               "path": "Xcode.app"
             }
           ],

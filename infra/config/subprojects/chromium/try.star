@@ -1468,7 +1468,6 @@ try_.chromium_mac_ios_builder(
             ".+/[+]/components/cronet/android/.+",
         ],
     ),
-    xcode = xcode.x11e146,
 )
 
 try_.chromium_mac_ios_builder(

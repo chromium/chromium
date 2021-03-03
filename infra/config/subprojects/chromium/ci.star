@@ -3643,7 +3643,6 @@ ci.fyi_ios_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
     notifies = ["cronet"],
-    xcode = xcode.x11e146,
 )
 
 ci.fyi_ios_builder(

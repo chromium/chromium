@@ -134,8 +134,6 @@ def xcode_enum(version):
 xcode = struct(
     # in use by webrtc mac builders
     x11c29 = xcode_enum("11c29"),
-    # in use by ci/ios-simulator-cronet and try/ios-simulator-cronet
-    x11e146 = xcode_enum("11e146"),
     # in use by ios-webkit-tot
     x11e608cwk = xcode_enum("11e608cwk"),
     # (current default for other projects) xc12.0 gm seed

@@ -262,15 +262,6 @@
     ],
     'identifier': 'iPhone X 12.4'
   },
-  'SIM_IPHONE_X_13_4': {
-    'args': [
-      '--platform',
-      'iPhone X',
-      '--version',
-      '13.4',
-    ],
-    'identifier': 'iPhone X 13.4'
-  },
   'SIM_IPHONE_X_13_5': {
     'args': [
       '--platform',

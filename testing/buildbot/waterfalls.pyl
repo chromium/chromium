@@ -2826,7 +2826,7 @@
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_11e146',
+          'xcode_12d4e',
           'xctest',
         ],
         'test_suites': {

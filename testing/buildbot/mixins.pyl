@@ -1046,23 +1046,6 @@
       },
     },
   },
-  # in use by ios-simulator-cronet
-  'xcode_11e146': {
-    '$mixin_append': {
-      'args': [
-        '--xcode-build-version',
-        '11e146'
-      ],
-    },
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_11e146',
-          'path': 'Xcode.app',
-        },
-      ],
-    },
-  },
   # in use by ios-webkit-tot
   'xcode_11e608c': {
     '$mixin_append': {
