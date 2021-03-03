@@ -157,6 +157,11 @@
         Native Theme Colors
       </message>
 
+      <!-- notification example -->
+      <message translateable="false" name="IDS_NOTIFICATION_SELECT_LABEL">
+        Notification
+      </message>
+
       <!-- progress example -->
       <message translateable="false" name="IDS_PROGRESS_SELECT_LABEL">
         Progress Bar
@@ -214,6 +219,9 @@
       <!-- tabbed pane example -->
       <message translateable="false" name="IDS_TABBED_PANE_SELECT_LABEL">
         Tabbed Pane
+      </message>
+      <message translateable="false" name="IDS_TABBED_PANE_SWAP_LAYOUT_LABEL">
+        Swap Layout
       </message>
       <message translateable="false" name="IDS_TABBED_PANE_ADD_LABEL">
         Add

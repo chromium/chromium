@@ -29,48 +29,32 @@ TabbedPaneExample::TabbedPaneExample()
 TabbedPaneExample::~TabbedPaneExample() = default;
 
 void TabbedPaneExample::CreateExampleView(View* container) {
-  auto tabbed_pane = std::make_unique<TabbedPane>();
-  tabbed_pane->set_listener(this);
-  auto add = std::make_unique<LabelButton>(
-      base::BindRepeating(&TabbedPaneExample::AddButton, base::Unretained(this),
-                          GetStringUTF16(IDS_TABBED_PANE_ADDED_LABEL)),
-      GetStringUTF16(IDS_TABBED_PANE_ADD_LABEL));
-
-  auto add_at = std::make_unique<LabelButton>(
-      base::BindRepeating(&TabbedPaneExample::AddAtButtonPressed,
-                          base::Unretained(this)),
-      GetStringUTF16(IDS_TABBED_PANE_ADD_1_LABEL));
-  auto select_at = std::make_unique<LabelButton>(
-      base::BindRepeating(
-          [](TabbedPane* pane) {
-            if (pane->GetTabCount() > 1)
-              pane->SelectTabAt(1);
-          },
-          base::Unretained(tabbed_pane_)),
-      GetStringUTF16(IDS_TABBED_PANE_SELECT_1_LABEL));
-
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(LayoutOrientation::kVertical);
 
-  auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
-                                     MaximumFlexSizeRule::kUnbounded)
-                       .WithWeight(1);
-
-  tabbed_pane_ = container->AddChildView(std::move(tabbed_pane));
-  tabbed_pane_->SetProperty(views::kFlexBehaviorKey, full_flex);
-
-  // Create a few tabs with a button first.
-  AddButton(GetStringUTF16(IDS_TABBED_PANE_TAB_1_LABEL));
-  AddButton(GetStringUTF16(IDS_TABBED_PANE_TAB_2_LABEL));
-  AddButton(GetStringUTF16(IDS_TABBED_PANE_TAB_3_LABEL));
+  CreateTabbedPane(container, TabbedPane::Orientation::kHorizontal);
 
   // Add control buttons horizontally.
-  auto* button_panel = container->AddChildView(std::make_unique<View>());
+  auto* const button_panel = container->AddChildView(std::make_unique<View>());
   button_panel->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  add_ = button_panel->AddChildView(std::move(add));
-  add_at_ = button_panel->AddChildView(std::move(add_at));
-  select_at_ = button_panel->AddChildView(std::move(select_at));
+  button_panel->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&TabbedPaneExample::SwapLayout,
+                          base::Unretained(this)),
+      GetStringUTF16(IDS_TABBED_PANE_SWAP_LAYOUT_LABEL)));
+  button_panel->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&TabbedPaneExample::AddTab, base::Unretained(this),
+                          GetStringUTF16(IDS_TABBED_PANE_ADDED_LABEL)),
+      GetStringUTF16(IDS_TABBED_PANE_ADD_LABEL)));
+  button_panel->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&TabbedPaneExample::AddAt, base::Unretained(this)),
+      GetStringUTF16(IDS_TABBED_PANE_ADD_1_LABEL)));
+  button_panel->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&TabbedPaneExample::SelectAt, base::Unretained(this)),
+      GetStringUTF16(IDS_TABBED_PANE_SELECT_1_LABEL)));
 
+  const auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
+                                           MaximumFlexSizeRule::kUnbounded)
+                             .WithWeight(1);
   for (View* view : button_panel->children())
     view->SetProperty(views::kFlexBehaviorKey, full_flex);
 }
@@ -80,23 +64,52 @@ void TabbedPaneExample::TabSelectedAt(int index) {
   PrintCurrentStatus();
 }
 
+void TabbedPaneExample::CreateTabbedPane(View* container,
+                                         TabbedPane::Orientation orientation) {
+  tabbed_pane_ =
+      container->AddChildViewAt(std::make_unique<TabbedPane>(orientation), 0);
+  tabbed_pane_->set_listener(this);
+  const auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
+                                           MaximumFlexSizeRule::kUnbounded)
+                             .WithWeight(1);
+  tabbed_pane_->SetProperty(views::kFlexBehaviorKey, full_flex);
+  AddTab(GetStringUTF16(IDS_TABBED_PANE_TAB_1_LABEL));
+  AddTab(GetStringUTF16(IDS_TABBED_PANE_TAB_2_LABEL));
+  AddTab(GetStringUTF16(IDS_TABBED_PANE_TAB_3_LABEL));
+}
+
 void TabbedPaneExample::PrintCurrentStatus() {
   PrintStatus("Tab Count:%" PRIuS ", Selected Tab:%" PRIuS,
               tabbed_pane_->GetTabCount(), tabbed_pane_->GetSelectedTabIndex());
 }
 
-void TabbedPaneExample::AddButton(const base::string16& label) {
+void TabbedPaneExample::SwapLayout() {
+  auto* const container = tabbed_pane_->parent();
+  const auto orientation =
+      (tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kHorizontal)
+          ? TabbedPane::Orientation::kVertical
+          : TabbedPane::Orientation::kHorizontal;
+  container->RemoveChildView(tabbed_pane_);
+  CreateTabbedPane(container, orientation);
+}
+
+void TabbedPaneExample::AddTab(const base::string16& label) {
   tabbed_pane_->AddTab(
       label, std::make_unique<LabelButton>(Button::PressedCallback(), label));
   PrintCurrentStatus();
 }
 
-void TabbedPaneExample::AddAtButtonPressed() {
+void TabbedPaneExample::AddAt() {
   const base::string16 label = GetStringUTF16(IDS_TABBED_PANE_ADDED_1_LABEL);
   tabbed_pane_->AddTabAtIndex(
       1, label,
       std::make_unique<LabelButton>(Button::PressedCallback(), label));
   PrintCurrentStatus();
+}
+
+void TabbedPaneExample::SelectAt() {
+  if (tabbed_pane_->GetTabCount() > 1)
+    tabbed_pane_->SelectTabAt(1);
 }
 
 }  // namespace examples
