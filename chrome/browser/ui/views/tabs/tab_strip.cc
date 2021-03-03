@@ -1757,6 +1757,7 @@ void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
     tab_at(selected_tabs_.active())
         ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   }
+  UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
 }
 
 void TabStrip::SetTabNeedsAttention(int model_index, bool attention) {
