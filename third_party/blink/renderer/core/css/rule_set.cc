@@ -60,6 +60,8 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
         return ValidPropertyFilter::kCue;
       case CSSSelector::kPseudoFirstLetter:
         return ValidPropertyFilter::kFirstLetter;
+      case CSSSelector::kPseudoFirstLine:
+        return ValidPropertyFilter::kFirstLine;
       case CSSSelector::kPseudoMarker:
         return ValidPropertyFilter::kMarker;
       case CSSSelector::kPseudoSelection:

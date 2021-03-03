@@ -440,6 +440,14 @@
       valid_type: "bool",
     },
 
+    // - valid_for_first_line: true
+    //
+    // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
+    valid_for_first_line: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - valid_for_cue: true
     //
     // https://w3c.github.io/webvtt/#the-cue-pseudo-element
@@ -696,6 +704,7 @@
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_highlight: true,
@@ -727,6 +736,7 @@
       converter: "ConvertFontFamily",
       priority: "High",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
       tree_scoped_value: true,
@@ -742,6 +752,7 @@
       keywords: ["auto", "normal", "none"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -755,6 +766,7 @@
       keywords: ["auto", "none"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -770,6 +782,7 @@
       keywords: ["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large", "larger", "smaller", "-webkit-xxx-large"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
     },
@@ -786,6 +799,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword", "Number"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -804,6 +818,7 @@
       ],
       typedom_types: ["Keyword", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
     },
@@ -819,6 +834,7 @@
       keywords: ["normal", "italic", "oblique"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
     },
@@ -839,6 +855,7 @@
       ],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -855,6 +872,7 @@
       ],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -871,6 +889,7 @@
       ],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -888,6 +907,7 @@
       ],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -903,6 +923,7 @@
       keywords: ["normal", "bold", "bolder", "lighter"],
       typedom_types: ["Keyword", "Number"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
     },
@@ -918,6 +939,7 @@
       keywords: ["normal"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -932,6 +954,7 @@
       keywords: ["normal"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
     },
@@ -943,6 +966,7 @@
       type_name: "FontSmoothingMode",
       priority: "High",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
     },
     {
       name: "forced-color-adjust",
@@ -1131,6 +1155,7 @@
         fill_type: "Attachment",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
     },
@@ -1150,6 +1175,7 @@
         fill_type_getter: "GetBlendMode",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       is_background: true,
     },
     {
@@ -1163,6 +1189,7 @@
         fill_type: "Clip",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
     },
@@ -1185,6 +1212,7 @@
         initial_color: "ComputedStyleInitialValues::InitialBackgroundColor",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_highlight: true,
       is_background: true,
@@ -1202,6 +1230,7 @@
         fill_type_getter: "GetImage",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
     },
@@ -1216,6 +1245,7 @@
         fill_type: "Origin",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
     },
@@ -1228,6 +1258,7 @@
         fill_type: "PositionX",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
     },
@@ -1240,6 +1271,7 @@
         fill_type: "PositionY",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
     },
@@ -1250,6 +1282,7 @@
         fill_type: "RepeatX",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
     },
     {
@@ -1259,6 +1292,7 @@
         fill_type: "RepeatY",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
     },
     {
@@ -1273,6 +1307,7 @@
         fill_type: "Size",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
     },
@@ -1699,6 +1734,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
     },
     {
       name: "box-sizing",
@@ -2437,6 +2473,7 @@
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -2470,6 +2507,7 @@
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length", "Number", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
     },
@@ -2873,6 +2911,7 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Number"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
     },
     {
@@ -3899,6 +3938,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_highlight: true,
     },
@@ -3914,6 +3954,7 @@
       type_name: "TextDecoration",
       converter: "ConvertFlags<TextDecoration>",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_highlight: true,
     },
@@ -3927,6 +3968,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_highlight: true,
@@ -3940,6 +3982,7 @@
       typedom_types: ["Keyword"],
       default_value: "solid",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_highlight: true,
     },
@@ -3957,6 +4000,7 @@
       keywords: ["auto", "from-font"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_highlight: true,
     },
     {
@@ -3984,6 +4028,7 @@
       type_name: "TextJustify",
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
     },
     {
       name: "text-overflow",
@@ -4009,6 +4054,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_highlight: true,
@@ -4038,6 +4084,7 @@
       typedom_types: ["Keyword"],
       default_value: "none",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -4053,6 +4100,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
     },
     {
       name: "text-underline-position",
@@ -4068,6 +4116,7 @@
       keywords: ["auto", "from-font", "under", "left", "right"],
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
     },
     {
       name: "top",
@@ -4219,6 +4268,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       keywords: ["baseline", "sub", "super", "text-top", "text-bottom", "middle"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
     },
     {
       name: "visibility",
@@ -4231,6 +4281,7 @@
       typedom_types: ["Keyword"],
       default_value: "visible",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
     },
     {
@@ -4920,6 +4971,7 @@
       typedom_types: ["normal"],
       typedom_types: ["Keyword", "Length"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_marker: true,
     },
     {
@@ -6129,6 +6181,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_highlight: true,
@@ -6180,6 +6233,7 @@
         initial_color: "ComputedStyleInitialValues::InitialBackgroundColor",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_highlight: true,
     },
@@ -6358,6 +6412,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_highlight: true,
     },
@@ -6423,6 +6478,7 @@
         initial_color: "ComputedStyleInitialValues::InitialInternalForcedBackgroundColor",
       },
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
     },
     {
@@ -6450,6 +6506,7 @@
       computed_style_custom_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
     },
@@ -6479,6 +6536,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_first_letter: true,
+      valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
     },

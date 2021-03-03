@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS color
-PASS font-size
-PASS font-weight
-FAIL position assert_equals: expected "absolute" but got "static"
-PASS nested color
-FAIL abspos assert_equals: expected "absolute" but got "static"
-Harness: the test ran to completion.
-

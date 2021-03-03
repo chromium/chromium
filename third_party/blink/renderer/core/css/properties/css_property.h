@@ -51,6 +51,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsVisited() const { return flags_ & kVisited; }
   bool IsInternal() const { return flags_ & kInternal; }
   bool IsValidForFirstLetter() const { return flags_ & kValidForFirstLetter; }
+  bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
   bool IsValidForHighlight() const { return flags_ & kValidForHighlight; }
@@ -147,6 +148,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kValidForHighlight = 1 << 18,
     // https://drafts.csswg.org/css-logical/#logical-property-group
     kInLogicalPropertyGroup = 1 << 19,
+    // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
+    kValidForFirstLine = 1 << 20,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

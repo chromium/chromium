@@ -33,6 +33,8 @@ def validate_property(prop):
         'Only longhands can have a field_template [%s]' % name
     assert not prop['valid_for_first_letter'] or prop['is_longhand'], \
         'Only longhands can be valid_for_first_letter [%s]' % name
+    assert not prop['valid_for_first_line'] or prop['is_longhand'], \
+        'Only longhands can be valid_for_first_line [%s]' % name
     assert not prop['valid_for_cue'] or prop['is_longhand'], \
         'Only longhands can be valid_for_cue [%s]' % name
     assert not prop['valid_for_marker'] or prop['is_longhand'], \

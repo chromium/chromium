@@ -58,6 +58,9 @@ enum class ValidPropertyFilter : unsigned {
   // Defined in a ::first-letter pseudo-element scope. Only properties listed in
   // https://drafts.csswg.org/css-pseudo-4/#first-letter-styling are valid.
   kFirstLetter,
+  // Defined in a ::first-line pseudo-element scope. Only properties listed in
+  // https://drafts.csswg.org/css-pseudo-4/#first-line-styling are valid.
+  kFirstLine,
   // Defined in a ::marker pseudo-element scope. Only properties listed in
   // https://drafts.csswg.org/css-pseudo-4/#marker-pseudo are valid.
   kMarker,
