@@ -408,9 +408,7 @@ template("lacros_tast_test") {
 
     # Lacros tast tests may have different test expectations based on whether
     # they're for Chromium or Chrome.
-    if (is_chrome_branded) {
-      tast_vars += [ "lacrosIsChromeBranded=true" ]
-    }
+    tast_vars += [ "lacrosIsChromeBranded=$is_chrome_branded" ]
 
     data_deps = [
       "//chrome",  # Builds the browser.
