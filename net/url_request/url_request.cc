@@ -569,7 +569,6 @@ URLRequest::URLRequest(const GURL& url,
       has_notified_completion_(false),
       received_response_content_length_(0),
       creation_time_(base::TimeTicks::Now()),
-      raw_header_size_(0),
       traffic_annotation_(traffic_annotation),
       upgrade_if_insecure_(false) {
   // Sanity check out environment.
@@ -1100,7 +1099,6 @@ void URLRequest::OnHeadersComplete() {
 
     load_timing_info_.request_start = request_start;
     load_timing_info_.request_start_time = request_start_time;
-    raw_header_size_ = GetTotalReceivedBytes();
 
     ConvertRealLoadTimesToBlockingTimes(&load_timing_info_);
   }

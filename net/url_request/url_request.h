@@ -675,10 +675,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // or after the response headers are received.
   void GetConnectionAttempts(ConnectionAttempts* out) const;
 
-  // Gets the over the wire raw header size of the response after https
-  // encryption, 0 for cached responses.
-  int raw_header_size() const { return raw_header_size_; }
-
   const NetworkTrafficAnnotationTag& traffic_annotation() const {
     return traffic_annotation_;
   }
@@ -954,9 +950,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // The proxy server used for this request, if any.
   ProxyServer proxy_server_;
-
-  // The raw header size of the response.
-  int raw_header_size_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
 
