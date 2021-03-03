@@ -222,8 +222,6 @@ class Manifest final {
 
   // Gets the underlying DictionaryValue representing the manifest.
   // Note: only use this when you KNOW you don't need the validation.
-  // TODO(karandeepb): Audit existing usages to see if they should be replaced
-  // by  available_values() instead.
   const base::DictionaryValue* value() const { return value_.get(); }
 
   // Gets the underlying DictionaryValue representing the manifest with all

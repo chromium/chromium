@@ -758,7 +758,7 @@ bool Extension::LoadDescription(base::string16* error) {
 bool Extension::LoadManifestVersion(base::string16* error) {
   // Get the original value out of the dictionary so that we can validate it
   // more strictly.
-  if (manifest_->value()->HasKey(keys::kManifestVersion)) {
+  if (manifest_->available_values().HasKey(keys::kManifestVersion)) {
     int manifest_version = 1;
     if (!manifest_->GetInteger(keys::kManifestVersion, &manifest_version) ||
         manifest_version < 1) {

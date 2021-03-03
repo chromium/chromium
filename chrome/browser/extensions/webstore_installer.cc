@@ -321,7 +321,8 @@ void WebstoreInstaller::Start() {
   InstallVerifier::Get(profile_)->AddProvisional(ids);
 
   std::string name;
-  if (!approval_->manifest->value()->GetString(manifest_keys::kName, &name)) {
+  if (!approval_->manifest->available_values().GetString(manifest_keys::kName,
+                                                         &name)) {
     NOTREACHED();
   }
   extensions::InstallTracker* tracker =
