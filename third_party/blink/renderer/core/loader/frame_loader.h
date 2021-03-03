@@ -60,7 +60,6 @@
 
 namespace blink {
 
-class ContentSecurityPolicy;
 class DocumentLoader;
 class LocalFrame;
 class Frame;
@@ -265,19 +264,6 @@ class CORE_EXPORT FrameLoader final {
                             HistoryItem* previous_history_item,
                             CommitReason);
 
-  // Creates CSP for the initial empty document. They are inherited from the
-  // owner document (parent or opener).
-  ContentSecurityPolicy* CreateCSPForInitialEmptyDocument() const;
-
-  // Creates CSP based on |response| and checks that they allow loading |url|.
-  // Returns nullptr if the check fails.
-  ContentSecurityPolicy* CreateCSP(
-      const KURL& url,
-      const ResourceResponse& response,
-      const base::Optional<WebOriginPolicy>& origin_policy,
-      ContentSecurityPolicy* initiator_csp,
-      CommitReason);
-
   LocalFrameClient* Client() const;
 
   Member<LocalFrame> frame_;
@@ -312,11 +298,6 @@ class CORE_EXPORT FrameLoader final {
   EmptyDocumentStatus empty_document_status_ = EmptyDocumentStatus::kOnlyEmpty;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
-
-  // The CSP of the latest document that has initiated a navigation in this
-  // frame. TODO(arthursonzogni): This looks fragile. The FrameLoader might be
-  // confused by several navigations submitted in a row.
-  Member<ContentSecurityPolicy> last_origin_window_csp_;
 
   // The origins for which a legacy TLS version warning has been printed. The
   // size of this set is capped, after which no more warnings are printed.

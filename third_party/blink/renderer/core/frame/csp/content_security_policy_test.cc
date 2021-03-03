@@ -131,7 +131,7 @@ TEST_F(ContentSecurityPolicyTest, ParseInsecureRequestPolicy) {
   }
 }
 
-TEST_F(ContentSecurityPolicyTest, CopyStateFrom) {
+TEST_F(ContentSecurityPolicyTest, AddPolicies) {
   csp->DidReceiveHeader("script-src 'none'", *secure_origin,
                         ContentSecurityPolicyType::kReport,
                         ContentSecurityPolicySource::kHTTP);
@@ -143,7 +143,7 @@ TEST_F(ContentSecurityPolicyTest, CopyStateFrom) {
   const KURL not_example_url("http://not-example.com");
 
   auto* csp2 = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp2->CopyStateFrom(csp.Get());
+  csp2->AddPolicies(mojo::Clone(csp->GetParsedPolicies()));
   EXPECT_FALSE(csp2->AllowScriptFromSource(
       example_url, String(), IntegrityMetadataSet(), kParserInserted,
       example_url, ResourceRequest::RedirectStatus::kNoRedirect,

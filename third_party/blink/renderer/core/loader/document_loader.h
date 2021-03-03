@@ -111,7 +111,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
  public:
   DocumentLoader(LocalFrame*,
                  WebNavigationType navigation_type,
-                 ContentSecurityPolicy* content_security_policy,
                  std::unique_ptr<WebNavigationParams> navigation_params,
                  std::unique_ptr<PolicyContainer> policy_container);
   ~DocumentLoader() override;
@@ -364,7 +363,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Member<MHTMLArchive> archive_;
 
  private:
-  network::mojom::blink::WebSandboxFlags CalculateSandboxFlags();
+  network::mojom::blink::WebSandboxFlags CalculateSandboxFlags(
+      ContentSecurityPolicy* csp);
   scoped_refptr<SecurityOrigin> CalculateOrigin(
       Document* owner_document,
       network::mojom::blink::WebSandboxFlags);
@@ -451,6 +451,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
            commit_reason_ == CommitReason::kXSLT;
   }
 
+  // Computes and creates CSP for this document.
+  ContentSecurityPolicy* CreateCSP();
+
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.
   std::unique_ptr<WebNavigationParams> params_;
@@ -502,7 +505,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   bool data_received_;
   const bool is_error_page_for_failed_navigation_;
 
-  const Member<ContentSecurityPolicy> content_security_policy_;
   mojo::Remote<mojom::blink::ContentSecurityNotifier>
       content_security_notifier_;
 
@@ -602,6 +604,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Whether this load request is cross browsing context group.
   bool is_cross_browsing_context_group_navigation_ = false;
+
+  // Content Security Policies forced by CSP Embedded Enforcement.
+  const WebVector<WebString> forced_content_security_policies_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

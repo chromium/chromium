@@ -287,16 +287,8 @@ void ContentSecurityPolicy::Trace(Visitor* visitor) const {
   visitor->Trace(console_messages_);
 }
 
-void ContentSecurityPolicy::CopyStateFrom(const ContentSecurityPolicy* other) {
-  DCHECK(policies_.IsEmpty());
-  policies_ = mojo::Clone(other->policies_);
-  for (const auto& policy : policies_)
-    ComputeInternalStateForParsedPolicy(*policy);
-  if (delegate_)
-    ReportAccumulatedHeaders();
-}
-
-void ContentSecurityPolicy::DidReceiveHeaders(
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ContentSecurityPolicy::DidReceiveHeaders(
     const ContentSecurityPolicyResponseHeaders& headers) {
   scoped_refptr<SecurityOrigin> self_origin =
       SecurityOrigin::Create(headers.ResponseUrl());
@@ -317,7 +309,8 @@ void ContentSecurityPolicy::DidReceiveHeaders(
     }
   }
 
-  AddPolicies(std::move(parsed_policies));
+  AddPolicies(mojo::Clone(parsed_policies));
+  return parsed_policies;
 }
 
 // static
@@ -329,12 +322,15 @@ ContentSecurityPolicy::ParseHeaders(
   return std::move(content_security_policy->policies_);
 }
 
-void ContentSecurityPolicy::DidReceiveHeader(
-    const String& header,
-    const SecurityOrigin& self_origin,
-    ContentSecurityPolicyType type,
-    ContentSecurityPolicySource source) {
-  AddPolicies(Parse(header, self_origin, type, source));
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ContentSecurityPolicy::DidReceiveHeader(const String& header,
+                                        const SecurityOrigin& self_origin,
+                                        ContentSecurityPolicyType type,
+                                        ContentSecurityPolicySource source) {
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
+      Parse(header, self_origin, type, source);
+  AddPolicies(mojo::Clone(parsed_policies));
+  return parsed_policies;
 }
 
 void ContentSecurityPolicy::AddPolicies(

@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
+#include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -172,6 +173,46 @@ bool IsPagePopupRunningInWebTest(LocalFrame* frame) {
          WebTestSupport::IsRunningWebTest();
 }
 
+// TODO(https://crbug.com/1041379): This should be moved out of blink.
+void ApplyOriginPolicy(ContentSecurityPolicy* csp,
+                       const KURL& response_url,
+                       const WebOriginPolicy& origin_policy,
+                       PolicyContainer& policy_container) {
+  // When this function is called. The following lines of code happen
+  // consecutively:
+  // 1) A new empty set of CSP is created.
+  // 2) CSP(s) from the HTTP response are appended.
+  // 3) CSP(s) from the OriginPolicy are appended. [HERE]
+  //
+  // As a result, at the beginning of this function, the set of CSP must not
+  // contain any OriginPolicy's CSP yet.
+  //
+  // TODO(arthursonzogni): HasPolicyFromSource(...) is used only in this DCHECK,
+  // consider removing this function.
+  DCHECK(!csp->HasPolicyFromSource(
+      network::mojom::ContentSecurityPolicySource::kOriginPolicy));
+
+  DCHECK(response_url.ProtocolIsInHTTPFamily());
+
+  scoped_refptr<SecurityOrigin> self_origin =
+      SecurityOrigin::Create(response_url);
+
+  for (const auto& policy : origin_policy.content_security_policies) {
+    policy_container.AddContentSecurityPolicies(csp->DidReceiveHeader(
+        policy, *self_origin,
+        network::mojom::ContentSecurityPolicyType::kEnforce,
+        network::mojom::ContentSecurityPolicySource::kOriginPolicy));
+  }
+
+  for (const auto& policy :
+       origin_policy.content_security_policies_report_only) {
+    policy_container.AddContentSecurityPolicies(csp->DidReceiveHeader(
+        policy, *self_origin,
+        network::mojom::ContentSecurityPolicyType::kReport,
+        network::mojom::ContentSecurityPolicySource::kOriginPolicy));
+  }
+}
+
 struct SameSizeAsDocumentLoader
     : public GarbageCollected<SameSizeAsDocumentLoader>,
       public UseCounter,
@@ -206,7 +247,6 @@ struct SameSizeAsDocumentLoader
   bool replaces_current_history_item;
   bool data_received;
   bool is_error_page_for_failed_navigation;
-  Member<ContentSecurityPolicy> content_security_policy;
   mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
   scoped_refptr<SecurityOrigin> origin_to_commit;
   WebNavigationType navigation_type;
@@ -256,6 +296,7 @@ struct SameSizeAsDocumentLoader
   bool navigation_scroll_allowed;
   bool origin_agent_cluster;
   bool is_cross_browsing_context_group_navigation;
+  const WebVector<WebString> forced_content_security_policies;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -269,7 +310,6 @@ ASSERT_SIZE(DocumentLoader, SameSizeAsDocumentLoader);
 DocumentLoader::DocumentLoader(
     LocalFrame* frame,
     WebNavigationType navigation_type,
-    ContentSecurityPolicy* content_security_policy,
     std::unique_ptr<WebNavigationParams> navigation_params,
     std::unique_ptr<PolicyContainer> policy_container)
     : params_(std::move(navigation_params)),
@@ -316,11 +356,6 @@ DocumentLoader::DocumentLoader(
       is_error_page_for_failed_navigation_(
           SchemeRegistry::ShouldTreatURLSchemeAsError(
               response_.ResponseUrl().Protocol())),
-      // The input CSP is null when the CSP check done in the FrameLoader failed
-      content_security_policy_(
-          content_security_policy
-              ? content_security_policy
-              : MakeGarbageCollected<ContentSecurityPolicy>()),
       // Loading the document was blocked by the CSP check. Pretend that this
       // was an empty document instead and don't reuse the original URL. More
       // details in: https://crbug.com/622385.
@@ -363,7 +398,9 @@ DocumentLoader::DocumentLoader(
           CopyForceEnabledOriginTrials(params_->force_enabled_origin_trials)),
       origin_agent_cluster_(params_->origin_agent_cluster),
       is_cross_browsing_context_group_navigation_(
-          params_->is_cross_browsing_context_group_navigation) {
+          params_->is_cross_browsing_context_group_navigation),
+      forced_content_security_policies_(
+          std::move(params_->forced_content_security_policies)) {
   DCHECK(frame_);
 
   // See `archive_` attribute documentation.
@@ -519,7 +556,6 @@ void DocumentLoader::Trace(Visitor* visitor) const {
   visitor->Trace(subresource_filter_);
   visitor->Trace(document_load_timing_);
   visitor->Trace(application_cache_host_);
-  visitor->Trace(content_security_policy_);
   visitor->Trace(cached_metadata_handler_);
   visitor->Trace(prefetched_signed_exchange_manager_);
   visitor->Trace(use_counter_);
@@ -1654,7 +1690,8 @@ void DocumentLoader::DidCommitNavigation() {
   }
 }
 
-network::mojom::blink::WebSandboxFlags DocumentLoader::CalculateSandboxFlags() {
+network::mojom::blink::WebSandboxFlags DocumentLoader::CalculateSandboxFlags(
+    ContentSecurityPolicy* csp) {
   // The snapshot of the FramePolicy taken, when the navigation started. This
   // contains the sandbox of the parent/opener and also the sandbox of the
   // iframe element owning this new document.
@@ -1662,7 +1699,7 @@ network::mojom::blink::WebSandboxFlags DocumentLoader::CalculateSandboxFlags() {
 
   // The new document's response can further restrict sandbox using the
   // Content-Security-Policy: sandbox directive:
-  sandbox_flags |= content_security_policy_->GetSandboxMask();
+  sandbox_flags |= csp->GetSandboxMask();
 
   if (archive_) {
     // The URL of a Document loaded from a MHTML archive is controlled by
@@ -1813,11 +1850,35 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
           commit_reason_ != CommitReason::kXSLT) ||
          !policy_container_);
 
+  bool did_have_policy_container = (policy_container_ != nullptr);
+
+  // DocumentLoader::InitializeWindow is called either on FrameLoader::Init or
+  // on FrameLoader::CommitNavigation. FrameLoader::Init always initializes a
+  // non null |policy_container_|. If |policy_container_| is null, this is
+  // committing a navigation without a policy container. This can happen in a
+  // few circumstances:
+  // 1. for a javascript or a xslt document,
+  // 2. when loading html in a page for testing,
+  // 3. this is the synchronous navigation to 'about:blank'.
+  // (On the other side notice that all navigations committed by the browser
+  // have a non null |policy_container_|). In all the cases 1-3 above, we should
+  // keep the PolicyContainer of the previous document (since the browser does
+  // not know about this and is not changing the RenderFrameHost's
+  // PolicyContainerHost).
+  if (frame_->DomWindow() && !policy_container_) {
+    policy_container_ = frame_->DomWindow()->TakePolicyContainer();
+  }
+
+  // Every window must have a policy container.
+  DCHECK(policy_container_);
+
+  ContentSecurityPolicy* csp = CreateCSP();
+
   // Provisional frames shouldn't be doing anything other than act as a
   // placeholder. Enforce a strict sandbox and ensure a unique opaque origin.
   // TODO(dcheng): Actually enforce strict sandbox flags for provisional frame.
   // For some reason, doing so breaks some random devtools tests.
-  auto sandbox_flags = CalculateSandboxFlags();
+  auto sandbox_flags = CalculateSandboxFlags(csp);
   auto security_origin = frame_->IsProvisional()
                              ? SecurityOrigin::CreateUniqueOpaque()
                              : CalculateOrigin(owner_document, sandbox_flags);
@@ -1841,20 +1902,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // LocalDOMWindow to the Document that results from the network load. See also
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get())) {
-    if (!policy_container_) {
-      // DocumentLoader::InitializeWindow is called either on FrameLoader::Init
-      // or on FrameLoader::CommitNavigation. FrameLoader::Init always
-      // initializes a non null |policy_container_|. So this is committing a
-      // navigation without a policy container. This can happen in a few
-      // circumstances, for example for a javascript or a xslt document, or when
-      // loading html in a page for testing (however notice that all navigations
-      // committed by the browser have a non null |policy_container_|). In all
-      // those cases, we should keep the PolicyContainer of the previous
-      // document (since the browser does not know about this and is not
-      // changing the RenderFrameHost's PolicyContainerHost).
-      policy_container_ = frame_->DomWindow()->TakePolicyContainer();
-    }
-
     auto* agent = GetWindowAgentForOrigin(frame_.Get(), security_origin.get(),
                                           origin_agent_cluster);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
@@ -1887,29 +1934,24 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
           frame_.Get(), security_origin.get(), origin_agent_cluster));
     }
     frame_->DomWindow()->ClearForReuse();
-  }
 
-  if (policy_container_) {
-    frame_->DomWindow()->SetPolicyContainer(std::move(policy_container_));
-  } else {
-    // This branch should only be taken if one of two things are true:
+    // If one of the two following things is true:
     // 1. JS called window.open(), Blink created a new auxiliary browsing
     //    context, and the target URL is resolved to 'about:blank'.
     // 2. A new iframe is attached, and the target URL is resolved to
     //    'about:blank'.
-    // In these cases, Blink immediately synchronously navigates to
-    // about:blank after creating the new browsing context and has initialized
-    // it with the initial empty document. In those cases, we must not pass a
-    // PolicyContainer, as this does not trigger a corresponding browser-side
-    // navigation, and we must reuse the PolicyContainer.
+    // then Blink immediately synchronously navigates to about:blank after
+    // creating the new browsing context and has initialized it with the initial
+    // empty document. In those cases, we must not pass a PolicyContainer, as
+    // this does not trigger a corresponding browser-side navigation, and we
+    // must reuse the PolicyContainer.
     //
     // TODO(antoniosartori): Improve this DCHECK to match exactly the condition
     // above.
-    DCHECK(WillLoadUrlAsEmpty(Url()));
+    DCHECK(did_have_policy_container || WillLoadUrlAsEmpty(Url()));
   }
 
-  // Every window must have a policy container.
-  DCHECK(frame_->DomWindow()->GetPolicyContainer());
+  frame_->DomWindow()->SetPolicyContainer(std::move(policy_container_));
 
   // Now that we have the final window and Agent, ensure the security origin has
   // the appropriate agent cluster id. This may derive a new security origin.
@@ -1917,7 +1959,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       frame_->DomWindow()->GetAgent()->cluster_id());
 
   SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
-  security_context.SetContentSecurityPolicy(content_security_policy_.Get());
+  security_context.SetContentSecurityPolicy(csp);
+
   security_context.SetSandboxFlags(sandbox_flags);
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that
@@ -2430,6 +2473,47 @@ bool DocumentLoader::ConsumeTextFragmentToken() {
   bool token_value = has_text_fragment_token_;
   has_text_fragment_token_ = false;
   return token_value;
+}
+
+ContentSecurityPolicy* DocumentLoader::CreateCSP() {
+  ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
+
+  if (GetFrame()->GetSettings()->GetBypassCSP())
+    return csp;  // Empty CSP.
+
+  // Add policies from the policy container. If this is a XSLT or javascript:
+  // document, this will just keep the current policies. If this is a local
+  // scheme document, the policy container contains the right policies (as
+  // inherited in the NavigationRequest in the browser). Otherwise, the policy
+  // container is empty.
+  csp->AddPolicies(
+      mojo::Clone(policy_container_->GetPolicies().content_security_policies));
+
+  // Parse CSPs from the HTTP response and add them to the policy container.
+  //
+  // TODO(https://crbug.com/1181683): We should prepopulate the policy container
+  // in the browser process with the CSPs from the parsed headers and skip this
+  // step.
+  policy_container_->AddContentSecurityPolicies(
+      csp->DidReceiveHeaders(ContentSecurityPolicyResponseHeaders(response_)));
+
+  // Retrieve CSP stored in the OriginPolicy and add them to the policy
+  // container.
+  if (origin_policy_) {
+    ApplyOriginPolicy(csp, Url(), origin_policy_.value(), *policy_container_);
+  }
+
+  // The following are Content Security Policies forced by CSP Embedded
+  // Enforcement.
+  for (auto& policy : forced_content_security_policies_) {
+    scoped_refptr<SecurityOrigin> self_origin = SecurityOrigin::Create(Url());
+    policy_container_->AddContentSecurityPolicies(csp->DidReceiveHeader(
+        policy, *self_origin,
+        network::mojom::ContentSecurityPolicyType::kEnforce,
+        network::mojom::ContentSecurityPolicySource::kHTTP));
+  }
+
+  return csp;
 }
 
 DEFINE_WEAK_IDENTIFIER_MAP(DocumentLoader)

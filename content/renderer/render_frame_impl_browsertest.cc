@@ -134,6 +134,7 @@ class RenderFrameImplTest : public RenderViewTest {
         view_->GetMainRenderFrame()->GetWebFrame()->FirstChild())
         ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
                  blink::RemoteFrameToken());
+    MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
         TestRenderFrame::CreateStubFrameReceiver(),
@@ -142,7 +143,11 @@ class RenderFrameImplTest : public RenderViewTest {
         base::UnguessableToken::Create(), std::move(frame_replication_state),
         &compositor_deps_, std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
-        /*has_committed_real_load=*/true, CreateStubPolicyContainer());
+        /*has_committed_real_load=*/true,
+        blink::mojom::PolicyContainer::New(
+            blink::mojom::PolicyContainerPolicies::New(),
+            mock_policy_container_host
+                .BindNewEndpointAndPassDedicatedRemote()));
 
     frame_ = static_cast<TestRenderFrame*>(
         RenderFrameImpl::FromRoutingID(kSubframeRouteId));

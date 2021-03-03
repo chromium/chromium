@@ -100,16 +100,18 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
   if (window->GetFrame()->GetSettings()->GetBypassCSP())
     return;
   if (EqualIgnoringASCIICase(equiv, "content-security-policy")) {
-    window->GetContentSecurityPolicy()->DidReceiveHeader(
-        content, *(window->GetSecurityOrigin()),
-        network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kMeta);
+    window->GetPolicyContainer()->AddContentSecurityPolicies(
+        window->GetContentSecurityPolicy()->DidReceiveHeader(
+            content, *(window->GetSecurityOrigin()),
+            network::mojom::ContentSecurityPolicyType::kEnforce,
+            network::mojom::ContentSecurityPolicySource::kMeta));
   } else if (EqualIgnoringASCIICase(equiv,
                                     "content-security-policy-report-only")) {
-    window->GetContentSecurityPolicy()->DidReceiveHeader(
-        content, *(window->GetSecurityOrigin()),
-        network::mojom::ContentSecurityPolicyType::kReport,
-        network::mojom::ContentSecurityPolicySource::kMeta);
+    window->GetPolicyContainer()->AddContentSecurityPolicies(
+        window->GetContentSecurityPolicy()->DidReceiveHeader(
+            content, *(window->GetSecurityOrigin()),
+            network::mojom::ContentSecurityPolicyType::kReport,
+            network::mojom::ContentSecurityPolicySource::kMeta));
   } else {
     NOTREACHED();
   }

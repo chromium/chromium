@@ -44,7 +44,6 @@
 
 namespace blink {
 
-class ContentSecurityPolicy;
 class PolicyContainer;
 
 // Extends blink::DocumentLoader to attach |extra_data_| to store data that can
@@ -54,7 +53,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
  public:
   WebDocumentLoaderImpl(LocalFrame*,
                         WebNavigationType navigation_type,
-                        ContentSecurityPolicy*,
                         std::unique_ptr<WebNavigationParams> navigation_params,
                         std::unique_ptr<PolicyContainer> policy_container);
   ~WebDocumentLoaderImpl() override;

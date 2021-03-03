@@ -751,15 +751,14 @@ void LocalFrameClientImpl::SelectorMatchChanged(
 DocumentLoader* LocalFrameClientImpl::CreateDocumentLoader(
     LocalFrame* frame,
     WebNavigationType navigation_type,
-    ContentSecurityPolicy* content_security_policy,
     std::unique_ptr<WebNavigationParams> navigation_params,
     std::unique_ptr<PolicyContainer> policy_container,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   DCHECK(frame);
   WebDocumentLoaderImpl* document_loader =
-      MakeGarbageCollected<WebDocumentLoaderImpl>(
-          frame, navigation_type, content_security_policy,
-          std::move(navigation_params), std::move(policy_container));
+      MakeGarbageCollected<WebDocumentLoaderImpl>(frame, navigation_type,
+                                                  std::move(navigation_params),
+                                                  std::move(policy_container));
   document_loader->SetExtraData(std::move(extra_data));
   if (web_frame_->Client())
     web_frame_->Client()->DidCreateDocumentLoader(document_loader);

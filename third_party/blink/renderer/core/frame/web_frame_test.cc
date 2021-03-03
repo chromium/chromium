@@ -7637,8 +7637,10 @@ TEST_F(WebFrameTest, IPAddressSpace) {
     params->navigation_timings.navigation_start = base::TimeTicks::Now();
     params->navigation_timings.fetch_start = base::TimeTicks::Now();
     params->is_browser_initiated = true;
+    MockPolicyContainerHost mock_policy_container_host;
     params->policy_container = std::make_unique<WebPolicyContainer>(
-        WebPolicyContainerPolicies(), mojo::NullAssociatedRemote());
+        WebPolicyContainerPolicies(),
+        mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     params->policy_container->policies.ip_address_space = value;
     web_view_helper.LocalMainFrame()->CommitNavigation(std::move(params),
                                                        nullptr);

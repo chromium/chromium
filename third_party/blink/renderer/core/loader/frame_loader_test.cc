@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -133,10 +134,12 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   std::unique_ptr<WebNavigationParams> params =
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), url);
+  MockPolicyContainerHost mock_policy_container_host;
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies{network::mojom::ReferrerPolicy::kAlways,
-                                 network::mojom::IPAddressSpace::kPublic},
-      mojo::NullAssociatedRemote());
+                                 network::mojom::IPAddressSpace::kPublic,
+                                 WebVector<WebContentSecurityPolicy>()},
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);

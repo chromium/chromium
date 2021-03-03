@@ -194,13 +194,20 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool IsBound();
   void BindToDelegate(ContentSecurityPolicyDelegate&);
-  void CopyStateFrom(const ContentSecurityPolicy*);
 
-  void DidReceiveHeaders(const ContentSecurityPolicyResponseHeaders&);
-  void DidReceiveHeader(const String&,
-                        const SecurityOrigin& self_origin,
-                        network::mojom::ContentSecurityPolicyType,
-                        network::mojom::ContentSecurityPolicySource);
+  // Parse and store Content Security Policies from the received headers. Return
+  // a copy of the policies which have just been parsed.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> DidReceiveHeaders(
+      const ContentSecurityPolicyResponseHeaders&);
+
+  // Parse and store Content Security Policies from a raw string. Return
+  // a copy of the policies which have just been parsed.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> DidReceiveHeader(
+      const String&,
+      const SecurityOrigin& self_origin,
+      network::mojom::ContentSecurityPolicyType,
+      network::mojom::ContentSecurityPolicySource);
+
   void ReportAccumulatedHeaders() const;
 
   void AddPolicies(

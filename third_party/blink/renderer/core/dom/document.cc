@@ -3333,8 +3333,6 @@ void Document::open(LocalDOMWindow* entered_window,
     Loader()->RunURLAndHistoryUpdateSteps(new_url, state_object);
 
     if (dom_window_ != entered_window) {
-      auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-      csp->CopyStateFrom(entered_window->GetContentSecurityPolicy());
       // We inherit the sandbox flags of the entered document, so mask on
       // the ones contained in the CSP. The operator| is a bitwise operation on
       // the sandbox flags bits. It makes the sandbox policy stricter (or as
@@ -3358,9 +3356,6 @@ void Document::open(LocalDOMWindow* entered_window,
       dom_window_->GetSecurityContext().SetSandboxFlags(
           dom_window_->GetSecurityContext().GetSandboxFlags() |
           entered_window->GetSandboxFlags());
-      dom_window_->GetSecurityContext().SetContentSecurityPolicy(csp);
-      dom_window_->GetContentSecurityPolicy()->BindToDelegate(
-          dom_window_->GetContentSecurityPolicyDelegate());
 
       dom_window_->GetSecurityContext().SetSecurityOrigin(
           entered_window->GetMutableSecurityOrigin());

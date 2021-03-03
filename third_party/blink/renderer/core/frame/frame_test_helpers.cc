@@ -460,12 +460,14 @@ WebLocalFrameImpl* WebViewHelper::CreateLocalChild(
   CheckFrameIsAssociatedWithWebView(&parent);
   std::unique_ptr<TestWebFrameClient> owned_client;
   client = CreateDefaultClientIfNeeded(client, owned_client);
+  MockPolicyContainerHost mock_policy_container_host;
   auto* frame = To<WebLocalFrameImpl>(parent.CreateLocalChild(
       mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
       nullptr, previous_sibling, properties,
       mojom::blink::FrameOwnerElementType::kIframe, LocalFrameToken(), nullptr,
-      std::make_unique<WebPolicyContainer>(WebPolicyContainerPolicies(),
-                                           mojo::NullAssociatedRemote())));
+      std::make_unique<WebPolicyContainer>(
+          WebPolicyContainerPolicies(),
+          mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote())));
   client->Bind(frame, std::move(owned_client));
 
   TestWebFrameWidget* frame_widget =

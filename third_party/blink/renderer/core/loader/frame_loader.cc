@@ -116,7 +116,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
-#include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -128,48 +127,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-namespace {
-
-void ApplyOriginPolicy(ContentSecurityPolicy* csp,
-                       const KURL& response_url,
-                       const WebOriginPolicy& origin_policy) {
-  // When this function is called. The following lines of code happen
-  // consecutively:
-  // 1) A new empty set of CSP is created.
-  // 2) CSP(s) from the HTTP response are appended.
-  // 3) CSP(s) from the OriginPolicy are appended. [HERE]
-  //
-  // As a result, at the beginning of this function, the set of CSP must not
-  // contain any OriginPolicy's CSP yet.
-  //
-  // TODO(arthursonzogni): HasPolicyFromSource(...) is used only in this DCHECK,
-  // consider removing this function.
-  DCHECK(!csp->HasPolicyFromSource(
-      network::mojom::ContentSecurityPolicySource::kOriginPolicy));
-
-  DCHECK(response_url.ProtocolIsInHTTPFamily());
-
-  scoped_refptr<SecurityOrigin> self_origin =
-      SecurityOrigin::Create(response_url);
-
-  for (const auto& policy : origin_policy.content_security_policies) {
-    csp->DidReceiveHeader(
-        policy, *self_origin,
-        network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kOriginPolicy);
-  }
-
-  for (const auto& policy :
-       origin_policy.content_security_policies_report_only) {
-    csp->DidReceiveHeader(
-        policy, *self_origin,
-        network::mojom::ContentSecurityPolicyType::kReport,
-        network::mojom::ContentSecurityPolicySource::kOriginPolicy);
-  }
-}
-
-}  // namespace
 
 bool IsBackForwardLoadType(WebFrameLoadType type) {
   return type == WebFrameLoadType::kBackForward;
@@ -240,7 +197,6 @@ void FrameLoader::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(progress_tracker_);
   visitor->Trace(document_loader_);
-  visitor->Trace(last_origin_window_csp_);
 }
 
 void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
@@ -256,9 +212,8 @@ void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
       PendingEffectiveSandboxFlags();
 
   DocumentLoader* new_document_loader = Client()->CreateDocumentLoader(
-      frame_, kWebNavigationTypeOther, CreateCSPForInitialEmptyDocument(),
-      std::move(navigation_params), std::move(policy_container),
-      nullptr /* extra_data */);
+      frame_, kWebNavigationTypeOther, std::move(navigation_params),
+      std::move(policy_container), nullptr /* extra_data */);
 
   CommitDocumentLoader(new_document_loader, base::nullopt, nullptr,
                        CommitReason::kInitialization);
@@ -741,17 +696,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         .BindReceiver(navigation_initiator.InitWithNewPipeAndPassReceiver());
   }
 
-  // Record the document that has initiated this navigation. It will be used at
-  // navigation commit time for inheritance.
-  // TODO(arthursonzogni): This looks very fragile. It seems easy to confuse the
-  // FrameLoader by starting several navigations in a row. We should get rid of
-  // this.
-  last_origin_window_csp_ = MakeGarbageCollected<ContentSecurityPolicy>();
-  if (origin_window && origin_window->GetContentSecurityPolicy()) {
-    last_origin_window_csp_->CopyStateFrom(
-        origin_window->GetContentSecurityPolicy());
-  }
-
   // TODO(arthursonzogni): 'frame-src' check is disabled on the
   // renderer side, but is enforced on the browser side.
   // See http://crbug.com/692595 for understanding why it
@@ -1031,24 +975,6 @@ void FrameLoader::CommitNavigation(
   // FrameLoader::Init.
   HistoryItem* previous_history_item = GetDocumentLoader()->GetHistoryItem();
 
-  // Check if the CSP of the response should block the new document from
-  // committing before unloading the current document. This will allow to report
-  // violations and display console messages properly.
-  ContentSecurityPolicy* content_security_policy = CreateCSP(
-      navigation_params->url, navigation_params->response.ToResourceResponse(),
-      navigation_params->origin_policy, last_origin_window_csp_.Release(),
-      commit_reason);
-
-  DCHECK(content_security_policy);
-
-  for (auto& csp : navigation_params->forced_content_security_policies) {
-    scoped_refptr<SecurityOrigin> self_origin =
-        SecurityOrigin::Create(navigation_params->url);
-    content_security_policy->DidReceiveHeader(
-        csp, *self_origin, network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kHTTP);
-  }
-
   // If this is a javascript: URL or XSLT commit, we must copy the ExtraData
   // from the previous DocumentLoader to ensure the new DocumentLoader behaves
   // the same way as the previous one.
@@ -1119,9 +1045,8 @@ void FrameLoader::CommitNavigation(
   // TODO(dgozman): get rid of provisional document loader and most of the code
   // below. We should probably call DocumentLoader::CommitNavigation directly.
   DocumentLoader* new_document_loader = Client()->CreateDocumentLoader(
-      frame_, navigation_type, content_security_policy,
-      std::move(navigation_params), std::move(policy_container),
-      std::move(extra_data));
+      frame_, navigation_type, std::move(navigation_params),
+      std::move(policy_container), std::move(extra_data));
 
   CommitDocumentLoader(new_document_loader, unload_timing,
                        previous_history_item, commit_reason);
@@ -1749,72 +1674,6 @@ inline void FrameLoader::TakeObjectSnapshot() const {
     return;
   }
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID("loading", "FrameLoader", this, this);
-}
-
-ContentSecurityPolicy* FrameLoader::CreateCSPForInitialEmptyDocument() const {
-  ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-
-  Frame* owner_frame = frame_->Parent() ? frame_->Parent() : frame_->Opener();
-  if (owner_frame) {
-    ContentSecurityPolicy* owner_csp =
-        owner_frame->GetSecurityContext()->GetContentSecurityPolicy();
-    csp->CopyStateFrom(owner_csp);
-  }
-
-  return csp;
-}
-
-ContentSecurityPolicy* FrameLoader::CreateCSP(
-    const KURL& url,
-    const ResourceResponse& response,
-    const base::Optional<WebOriginPolicy>& origin_policy,
-    ContentSecurityPolicy* initiator_csp,
-    CommitReason commit_reason) {
-  // about:srcdoc inherits CSP from its parent.
-  if (url.IsAboutSrcdocURL()) {
-    ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-    csp->CopyStateFrom(frame_->Tree()
-                           .Parent()
-                           ->GetSecurityContext()
-                           ->GetContentSecurityPolicy());
-    return csp;
-  }
-
-  // Documents constructed by XSLTProcessor inherit CSP from the previous
-  // Document.
-  if (commit_reason == CommitReason::kXSLT) {
-    ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-    csp->CopyStateFrom(frame_->DomWindow()->GetContentSecurityPolicy());
-    return csp;
-  }
-
-  // Documents with a local-scheme inherits CSP from their navigation initiator.
-  bool is_local_scheme = url.IsEmpty() || url.ProtocolIsAbout() ||
-                         url.ProtocolIsData() || url.ProtocolIs("blob") ||
-                         url.ProtocolIs("filesystem");
-  if (is_local_scheme) {
-    if (initiator_csp)
-      return initiator_csp;
-    return MakeGarbageCollected<ContentSecurityPolicy>();
-  }
-
-  // In the main case (outside of the ones above), CSP(s) are NOT inherited.
-  // Otherwise, it would allow a malicious parent/opener to block some
-  // iframe/popup's script at a fine-grained level.
-
-  ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-
-  if (frame_->GetSettings()->GetBypassCSP())
-    return csp;  // Empty CSP.
-
-  // Parse CSP from the HTTP response.
-  csp->DidReceiveHeaders(ContentSecurityPolicyResponseHeaders(response));
-
-  // Retrieve CSP stored in the OriginPolicy.
-  if (origin_policy)
-    ApplyOriginPolicy(csp, url, origin_policy.value());
-
-  return csp;
 }
 
 }  // namespace blink

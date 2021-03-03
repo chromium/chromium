@@ -257,17 +257,21 @@ void TestRenderFrame::Navigate(network::mojom::URLResponseHeadPtr head,
       blink::ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
           network::NotImplementedURLLoaderFactory::Create());
 
-  CommitNavigation(std::move(common_params), std::move(commit_params),
-                   std::move(head), mojo::ScopedDataPipeConsumerHandle(),
-                   network::mojom::URLLoaderClientEndpointsPtr(),
-                   std::move(pending_factory_bundle), base::nullopt,
-                   blink::mojom::ControllerServiceWorkerInfoPtr(),
-                   blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
-                   mojo::NullRemote() /* prefetch_loader_factory */,
-                   base::UnguessableToken::Create(),
-                   CreateStubPolicyContainer(),
-                   base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
-                                  base::Unretained(mock_frame_host_.get())));
+  MockPolicyContainerHost mock_policy_container_host;
+  CommitNavigation(
+      std::move(common_params), std::move(commit_params), std::move(head),
+      mojo::ScopedDataPipeConsumerHandle(),
+      network::mojom::URLLoaderClientEndpointsPtr(),
+      std::move(pending_factory_bundle), base::nullopt,
+      blink::mojom::ControllerServiceWorkerInfoPtr(),
+      blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
+      mojo::NullRemote() /* prefetch_loader_factory */,
+      base::UnguessableToken::Create(),
+      blink::mojom::PolicyContainer::New(
+          blink::mojom::PolicyContainerPolicies::New(),
+          mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),
+      base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
+                     base::Unretained(mock_frame_host_.get())));
 }
 
 void TestRenderFrame::Navigate(mojom::CommonNavigationParamsPtr common_params,
