@@ -1025,7 +1025,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.action = action;
 
-  [handler showSnackbarMessage:message];
+  [handler showSnackbarMessage:message
+                withHapticType:UINotificationFeedbackTypeError];
 }
 
 - (BOOL)isIncognitoDisabled {

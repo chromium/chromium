@@ -17,6 +17,10 @@
 // is visible. If there's no bottom toolbar offset will be 0.
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message;
 
+// Shows a snackbar with |message| while having a haptic feedback with |type|.
+- (void)showSnackbarMessage:(MDCSnackbarMessage*)message
+             withHapticType:(UINotificationFeedbackType)type;
+
 // Shows a snackbar with |message| using |bottomOffset| as bottom offset.
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
                bottomOffset:(CGFloat)offset;

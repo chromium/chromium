@@ -111,6 +111,10 @@ constexpr char kPassword[] = "test";
 }
 
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
+             withHapticType:(UINotificationFeedbackType)type {
+}
+
+- (void)showSnackbarMessage:(MDCSnackbarMessage*)message
                bottomOffset:(CGFloat)offset {
 }
 
