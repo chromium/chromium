@@ -22,7 +22,6 @@
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_features.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_helper.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service.h"
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
@@ -166,12 +165,13 @@ blink::mojom::HeavyAdReason GetHeavyAdReason(ad_metrics::HeavyAdStatus status) {
 
 // static
 std::unique_ptr<AdsPageLoadMetricsObserver>
-AdsPageLoadMetricsObserver::CreateIfNeeded(content::WebContents* web_contents) {
+AdsPageLoadMetricsObserver::CreateIfNeeded(content::WebContents* web_contents,
+                                           HeavyAdService* heavy_ad_service) {
   if (!base::FeatureList::IsEnabled(subresource_filter::kAdTagging) ||
       !subresource_filter::ContentSubresourceFilterThrottleManager::
           FromWebContents(web_contents))
     return nullptr;
-  return std::make_unique<AdsPageLoadMetricsObserver>();
+  return std::make_unique<AdsPageLoadMetricsObserver>(heavy_ad_service);
 }
 
 // static
@@ -228,18 +228,24 @@ int AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
 }
 
 AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
+    HeavyAdService* heavy_ad_service,
     base::TickClock* clock,
     HeavyAdBlocklist* blocklist)
     : subresource_observer_(this),
       clock_(clock ? clock : base::DefaultTickClock::GetInstance()),
       restricted_navigation_ad_tagging_enabled_(base::FeatureList::IsEnabled(
           features::kRestrictedNavigationAdTagging)),
+      heavy_ad_service_(heavy_ad_service),
       heavy_ad_blocklist_(blocklist),
       heavy_ad_privacy_mitigations_enabled_(
           base::FeatureList::IsEnabled(features::kHeavyAdPrivacyMitigations)),
       heavy_ad_threshold_noise_provider_(
           std::make_unique<HeavyAdThresholdNoiseProvider>(
-              heavy_ad_privacy_mitigations_enabled_ /* use_noise */)) {}
+              heavy_ad_privacy_mitigations_enabled_ /* use_noise */)) {
+  // Manual setting of the heavy ad blocklist should be used only as a
+  // convenience for tests that don't create HeavyAdService.
+  DCHECK(!heavy_ad_service_ || !heavy_ad_blocklist_);
+}
 
 AdsPageLoadMetricsObserver::~AdsPageLoadMetricsObserver() = default;
 
@@ -1361,12 +1367,10 @@ bool AdsPageLoadMetricsObserver::IsBlocklisted(bool report) {
 HeavyAdBlocklist* AdsPageLoadMetricsObserver::GetHeavyAdBlocklist() {
   if (heavy_ad_blocklist_)
     return heavy_ad_blocklist_;
-  auto* heavy_ad_service = HeavyAdServiceFactory::GetForBrowserContext(
-      GetDelegate().GetWebContents()->GetBrowserContext());
-  if (!heavy_ad_service)
+  if (!heavy_ad_service_)
     return nullptr;
 
-  return heavy_ad_service->heavy_ad_blocklist();
+  return heavy_ad_service_->heavy_ad_blocklist();
 }
 
 void AdsPageLoadMetricsObserver::UpdateAggregateMemoryUsage(

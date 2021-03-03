@@ -32,6 +32,7 @@ extern const base::Feature kRestrictedNavigationAdTagging;
 }
 
 class HeavyAdBlocklist;
+class HeavyAdService;
 
 // This observer labels each sub-frame as an ad or not, and keeps track of
 // relevant per-frame and whole-page byte statistics.
@@ -70,7 +71,8 @@ class AdsPageLoadMetricsObserver
   // Returns a new AdsPageLoadMetricsObserver. If the feature is disabled it
   // returns nullptr.
   static std::unique_ptr<AdsPageLoadMetricsObserver> CreateIfNeeded(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      HeavyAdService* heavy_ad_service);
 
   // For a given subframe, returns whether or not the subframe's url would be
   // considering same origin to the main frame's url. |use_parent_origin|
@@ -80,7 +82,10 @@ class AdsPageLoadMetricsObserver
       content::RenderFrameHost* sub_host,
       bool use_parent_origin);
 
-  explicit AdsPageLoadMetricsObserver(base::TickClock* clock = nullptr,
+  // |clock| and |blocklist| should be set only by tests. In particular,
+  // |blocklist| should be set only if |heavy_ad_service| is null.
+  explicit AdsPageLoadMetricsObserver(HeavyAdService* heavy_ad_service,
+                                      base::TickClock* clock = nullptr,
                                       HeavyAdBlocklist* blocklist = nullptr);
   ~AdsPageLoadMetricsObserver() override;
 
@@ -297,6 +302,10 @@ class AdsPageLoadMetricsObserver
   // true. Used as a cache to avoid checking the blocklist once the page is
   // blocklisted. Once blocklisted, a page load cannot be unblocklisted.
   base::Optional<blocklist::BlocklistReason> heavy_ads_blocklist_reason_;
+
+  // Pointer to the HeavyAdService from which the heavy ad blocklist is obtained
+  // in production.
+  HeavyAdService* heavy_ad_service_;
 
   // Pointer to the blocklist used to throttle the heavy ad intervention. Can
   // be replaced by tests.

@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/aborts_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/floc_page_load_metrics_observer.h"
@@ -129,7 +130,10 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     tracker->AddObserver(
         std::make_unique<DataSaverSiteBreakdownMetricsObserver>());
     std::unique_ptr<AdsPageLoadMetricsObserver> ads_observer =
-        AdsPageLoadMetricsObserver::CreateIfNeeded(tracker->GetWebContents());
+        AdsPageLoadMetricsObserver::CreateIfNeeded(
+            tracker->GetWebContents(),
+            HeavyAdServiceFactory::GetForBrowserContext(
+                tracker->GetWebContents()->GetBrowserContext()));
     if (ads_observer)
       tracker->AddObserver(std::move(ads_observer));
 

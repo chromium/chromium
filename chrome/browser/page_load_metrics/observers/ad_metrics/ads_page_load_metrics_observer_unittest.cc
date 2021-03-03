@@ -806,7 +806,7 @@ class AdsPageLoadMetricsObserverTest
  private:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) {
     auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
-        clock_.get(), test_blocklist_.get());
+        /*heavy_ad_service=*/nullptr, clock_.get(), test_blocklist_.get());
     ads_observer_ = observer.get();
 
     // Mock the noise provider to make tests deterministic. Tests can override
