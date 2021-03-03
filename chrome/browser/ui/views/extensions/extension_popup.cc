@@ -4,14 +4,11 @@
 
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/insets.h"
@@ -172,14 +169,10 @@ void ExtensionPopup::OnExtensionUnloaded(
   }
 }
 
-void ExtensionPopup::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  DCHECK_EQ(type, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME);
-  DCHECK_EQ(host_->host_contents(),
-            content::Source<content::WebContents>(source).ptr());
+void ExtensionPopup::DocumentOnLoadCompletedInMainFrame() {
   // Show when the content finishes loading and its width is computed.
   ShowBubble();
+  Observe(nullptr);
 }
 
 void ExtensionPopup::OnTabStripModelChanged(
@@ -257,9 +250,7 @@ ExtensionPopup::ExtensionPopup(
     ShowBubble();
   } else {
     // Wait to show the popup until the contained host finishes loading.
-    registrar_.Add(
-        this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::Source<content::WebContents>(host_->host_contents()));
+    Observe(host_->host_contents());
   }
 }
 

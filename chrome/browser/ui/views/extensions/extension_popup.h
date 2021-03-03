@@ -13,8 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_registry.h"
@@ -47,7 +46,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
 #endif
                        public ExtensionViewViews::Container,
                        public extensions::ExtensionRegistryObserver,
-                       public content::NotificationObserver,
+                       public content::WebContentsObserver,
                        public TabStripModelObserver,
                        public content::DevToolsAgentHostObserver,
                        public extensions::ExtensionHostObserver {
@@ -107,10 +106,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::WebContentsObserver:
+  void DocumentOnLoadCompletedInMainFrame() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -153,8 +150,6 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
       extension_registry_observation_{this};
 
   ShowAction show_action_;
-
-  content::NotificationRegistrar registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_
