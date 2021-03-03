@@ -84,6 +84,9 @@ public class PrivacySandboxSettingsFragment
         privacySandboxToggle.setChecked(PrivacySandboxBridge.isPrivacySandboxEnabled());
 
         parseAndRecordReferrer(bundle);
+
+        // Enable the options menu to be able to use a custom question mark button.
+        setHasOptionsMenu(true);
     }
 
     @Override
