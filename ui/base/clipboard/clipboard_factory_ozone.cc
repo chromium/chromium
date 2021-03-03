@@ -8,11 +8,11 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
 #if defined(USE_OZONE)
-#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/clipboard_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
