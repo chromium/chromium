@@ -24,9 +24,6 @@ namespace ash {
 
 namespace {
 
-// The amount the grid's fling curve's offsets are scaled down.
-constexpr float kFlingScaleDown = 3.f;
-
 // Do not bother moving the grid until a series of scrolls has reached this
 // threshold.
 constexpr float kScrollOffsetThresholdDp = 1.f;
