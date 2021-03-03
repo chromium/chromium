@@ -19,6 +19,10 @@ bool TestDownloadShelf::IsClosing() const {
   return false;
 }
 
+views::View* TestDownloadShelf::GetView() {
+  return nullptr;
+}
+
 void TestDownloadShelf::DoShowDownload(
     DownloadUIModel::DownloadUIModelPtr download) {
   did_add_download_ = true;

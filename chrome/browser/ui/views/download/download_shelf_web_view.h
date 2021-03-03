@@ -6,13 +6,18 @@
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_WEB_VIEW_H_
 
 #include "chrome/browser/download/download_shelf.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/webview/webview.h"
 
 class Browser;
+class BrowserView;
 
-class DownloadShelfWebView : public DownloadShelf, public views::WebView {
+class DownloadShelfWebView : public DownloadShelf,
+                             public views::WebView,
+                             public views::AnimationDelegateViews {
  public:
-  explicit DownloadShelfWebView(Browser* browser);
+  DownloadShelfWebView(Browser* browser, BrowserView* parent);
   DownloadShelfWebView(const DownloadShelfWebView&) = delete;
   DownloadShelfWebView& operator=(const DownloadShelfWebView&) = delete;
   ~DownloadShelfWebView() override;
@@ -28,10 +33,26 @@ class DownloadShelfWebView : public DownloadShelf, public views::WebView {
   void DoHide() override;
   void DoUnhide() override;
 
+  // views::AnimationDelegateViews:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
+
+  // views::WebView:
+  void OnThemeChanged() override;
+
+  views::View* GetView() override;
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(DownloadShelfWebViewTest, VisibilityTest);
+
   // DownloadShelf:
   bool IsShowing() const override;
   bool IsClosing() const override;
+
+  BrowserView* parent_;
+
+  // The show/hide animation for the shelf itself.
+  gfx::SlideAnimation shelf_animation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_WEB_VIEW_H_

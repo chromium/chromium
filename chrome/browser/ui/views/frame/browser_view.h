@@ -145,6 +145,8 @@ class BrowserView : public BrowserWindow,
     return top_controls_slide_controller_.get();
   }
 
+  void SetDownloadShelfForTest(DownloadShelf* download_shelf);
+
   // This suppresses the slide behaviors of top-controls and so the top controls
   // will stay showing under any situation. This is only for testing behaviors
   // of top controls which should be visible always.
@@ -793,7 +795,7 @@ class BrowserView : public BrowserWindow,
   // |  |  contents_web_view_                                        |  |
   // |  --------------------------------------------------------------  |
   // |------------------------------------------------------------------|
-  // | Active downloads (download_shelf_view_)                          |
+  // | Active downloads (download_shelf_)                               |
   // --------------------------------------------------------------------
 
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
@@ -839,9 +841,6 @@ class BrowserView : public BrowserWindow,
   // relative to views which paint into layers and views with an associated
   // NativeView.
   View* find_bar_host_view_ = nullptr;
-
-  // The download shelf view (view at the bottom of the page).
-  View* download_shelf_view_ = nullptr;
 
   // The download shelf.
   DownloadShelf* download_shelf_ = nullptr;

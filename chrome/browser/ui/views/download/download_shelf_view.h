@@ -47,6 +47,8 @@ class DownloadShelfView : public DownloadShelf,
   bool IsShowing() const override;
   bool IsClosing() const override;
 
+  views::View* GetView() override;
+
   // views::AccessiblePaneView:
   // TODO(crbug.com/1005568): Replace these with a LayoutManager
   gfx::Size CalculatePreferredSize() const override;

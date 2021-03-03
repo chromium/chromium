@@ -4,18 +4,26 @@
 
 #include "chrome/browser/ui/views/download/download_shelf_web_view.h"
 
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/test/views/chrome_test_widget.h"
 
-using DownloadShelfWebViewTest = BrowserWithTestWindowTest;
+using DownloadShelfWebViewTest = TestWithBrowserView;
 
-TEST_F(DownloadShelfWebViewTest, BorderSet) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
-  params.context = GetContext();
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  ChromeTestWidget widget;
-  widget.Init(std::move(params));
-  DownloadShelfWebView* view =
-      widget.SetContentsView(std::make_unique<DownloadShelfWebView>(browser()));
-  EXPECT_NE(view->GetBorder(), nullptr);
+TEST_F(DownloadShelfWebViewTest, VisibilityTest) {
+  auto* download_shelf = browser_view()->AddChildView(
+      std::make_unique<DownloadShelfWebView>(browser(), browser_view()));
+  browser_view()->SetDownloadShelfForTest(download_shelf);
+
+  // Initially hidden.
+  EXPECT_FALSE(download_shelf->GetVisible());
+  download_shelf->DoOpen();
+  EXPECT_TRUE(download_shelf->GetVisible());
+  download_shelf->DoClose();
+  // Should still be visible during closing because of animation.
+  EXPECT_TRUE(download_shelf->GetVisible());
+  download_shelf->DoUnhide();
+  EXPECT_TRUE(download_shelf->GetVisible());
+  download_shelf->DoHide();
+  EXPECT_FALSE(download_shelf->GetVisible());
 }

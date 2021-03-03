@@ -8,15 +8,24 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/views/border.h"
 #include "url/url_constants.h"
 
-DownloadShelfWebView::DownloadShelfWebView(Browser* browser)
-    : DownloadShelf(browser, browser->profile()), WebView(browser->profile()) {
+DownloadShelfWebView::DownloadShelfWebView(Browser* browser,
+                                           BrowserView* parent)
+    : DownloadShelf(browser, browser->profile()),
+      WebView(browser->profile()),
+      AnimationDelegateViews(this),
+      parent_(parent) {
+  SetVisible(false);
+
   // TODO: Replace with a new chrome::kChromeUIDownloadsBarURL.
   LoadInitialURL(GURL(url::kAboutBlankURL));
-  SetBorder(views::CreateSolidSidedBorder(
-      1, 0, 0, 0, ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR));
+
+  shelf_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(
+      gfx::Animation::ShouldRenderRichAnimation() ? 120 : 0));
 
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents());
@@ -26,24 +35,69 @@ DownloadShelfWebView::DownloadShelfWebView(Browser* browser)
 DownloadShelfWebView::~DownloadShelfWebView() = default;
 
 gfx::Size DownloadShelfWebView::CalculatePreferredSize() const {
-  return gfx::Size(0, 50);
+  return gfx::Tween::SizeValueBetween(shelf_animation_.GetCurrentValue(),
+                                      gfx::Size(), gfx::Size(0, 50));
+}
+
+void DownloadShelfWebView::OnThemeChanged() {
+  views::WebView::OnThemeChanged();
+  SetBorder(views::CreateSolidSidedBorder(
+      1, 0, 0, 0,
+      GetThemeProvider()->GetColor(
+          ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR)));
 }
 
 void DownloadShelfWebView::DoShowDownload(
     DownloadUIModel::DownloadUIModelPtr download) {}
 
-void DownloadShelfWebView::DoOpen() {}
+void DownloadShelfWebView::DoOpen() {
+  SetVisible(true);
+  shelf_animation_.Show();
+}
 
-void DownloadShelfWebView::DoClose() {}
+void DownloadShelfWebView::DoClose() {
+  parent_->SetDownloadShelfVisible(false);
+  shelf_animation_.Hide();
+}
 
-void DownloadShelfWebView::DoHide() {}
+void DownloadShelfWebView::DoHide() {
+  SetVisible(false);
+  parent_->SetDownloadShelfVisible(false);
+  parent_->ToolbarSizeChanged(false);
+}
 
-void DownloadShelfWebView::DoUnhide() {}
+void DownloadShelfWebView::DoUnhide() {
+  SetVisible(true);
+  parent_->ToolbarSizeChanged(true);
+  parent_->SetDownloadShelfVisible(true);
+}
+
+void DownloadShelfWebView::AnimationProgressed(
+    const gfx::Animation* animation) {
+  DCHECK_EQ(&shelf_animation_, animation);
+  // Force a re-layout of the parent, which will call back into
+  // GetPreferredSize(), where we will do our animation. In the case where the
+  // animation is hiding, we do a full resize - the fast resizing would
+  // otherwise leave blank white areas where the shelf was and where the
+  // user's eye is. Thankfully bottom-resizing is a lot faster than
+  // top-resizing.
+  parent_->ToolbarSizeChanged(shelf_animation_.IsShowing());
+}
+
+void DownloadShelfWebView::AnimationEnded(const gfx::Animation* animation) {
+  DCHECK_EQ(&shelf_animation_, animation);
+  const bool shown = shelf_animation_.IsShowing();
+  parent_->SetDownloadShelfVisible(shown);
+}
+
+views::View* DownloadShelfWebView::GetView() {
+  return this;
+}
 
 bool DownloadShelfWebView::IsShowing() const {
-  return GetVisible();
+  return GetVisible() && shelf_animation_.IsShowing();
 }
 
 bool DownloadShelfWebView::IsClosing() const {
-  return false;
+  return shelf_animation_.IsClosing();
 }

@@ -118,6 +118,10 @@ bool DownloadShelfView::IsClosing() const {
   return shelf_animation_.IsClosing();
 }
 
+views::View* DownloadShelfView::GetView() {
+  return this;
+}
+
 gfx::Size DownloadShelfView::CalculatePreferredSize() const {
   gfx::Size prefsize(kEndPadding + kStartPadding + kCloseAndLinkPadding, 0);
 

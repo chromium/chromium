@@ -718,6 +718,10 @@ BrowserView* BrowserView::GetBrowserViewForBrowser(const Browser* browser) {
   return GetBrowserViewForNativeWindow(browser->window()->GetNativeWindow());
 }
 
+void BrowserView::SetDownloadShelfForTest(DownloadShelf* download_shelf) {
+  download_shelf_ = download_shelf;
+}
+
 // static
 void BrowserView::SetDisableRevealerDelayForTesting(bool disable) {
   g_disable_revealer_delay_for_testing = disable;
@@ -1851,7 +1855,7 @@ void BrowserView::ShowOneClickSigninConfirmation(
 #endif
 
 void BrowserView::SetDownloadShelfVisible(bool visible) {
-  DCHECK(download_shelf_view_);
+  DCHECK(download_shelf_);
   browser_->UpdateDownloadShelfVisibility(visible);
 
   // SetDownloadShelfVisible can force-close the shelf, so make sure we lay out
@@ -1867,17 +1871,13 @@ bool BrowserView::IsDownloadShelfVisible() const {
 DownloadShelf* BrowserView::GetDownloadShelf() {
   if (!download_shelf_) {
     if (base::FeatureList::IsEnabled(features::kWebUIDownloadShelf)) {
-      DownloadShelfWebView* download_shelf_web_view =
-          AddChildView(std::make_unique<DownloadShelfWebView>(browser_.get()));
-      download_shelf_view_ = download_shelf_web_view;
-      download_shelf_ = download_shelf_web_view;
+      download_shelf_ = AddChildView(
+          std::make_unique<DownloadShelfWebView>(browser_.get(), this));
     } else {
-      DownloadShelfView* download_shelf_view = AddChildView(
+      download_shelf_ = AddChildView(
           std::make_unique<DownloadShelfView>(browser_.get(), this));
-      download_shelf_view_ = download_shelf_view;
-      download_shelf_ = download_shelf_view;
     }
-    GetBrowserViewLayout()->set_download_shelf(download_shelf_view_);
+    GetBrowserViewLayout()->set_download_shelf(download_shelf_->GetView());
   }
   return download_shelf_;
 }
@@ -2421,8 +2421,8 @@ void BrowserView::EnsureFocusOrder() {
   // contains the debug console, etc.) This prevents it from intruding into the
   // focus order, but makes it easily accessible by using SHIFT-TAB (reverse
   // focus traversal) from the toolbar/omnibox.
-  if (download_shelf_view_ && contents_container_)
-    download_shelf_view_->InsertAfterInFocusList(contents_container_);
+  if (download_shelf_ && contents_container_)
+    download_shelf_->GetView()->InsertAfterInFocusList(contents_container_);
 
 #if DCHECK_IS_ON()
   // Make sure we didn't create any cycles in the focus order.
@@ -2777,8 +2777,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     panes->push_back(bookmark_bar_view_.get());
   if (infobar_container_)
     panes->push_back(infobar_container_);
-  if (download_shelf_view_)
-    panes->push_back(download_shelf_view_);
+  if (download_shelf_)
+    panes->push_back(download_shelf_->GetView());
 // TODO(crbug.com/1055150): Implement for mac.
 #if !defined(OS_MAC)
   // See if there is a caption bubble present.
