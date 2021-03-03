@@ -60,8 +60,9 @@ NetworkLocationProvider::NetworkLocationProvider(
                               base::Unretained(this)))) {
   DCHECK(position_cache_);
 #if defined(OS_MAC)
-  geolocation_permission_observation_.Observe(
-      geolocation_system_permission_manager);
+  permission_observers_ =
+      geolocation_system_permission_manager->GetObserverList();
+  permission_observers_->AddObserver(this);
   main_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GeolocationSystemPermissionManager::GetSystemPermission,
@@ -73,6 +74,9 @@ NetworkLocationProvider::NetworkLocationProvider(
 
 NetworkLocationProvider::~NetworkLocationProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
+#if defined(OS_MAC)
+  permission_observers_->RemoveObserver(this);
+#endif
   if (IsStarted())
     StopProvider();
 }

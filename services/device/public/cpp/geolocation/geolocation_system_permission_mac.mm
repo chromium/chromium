@@ -70,8 +70,7 @@ GeolocationSystemPermissionManager::Create() {
 }
 
 GeolocationSystemPermissionManager::GeolocationSystemPermissionManager()
-    : observers_(
-          new base::ObserverListThreadSafe<GeolocationPermissionObserver>()) {}
+    : observers_(new ObserverList()) {}
 
 GeolocationSystemPermissionManager::~GeolocationSystemPermissionManager() =
     default;
@@ -91,6 +90,11 @@ void GeolocationSystemPermissionManager::NotifyObservers(
   observers_->Notify(FROM_HERE,
                      &GeolocationPermissionObserver::OnSystemPermissionUpdate,
                      status);
+}
+
+scoped_refptr<GeolocationSystemPermissionManager::ObserverList>
+GeolocationSystemPermissionManager::GetObserverList() {
+  return observers_;
 }
 
 }  // device namespace

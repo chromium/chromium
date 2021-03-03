@@ -23,19 +23,22 @@ class GeolocationSystemPermissionManager {
         LocationSystemPermissionStatus new_status) = 0;
   };
 
+  using ObserverList =
+      base::ObserverListThreadSafe<GeolocationPermissionObserver>;
+
   GeolocationSystemPermissionManager();
   virtual ~GeolocationSystemPermissionManager();
   static std::unique_ptr<GeolocationSystemPermissionManager> Create();
   virtual LocationSystemPermissionStatus GetSystemPermission() = 0;
   void AddObserver(GeolocationPermissionObserver* observer);
   void RemoveObserver(GeolocationPermissionObserver* observer);
+  scoped_refptr<ObserverList> GetObserverList();
 
  protected:
   void NotifyObservers(LocationSystemPermissionStatus status);
 
  private:
-  scoped_refptr<base::ObserverListThreadSafe<GeolocationPermissionObserver>>
-      observers_;
+  scoped_refptr<ObserverList> observers_;
 };
 
 }  // namespace device
