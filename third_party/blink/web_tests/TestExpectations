@@ -5337,7 +5337,6 @@ crbug.com/1122582 external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-
 crbug.com/1071909 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw.https.html [ Pass Timeout ]
 
 # Mac11.0 rebaseline
-crbug.com/1122490 [ Mac11.0 ] virtual/text-antialias/mac-system-ui-weight.html [ Failure ]
 crbug.com/1122490 [ Mac11.0 ] virtual/text-antialias/mac-system-ui-trak.html [ Failure ]
 crbug.com/1123002 [ Mac11.0 ] external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-N-between-Rs.html [ Failure ]
 

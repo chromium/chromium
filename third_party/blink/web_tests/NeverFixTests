@@ -63,6 +63,10 @@ fast/harness/results.html [ Skip ]
 [ Mac10.11 ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
 [ Mac10.12 ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
 
+# Tests Mac system font specific weight variations.
+[ Linux ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
+[ Win ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
+
  # Mac's popup behavior is different.
 [ Mac ] fast/forms/select/menulist-onchange-fired-with-key-up-down.html [ Skip ]
 [ Mac ] fast/forms/select/popup-with-display-none-optgroup.html [ Skip ]
@@ -110,9 +114,6 @@ fast/harness/results.html [ Skip ]
 # AAT/mortx shaping not supported on platforms other than Mac
 [ Linux ] virtual/text-antialias/aat-morx.html [ Skip ]
 [ Win ] virtual/text-antialias/aat-morx.html [ Skip ]
-
-[ Linux ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
-[ Win ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
 
 # AAT Small Caps test not supported on platforms other than Mac 10.13.
 [ Linux ] virtual/text-antialias/small-caps-aat.html [ Skip ]
