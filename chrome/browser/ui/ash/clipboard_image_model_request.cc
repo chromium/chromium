@@ -27,6 +27,14 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+namespace {
+
+// The maximum size that the web contents can be. It caps the memory consumption
+// incurred by web contents rendering.
+constexpr gfx::Size kMaxWebContentsSize(2000, 2000);
+
+}  // namespace
+
 ClipboardImageModelRequest::Params::Params(const base::UnguessableToken& id,
                                            const std::string& html_markup,
                                            ImageModelCallback callback)
@@ -214,7 +222,7 @@ void ClipboardImageModelRequest::RenderViewHostChanged(
     return;
 
   web_contents()->GetRenderWidgetHostView()->EnableAutoResize(
-      gfx::Size(1, 1), gfx::Size(INT_MAX, INT_MAX));
+      gfx::Size(1, 1), kMaxWebContentsSize);
 }
 
 void ClipboardImageModelRequest::OnVisualStateChangeFinished(bool done) {
