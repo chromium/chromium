@@ -276,6 +276,11 @@ void VersionUpdaterCros::UpdateStatusChanged(
   int64_t size = status.new_size();
   base::string16 message;
 
+  // If the status change is for an installation, this means that DLCs are being
+  // installed and has nothing to with the OS. Ignore this status change.
+  if (status.is_install())
+    return;
+
   // If the updater is currently idle, just show the last operation (unless it
   // was previously checking for an update -- in that case, the system is
   // up to date now).  See http://crbug.com/120063 for details.
