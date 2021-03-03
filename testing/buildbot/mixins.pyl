@@ -562,17 +562,10 @@
       },
     },
   },
-  'mac_11': {
+  'mac_11.0_beta': {
     'swarming': {
       'dimensions': {
-        'os': 'Mac-11|Mac-10.16',
-      },
-    },
-  },
-  'mac_11_beta': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Mac-11.3',
+        'os': 'Mac-11.0|Mac-10.16',
       },
     },
   },
@@ -580,7 +573,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'arm64',
-        'os': 'Mac-11',
+        'os': 'Mac-11.0',
         'pool': 'chromium.tests.mac-arm64',
       },
     },

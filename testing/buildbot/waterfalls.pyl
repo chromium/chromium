@@ -2555,7 +2555,7 @@
       },
       'Mac11.0 Tests': {
         'mixins': [
-            'mac_11',
+            'mac_11.0_beta',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
@@ -3162,7 +3162,7 @@
         'mixins': [
           'intel_iris_5100',
           'limited_capacity_bot',
-          'mac_11_beta',
+          'mac_11.0_beta',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
@@ -3255,7 +3255,7 @@
       },
       'mac11.0-blink-rel-dummy': {
         'mixins': [
-            'mac_11_beta',
+            'mac_11.0_beta',
         ],
         'swarming': {
           'dimension_sets': [
