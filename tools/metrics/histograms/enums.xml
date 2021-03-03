@@ -42045,7 +42045,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="LanguageSettingsActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Click on the 'Add Language' button">
-    Removed for Android in M89. Still in Desktop and iOS.
+    Removed from Android in M89 and Desktop in M90. Still on iOS.
   </int>
   <int value="2" label="Language added"/>
   <int value="3" label="Language removed"/>
@@ -42065,6 +42065,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Chrome Language">Windows and Android only</int>
   <int value="4" label="Advanced Language Settings"/>
   <int value="5" label="Target Language"/>
+  <int value="6" label="Language Overflow Menu Opened">Desktop only</int>
 </enum>
 
 <enum name="LanguageUsage.UI.Android.Availability">

@@ -40,7 +40,7 @@ import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
 import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 // </if>
 
-import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl} from './languages_settings_metrics_proxy.js';
+import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 
 /**
  * @type {number} Millisecond delay that can be used when closing an action
@@ -160,8 +160,8 @@ Polymer({
     // <if expr="chromeos">
     this.languagesMetricsProxy_.recordAddLanguages();
     // </if>
-    this.languageSettingsMetricsProxy_.recordSettingsMetric(
-        LanguageSettingsActionType.CLICK_ON_ADD_LANGUAGE);
+    this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
+        LanguageSettingsPageImpressionType.ADD_LANGUAGE);
     this.showAddLanguagesDialog_ = true;
   },
 
@@ -570,6 +570,8 @@ Polymer({
     }
 
     menu.showAt(/** @type {!Element} */ (e.target));
+    this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
+        LanguageSettingsPageImpressionType.LANGUAGE_OVERFLOW_MENU_OPENED);
   },
 
   /**

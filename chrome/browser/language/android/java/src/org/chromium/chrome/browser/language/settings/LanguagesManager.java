@@ -76,7 +76,8 @@ public class LanguagesManager {
         int CHROME_LANGUAGE = 3;
         int ADVANCED_LANGUAGE_SETTINGS = 4;
         int TARGET_LANGUAGE = 5;
-        int NUM_ENTRIES = 6;
+        int LANGUAGE_OVERFLOW_MENU_OPENED = 6;
+        int NUM_ENTRIES = 7;
     }
 
     private static LanguagesManager sManager;

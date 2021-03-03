@@ -50,13 +50,7 @@ import {Route, Router} from '../router.m.js';
 import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 // </if>
 
-import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl} from './languages_settings_metrics_proxy.js';
-
-/**
- * Name of the language setting is shown uma histogram.
- * @type {string}
- */
-const LANGUAGE_SETTING_IS_SHOWN_UMA_NAME = 'Translate.LanguageSettingsIsShown';
+import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 
 Polymer({
   is: 'settings-languages-page',
@@ -408,9 +402,8 @@ Polymer({
    */
   onLanguagesOpenedChanged_(newVal, oldVal) {
     if (!oldVal && newVal) {
-      chrome.send(
-          'metricsHandler:recordBooleanHistogram',
-          [LANGUAGE_SETTING_IS_SHOWN_UMA_NAME, true]);
+      this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
+          LanguageSettingsPageImpressionType.MAIN);
     }
   },
 
