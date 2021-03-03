@@ -260,7 +260,11 @@ void PDFWebContentsHelper::HasUnsupportedFeature() {
 void PDFWebContentsHelper::SaveUrlAs(const GURL& url,
                                      blink::mojom::ReferrerPtr referrer) {
   client_->OnSaveURL(web_contents());
-  web_contents()->SaveFrame(url, referrer.To<content::Referrer>());
+
+  if (content::RenderFrameHost* rfh =
+          web_contents()->GetOuterWebContentsFrame()) {
+    web_contents()->SaveFrame(url, referrer.To<content::Referrer>(), rfh);
+  }
 }
 
 void PDFWebContentsHelper::UpdateContentRestrictions(

@@ -469,11 +469,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool SavePage(const base::FilePath& main_file,
                 const base::FilePath& dir_path,
                 SavePageType save_type) override;
-  void SaveFrame(const GURL& url, const Referrer& referrer) override;
+  void SaveFrame(const GURL& url,
+                 const Referrer& referrer,
+                 RenderFrameHost* rfh) override;
   void SaveFrameWithHeaders(const GURL& url,
                             const Referrer& referrer,
                             const std::string& headers,
-                            const base::string16& suggested_filename) override;
+                            const base::string16& suggested_filename,
+                            RenderFrameHost* rfh) override;
   void GenerateMHTML(const MHTMLGenerationParams& params,
                      base::OnceCallback<void(int64_t)> callback) override;
   void GenerateMHTMLWithResult(

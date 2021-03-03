@@ -2994,8 +2994,15 @@ void RenderViewContextMenu::ExecSaveAs() {
     const GURL& url = params_.src_url;
     content::Referrer referrer = CreateReferrer(url, params_);
     std::string headers;
-    source_web_contents_->SaveFrameWithHeaders(url, referrer, headers,
-                                               params_.suggested_filename);
+
+    RenderFrameHost* frame_host =
+        (params_.media_type == ContextMenuDataMediaType::kPlugin)
+            ? source_web_contents_->GetOuterWebContentsFrame()
+            : GetRenderFrameHost();
+    if (frame_host) {
+      source_web_contents_->SaveFrameWithHeaders(
+          url, referrer, headers, params_.suggested_filename, frame_host);
+    }
   }
 }
 

@@ -338,11 +338,12 @@ bool MimeHandlerViewGuest::GuestSaveFrame(
 }
 
 bool MimeHandlerViewGuest::SaveFrame(const GURL& url,
-                                     const content::Referrer& referrer) {
+                                     const content::Referrer& referrer,
+                                     content::RenderFrameHost* rfh) {
   if (!attached())
     return false;
 
-  embedder_web_contents()->SaveFrame(stream_->original_url(), referrer);
+  embedder_web_contents()->SaveFrame(stream_->original_url(), referrer, rfh);
   return true;
 }
 

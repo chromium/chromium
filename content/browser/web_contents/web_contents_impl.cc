@@ -4544,7 +4544,7 @@ void WebContentsImpl::OnSavePage() {
   if (!IsSavable()) {
     download::RecordSavePackageEvent(
         download::SAVE_PACKAGE_DOWNLOAD_ON_NON_HTML);
-    SaveFrame(GetLastCommittedURL(), Referrer());
+    SaveFrame(GetLastCommittedURL(), Referrer(), GetMainFrame());
     return;
   }
 
@@ -4573,16 +4573,21 @@ bool WebContentsImpl::SavePage(const base::FilePath& main_file,
   return save_package_->Init(SavePackageDownloadCreatedCallback());
 }
 
-void WebContentsImpl::SaveFrame(const GURL& url, const Referrer& referrer) {
+void WebContentsImpl::SaveFrame(const GURL& url,
+                                const Referrer& referrer,
+                                RenderFrameHost* rfh) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SaveFrame");
-  SaveFrameWithHeaders(url, referrer, std::string(), base::string16());
+  SaveFrameWithHeaders(url, referrer, std::string(), base::string16(), rfh);
 }
 
 void WebContentsImpl::SaveFrameWithHeaders(
     const GURL& url,
     const Referrer& referrer,
     const std::string& headers,
-    const base::string16& suggested_filename) {
+    const base::string16& suggested_filename,
+    RenderFrameHost* rfh) {
+  DCHECK(rfh);
+
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SaveFrameWithHeaders",
                         "url", base::trace_event::ValueToString(url), "headers",
                         headers);
@@ -4603,7 +4608,7 @@ void WebContentsImpl::SaveFrameWithHeaders(
 
   if (!GetLastCommittedURL().is_valid())
     return;
-  if (delegate_ && delegate_->SaveFrame(url, referrer))
+  if (delegate_ && delegate_->SaveFrame(url, referrer, rfh))
     return;
 
   // TODO(nasko): This check for main frame is incorrect and should be fixed
@@ -4660,6 +4665,10 @@ void WebContentsImpl::SaveFrameWithHeaders(
   }
   params->set_suggested_name(suggested_filename);
   params->set_download_source(download::DownloadSource::WEB_CONTENTS_API);
+  params->set_isolation_info(
+      static_cast<RenderFrameHostImpl*>(rfh)->ComputeIsolationInfoForNavigation(
+          url));
+
   BrowserContext::GetDownloadManager(GetBrowserContext())
       ->DownloadUrl(std::move(params));
 }
