@@ -409,8 +409,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="MultiDevice.WifiSync.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2021-09-01">
+<histogram name="WifiSync.MultiDeviceFeatureState"
+    enum="MultiDevice_FeatureState" expires_after="2022-03-01">
   <owner>cvandermerwe@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
