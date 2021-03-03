@@ -352,10 +352,12 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
       });
   if (logger_.is_bound()) {
     auto sink_id = sink_it == sinks.end() ? "" : sink_it->first;
-    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      base::StrCat({"Media Router Channel Error: ",
-                                    EnumToString(error_code)}),
-                      sink_id, "", "");
+    logger_->LogError(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        base::StrCat({"Media Router Channel Error: ", EnumToString(error_code),
+                      ". channel_id: ", base::NumberToString(socket_id),
+                      ". IP endpoint: ", ip_endpoint.ToString()}),
+        sink_id, "", "");
   }
   if (sink_it == sinks.end()) {
     return;
@@ -638,7 +640,9 @@ void CastMediaSinkServiceImpl::OnChannelOpenFailed(
   if (logger_.is_bound()) {
     logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
                       base::StrCat({"Failed to open the channel. IP endpoint: ",
-                                    ip_endpoint.ToString()}),
+                                    ip_endpoint.ToString(), ". channel_id: ",
+                                    base::NumberToString(
+                                        existing_sink->cast_channel_id())}),
                       sink.sink().id(), "", "");
   }
   RemoveSink(sink);
