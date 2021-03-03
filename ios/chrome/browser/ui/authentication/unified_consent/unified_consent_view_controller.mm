@@ -20,7 +20,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
 
@@ -43,8 +42,7 @@ const CGFloat kVerticalSeparatorTextMargin = 16.;
 const char* const kSettingsSyncURL = "internal://settings-sync";
 }  // namespace
 
-@interface UnifiedConsentViewController () <UIScrollViewDelegate,
-                                            UITextViewDelegate> {
+@interface UnifiedConsentViewController ()<UIScrollViewDelegate> {
   std::vector<int> _consentStringIds;
 }
 
@@ -64,8 +62,10 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 // Constraint for the maximum height of the header view (also used to hide the
 // the header view if needed).
 @property(nonatomic, strong) NSLayoutConstraint* headerViewMaxHeightConstraint;
-// Text description that may show link to advanced Sync settings.
-@property(nonatomic, strong) UITextView* syncSettingsTextView;
+// Settings link controller.
+@property(nonatomic, strong) LabelLinkController* settingsLinkController;
+// Label related to customize sync text.
+@property(nonatomic, strong) UILabel* customizeSyncLabel;
 
 @end
 
@@ -78,8 +78,9 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 @synthesize noIdentityConstraint = _noIdentityConstraint;
 @synthesize openSettingsStringId = _openSettingsStringId;
 @synthesize scrollView = _scrollView;
+@synthesize settingsLinkController = _settingsLinkController;
 @synthesize withIdentityConstraint = _withIdentityConstraint;
-@synthesize syncSettingsTextView = _syncSettingsTextView;
+@synthesize customizeSyncLabel = _customizeSyncLabel;
 
 - (const std::vector<int>&)consentStringIds {
   return _consentStringIds;
@@ -195,21 +196,13 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   separator.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   [container addSubview:separator];
 
-  // Sync settings description.
-  self.syncSettingsTextView = [[UITextView alloc] init];
-  self.syncSettingsTextView.scrollEnabled = NO;
-  self.syncSettingsTextView.editable = NO;
-  self.syncSettingsTextView.delegate = self;
-  self.syncSettingsTextView.backgroundColor = UIColor.clearColor;
-  self.syncSettingsTextView.font =
-      [UIFont preferredFontForTextStyle:kAuthenticationTextFontStyle];
-  self.syncSettingsTextView.adjustsFontForContentSizeCategory = YES;
-  self.syncSettingsTextView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.syncSettingsTextView.linkTextAttributes =
-      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
-  [container addSubview:self.syncSettingsTextView];
-
+  // Customize label.
   self.openSettingsStringId = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
+  self.customizeSyncLabel =
+      [self addLabelWithStringId:self.openSettingsStringId
+                       fontStyle:kAuthenticationTextFontStyle
+                       textColor:UIColor.cr_secondaryLabelColor
+                      parentView:container];
 
   // Layouts
   NSDictionary* views = @{
@@ -221,7 +214,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
     @"separator" : separator,
     @"synctitle" : syncTitleLabel,
     @"syncsubtitle" : syncSubtitleLabel,
-    @"customizesync" : self.syncSettingsTextView,
+    @"customizesync" : self.customizeSyncLabel,
   };
   NSDictionary* metrics = @{
     @"TitlePickerMargin" : @(kTitlePickerMargin),
@@ -373,51 +366,31 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   return label;
 }
 
-// Displays the description used for advanced Sync Settings. The link to
-// customize Settings is shown when there is at least one selected identity on
-// the device.
+// Adds or removes the Settings link in |self.customizeSyncLabel|.
 - (void)setSettingsLinkURLShown:(BOOL)showLink {
+  self.customizeSyncLabel.text =
+      l10n_util::GetNSString(self.openSettingsStringId);
+  GURL URL = google_util::AppendGoogleLocaleParam(
+      GURL(kSettingsSyncURL), GetApplicationContext()->GetApplicationLocale());
   NSRange range;
-  NSString* strippedText = ParseStringWithLink(
-      l10n_util::GetNSString(self.openSettingsStringId), &range);
-  NSRange fullRange = NSMakeRange(0, strippedText.length);
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:strippedText];
-  [attributedText addAttribute:NSForegroundColorAttributeName
-                         value:UIColor.cr_secondaryLabelColor
-                         range:fullRange];
-
-  [attributedText
-      addAttribute:NSFontAttributeName
-             value:[UIFont
-                       preferredFontForTextStyle:kAuthenticationTextFontStyle]
-             range:fullRange];
-
+  NSString* text = self.customizeSyncLabel.text;
+  self.customizeSyncLabel.text = ParseStringWithLink(text, &range);
   DCHECK(range.location != NSNotFound && range.length != 0);
-
-  if (showLink) {
-    NSURL* URL = net::NSURLWithGURL(google_util::AppendGoogleLocaleParam(
-        GURL(kSettingsSyncURL),
-        GetApplicationContext()->GetApplicationLocale()));
-    [attributedText addAttribute:NSLinkAttributeName value:URL range:range];
+  if (!showLink) {
+    self.settingsLinkController = nil;
   } else {
-    [attributedText removeAttribute:NSLinkAttributeName
-                              range:NSMakeRange(0, attributedText.length)];
+    __weak UnifiedConsentViewController* weakSelf = self;
+    self.settingsLinkController =
+        [[LabelLinkController alloc] initWithLabel:self.customizeSyncLabel
+                                            action:^(const GURL& URL) {
+                                              [weakSelf openSettings];
+                                            }];
+    [self.settingsLinkController setLinkColor:[UIColor colorNamed:kBlueColor]];
+    [self.settingsLinkController
+        addLinkWithRange:range
+                     url:URL
+         accessibilityID:kAdvancedSigninSettingsLinkIdentifier];
   }
-
-  self.syncSettingsTextView.attributedText = attributedText;
-}
-
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  DCHECK(self.syncSettingsTextView == textView);
-  DCHECK(URL);
-  [self.delegate unifiedConsentViewControllerDidTapSettingsLink:self];
-
-  // Returns NO as the app is handling the opening of the URL.
-  return NO;
 }
 
 // Updates constraints and content insets for the |scrollView| and
@@ -430,6 +403,11 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
     // Don't send the notification if the delegate is not configured yet.
     [self sendDidReachBottomIfReached];
   }
+}
+
+// Notifies |delegate| that the user tapped on "Settings" link.
+- (void)openSettings {
+  [self.delegate unifiedConsentViewControllerDidTapSettingsLink:self];
 }
 
 // Sends notification to the delegate if the scroll view is scrolled to the

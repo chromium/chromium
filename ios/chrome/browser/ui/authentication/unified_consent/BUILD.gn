@@ -62,15 +62,3 @@ source_set("constants") {
   ]
   frameworks = [ "Foundation.framework" ]
 }
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "unified_consent_view_controller_unittest.mm" ]
-  deps = [
-    ":unified_consent_ui",
-    "//ios/chrome/common",
-    "//testing/gtest",
-    "//ui/base",
-  ]
-}
