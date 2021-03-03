@@ -90,6 +90,12 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
         ->SetAccountStatusChangeDelegateRemote(
             fake_account_status_change_delegate_->GenerateRemote());
     fake_account_status_change_delegate_notifier_->FlushForTesting();
+    multidevice::RemoteDeviceRef local_device =
+        multidevice::CreateRemoteDeviceRefForTest();
+    GetMutableRemoteDevice(local_device)
+        ->software_features[multidevice::SoftwareFeature::kWifiSyncClient] =
+        multidevice::SoftwareFeatureState::kSupported;
+    fake_device_sync_client_->set_local_device_metadata(local_device);
   }
 
   void TearDown() override {}
