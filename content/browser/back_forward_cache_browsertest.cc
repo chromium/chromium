@@ -1188,9 +1188,17 @@ class HighCacheSizeBackForwardCacheBrowserTest
   const size_t kBackForwardCacheSize = 10;
 };
 
+// TODO(crbug.com/1184360): Disabled on Android for being flaky.
+#if defined(OS_ANDROID)
+#define MAYBE_CacheEvictionWithIncreasedCacheSize \
+  DISABLED_CacheEvictionWithIncreasedCacheSize
+#else
+#define MAYBE_CacheEvictionWithIncreasedCacheSize \
+  CacheEvictionWithIncreasedCacheSize
+#endif
 // Test documents are evicted from the BackForwardCache at some point.
 IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
-                       CacheEvictionWithIncreasedCacheSize) {
+                       MAYBE_CacheEvictionWithIncreasedCacheSize) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
