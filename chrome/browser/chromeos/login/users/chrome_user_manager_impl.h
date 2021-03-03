@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -29,9 +30,9 @@
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -57,7 +58,7 @@ class SessionLengthLimiter;
 // Chrome specific implementation of the UserManager.
 class ChromeUserManagerImpl
     : public ChromeUserManager,
-      public content::NotificationObserver,
+      public session_manager::SessionManagerObserver,
       public DeviceSettingsService::Observer,
       public policy::DeviceLocalAccountPolicyService::Observer,
       public policy::MinimumVersionPolicyHandler::Observer,
@@ -114,10 +115,8 @@ class ChromeUserManagerImpl
                              std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
 
-  // content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // DeviceSettingsService::Observer:
   void OwnershipStatusChanged() override;
@@ -244,7 +243,9 @@ class ChromeUserManagerImpl
   // Interface to device-local account definitions and associated policy.
   policy::DeviceLocalAccountPolicyService* device_local_account_policy_service_;
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
   // User avatar managers.
   UserImageManagerMap user_image_managers_;

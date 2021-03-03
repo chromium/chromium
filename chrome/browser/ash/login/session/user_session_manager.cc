@@ -1484,11 +1484,6 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
 
     // Send the notification before creating the browser so additional objects
     // that need the profile (e.g. the launcher) can be created first.
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-        content::NotificationService::AllSources(),
-        content::Details<Profile>(profile));
-
     session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
         ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId());
 
@@ -1828,11 +1823,6 @@ void UserSessionManager::RestoreAuthSessionImpl(
 void UserSessionManager::NotifyUserProfileLoaded(
     Profile* profile,
     const user_manager::User* user) {
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources(),
-      content::Details<Profile>(profile));
-
   session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
       user->GetAccountId());
 

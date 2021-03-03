@@ -217,8 +217,7 @@ AffiliatedInvalidationServiceProviderImpl::
   DCHECK(g_browser_process->profile_manager()->GetLoadedProfiles().empty());
 
   // Subscribe to notification about new user profiles becoming available.
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-                 content::NotificationService::AllSources());
+  session_observation_.Observe(session_manager::SessionManager::Get());
 }
 
 AffiliatedInvalidationServiceProviderImpl::
@@ -227,13 +226,11 @@ AffiliatedInvalidationServiceProviderImpl::
   DCHECK(is_shut_down_);
 }
 
-void AffiliatedInvalidationServiceProviderImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED, type);
+void AffiliatedInvalidationServiceProviderImpl::OnUserProfileLoaded(
+    const AccountId& account_id) {
   DCHECK(!is_shut_down_);
-  Profile* profile = content::Details<Profile>(details).ptr();
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(profile);
   if (!invalidation_provider) {
@@ -295,7 +292,7 @@ void AffiliatedInvalidationServiceProviderImpl::UnregisterConsumer(
 void AffiliatedInvalidationServiceProviderImpl::Shutdown() {
   is_shut_down_ = true;
 
-  registrar_.RemoveAll();
+  session_observation_.Reset();
   profile_invalidation_service_observers_.clear();
   device_invalidation_service_observer_.reset();
 

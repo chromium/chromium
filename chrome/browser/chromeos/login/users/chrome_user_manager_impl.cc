@@ -328,8 +328,10 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   if (g_browser_process->profile_manager())
     g_browser_process->profile_manager()->AddObserver(this);
 
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-                 content::NotificationService::AllSources());
+  auto* session_manager = session_manager::SessionManager::Get();
+  // SessionManager might not exist in unit tests.
+  if (session_manager)
+    session_observation_.Observe(session_manager);
 
   // Since we're in ctor postpone any actions till this is fully created.
   if (base::ThreadTaskRunnerHandle::IsSet()) {
@@ -432,7 +434,7 @@ void ChromeUserManagerImpl::Shutdown() {
   }
   multi_profile_user_controller_.reset();
   cloud_external_data_policy_handlers_.clear();
-  registrar_.RemoveAll();
+  session_observation_.Reset();
 }
 
 MultiProfileUserController*
@@ -582,12 +584,8 @@ void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
   cloud_external_data_policy_handlers_.clear();
 }
 
-void ChromeUserManagerImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(type, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED);
-  Profile* profile = content::Details<Profile>(details).ptr();
+void ChromeUserManagerImpl::OnUserProfileLoaded(const AccountId& account_id) {
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (IsUserLoggedIn() && !IsLoggedInAsGuest() && !IsLoggedInAsAnyKioskApp()) {
     if (!profile->IsOffTheRecord()) {
       if (AuthErrorObserver::ShouldObserve(profile)) {

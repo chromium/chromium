@@ -142,11 +142,6 @@ enum NotificationType {
   // Misc --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Sent immediately after the logged-in user's profile is ready.
-  // The details are a Profile object.
-  // TODO(https://crbug.com/1174789): Remove.
-  NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-
   // Sent when a network error message is displayed on the WebUI login screen.
   // First paint event of this fires NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE.
   // TODO(https://crbug.com/1174791): Remove.

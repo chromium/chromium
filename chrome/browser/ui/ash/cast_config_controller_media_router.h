@@ -10,18 +10,21 @@
 #include "ash/public/cpp/cast_config_controller.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "base/scoped_observation.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
 namespace media_router {
 class MediaRouter;
 }
 
+class AccountId;
 class CastDeviceCache;
 
 // A class which allows the ash tray to communicate with the media router.
-class CastConfigControllerMediaRouter : public ash::CastConfigController,
-                                        public content::NotificationObserver {
+class CastConfigControllerMediaRouter
+    : public ash::CastConfigController,
+      public session_manager::SessionManagerObserver {
  public:
   CastConfigControllerMediaRouter();
   ~CastConfigControllerMediaRouter() override;
@@ -39,10 +42,8 @@ class CastConfigControllerMediaRouter : public ash::CastConfigController,
   void CastToSink(const std::string& sink_id) override;
   void StopCasting(const std::string& route_id) override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // |device_cache_| stores the current source/route status that we query from.
   // This will return null until the media router is initialized.
@@ -55,7 +56,9 @@ class CastConfigControllerMediaRouter : public ash::CastConfigController,
 
   base::ObserverList<Observer> observers_;
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastConfigControllerMediaRouter);
 };

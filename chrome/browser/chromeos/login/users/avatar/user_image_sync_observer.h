@@ -8,16 +8,15 @@
 #include <memory>
 #include <string>
 
+#include "base/scoped_observation.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_observer.h"
 
 class PrefChangeRegistrar;
 class Profile;
-
-namespace content {
-class NotificationRegistrar;
-}
+class AccountId;
 
 namespace sync_preferences {
 class PrefServiceSyncable;
@@ -37,7 +36,7 @@ namespace chromeos {
 // image saved in syncable preference.
 class UserImageSyncObserver
     : public sync_preferences::PrefServiceSyncableObserver,
-      public content::NotificationObserver,
+      public session_manager::SessionManagerObserver,
       public user_manager::UserManager::Observer {
  public:
   explicit UserImageSyncObserver(const user_manager::User* user);
@@ -50,10 +49,8 @@ class UserImageSyncObserver
   // sync_preferences::PrefServiceSyncableObserver implementation.
   void OnIsSyncingChanged() override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // session_manager::SessionManagerObserver implementation.
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // user_manager::UserManager::Observer implementation.
   void OnUserImageChanged(const user_manager::User& user) override;
@@ -79,7 +76,9 @@ class UserImageSyncObserver
 
   const user_manager::User* user_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::unique_ptr<content::NotificationRegistrar> notification_registrar_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
   sync_preferences::PrefServiceSyncable* prefs_;
   bool is_synced_;
   // Indicates if local user image changed during initialization.

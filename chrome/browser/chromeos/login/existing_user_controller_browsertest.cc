@@ -29,8 +29,8 @@
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
@@ -69,6 +69,7 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/account_id/account_id.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -83,13 +84,14 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/mock_notification_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -177,6 +179,34 @@ void EnableArcForProfile(Profile* profile) {
 arc::data_snapshotd::ArcDataSnapshotdManager* arc_data_snapshotd_manager() {
   return arc::data_snapshotd::ArcDataSnapshotdManager::Get();
 }
+
+class UserProfileLoadedObserver
+    : public session_manager::SessionManagerObserver {
+ public:
+  UserProfileLoadedObserver() {
+    session_observation_.Observe(session_manager::SessionManager::Get());
+  }
+
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override {
+    session_observation_.Reset();
+    account_id_ = account_id;
+    run_loop_.Quit();
+  }
+
+  AccountId Wait() {
+    run_loop_.Run();
+    DCHECK(!account_id_.empty());
+    return account_id_;
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  AccountId account_id_ = EmptyAccountId();
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+};
 
 }  // namespace
 
@@ -302,11 +332,9 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerTest, ExistingUserLogin) {
               StartWizard(TermsOfServiceScreenView::kScreenId.AsId()))
       .Times(0);
 
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
   login_manager_.LoginWithDefaultContext(existing_user_);
-  profile_prepared_observer.Wait();
+  profile_loaded_observer.Wait();
 }
 
 // Verifies that when the cros settings are untrusted, no new session can be
@@ -570,9 +598,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   ExpectSuccessfulLogin(user_context);
   existing_user_controller()->OnSigninScreenReady();
 
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
 
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginShortDelay);
   ASSERT_TRUE(auto_login_timer());
@@ -588,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
               runner.QuitClosure());
   runner.Run();
 
-  profile_prepared_observer.Wait();
+  profile_loaded_observer.Wait();
 
   // Wait for login tasks to complete.
   content::RunAllPendingInMessageLoop();
@@ -605,9 +631,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginLongDelay);
   EXPECT_TRUE(auto_login_timer());
 
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
 
   // Log in and check that it stopped the timer.
   existing_user_controller()->Login(user_context, SigninSpecifics());
@@ -615,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   ASSERT_TRUE(auto_login_timer());
   EXPECT_FALSE(auto_login_timer()->IsRunning());
 
-  profile_prepared_observer.Wait();
+  profile_loaded_observer.Wait();
 
   // Wait for login tasks to complete.
   content::RunAllPendingInMessageLoop();
@@ -665,16 +689,14 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginLongDelay);
   EXPECT_TRUE(auto_login_timer());
 
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
 
   // Check that login completes and stops the timer.
   existing_user_controller()->CompleteLogin(user_context);
   ASSERT_TRUE(auto_login_timer());
   EXPECT_FALSE(auto_login_timer()->IsRunning());
 
-  profile_prepared_observer.Wait();
+  profile_loaded_observer.Wait();
 
   // Wait for login tasks to complete.
   content::RunAllPendingInMessageLoop();
@@ -695,9 +717,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   SetAutoLoginPolicy(kPublicSessionUserEmail, kAutoLoginLongDelay);
   EXPECT_TRUE(auto_login_timer());
 
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
 
   // Login and check that it stopped the timer.
   existing_user_controller()->Login(
@@ -709,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   ASSERT_TRUE(auto_login_timer());
   EXPECT_FALSE(auto_login_timer()->IsRunning());
 
-  profile_prepared_observer.Wait();
+  profile_loaded_observer.Wait();
 
   // Wait for login tasks to complete.
   content::RunAllPendingInMessageLoop();
@@ -901,12 +921,10 @@ class ExistingUserControllerActiveDirectoryTest
     user_context.SetAuthFlow(UserContext::AUTH_FLOW_ACTIVE_DIRECTORY);
     ASSERT_EQ(user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
               user_context.GetUserType());
-    content::WindowedNotificationObserver profile_prepared_observer(
-        chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-        content::NotificationService::AllSources());
+    UserProfileLoadedObserver profile_loaded_observer;
     existing_user_controller()->CompleteLogin(user_context);
 
-    profile_prepared_observer.Wait();
+    profile_loaded_observer.Wait();
 
     // This only works if no RunLoop::Run() call is made after the Kerberos file
     // writer task has been posted. Ideally, SetFilesChangedForTesting() should
@@ -1056,11 +1074,9 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
   ASSERT_EQ(user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
             user_context.GetUserType());
 
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
   existing_user_controller()->Login(user_context, SigninSpecifics());
-  profile_prepared_observer.Wait();
+  profile_loaded_observer.Wait();
 
   // Note: Can't call SetFilesChangedForTesting() earlier, see LoginAdOnline().
   base::RunLoop run_loop;
@@ -1089,12 +1105,10 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryUserAllowlistTest,
   user_context.SetAuthFlow(UserContext::AUTH_FLOW_ACTIVE_DIRECTORY);
   ASSERT_EQ(user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
             user_context.GetUserType());
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
   existing_user_controller()->CompleteLogin(user_context);
 
-  profile_prepared_observer.Wait();
+  profile_loaded_observer.Wait();
 }
 
 // Tests that authentication fails if user email does not match allowlist.
@@ -1131,16 +1145,13 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
                        GaiaOnlineLoginSavesPasswordHashToPrefs) {
   UserContext user_context(
       LoginManagerMixin::CreateDefaultUserContext(new_user_));
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
   existing_user_controller()->CompleteLogin(user_context);
 
-  profile_prepared_observer.Wait();
+  AccountId account_id = profile_loaded_observer.Wait();
 
   // Verify password hash and salt are saved to prefs.
-  Profile* profile =
-      content::Details<Profile>(profile_prepared_observer.details()).ptr();
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   EXPECT_TRUE(profile->GetPrefs()->HasPrefPath(
       password_manager::prefs::kPasswordHashDataList));
 }
@@ -1151,16 +1162,13 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
                        OfflineLoginSavesPasswordHashToPrefs) {
   UserContext user_context(
       LoginManagerMixin::CreateDefaultUserContext(existing_user_));
-  content::WindowedNotificationObserver profile_prepared_observer(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  UserProfileLoadedObserver profile_loaded_observer;
   existing_user_controller()->Login(user_context, SigninSpecifics());
 
-  profile_prepared_observer.Wait();
+  AccountId account_id = profile_loaded_observer.Wait();
 
   // Verify password hash and salt are saved to prefs.
-  Profile* profile =
-      content::Details<Profile>(profile_prepared_observer.details()).ptr();
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   EXPECT_TRUE(profile->GetPrefs()->HasPrefPath(
       password_manager::prefs::kPasswordHashDataList));
 }

@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -24,8 +23,6 @@
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/common/media_source.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 
 namespace {
 
@@ -150,8 +147,7 @@ void CastDeviceCache::OnRoutesUpdated(
 CastConfigControllerMediaRouter::CastConfigControllerMediaRouter() {
   // TODO(jdufault): This should use a callback interface once there is an
   // equivalent. See crbug.com/666005.
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-                 content::NotificationService::AllSources());
+  session_observation_.Observe(session_manager::SessionManager::Get());
 }
 
 CastConfigControllerMediaRouter::~CastConfigControllerMediaRouter() = default;
@@ -261,17 +257,11 @@ void CastConfigControllerMediaRouter::StopCasting(const std::string& route_id) {
     GetMediaRouter()->TerminateRoute(route_id);
 }
 
-void CastConfigControllerMediaRouter::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED:
-      // The active profile has changed, which means that the media router has
-      // as well. Reset the device cache to ensure we are using up-to-date
-      // object instances.
-      device_cache_.reset();
-      RequestDeviceRefresh();
-      break;
-  }
+void CastConfigControllerMediaRouter::OnUserProfileLoaded(
+    const AccountId& account_id) {
+  // The active profile has changed, which means that the media router has
+  // as well. Reset the device cache to ensure we are using up-to-date
+  // object instances.
+  device_cache_.reset();
+  RequestDeviceRefresh();
 }

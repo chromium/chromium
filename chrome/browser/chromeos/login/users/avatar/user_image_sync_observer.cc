@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/default_user_image/default_user_images.h"
@@ -18,8 +17,6 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 
 namespace chromeos {
 namespace {
@@ -43,13 +40,13 @@ UserImageSyncObserver::UserImageSyncObserver(const user_manager::User* user)
       local_image_changed_(false) {
   user_manager::UserManager::Get()->AddObserver(this);
 
-  notification_registrar_.reset(new content::NotificationRegistrar);
   if (Profile* profile = ProfileHelper::Get()->GetProfileByUser(user)) {
     OnProfileGained(profile);
   } else {
-    notification_registrar_->Add(
-        this, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-        content::NotificationService::AllSources());
+    auto* session_manager = session_manager::SessionManager::Get();
+    // SessionManager might not exist in unit tests.
+    if (session_manager)
+      session_observation_.Observe(session_manager);
   }
 }
 
@@ -110,18 +107,14 @@ void UserImageSyncObserver::OnPreferenceChanged(const std::string& pref_name) {
   }
 }
 
-void UserImageSyncObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED, type);
+void UserImageSyncObserver::OnUserProfileLoaded(const AccountId& account_id) {
+  if (user_->GetAccountId() != account_id)
+    return;
 
-  if (Profile* profile = ProfileHelper::Get()->GetProfileByUser(user_)) {
-    notification_registrar_->Remove(
-        this, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-        content::NotificationService::AllSources());
-    OnProfileGained(profile);
-  }
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  DCHECK(profile);
+  session_observation_.Reset();
+  OnProfileGained(profile);
 }
 
 void UserImageSyncObserver::OnUserImageChanged(const user_manager::User& user) {

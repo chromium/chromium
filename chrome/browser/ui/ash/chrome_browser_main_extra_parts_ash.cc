@@ -13,12 +13,12 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/scoped_observation.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/night_light/night_light_client.h"
 #include "chrome/browser/chromeos/policy/display_resolution_handler.h"
 #include "chrome/browser/chromeos/policy/display_rotation_default_handler.h"
@@ -59,9 +59,6 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -109,10 +106,13 @@ class ChromeLauncherControllerInitializer
 
 }  // namespace internal
 
-ChromeBrowserMainExtraPartsAsh::ChromeBrowserMainExtraPartsAsh()
-    : notification_observer_(std::make_unique<NotificationObserver>()) {}
+ChromeBrowserMainExtraPartsAsh::ChromeBrowserMainExtraPartsAsh() = default;
 
 ChromeBrowserMainExtraPartsAsh::~ChromeBrowserMainExtraPartsAsh() = default;
+
+void ChromeBrowserMainExtraPartsAsh::PreMainMessageLoopStart() {
+  user_profile_loaded_observer_ = std::make_unique<UserProfileLoadedObserver>();
+}
 
 void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // NetworkConnect handles the network connection state machine for the UI.
@@ -271,46 +271,37 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   if (chromeos::NetworkConnect::IsInitialized())
     chromeos::NetworkConnect::Shutdown();
   network_connect_delegate_.reset();
+  user_profile_loaded_observer_.reset();
 }
 
-class ChromeBrowserMainExtraPartsAsh::NotificationObserver
-    : public content::NotificationObserver {
+class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
+    : public session_manager::SessionManagerObserver {
  public:
-  NotificationObserver() {
-    registrar_.Add(this, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-                   content::NotificationService::AllSources());
+  UserProfileLoadedObserver() {
+    session_observation_.Observe(session_manager::SessionManager::Get());
   }
-  ~NotificationObserver() override = default;
+  ~UserProfileLoadedObserver() override = default;
 
-  // content::NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    switch (type) {
-      case chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED: {
-        Profile* profile = content::Details<Profile>(details).ptr();
-        if (chromeos::ProfileHelper::IsRegularProfile(profile) &&
-            !profile->IsGuestSession()) {
-          // Start the error notifier services to show auth/sync notifications.
-          SigninErrorNotifierFactory::GetForProfile(profile);
-          SyncErrorNotifierFactory::GetForProfile(profile);
-        }
-        // Do not use chrome::NOTIFICATION_PROFILE_ADDED because the
-        // profile is not fully initialized by user_manager.  Use
-        // chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED instead.
-        if (ChromeLauncherController::instance()) {
-          ChromeLauncherController::instance()->OnUserProfileReadyToSwitch(
-              profile);
-        }
-        break;
-      }
-      default:
-        NOTREACHED() << "Unexpected notification " << type;
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override {
+    Profile* profile =
+        chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+    if (chromeos::ProfileHelper::IsRegularProfile(profile) &&
+        !profile->IsGuestSession()) {
+      // Start the error notifier services to show auth/sync notifications.
+      SigninErrorNotifierFactory::GetForProfile(profile);
+      SyncErrorNotifierFactory::GetForProfile(profile);
+    }
+
+    if (ChromeLauncherController::instance()) {
+      ChromeLauncherController::instance()->OnUserProfileReadyToSwitch(profile);
     }
   }
 
  private:
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(NotificationObserver);
+  DISALLOW_COPY_AND_ASSIGN(UserProfileLoadedObserver);
 };

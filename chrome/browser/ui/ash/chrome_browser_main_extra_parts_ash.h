@@ -58,15 +58,16 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   ~ChromeBrowserMainExtraPartsAsh() override;
 
   // Overridden from ChromeBrowserMainExtraParts:
+  void PreMainMessageLoopStart() override;
   void PreProfileInit() override;
   void PostProfileInit() override;
   void PostBrowserStart() override;
   void PostMainMessageLoopRun() override;
 
  private:
-  class NotificationObserver;
+  class UserProfileLoadedObserver;
 
-  std::unique_ptr<NotificationObserver> notification_observer_;
+  std::unique_ptr<UserProfileLoadedObserver> user_profile_loaded_observer_;
 
   // Initialized in PreProfileInit in all configs before Shell init:
   std::unique_ptr<NetworkConnectDelegateChromeOS> network_connect_delegate_;
