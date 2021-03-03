@@ -25,14 +25,38 @@ enum SpeechRecognizerStatus {
 // which this delegate was constructed.
 class SpeechRecognizerDelegate {
  public:
+  // The timing information for the recognized speech text.
+  struct TranscriptTiming {
+    TranscriptTiming();
+    TranscriptTiming(const TranscriptTiming&) = delete;
+    TranscriptTiming& operator=(const TranscriptTiming&) = delete;
+    ~TranscriptTiming();
+
+    // Describes the time that elapsed between the start of speech recognition
+    // session and the first audio input that corresponds to the transcription
+    // result.
+    base::TimeDelta audio_start_time;
+
+    // Describes the time that elapsed between the start of speech recognition
+    // and the last audio input that corresponds to the transcription result.
+    base::TimeDelta audio_end_time;
+
+    // Describes the time that elapsed between the start of speech recognition
+    // and the audio input corresponding to each word in the transcription
+    // result. The vector will have the same number of TimeDeltas as the
+    // transcription result.
+    std::vector<base::TimeDelta> word_offsets;
+  };
+
   // Receive a speech recognition result. |is_final| indicated whether the
   // result is an intermediate or final result. If |is_final| is true, then the
   // recognizer stops and no more results will be returned.
-  // May include word timing information in |word_offsets|.
+  // May include word timing information in |timing| if the speech recognizer is
+  // an on device speech recognizer.
   virtual void OnSpeechResult(
       const base::string16& text,
       bool is_final,
-      base::Optional<std::vector<base::TimeDelta>> word_offsets) = 0;
+      const base::Optional<TranscriptTiming>& timing) = 0;
 
   // Invoked regularly to indicate the average sound volume.
   virtual void OnSpeechSoundLevelChanged(int16_t level) = 0;

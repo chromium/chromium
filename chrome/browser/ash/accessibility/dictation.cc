@@ -87,7 +87,8 @@ bool Dictation::OnToggleDictation() {
 void Dictation::OnSpeechResult(
     const base::string16& query,
     bool is_final,
-    base::Optional<std::vector<base::TimeDelta>> word_offsets) {
+    const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
+        word_offsets) {
   composition_->text = query;
 
   if (!is_final) {

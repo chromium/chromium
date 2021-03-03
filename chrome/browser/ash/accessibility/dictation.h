@@ -40,7 +40,8 @@ class Dictation : public SpeechRecognizerDelegate,
   void OnSpeechResult(
       const base::string16& query,
       bool is_final,
-      base::Optional<std::vector<base::TimeDelta>> word_offsets) override;
+      const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
+          word_offsets) override;
   void OnSpeechSoundLevelChanged(int16_t level) override;
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;

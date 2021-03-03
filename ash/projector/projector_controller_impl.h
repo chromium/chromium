@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/projector/projector_controller.h"
-#include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
 
 namespace base {
 class FilePath;
@@ -32,6 +31,12 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
 
   // ProjectorController:
   void SetClient(ash::ProjectorClient* client) override;
+  void OnSpeechRecognitionAvailable(bool available) override;
+  void OnTranscription(const base::string16& text,
+                       base::TimeDelta audio_start_time,
+                       base::TimeDelta audio_end_time,
+                       const std::vector<base::TimeDelta>& word_offsets,
+                       bool is_final) override;
 
   // Shows projector toolbar.
   void ShowToolbar();
@@ -49,16 +54,6 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   // Saves the screencast including metadata.
   void SaveScreencast(const base::FilePath& saved_video_path);
 
-  // TODO(crbug.com/1165437): Update the interface once SODA integration is
-  // available.
-  // Invoked when transcription result is available to record the transcript
-  // and maybe update the UI.
-  // TODO(yilkal): Make this method an inherited method from
-  // ProjectorController.
-  void OnTranscription(
-      chromeos::machine_learning::mojom::SpeechRecognizerEventPtr
-          speech_recognizer_event);
-
   void SetProjectorUiControllerForTest(
       std::unique_ptr<ProjectorUiController> ui_controller);
   void SetProjectorMetadataControllerForTest(
@@ -75,7 +70,13 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   std::unique_ptr<ProjectorUiController> ui_controller_;
   std::unique_ptr<ProjectorMetadataController> metadata_controller_;
 
+  // Whether the caption bubble ui is being shown or not.
   bool is_caption_on_ = false;
+
+  // Whether SODA is available on the device.
+  bool is_speech_recognition_available_ = false;
+
+  // Whether speech recognition is taking place or not.
   bool is_speech_recognition_on_ = false;
 };
 

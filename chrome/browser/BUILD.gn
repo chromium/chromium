@@ -1693,6 +1693,7 @@ static_library("browser") {
     "speech/on_device_speech_recognizer.h",
     "speech/speech_recognizer.cc",
     "speech/speech_recognizer.h",
+    "speech/speech_recognizer_delegate.cc",
     "speech/speech_recognizer_delegate.h",
     "ssl/certificate_error_reporter.cc",
     "ssl/certificate_error_reporter.h",

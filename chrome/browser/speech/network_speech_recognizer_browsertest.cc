@@ -37,10 +37,12 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
     return weak_factory_.GetWeakPtr();
   }
 
-  MOCK_METHOD3(OnSpeechResult,
-               void(const base::string16& text,
-                    bool is_final,
-                    base::Optional<std::vector<base::TimeDelta>> word_offsets));
+  MOCK_METHOD3(
+      OnSpeechResult,
+      void(const base::string16& text,
+           bool is_final,
+           const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
+               timing));
   MOCK_METHOD1(OnSpeechSoundLevelChanged, void(int16_t));
   MOCK_METHOD1(OnSpeechRecognitionStateChanged, void(SpeechRecognizerStatus));
 
@@ -85,10 +87,9 @@ IN_PROC_BROWSER_TEST_F(AppListNetworkSpeechRecognizerBrowserTest,
       "en" /* accept_language */, "en" /* locale */);
 
   base::RunLoop run_loop;
-  base::Optional<std::vector<base::TimeDelta>> timings = base::nullopt;
   EXPECT_CALL(*mock_speech_delegate_,
               OnSpeechResult(base::ASCIIToUTF16("Pictures of the moon"), true,
-                             timings));
+                             testing::_));
   EXPECT_CALL(*mock_speech_delegate_,
               OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));

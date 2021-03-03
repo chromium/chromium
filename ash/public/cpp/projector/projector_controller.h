@@ -5,7 +5,10 @@
 #ifndef ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_CONTROLLER_H_
 
+#include <vector>
+
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -25,8 +28,15 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // ProjectorController.
   virtual void SetClient(ProjectorClient* client) = 0;
 
-  // TODO(ylkal): Add OnTranscriptionResult method to receive transcription
-  // results here.
+  // Called when speech recognition using SODA is available.
+  virtual void OnSpeechRecognitionAvailable(bool available) = 0;
+
+  // Called when transcription result from mic input is ready.
+  virtual void OnTranscription(const base::string16& text,
+                               base::TimeDelta start_time,
+                               base::TimeDelta end_time,
+                               const std::vector<base::TimeDelta>& word_offsets,
+                               bool is_final) = 0;
 };
 
 }  // namespace ash

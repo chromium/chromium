@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,42 +30,28 @@ using chromeos::machine_learning::mojom::TimingInfo;
 using testing::_;
 using testing::ElementsAre;
 
-SpeechRecognizerEventPtr BuildFinalResultEvent() {
-  auto final_result = FinalResult::New();
-  final_result->final_hypotheses.push_back("transcript text 1");
-  final_result->final_hypotheses.push_back("transcript text 2");
-
-  auto timing_event = TimingInfo::New();
-  timing_event->audio_start_time = base::TimeDelta::FromMilliseconds(0);
-  timing_event->event_end_time = base::TimeDelta::FromMilliseconds(3000);
-  timing_event->word_alignments.push_back(
-      base::TimeDelta::FromMilliseconds(1000));
-  timing_event->word_alignments.push_back(
-      base::TimeDelta::FromMilliseconds(2000)),
-      timing_event->word_alignments.push_back(
-          base::TimeDelta::FromMilliseconds(2500));
-  final_result->timing_event = std::move(timing_event);
-
-  return SpeechRecognizerEvent::NewFinalResult(std::move(final_result));
+void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
+  controller->OnTranscription(
+      base::UTF8ToUTF16("transcript text 1"),
+      base::TimeDelta::FromMilliseconds(0) /* audio_start_time */,
+      base::TimeDelta::FromMilliseconds(3000) /* audio_end_time */,
+      {{base::TimeDelta::FromMilliseconds(1000),
+        base::TimeDelta::FromMilliseconds(2000),
+        base::TimeDelta::FromMilliseconds(2500)}} /* word_offsets*/,
+      true /* is_final */);
 }
 
-SpeechRecognizerEventPtr BuildPartialResultEvent() {
-  auto partial_result = PartialResult::New();
-  partial_result->partial_text.push_back("transcript partial text 1");
-  partial_result->partial_text.push_back("transcript partial text 2");
-
-  auto timing_event = TimingInfo::New();
-  timing_event->audio_start_time = base::TimeDelta::FromMilliseconds(0);
-  timing_event->event_end_time = base::TimeDelta::FromMilliseconds(3000);
-  timing_event->word_alignments.push_back(
-      base::TimeDelta::FromMilliseconds(1000));
-  timing_event->word_alignments.push_back(
-      base::TimeDelta::FromMilliseconds(2000)),
-      timing_event->word_alignments.push_back(
-          base::TimeDelta::FromMilliseconds(2500));
-  partial_result->timing_event = std::move(timing_event);
-
-  return SpeechRecognizerEvent::NewPartialResult(std::move(partial_result));
+void NotifyControllerForPartialSpeechResult(
+    ProjectorControllerImpl* controller) {
+  controller->OnTranscription(
+      base::UTF8ToUTF16("transcript partial text 1"),
+      base::TimeDelta::FromMilliseconds(0) /* audio_start_time */,
+      base::TimeDelta::FromMilliseconds(3000) /* audio_end_time */,
+      {{base::TimeDelta::FromMilliseconds(1000),
+        base::TimeDelta::FromMilliseconds(2000),
+        base::TimeDelta::FromMilliseconds(2500),
+        base::TimeDelta::FromMilliseconds(3000)}} /* word_offsets*/,
+      false /* is_final */);
 }
 
 }  // namespace
@@ -113,8 +100,6 @@ TEST_F(ProjectorControllerTest, SaveScreencast) {
 }
 
 TEST_F(ProjectorControllerTest, OnTranscription) {
-  auto speech_recognition_event = BuildFinalResultEvent();
-
   // Verify that |RecordTranscription| in |ProjectorMetadataController| is
   // called to record the transcript.
   EXPECT_CALL(
@@ -129,12 +114,10 @@ TEST_F(ProjectorControllerTest, OnTranscription) {
   // Verify that |OnTranscription| in |ProjectorUiController| is not called
   // since capton is off.
   EXPECT_CALL(*mock_ui_controller_, OnTranscription(_, _)).Times(0);
-  controller_->OnTranscription(std::move(speech_recognition_event));
+  NotifyControllerForFinalSpeechResult(controller_.get());
 }
 
 TEST_F(ProjectorControllerTest, OnTranscriptionPartialResult) {
-  auto speech_recognition_event = BuildPartialResultEvent();
-
   // Verify that |RecordTranscription| in |ProjectorMetadataController| is not
   // called since it is not a final result.
   EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_, _, _, _))
@@ -142,12 +125,10 @@ TEST_F(ProjectorControllerTest, OnTranscriptionPartialResult) {
   // Verify that |OnTranscription| in |ProjectorUiController| is not called
   // since caption is off.
   EXPECT_CALL(*mock_ui_controller_, OnTranscription(_, _)).Times(0);
-  controller_->OnTranscription(std::move(speech_recognition_event));
+  NotifyControllerForPartialSpeechResult(controller_.get());
 }
 
 TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOn) {
-  auto speech_recognition_event = BuildFinalResultEvent();
-
   // Verify that |SaveMetadata| in |ProjectorMetadataController| is called to
   // record the transcript.
   EXPECT_CALL(
@@ -164,12 +145,10 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOn) {
   EXPECT_CALL(*mock_ui_controller_, OnTranscription("transcript text 1", true))
       .Times(1);
   controller_->SetCaptionState(true);
-  controller_->OnTranscription(std::move(speech_recognition_event));
+  NotifyControllerForFinalSpeechResult(controller_.get());
 }
 
 TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
-  auto speech_recognition_event = BuildPartialResultEvent();
-
   // Verify that |RecordTranscription| in |ProjectorMetadataController| is
   // called.
   EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_, _, _, _))
@@ -180,7 +159,7 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
               OnTranscription("transcript partial text 1", false))
       .Times(1);
   controller_->SetCaptionState(true);
-  controller_->OnTranscription(std::move(speech_recognition_event));
+  NotifyControllerForPartialSpeechResult(controller_.get());
 }
 
 }  // namespace ash
