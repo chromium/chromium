@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+div {
+  position: absolute;
+}
+#scroller {
+  width: 500px;
+  height: 500px;
+  overflow: scroll;
+  scroll-snap-type: both mandatory;
+  border: solid black 5px;
+}
+#space {
+  width: 2000px;
+  height: 2000px;
+}
+.target {
+  width: 200px;
+  height: 200px;
+  scroll-snap-align: start;
+  background-color: blue;
+}
+</style>
+
+<div id="scroller">
+  <div id="space"></div>
+  <div class="target" style="left: 0px; top: 0px;"></div>
+  <div class="target" style="left: 80px; top: 80px;"></div>
+  <div class="target" style="left: 200px; top: 200px;"></div>
+</div>
+
+<script>
+if (window.internals) {
+  internals.runtimeFlags.implicitRootScrollerEnabled = true;
+  // Jump directly to the snap position.
+  internals.settings.setScrollAnimatorEnabled(false);
+}
+
+var body = document.body;
+var scroller = document.getElementById("scroller");
+var space = document.getElementById("space");
+
+function scrollLeft() {
+  return scroller.scrollLeft;
+}
+
+function scrollTop() {
+  return scroller.scrollTop;
+}
+
+function approx_equal(callback, value, tolerance) {
+  return Math.abs(callback() - value) < tolerance;
+}
+
+// MacOS devices do not have touch screens. Tests are irrelevant.
+const macPlatform = navigator.platform.indexOf('Mac') == 0;
+
+promise_test (async () => {
+  if (macPlatform)
+    return;
+
+  scroller.scrollTo(0, 0);
+  const scrollPromise = waitForScrollEvent(scroller);
+  await smoothScroll(100, 200, 200, GestureSourceType.TOUCH_INPUT, 'downright', SPEED_INSTANT);
+  await scrollPromise;
+  // Use time-based detection of the scroll end since scrolling past snap point.
+  await waitForAnimationEndTimeBased(scrollLeft);
+  assert_equals(scrollLeft(), 80);
+  assert_equals(scrollTop(), 80);
+
+}, "Without fling enabled, the scroll ends at the closest snap point to the " +
+   "scroll destination.");
+
+promise_test (async () => {
+  scroller.scrollTo(0, 0);
+  const scrollPromise = waitForScrollEvent(scroller);
+  await swipe(100, 200, 200, 'upleft', 900);
+  await scrollPromise;
+  await waitForAnimationEndTimeBased(scrollLeft);
+  assert_equals(scrollLeft(), 200);
+  assert_equals(scrollTop(), 200);
+}, "Fling scroll ends at the closest snap point to the fling destination.");
+
+promise_test (async () => {
+  scroller.scrollTo(0, 0);
+  const scrollPromise = waitForScrollEvent(scroller);
+  // Scroll horizontally to (100, 0) with momentum.
+  await swipe(100, 200, 200, 'left', 900);
+  await scrollPromise;
+  await waitForAnimationEndTimeBased(scrollLeft);
+  assert_equals(scrollLeft(), 200);
+  assert_equals(scrollTop(), 0);
+}, "Fling scroll in one direction ends at closest snap point to the fling " +
+   "destination.");
+
+promise_test (async () => {
+  scroller.scrollTo(0, 0);
+  const scrollPromise = waitForScrollEvent(scroller);
+  // Scroll right and up. Going up vertically is not possible since it is
+  // outside the bound. The expectation in this case is to snap as if user
+  // scrolled horizontally to (100, 0) with momentum.
+  await swipe(100, 200, 200, 'downleft', 900);
+  await scrollPromise;
+  await waitForAnimationEndTimeBased(scrollLeft);
+  // TODO(823998): Scroll top may land either at 0px or 80px which are both
+  // valid snap targets. My expectation was that it would be at 0. Needs more
+  // investigation to deflake.
+  // assert_approx_equals(scrollTop(), 0, 1);
+}, "Fling scroll that goes outside the boundary ends at the closest snap " +
+   "point to the fling destination.");
+</script>
