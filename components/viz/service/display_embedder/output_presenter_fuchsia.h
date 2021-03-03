@@ -101,7 +101,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
     std::vector<PendingOverlay> overlays;
   };
 
-  struct PresentatonState {
+  struct PresentationState {
     int presented_frame_ordinal;
     base::TimeTicks presentation_time;
     base::TimeDelta interval;
@@ -143,7 +143,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
   // Presentation information received from ImagePipe after rendering a frame.
   // Used to calculate target presentation time for the frames presented in the
   // future.
-  base::Optional<PresentatonState> presentation_state_;
+  base::Optional<PresentationState> presentation_state_;
 
   // Target presentation time of tha last frame sent to ImagePipe. Stored here
   // to ensure ImagePipe.Present() is not called with decreasing timestamps.

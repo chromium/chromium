@@ -482,7 +482,7 @@ void OutputPresenterFuchsia::PresentNextFrame() {
 
   auto present_time = now;
 
-  // If we have PresentatonState frame a previously displayed frame then use it
+  // If we have PresentationState frame a previously displayed frame then use it
   // to calculate target timestamp for the new frame.
   if (presentation_state_) {
     uint32_t relative_position =
@@ -527,8 +527,8 @@ void OutputPresenterFuchsia::OnPresentComplete(
   }
 
   presentation_state_ =
-      PresentatonState{pending_frames_.front().ordinal, presentation_time,
-                       presentation_interval};
+      PresentationState{pending_frames_.front().ordinal, presentation_time,
+                        presentation_interval};
 
   pending_frames_.pop_front();
 }
