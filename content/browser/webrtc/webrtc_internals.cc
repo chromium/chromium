@@ -69,26 +69,26 @@ void FreeLogList(base::Value* value) {
 WebRTCInternals* WebRTCInternals::g_webrtc_internals = nullptr;
 
 WebRTCInternals::PendingUpdate::PendingUpdate(
-    const std::string& event_name,
-    std::unique_ptr<base::Value> event_data)
-    : event_name_(event_name), event_data_(std::move(event_data)) {}
+    const char* command,
+    std::unique_ptr<base::Value> value)
+    : command_(command), value_(std::move(value)) {}
 
 WebRTCInternals::PendingUpdate::PendingUpdate(PendingUpdate&& other)
-    : event_name_(other.event_name_),
-      event_data_(std::move(other.event_data_)) {}
+    : command_(other.command_),
+      value_(std::move(other.value_)) {}
 
 WebRTCInternals::PendingUpdate::~PendingUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-const std::string& WebRTCInternals::PendingUpdate::event_name() const {
+const char* WebRTCInternals::PendingUpdate::command() const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return event_name_;
+  return command_;
 }
 
-const base::Value* WebRTCInternals::PendingUpdate::event_data() const {
+const base::Value* WebRTCInternals::PendingUpdate::value() const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return event_data_.get();
+  return value_.get();
 }
 
 WebRTCInternals::WebRTCInternals() : WebRTCInternals(500, true) {}
@@ -178,7 +178,7 @@ void WebRTCInternals::OnAddPeerConnection(int render_process_id,
   dict->SetBoolean("connected", false);
 
   if (!observers_.empty())
-    SendUpdate("add-peer-connection", dict->CreateDeepCopy());
+    SendUpdate("addPeerConnection", dict->CreateDeepCopy());
 
   peer_connection_data_.Append(std::move(dict));
 
@@ -203,7 +203,7 @@ void WebRTCInternals::OnRemovePeerConnection(ProcessId pid, int lid) {
     std::unique_ptr<base::DictionaryValue> id(new base::DictionaryValue());
     id->SetInteger("pid", static_cast<int>(pid));
     id->SetInteger("lid", lid);
-    SendUpdate("remove-peer-connection", std::move(id));
+    SendUpdate("removePeerConnection", std::move(id));
   }
 }
 
@@ -243,7 +243,7 @@ void WebRTCInternals::OnUpdatePeerConnection(
   update->SetInteger("lid", lid);
   update->MergeDictionary(log_entry.get());
 
-  SendUpdate("update-peer-connection", std::move(update));
+  SendUpdate("updatePeerConnection", std::move(update));
 
   // Append the update to the end of the log.
   EnsureLogList(record)->Append(std::move(log_entry));
@@ -261,7 +261,7 @@ void WebRTCInternals::OnAddStandardStats(base::ProcessId pid,
 
   dict->SetKey("reports", std::move(value));
 
-  SendUpdate("add-standard-stats", std::move(dict));
+  SendUpdate("addStandardStats", std::move(dict));
 }
 
 void WebRTCInternals::OnAddLegacyStats(base::ProcessId pid,
@@ -276,7 +276,7 @@ void WebRTCInternals::OnAddLegacyStats(base::ProcessId pid,
 
   dict->SetKey("reports", std::move(value));
 
-  SendUpdate("add-legacy-stats", std::move(dict));
+  SendUpdate("addLegacyStats", std::move(dict));
 }
 
 void WebRTCInternals::OnGetUserMedia(int rid,
@@ -305,7 +305,7 @@ void WebRTCInternals::OnGetUserMedia(int rid,
     dict->SetString("video", video_constraints);
 
   if (!observers_.empty())
-    SendUpdate("add-get-user-media", dict->CreateDeepCopy());
+    SendUpdate("addGetUserMedia", dict->CreateDeepCopy());
 
   get_user_media_requests_.Append(std::move(dict));
 
@@ -352,10 +352,10 @@ void WebRTCInternals::RemoveConnectionsObserver(
 void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (peer_connection_data_.GetSize() > 0)
-    observer->OnUpdate("update-all-peer-connections", &peer_connection_data_);
+    observer->OnUpdate("updateAllPeerConnections", &peer_connection_data_);
 
   for (const auto& request : get_user_media_requests_) {
-    observer->OnUpdate("add-get-user-media", &request);
+    observer->OnUpdate("addGetUserMedia", &request);
   }
 }
 
@@ -449,13 +449,13 @@ bool WebRTCInternals::CanToggleEventLogRecordings() const {
   return command_line_derived_logging_path_.empty();
 }
 
-void WebRTCInternals::SendUpdate(const std::string& event_name,
-                                 std::unique_ptr<base::Value> event_data) {
+void WebRTCInternals::SendUpdate(const char* command,
+                                 std::unique_ptr<base::Value> value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!observers_.empty());
 
   bool queue_was_empty = pending_updates_.empty();
-  pending_updates_.push(PendingUpdate(event_name, std::move(event_data)));
+  pending_updates_.push(PendingUpdate(command, std::move(value)));
 
   if (queue_was_empty) {
     GetUIThreadTaskRunner({})->PostDelayedTask(
@@ -502,10 +502,10 @@ void WebRTCInternals::FileSelectionCanceled(void* params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs:
-      SendUpdate("event-log-recordings-file-selection-cancelled", nullptr);
+      SendUpdate("eventLogRecordingsFileSelectionCancelled", nullptr);
       break;
     case SelectionType::kAudioDebugRecordings:
-      SendUpdate("audio-debug-recordings-file-selection-cancelled", nullptr);
+      SendUpdate("audioDebugRecordingsFileSelectionCancelled", nullptr);
       break;
     default:
       NOTREACHED();
@@ -535,7 +535,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
             new base::DictionaryValue());
         update->SetInteger("lid", lid);
         update->SetInteger("pid", pid);
-        SendUpdate("remove-peer-connection", std::move(update));
+        SendUpdate("removePeerConnection", std::move(update));
       }
       MaybeClosePeerConnection(record);
       peer_connection_data_.Remove(i, nullptr);
@@ -562,7 +562,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
   if (found_any && !observers_.empty()) {
     std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue());
     update->SetInteger("rid", render_process_id);
-    SendUpdate("remove-get-user-media-for-renderer", std::move(update));
+    SendUpdate("removeGetUserMediaForRenderer", std::move(update));
   }
 }
 
@@ -659,7 +659,7 @@ void WebRTCInternals::ProcessPendingUpdates() {
   while (!pending_updates_.empty()) {
     const auto& update = pending_updates_.front();
     for (auto& observer : observers_)
-      observer.OnUpdate(update.event_name(), update.event_data());
+      observer.OnUpdate(update.command(), update.value());
     pending_updates_.pop();
   }
 }

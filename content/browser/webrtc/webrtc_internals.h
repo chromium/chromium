@@ -156,8 +156,8 @@ class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
 
   static WebRTCInternals* g_webrtc_internals;
 
-  void SendUpdate(const std::string& event_name,
-                  std::unique_ptr<base::Value> event_data);
+  void SendUpdate(const char* command,
+                  std::unique_ptr<base::Value> value);
 
   // RenderProcessHostObserver implementation.
   void RenderProcessExited(RenderProcessHost* host,
@@ -269,18 +269,18 @@ class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
   // thread.
   class PendingUpdate {
    public:
-    PendingUpdate(const std::string& event_name,
-                  std::unique_ptr<base::Value> event_data);
+    PendingUpdate(const char* command,
+                  std::unique_ptr<base::Value> value);
     PendingUpdate(PendingUpdate&& other);
     ~PendingUpdate();
 
-    const std::string& event_name() const;
-    const base::Value* event_data() const;
+    const char* command() const;
+    const base::Value* value() const;
 
    private:
     base::ThreadChecker thread_checker_;
-    const std::string event_name_;
-    std::unique_ptr<base::Value> event_data_;
+    const char* command_;
+    std::unique_ptr<base::Value> value_;
     DISALLOW_COPY_AND_ASSIGN(PendingUpdate);
   };
 

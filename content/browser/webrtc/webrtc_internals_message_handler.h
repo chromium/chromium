@@ -51,8 +51,7 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
   void OnDOMLoadDone(const base::ListValue* list);
 
   // WebRTCInternalsUIObserver override.
-  void OnUpdate(const std::string& event_name,
-                const base::Value* event_data) override;
+  void OnUpdate(const char* command, const base::Value* args) override;
 
   // Executes Javascript command.
   void ExecuteJavascriptCommand(const char* command, const base::Value* args);

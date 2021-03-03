@@ -33,25 +33,24 @@ const char* const kWakeLockDisconnectingValues[] = {"disconnected", "closed",
 
 class MockWebRtcInternalsProxy : public WebRTCInternalsUIObserver {
  public:
-  MockWebRtcInternalsProxy() = default;
+  MockWebRtcInternalsProxy() : loop_(nullptr) {}
   explicit MockWebRtcInternalsProxy(base::RunLoop* loop) : loop_(loop) {}
 
-  const std::string& event_name() const { return event_name_; }
+  const std::string& command() const { return command_; }
 
-  base::Value* event_data() { return event_data_.get(); }
+  base::Value* value() { return value_.get(); }
 
  private:
-  void OnUpdate(const std::string& event_name,
-                const base::Value* event_data) override {
-    event_name_ = event_name;
-    event_data_.reset(event_data ? event_data->DeepCopy() : nullptr);
+  void OnUpdate(const char* command, const base::Value* value) override {
+    command_ = command;
+    value_.reset(value ? value->DeepCopy() : nullptr);
     if (loop_)
       loop_->Quit();
   }
 
-  std::string event_name_;
-  std::unique_ptr<base::Value> event_data_;
-  base::RunLoop* loop_{nullptr};
+  std::string command_;
+  std::unique_ptr<base::Value> value_;
+  base::RunLoop* loop_;
 };
 
 class MockWakeLock : public device::mojom::WakeLock {
@@ -179,7 +178,7 @@ TEST_F(WebRtcInternalsTest, AddRemoveObserver) {
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE, loop.QuitClosure());
   loop.Run();
 
-  EXPECT_EQ("", observer.event_name());
+  EXPECT_EQ("", observer.command());
 
   webrtc_internals.OnRemovePeerConnection(3, 4);
 
@@ -198,10 +197,10 @@ TEST_F(WebRtcInternalsTest, EnsureNoLogWhenNoObserver) {
   // Make sure we don't have a log entry since there was no observer.
   MockWebRtcInternalsProxy observer;
   webrtc_internals.UpdateObserver(&observer);
-  EXPECT_EQ("update-all-peer-connections", observer.event_name());
+  EXPECT_EQ("updateAllPeerConnections", observer.command());
 
   base::ListValue* list = nullptr;
-  ASSERT_TRUE(observer.event_data()->GetAsList(&list));
+  ASSERT_TRUE(observer.value()->GetAsList(&list));
   EXPECT_EQ(1U, list->GetSize());
   base::DictionaryValue* dict = nullptr;
   ASSERT_TRUE((*list->begin()).GetAsDictionary(&dict));
@@ -226,10 +225,10 @@ TEST_F(WebRtcInternalsTest, EnsureLogIsRemovedWhenObserverIsRemoved) {
 
   // Make sure we have a log entry since there was an observer.
   webrtc_internals.UpdateObserver(&observer);
-  EXPECT_EQ("update-all-peer-connections", observer.event_name());
+  EXPECT_EQ("updateAllPeerConnections", observer.command());
 
   base::ListValue* list = nullptr;
-  ASSERT_TRUE(observer.event_data()->GetAsList(&list));
+  ASSERT_TRUE(observer.value()->GetAsList(&list));
   EXPECT_EQ(1U, list->GetSize());
   base::DictionaryValue* dict = nullptr;
   ASSERT_TRUE((*list->begin()).GetAsDictionary(&dict));
@@ -239,9 +238,9 @@ TEST_F(WebRtcInternalsTest, EnsureLogIsRemovedWhenObserverIsRemoved) {
   // Make sure we the log entry was removed when the last observer was removed.
   webrtc_internals.RemoveObserver(&observer);
   webrtc_internals.UpdateObserver(&observer);
-  EXPECT_EQ("update-all-peer-connections", observer.event_name());
+  EXPECT_EQ("updateAllPeerConnections", observer.command());
 
-  ASSERT_TRUE(observer.event_data()->GetAsList(&list));
+  ASSERT_TRUE(observer.value()->GetAsList(&list));
   EXPECT_EQ(1U, list->GetSize());
   ASSERT_TRUE((*list->begin()).GetAsDictionary(&dict));
   ASSERT_FALSE(dict->GetList("log", &log));
@@ -261,10 +260,10 @@ TEST_F(WebRtcInternalsTest, SendAddPeerConnectionUpdate) {
 
   loop.Run();
 
-  ASSERT_EQ("add-peer-connection", observer.event_name());
+  ASSERT_EQ("addPeerConnection", observer.command());
 
   base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  EXPECT_TRUE(observer.value()->GetAsDictionary(&dict));
 
   VerifyInt(dict, "pid", 1);
   VerifyInt(dict, "lid", 2);
@@ -289,10 +288,10 @@ TEST_F(WebRtcInternalsTest, SendRemovePeerConnectionUpdate) {
 
   loop.Run();
 
-  ASSERT_EQ("remove-peer-connection", observer.event_name());
+  ASSERT_EQ("removePeerConnection", observer.command());
 
   base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  EXPECT_TRUE(observer.value()->GetAsDictionary(&dict));
 
   VerifyInt(dict, "pid", 1);
   VerifyInt(dict, "lid", 2);
@@ -316,10 +315,10 @@ TEST_F(WebRtcInternalsTest, SendUpdatePeerConnectionUpdate) {
 
   loop.Run();
 
-  ASSERT_EQ("update-peer-connection", observer.event_name());
+  ASSERT_EQ("updatePeerConnection", observer.command());
 
   base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  EXPECT_TRUE(observer.value()->GetAsDictionary(&dict));
 
   VerifyInt(dict, "pid", 1);
   VerifyInt(dict, "lid", 2);
@@ -353,9 +352,9 @@ TEST_F(WebRtcInternalsTest, AddGetUserMedia) {
 
   loop.Run();
 
-  ASSERT_EQ("add-get-user-media", observer.event_name());
-  VerifyGetUserMediaData(observer.event_data(), rid, pid, kUrl,
-                         audio_constraint, video_constraint);
+  ASSERT_EQ("addGetUserMedia", observer.command());
+  VerifyGetUserMediaData(observer.value(), rid, pid, kUrl, audio_constraint,
+                         video_constraint);
 
   webrtc_internals.RemoveObserver(&observer);
 
@@ -376,9 +375,9 @@ TEST_F(WebRtcInternalsTest, SendAllUpdateWithGetUserMedia) {
   webrtc_internals.AddObserver(&observer);
   webrtc_internals.UpdateObserver(&observer);
 
-  EXPECT_EQ("add-get-user-media", observer.event_name());
-  VerifyGetUserMediaData(observer.event_data(), rid, pid, kUrl,
-                         audio_constraint, video_constraint);
+  EXPECT_EQ("addGetUserMedia", observer.command());
+  VerifyGetUserMediaData(observer.value(), rid, pid, kUrl, audio_constraint,
+                         video_constraint);
 
   webrtc_internals.RemoveObserver(&observer);
 
@@ -401,11 +400,11 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
 
   webrtc_internals.UpdateObserver(&observer);
 
-  EXPECT_EQ("update-all-peer-connections", observer.event_name());
-  ASSERT_TRUE(observer.event_data());
+  EXPECT_EQ("updateAllPeerConnections", observer.command());
+  ASSERT_TRUE(observer.value());
 
   base::ListValue* list = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsList(&list));
+  EXPECT_TRUE(observer.value()->GetAsList(&list));
   EXPECT_EQ(1U, list->GetSize());
 
   base::DictionaryValue* dict = nullptr;
@@ -450,11 +449,11 @@ TEST_F(WebRtcInternalsTest, OnAddStandardStats) {
 
   loop.Run();
 
-  EXPECT_EQ("add-standard-stats", observer.event_name());
-  ASSERT_TRUE(observer.event_data());
+  EXPECT_EQ("addStandardStats", observer.command());
+  ASSERT_TRUE(observer.value());
 
   base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  EXPECT_TRUE(observer.value()->GetAsDictionary(&dict));
 
   VerifyInt(dict, "pid", pid);
   VerifyInt(dict, "lid", lid);
@@ -481,11 +480,11 @@ TEST_F(WebRtcInternalsTest, OnAddLegacyStats) {
 
   loop.Run();
 
-  EXPECT_EQ("add-legacy-stats", observer.event_name());
-  ASSERT_TRUE(observer.event_data());
+  EXPECT_EQ("addLegacyStats", observer.command());
+  ASSERT_TRUE(observer.value());
 
   base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  EXPECT_TRUE(observer.value()->GetAsDictionary(&dict));
 
   VerifyInt(dict, "pid", pid);
   VerifyInt(dict, "lid", lid);
@@ -505,9 +504,8 @@ TEST_F(WebRtcInternalsTest, AudioDebugRecordingsFileSelectionCanceled) {
 
   loop.Run();
 
-  EXPECT_EQ("audio-debug-recordings-file-selection-cancelled",
-            observer.event_name());
-  EXPECT_EQ(nullptr, observer.event_data());
+  EXPECT_EQ("audioDebugRecordingsFileSelectionCancelled", observer.command());
+  EXPECT_EQ(nullptr, observer.value());
 
   base::RunLoop().RunUntilIdle();
 }

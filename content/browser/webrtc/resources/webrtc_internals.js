@@ -2,18 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
-
-import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
-import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
-import {PeerConnectionUpdateTable} from './peer_connection_update_table.js';
-import {SsrcInfoManager} from './ssrc_info_manager.js';
-import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js';
-import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
-import {StatsTable} from './stats_table.js';
-import {TabView} from './tab_view.js';
-
 var USER_MEDIA_TAB_ID = 'user-media-tab-id';
 
 const OPTION_GETSTATS_STANDARD = 'Standardized (promise-based) getStats() API';
@@ -26,20 +14,18 @@ var ssrcInfoManager = null;
 var peerConnectionUpdateTable = null;
 var statsTable = null;
 var dumpCreator = null;
-
-// Exporting these on window since they are directly accessed by tests.
-window.setCurrentGetStatsMethod = function(method) {
-  currentGetStatsMethod = method;
-};
-window.OPTION_GETSTATS_LEGACY = OPTION_GETSTATS_LEGACY;
+/** A map from peer connection id to the PeerConnectionRecord. */
+var peerConnectionDataStore = {};
+/** A list of getUserMedia requests. */
+var userMediaRequests = [];
 
 /** Maps from id (see getPeerConnectionId) to StatsRatesCalculator. */
-const statsRatesCalculatorById = new Map();
+statsRatesCalculatorById = new Map();
 
 /** A simple class to store the updates and stats data for a peer connection. */
+var PeerConnectionRecord = (function() {
   /** @constructor */
-class PeerConnectionRecord {
-  constructor() {
+  function PeerConnectionRecord() {
     /** @private */
     this.record_ = {
       constraints: {},
@@ -50,94 +36,84 @@ class PeerConnectionRecord {
     };
   }
 
-  /** @override */
-  toJSON() {
-    return this.record_;
-  }
+  PeerConnectionRecord.prototype = {
+    /** @override */
+    toJSON: function() {
+      return this.record_;
+    },
 
-  /**
-   * Adds the initialization info of the peer connection.
-   * @param {string} url The URL of the web page owning the peer connection.
-   * @param {Array} rtcConfiguration
-   * @param {!Object} constraints Media constraints.
-   */
-  initialize(url, rtcConfiguration, constraints) {
-    this.record_.url = url;
-    this.record_.rtcConfiguration = rtcConfiguration;
-    this.record_.constraints = constraints;
-  }
+    /**
+     * Adds the initilization info of the peer connection.
+     * @param {string} url The URL of the web page owning the peer connection.
+     * @param {Array} rtcConfiguration
+     * @param {!Object} constraints Media constraints.
+     */
+    initialize: function(url, rtcConfiguration, constraints) {
+      this.record_.url = url;
+      this.record_.rtcConfiguration = rtcConfiguration;
+      this.record_.constraints = constraints;
+    },
 
-  resetStats() {
-    this.record_.stats = {};
-  }
+    resetStats: function() {
+      this.record_.stats = {};
+    },
 
-  /**
-   * @param {string} dataSeriesId The TimelineDataSeries identifier.
-   * @return {!TimelineDataSeries}
-   */
-  getDataSeries(dataSeriesId) {
-    return this.record_.stats[dataSeriesId];
-  }
+    /**
+     * @param {string} dataSeriesId The TimelineDataSeries identifier.
+     * @return {!TimelineDataSeries}
+     */
+    getDataSeries: function(dataSeriesId) {
+      return this.record_.stats[dataSeriesId];
+    },
 
-  /**
-   * @param {string} dataSeriesId The TimelineDataSeries identifier.
-   * @param {!TimelineDataSeries} dataSeries The TimelineDataSeries to set to.
-   */
-  setDataSeries(dataSeriesId, dataSeries) {
-    this.record_.stats[dataSeriesId] = dataSeries;
-  }
+    /**
+     * @param {string} dataSeriesId The TimelineDataSeries identifier.
+     * @param {!TimelineDataSeries} dataSeries The TimelineDataSeries to set to.
+     */
+    setDataSeries: function(dataSeriesId, dataSeries) {
+      this.record_.stats[dataSeriesId] = dataSeries;
+    },
 
-  /**
-   * @param {!Object} update The object contains keys "time", "type", and
-   *   "value".
-   */
-  addUpdate(update) {
-    var time = new Date(parseFloat(update.time));
-    this.record_.updateLog.push({
-      time: time.toLocaleString(),
-      type: update.type,
-      value: update.value,
-    });
-  }
-}
+    /**
+     * @param {!Object} update The object contains keys "time", "type", and
+     *   "value".
+     */
+    addUpdate: function(update) {
+      var time = new Date(parseFloat(update.time));
+      this.record_.updateLog.push({
+        time: time.toLocaleString(),
+        type: update.type,
+        value: update.value,
+      });
+    },
+  };
+
+  return PeerConnectionRecord;
+})();
+
+// The maximum number of data points bufferred for each stats. Old data points
+// will be shifted out when the buffer is full.
+var MAX_STATS_DATA_POINT_BUFFER_SIZE = 1000;
+
+// <include src="tab_view.js">
+// <include src="data_series.js">
+// <include src="ssrc_info_manager.js">
+// <include src="stats_graph_helper.js">
+// <include src="stats_rates_calculator.js">
+// <include src="stats_table.js">
+// <include src="peer_connection_update_table.js">
+// <include src="dump_creator.js">
+
 
 function initialize() {
   dumpCreator = new DumpCreator($('content-root'));
   $('content-root').appendChild(createStatsSelectionOptionElements());
   tabView = new TabView($('content-root'));
   ssrcInfoManager = new SsrcInfoManager();
-  window.ssrcInfoManager = ssrcInfoManager;
   peerConnectionUpdateTable = new PeerConnectionUpdateTable();
   statsTable = new StatsTable(ssrcInfoManager);
 
-  // Add listeners for all the updates that get sent from webrtc_internals.cc.
-  addWebUIListener('add-peer-connection', addPeerConnection);
-  addWebUIListener('update-peer-connection', updatePeerConnection);
-  addWebUIListener('update-all-peer-connections', updateAllPeerConnections);
-  addWebUIListener('remove-peer-connection', removePeerConnection);
-  addWebUIListener('add-standard-stats', addStandardStats);
-  addWebUIListener('add-legacy-stats', addLegacyStats);
-  addWebUIListener('add-get-user-media', addGetUserMedia);
-  addWebUIListener(
-      'remove-get-user-media-for-renderer', removeGetUserMediaForRenderer);
-  addWebUIListener(
-      'event-log-recordings-file-selection-cancelled',
-      eventLogRecordingsFileSelectionCancelled);
-  addWebUIListener(
-      'audio-debug-recordings-file-selection-cancelled',
-      audioDebugRecordingsFileSelectionCancelled);
-
-  // Request initial startup parameters.
-  sendWithPromise('finishedDOMLoad').then(params => {
-    if (params.audioDebugRecordingsEnabled) {
-      dumpCreator.setAudioDebugRecordingsCheckbox();
-    }
-    if (params.eventLogRecordingsEnabled) {
-      dumpCreator.setEventLogRecordingsCheckbox();
-    }
-    dumpCreator.setEventLogRecordingsCheckboxMutability(
-        params.eventLogRecordingsToggleable);
-  });
+  chrome.send('finishedDOMLoad');
 
   // Requests stats from all peer connections every second.
   window.setInterval(requestStats, 1000);
@@ -483,4 +459,32 @@ function audioDebugRecordingsFileSelectionCancelled() {
  */
 function eventLogRecordingsFileSelectionCancelled() {
   dumpCreator.clearEventLogRecordingsCheckbox();
+}
+
+
+/**
+ * Notification that audio debug recordings are enabled. Used e.g. on page load
+ * to update the UI to reflect the recording state.
+ */
+function setAudioDebugRecordingsEnabled() {
+  dumpCreator.setAudioDebugRecordingsCheckbox();
+}
+
+
+/**
+ * Notification that event log recordings are enabled. Used e.g. on page load
+ * to update the UI to reflect the recording state.
+ */
+function setEventLogRecordingsEnabled() {
+  dumpCreator.setEventLogRecordingsCheckbox();
+}
+
+
+/**
+ * Notification that event log recordings may be turned off/on by the user.
+ * Used e.g. on page load to update the UI to reflect the recording state's
+ * mutability.
+ */
+function setEventLogRecordingsToggleability(isToggleable) {
+  dumpCreator.setEventLogRecordingsCheckboxMutability(isToggleable);
 }

@@ -11,12 +11,7 @@
 // Each group has an expand/collapse button and is collapsed initially.
 //
 
-import {$} from 'chrome://resources/js/util.m.js';
-
-import {TimelineDataSeries} from './data_series.js';
-import {peerConnectionDataStore} from './dump_creator.js';
-import {GetSsrcFromReport} from './ssrc_info_manager.js';
-import {TimelineGraphView} from './timeline_graph_view.js';
+// <include src="timeline_graph_view.js">
 
 var STATS_GRAPH_CONTAINER_HEADING_CLASS = 'stats-graph-container-heading';
 
@@ -102,7 +97,7 @@ var statsNameBlackList = {
   'googFingerprint': true,
 };
 
-function isStandardReportBlocklisted(report) {
+function isStandardReportBlacklisted(report) {
   // Codec stats reflect what has been negotiated. There are LOTS of them and
   // they don't change over time on their own.
   if (report.type === 'codec') {
@@ -137,7 +132,7 @@ function readReportStat(report, stat) {
   return undefined;
 }
 
-function isStandardStatBlocklisted(report, statName) {
+function isStandardStatBlacklisted(report, statName) {
   // The datachannelid is an identifier, but because it is a number it shows up
   // as a graph if we don't blacklist it.
   if (report.type === 'data-channel' && statName === 'datachannelid') {
@@ -151,8 +146,6 @@ function isStandardStatBlocklisted(report, statName) {
 }
 
 var graphViews = {};
-// Export on |window| since tests access this directly from C++.
-window.graphViews = graphViews;
 let graphElementsByPeerConnectionId = new Map();
 
 // Returns number parsed from |value|, or NaN if the stats name is black-listed.
@@ -168,8 +161,7 @@ function getNumberFromValue(name, value) {
 
 // Adds the stats report |report| to the timeline graph for the given
 // |peerConnectionElement|.
-export function drawSingleReport(
-    peerConnectionElement, report, isLegacyReport) {
+function drawSingleReport(peerConnectionElement, report, isLegacyReport) {
   var reportType = report.type;
   var reportId = report.id;
   var stats = report.stats;
@@ -224,8 +216,8 @@ export function drawSingleReport(
         [finalValue]);
 
     if (!isLegacyReport &&
-        (isStandardReportBlocklisted(report) ||
-         isStandardStatBlocklisted(report, rawLabel))) {
+        (isStandardReportBlacklisted(report) ||
+         isStandardStatBlacklisted(report, rawLabel))) {
       // We do not want to draw certain standard reports but still want to
       // record them in the data series.
       continue;
@@ -271,7 +263,7 @@ export function drawSingleReport(
   }
 }
 
-export function removeStatsReportGraphs(peerConnectionElement) {
+function removeStatsReportGraphs(peerConnectionElement) {
   const graphElements =
       graphElementsByPeerConnectionId.get(peerConnectionElement.id);
   if (graphElements) {

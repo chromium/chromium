@@ -83,7 +83,7 @@ class CalculatedStats {
 // associated with metrics from the original report. Convertible to and from the
 // "internal reports" format used by webrtc_internals.js to pass stats from C++
 // to JavaScript.
-export class StatsReport {
+class StatsReport {
   constructor() {
     // Represents an RTCStatsReport. It is a Map RTCStats.id -> RTCStats.
     // https://w3c.github.io/webrtc-pc/#dom-rtcstatsreport
@@ -394,7 +394,7 @@ class StandardDeviationCalculator {
 
 // Keeps track of previous and current stats report and calculates all
 // calculated metrics.
-export class StatsRatesCalculator {
+class StatsRatesCalculator {
   constructor() {
     this.previousReport = null;
     this.currentReport = null;
