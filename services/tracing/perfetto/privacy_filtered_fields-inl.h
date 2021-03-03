@@ -186,7 +186,7 @@ constexpr MessageInfo kChromeRendererSchedulerState = {
     kChromeRendererSchedulerStateIndices, nullptr};
 
 // Proto Message: ChromeWindowHandleEventInfo
-constexpr int kChromeWindowHandleEventInfoIndices[] = {1, 2, -1};
+constexpr int kChromeWindowHandleEventInfoIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kChromeWindowHandleEventInfo = {
     kChromeWindowHandleEventInfoIndices, nullptr};
 
@@ -290,7 +290,7 @@ constexpr MessageInfo kTraceStats = {kTraceStatsIndices,
                                      kTraceStatsComplexMessages};
 
 // Proto Message: ProcessDescriptor
-constexpr int kProcessDescriptorIndices[] = {1, 4, 5, -1};
+constexpr int kProcessDescriptorIndices[] = {1, 4, 5, 7, -1};
 constexpr MessageInfo kProcessDescriptor = {kProcessDescriptorIndices, nullptr};
 
 // Proto Message: ThreadDescriptor
