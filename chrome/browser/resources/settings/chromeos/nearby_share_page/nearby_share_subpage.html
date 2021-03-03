@@ -95,6 +95,7 @@
         </div>
       </div>
       <cr-button id="editDeviceNameButton" on-click="onDeviceNameTap_"
+          disabled="[[!prefs.nearby_sharing.enabled.value]]"
           aria-description="[[getEditNameButtonAriaDescription_(
               settings.deviceName)]]"
           deep-link-focus-id$="[[Setting.kNearbyShareDeviceName]]">
@@ -116,6 +117,7 @@
         </div>
       </div>
       <cr-button id="editVisibilityButton" on-click="onVisibilityTap_"
+          disabled="[[!prefs.nearby_sharing.enabled.value]]"
           aria-description="[[getVisibilityDescription_(settings.visibility)]]"
           deep-link-focus-id$="[[Setting.kNearbyShareDeviceVisibility]]">
         $i18n{nearbyShareEditVisibility}
@@ -139,6 +141,7 @@
       <cr-toggle
           id="highVisibilityToggle"
           checked="{{inHighVisibility_}}"
+          disabled="[[!prefs.nearby_sharing.enabled.value]]"
           aria-labelledby="highVisibilityTitle"
           aria-describedby="highVisibilitySubtitle"
           on-change="onInHighVisibilityToggledByUser_">
@@ -165,6 +168,7 @@
         </div>
       </div>
       <cr-button id="editDataUsageButton" on-click="onDataUsageTap_"
+          disabled="[[!prefs.nearby_sharing.enabled.value]]"
           aria-description="[[getEditDataUsageButtonAriaDescription_(
               prefs.nearby_sharing.data_usage.value)]]"
           deep-link-focus-id$="[[Setting.kNearbyShareDataUsage]]">
