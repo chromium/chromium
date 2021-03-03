@@ -1822,12 +1822,12 @@ class FlickrMobileStory2019(_InfiniteScrollStory):
   TAGS = [story_tags.INFINITE_SCROLL, story_tags.YEAR_2019]
 
 
-class PinterestMobileStory2019(_InfiniteScrollStory):
-  NAME = 'browse:social:pinterest_infinite_scroll:2019'
+class PinterestMobileStory2021(_InfiniteScrollStory):
+  NAME = 'browse:social:pinterest_infinite_scroll:2021'
   URL = 'https://www.pinterest.co.uk'
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.INFINITE_SCROLL, story_tags.YEAR_2019
+      story_tags.HEALTH_CHECK, story_tags.INFINITE_SCROLL, story_tags.YEAR_2021
   ]
   # TODO(crbug.com/862077): Story breaks if login is skipped during replay.
   SKIP_LOGIN = False

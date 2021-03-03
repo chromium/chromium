@@ -174,8 +174,8 @@
         "browse:social:pinterest_infinite_scroll": {
             "DEFAULT": "system_health_mobile_063.wprgo"
         },
-        "browse:social:pinterest_infinite_scroll:2019": {
-            "DEFAULT": "system_health_mobile_d8fcf4e2bf.wprgo"
+        "browse:social:pinterest_infinite_scroll:2021": {
+            "DEFAULT": "system_health_mobile_807128ffeb.wprgo"
         },
         "browse:social:tumblr_infinite_scroll": {
             "DEFAULT": "system_health_mobile_062.wprgo"
@@ -228,14 +228,14 @@
         "load:media:facebook_feed:mobile:2020": {
             "DEFAULT": "system_health_mobile_b419f6ee29.wprgo"
         },
-        "load:media:facebook_photos:mobile:2020": {
-            "DEFAULT": "system_health_mobile_93a1b4b4b9.wprgo"
-        },
         "load:media:facebook_photos": {
             "DEFAULT": "system_health_mobile_040.wprgo"
         },
         "load:media:facebook_photos:2019": {
             "DEFAULT": "system_health_mobile_6fb624f9e6.wprgo"
+        },
+        "load:media:facebook_photos:mobile:2020": {
+            "DEFAULT": "system_health_mobile_93a1b4b4b9.wprgo"
         },
         "load:media:flickr": {
             "DEFAULT": "system_health_mobile_003.wprgo"

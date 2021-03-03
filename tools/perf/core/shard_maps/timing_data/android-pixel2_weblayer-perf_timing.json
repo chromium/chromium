@@ -28,10 +28,6 @@
         "name": "system_health.common_mobile/browse:news:reddit:2019"
     },
     {
-        "duration": "5.0",
-        "name": "system_health.common_mobile/browse:social:pinterest_infinite_scroll:2019"
-    },
-    {
         "duration": "62.0",
         "name": "system_health.common_mobile/browse:social:tumblr_infinite_scroll:2018"
     },
@@ -70,10 +66,6 @@
     {
         "duration": "52.0",
         "name": "system_health.memory_mobile/browse:news:reddit:2019"
-    },
-    {
-        "duration": "3.0",
-        "name": "system_health.memory_mobile/browse:social:pinterest_infinite_scroll:2019"
     },
     {
         "duration": "62.0",

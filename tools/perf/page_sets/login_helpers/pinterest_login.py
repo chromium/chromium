@@ -61,3 +61,4 @@ def LoginMobileAccount(action_runner, credential,
   """
   _LoginAccount(action_runner, credential, credentials_path)
   action_runner.WaitForElement(selector='div.mobileGrid div[role="button"]')
+  action_runner.Wait(1)

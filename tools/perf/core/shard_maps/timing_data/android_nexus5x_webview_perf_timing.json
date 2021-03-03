@@ -3656,10 +3656,6 @@
         "name": "system_health.common_mobile/browse:social:instagram:2019"
     },
     {
-        "duration": "3.0",
-        "name": "system_health.common_mobile/browse:social:pinterest_infinite_scroll:2019"
-    },
-    {
         "duration": "66.0",
         "name": "system_health.common_mobile/browse:social:tumblr_infinite_scroll:2018"
     },
@@ -3942,10 +3938,6 @@
     {
         "duration": "2.0",
         "name": "system_health.memory_mobile/browse:social:instagram:2019"
-    },
-    {
-        "duration": "4.0",
-        "name": "system_health.memory_mobile/browse:social:pinterest_infinite_scroll:2019"
     },
     {
         "duration": "68.0",
@@ -4250,10 +4242,6 @@
     {
         "duration": "19.0",
         "name": "v8.browsing_mobile/browse:social:instagram:2019"
-    },
-    {
-        "duration": "19.0",
-        "name": "v8.browsing_mobile/browse:social:pinterest_infinite_scroll:2019"
     },
     {
         "duration": "93.0",

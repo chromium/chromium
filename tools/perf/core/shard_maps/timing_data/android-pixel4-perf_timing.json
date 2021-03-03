@@ -3732,10 +3732,6 @@
         "name": "system_health.common_mobile/browse:social:instagram:2019"
     },
     {
-        "duration": "7.0",
-        "name": "system_health.common_mobile/browse:social:pinterest_infinite_scroll:2019"
-    },
-    {
         "duration": "63.0",
         "name": "system_health.common_mobile/browse:social:tumblr_infinite_scroll:2018"
     },
