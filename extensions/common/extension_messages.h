@@ -587,12 +587,6 @@ IPC_MESSAGE_ROUTED1(ExtensionMsg_UpdateBrowserWindowId,
 IPC_MESSAGE_CONTROL1(ExtensionMsg_UpdatePermissions,
                      ExtensionMsg_UpdatePermissions_Params)
 
-// Tell the render view to clear tab-specific permissions for some extensions.
-IPC_MESSAGE_CONTROL3(ExtensionMsg_ClearTabSpecificPermissions,
-                     std::vector<std::string> /* extension_ids */,
-                     bool /* update origin whitelist */,
-                     int /* tab_id */)
-
 // The browser's response to the ExtensionMsg_WakeEventPage IPC.
 IPC_MESSAGE_CONTROL2(ExtensionMsg_WakeEventPageResponse,
                      int /* request_id */,

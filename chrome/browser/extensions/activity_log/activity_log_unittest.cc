@@ -104,6 +104,10 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
                                     const URLPatternSet& new_hosts,
                                     int tab_id,
                                     bool update_origin_whitelist) override {}
+  void ClearTabSpecificPermissions(
+      const std::vector<std::string>& extension_ids,
+      int tab_id,
+      bool update_origin_whitelist) override {}
 
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };

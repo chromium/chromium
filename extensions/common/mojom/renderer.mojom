@@ -64,4 +64,10 @@ interface Renderer {
                                URLPatternSet new_hosts,
                                int32 tab_id,
                                bool update_origin_whitelist);
+
+  // Tells the render view to clear tab-specific permissions for some
+  // extensions.
+  ClearTabSpecificPermissions(array<string> extension_ids,
+                              int32 tab_id,
+                              bool update_origin_whitelist);
 };

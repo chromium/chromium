@@ -236,6 +236,10 @@ class Dispatcher : public content::RenderThreadObserver,
                                     const extensions::URLPatternSet& new_hosts,
                                     int tab_id,
                                     bool update_origin_whitelist) override;
+  void ClearTabSpecificPermissions(
+      const std::vector<std::string>& extension_ids,
+      int tab_id,
+      bool update_origin_whitelist) override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
@@ -256,10 +260,6 @@ class Dispatcher : public content::RenderThreadObserver,
                        const base::ListValue& event_args);
   void OnTransferBlobs(const std::vector<std::string>& blob_uuids);
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
-  void OnClearTabSpecificPermissions(
-      const std::vector<std::string>& extension_ids,
-      bool update_origin_whitelist,
-      int tab_id);
 
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(const std::set<HostID>& changed_hosts) override;

@@ -37,38 +37,6 @@ namespace extensions {
 
 namespace {
 
-using CreateMessageFunction = base::RepeatingCallback<IPC::Message*(bool)>;
-
-// Creates a new IPC message for clearing tab-specific permissions.
-IPC::Message* CreateClearMessage(const std::vector<std::string>& ids,
-                                 int tab_id,
-                                 bool update_allowlist) {
-  return new ExtensionMsg_ClearTabSpecificPermissions(ids, update_allowlist,
-                                                      tab_id);
-}
-
-// Sends a message exactly once to each render process host owning one of the
-// given |frame_hosts| and |tab_process|. If |tab_process| doesn't own any of
-// the |frame_hosts|, it will not be signaled to update its origin allowlist.
-void SendMessageToProcesses(
-    const std::set<content::RenderFrameHost*>& frame_hosts,
-    content::RenderProcessHost* tab_process,
-    const CreateMessageFunction& create_message) {
-  std::set<content::RenderProcessHost*> sent_to_hosts;
-  for (content::RenderFrameHost* frame_host : frame_hosts) {
-    content::RenderProcessHost* process_host = frame_host->GetProcess();
-    if (sent_to_hosts.count(process_host) == 0) {
-      // Extension processes have to update the origin allowlists.
-      process_host->Send(create_message.Run(true));
-      sent_to_hosts.insert(frame_host->GetProcess());
-    }
-  }
-  // If the tab wasn't one of those processes already updated (it likely
-  // wasn't), update it. Tabs don't need to update the origin allowlist.
-  if (sent_to_hosts.count(tab_process) == 0)
-    tab_process->Send(create_message.Run(false));
-}
-
 using RendererMessageFunction =
     base::RepeatingCallback<void(bool, content::RenderProcessHost*)>;
 
@@ -84,6 +52,20 @@ void UpdateTabSpecificPermissions(const std::string& extension_id,
   if (renderer) {
     renderer->UpdateTabSpecificPermissions(extension_id, new_hosts, tab_id,
                                            update_origin_whitelist);
+  }
+}
+
+void ClearTabSpecificPermissions(const std::vector<std::string>& extension_ids,
+                                 int tab_id,
+                                 bool update_origin_whitelist,
+                                 content::RenderProcessHost* process) {
+  mojom::Renderer* renderer =
+      RendererStartupHelperFactory::GetForBrowserContext(
+          process->GetBrowserContext())
+          ->GetRenderer(process);
+  if (renderer) {
+    renderer->ClearTabSpecificPermissions(extension_ids, tab_id,
+                                          update_origin_whitelist);
   }
 }
 
@@ -287,9 +269,9 @@ void ActiveTabPermissionGranter::ClearActiveExtensionsAndNotify() {
                        extension_frame_hosts.end());
   }
 
-  CreateMessageFunction clear_message =
-      base::BindRepeating(&CreateClearMessage, extension_ids, tab_id_);
-  SendMessageToProcesses(
+  RendererMessageFunction clear_message =
+      base::BindRepeating(&ClearTabSpecificPermissions, extension_ids, tab_id_);
+  SendRendererMessageToProcesses(
       frame_hosts, web_contents()->GetMainFrame()->GetProcess(), clear_message);
 
   granted_extensions_.Clear();

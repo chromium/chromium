@@ -873,8 +873,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_HANDLER(ExtensionMsg_TransferBlobs, OnTransferBlobs)
   IPC_MESSAGE_HANDLER(ExtensionMsg_UpdatePermissions, OnUpdatePermissions)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_ClearTabSpecificPermissions,
-                      OnClearTabSpecificPermissions)
   IPC_MESSAGE_FORWARD(ExtensionMsg_WatchPages,
                       content_watcher_.get(),
                       ContentWatcher::OnWatchPages)
@@ -1066,6 +1064,20 @@ void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
     UpdateOriginPermissions(*extension);
 }
 
+void Dispatcher::ClearTabSpecificPermissions(
+    const std::vector<std::string>& extension_ids,
+    int tab_id,
+    bool update_origin_whitelist) {
+  for (const std::string& id : extension_ids) {
+    const Extension* extension = RendererExtensionRegistry::Get()->GetByID(id);
+    if (extension) {
+      extension->permissions_data()->ClearTabSpecificPermissions(tab_id);
+      if (update_origin_whitelist)
+        UpdateOriginPermissions(*extension);
+    }
+  }
+}
+
 void Dispatcher::OnDeliverMessage(int worker_thread_id,
                                   const PortId& target_port_id,
                                   const Message& message) {
@@ -1252,20 +1264,6 @@ void Dispatcher::OnUpdatePermissions(
   UpdateOriginPermissions(*extension);
 
   UpdateBindingsForExtension(*extension);
-}
-
-void Dispatcher::OnClearTabSpecificPermissions(
-    const std::vector<std::string>& extension_ids,
-    bool update_origin_whitelist,
-    int tab_id) {
-  for (const std::string& id : extension_ids) {
-    const Extension* extension = RendererExtensionRegistry::Get()->GetByID(id);
-    if (extension) {
-      extension->permissions_data()->ClearTabSpecificPermissions(tab_id);
-      if (update_origin_whitelist)
-        UpdateOriginPermissions(*extension);
-    }
-  }
 }
 
 void Dispatcher::SetActivityLoggingEnabled(bool enabled) {
