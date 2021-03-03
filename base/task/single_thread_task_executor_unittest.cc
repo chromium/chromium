@@ -399,14 +399,13 @@ void PostNTasksThenQuit(int posts_remaining) {
 
 class TestIOHandler : public MessagePumpForIO::IOHandler {
  public:
-  TestIOHandler(const wchar_t* name, HANDLE signal, bool wait);
+  TestIOHandler(const wchar_t* name, HANDLE signal);
 
   void OnIOCompleted(MessagePumpForIO::IOContext* context,
                      DWORD bytes_transfered,
                      DWORD error) override;
 
   void Init();
-  void WaitForIO();
   OVERLAPPED* context() { return &context_.overlapped; }
   DWORD size() { return sizeof(buffer_); }
 
@@ -415,11 +414,10 @@ class TestIOHandler : public MessagePumpForIO::IOHandler {
   MessagePumpForIO::IOContext context_;
   HANDLE signal_;
   win::ScopedHandle file_;
-  bool wait_;
 };
 
-TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal, bool wait)
-    : MessagePumpForIO::IOHandler(FROM_HERE), signal_(signal), wait_(wait) {
+TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal)
+    : MessagePumpForIO::IOHandler(FROM_HERE), signal_(signal) {
   memset(buffer_, 0, sizeof(buffer_));
 
   file_.Set(CreateFile(name, GENERIC_READ, 0, NULL, OPEN_EXISTING,
@@ -433,8 +431,6 @@ void TestIOHandler::Init() {
   DWORD read;
   EXPECT_FALSE(ReadFile(file_.Get(), buffer_, size(), &read, context()));
   EXPECT_EQ(static_cast<DWORD>(ERROR_IO_PENDING), GetLastError());
-  if (wait_)
-    WaitForIO();
 }
 
 void TestIOHandler::OnIOCompleted(MessagePumpForIO::IOContext* context,
@@ -442,11 +438,6 @@ void TestIOHandler::OnIOCompleted(MessagePumpForIO::IOContext* context,
                                   DWORD error) {
   ASSERT_TRUE(context == &context_);
   ASSERT_TRUE(SetEvent(signal_));
-}
-
-void TestIOHandler::WaitForIO() {
-  EXPECT_TRUE(CurrentIOThread::Get()->WaitForIOCompletion(300, this));
-  EXPECT_TRUE(CurrentIOThread::Get()->WaitForIOCompletion(400, this));
 }
 
 void RunTest_IOHandler() {
@@ -463,7 +454,7 @@ void RunTest_IOHandler() {
   options.message_pump_type = MessagePumpType::IO;
   ASSERT_TRUE(thread.StartWithOptions(options));
 
-  TestIOHandler handler(kPipeName, callback_called.Get(), false);
+  TestIOHandler handler(kPipeName, callback_called.Get());
   thread.task_runner()->PostTask(
       FROM_HERE, BindOnce(&TestIOHandler::Init, Unretained(&handler)));
   // Make sure the thread runs and sleeps for lack of work.
@@ -474,58 +465,6 @@ void RunTest_IOHandler() {
   EXPECT_TRUE(WriteFile(server.Get(), buffer, sizeof(buffer), &written, NULL));
 
   DWORD result = WaitForSingleObject(callback_called.Get(), 1000);
-  EXPECT_EQ(WAIT_OBJECT_0, result);
-
-  thread.Stop();
-}
-
-void RunTest_WaitForIO() {
-  win::ScopedHandle callback1_called(CreateEvent(NULL, TRUE, FALSE, NULL));
-  win::ScopedHandle callback2_called(CreateEvent(NULL, TRUE, FALSE, NULL));
-  ASSERT_TRUE(callback1_called.IsValid());
-  ASSERT_TRUE(callback2_called.IsValid());
-
-  const wchar_t* kPipeName1 = L"\\\\.\\pipe\\iohandler_pipe1";
-  const wchar_t* kPipeName2 = L"\\\\.\\pipe\\iohandler_pipe2";
-  win::ScopedHandle server1(
-      CreateNamedPipe(kPipeName1, PIPE_ACCESS_OUTBOUND, 0, 1, 0, 0, 0, NULL));
-  win::ScopedHandle server2(
-      CreateNamedPipe(kPipeName2, PIPE_ACCESS_OUTBOUND, 0, 1, 0, 0, 0, NULL));
-  ASSERT_TRUE(server1.IsValid());
-  ASSERT_TRUE(server2.IsValid());
-
-  Thread thread("IOHandler test");
-  Thread::Options options;
-  options.message_pump_type = MessagePumpType::IO;
-  ASSERT_TRUE(thread.StartWithOptions(options));
-
-  TestIOHandler handler1(kPipeName1, callback1_called.Get(), false);
-  TestIOHandler handler2(kPipeName2, callback2_called.Get(), true);
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&TestIOHandler::Init, Unretained(&handler1)));
-  // TODO(ajwong): Do we really need such long Sleeps in this function?
-  // Make sure the thread runs and sleeps for lack of work.
-  TimeDelta delay = TimeDelta::FromMilliseconds(100);
-  PlatformThread::Sleep(delay);
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&TestIOHandler::Init, Unretained(&handler2)));
-  PlatformThread::Sleep(delay);
-
-  // At this time handler1 is waiting to be called, and the thread is waiting
-  // on the Init method of handler2, filtering only handler2 callbacks.
-
-  const char buffer[] = "Hello there!";
-  DWORD written;
-  EXPECT_TRUE(WriteFile(server1.Get(), buffer, sizeof(buffer), &written, NULL));
-  PlatformThread::Sleep(2 * delay);
-  EXPECT_EQ(static_cast<DWORD>(WAIT_TIMEOUT),
-            WaitForSingleObject(callback1_called.Get(), 0))
-      << "handler1 has not been called";
-
-  EXPECT_TRUE(WriteFile(server2.Get(), buffer, sizeof(buffer), &written, NULL));
-
-  HANDLE objects[2] = {callback1_called.Get(), callback2_called.Get()};
-  DWORD result = WaitForMultipleObjects(2, objects, TRUE, 1000);
   EXPECT_EQ(WAIT_OBJECT_0, result);
 
   thread.Stop();
@@ -1884,10 +1823,6 @@ TEST(SingleThreadTaskExecutorTest, NestingSupport2) {
 #if defined(OS_WIN)
 TEST(SingleThreadTaskExecutorTest, IOHandler) {
   RunTest_IOHandler();
-}
-
-TEST(SingleThreadTaskExecutorTest, WaitForIO) {
-  RunTest_WaitForIO();
 }
 
 TEST(SingleThreadTaskExecutorTest, HighResolutionTimer) {

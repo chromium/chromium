@@ -10,8 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 
@@ -274,13 +277,11 @@ size_t File::GetLength() {
 }
 
 // Static.
-void File::WaitForPendingIO(int* num_pending_io) {
-  while (*num_pending_io) {
-    // Asynchronous IO operations may be in flight and the completion may end
-    // up calling us back so let's wait for them.
-    base::MessagePumpForIO::IOHandler* handler = CompletionHandler::Get();
-    base::CurrentIOThread::Get()->WaitForIOCompletion(100, handler);
-  }
+void File::WaitForPendingIOForTesting(int* num_pending_io) {
+  // This waits for callbacks running on worker threads.
+  base::ThreadPoolInstance::Get()->FlushForTesting();  // IN-TEST
+  // This waits for the "Reply" tasks running on the current MessageLoop.
+  base::RunLoop().RunUntilIdle();
 }
 
 // Static.

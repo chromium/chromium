@@ -728,7 +728,7 @@ void MessagePumpForIO::DoRunLoop() {
       break;
 
     state_->delegate->BeforeWait();
-    more_work_is_plausible |= WaitForIOCompletion(0, nullptr);
+    more_work_is_plausible |= WaitForIOCompletion(0);
     if (state_->should_quit)
       break;
 
@@ -761,45 +761,32 @@ void MessagePumpForIO::WaitForWork(Delegate::NextWorkInfo next_work_info) {
 
   // Tell the optimizer to retain these values to simplify analyzing hangs.
   base::debug::Alias(&timeout);
-  WaitForIOCompletion(timeout, nullptr);
+  WaitForIOCompletion(timeout);
 }
 
-bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout, IOHandler* filter) {
+bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   IOItem item;
-  if (completed_io_.empty() || !MatchCompletedIOItem(filter, &item)) {
-    // We have to ask the system for another IO completion.
-    if (!GetIOItem(timeout, &item))
-      return false;
+  if (!GetIOItem(timeout, &item))
+    return false;
 
-    if (ProcessInternalIOItem(item))
-      return true;
-  }
+  if (ProcessInternalIOItem(item))
+    return true;
 
-  if (filter && item.handler != filter) {
-    // Save this item for later
-    completed_io_.push_back(item);
-  } else {
-    TRACE_EVENT(
-        "base,toplevel", "IOHandler::OnIOCompleted",
-        [&](perfetto::EventContext ctx) {
-          ctx.event()->set_chrome_message_pump()->set_io_handler_location_iid(
-              base::trace_event::InternedSourceLocation::Get(
-                  &ctx, base::trace_event::TraceSourceLocation(
-                            item.handler->io_handler_location())));
-        });
+  TRACE_EVENT(
+      "base,toplevel", "IOHandler::OnIOCompleted",
+      [&](perfetto::EventContext ctx) {
+        ctx.event()->set_chrome_message_pump()->set_io_handler_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx, base::trace_event::TraceSourceLocation(
+                          item.handler->io_handler_location())));
+      });
 
-    // |state_| can be null when WaitForIOCompletion() is invoked outside of
-    // Run() in rare unit tests that statically invoke
-    // CurrentIOThread::WaitForIOCompletion(). In all other circumstances,
-    // report the upcoming IO item handling as native work.
-    Delegate::ScopedDoNativeWork scoped_do_native_work;
-    if (state_)
-      scoped_do_native_work = state_->delegate->BeginNativeWork();
-    item.handler->OnIOCompleted(item.context, item.bytes_transfered,
-                                item.error);
-  }
+  Delegate::ScopedDoNativeWork scoped_do_native_work(
+      state_->delegate->BeginNativeWork());
+  item.handler->OnIOCompleted(item.context, item.bytes_transfered, item.error);
+
   return true;
 }
 
@@ -832,22 +819,6 @@ bool MessagePumpForIO::ProcessInternalIOItem(const IOItem& item) {
     DCHECK(!item.bytes_transfered);
     work_scheduled_ = false;
     return true;
-  }
-  return false;
-}
-
-// Returns a completion item that was previously received.
-bool MessagePumpForIO::MatchCompletedIOItem(IOHandler* filter, IOItem* item) {
-  DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
-
-  DCHECK(!completed_io_.empty());
-  for (std::list<IOItem>::iterator it = completed_io_.begin();
-       it != completed_io_.end(); ++it) {
-    if (!filter || it->handler == filter) {
-      *item = *it;
-      completed_io_.erase(it);
-      return true;
-    }
   }
   return false;
 }

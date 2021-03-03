@@ -272,7 +272,7 @@ size_t File::GetLength() {
 }
 
 // Static.
-void File::WaitForPendingIO(int* num_pending_io) {
+void File::WaitForPendingIOForTesting(int* num_pending_io) {
   // We may be running unit tests so we should allow be able to reset the
   // message loop.
   GetFileInFlightIO()->WaitForPendingIO();
