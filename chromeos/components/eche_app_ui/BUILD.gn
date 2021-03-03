@@ -30,6 +30,7 @@ static_library("eche_app_ui") {
 
   deps = [
     "//ash/constants",
+    "//chromeos/components/eche_app_ui/proto",
     "//chromeos/components/multidevice:multidevice",
     "//chromeos/components/multidevice/logging",
     "//chromeos/components/phonehub:phonehub",
