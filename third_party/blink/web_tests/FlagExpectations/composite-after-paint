@@ -41,11 +41,8 @@ paint/invalidation/compositing/subpixel-offset-scaled-transform-composited.html 
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Pass ]
 crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Pass ]
 
-# Raster invalidation doesn't work for huge layers.
+# Raster under-invalidation checking doesn't work for huge layers.
 paint/invalidation/raster-under-invalidation-checking.html [ Failure ]
-
-# No composited scrolling for overflow:hidden (on marquee).
-compositing/overflow/do-not-repaint-if-scrolling-composited-layers.html [ Failure ]
 
 paint/invalidation/media-audio-no-spurious-repaints.html [ Failure ]
 
@@ -63,6 +60,13 @@ crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pend
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
 
 crbug.com/1124979 compositing/video/video-controls-layer-creation.html [ Pass Failure ]
+
+# Fixed-position element gets composited/decomposited on overlap change during scroll.
+crbug.com/1099379 compositing/squashing/squash-above-fixed-1.html [ Failure ]
+crbug.com/1099379 compositing/squashing/squash-above-fixed-3.html [ Failure ]
+
+# A transform with a huge scale value causing NaN values and crash when casted to int.
+crbug.com/1184035 external/wpt/css/css-values/round-function.html [ Crash ]
 
 crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]

@@ -12,12 +12,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
+#include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
-#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 using testing::_;
 
@@ -53,11 +52,10 @@ HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
 
 }  // namespace
 
-class PaintLayerScrollableAreaTest : public RenderingTest,
-                                     public PaintTestConfigurations {
+class PaintLayerScrollableAreaTest : public PaintControllerPaintTest {
  public:
   PaintLayerScrollableAreaTest()
-      : RenderingTest(MakeGarbageCollected<EmptyLocalFrameClient>()),
+      : PaintControllerPaintTest(MakeGarbageCollected<EmptyLocalFrameClient>()),
         chrome_client_(MakeGarbageCollected<ScrollableAreaMockChromeClient>()) {
   }
 
@@ -811,35 +809,36 @@ TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {
   EXPECT_EQ(nullptr, properties->ScrollTranslation());
   EXPECT_EQ(FloatSize(0, 0), scrollable_area->GetScrollOffset());
 
-  // Going from zero scroll offset to non-zero may require a new paint property
-  // and should invalidate paint and paint properties.
+  // A property update is needed when scroll offset changes.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
                                    mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
 
   // A scroll offset translation is needed when scroll offset is non-zero.
   EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 
-  // A property update is needed when scroll offset changes.
+  UpdateAllLifecyclePhasesForTest();
+
   scrollable_area->SetScrollOffset(ScrollOffset(0, 2),
                                    mojom::blink::ScrollType::kProgrammatic);
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
 
   // A scroll offset translation is still needed when scroll offset is non-zero.
   EXPECT_EQ(FloatSize(0, 2), scrollable_area->GetScrollOffset());
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 
-  // Going from non-zero scroll offset to zero may require destroying a paint
-  // property and should invalidate paint and paint properties.
+  UpdateAllLifecyclePhasesForTest();
+
   scrollable_area->SetScrollOffset(ScrollOffset(0, 0),
                                    mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
-  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
 
   // No scroll offset translation is needed when scroll offset is zero.
   EXPECT_EQ(nullptr, properties->ScrollTranslation());

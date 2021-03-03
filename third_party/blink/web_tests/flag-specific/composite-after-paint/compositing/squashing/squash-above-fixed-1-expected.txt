@@ -51,9 +51,6 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "invalidations": [
-        [0, 100, 200, 100]
-      ],
       "transform": 1
     },
     {
@@ -64,13 +61,10 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan'",
-      "position": [0, 200],
-      "bounds": [200, 1200],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaque": true,
-      "invalidations": [
-        [0, 0, 200, 1200]
-      ],
       "transform": 1
     },
     {
@@ -119,9 +113,9 @@ CASE 3, scrolling y to 120, no repaints expected:
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-c' class='overlapping cyan'",
-      "position": [0, 200],
-      "bounds": [200, 1200],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaque": true,
       "transform": 1
     },
@@ -161,9 +155,6 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
       "bounds": [785, 1400],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "invalidations": [
-        [0, 200, 200, 100]
-      ],
       "transform": 1
     },
     {
@@ -174,13 +165,10 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-d' class='overlapping lime'",
-      "position": [0, 300],
-      "bounds": [200, 1100],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
       "contentsOpaque": true,
-      "invalidations": [
-        [0, 0, 200, 1100]
-      ],
       "transform": 1
     },
     {

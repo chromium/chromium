@@ -40,11 +40,15 @@ static int LocalPixelDistanceToExpand(
 }
 
 bool CullRect::Intersects(const IntRect& rect) const {
+  if (rect.IsEmpty())
+    return false;
   return IsInfinite() || rect.Intersects(rect_);
 }
 
 bool CullRect::IntersectsTransformed(const AffineTransform& transform,
                                      const FloatRect& rect) const {
+  if (rect.IsEmpty())
+    return false;
   return IsInfinite() || transform.MapRect(rect).Intersects(rect_);
 }
 

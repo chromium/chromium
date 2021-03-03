@@ -172,15 +172,11 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
           (object.IsLayoutView() &&
            ShouldPreferCompositingForLayoutView(To<LayoutView>(object)));
 
-      if (scrollable_area->ComputeNeedsCompositedScrolling(
-              force_prefer_compositing_to_lcd_text)) {
-        reasons |= CompositingReason::kOverflowScrolling;
-      }
-    } else if (scrollable_area->NeedsCompositedScrolling()) {
-      // For pre-CompositeAfterPaint, just let |reasons| reflect the current
-      // composited scrolling status.
-      reasons |= CompositingReason::kOverflowScrolling;
+      scrollable_area->UpdateNeedsCompositedScrolling(
+          force_prefer_compositing_to_lcd_text);
     }
+    if (scrollable_area->NeedsCompositedScrolling())
+      reasons |= CompositingReason::kOverflowScrolling;
   }
 
   reasons |= BackfaceInvisibility3DAncestorReason(*layer);

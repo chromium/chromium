@@ -34,13 +34,6 @@ Not scaled:
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 6
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
       "transform": 1
     }
   ],
@@ -73,7 +66,7 @@ Not scaled:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, -100, 0, 1]
+        [8, 1008, 0, 1]
       ]
     },
     {
@@ -83,21 +76,11 @@ Not scaled:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 1008, 0, 1]
-      ]
-    },
-    {
-      "id": 5,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [1000, 0, 0, 1]
       ]
     },
     {
-      "id": 6,
+      "id": 5,
       "parent": 1,
       "transform": [
         [1, 0, 0, 0],
@@ -145,13 +128,6 @@ Scale=0.5:
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 6
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
       "transform": 1
     }
   ],
@@ -184,7 +160,7 @@ Scale=0.5:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, -100, 0, 1]
+        [8, 1008, 0, 1]
       ]
     },
     {
@@ -194,21 +170,11 @@ Scale=0.5:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 1008, 0, 1]
-      ]
-    },
-    {
-      "id": 5,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [1000, 0, 0, 1]
       ]
     },
     {
-      "id": 6,
+      "id": 5,
       "parent": 1,
       "transform": [
         [1, 0, 0, 0],
@@ -256,13 +222,6 @@ Scale=1.5:
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 6
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
       "transform": 1
     }
   ],
@@ -295,7 +254,7 @@ Scale=1.5:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, -100, 0, 1]
+        [8, 1008, 0, 1]
       ]
     },
     {
@@ -305,21 +264,11 @@ Scale=1.5:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 1008, 0, 1]
-      ]
-    },
-    {
-      "id": 5,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [1000, 0, 0, 1]
       ]
     },
     {
-      "id": 6,
+      "id": 5,
       "parent": 1,
       "transform": [
         [1, 0, 0, 0],

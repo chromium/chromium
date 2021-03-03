@@ -73,6 +73,15 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
     adjusted_paint_info_.emplace(input_paint_info_);
     adjusted_paint_info_->SetCullRect(
         fragment_to_paint_->GetContentsCullRect());
+    if (box.HasLayer() && box.Layer()->PreviousPaintResult() == kFullyPainted) {
+      PhysicalRect contents_visual_rect =
+          box.PhysicalContentsVisualOverflowRect();
+      contents_visual_rect.Move(fragment_to_paint_->PaintOffset());
+      if (!PhysicalRect(fragment_to_paint_->GetContentsCullRect().Rect())
+               .Contains(contents_visual_rect)) {
+        box.Layer()->SetPreviousPaintResult(kMayBeClippedByCullRect);
+      }
+    }
     return;
   }
 

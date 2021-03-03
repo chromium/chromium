@@ -448,6 +448,11 @@ class PLATFORM_EXPORT TransformationMatrix {
   // transformed by this matrix.
   bool Preserves2dAxisAlignment() const;
 
+  bool HasPerspective() const {
+    return matrix_[0][3] != 0 || matrix_[1][3] != 0 || matrix_[2][3] != 0 ||
+           matrix_[3][3] != 1;
+  }
+
   // If this transformation is identity or 2D translation, returns the
   // translation.
   FloatSize To2DTranslation() const {

@@ -696,6 +696,7 @@
     },
     {
       name: "CullRectUpdate",
+      implied_by: ["CompositeAfterPaint"],
     },
     {
       name: "CustomElementDefaultStyle",

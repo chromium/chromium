@@ -252,11 +252,12 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
       LayoutSize(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
 
-  EXPECT_TRUE(scroll_layer->SelfNeedsRepaint());
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
     // The content layer needs repaint because its cull rect changed.
     EXPECT_TRUE(content_layer->SelfNeedsRepaint());
   } else {
+    EXPECT_TRUE(scroll_layer->SelfNeedsRepaint());
     // We don't set the layer needing repaint, but will repaint the layer when
     // we find that the cull rect changes during paint.
     EXPECT_FALSE(content_layer->SelfNeedsRepaint());

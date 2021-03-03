@@ -50,6 +50,11 @@ TEST_F(CullRectTest, IntersectsIntRect) {
 
   EXPECT_TRUE(cull_rect.Intersects(IntRect(0, 0, 1, 1)));
   EXPECT_FALSE(cull_rect.Intersects(IntRect(51, 51, 1, 1)));
+  EXPECT_FALSE(cull_rect.Intersects(IntRect(1, 1, 1, 0)));
+
+  EXPECT_TRUE(CullRect::Infinite().Intersects(IntRect(0, 0, 1, 1)));
+  EXPECT_FALSE(CullRect::Infinite().Intersects(IntRect(1, 1, 1, 0)));
+  EXPECT_FALSE(CullRect(IntRect()).Intersects(IntRect()));
 }
 
 TEST_F(CullRectTest, IntersectsTransformed) {
@@ -60,6 +65,11 @@ TEST_F(CullRectTest, IntersectsTransformed) {
   EXPECT_TRUE(
       cull_rect.IntersectsTransformed(transform, FloatRect(51, 51, 1, 1)));
   EXPECT_FALSE(cull_rect.Intersects(IntRect(52, 52, 1, 1)));
+
+  EXPECT_TRUE(CullRect::Infinite().IntersectsTransformed(
+      transform, FloatRect(51, 51, 1, 1)));
+  EXPECT_FALSE(CullRect::Infinite().IntersectsTransformed(
+      transform, FloatRect(1, 1, 1, 0)));
 }
 
 TEST_F(CullRectTest, Infinite) {

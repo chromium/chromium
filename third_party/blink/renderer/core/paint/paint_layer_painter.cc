@@ -174,8 +174,15 @@ static bool IsUnclippedLayoutView(const PaintLayer& layer) {
   return false;
 }
 
-bool PaintLayerPainter::ShouldUseInfiniteCullRect(
-    GlobalPaintFlags global_flags) {
+bool PaintLayerPainter::ShouldUseInfiniteCullRect() {
+  DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
+  return ShouldUseInfiniteCullRectInternal(kGlobalPaintNormalPhase,
+                                           /*for_cull_rect_update*/ true);
+}
+
+bool PaintLayerPainter::ShouldUseInfiniteCullRectInternal(
+    GlobalPaintFlags global_flags,
+    bool for_cull_rect_update) {
   bool is_printing = paint_layer_.GetLayoutObject().GetDocument().Printing();
   if (IsUnclippedLayoutView(paint_layer_) && !is_printing)
     return true;
@@ -201,6 +208,21 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRect(
   if (paint_layer_.GetLayoutObject().StyleRef().HasPerspective())
     return true;
 
+  if (const auto* properties =
+          paint_layer_.GetLayoutObject().FirstFragment().PaintProperties()) {
+    if (properties->Perspective())
+      return true;
+    if (for_cull_rect_update) {
+      // A CSS transform can also have perspective like
+      // "transform: perspective(100px) rotateY(45deg)".
+      if (const auto* transform = properties->Transform()) {
+        if (!transform->IsIdentityOr2DTranslation() &&
+            transform->Matrix().HasPerspective())
+          return true;
+      }
+    }
+  }
+
   // We do not apply cull rect optimizations across transforms for two
   // reasons:
   //   1) Performance: We can optimize transform changes by not repainting.
@@ -208,8 +230,7 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRect(
   //      change.
   // For these reasons, we use an infinite dirty rect here.
   // The reasons don't apply for CullRectUpdate.
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
-      paint_layer_.PaintsWithTransform(global_flags) &&
+  if (!for_cull_rect_update && paint_layer_.PaintsWithTransform(global_flags) &&
       // The reasons don't apply for printing though, because when we enter and
       // leaving printing mode, full invalidations occur.
       !is_printing)
@@ -225,7 +246,8 @@ void PaintLayerPainter::AdjustForPaintProperties(
   const auto& first_fragment = paint_layer_.GetLayoutObject().FirstFragment();
 
   bool should_use_infinite_cull_rect =
-      ShouldUseInfiniteCullRect(painting_info.GetGlobalPaintFlags());
+      ShouldUseInfiniteCullRectInternal(painting_info.GetGlobalPaintFlags(),
+                                        /*for_cull_rect_update*/ false);
   if (should_use_infinite_cull_rect) {
     painting_info.cull_rect = CullRect::Infinite();
     // Avoid clipping during CollectFragments.
@@ -415,8 +437,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
     subsequence_recorder.emplace(context, paint_layer_);
   }
 
-  PhysicalOffset offset_from_root =
-      paint_layer_.GetLayoutObject().FirstFragment().PaintOffset();
+  PhysicalOffset offset_from_root = object.FirstFragment().PaintOffset();
   if (const PaintLayer* root = painting_info.root_layer)
     offset_from_root -= root->GetLayoutObject().FirstFragment().PaintOffset();
   offset_from_root += subpixel_accumulation;
@@ -436,6 +457,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(
                .Contains(contents_visual_rect)) {
         result = kMayBeClippedByCullRect;
       }
+      // The above doesn't consider clips on non-self-painting contents.
+      // Will update in ScopedBoxContentsPaintState.
     }
   } else {
     PhysicalRect bounds = paint_layer_.PhysicalBoundingBox(offset_from_root);

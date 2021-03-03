@@ -146,9 +146,7 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       scroll_corner_(nullptr),
       resizer_(nullptr),
       scroll_anchor_(this),
-      non_composited_main_thread_scrolling_reasons_(0),
-      horizontal_scrollbar_previously_was_overlay_(false),
-      vertical_scrollbar_previously_was_overlay_(false) {
+      non_composited_main_thread_scrolling_reasons_(0) {
   if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
     // We save and restore only the scrollOffset as the other scroll values are
     // recalculated.
@@ -554,11 +552,10 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   }
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (auto* scrolling_coordinator = GetScrollingCoordinator())
-      scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this);
-    // TODO(pdr): Optimize this to use a repaint update if possible, rather than
-    // forcing a full update. See: |UpdateCompositingLayersAfterScroll|.
-    frame_view->SetPaintArtifactCompositorNeedsUpdate();
+    if (auto* scrolling_coordinator = GetScrollingCoordinator()) {
+      if (!scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this))
+        GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
+    }
   } else {
     UpdateCompositingLayersAfterScroll();
   }
@@ -666,10 +663,15 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
   // that cull rect could be affected by scroll offset. For composited
   // scrollers, this will be taken care of by the interest rect computation
   // in CompositedLayerMapping.
-  // TODO(wangxianzhu): replace this shortcut with interest rects.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
       !UsesCompositedScrolling())
     Layer()->SetNeedsRepaint();
+
+  // Scrolling can change overlap relationship.
+  // TODO(crbug.com/1099379): Implement better fixed/sticky overlap testing.
+  // TODO(crbug.com/1180972): Avoid this for common composited scroll cases.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    box->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
 IntSize PaintLayerScrollableArea::ScrollOffsetInt() const {
@@ -2616,10 +2618,14 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
 
 void PaintLayerScrollableArea::UpdateNeedsCompositedScrolling(
     bool force_prefer_compositing_to_lcd_text) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-
-  needs_composited_scrolling_ =
+  bool new_needs_composited_scrolling =
       ComputeNeedsCompositedScrolling(force_prefer_compositing_to_lcd_text);
+  if (new_needs_composited_scrolling == needs_composited_scrolling_)
+    return;
+
+  needs_composited_scrolling_ = new_needs_composited_scrolling;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    GetLayoutBox()->SetShouldCheckForPaintInvalidation();
 }
 
 bool PaintLayerScrollableArea::VisualViewportSuppliesScrollbars() const {
@@ -2964,15 +2970,26 @@ static bool ScrollControlNeedsPaintInvalidation(
   return needs_paint_invalidation;
 }
 
-static IntRect InvalidatePaintOfScrollbarIfNeeded(
+bool PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar(
+    const Scrollbar& scrollbar) const {
+  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  // Don't composite non-scrollable scrollbars.
+  if (!scrollbar.Maximum())
+    return false;
+  if (scrollbar.IsCustomScrollbar())
+    return false;
+
+  return NeedsCompositedScrolling();
+}
+
+void PaintLayerScrollableArea::InvalidatePaintOfScrollbarIfNeeded(
+    const PaintInvalidatorContext& context,
+    bool needs_paint_invalidation,
     Scrollbar* scrollbar,
     GraphicsLayer* graphics_layer,
     bool& previously_was_overlay,
-    const IntRect& previous_visual_rect,
-    bool needs_paint_invalidation,
-    LayoutBox& box,
-    bool& box_geometry_has_been_invalidated,
-    const PaintInvalidatorContext& context) {
+    bool& previously_was_directly_composited,
+    IntRect& visual_rect) {
   bool is_overlay = scrollbar && scrollbar->IsOverlayScrollbar();
 
   IntRect new_visual_rect;
@@ -2995,36 +3012,46 @@ static IntRect InvalidatePaintOfScrollbarIfNeeded(
     new_scrollbar_used_space_in_box = new_visual_rect.Size();
   IntSize previous_scrollbar_used_space_in_box;
   if (!previously_was_overlay)
-    previous_scrollbar_used_space_in_box = previous_visual_rect.Size();
+    previous_scrollbar_used_space_in_box = visual_rect.Size();
 
   // The IsEmpty() check avoids invalidaiton in cases when the visual rect
   // changes from (0,0 0x0) to (0,0 0x100).
-  if (!box_geometry_has_been_invalidated &&
-      !(new_scrollbar_used_space_in_box.IsEmpty() &&
+  if (!(new_scrollbar_used_space_in_box.IsEmpty() &&
         previous_scrollbar_used_space_in_box.IsEmpty()) &&
       new_scrollbar_used_space_in_box != previous_scrollbar_used_space_in_box) {
     context.painting_layer->SetNeedsRepaint();
+    const auto& box = *GetLayoutBox();
     ObjectPaintInvalidator(box).InvalidateDisplayItemClient(
         box, PaintInvalidationReason::kGeometry);
-    box_geometry_has_been_invalidated = true;
   }
 
   previously_was_overlay = is_overlay;
 
-  if (!scrollbar ||
-      !ScrollControlNeedsPaintInvalidation(
-          new_visual_rect, previous_visual_rect, needs_paint_invalidation))
-    return new_visual_rect;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() && scrollbar) {
+    bool directly_composited = ShouldDirectlyCompositeScrollbar(*scrollbar);
+    if (directly_composited != previously_was_directly_composited) {
+      needs_paint_invalidation = true;
+      previously_was_directly_composited = directly_composited;
+    } else if (directly_composited) {
+      // Don't invalidate directly composited scrollbar if the change is only
+      // inside of the scrollbar. ScrollbarDisplayItem will handle such change.
+      needs_paint_invalidation = false;
+    }
+  }
 
-  if (graphics_layer)
-    graphics_layer->Invalidate(PaintInvalidationReason::kScrollControl);
-  else
-    context.painting_layer->SetNeedsRepaint();
-  scrollbar->Invalidate(PaintInvalidationReason::kScrollControl);
-  if (auto* custom_scrollbar = DynamicTo<CustomScrollbar>(scrollbar))
-    custom_scrollbar->InvalidateDisplayItemClientsOfScrollbarParts();
+  if (scrollbar &&
+      ScrollControlNeedsPaintInvalidation(new_visual_rect, visual_rect,
+                                          needs_paint_invalidation)) {
+    if (graphics_layer)
+      graphics_layer->Invalidate(PaintInvalidationReason::kScrollControl);
+    else
+      context.painting_layer->SetNeedsRepaint();
+    scrollbar->Invalidate(PaintInvalidationReason::kScrollControl);
+    if (auto* custom_scrollbar = DynamicTo<CustomScrollbar>(scrollbar))
+      custom_scrollbar->InvalidateDisplayItemClientsOfScrollbarParts();
+  }
 
-  return new_visual_rect;
+  visual_rect = new_visual_rect;
 }
 
 void PaintLayerScrollableArea::InvalidatePaintOfScrollControlsIfNeeded(
@@ -3032,20 +3059,18 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollControlsIfNeeded(
   if (context.subtree_flags & PaintInvalidatorContext::kSubtreeFullInvalidation)
     SetScrollControlsNeedFullPaintInvalidation();
 
-  LayoutBox& box = *GetLayoutBox();
-  bool box_geometry_has_been_invalidated = false;
-  horizontal_scrollbar_visual_rect_ = InvalidatePaintOfScrollbarIfNeeded(
+  InvalidatePaintOfScrollbarIfNeeded(
+      context, HorizontalScrollbarNeedsPaintInvalidation(),
       HorizontalScrollbar(), GraphicsLayerForHorizontalScrollbar(),
       horizontal_scrollbar_previously_was_overlay_,
-      horizontal_scrollbar_visual_rect_,
-      HorizontalScrollbarNeedsPaintInvalidation(), box,
-      box_geometry_has_been_invalidated, context);
-  vertical_scrollbar_visual_rect_ = InvalidatePaintOfScrollbarIfNeeded(
-      VerticalScrollbar(), GraphicsLayerForVerticalScrollbar(),
+      horizontal_scrollbar_previously_was_directly_composited_,
+      horizontal_scrollbar_visual_rect_);
+  InvalidatePaintOfScrollbarIfNeeded(
+      context, VerticalScrollbarNeedsPaintInvalidation(), VerticalScrollbar(),
+      GraphicsLayerForVerticalScrollbar(),
       vertical_scrollbar_previously_was_overlay_,
-      vertical_scrollbar_visual_rect_,
-      VerticalScrollbarNeedsPaintInvalidation(), box,
-      box_geometry_has_been_invalidated, context);
+      vertical_scrollbar_previously_was_directly_composited_,
+      vertical_scrollbar_visual_rect_);
 
   IntRect new_scroll_corner_and_resizer_visual_rect =
       ScrollCornerAndResizerRect();
@@ -3074,9 +3099,9 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollControlsIfNeeded(
       graphics_layer->Invalidate(PaintInvalidationReason::kScrollControl);
     } else {
       context.painting_layer->SetNeedsRepaint();
-      ObjectPaintInvalidator(box).InvalidateDisplayItemClient(
-          GetScrollCornerDisplayItemClient(),
-          PaintInvalidationReason::kGeometry);
+      ObjectPaintInvalidator(*GetLayoutBox())
+          .InvalidateDisplayItemClient(GetScrollCornerDisplayItemClient(),
+                                       PaintInvalidationReason::kGeometry);
     }
   }
 

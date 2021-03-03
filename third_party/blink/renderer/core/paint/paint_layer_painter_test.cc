@@ -1186,15 +1186,14 @@ TEST_P(PaintLayerPainterTestCAP, ScaledCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll;
-                transform: scaleX(2) scaleY(0.5)'>
+                transform: scaleX(3) scaleY(0.5)'>
       <div id='target' style='height: 400px; position: relative'></div>
       <div style='width: 10000px; height: 10000px'></div>
     </div>
   )HTML");
 
-  // The scale doesn't affect the cull rect.
-  // TODO(wangxianzhu): actually it should.
-  EXPECT_EQ(IntRect(0, 0, 4200, 4300),
+  // The expansion is 4000 / max(scaleX, scaleY).
+  EXPECT_EQ(IntRect(0, 0, 8200, 8300),
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
@@ -1202,16 +1201,16 @@ TEST_P(PaintLayerPainterTestCAP, ScaledAndRotatedCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll;
-                transform: scaleX(2) scaleY(0.5) rotateZ(45deg)'>
+                transform: scaleX(3) scaleY(0.5) rotateZ(45deg)'>
       <div id='target' style='height: 400px; position: relative;
                will-change: transform'></div>
       <div style='width: 10000px; height: 10000px'></div>
     </div>
   )HTML");
 
-  // The scale and the rotation don't affect the cull rect.
-  // TODO(wangxianzhu): actually they should.
-  EXPECT_EQ(IntRect(0, 0, 4200, 4300),
+  // The expansion 6599 is 4000 * max_dimension(1x1 rect projected from screen
+  // to local).
+  EXPECT_EQ(IntRect(0, 0, 6799, 6899),
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
@@ -1251,13 +1250,14 @@ TEST_P(PaintLayerPainterTestCAP, 3DRotatedNear90DegreesCullRect) {
 
 TEST_P(PaintLayerPainterTestCAP, PerspectiveCullRect) {
   SetBodyInnerHTML(R"HTML(
-    <div id='target'
-         style='width: 100px; height: 100px; transform: perspective(1000px)'>
+    <div id=target style='transform: perspective(1000px) rotateX(-100deg);'>
+      <div style='width: 2000px; height: 3000px></div>
     </div>
   )HTML");
 
-  // Use infinite cull rect with perspective.
-  EXPECT_TRUE(GetCullRect(*GetPaintLayerByElementId("target")).IsInfinite());
+  EXPECT_TRUE(GetCullRect(*GetPaintLayerByElementId("target"))
+                  .Rect()
+                  .Contains(IntRect(0, 0, 2000, 3000)));
 }
 
 TEST_P(PaintLayerPainterTestCAP, 3D45DegRotatedTallCullRect) {
@@ -1267,15 +1267,32 @@ TEST_P(PaintLayerPainterTestCAP, 3D45DegRotatedTallCullRect) {
     </div>
   )HTML");
 
-  // Use infinite cull rect with 3d transform.
-  EXPECT_TRUE(GetCullRect(*GetPaintLayerByElementId("target")).IsInfinite());
+  // See CompositedLayerMappingTest.3D45DegRotatedTallInterestRect (which with
+  // be combined with this one) for why the cull rect covers the whole layer.
+  EXPECT_TRUE(GetCullRect(*GetPaintLayerByElementId("target"))
+                  .Rect()
+                  .Contains(IntRect(0, 0, 200, 10000)));
 }
 
-TEST_P(PaintLayerPainterTestCAP, FixedPositionCullRect) {
+TEST_P(PaintLayerPainterTestCAP, FixedPositionInNonScrollableViewCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='width: 1000px; height: 2000px;
                             position: fixed; top: 100px; left: 200px;'>
     </div>
+  )HTML");
+
+  // The cull rect is in the coordinate space of the containing transform
+  // (LayoutView's contents space).
+  EXPECT_EQ(IntRect(0, 0, 800, 600),
+            GetCullRect(*GetPaintLayerByElementId("target")).Rect());
+}
+
+TEST_P(PaintLayerPainterTestCAP, FixedPositionInScrollableViewCullRect) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' style='width: 1000px; height: 2000px;
+                            position: fixed; top: 100px; left: 200px;'>
+    </div>
+    <div style='height: 3000px'></div>
   )HTML");
 
   EXPECT_EQ(IntRect(-200, -100, 800, 600),
@@ -1360,9 +1377,7 @@ TEST_P(PaintLayerPainterTestCAP, ClippedBigLayer) {
     </div>
   )HTML");
 
-  // The viewport is not scrollable because of the clip, so the cull rect is
-  // just the viewport rect.
-  EXPECT_EQ(IntRect(0, 0, 800, 600),
+  EXPECT_EQ(IntRect(8, 8, 1, 1),
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 

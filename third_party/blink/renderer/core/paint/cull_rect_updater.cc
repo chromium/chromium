@@ -86,14 +86,14 @@ void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
                                         const PaintLayer& parent_painting_layer,
                                         bool force_update_self) {
   bool should_proactively_update = ShouldProactivelyUpdateCullRect(layer);
-  bool force_update_children = should_proactively_update;
+  bool force_update_children =
+      should_proactively_update || layer.ForcesChildrenCullRectUpdate();
 
   if (force_update_self || should_proactively_update ||
       layer.NeedsCullRectUpdate())
     force_update_children |= UpdateForSelf(layer, parent_painting_layer);
 
-  if (force_update_children || should_proactively_update ||
-      layer.DescendantNeedsCullRectUpdate())
+  if (force_update_children || layer.DescendantNeedsCullRectUpdate())
     UpdateForDescendants(layer, force_update_children);
 
   layer.ClearNeedsCullRectUpdate();
@@ -200,8 +200,8 @@ bool CullRectUpdater::UpdateForSelf(PaintLayer& layer,
 
     CullRect cull_rect;
     CullRect contents_cull_rect;
-    if (!parent_fragment || PaintLayerPainter(layer).ShouldUseInfiniteCullRect(
-                                kGlobalPaintNormalPhase)) {
+    if (!parent_fragment ||
+        PaintLayerPainter(layer).ShouldUseInfiniteCullRect()) {
       cull_rect = CullRect::Infinite();
       contents_cull_rect = CullRect::Infinite();
     } else {
@@ -265,12 +265,12 @@ OverriddenCullRectScope::OverriddenCullRectScope(LocalFrameView& frame_view,
   PaintLayer* root_layer = frame_view_.GetLayoutView()->Layer();
   DCHECK(root_layer);
 
-  // The cull rects calculated during PrePaint are good.
   if (frame_view.GetFrame().IsLocalRoot() &&
       !root_layer->NeedsCullRectUpdate() &&
+      !root_layer->DescendantNeedsCullRectUpdate() &&
       cull_rect ==
           root_layer->GetLayoutObject().FirstFragment().GetCullRect()) {
-    DCHECK(!root_layer->DescendantNeedsCullRectUpdate());
+    // The cull rects calculated during PrePaint are good.
     return;
   }
 
