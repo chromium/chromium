@@ -170,14 +170,9 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   ASSERT_TRUE(IsFocusedViewInsideBrowserToolbar());
 }
 
-#if defined(OS_WIN) && defined(OFFICIAL_BUILD)
-// Test seems to fail only in official Windows builds: http://crbug.com/848049
-#define MAYBE_ReloadMultipleSadTabs DISABLED_ReloadMultipleSadTabs
-#else
-#define MAYBE_ReloadMultipleSadTabs ReloadMultipleSadTabs
-#endif
+// TODO(crbug.com/1184132): flaky test.
 IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
-                       MAYBE_ReloadMultipleSadTabs) {
+                       DISABLED_ReloadMultipleSadTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/links.html"));
   ui_test_utils::NavigateToURL(browser(), url);
