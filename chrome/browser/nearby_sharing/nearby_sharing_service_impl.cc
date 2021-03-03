@@ -3745,9 +3745,13 @@ void NearbySharingServiceImpl::UnregisterShareTarget(
     if (it != outgoing_share_target_info_map_.end())
       endpoint_id = it->second.endpoint_id();
 
-    // TODO(crbug/1108348): Support caching manager by keeping track of the
-    // share_target/endpoint_id for next time.
-    ClearOutgoingShareTargetInfoMap();
+    // Be careful not to clear out the share target info map if a new session
+    // was started during the cancelation delay.
+    if (!is_scanning_ && !is_transferring_) {
+      // TODO(crbug/1108348): Support caching manager by keeping track of the
+      // share_target/endpoint_id for next time.
+      ClearOutgoingShareTargetInfoMap();
+    }
 
     NS_LOG(VERBOSE) << __func__
                     << ": Unregister share target: " << share_target.id;
