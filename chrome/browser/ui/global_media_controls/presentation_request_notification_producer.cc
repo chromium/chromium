@@ -52,8 +52,7 @@ PresentationRequestNotificationProducer::
 base::WeakPtr<media_message_center::MediaNotificationItem>
 PresentationRequestNotificationProducer::GetNotificationItem(
     const std::string& id) {
-  if (item_) {
-    DCHECK_EQ(item_->id(), id);
+  if (item_ && item_->id() == id) {
     return item_->GetWeakPtr();
   }
   return nullptr;
