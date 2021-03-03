@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/origin_policy_throttle.h"
+#include "content/browser/webid/federated_auth_navigation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace content {
@@ -121,6 +122,9 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
 
   // Block certain requests that are not permitted for portals.
   AddThrottle(PortalNavigationThrottle::MaybeCreateThrottleFor(request));
+
+  // Intercept federated identity requests.
+  AddThrottle(FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(request));
 
   for (auto& throttle :
        devtools_instrumentation::CreateNavigationThrottles(request)) {
