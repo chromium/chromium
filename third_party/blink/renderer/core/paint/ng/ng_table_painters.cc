@@ -344,6 +344,7 @@ class TableCellBackgroundClipper {
 void NGTablePainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset,
+    const DisplayItemClient& client,
     const IntRect& visual_rect) {
   const NGTableFragmentData::ColumnGeometries* column_geometries_original =
       fragment_.TableColumnGeometries();
@@ -357,12 +358,10 @@ void NGTablePainter::PaintBoxDecorationBackground(
     }
   }
   BoxDecorationData box_decoration_data(paint_info, fragment_);
-  const LayoutNGTable& layout_table =
-      *To<LayoutNGTable>(fragment_.GetLayoutObject());
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, layout_table, paint_info.phase))
+  if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context, client,
+                                                  paint_info.phase))
     return;
-  DrawingRecorder recorder(paint_info.context, layout_table, paint_info.phase,
+  DrawingRecorder recorder(paint_info.context, client, paint_info.phase,
                            visual_rect);
 
   // BoxDecorationData is not aware of column backgrounds, so
@@ -384,6 +383,8 @@ void NGTablePainter::PaintBoxDecorationBackground(
       NGPhysicalBoxStrut table_borders_padding =
           fragment_.Borders() + fragment_.Padding();
 
+      const auto& layout_table =
+          *To<LayoutNGTable>(fragment_.GetLayoutObject());
       PhysicalSize border_spacing = ToPhysicalSize(
           layout_table.BorderSpacing(), table_style.GetWritingMode());
       PhysicalSize column_size{
@@ -526,15 +527,15 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
 void NGTableSectionPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset,
+    const DisplayItemClient& client,
     const IntRect& visual_rect) {
   BoxDecorationData box_decoration_data(paint_info, fragment_);
   if (!box_decoration_data.ShouldPaint())
     return;
-  const auto& layout_section = *To<LayoutBox>(fragment_.GetLayoutObject());
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, layout_section, paint_info.phase))
+  if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context, client,
+                                                  paint_info.phase))
     return;
-  DrawingRecorder recorder(paint_info.context, layout_section, paint_info.phase,
+  DrawingRecorder recorder(paint_info.context, client, paint_info.phase,
                            visual_rect);
 
   PhysicalRect shadow_box{paint_offset, fragment_.Size()};
@@ -550,7 +551,7 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
       continue;
     NGTableRowPainter(To<NGPhysicalBoxFragment>(child_fragment))
         .PaintTablePartBackgroundIntoCells(
-            paint_info, layout_section,
+            paint_info, *To<LayoutBox>(fragment_.GetLayoutObject()),
             PhysicalRect(paint_offset, fragment_.Size()), child.offset);
   }
   if (box_decoration_data.ShouldPaintShadow()) {
@@ -576,15 +577,15 @@ void NGTableSectionPainter::PaintColumnsBackground(
 void NGTableRowPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset,
+    const DisplayItemClient& client,
     const IntRect& visual_rect) {
   BoxDecorationData box_decoration_data(paint_info, fragment_);
   if (!box_decoration_data.ShouldPaint())
     return;
-  const auto& layout_row = *To<LayoutBox>(fragment_.GetLayoutObject());
-  if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context,
-                                                  layout_row, paint_info.phase))
+  if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context, client,
+                                                  paint_info.phase))
     return;
-  DrawingRecorder recorder(paint_info.context, layout_row, paint_info.phase,
+  DrawingRecorder recorder(paint_info.context, client, paint_info.phase,
                            visual_rect);
 
   PhysicalRect shadow_box{paint_offset, fragment_.Size()};
@@ -595,8 +596,8 @@ void NGTableRowPainter::PaintBoxDecorationBackground(
   }
 
   PaintTablePartBackgroundIntoCells(
-      paint_info, layout_row, PhysicalRect(paint_offset, fragment_.Size()),
-      PhysicalOffset());
+      paint_info, *To<LayoutBox>(fragment_.GetLayoutObject()),
+      PhysicalRect(paint_offset, fragment_.Size()), PhysicalOffset());
   if (box_decoration_data.ShouldPaintShadow()) {
     BoxPainterBase::PaintInsetBoxShadowWithInnerRect(paint_info, shadow_box,
                                                      fragment_.Style());
@@ -675,24 +676,23 @@ void NGTableRowPainter::PaintColumnsBackground(
 void NGTableCellPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset,
+    const DisplayItemClient& client,
     const IntRect& visual_rect) {
   BoxDecorationData box_decoration_data(paint_info, fragment_);
   if (!box_decoration_data.ShouldPaint())
     return;
 
-  const auto& layout_cell = *To<LayoutNGTableCell>(fragment_.GetLayoutObject());
   if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, layout_cell,
-          DisplayItem::kBoxDecorationBackground))
+          paint_info.context, client, DisplayItem::kBoxDecorationBackground))
     return;
 
-  DrawingRecorder recorder(paint_info.context, layout_cell,
+  DrawingRecorder recorder(paint_info.context, client,
                            DisplayItem::kBoxDecorationBackground, visual_rect);
 
   PhysicalRect paint_rect(paint_offset, fragment_.Size());
   TableCellBackgroundClipper clipper(
-      paint_info.context, layout_cell, paint_rect,
-      box_decoration_data.IsPaintingScrollingBackground());
+      paint_info.context, *To<LayoutNGTableCell>(fragment_.GetLayoutObject()),
+      paint_rect, box_decoration_data.IsPaintingScrollingBackground());
   NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
       paint_info, paint_rect, box_decoration_data);
 }

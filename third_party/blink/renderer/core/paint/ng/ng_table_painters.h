@@ -27,6 +27,7 @@ class NGTablePainter {
 
   void PaintBoxDecorationBackground(const PaintInfo&,
                                     const PhysicalOffset&,
+                                    const DisplayItemClient& client,
                                     const IntRect& visual_rect);
 
   void PaintCollapsedBorders(const PaintInfo&,
@@ -49,6 +50,7 @@ class NGTableSectionPainter {
 
   void PaintBoxDecorationBackground(const PaintInfo&,
                                     const PhysicalOffset&,
+                                    const DisplayItemClient& client,
                                     const IntRect& visual_rect);
 
   void PaintColumnsBackground(const PaintInfo&,
@@ -71,6 +73,7 @@ class NGTableRowPainter {
 
   void PaintBoxDecorationBackground(const PaintInfo&,
                                     const PhysicalOffset&,
+                                    const DisplayItemClient& client,
                                     const IntRect& visual_rect);
 
   void PaintTablePartBackgroundIntoCells(
@@ -97,6 +100,7 @@ class NGTableCellPainter {
 
   void PaintBoxDecorationBackground(const PaintInfo&,
                                     const PhysicalOffset&,
+                                    const DisplayItemClient& client,
                                     const IntRect& visual_rect);
 
   void PaintBackgroundForTablePart(const PaintInfo& paint_info,

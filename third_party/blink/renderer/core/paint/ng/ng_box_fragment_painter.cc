@@ -921,27 +921,22 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
           .PaintBoxDecorationBackground(paint_info, paint_offset);
     } else if (PhysicalFragment().IsTableNGPart()) {
       if (box_fragment_.IsTableNGCell()) {
-        // Just doing this without any collapsed borders makes 2 extra tests
-        // pass, they used to be off by 1 pixel.
-        // external/wpt/css/css-backgrounds/background-image-table-cells-zoomed.html
-        // tables/mozilla/bugs/bug131020_iframe.html
-        // TODO(atotic+pdr) Flagged for followup code review.
         NGTableCellPainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          visual_rect);
+                                          *background_client, visual_rect);
       } else if (box_fragment_.IsTableNGRow()) {
         NGTableRowPainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          visual_rect);
+                                          *background_client, visual_rect);
       } else if (box_fragment_.IsTableNGSection()) {
         NGTableSectionPainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          visual_rect);
+                                          *background_client, visual_rect);
       } else {
         DCHECK(box_fragment_.IsTableNG());
         NGTablePainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          visual_rect);
+                                          *background_client, visual_rect);
       }
     } else if (box_fragment_.Style().HasBoxDecorationBackground()) {
       PaintBoxDecorationBackgroundWithRect(

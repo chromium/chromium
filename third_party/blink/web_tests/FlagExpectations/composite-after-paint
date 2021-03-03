@@ -70,6 +70,3 @@ crbug.com/1184035 external/wpt/css/css-values/round-function.html [ Crash ]
 
 crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
-
-# Duplicated display item id for fragmented TableNG cell background.
-crbug.com/1183098 fast/table/overflowHidden.html [ Crash ]
