@@ -5751,6 +5751,8 @@ crbug.com/1145610 http/tests/devtools/elements/inline-style-title.js [ Pass Fail
 crbug.com/1145610 http/tests/devtools/elements/shadow/shadow-host-display-modes.js [ Pass Failure ]
 crbug.com/1145610 http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Pass Failure ]
 crbug.com/1145610 http/tests/devtools/oopif/oopif-elements-nesting.js [ Pass Failure ]
+crbug.com/1145610 virtual/portals/http/tests/devtools/portals/portals-elements-activate.js [ Pass Failure ]
+crbug.com/1145610 virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Pass Failure ]
 
 # Temporarily disabled for https://crrev.com/c/2713104
 crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass Failure ]
