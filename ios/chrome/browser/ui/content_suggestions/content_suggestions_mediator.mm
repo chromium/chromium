@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -328,7 +329,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     }
   } else if (sectionInfo == self.mostVisitedSectionInfo) {
     [convertedSuggestions addObjectsFromArray:self.mostVisitedItems];
-    [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
+    if (!ShouldHideShortcutsForStartSurface()) {
+      [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
+    }
   } else if (sectionInfo == self.learnMoreSectionInfo) {
     [convertedSuggestions addObject:self.learnMoreItem];
   } else if (sectionInfo == self.discoverSectionInfo) {

@@ -15,6 +15,10 @@ const base::Feature kStartSurface{"StartSurface",
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =
     "ReturnToStartSurfaceInactiveDurationInSeconds";
 
+const char kStartSurfaceHideShortcutsParam[] = "remove_shortcuts";
+const char kStartSurfaceShrinkLogoParam[] = "shrink_logo";
+const char kStartSurfaceReturnToRecentTabParam[] = "show_return_to_recent_tab";
+
 bool IsStartSurfaceEnabled() {
   return base::FeatureList::IsEnabled(kStartSurface);
 }
@@ -23,4 +27,19 @@ double GetReturnToStartSurfaceDuration() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kStartSurface, kReturnToStartSurfaceInactiveDurationInSeconds,
       60 * 60 /*default to 1 hour*/);
+}
+
+bool ShouldHideShortcutsForStartSurface() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kStartSurface, kStartSurfaceHideShortcutsParam, false);
+}
+
+bool ShouldShrinkLogoForStartSurface() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kStartSurface, kStartSurfaceShrinkLogoParam, false);
+}
+
+bool ShouldShowReturnToMostRecentTabForStartSurface() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kStartSurface, kStartSurfaceReturnToRecentTabParam, false);
 }
