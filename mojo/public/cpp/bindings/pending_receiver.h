@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
@@ -17,6 +18,9 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
+
+template <typename T>
+class PendingRemote;
 
 template <typename T>
 struct PendingReceiverConverter;
@@ -129,6 +133,11 @@ class PendingReceiver {
     return std::move(state_.connection_group);
   }
 
+  // Creates a new message pipe, retaining one end in the PendingReceiver
+  // (making it valid) and returning the other end as its entangled
+  // PendingRemote. May only be called on an invalid PendingReceiver.
+  PendingRemote<Interface> InitWithNewPipeAndPassRemote() WARN_UNUSED_RESULT;
+
   // For internal Mojo use only.
   internal::PendingReceiverState* internal_state() { return &state_; }
 
@@ -145,6 +154,21 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) NullReceiver {
     return PendingReceiver<Interface>();
   }
 };
+
+}  // namespace mojo
+
+#include "mojo/public/cpp/bindings/pending_remote.h"
+
+namespace mojo {
+
+template <typename Interface>
+PendingRemote<Interface>
+PendingReceiver<Interface>::InitWithNewPipeAndPassRemote() {
+  DCHECK(!is_valid()) << "PendingReceiver already has a remote";
+  MessagePipe pipe;
+  state_.pipe = std::move(pipe.handle0);
+  return PendingRemote<Interface>(std::move(pipe.handle1), 0u);
+}
 
 }  // namespace mojo
 

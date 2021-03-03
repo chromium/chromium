@@ -3616,10 +3616,10 @@ RenderFrameImpl::CreateWorkerFetchContext() {
           frame_->GetDocumentLoader()->GetServiceWorkerNetworkProvider());
   DCHECK(provider);
 
-  mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher;
   mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
-      watcher_receiver = watcher.InitWithNewPipeAndPassReceiver();
-  render_view()->RegisterRendererPreferenceWatcher(std::move(watcher));
+      watcher_receiver;
+  render_view()->RegisterRendererPreferenceWatcher(
+      watcher_receiver.InitWithNewPipeAndPassRemote());
 
   mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier>
       pending_resource_load_info_notifier;
@@ -3658,10 +3658,10 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   DCHECK(factory_client);
 
-  mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher;
   mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
-      watcher_receiver = watcher.InitWithNewPipeAndPassReceiver();
-  render_view()->RegisterRendererPreferenceWatcher(std::move(watcher));
+      watcher_receiver;
+  render_view()->RegisterRendererPreferenceWatcher(
+      watcher_receiver.InitWithNewPipeAndPassRemote());
 
   mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier>
       pending_resource_load_info_notifier;
@@ -3773,16 +3773,15 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
           name.IsEmpty() ? fallback_name.Utf8() : name.Utf8(),
           is_created_by_script);
 
-  mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
-  mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver =
-      pending_frame_remote.InitWithNewEndpointAndPassReceiver();
+  mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver;
 
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
 
   // Now create the child frame in the browser via an asynchronous call.
   GetFrameHost()->CreateChildFrame(
-      child_routing_id, std::move(pending_frame_remote),
+      child_routing_id,
+      pending_frame_receiver.InitWithNewEndpointAndPassRemote(),
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
       blink::mojom::PolicyContainerBindParams::New(
           std::move(policy_container_bind_params.receiver)),

@@ -19,6 +19,9 @@
 namespace mojo {
 
 template <typename T>
+class PendingAssociatedRemote;
+
+template <typename T>
 struct PendingAssociatedReceiverConverter;
 
 // PendingAssociatedReceiver represents an unbound associated interface
@@ -87,6 +90,9 @@ class PendingAssociatedReceiver {
     handle_.ResetWithReason(custom_reason, description);
   }
 
+  PendingAssociatedRemote<Interface> InitWithNewEndpointAndPassRemote()
+      WARN_UNUSED_RESULT;
+
   // Associates this endpoint with a dedicated message pipe. This allows the
   // entangled AssociatedReceiver/AssociatedRemote endpoints to be used without
   // ever being associated with any other mojom interfaces.
@@ -127,6 +133,21 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) NullAssociatedReceiver {
     return PendingAssociatedReceiver<Interface>();
   }
 };
+
+}  // namespace mojo
+
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+
+namespace mojo {
+
+template <typename Interface>
+PendingAssociatedRemote<Interface>
+PendingAssociatedReceiver<Interface>::InitWithNewEndpointAndPassRemote() {
+  ScopedInterfaceEndpointHandle remote_handle;
+  ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(&handle_,
+                                                              &remote_handle);
+  return PendingAssociatedRemote<Interface>(std::move(remote_handle), 0u);
+}
 
 }  // namespace mojo
 
