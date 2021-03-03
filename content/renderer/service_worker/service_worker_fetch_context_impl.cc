@@ -9,13 +9,13 @@
 #include "content/common/content_constants_internal.h"
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/url_loader_throttle_provider.h"
-#include "content/public/renderer/websocket_handshake_throttle_provider.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/platform/internet_disconnected_web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 
 namespace content {
 
@@ -28,7 +28,7 @@ ServiceWorkerFetchContextImpl::ServiceWorkerFetchContextImpl(
         pending_script_loader_factory,
     const GURL& script_url_to_skip_throttling,
     std::unique_ptr<URLLoaderThrottleProvider> throttle_provider,
-    std::unique_ptr<WebSocketHandshakeThrottleProvider>
+    std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
         websocket_handshake_throttle_provider,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,

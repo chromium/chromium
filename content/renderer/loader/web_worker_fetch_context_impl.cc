@@ -18,7 +18,6 @@
 #include "content/public/common/origin_util.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/url_loader_throttle_provider.h"
-#include "content/public/renderer/websocket_handshake_throttle_provider.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"
@@ -36,6 +35,7 @@
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 
 namespace content {
 
@@ -248,7 +248,7 @@ WebWorkerFetchContextImpl::WebWorkerFetchContextImpl(
     mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
         pending_subresource_loader_updater,
     std::unique_ptr<URLLoaderThrottleProvider> throttle_provider,
-    std::unique_ptr<WebSocketHandshakeThrottleProvider>
+    std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
         websocket_handshake_throttle_provider,
     const std::vector<std::string>& cors_exempt_header_list,
     mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier>

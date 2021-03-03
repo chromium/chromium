@@ -35,7 +35,7 @@ AwWebSocketHandshakeThrottleProvider::AwWebSocketHandshakeThrottleProvider(
   }
 }
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 AwWebSocketHandshakeThrottleProvider::Clone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

@@ -1392,7 +1392,7 @@ SpellCheck* ChromeContentRendererClient::GetSpellCheck() {
 }
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 ChromeContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return std::make_unique<WebSocketHandshakeThrottleProviderImpl>(
       browser_interface_broker_.get());

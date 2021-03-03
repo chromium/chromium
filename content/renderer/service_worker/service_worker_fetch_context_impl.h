@@ -20,11 +20,11 @@
 
 namespace blink {
 class InternetDisconnectedWebURLLoaderFactory;
+class WebSocketHandshakeThrottleProvider;
 }
 
 namespace content {
 class URLLoaderThrottleProvider;
-class WebSocketHandshakeThrottleProvider;
 
 class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
     : public blink::WebServiceWorkerFetchContext,
@@ -50,7 +50,7 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
           pending_script_loader_factory,
       const GURL& script_url_to_skip_throttling,
       std::unique_ptr<URLLoaderThrottleProvider> throttle_provider,
-      std::unique_ptr<WebSocketHandshakeThrottleProvider>
+      std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
           websocket_handshake_throttle_provider,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           preference_watcher_receiver,
@@ -122,7 +122,7 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
   std::unique_ptr<blink::WebURLLoaderFactory> web_script_loader_factory_;
 
   std::unique_ptr<URLLoaderThrottleProvider> throttle_provider_;
-  std::unique_ptr<WebSocketHandshakeThrottleProvider>
+  std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
       websocket_handshake_throttle_provider_;
 
   mojo::Receiver<blink::mojom::RendererPreferenceWatcher>

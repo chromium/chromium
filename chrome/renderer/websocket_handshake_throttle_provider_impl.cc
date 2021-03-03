@@ -30,7 +30,7 @@ WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
       safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
 }
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 WebSocketHandshakeThrottleProviderImpl::Clone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

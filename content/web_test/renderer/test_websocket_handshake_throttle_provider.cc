@@ -80,7 +80,7 @@ class TestWebSocketHandshakeThrottle
 
 }  // namespace
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 TestWebSocketHandshakeThrottleProvider::Clone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   return std::make_unique<TestWebSocketHandshakeThrottleProvider>();

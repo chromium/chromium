@@ -2,25 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_RENDERER_WEBSOCKET_HANDSHAKE_THROTTLE_PROVIDER_H_
-#define CONTENT_PUBLIC_RENDERER_WEBSOCKET_HANDSHAKE_THROTTLE_PROVIDER_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEBSOCKET_HANDSHAKE_THROTTLE_PROVIDER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEBSOCKET_HANDSHAKE_THROTTLE_PROVIDER_H_
 
 #include <memory>
 
 #include "base/single_thread_task_runner.h"
-#include "content/common/content_export.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
 class WebSocketHandshakeThrottle;
-}
-
-namespace content {
 
 // This interface allows the embedder to provide a WebSocketHandshakeThrottle
 // implementation. An instance of this class must be constructed on the render
 // thread, and then used and destructed on a single thread, which can be
 // different from the render thread.
-class CONTENT_EXPORT WebSocketHandshakeThrottleProvider {
+class BLINK_PLATFORM_EXPORT WebSocketHandshakeThrottleProvider {
  public:
   virtual ~WebSocketHandshakeThrottleProvider() {}
 
@@ -42,6 +39,6 @@ class CONTENT_EXPORT WebSocketHandshakeThrottleProvider {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_PUBLIC_RENDERER_WEBSOCKET_HANDSHAKE_THROTTLE_PROVIDER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEBSOCKET_HANDSHAKE_THROTTLE_PROVIDER_H_

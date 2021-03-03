@@ -130,7 +130,7 @@ void WebTestContentRendererClient::RenderFrameCreated(
   // override is not needed.
 }
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 WebTestContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return std::make_unique<TestWebSocketHandshakeThrottleProvider>();
 }
