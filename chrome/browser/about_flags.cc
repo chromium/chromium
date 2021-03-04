@@ -217,6 +217,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/arc/arc_features.h"
+#include "components/arc/arc_util.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #include "ui/events/ozone/features.h"
@@ -699,6 +700,8 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
      switches::kTopChromeTouchUiEnabled}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kArcUseHighMemoryDalvikProfileInternalName[] =
+    "arc-use-high-memory-dalvik-profile";
 const char kLacrosSupportInternalName[] = "lacros-support";
 const char kLacrosStabilityInternalName[] = "lacros-stability";
 
@@ -4045,7 +4048,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcNativeBridge64BitSupportExperimentDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kNativeBridge64BitSupportExperimentFeature)},
-    {"arc-use-high-memory-dalvik-profile",
+    {kArcUseHighMemoryDalvikProfileInternalName,
      flag_descriptions::kArcUseHighMemoryDalvikProfileName,
      flag_descriptions::kArcUseHighMemoryDalvikProfileDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kUseHighMemoryDalvikProfile)},
@@ -7301,6 +7304,13 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
       channel != version_info::Channel::UNKNOWN) {
     return true;
   }
+
+  // Leave the feature only for ARCVM.
+  if (!strcmp(kArcUseHighMemoryDalvikProfileInternalName,
+              entry.internal_name)) {
+    return !arc::IsArcVmEnabled();
+  }
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // data-reduction-proxy-lo-fi and enable-data-reduction-proxy-lite-page

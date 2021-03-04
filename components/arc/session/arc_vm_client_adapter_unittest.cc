@@ -27,6 +27,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -35,6 +36,7 @@
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/file_system_status.h"
@@ -1683,6 +1685,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kDalvikMemoryProfileTestCases));
 
 TEST_P(ArcVmClientAdapterDalvikMemoryProfileTest, Profile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kUseHighMemoryDalvikProfile,
+                                    true /* use */);
+
   const auto& test_param = GetParam();
   StartParams start_params(GetPopulatedStartParams());
   start_params.dalvik_memory_profile = test_param.profile;

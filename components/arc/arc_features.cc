@@ -66,9 +66,10 @@ const base::Feature kNativeBridgeToggleFeature{
 const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls ARC high-memory dalvik profile.
+// Controls ARC high-memory dalvik profile in ARCVM.
 // When enabled, Android tries to use dalvik memory profile tuned for
-// high-memory devices like 8G and 16G.
+// high-memory devices like 8G and 16G. This is enabled without conditions
+// in ARC container.
 const base::Feature kUseHighMemoryDalvikProfile{
     "ArcUseHighMemoryDalvikProfile", base::FEATURE_DISABLED_BY_DEFAULT};
 

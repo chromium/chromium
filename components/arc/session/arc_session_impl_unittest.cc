@@ -967,9 +967,6 @@ bool GetSystemMemoryInfo(const std::string& file_name,
 TEST_P(ArcSessionImplDalvikMemoryProfileTest, DalvikMemoryProfiles) {
   const DalvikMemoryProfileVariant& variant = GetParam();
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kUseHighMemoryDalvikProfile,
-                                    true /* use */);
   auto arc_session = CreateArcSession();
   arc_session->SetSystemMemoryInfoCallbackForTesting(
       base::BindRepeating(&GetSystemMemoryInfo, variant.file_name));

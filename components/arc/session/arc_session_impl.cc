@@ -99,13 +99,6 @@ bool WaitForSocketReadable(int raw_socket_fd, int raw_cancel_fd) {
 void ApplyDalvikMemoryProfile(
     ArcSessionImpl::SystemMemoryInfoCallback system_memory_info_callback,
     StartParams* params) {
-  // Check if enabled.
-  if (!base::FeatureList::IsEnabled(arc::kUseHighMemoryDalvikProfile)) {
-    VLOG(1) << "High-memory dalvik profile is not enabled, default low-memory "
-               "is used.";
-    return;
-  }
-
   base::SystemMemoryInfoKB mem_info;
   if (!system_memory_info_callback.Run(&mem_info)) {
     LOG(ERROR) << "Failed to get system memory info";

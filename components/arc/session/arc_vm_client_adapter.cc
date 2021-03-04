@@ -271,18 +271,24 @@ std::vector<std::string> GenerateKernelCmdline(
       break;
   }
 
-  switch (start_params.dalvik_memory_profile) {
-    case StartParams::DalvikMemoryProfile::DEFAULT:
-      break;
-    case StartParams::DalvikMemoryProfile::M4G:
-      result.push_back("androidboot.arc_dalvik_memory_profile=4G");
-      break;
-    case StartParams::DalvikMemoryProfile::M8G:
-      result.push_back("androidboot.arc_dalvik_memory_profile=8G");
-      break;
-    case StartParams::DalvikMemoryProfile::M16G:
-      result.push_back("androidboot.arc_dalvik_memory_profile=16G");
-      break;
+  // Check if enabled.
+  if (base::FeatureList::IsEnabled(arc::kUseHighMemoryDalvikProfile)) {
+    switch (start_params.dalvik_memory_profile) {
+      case StartParams::DalvikMemoryProfile::DEFAULT:
+        break;
+      case StartParams::DalvikMemoryProfile::M4G:
+        result.push_back("androidboot.arc_dalvik_memory_profile=4G");
+        break;
+      case StartParams::DalvikMemoryProfile::M8G:
+        result.push_back("androidboot.arc_dalvik_memory_profile=8G");
+        break;
+      case StartParams::DalvikMemoryProfile::M16G:
+        result.push_back("androidboot.arc_dalvik_memory_profile=16G");
+        break;
+    }
+  } else {
+    VLOG(1) << "High-memory dalvik profile is not enabled, default low-memory "
+               "is used.";
   }
 
   std::string log_profile_name;
