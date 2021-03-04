@@ -213,13 +213,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   // the corresponding scroll button is visible.
   void UpdateGradientZone();
 
-  // Performs on clicking the |left_scroll_button_|, scrolls to the start
-  // position of the scroll view.
-  void ClickOnLeftScrollButton();
-
-  // Performs on clicking the |right_scroll_button_|, scrolls to the end
-  // position of the scroll view.
-  void ClickOnRightScrollButton();
+  // Scrolls the desks bar to the previous or next page. The page size is the
+  // width of the scroll view, the contents that are outside of the scroll view
+  // will be clipped and can not be seen.
+  void ScrollToPreviousPage();
+  void ScrollToNextPage();
 
   // A view that shows a dark gary transparent background that can be animated
   // when the very first mini_views are created.
