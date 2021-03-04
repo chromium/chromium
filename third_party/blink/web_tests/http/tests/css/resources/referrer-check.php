@@ -31,7 +31,7 @@ $expectedReferrerPaths = array(
     "document" => "/css/css-resources-referrer.html",
     "sheet" => "/css/resources/css-resources-referrer.css",
     "importedSheet" => "/css/resources/css-resources-referrer-import.css",
-    "iframe" => "/from/iframe.html"
+    "iframe" => "/css/css-resources-referrer-srcdoc.html"
 );
 
 $from = $_GET["from"];
