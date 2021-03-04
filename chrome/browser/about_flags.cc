@@ -1774,7 +1774,8 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceFinale[] = {
     {"start_surface_variation", "single"},
     {"omnibox_focused_on_new_tab", "true"},
     {"home_button_on_grid_tab_switcher", "true"},
-    {"new_home_surface_from_home_button", "hide_tab_switcher_only"}};
+    {"new_home_surface_from_home_button", "hide_tab_switcher_only"},
+    {"hide_switch_when_no_incognito_tabs", "true"}};
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2[] = {
     {"start_surface_variation", "single"},
