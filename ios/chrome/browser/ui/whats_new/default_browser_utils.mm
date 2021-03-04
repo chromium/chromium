@@ -165,5 +165,5 @@ bool IsLikelyInterestedDefaultBrowserUser() {
       [[[NSUserDefaults standardUserDefaults]
           arrayForKey:kLastSignificantUserEvent] mutableCopy];
   pastUserEvents = SanitizePastUserEvents(pastUserEvents);
-  return [pastUserEvents count] > 1 && base::ios::IsRunningOnIOS14OrLater();
+  return [pastUserEvents count] > 0 && base::ios::IsRunningOnIOS14OrLater();
 }
