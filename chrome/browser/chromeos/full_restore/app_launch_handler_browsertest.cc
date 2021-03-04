@@ -85,10 +85,10 @@ void WaitForAppLaunchInfoSaved() {
   ::full_restore::FullRestoreSaveHandler* save_handler =
       ::full_restore::FullRestoreSaveHandler::GetInstance();
   base::OneShotTimer* timer = save_handler->GetTimerForTesting();
-  EXPECT_TRUE(timer->IsRunning());
-
-  // Simulate timeout, and the launch info is saved.
-  timer->FireNow();
+  if (timer->IsRunning()) {
+    // Simulate timeout, and the launch info is saved.
+    timer->FireNow();
+  }
   content::RunAllTasksUntilIdle();
 }
 
@@ -567,9 +567,7 @@ class AppLaunchHandlerSystemWebAppsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1184448): Diasbled for being flaky.
-IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
-                       DISABLED_LaunchSWA) {
+IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest, LaunchSWA) {
   Browser* app_browser = LaunchSystemWebApp();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
