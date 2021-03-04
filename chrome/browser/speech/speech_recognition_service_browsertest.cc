@@ -17,6 +17,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/pref_names.h"
+#include "content/public/browser/audio_service.h"
 #include "content/public/test/browser_test.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/media_switches.h"
@@ -65,6 +66,7 @@ class SpeechRecognitionServiceTest
 
  protected:
   void LaunchService();
+  void LaunchServiceWithAudioSourceFetcher();
 
   // The root directory for test files.
   base::FilePath test_data_dir_;
@@ -75,6 +77,8 @@ class SpeechRecognitionServiceTest
 
   mojo::Remote<media::mojom::SpeechRecognitionRecognizer>
       speech_recognition_recognizer_;
+
+  mojo::Remote<media::mojom::AudioSourceFetcher> audio_source_fetcher_;
 
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
       speech_recognition_client_receiver_{this};
@@ -125,6 +129,38 @@ void SpeechRecognitionServiceTest::LaunchService() {
 
   run_loop->Run();
   ASSERT_TRUE(is_multichannel_supported);
+}
+
+void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
+  // Launch the Speech Recognition service.
+  auto* browser_context =
+      static_cast<content::BrowserContext*>(browser()->profile());
+  auto* service = new ChromeSpeechRecognitionService(browser_context);
+
+  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
+      speech_recognition_context_receiver =
+          speech_recognition_context_.BindNewPipeAndPassReceiver();
+  service->Create(std::move(speech_recognition_context_receiver));
+
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory;
+  content::GetAudioServiceStreamFactoryBinder().Run(
+      stream_factory.InitWithNewPipeAndPassReceiver());
+
+  bool success = false;
+  auto run_loop = std::make_unique<base::RunLoop>();
+  // Bind the recognizer pipes used to send audio and receive results.
+  speech_recognition_context_->BindAudioSourceFetcher(
+      audio_source_fetcher_.BindNewPipeAndPassReceiver(),
+      speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      std::move(stream_factory),
+      base::BindOnce(
+          [](bool* p_success, base::RunLoop* run_loop, bool success) {
+            *p_success = success;
+            run_loop->Quit();
+          },
+          &success, run_loop.get()));
+  run_loop->Run();
+  ASSERT_TRUE(success);
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
@@ -210,6 +246,29 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   histograms.ExpectUniqueTimeSample(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName,
       base::TimeDelta::FromMilliseconds(1260), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
+  base::HistogramTester histograms;
+  g_browser_process->local_state()->SetFilePath(
+      prefs::kSodaBinaryPath,
+      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
+          .Append(kSodaBinaryRelativePath));
+  g_browser_process->local_state()->SetFilePath(
+      prefs::kSodaEnUsConfigPath,
+      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
+          .Append(kSodaLanguagePackRelativePath));
+
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  // TODO(crbug.com/1173135): Disconnect from kLiveCaptionEnabled.
+  profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
+  LaunchServiceWithAudioSourceFetcher();
+
+  // TODO(crbug.com/1173135): Test mock audio input for AudioSourceFetcher.
+  // Currently a sanity check as nothing happens yet.
+  audio_source_fetcher_->Start();
+  audio_source_fetcher_->Stop();
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace speech

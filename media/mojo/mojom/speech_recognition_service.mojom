@@ -4,21 +4,33 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/audio_stream_factory.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 
 // The main interface a client uses to interact with a speech recognition
-// service process. Every renderer can own one or more
+// service process. In Live Caption, every renderer can own one or more
 // Remote<SpeechRecognitionContext>, with the receiver bound through the
-// BrowserInterfaceBroker. Returns a flag indicating whether multichannel
-// audio is supported by the speech recognition service.
+// BrowserInterfaceBroker. In Chrome OS features like Dictation and Projector,
+// every OnDeviceSpeechRecognizer can own a Remote<SpeechRecognitionContext>.
 interface SpeechRecognitionContext {
-  // Bind the recognizers to the speech recognition service.
+  // Bind the recognizers to the speech recognition service. Returns a flag
+  // indicating whether multichannel audio is supported by the speech
+  // recognition service.
   BindRecognizer(pending_receiver<SpeechRecognitionRecognizer> receiver,
                  pending_remote<SpeechRecognitionRecognizerClient> client)
                  => (bool is_multichannel_supported);
+
+  // Prepares microphone audio to be captured from within the
+  // SpeechRecognitionService process, with results passed back to the
+  // SpeechRecognitionRecognizerClient.
+  BindAudioSourceFetcher(
+                 pending_receiver<AudioSourceFetcher> fetcher_receiver,
+                 pending_remote<SpeechRecognitionRecognizerClient> client,
+                 pending_remote<AudioStreamFactory> factory)
+                 => (bool success);
 };
 
 // The main interface to a speech secognition service process.
@@ -41,6 +53,16 @@ interface SpeechRecognitionService {
   // recognition service to send messages back to the client.
   BindSpeechRecognitionServiceClient(
       pending_remote<SpeechRecognitionServiceClient> client);
+};
+
+// The interface used to start and stop fetching audio from the microphone
+// for speech recognition.
+// TODO(crbug.com/1173135): Add Start() to begin fetching audio. Results will
+// be returned using the Remote<SpeechRecognitionRecognizerClient> which was
+// passed in BindAudioSourceFetcher.
+interface AudioSourceFetcher {
+  // Stops audio fetching.
+  Stop();
 };
 
 // The interface used to send messages from the speech recognition service

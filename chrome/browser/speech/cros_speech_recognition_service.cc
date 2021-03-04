@@ -5,6 +5,7 @@
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
 #include "chrome/browser/accessibility/soda_installer.h"
+#include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "components/soda/constants.h"
 #include "media/base/media_switches.h"
@@ -34,6 +35,37 @@ void CrosSpeechRecognitionService::BindRecognizer(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     BindRecognizerCallback callback) {
   base::FilePath binary_path, languagepack_path;
+  PopulateFilePaths(binary_path, languagepack_path);
+
+  CrosSpeechRecognitionRecognizerImpl::Create(
+      std::move(receiver), std::move(client),
+      nullptr /* =SpeechRecognitionService WeakPtr*/, binary_path,
+      languagepack_path);
+  std::move(callback).Run(
+      CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
+}
+
+void CrosSpeechRecognitionService::BindAudioSourceFetcher(
+    mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+    BindRecognizerCallback callback) {
+  base::FilePath binary_path, languagepack_path;
+  PopulateFilePaths(binary_path, languagepack_path);
+
+  // TODO(crbug.com/1173135): Consider creating on I/O thread if called on
+  // browser UI thread.
+  AudioSourceFetcherImpl::Create(
+      std::move(fetcher_receiver), std::move(stream_factory),
+      std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
+          std::move(client), nullptr /* =SpeechRecognitionService WeakPtr*/,
+          binary_path, languagepack_path));
+  std::move(callback).Run(true);
+}
+
+void CrosSpeechRecognitionService::PopulateFilePaths(
+    base::FilePath& binary_path,
+    base::FilePath& languagepack_path) {
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   if (soda_installer->IsSodaInstalled()) {
     binary_path = soda_installer->GetSodaBinaryPath();
@@ -42,13 +74,6 @@ void CrosSpeechRecognitionService::BindRecognizer(
     LOG(DFATAL)
         << "Instantiation of SODA requested without SODA being installed.";
   }
-
-  CrosSpeechRecognitionRecognizerImpl::Create(
-      std::move(receiver), std::move(client),
-      nullptr /* =SpeechRecognitionService WeakPtr*/, binary_path,
-      languagepack_path);
-  std::move(callback).Run(
-      CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
 
 }  // namespace speech

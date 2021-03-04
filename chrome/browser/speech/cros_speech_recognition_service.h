@@ -37,8 +37,16 @@ class CrosSpeechRecognitionService
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           client,
       BindRecognizerCallback callback) override;
+  void BindAudioSourceFetcher(
+      mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+          client,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+      BindRecognizerCallback callback) override;
 
  private:
+  void PopulateFilePaths(base::FilePath& binary_path,
+                         base::FilePath& languagepack_path);
   mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
       speech_recognition_contexts_;
   const bool enable_soda_;
