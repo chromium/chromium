@@ -66,11 +66,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
-  void Email(const std::string& to,
-             const std::string& cc,
-             const std::string& bcc,
-             const std::string& subject,
-             const std::string& body) override;
   void Print() override;
   void SubmitForm(const std::string& url,
                   const void* data,

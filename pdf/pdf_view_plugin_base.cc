@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/document_layout.h"
@@ -211,6 +212,21 @@ void PdfViewPluginBase::Beep() {
 
 std::string PdfViewPluginBase::GetURL() {
   return url_;
+}
+
+void PdfViewPluginBase::Email(const std::string& to,
+                              const std::string& cc,
+                              const std::string& bcc,
+                              const std::string& subject,
+                              const std::string& body) {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "email");
+  message.SetStringKey("to", net::EscapeUrlEncodedData(to, false));
+  message.SetStringKey("cc", net::EscapeUrlEncodedData(cc, false));
+  message.SetStringKey("bcc", net::EscapeUrlEncodedData(bcc, false));
+  message.SetStringKey("subject", net::EscapeUrlEncodedData(subject, false));
+  message.SetStringKey("body", net::EscapeUrlEncodedData(body, false));
+  SendMessage(std::move(message));
 }
 
 SkColor PdfViewPluginBase::GetBackgroundColor() {

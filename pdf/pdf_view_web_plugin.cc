@@ -221,12 +221,6 @@ std::string PdfViewWebPlugin::Prompt(const std::string& question,
   return "";
 }
 
-void PdfViewWebPlugin::Email(const std::string& to,
-                             const std::string& cc,
-                             const std::string& bcc,
-                             const std::string& subject,
-                             const std::string& body) {}
-
 void PdfViewWebPlugin::Print() {}
 
 void PdfViewWebPlugin::SubmitForm(const std::string& url,
