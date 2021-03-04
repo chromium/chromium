@@ -4178,34 +4178,17 @@
         },
       },
       'gpu_unittests': {},
-      'ui_touch_selection_unittests': {},
-      'views_unittests': {},
-      'viz_unittests': {},
-    },
-
-    # This is a separate suite for CI bot as browser_tests and content_browsertests
-    # conflict with the existing browser_tests and content_browsertests entry in the
-    # chromium_gtests. Thus, this suite doesn't include browser_tests and
-    # content_browsertests, but still has almost the same set of tests that
-    # linux_ozone_wayland_and_x11_gtests has.
-    # TODO(msisov): remove this suite once Wayland includes all the gtests
-    # that chromium_linux_gtests has.
-    'linux_ozone_wayland_ci_gtests': {
-      'accessibility_unittests': {},
-      'aura_unittests': {},
-      'compositor_unittests': {},
-      'gpu_unittests': {},
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
       'ui_touch_selection_unittests': {},
       'views_unittests': {},
       'viz_unittests': {},
     },
 
     'linux_ozone_x11_only_gtests': {
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
       'ozone_x11_unittests': {},
       'x11_unittests': {},
     },
@@ -7042,11 +7025,14 @@
     },
 
     # These tests run on Ozone/Wayland CI tester.
-    # Will replicate chromium_linux_gtests with OZONE_WAYLAND variant.
+    # These replicate chromium_linux_gtests with OZONE_WAYLAND variant.
     # Unfortunatelly, we can't have chromium_linux_gtests matrix
     # compound test added here as the script that generates config
     # doesn't permit so. Thus, this will be a mirrored list of tests
     # from chromium_linux_gtests.
+    # Thus, any changes done to chromium_linux_gtests must be also
+    # made here. Please note that this mustn't include X11 specific
+    # tests.
     'linux_ozone_wayland_ci_tests': {
       'aura_gtests': {
         'variants': [
@@ -7058,7 +7044,52 @@
           'OZONE_WAYLAND',
         ]
       },
-      'linux_ozone_wayland_ci_gtests': {
+      'chromium_gtests_for_devices_with_graphical_output': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'chromium_gtests_for_linux_and_chromeos_only': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'chromium_gtests_for_linux_and_mac_only': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'chromium_gtests_for_win_and_linux_only': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'linux_flavor_specific_chromium_gtests': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'linux_specific_xr_gtests': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'non_android_and_cast_and_chromeos_chromium_gtests': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'non_android_chromium_gtests': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'weblayer_gtests': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'vr_platform_specific_chromium_gtests': {
         'variants': [
           'OZONE_WAYLAND',
         ]

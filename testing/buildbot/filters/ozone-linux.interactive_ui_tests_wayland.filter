@@ -1,0 +1,6 @@
+# TODO(https://crbug.com/1134495): 
+# Will be enabled after input emulation lands (https://crrev.com/c/2726705)
+# For now, all the tests are disabled as their initialization fails because of the
+# lack of the input emulation. It's easier to disable them via a filter instead of
+# keeping a separate list of gtests.
+-*

@@ -7296,7 +7296,7 @@ if (!is_fuchsia && !is_android) {
     ]
 
     data_deps = [
-      "//testing/buildbot/filters:e2e_sync_integration_tests_filters",
+      "//testing/buildbot/filters:sync_integration_tests_filters",
       "//third_party/mesa_headers",
     ]
 

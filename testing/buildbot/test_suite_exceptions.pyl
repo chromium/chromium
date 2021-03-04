@@ -1255,6 +1255,16 @@
       },
     },
   },
+  'dbus_unittests_wayland': {
+    'modifications': {
+      # CI Ozone/Wayland tester.
+      'Linux Tester (Ozone Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.dbus_unittests_wayland.filter',
+        ],
+      },
+    }
+  },
   'depth_capture_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
@@ -1618,6 +1628,22 @@
       'linux-lacros-tester-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.interactive_ui_tests.filter',
+        ],
+      },
+    },
+  },
+  'interactive_ui_tests_wayland': {
+    'modifications': {
+      # CQ tester.
+      'Linux Ozone Tester (Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter',
+        ],
+      },
+      # CI Ozone/Wayland tester.
+      'Linux Tester (Ozone Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter',
         ],
       },
     },
@@ -2459,6 +2485,16 @@
       },
     },
   },
+  'sync_integration_tests_wayland': {
+    'modifications': {
+      # CI Ozone/Wayland tester.
+      'Linux Tester (Ozone Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.sync_integration_tests_wayland.filter',
+        ],
+      },
+    }
+  },
   'tab_capture_end2end_tests': {
     # Run these only on Release bots.
     'remove_from': [
@@ -2685,6 +2721,16 @@
         ],
       },
     },
+  },
+  'unit_tests_wayland': {
+    'modifications': {
+      # CI Ozone/Wayland tester.
+      'Linux Tester (Ozone Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
+        ],
+      },
+    }
   },
   'video_decode_accelerator_gl_unittest': {
     'remove_from': [
