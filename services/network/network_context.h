@@ -619,13 +619,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::set<std::unique_ptr<ProxyLookupRequest>, base::UniquePtrComparator>
       proxy_lookup_requests_;
 
-  // This must be below |url_request_context_| so that the URLRequestContext
-  // outlives all the URLLoaderFactories and URLLoaders that depend on it;
-  // for the same reason, it must also be below |network_context_|.
-  std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
-           base::UniquePtrComparator>
-      url_loader_factories_;
-
   std::set<std::unique_ptr<QuicTransport>, base::UniquePtrComparator>
       quic_transports_;
 
@@ -735,6 +728,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // `http_auth_merged_preferences_` which would then be used to create
   // HttpAuthHandle via |NetworkContext::CreateHttpAuthHandlerFactory|.
   net::HttpAuthPreferences http_auth_merged_preferences_;
+
+  // CorsURLLoaderFactory assumes that fields owned by the NetworkContext always
+  // live longer than the factory.  Therefore we want the factories to be
+  // destroyed before other fields above.  In particular:
+  // - This must be below |url_request_context_| so that the URLRequestContext
+  //   outlives all the URLLoaderFactories and URLLoaders that depend on it;
+  //   for the same reason, it must also be below |network_context_|.
+  // - This must be below |loader_count_per_process_| that is touched by
+  //   CorsURLLoaderFactory::DestroyURLLoader (see also
+  //   https://crbug.com/1174943).
+  std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
+           base::UniquePtrComparator>
+      url_loader_factories_;
 
   base::WeakPtrFactory<NetworkContext> weak_factory_{this};
 
