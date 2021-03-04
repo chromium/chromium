@@ -47,7 +47,7 @@ public interface RenderFrameHost {
      *
      * @return Whether the feature policy allows the feature in this frame.
      */
-    boolean isFeatureEnabled(@FeaturePolicyFeature int feature);
+    boolean isFeatureEnabled(@PermissionsPolicyFeature int feature);
 
     /**
      * Returns an interface by name to the Frame in the renderer process. This

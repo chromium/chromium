@@ -17,7 +17,7 @@ import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PrefsStrings;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.FeaturePolicyFeature;
+import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
@@ -104,7 +104,7 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
     @Override
     public PaymentRequest createImpl() {
         if (mRenderFrameHost == null) return new InvalidPaymentRequest();
-        if (!mRenderFrameHost.isFeatureEnabled(FeaturePolicyFeature.PAYMENT)) {
+        if (!mRenderFrameHost.isFeatureEnabled(PermissionsPolicyFeature.PAYMENT)) {
             mRenderFrameHost.terminateRendererDueToBadMessage(241 /*PAYMENTS_WITHOUT_PERMISSION*/);
             return null;
         }

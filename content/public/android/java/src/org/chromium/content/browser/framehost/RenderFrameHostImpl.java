@@ -12,7 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorStatus;
-import org.chromium.content_public.browser.FeaturePolicyFeature;
+import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.bindings.Interface;
 import org.chromium.mojo.bindings.InterfaceRequest;
@@ -98,7 +98,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public boolean isFeatureEnabled(@FeaturePolicyFeature int feature) {
+    public boolean isFeatureEnabled(@PermissionsPolicyFeature int feature) {
         return mNativeRenderFrameHostAndroid != 0
                 && RenderFrameHostImplJni.get().isFeatureEnabled(
                         mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, feature);
@@ -195,7 +195,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         void getCanonicalUrlForSharing(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, Callback<GURL> callback);
         boolean isFeatureEnabled(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller,
-                @FeaturePolicyFeature int feature);
+                @PermissionsPolicyFeature int feature);
         UnguessableToken getAndroidOverlayRoutingToken(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void notifyUserActivation(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);

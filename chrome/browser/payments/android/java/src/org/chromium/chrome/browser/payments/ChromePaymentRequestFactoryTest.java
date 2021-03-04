@@ -24,7 +24,7 @@ import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.components.payments.test_support.ShadowWebContentsStatics;
-import org.chromium.content_public.browser.FeaturePolicyFeature;
+import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 
@@ -61,7 +61,7 @@ public class ChromePaymentRequestFactoryTest {
     private void setPaymentFeaturePolicy(boolean enabled) {
         Mockito.doReturn(enabled)
                 .when(mRenderFrameHost)
-                .isFeatureEnabled(FeaturePolicyFeature.PAYMENT);
+                .isFeatureEnabled(PermissionsPolicyFeature.PAYMENT);
     }
 
     private void setWebContentsDestroyed(boolean isDestroyed) {
