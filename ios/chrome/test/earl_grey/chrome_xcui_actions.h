@@ -58,6 +58,14 @@ BOOL TapAtOffsetOf(NSString* accessibility_identifier,
                    int window_number,
                    CGVector normalized_offset);
 
+// Action (XCUI, hence local) to type text in text field with
+// |accessibility_identifier| in |window_number|. Use to replace grey_typeText
+// call that are flaky. grey_typeText fails sometime during a layout change of
+// the keyboard.
+BOOL TypeText(NSString* accessibility_identifier,
+              int window_number,
+              NSString* text);
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_XCUI_ACTIONS_H_

@@ -31,7 +31,7 @@ using chrome_test_util::ManualFallbackProfileTableViewWindowMatcher;
 
 namespace {
 
-// Using |isKeyboadDocked| requires to inject a UITextField in the window and
+// Using |isKeyboardDocked| requires to inject a UITextField in the window and
 // wait for it to be shown. For performance reasons, only try to dock the
 // keyboard in |tearDown| if it was undocked during the test.
 bool gKeyboardUndockAttempted = false;
@@ -73,7 +73,7 @@ BOOL UndockAndSplitKeyboard() {
   UITextField* textField = [KeyboardAppInterface showKeyboard];
 
   // Return if already undocked.
-  if (![KeyboardAppInterface isKeyboadDocked]) {
+  if (![KeyboardAppInterface isKeyboardDocked]) {
     // If a dummy textfield was created for this, remove it.
     [textField removeFromSuperview];
     return YES;
@@ -86,7 +86,7 @@ BOOL UndockAndSplitKeyboard() {
 
   // If a dummy textfield was created for this, remove it.
   [textField removeFromSuperview];
-  return ![KeyboardAppInterface isKeyboadDocked];
+  return ![KeyboardAppInterface isKeyboardDocked];
 }
 
 // Docks the keyboard by swiping it down. Does nothing if already docked.
@@ -98,7 +98,7 @@ void DockKeyboard() {
   UITextField* textField = [KeyboardAppInterface showKeyboard];
 
   // Return if already docked.
-  if ([KeyboardAppInterface isKeyboadDocked]) {
+  if ([KeyboardAppInterface isKeyboardDocked]) {
     // If we created a dummy textfield for this, remove it.
     [textField removeFromSuperview];
     return;
@@ -114,7 +114,7 @@ void DockKeyboard() {
   GREYCondition* waitForDockedKeyboard = [GREYCondition
       conditionWithName:@"Wait For Docked Keyboard Animations"
                   block:^BOOL {
-                    return [KeyboardAppInterface isKeyboadDocked];
+                    return [KeyboardAppInterface isKeyboardDocked];
                   }];
 
   GREYAssertTrue([waitForDockedKeyboard waitWithTimeout:kWaitForActionTimeout],

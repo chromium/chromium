@@ -223,4 +223,20 @@ BOOL TapAtOffsetOf(NSString* accessibility_identifier,
   return YES;
 }
 
+BOOL TypeText(NSString* accessibility_identifier,
+              int window_number,
+              NSString* text) {
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
+      app, accessibility_identifier, window_number, XCUIElementTypeTextField);
+
+  if (query.count == 0)
+    return NO;
+
+  XCUIElement* element = [query elementBoundByIndex:0];
+  [element typeText:text];
+
+  return YES;
+}
+
 }  // namespace chrome_test_util
