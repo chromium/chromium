@@ -141,7 +141,6 @@
 Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
 <translation id="2381405137052800939">Oinarrizkoak</translation>
 <translation id="2386793615875593361">Bat hautatu da</translation>
-<translation id="2419661687355878017">Zure erakundeak ezkutuko modua desaktibatu du</translation>
 <translation id="2421004566762153674">Hirugarrenen cookieak blokeatzea</translation>
 <translation id="2421044535038393232">Jarraitu editatzen</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
@@ -633,6 +632,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="7481312909269577407">Aurrera</translation>
 <translation id="7483467499335917849">Erabili uneko kokapena</translation>
 <translation id="750493650310597496">Ez da bat ere hautatu</translation>
+<translation id="7508728395076009983">Ezkutuko moduko fitxak blokeatzeko, konfiguratu Touch ID, Face ID edo pasakode bat.</translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7537586195939242955">Dokumentua ezin izan da instalatu Passbook-en.</translation>
 <translation id="7554791636758816595">Fitxa berria</translation>

@@ -990,7 +990,6 @@
 <translation id="2090165459409185032">如要復原帳戶資料，請前往：google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">系統安全性設定</translation>
 <translation id="2091887806945687916">音效</translation>
-<translation id="209539936453343974">如要設定家長監控設定，子女必須有由家長管理的 Google 帳戶。<ph name="DEVICE_TYPE_PLURAL" /> 允許家長透過 Family Link 應用程式設定裝置使用時間限制、核准/封鎖網站，以及執行更多操作。如果子女需要在 Google Classroom 等網站上完成作業，可在日後新增學校帳戶。</translation>
 <translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2098805196501063469">檢查餘下的密碼</translation>
 <translation id="2099172618127234427">您即將啟用 Chrome 作業系統偵錯功能；啟用後，系統會設定 sshd 協助程式，並啟用 USB 記憶體開機功能。</translation>
@@ -5079,7 +5078,7 @@
 <translation id="6781284683813954823">Doodle 連結</translation>
 <translation id="6781978626986383437">已取消 Linux 備份</translation>
 <translation id="6782067259631821405">PIN 無效</translation>
-<translation id="6782468519961184511">管理員已禁止新增其他 Google 帳戶</translation>
+<translation id="6782468519961184511">管理員禁止新增其他 Google 帳戶</translation>
 <translation id="6785518634832172390">PIN 不可超出 12 個數字</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
@@ -5557,7 +5556,7 @@
 <translation id="7324297612904500502">Chrome 測試版論壇</translation>
 <translation id="7325209047678309347">打印機卡紙</translation>
 <translation id="7326004502692201767">為子女設定此 <ph name="DEVICE_TYPE" /></translation>
-<translation id="7326025035243649350">是否要啟用 Chrome 作業系統內置的螢幕閱讀器 ChromeVox 嗎？</translation>
+<translation id="7326025035243649350">要啟用 Chrome 作業系統內置的螢幕閱讀器 ChromeVox 嗎？</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，您將無法載入應用程式。</translation>
 <translation id="7328867076235380839">無效的組合</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>

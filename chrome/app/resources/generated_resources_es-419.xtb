@@ -987,7 +987,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2090165459409185032">Para recuperar la información de la cuenta, accede a google.com/accounts/recovery.</translation>
 <translation id="2090876986345970080">Configuración de seguridad del sistema</translation>
 <translation id="2091887806945687916">Sonido</translation>
-<translation id="209539936453343974">Para configurar los controles parentales, un niño debe tener una Cuenta de Google administrada por un padre o una madre. <ph name="DEVICE_TYPE_PLURAL" /> permiten al padre o la madre configurar el límite de tiempo de uso, aprobar o bloquear sitios web y mucho más con la app de Family Link. Si el niño necesita hacer tarea en sitios como Google Classroom, más tarde se puede agregar una cuenta de institución educativa.</translation>
 <translation id="2096715839409389970">Borrar cookies de terceros</translation>
 <translation id="2098805196501063469">Revisar las contraseñas restantes</translation>
 <translation id="2099172618127234427">Estás habilitando las funciones de depuración del Sistema operativo Chrome que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
@@ -3789,7 +3788,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5288678174502918605">Volv&amp;er a abrir una pestaña cerrada</translation>
 <translation id="52895863590846877">La página no está en <ph name="LANGUAGE" /></translation>
 <translation id="52912272896845572">Archivo de clave privada no válido</translation>
-<translation id="5291739252352359682">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome (por el momento, disponible solo en inglés). El audio y los subtítulos se procesan en el dispositivo y nunca se envían a otra parte.</translation>
+<translation id="5291739252352359682">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome (por el momento disponible en inglés). El audio y los subtítulos se procesan en el dispositivo y nunca se envían a otra parte.</translation>
 <translation id="529175790091471945">Formatear este dispositivo</translation>
 <translation id="5293170712604732402">Restaurar la configuración a los valores predeterminados originales</translation>
 <translation id="5294097441441645251">Debe comenzar con una letra minúscula o un guion bajo</translation>

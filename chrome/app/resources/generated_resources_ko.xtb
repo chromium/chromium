@@ -990,7 +990,6 @@
 <translation id="2090165459409185032">계정 정보를 복구하려면 google.com/accounts/recovery 페이지로 이동하세요.</translation>
 <translation id="2090876986345970080">시스템 보안 설정</translation>
 <translation id="2091887806945687916">소리</translation>
-<translation id="209539936453343974">자녀 보호 기능을 설정하려면 부모가 관리하는 자녀의 Google 계정이 있어야 합니다. 부모님은 <ph name="DEVICE_TYPE_PLURAL" />에서 Family Link 앱을 사용해 기기 사용 시간 한도를 설정하고, 웹사이트를 승인하거나 차단하는 등의 작업을 할 수 있습니다. 자녀가 Google 클래스룸과 같은 사이트에서 학교 과제를 해야 하는 경우 나중에 학교 계정을 추가하면 됩니다.</translation>
 <translation id="2096715839409389970">타사 쿠키 삭제</translation>
 <translation id="2098805196501063469">나머지 비밀번호 확인</translation>
 <translation id="2099172618127234427">sshd 데몬을 설정하고 USB 드라이브에서 부팅하도록 사용 설정하는 Chrome OS 디버깅 기능을 사용 설정 중입니다.</translation>
@@ -1666,7 +1665,7 @@
 <translation id="2822910719211888134">Linux 백업 중에 오류가 발생했습니다.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 관리자의 프록시 설정을 사용 중입니다.</translation>
 <translation id="2825758591930162672">대상의 공개 키</translation>
-<translation id="2828375943530438449">로그인 페이지에서 돌아오기</translation>
+<translation id="2828375943530438449">이전 페이지로 돌아가기</translation>
 <translation id="2828650939514476812">Wi-Fi 네트워크에 연결</translation>
 <translation id="2835547721736623118">음성 인식 서비스</translation>
 <translation id="2836269494620652131">비정상 종료</translation>
@@ -2288,7 +2287,7 @@
 <translation id="3550915441744863158">Chrome은 자동으로 업데이트되므로 항상 최신 버전을 사용할 수 있습니다.</translation>
 <translation id="3551320343578183772">탭 닫기</translation>
 <translation id="3552780134252864554">종료 시 삭제됨</translation>
-<translation id="3554493885489666172"><ph name="PROFILE_NAME" />에서 관리하는 기기입니다. 관리자가 기기에 등록된 모든 프로필에서 데이터에 액세스할 수 있습니다.</translation>
+<translation id="3554493885489666172"><ph name="PROFILE_NAME" />에서 관리하는 기기입니다. 관리자가 기기에 등록된 모든 프로필의 데이터에 액세스할 수 있습니다.</translation>
 <translation id="3555812735919707620">확장 프로그램 삭제</translation>
 <translation id="3556000484321257665">검색엔진이 <ph name="URL" />(으)로 변경되었습니다.</translation>
 <translation id="3556433843310711081">관리자가 차단 해제할 수 있습니다.</translation>
@@ -5209,7 +5208,7 @@
 <translation id="6922128026973287222">Google 데이터 절약 모드를 사용하여 더 빠르게 데이터를 저장하고 탐색하세요. 자세히 알아보려면 클릭하세요.</translation>
 <translation id="6922570474772078053">사용 중지하는 중</translation>
 <translation id="6922745772873733498">인쇄하려면 PIN을 입력하세요.</translation>
-<translation id="6922763095098248079">조직에서 기기를 관리합니다. 관리자가 기기에 등록된 모든 프로필에서 데이터에 액세스할 수 있습니다.</translation>
+<translation id="6922763095098248079">조직에서 기기를 관리합니다. 관리자가 기기에 등록된 모든 프로필의 데이터에 액세스할 수 있습니다.</translation>
 <translation id="6923132443355966645">스크롤/클릭</translation>
 <translation id="6923633482430812883">공유를 마운트하는 중 오류가 발생했습니다. 연결하려는 파일 서버가 SMBv2 이상을 지원하는지 확인하세요.</translation>
 <translation id="6925127338315966709">브라우저에 관리되는 프로필을 추가하려고 합니다. 관리자가 프로필을 제어하고 프로필 데이터에 액세스할 수 있습니다. 북마크, 방문 기록, 비밀번호 및 기타 설정이 계정에 동기화되고 이를 관리자가 관리할 수 있습니다.</translation>

@@ -990,7 +990,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2090165459409185032">Fiókadatainak helyreállításához lépjen a következő oldalra: google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">Rendszerbiztonsági beállítás</translation>
 <translation id="2091887806945687916">Hang</translation>
-<translation id="209539936453343974">Szülői felügyelet beállításához a gyermeknek a szülő által felügyelt Google-fiókkal kell rendelkeznie. A(z) <ph name="DEVICE_TYPE_PLURAL" /> eszközök lehetővé teszik, hogy a szülők képernyőidőre vonatkozó korlátozásokat állítsanak be, webhelyeket hagyjanak jóvá és tiltsanak le, illetve egyéb műveleteket is végezhetnek a Family Link alkalmazás segítségével. Ha a gyermeknek iskolai feladatokat kell végeznie a Google Tanteremhez hasonló webhelyeken, akkor később iskolai fiók is hozzáadható.</translation>
 <translation id="2096715839409389970">Harmadik féltől származó cookie-k törlése</translation>
 <translation id="2098805196501063469">A hátralévő jelszavak ellenőrzése</translation>
 <translation id="2099172618127234427">Ön engedélyezi a Chrome OS hibakeresési funkcióit, melyek be fogják állítani az sshd daemon szolgáltatást, és engedélyezni fogják az USB-meghajtókról való indítást.</translation>

@@ -640,6 +640,7 @@
 <translation id="1692118695553449118">Synchronisatie is ingeschakeld</translation>
 <translation id="1692210323591458290">Donkerpaars</translation>
 <translation id="169279809881363536">Er zijn geen profielen gevonden. Als je een nieuw netwerk wilt instellen, scan je de QR-code met de camera van je apparaat en geef je de activeringscode op die je van je provider hebt gekregen.</translation>
+<translation id="169675691788639886">Er is een SSH-server ingesteld voor het apparaat. Log niet in met gevoelige accounts.</translation>
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Bestand bewerken</translation>
 <translation id="1698122934742150150">Alleen huidige incognitosessie</translation>
@@ -990,7 +991,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2090165459409185032">Als je je accountgegevens wilt herstellen, ga je naar: google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">Instelling voor systeembeveiliging</translation>
 <translation id="2091887806945687916">Geluid</translation>
-<translation id="209539936453343974">Als je ouderlijk toezicht wilt instellen, moet een kind een Google-account hebben dat wordt beheerd door een ouder. Met <ph name="DEVICE_TYPE_PLURAL" /> kunnen ouders in de Family Link-app onder meer schermlimieten instellen en websites goedkeuren en blokkeren. Als het kind schoolwerk moet doen op sites zoals Google Classroom, kan later een schoolaccount worden toegevoegd.</translation>
 <translation id="2096715839409389970">Cookies van derden wissen</translation>
 <translation id="2098805196501063469">Resterende wachtwoorden checken</translation>
 <translation id="2099172618127234427">Je schakelt foutopsporingsfuncties in voor Chrome OS waarmee de sshd daemon wordt ingesteld en opstarten vanaf USB-stations wordt ingeschakeld.</translation>
@@ -2825,6 +2825,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4115080753528843955">Sommige contentservices gebruiken unieke ID's om de toegang tot beschermde content te autoriseren</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Start het apparaat opnieuw op en probeer het opnieuw.</translation>
+<translation id="4118998393712575296">Als je opties voor Ouderlijk toezicht zoals app-goedkeuring en schermtijdlimieten wilt gebruiken, moet je kind een Google-account hebben dat wordt beheerd door een ouder. Je kunt later een schoolaccount toevoegen voor gebruik met sites en apps zoals Google Classroom.</translation>
 <translation id="4120388883569225797">Kan deze beveiligingssleutel niet resetten</translation>
 <translation id="4120817667028078560">Pad is te lang</translation>
 <translation id="4124823734405044952">Je beveiligingssleutel is gereset</translation>
@@ -3890,6 +3891,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="540296380408672091">Cookies op <ph name="HOST" /> altijd blokkeren</translation>
 <translation id="540495485885201800">Wisselen met vorige</translation>
 <translation id="5405146885510277940">Instellingen resetten</translation>
+<translation id="5407119150486192764">Geef de ontgrendelingscode van 8 cijfers voor je pincode op die je van je provider hebt gekregen</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Uit je Google-account.</translation>
 <translation id="5411472733320185105">De proxyinstellingen niet gebruiken voor deze hosts en domeinen:</translation>
@@ -4524,6 +4526,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6124213551517593835">Hiermee wis je alle gegevens en cookies die zijn opgeslagen door <ph name="SITE_GROUP_NAME" /> en eventuele onderliggende sites</translation>
 <translation id="6124650939968185064">De volgende extensies zijn afhankelijk van deze extensie:</translation>
 <translation id="6124698108608891449">Deze site heeft meer rechten nodig.</translation>
+<translation id="6125442051901189730">Geen beschikbare simkaartprofielen. <ph name="BEGIN_LINK" />Hier<ph name="END_LINK" /> kun je een nieuw profiel instellen.</translation>
 <translation id="6125479973208104919">Je moet je account opnieuw toevoegen aan deze <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">De geselecteerde gegevens zijn verwijderd uit Chrome en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Opmerking van Netscape-certificaat</translation>
@@ -6638,6 +6641,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8551588720239073785">Instellingen voor datum en tijd</translation>
 <translation id="8553342806078037065">Andere mensen beheren</translation>
 <translation id="8554899698005018844">Geen taal</translation>
+<translation id="8555195867496021627">Geen beschikbare e-simkaartprofielen. <ph name="BEGIN_LINK" />Hier<ph name="END_LINK" /> kun je een nieuw profiel downloaden.</translation>
 <translation id="8557022314818157177">Blijf je beveiligingssleutel aanraken totdat je vingerafdruk is geregistreerd</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Alles openen in &amp;nieuw venster}=1{Openen in &amp;nieuw venster}other{Alles ({COUNT}) openen in &amp;nieuw venster}}</translation>

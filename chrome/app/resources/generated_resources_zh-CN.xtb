@@ -983,7 +983,6 @@
 <translation id="2090165459409185032">要恢复您的帐号信息，请访问 google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">系统安全设置</translation>
 <translation id="2091887806945687916">声音</translation>
-<translation id="209539936453343974">如果您要设置家长控制功能，孩子必须有一个由家长管理的 Google 帐号。通过 <ph name="DEVICE_TYPE_PLURAL" />，家长可以使用 Family Link 应用来设定设备使用时限、允许/禁止访问网站以及执行其他操作。家长还可于需要时添加学校帐号，以方便孩子在 Google 课堂等网站上完成学校作业。</translation>
 <translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2098805196501063469">检查其余的密码</translation>
 <translation id="2099172618127234427">您正在启用 Chrome 操作系统调试功能，此功能将设置 sshd 守护程序并允许从 U 盘启动设备。</translation>
@@ -5957,7 +5956,7 @@
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
 <translation id="7805768142964895445">状态</translation>
-<translation id="7807067443225230855">搜索和智能助理</translation>
+<translation id="7807067443225230855">Google 搜索和 Google 助理</translation>
 <translation id="7807711621188256451">始终允许 <ph name="HOST" /> 使用您的摄像头</translation>
 <translation id="7809278638132552546">Linux 开发环境（Beta 版）</translation>
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
