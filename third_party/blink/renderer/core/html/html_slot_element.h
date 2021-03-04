@@ -125,6 +125,8 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;
   void RemovedFrom(ContainerNode&) final;
 
+  void ChildrenChanged(const ChildrenChange&) override;
+
   void EnqueueSlotChangeEvent();
 
   bool HasSlotableChild() const;
