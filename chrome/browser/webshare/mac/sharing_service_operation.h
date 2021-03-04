@@ -33,6 +33,7 @@ class SharingServiceOperation final : content::WebContentsObserver {
       const std::vector<base::FilePath>& file_paths,
       const std::string& text,
       const std::string& title,
+      const GURL& url,
       blink::mojom::ShareService::ShareCallback close_callback)>;
 
   SharingServiceOperation(const std::string& title,
@@ -59,6 +60,7 @@ class SharingServiceOperation final : content::WebContentsObserver {
       const std::vector<base::FilePath>& file_paths,
       const std::string& text,
       const std::string& title,
+      const GURL& url,
       blink::mojom::ShareService::ShareCallback close_callback);
   static SharePickerCallback& GetSharePickerCallback();
 

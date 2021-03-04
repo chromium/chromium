@@ -21,6 +21,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
 
+#if defined(OS_MAC)
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#endif
+
 namespace gfx {
 class Insets;
 class Point;
@@ -254,6 +258,23 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // Allows to update the widget's screen rects when it is not attached to
   // a window (e.g. in headless mode).
   virtual void SetWindowFrameInScreen(const gfx::Rect& rect) = 0;
+
+  // Invoked by browser implementation of the navigator.share() to trigger the
+  // NSSharingServicePicker.
+  //
+  // |title|, |text|, |url| makes up the requested data that is passed to the
+  // picker after being converted to NSString.
+  // |file_paths| is the set of paths to files to be shared passed onto the
+  // picker after being converted to NSURL.
+  // |callback| returns the result from the NSSharingServicePicker depending
+  // upon the user's action.
+  virtual void ShowSharePicker(
+      const std::string& title,
+      const std::string& text,
+      const std::string& url,
+      const std::vector<std::string>& file_paths,
+      blink::mojom::ShareService::ShareCallback callback) = 0;
+
 #endif  // defined(OS_MAC)
 
   // Indicates that this view should show the contents of |view| if it doesn't
