@@ -79,6 +79,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleAccessibilityAction(const AccessibilityActionData& action_data);
 
  protected:
+  // Do not save files with over 100 MB. This cap should be kept in sync with
+  // and is also enforced in chrome/browser/resources/pdf/pdf_viewer.js.
+  static constexpr size_t kMaximumSavedFileSize = 100 * 1000 * 1000;
+
   enum class AccessibilityState {
     kOff = 0,  // Off.
     kPending,  // Enabled but waiting for doc to load.
@@ -211,6 +215,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // renderer.
   virtual void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) = 0;
+
+  constexpr bool IsSaveDataSizeValid(size_t size) {
+    return size > 0 && size <= kMaximumSavedFileSize;
+  }
 
   const SkBitmap& image_data() const { return image_data_; }
   SkBitmap& mutable_image_data() { return image_data_; }

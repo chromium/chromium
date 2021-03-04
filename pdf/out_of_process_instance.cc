@@ -171,10 +171,6 @@ constexpr char kJSGetThumbnailHeight[] = "height";
 constexpr base::TimeDelta kFindResultCooldown =
     base::TimeDelta::FromMilliseconds(100);
 
-// Do not save files with over 100 MB. This cap should be kept in sync with and
-// is also enforced in chrome/browser/resources/pdf/pdf_viewer.js.
-constexpr size_t kMaximumSavedFileSize = 100u * 1000u * 1000u;
-
 // Same value as printing::COMPLETE_PREVIEW_DOCUMENT_INDEX.
 constexpr int kCompletePDFIndex = -1;
 // A different negative value to differentiate itself from |kCompletePDFIndex|.
@@ -410,10 +406,6 @@ void ScaleFloatPoint(float scale, pp::FloatPoint* point) {
 void ScalePoint(float scale, pp::Point* point) {
   point->set_x(static_cast<int>(point->x() * scale));
   point->set_y(static_cast<int>(point->y() * scale));
-}
-
-bool IsSaveDataSizeValid(size_t size) {
-  return size > 0 && size <= kMaximumSavedFileSize;
 }
 
 PP_PrivateAccessibilityPageInfo ToPrivateAccessibilityPageInfo(
