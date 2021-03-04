@@ -6,6 +6,7 @@ module chromeos.libassistant.mojom;
 
 import "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom";
+import "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom";
 import "chromeos/services/libassistant/public/mojom/conversation_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/display_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/media_controller.mojom";
@@ -40,5 +41,10 @@ interface LibassistantService {
   // Add a speech recognition observer, which will be informed of all speech
   // recognition related updates.
   AddSpeechRecognitionObserver(pending_remote<SpeechRecognitionObserver>
+    observer);
+
+  // Add an authentication state observer, which will be informed of
+  // authentication state changes.
+  AddAuthenticationStateObserver(pending_remote<AuthenticationStateObserver>
     observer);
 };

@@ -57,6 +57,10 @@ class ConversationObserverMock : public mojom::ConversationObserver {
   ~ConversationObserverMock() override = default;
 
   // mojom::ConversationObserver implementation:
+  MOCK_METHOD(
+      void,
+      OnInteractionStarted,
+      (const ::chromeos::assistant::AssistantInteractionMetadata& metadata));
   MOCK_METHOD(void,
               OnInteractionFinished,
               (chromeos::assistant::AssistantInteractionResolution resolution));
@@ -65,6 +69,8 @@ class ConversationObserverMock : public mojom::ConversationObserver {
               OnHtmlResponse,
               (const std::string& response, const std::string& fallback));
   MOCK_METHOD(void, OnTextResponse, (const std::string& text));
+  MOCK_METHOD(void, OnNotificationRemoved, (const std::string& id));
+  MOCK_METHOD(void, OnAllNotificationsRemoved, ());
 
   mojo::PendingRemote<mojom::ConversationObserver> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();

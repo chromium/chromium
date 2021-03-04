@@ -69,6 +69,10 @@ class FakeLibassistantService
       mojo::PendingRemote<
           chromeos::libassistant::mojom::SpeechRecognitionObserver> observer)
       override {}
+  void AddAuthenticationStateObserver(
+      mojo::PendingRemote<
+          chromeos::libassistant::mojom::AuthenticationStateObserver> observer)
+      override {}
 
  private:
   mojo::Receiver<chromeos::libassistant::mojom::LibassistantService> receiver_;

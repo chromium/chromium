@@ -22,6 +22,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -62,8 +63,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
       public chromeos::PowerManagerClient::Observer,
       public ash::SessionActivationObserver,
       public ash::AssistantStateObserver,
-      public AssistantManagerService::CommunicationErrorObserver,
-      public AssistantManagerService::StateObserver {
+      public AssistantManagerService::StateObserver,
+      public AuthenticationStateObserver {
  public:
   Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
               pending_url_loader_factory,
@@ -112,9 +113,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
   void OnLockedFullScreenStateChanged(bool enabled) override;
 
-  // AssistantManagerService::CommunicationErrorObserver overrides:
-  void OnCommunicationError(
-      AssistantManagerService::CommunicationErrorType error_type) override;
+  // AuthenticationStateObserver overrides:
+  void OnAuthenticationError() override;
 
   // AssistantManagerService::StateObserver overrides:
   void OnStateChanged(AssistantManagerService::State new_state) override;

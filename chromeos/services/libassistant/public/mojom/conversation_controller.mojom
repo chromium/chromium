@@ -8,11 +8,8 @@ import "chromeos/services/libassistant/public/mojom/conversation_observer.mojom"
 
 // Interface for controller supporting conversation related functionalities.
 interface ConversationController {
-  // Sends the specific text query to Libassistant. |conversation_id| is an
-  // identifier that will be propagated through the speech processor event
-  // pipeline to uniquely identify a conversation turn. If omitted, a unique
-  // identifier will be automatically generated.
-  SendTextQuery(string query, bool allow_tts, string? conversation_id);
+  // Sends the specific text query to Libassistant.
+  SendTextQuery(string query, AssistantQuerySource source, bool allow_tts);
 
   // Starts an interaction to edit the reminder uniquely identified by
   // |client_id|. In response to the request, LibAssistant will initiate

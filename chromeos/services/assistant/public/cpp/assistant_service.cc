@@ -28,22 +28,6 @@ AssistantService::~AssistantService() {
   g_instance = nullptr;
 }
 
-AssistantInteractionMetadata::AssistantInteractionMetadata() = default;
-AssistantInteractionMetadata::AssistantInteractionMetadata(
-    AssistantInteractionType type,
-    AssistantQuerySource source,
-    const std::string& query)
-    : type(type), source(source), query(query) {}
-AssistantInteractionMetadata::AssistantInteractionMetadata(
-    const AssistantInteractionMetadata& suggestion) = default;
-AssistantInteractionMetadata& AssistantInteractionMetadata::operator=(
-    const AssistantInteractionMetadata&) = default;
-AssistantInteractionMetadata::AssistantInteractionMetadata(
-    AssistantInteractionMetadata&& suggestion) = default;
-AssistantInteractionMetadata& AssistantInteractionMetadata::operator=(
-    AssistantInteractionMetadata&&) = default;
-AssistantInteractionMetadata::~AssistantInteractionMetadata() = default;
-
 AssistantSuggestion::AssistantSuggestion() = default;
 AssistantSuggestion::AssistantSuggestion(base::UnguessableToken id,
                                          AssistantSuggestionType type,

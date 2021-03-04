@@ -6,16 +6,23 @@
 
 namespace mojo {
 
-using AppStatus = chromeos::assistant::AppStatus;
 using AndroidAppStatus = chromeos::libassistant::mojom::AndroidAppStatus;
+using AppStatus = chromeos::assistant::AppStatus;
+using AssistantInteractionType = chromeos::assistant::AssistantInteractionType;
+using AssistantQuerySource = chromeos::assistant::AssistantQuerySource;
 using AssistantResolution = chromeos::assistant::AssistantInteractionResolution;
 using MojoResolution =
     chromeos::libassistant::mojom::AssistantInteractionResolution;
+using MojomInteractionType =
+    chromeos::libassistant::mojom::AssistantInteractionType;
+using chromeos::assistant::AssistantInteractionMetadata;
+using MojomQuerySource = chromeos::libassistant::mojom::AssistantQuerySource;
 using chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::AssistantFeedback;
 using chromeos::assistant::AssistantNotification;
 using chromeos::libassistant::mojom::AndroidAppInfoDataView;
 using chromeos::libassistant::mojom::AssistantFeedbackDataView;
+using chromeos::libassistant::mojom::AssistantInteractionMetadataDataView;
 using chromeos::libassistant::mojom::AssistantNotificationDataView;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -239,6 +246,152 @@ bool EnumTraits<MojoResolution, AssistantResolution>::FromMojom(
       return true;
   }
   NOTREACHED();
+  return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantInteractionMetadata
+////////////////////////////////////////////////////////////////////////////////
+
+AssistantInteractionType
+StructTraits<AssistantInteractionMetadataDataView,
+             AssistantInteractionMetadata>::type(const NativeType& input) {
+  return input.type;
+}
+
+AssistantQuerySource
+StructTraits<AssistantInteractionMetadataDataView,
+             AssistantInteractionMetadata>::source(const NativeType& input) {
+  return input.source;
+}
+
+const std::string&
+StructTraits<AssistantInteractionMetadataDataView,
+             AssistantInteractionMetadata>::query(const NativeType& input) {
+  return input.query;
+}
+
+bool StructTraits<AssistantInteractionMetadataDataView,
+                  AssistantInteractionMetadata>::Read(MojomType data,
+                                                      NativeType* output) {
+  if (!data.ReadType(&output->type))
+    return false;
+  if (!data.ReadSource(&output->source))
+    return false;
+  if (!data.ReadQuery(&output->query))
+    return false;
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantInteractionType
+////////////////////////////////////////////////////////////////////////////////
+
+MojomInteractionType
+EnumTraits<MojomInteractionType, AssistantInteractionType>::ToMojom(
+    NativeType input) {
+  switch (input) {
+    case NativeType::kText:
+      return MojomInteractionType::kText;
+    case NativeType::kVoice:
+      return MojomInteractionType::kVoice;
+  }
+}
+
+bool EnumTraits<MojomInteractionType, AssistantInteractionType>::FromMojom(
+    MojomType input,
+    NativeType* output) {
+  switch (input) {
+    case MojomType::kText:
+      *output = NativeType::kText;
+      return true;
+    case MojomType::kVoice:
+      *output = NativeType::kVoice;
+      return true;
+  }
+  return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantQuerySource
+////////////////////////////////////////////////////////////////////////////////
+
+MojomQuerySource EnumTraits<MojomQuerySource, AssistantQuerySource>::ToMojom(
+    NativeType input) {
+  switch (input) {
+    case NativeType::kUnspecified:
+      return MojomType::kUnspecified;
+    case NativeType::kDeepLink:
+      return MojomType::kDeepLink;
+    case NativeType::kDialogPlateTextField:
+      return MojomType::kDialogPlateTextField;
+    case NativeType::kStylus:
+      return MojomType::kStylus;
+    case NativeType::kSuggestionChip:
+      return MojomType::kSuggestionChip;
+    case NativeType::kVoiceInput:
+      return MojomType::kVoiceInput;
+    case NativeType::kProactiveSuggestions:
+      return MojomType::kProactiveSuggestions;
+    case NativeType::kLibAssistantInitiated:
+      return MojomType::kLibAssistantInitiated;
+    case NativeType::kConversationStarter:
+      return MojomType::kConversationStarter;
+    case NativeType::kWhatsOnMyScreen:
+      return MojomType::kWhatsOnMyScreen;
+    case NativeType::kQuickAnswers:
+      return MojomType::kQuickAnswers;
+    case NativeType::kLauncherChip:
+      return MojomType::kLauncherChip;
+    case NativeType::kBetterOnboarding:
+      return MojomType::kBetterOnboarding;
+  }
+}
+
+bool EnumTraits<MojomQuerySource, AssistantQuerySource>::FromMojom(
+    MojomType input,
+    NativeType* output) {
+  switch (input) {
+    case MojomType::kUnspecified:
+      *output = NativeType::kUnspecified;
+      return true;
+    case MojomType::kDeepLink:
+      *output = NativeType::kDeepLink;
+      return true;
+    case MojomType::kDialogPlateTextField:
+      *output = NativeType::kDialogPlateTextField;
+      return true;
+    case MojomType::kStylus:
+      *output = NativeType::kStylus;
+      return true;
+    case MojomType::kSuggestionChip:
+      *output = NativeType::kSuggestionChip;
+      return true;
+    case MojomType::kVoiceInput:
+      *output = NativeType::kVoiceInput;
+      return true;
+    case MojomType::kProactiveSuggestions:
+      *output = NativeType::kProactiveSuggestions;
+      return true;
+    case MojomType::kLibAssistantInitiated:
+      *output = NativeType::kLibAssistantInitiated;
+      return true;
+    case MojomType::kConversationStarter:
+      *output = NativeType::kConversationStarter;
+      return true;
+    case MojomType::kWhatsOnMyScreen:
+      *output = NativeType::kWhatsOnMyScreen;
+      return true;
+    case MojomType::kQuickAnswers:
+      *output = NativeType::kQuickAnswers;
+      return true;
+    case MojomType::kLauncherChip:
+      *output = NativeType::kLauncherChip;
+      return true;
+    case MojomType::kBetterOnboarding:
+      *output = NativeType::kBetterOnboarding;
+      return true;
+  }
   return false;
 }
 

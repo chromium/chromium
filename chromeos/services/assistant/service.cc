@@ -58,8 +58,6 @@ namespace assistant {
 
 namespace {
 
-using CommunicationErrorType = AssistantManagerService::CommunicationErrorType;
-
 constexpr char kScopeAuthGcm[] = "https://www.googleapis.com/auth/gcm";
 constexpr char kScopeAssistant[] =
     "https://www.googleapis.com/auth/assistant-sdk-prototype";
@@ -334,9 +332,8 @@ void Service::OnLockedFullScreenStateChanged(bool enabled) {
   UpdateListeningState();
 }
 
-void Service::OnCommunicationError(CommunicationErrorType error_type) {
-  if (error_type == CommunicationErrorType::AuthenticationError)
-    RequestAccessToken();
+void Service::OnAuthenticationError() {
+  RequestAccessToken();
 }
 
 void Service::OnStateChanged(AssistantManagerService::State new_state) {
@@ -495,7 +492,7 @@ void Service::CreateAssistantManagerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   assistant_manager_service_ = CreateAndReturnAssistantManagerService();
-  assistant_manager_service_->AddCommunicationErrorObserver(this);
+  assistant_manager_service_->AddAuthenticationStateObserver(this);
   assistant_manager_service_->AddAndFireStateObserver(this);
 
   if (AssistantInteractionLogger::IsLoggingEnabled()) {

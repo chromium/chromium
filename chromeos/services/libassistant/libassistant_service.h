@@ -72,6 +72,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
       mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate) override;
   void AddSpeechRecognitionObserver(
       mojo::PendingRemote<mojom::SpeechRecognitionObserver> observer) override;
+  void AddAuthenticationStateObserver(
+      mojo::PendingRemote<
+          chromeos::libassistant::mojom::AuthenticationStateObserver> observer)
+      override;
 
  private:
   ServiceController& service_controller() { return *service_controller_; }

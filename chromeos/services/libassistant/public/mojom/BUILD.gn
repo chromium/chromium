@@ -11,6 +11,7 @@ mojom("mojom") {
     "android_app_info.mojom",
     "audio_input_controller.mojom",
     "audio_output_delegate.mojom",
+    "authentication_state_observer.mojom",
     "conversation_controller.mojom",
     "conversation_observer.mojom",
     "display_controller.mojom",
@@ -53,8 +54,20 @@ mojom("mojom") {
           cpp = "::chromeos::assistant::AssistantFeedback"
         },
         {
+          mojom = "chromeos.libassistant.mojom.AssistantInteractionMetadata"
+          cpp = "::chromeos::assistant::AssistantInteractionMetadata"
+        },
+        {
           mojom = "chromeos.libassistant.mojom.AssistantInteractionResolution"
           cpp = "::chromeos::assistant::AssistantInteractionResolution"
+        },
+        {
+          mojom = "chromeos.libassistant.mojom.AssistantInteractionType"
+          cpp = "::chromeos::assistant::AssistantInteractionType"
+        },
+        {
+          mojom = "chromeos.libassistant.mojom.AssistantQuerySource"
+          cpp = "::chromeos::assistant::AssistantQuerySource"
         },
       ]
 

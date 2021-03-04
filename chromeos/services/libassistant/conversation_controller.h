@@ -13,6 +13,7 @@
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -34,6 +35,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
       public ::chromeos::assistant::action::AssistantActionObserver {
  public:
   using AssistantNotification = ::chromeos::assistant::AssistantNotification;
+  using AssistantQuerySource = ::chromeos::assistant::AssistantQuerySource;
   using AssistantFeedback = ::chromeos::assistant::AssistantFeedback;
 
   explicit ConversationController(ServiceController* service_controller);
@@ -43,6 +45,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   void Bind(mojo::PendingReceiver<mojom::ConversationController> receiver);
 
+  void AddAuthenticationStateObserver(
+      mojo::PendingRemote<
+          chromeos::libassistant::mojom::AuthenticationStateObserver> observer);
+
   // AssistantManagerObserver:
   void OnAssistantManagerCreated(
       assistant_client::AssistantManager* assistant_manager,
@@ -50,10 +56,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
       override;
 
   // mojom::ConversationController implementation:
-  void SendTextQuery(
-      const std::string& query,
-      bool allow_tts,
-      const base::Optional<std::string>& conversation_id) override;
+  void SendTextQuery(const std::string& query,
+                     AssistantQuerySource source,
+                     bool allow_tts) override;
   void StartEditReminderInteraction(const std::string& client_id) override;
   void RetrieveNotification(const AssistantNotification& notification,
                             int32_t action_index) override;
@@ -73,6 +78,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   }
 
  private:
+  class AssistantManagerDelegateImpl;
+
   void SendVoicelessInteraction(const std::string& interaction,
                                 const std::string& description,
                                 bool is_user_initiated);
@@ -81,10 +88,13 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   mojo::Receiver<mojom::ConversationController> receiver_;
   mojo::RemoteSet<mojom::ConversationObserver> observers_;
+  mojo::RemoteSet<mojom::AuthenticationStateObserver>
+      authentication_state_observers_;
 
   // Owned by |LibassistantService|.
   ServiceController* const service_controller_;
 
+  std::unique_ptr<AssistantManagerDelegateImpl> assistant_manager_delegate_;
   std::unique_ptr<assistant::action::CrosActionModule> action_module_;
 
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;

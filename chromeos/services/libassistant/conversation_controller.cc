@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/assistant/internal/internal_util.h"
@@ -14,12 +17,17 @@
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/service_controller.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "libassistant/shared/internal_api/assistant_manager_delegate.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 namespace libassistant {
+
+using assistant::AssistantInteractionMetadata;
+using assistant::AssistantInteractionType;
+using assistant::AssistantQuerySource;
 
 namespace {
 // A macro which ensures we are running on the main thread.
@@ -32,14 +40,131 @@ namespace {
   }
 }  // namespace
 
+////////////////////////////////////////////////////////////////////////////////
+// AssistantManagerDelegateImpl
+////////////////////////////////////////////////////////////////////////////////
+
+// Implementation of |AssistantManagerDelegate| that will forward all calls
+// to the correct observers.
+// It also keeps track of the last text query that was started, so we can
+// pass its metadata to |OnConversationTurnStarted|.
+class ConversationController::AssistantManagerDelegateImpl
+    : public assistant_client::AssistantManagerDelegate {
+ public:
+  explicit AssistantManagerDelegateImpl(ConversationController* parent)
+      : parent_(*parent),
+        mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  AssistantManagerDelegateImpl(const AssistantManagerDelegateImpl&) = delete;
+  AssistantManagerDelegateImpl& operator=(const AssistantManagerDelegateImpl&) =
+      delete;
+  ~AssistantManagerDelegateImpl() override = default;
+
+  std::string AddPendingTextInteraction(const std::string& query,
+                                        AssistantQuerySource source) {
+    return NewPendingInteraction(AssistantInteractionType::kText, source,
+                                 query);
+  }
+
+  std::string NewPendingInteraction(AssistantInteractionType interaction_type,
+                                    AssistantQuerySource source,
+                                    const std::string& query) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto id = base::NumberToString(next_interaction_id_++);
+    pending_interactions_.emplace(
+        id, AssistantInteractionMetadata(interaction_type, source, query));
+    return id;
+  }
+
+  // assistant_client::AssistantManagerDelegate overrides:
+  void OnConversationTurnStartedInternal(
+      const assistant_client::ConversationTurnMetadata& metadata) override {
+    ENSURE_MOJOM_THREAD(
+        &AssistantManagerDelegateImpl::OnConversationTurnStartedInternal,
+        metadata);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Retrieve the cached interaction metadata associated with this
+    // conversation turn or construct a new instance if there's no match in the
+    // cache.
+    AssistantInteractionMetadata interaction_metadata;
+    auto it = pending_interactions_.find(metadata.id);
+    if (it != pending_interactions_.end()) {
+      interaction_metadata = it->second;
+      pending_interactions_.erase(it);
+    } else {
+      interaction_metadata.type = metadata.is_mic_open
+                                      ? AssistantInteractionType::kVoice
+                                      : AssistantInteractionType::kText;
+      interaction_metadata.source =
+          AssistantQuerySource::kLibAssistantInitiated;
+    }
+
+    for (auto& observer : parent_.observers_)
+      observer->OnInteractionStarted(interaction_metadata);
+  }
+
+  void OnNotificationRemoved(const std::string& grouping_key) override {
+    ENSURE_MOJOM_THREAD(&AssistantManagerDelegateImpl::OnNotificationRemoved,
+                        grouping_key);
+
+    if (grouping_key.empty())
+      RemoveAllNotifications();
+    else
+      RemoveNotification(grouping_key);
+  }
+
+  void OnCommunicationError(int error_code) override {
+    ENSURE_MOJOM_THREAD(&AssistantManagerDelegateImpl::OnCommunicationError,
+                        error_code);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (assistant::IsAuthError(error_code)) {
+      for (auto& observer : parent_.authentication_state_observers_)
+        observer->OnAuthenticationError();
+    }
+  }
+
+ private:
+  void RemoveAllNotifications() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (auto& observer : parent_.observers_)
+      observer->OnAllNotificationsRemoved();
+  }
+
+  void RemoveNotification(const std::string& id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (auto& observer : parent_.observers_)
+      observer->OnNotificationRemoved(id);
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  int next_interaction_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 1;
+  std::map<std::string, AssistantInteractionMetadata> pending_interactions_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  ConversationController& parent_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
+  base::WeakPtrFactory<AssistantManagerDelegateImpl> weak_factory_{this};
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// ConversationController
+////////////////////////////////////////////////////////////////////////////////
+
 ConversationController::ConversationController(
     ServiceController* service_controller)
     : receiver_(this),
       service_controller_(service_controller),
+      assistant_manager_delegate_(
+          std::make_unique<AssistantManagerDelegateImpl>(this)),
       action_module_(std::make_unique<assistant::action::CrosActionModule>(
           assistant::features::IsAppSupportEnabled(),
           assistant::features::IsWaitSchedulingEnabled())),
       mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+  // TODO(jeroendh): We no longer need to pass in service_controller as we
+  // already are a AssistantManagerObserver.
   DCHECK(service_controller_);
 
   action_module_->AddObserver(this);
@@ -54,12 +179,21 @@ void ConversationController::Bind(
   receiver_.Bind(std::move(receiver));
 }
 
+void ConversationController::AddAuthenticationStateObserver(
+    mojo::PendingRemote<
+        chromeos::libassistant::mojom::AuthenticationStateObserver> observer) {
+  authentication_state_observers_.Add(std::move(observer));
+}
+
 void ConversationController::OnAssistantManagerCreated(
     assistant_client::AssistantManager* assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal) {
   // Registers ActionModule when AssistantManagerInternal has been created
   // but not yet started.
   assistant_manager_internal->RegisterActionModule(action_module_.get());
+
+  assistant_manager_internal->SetAssistantManagerDelegate(
+      assistant_manager_delegate_.get());
 
   auto* v1_api = assistant::LibassistantV1Api::Get();
   // LibassistantV1Api should be ready to use by this time.
@@ -68,10 +202,9 @@ void ConversationController::OnAssistantManagerCreated(
   v1_api->SetActionModule(action_module_.get());
 }
 
-void ConversationController::SendTextQuery(
-    const std::string& query,
-    bool allow_tts,
-    const base::Optional<std::string>& conversation_id) {
+void ConversationController::SendTextQuery(const std::string& query,
+                                           AssistantQuerySource source,
+                                           bool allow_tts) {
   // DCHECKs if this function gets invoked after the service has been fully
   // started.
   // TODO(meilinw): only check for the |ServiceState::kRunning| state instead
@@ -87,9 +220,10 @@ void ConversationController::SendTextQuery(
     options.modality =
         assistant_client::VoicelessOptions::Modality::TYPING_MODALITY;
   }
-  // Ensure LibAssistant uses the requested conversation id.
-  if (conversation_id.has_value())
-    options.conversation_turn_id = conversation_id.value();
+  // Remember the interaction metadata, and pass the generated conversation id
+  // to LibAssistant.
+  options.conversation_turn_id =
+      assistant_manager_delegate_->AddPendingTextInteraction(query, source);
 
   // Builds text interaction.
   std::string interaction = assistant::CreateTextQueryInteraction(query);

@@ -14,6 +14,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
@@ -21,23 +22,6 @@ namespace chromeos {
 namespace assistant {
 
 struct AssistantFeedback;
-
-// Describes an Assistant interaction.
-struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionMetadata {
-  AssistantInteractionMetadata();
-  AssistantInteractionMetadata(AssistantInteractionType type,
-                               AssistantQuerySource source,
-                               const std::string& query);
-  AssistantInteractionMetadata(const AssistantInteractionMetadata& suggestion);
-  AssistantInteractionMetadata& operator=(const AssistantInteractionMetadata&);
-  AssistantInteractionMetadata(AssistantInteractionMetadata&& suggestion);
-  AssistantInteractionMetadata& operator=(AssistantInteractionMetadata&&);
-  ~AssistantInteractionMetadata();
-
-  AssistantInteractionType type{AssistantInteractionType::kText};
-  AssistantQuerySource source{AssistantQuerySource::kUnspecified};
-  std::string query;
-};
 
 // Models an Assistant suggestion.
 struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantSuggestion {
@@ -87,10 +71,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
   AssistantInteractionSubscriber& operator=(
       const AssistantInteractionSubscriber&) = delete;
   ~AssistantInteractionSubscriber() override = default;
-
-  // Assistant interaction has started.
-  virtual void OnInteractionStarted(
-      const AssistantInteractionMetadata& metadata) {}
 
   // Assistant got suggestions response from server.
   virtual void OnSuggestionsResponse(

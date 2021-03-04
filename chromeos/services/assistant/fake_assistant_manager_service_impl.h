@@ -21,8 +21,8 @@ namespace assistant {
 
 using media_session::mojom::MediaSessionAction;
 
-// Stub implementation of AssistantManagerService.  Should return deterministic
-// result for testing.
+// Stub implementation of AssistantManagerService.
+// Will return deterministic result for testing.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
     : public AssistantManagerService {
  public:
@@ -42,10 +42,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   void SetAssistantContextEnabled(bool enable) override;
   State GetState() const override;
   AssistantSettings* GetAssistantSettings() override;
-  void AddCommunicationErrorObserver(
-      CommunicationErrorObserver* observer) override {}
-  void RemoveCommunicationErrorObserver(
-      const CommunicationErrorObserver* observer) override {}
+  void AddAuthenticationStateObserver(
+      AuthenticationStateObserver* observer) override {}
   void AddAndFireStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(const StateObserver* observer) override;
   void SyncDeviceAppsStatus() override {}

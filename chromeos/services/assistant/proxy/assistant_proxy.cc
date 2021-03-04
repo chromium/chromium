@@ -201,5 +201,12 @@ void AssistantProxy::AddSpeechRecognitionObserver(
       std::move(observer));
 }
 
+void AssistantProxy::AddAuthenticationStateObserver(
+    mojo::PendingRemote<
+        chromeos::libassistant::mojom::AuthenticationStateObserver> observer) {
+  libassistant_service_remote_->AddAuthenticationStateObserver(
+      std::move(observer));
+}
+
 }  // namespace assistant
 }  // namespace chromeos

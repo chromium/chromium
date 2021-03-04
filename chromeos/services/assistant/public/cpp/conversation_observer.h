@@ -24,6 +24,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
   void OnHtmlResponse(const std::string& response,
                       const std::string& fallback) override {}
   void OnTextResponse(const std::string& response) override {}
+  void OnNotificationRemoved(const std::string& id) override {}
+  void OnAllNotificationsRemoved() override {}
 
   mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
   BindNewPipeAndPassRemote();

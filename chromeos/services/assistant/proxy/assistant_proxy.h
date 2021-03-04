@@ -72,6 +72,10 @@ class AssistantProxy {
       mojo::PendingRemote<
           chromeos::libassistant::mojom::SpeechRecognitionObserver> observer);
 
+  void AddAuthenticationStateObserver(
+      mojo::PendingRemote<
+          chromeos::libassistant::mojom::AuthenticationStateObserver> observer);
+
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
   ExtractAudioInputController();
   mojo::PendingReceiver<chromeos::libassistant::mojom::AudioOutputDelegate>

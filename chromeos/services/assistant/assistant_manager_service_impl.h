@@ -32,7 +32,6 @@
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
-#include "libassistant/shared/internal_api/assistant_manager_delegate.h"
 #include "libassistant/shared/public/conversation_state_listener.h"
 #include "libassistant/shared/public/device_state_listener.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -106,7 +105,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
     : public AssistantManagerService,
       public chromeos::assistant::action::AssistantActionObserver,
       public assistant_client::ConversationStateListener,
-      public assistant_client::AssistantManagerDelegate,
       public AppListEventSubscriber,
       private chromeos::libassistant::mojom::StateObserver,
       public ConversationObserver {
@@ -138,10 +136,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void SetArcPlayStoreEnabled(bool enable) override;
   void SetAssistantContextEnabled(bool enable) override;
   AssistantSettings* GetAssistantSettings() override;
-  void AddCommunicationErrorObserver(
-      CommunicationErrorObserver* observer) override;
-  void RemoveCommunicationErrorObserver(
-      const CommunicationErrorObserver* observer) override;
+  void AddAuthenticationStateObserver(
+      AuthenticationStateObserver* observer) override;
   void AddAndFireStateObserver(
       AssistantManagerService::StateObserver* observer) override;
   void RemoveStateObserver(
@@ -193,19 +189,15 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       const ::assistant::api::client_op::GetDeviceSettingsArgs& args) override;
 
   // chromeos::assistant::ConversationObserver overrides:
+  void OnInteractionStarted(
+      const AssistantInteractionMetadata& metadata) override;
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override;
   void OnHtmlResponse(const std::string& response,
                       const std::string& fallback) override;
   void OnTextResponse(const std::string& reponse) override;
-
-  // AssistantManagerDelegate overrides:
-  void OnConversationTurnStartedInternal(
-      const assistant_client::ConversationTurnMetadata& metadata) override;
-  void OnNotificationRemoved(const std::string& grouping_key) override;
-  void OnCommunicationError(int error_code) override;
-  // Last search source will be cleared after it is retrieved.
-  std::string GetLastSearchSource() override;
+  void OnNotificationRemoved(const std::string& id) override;
+  void OnAllNotificationsRemoved() override;
 
   // AppListEventSubscriber overrides:
   void OnAndroidAppListRefreshed(
@@ -247,8 +239,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                                     AssistantQuerySource source,
                                     const std::string& query);
 
-  std::string ConsumeLastTriggerSource();
-
   void SendVoicelessInteraction(const std::string& interaction,
                                 const std::string& description,
                                 bool is_user_initiated);
@@ -261,6 +251,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   DeviceActions* device_actions();
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
+  ::chromeos::libassistant::mojom::ConversationController&
+  conversation_controller();
   ConversationControllerProxy& conversation_controller_proxy();
   chromeos::libassistant::mojom::DisplayController& display_controller();
   ServiceControllerProxy& service_controller();
@@ -298,13 +290,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   bool spoken_feedback_enabled_ = false;
 
-  std::string last_trigger_source_;
-  base::Lock last_trigger_source_lock_;
   base::TimeTicks started_time_;
-
-  int next_interaction_id_ = 1;
-  std::map<std::string, std::unique_ptr<AssistantInteractionMetadata>>
-      pending_interactions_;
 
   bool receive_modify_settings_proto_response_ = false;
   bool receive_inline_response_ = false;
@@ -322,7 +308,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                           &DeviceActions::AddAndFireAppListEventSubscriber,
                           &DeviceActions::RemoveAppListEventSubscriber>
       scoped_app_list_event_subscriber_{this};
-  base::ObserverList<CommunicationErrorObserver> error_observers_;
   base::ObserverList<AssistantManagerService::StateObserver> state_observers_;
   base::ScopedObservation<action::CrosActionModule,
                           action::AssistantActionObserver>

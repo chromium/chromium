@@ -60,7 +60,6 @@ using testing::ElementsAre;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::StrictMock;
-using CommunicationErrorType = AssistantManagerService::CommunicationErrorType;
 using UserInfo = AssistantManagerService::UserInfo;
 
 namespace {
@@ -84,30 +83,6 @@ void AddTimerEvent(std::vector<assistant_client::AlarmTimerEvent>* events,
   events->back().timer_data.state = state;
 }
 
-// Return the list of all libassistant error codes that are considered to be
-// authentication errors. This list is created on demand as there is no clear
-// enum that defines these, and we don't want to hard code this list in the
-// test.
-std::vector<int> GetAuthenticationErrorCodes() {
-  const int kMinErrorCode = GetLowestErrorCode();
-  const int kMaxErrorCode = GetHighestErrorCode();
-
-  std::vector<int> result;
-  for (int code = kMinErrorCode; code <= kMaxErrorCode; ++code) {
-    if (IsAuthError(code))
-      result.push_back(code);
-  }
-
-  return result;
-}
-
-// Return a list of some libassistant error codes that are not considered to be
-// authentication errors.  Note we do not return all such codes as there are
-// simply too many and testing them all significantly slows down the tests.
-std::vector<int> GetNonAuthenticationErrorCodes() {
-  return {-99999, 0, 1};
-}
-
 class AssistantAlarmTimerControllerMock
     : public ash::AssistantAlarmTimerController {
  public:
@@ -128,20 +103,6 @@ class AssistantAlarmTimerControllerMock
               OnTimerStateChanged,
               (const std::vector<AssistantTimer>&),
               (override));
-};
-
-class CommunicationErrorObserverMock
-    : public AssistantManagerService::CommunicationErrorObserver {
- public:
-  CommunicationErrorObserverMock() = default;
-  ~CommunicationErrorObserverMock() override = default;
-
-  MOCK_METHOD(void,
-              OnCommunicationError,
-              (AssistantManagerService::CommunicationErrorType error));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CommunicationErrorObserverMock);
 };
 
 class FakeLibassistantServiceHost : public LibassistantServiceHost {
@@ -334,33 +295,6 @@ class AssistantManagerServiceImplTest : public testing::Test {
         "AssistantManagerStateImpl");
   }
 
-  // Raise all the |libassistant_error_codes| as communication errors from
-  // libassistant, and check that they are reported to our
-  // |AssistantCommunicationErrorObserver| as errors of type |expected_type|.
-  void TestCommunicationErrors(const std::vector<int>& libassistant_error_codes,
-                               CommunicationErrorType expected_error) {
-    Start();
-    WaitForState(AssistantManagerService::STARTED);
-
-    auto* delegate =
-        fake_assistant_manager_internal()->assistant_manager_delegate();
-
-    for (int code : libassistant_error_codes) {
-      CommunicationErrorObserverMock observer;
-      assistant_manager_service()->AddCommunicationErrorObserver(&observer);
-
-      EXPECT_CALL(observer, OnCommunicationError(expected_error));
-
-      delegate->OnCommunicationError(code);
-      RunUntilIdle();
-
-      assistant_manager_service()->RemoveCommunicationErrorObserver(&observer);
-
-      ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer))
-          << "Failure for error code " << code;
-    }
-  }
-
   void SetAssistantManagerInternal(std::unique_ptr<FakeAssistantManagerInternal>
                                        assistant_manager_internal) {
     assistant_manager_->set_assistant_manager_internal(
@@ -546,25 +480,6 @@ TEST_F(AssistantManagerServiceImplTest,
   RunUntilIdle();
 
   EXPECT_EQ(true, mojom_service_controller().has_data_been_reset());
-}
-
-TEST_F(AssistantManagerServiceImplTest,
-       ShouldReportAuthenticationErrorsToCommunicationErrorObservers) {
-  TestCommunicationErrors(GetAuthenticationErrorCodes(),
-                          CommunicationErrorType::AuthenticationError);
-}
-
-TEST_F(AssistantManagerServiceImplTest,
-       ShouldReportNonAuthenticationErrorsToCommunicationErrorObservers) {
-  std::vector<int> non_authentication_errors = GetNonAuthenticationErrorCodes();
-
-  // check to ensure these are not authentication errors.
-  for (int code : non_authentication_errors)
-    ASSERT_FALSE(IsAuthError(code));
-
-  // Run the actual unittest
-  TestCommunicationErrors(non_authentication_errors,
-                          CommunicationErrorType::Other);
 }
 
 TEST_F(AssistantManagerServiceImplTest,

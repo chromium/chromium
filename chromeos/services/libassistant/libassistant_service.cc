@@ -106,5 +106,11 @@ void LibassistantService::AddSpeechRecognitionObserver(
   speech_recognition_observers_.Add(std::move(observer));
 }
 
+void LibassistantService::AddAuthenticationStateObserver(
+    mojo::PendingRemote<
+        chromeos::libassistant::mojom::AuthenticationStateObserver> observer) {
+  conversation_controller_->AddAuthenticationStateObserver(std::move(observer));
+}
+
 }  // namespace libassistant
 }  // namespace chromeos

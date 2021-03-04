@@ -40,36 +40,6 @@ enum AssistantAllowedState {
   MAX_VALUE = DISALLOWED_BY_KIOSK_MODE,
 };
 
-// Enumeration of possible Assistant query sources. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never
-// be reused. Append new values to the end.
-enum class AssistantQuerySource {
-  kUnspecified = 0,
-  kMinValue = kUnspecified,
-  kDeepLink = 1,
-  kDialogPlateTextField = 2,
-  kStylus = 3,
-  kSuggestionChip = 4,
-  kVoiceInput = 5,
-  kProactiveSuggestions = 6,
-  kLibAssistantInitiated = 7,
-  // kWarmerWelcomeDeprecated = 8,
-  kConversationStarter = 9,
-  kWhatsOnMyScreen = 10,
-  kQuickAnswers = 11,
-  kLauncherChip = 12,
-  kBetterOnboarding = 13,
-  // Deprecated, please do not use.
-  // kBloom = 14,
-  kMaxValue = kBetterOnboarding,
-};
-
-// Enumeration of possible Assistant interaction types.
-enum class AssistantInteractionType {
-  kText,
-  kVoice,
-};
-
 // Enumeration of possible completions for an Assistant interaction.
 // The values are recorded in UMA, do not reuse existing values when updating.
 enum class AssistantInteractionResolution {

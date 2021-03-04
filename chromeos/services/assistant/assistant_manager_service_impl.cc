@@ -70,8 +70,6 @@
 
 using media_session::mojom::MediaSessionAction;
 using Resolution = assistant_client::ConversationStateListener::Resolution;
-using CommunicationErrorType =
-    chromeos::assistant::AssistantManagerService::CommunicationErrorType;
 
 namespace api = ::assistant::api;
 
@@ -82,13 +80,6 @@ namespace {
 static bool is_first_init = true;
 
 constexpr char kAndroidSettingsAppPackage[] = "com.android.settings";
-
-CommunicationErrorType CommunicationErrorTypeFromLibassistantErrorCode(
-    int error_code) {
-  if (IsAuthError(error_code))
-    return CommunicationErrorType::AuthenticationError;
-  return CommunicationErrorType::Other;
-}
 
 std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>
 ToAuthenticationTokens(
@@ -104,33 +95,6 @@ ToAuthenticationTokens(
   }
 
   return result;
-}
-
-const char* ToTriggerSource(AssistantEntryPoint entry_point) {
-  switch (entry_point) {
-    case AssistantEntryPoint::kUnspecified:
-      return kEntryPointUnspecified;
-    case AssistantEntryPoint::kDeepLink:
-      return kEntryPointDeepLink;
-    case AssistantEntryPoint::kHotkey:
-      return kEntryPointHotkey;
-    case AssistantEntryPoint::kHotword:
-      return kEntryPointHotword;
-    case AssistantEntryPoint::kLongPressLauncher:
-      return kEntryPointLongPressLauncher;
-    case AssistantEntryPoint::kSetup:
-      return kEntryPointSetup;
-    case AssistantEntryPoint::kStylus:
-      return kEntryPointStylus;
-    case AssistantEntryPoint::kLauncherSearchResult:
-      return kEntryPointLauncherSearchResult;
-    case AssistantEntryPoint::kLauncherSearchBoxIcon:
-      return kEntryPointLauncherSearchBoxIcon;
-    case AssistantEntryPoint::kProactiveSuggestions:
-      return kEntryPointProactiveSuggestions;
-    case AssistantEntryPoint::kLauncherChip:
-      return kEntryPointLauncherChip;
-  }
 }
 
 bool ShouldPutLogsInHomeDirectory() {
@@ -356,14 +320,11 @@ AssistantSettings* AssistantManagerServiceImpl::GetAssistantSettings() {
   return assistant_settings_.get();
 }
 
-void AssistantManagerServiceImpl::AddCommunicationErrorObserver(
-    CommunicationErrorObserver* observer) {
-  error_observers_.AddObserver(observer);
-}
-
-void AssistantManagerServiceImpl::RemoveCommunicationErrorObserver(
-    const CommunicationErrorObserver* observer) {
-  error_observers_.RemoveObserver(observer);
+void AssistantManagerServiceImpl::AddAuthenticationStateObserver(
+    AuthenticationStateObserver* observer) {
+  DCHECK(observer);
+  assistant_proxy_->AddAuthenticationStateObserver(
+      observer->BindNewPipeAndPassRemote());
 }
 
 void AssistantManagerServiceImpl::AddAndFireStateObserver(
@@ -488,9 +449,7 @@ void AssistantManagerServiceImpl::StartTextInteraction(
 
   MaybeStopPreviousInteraction();
 
-  conversation_controller_proxy().SendTextQuery(
-      query, allow_tts,
-      NewPendingInteraction(AssistantInteractionType::kText, source, query));
+  conversation_controller().SendTextQuery(query, source, allow_tts);
 }
 
 void AssistantManagerServiceImpl::AddAssistantInteractionSubscriber(
@@ -520,32 +479,11 @@ void AssistantManagerServiceImpl::DismissNotification(
   conversation_controller_proxy().DismissNotification(notification);
 }
 
-void AssistantManagerServiceImpl::OnConversationTurnStartedInternal(
-    const assistant_client::ConversationTurnMetadata& metadata) {
-  ENSURE_MAIN_THREAD(
-      &AssistantManagerServiceImpl::OnConversationTurnStartedInternal,
-      metadata);
-
+void AssistantManagerServiceImpl::OnInteractionStarted(
+    const AssistantInteractionMetadata& metadata) {
   stop_interaction_closure_.reset();
 
   audio_input_host_->OnConversationTurnStarted();
-
-  // Retrieve the cached interaction metadata associated with this conversation
-  // turn or construct a new instance if there's no match in the cache.
-  std::unique_ptr<AssistantInteractionMetadata> metadata_ptr;
-  auto it = pending_interactions_.find(metadata.id);
-  if (it != pending_interactions_.end()) {
-    metadata_ptr = std::move(it->second);
-    pending_interactions_.erase(it);
-  } else {
-    metadata_ptr = std::make_unique<AssistantInteractionMetadata>();
-    metadata_ptr->type = metadata.is_mic_open ? AssistantInteractionType::kVoice
-                                              : AssistantInteractionType::kText;
-    metadata_ptr->source = AssistantQuerySource::kLibAssistantInitiated;
-  }
-
-  for (auto& it : interaction_subscribers_)
-    it.OnInteractionStarted(*metadata_ptr);
 }
 
 void AssistantManagerServiceImpl::OnInteractionFinished(
@@ -740,30 +678,14 @@ void AssistantManagerServiceImpl::OnGetDeviceSettings(
       /*is_user_initiated=*/true);
 }
 
-void AssistantManagerServiceImpl::OnNotificationRemoved(
-    const std::string& grouping_key) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnNotificationRemoved,
-                     grouping_key);
-
-  if (grouping_key.empty()) {
-    assistant_notification_controller()->RemoveAllNotifications(
-        /*from_server=*/true);
-  } else {
-    assistant_notification_controller()->RemoveNotificationByGroupingKey(
-        grouping_key, /*from_server=*/
-        true);
-  }
+void AssistantManagerServiceImpl::OnNotificationRemoved(const std::string& id) {
+  assistant_notification_controller()->RemoveNotificationByGroupingKey(
+      id, /*from_server=*/true);
 }
 
-void AssistantManagerServiceImpl::OnCommunicationError(int error_code) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnCommunicationError,
-                     error_code);
-
-  CommunicationErrorType type =
-      CommunicationErrorTypeFromLibassistantErrorCode(error_code);
-
-  for (auto& observer : error_observers_)
-    observer.OnCommunicationError(type);
+void AssistantManagerServiceImpl::OnAllNotificationsRemoved() {
+  assistant_notification_controller()->RemoveAllNotifications(
+      /*from_server=*/true);
 }
 
 void AssistantManagerServiceImpl::OnStateChanged(
@@ -793,8 +715,7 @@ void AssistantManagerServiceImpl::InitAssistant(
   bootup_config->locale = assistant_state()->locale().value();
   bootup_config->spoken_feedback_enabled = spoken_feedback_enabled_;
 
-  service_controller().Start(
-      /*assistant_manager_delegate=*/this, std::move(bootup_config));
+  service_controller().Start(std::move(bootup_config));
 }
 
 base::Thread& AssistantManagerServiceImpl::GetBackgroundThreadForTesting() {
@@ -919,15 +840,7 @@ void AssistantManagerServiceImpl::AddRemoteConversationObserver(
 
 void AssistantManagerServiceImpl::NotifyEntryIntoAssistantUi(
     AssistantEntryPoint entry_point) {
-  base::AutoLock lock(last_trigger_source_lock_);
-  last_trigger_source_ = ToTriggerSource(entry_point);
-}
-
-std::string AssistantManagerServiceImpl::ConsumeLastTriggerSource() {
-  base::AutoLock lock(last_trigger_source_lock_);
-  auto trigger_source = last_trigger_source_;
-  last_trigger_source_ = std::string();
-  return trigger_source;
+  // TODO(jeroendh) remove.
 }
 
 void AssistantManagerServiceImpl::SendVoicelessInteraction(
@@ -948,10 +861,6 @@ void AssistantManagerServiceImpl::MaybeStopPreviousInteraction() {
   }
 
   stop_interaction_closure_->callback().Run();
-}
-
-std::string AssistantManagerServiceImpl::GetLastSearchSource() {
-  return ConsumeLastTriggerSource();
 }
 
 void AssistantManagerServiceImpl::RecordQueryResponseTypeUMA() {
@@ -981,17 +890,6 @@ void AssistantManagerServiceImpl::RecordQueryResponseTypeUMA() {
 void AssistantManagerServiceImpl::SendAssistantFeedback(
     const AssistantFeedback& assistant_feedback) {
   conversation_controller_proxy().SendAssistantFeedback(assistant_feedback);
-}
-
-std::string AssistantManagerServiceImpl::NewPendingInteraction(
-    AssistantInteractionType interaction_type,
-    AssistantQuerySource source,
-    const std::string& query) {
-  auto id = base::NumberToString(next_interaction_id_++);
-  pending_interactions_.emplace(
-      id, std::make_unique<AssistantInteractionMetadata>(interaction_type,
-                                                         source, query));
-  return id;
 }
 
 ash::AssistantNotificationController*
@@ -1048,6 +946,11 @@ void AssistantManagerServiceImpl::SetMicState(bool mic_open) {
 ConversationControllerProxy&
 AssistantManagerServiceImpl::conversation_controller_proxy() {
   return assistant_proxy_->conversation_controller_proxy();
+}
+
+::chromeos::libassistant::mojom::ConversationController&
+AssistantManagerServiceImpl::conversation_controller() {
+  return conversation_controller_proxy().controller();
 }
 
 ServiceControllerProxy& AssistantManagerServiceImpl::service_controller() {

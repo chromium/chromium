@@ -8,6 +8,12 @@ module chromeos.libassistant.mojom;
 // turn, including response events (i.e. OnShowText) and events indicating a
 // conversation's life cycle (i.e. OnTurnFinished).
 interface ConversationObserver{
+  // A conversation turn has started.
+  // Note that we guarantee OnInteractionFinished() will be called before
+  // OnInteractionStarted is called again, so no 2 conversations will ever be
+  // active at the same time.
+  OnInteractionStarted(AssistantInteractionMetadata metadata);
+
   // The current conversation turn has finished.
   OnInteractionFinished(AssistantInteractionResolution resolution);
 
@@ -21,6 +27,18 @@ interface ConversationObserver{
 
   // Assistant received text response from Libassistant.
   OnTextResponse(string response);
+
+  // Libassistant is removing the notification with the given id.
+  OnNotificationRemoved(string id);
+
+  // Libassistant is removing all notifications.
+  OnAllNotificationsRemoved();
+};
+
+struct AssistantInteractionMetadata {
+  AssistantInteractionType type;
+  AssistantQuerySource source;
+  string query;
 };
 
 enum AssistantInteractionResolution {
@@ -34,4 +52,25 @@ enum AssistantInteractionResolution {
   kMicTimeout,
   // Assistant interaction completed due to multi-device hotword loss.
   kMultiDeviceHotwordLoss,
+};
+
+enum AssistantQuerySource {
+  kUnspecified,
+  kDeepLink,
+  kDialogPlateTextField,
+  kStylus,
+  kSuggestionChip,
+  kVoiceInput,
+  kProactiveSuggestions,
+  kLibAssistantInitiated,
+  kConversationStarter,
+  kWhatsOnMyScreen,
+  kQuickAnswers,
+  kLauncherChip,
+  kBetterOnboarding,
+};
+
+enum AssistantInteractionType {
+  kText,
+  kVoice,
 };

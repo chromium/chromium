@@ -14,12 +14,6 @@
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace assistant_client {
-
-class AssistantManagerDelegate;
-
-}  // namespace assistant_client
-
 namespace network {
 class PendingSharedURLLoaderFactory;
 class SharedURLLoaderFactory;
@@ -49,7 +43,6 @@ class ServiceControllerProxy {
   //
   // Start() can only be called when the service is stopped.
   void Start(
-      assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
       chromeos::libassistant::mojom::BootupConfigPtr bootup_config);
   // Stop and destroy the |AssistantManager| and all related objects.
   void Stop();

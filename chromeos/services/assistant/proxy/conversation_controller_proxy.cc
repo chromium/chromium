@@ -23,14 +23,6 @@ void ConversationControllerProxy::AddConversationObserver(
   conversation_controller_remote_->AddRemoteObserver(std::move(observer));
 }
 
-void ConversationControllerProxy::SendTextQuery(
-    const std::string& query,
-    bool allow_tts,
-    const std::string& conversation_id) {
-  conversation_controller_remote_->SendTextQuery(query, allow_tts,
-                                                 conversation_id);
-}
-
 void ConversationControllerProxy::StartEditReminderInteraction(
     const std::string& client_id) {
   conversation_controller_remote_->StartEditReminderInteraction(client_id);

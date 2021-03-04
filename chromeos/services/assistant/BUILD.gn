@@ -21,6 +21,7 @@ component("lib") {
   sources = [
     "assistant_interaction_logger.cc",
     "assistant_interaction_logger.h",
+    "assistant_manager_service.cc",
     "assistant_manager_service.h",
     "fake_assistant_manager_service_impl.cc",
     "fake_assistant_manager_service_impl.h",

@@ -32,12 +32,9 @@ class ConversationControllerProxy {
       mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
           observer);
 
-  // Starts a new Assistant text interaction. If |allow_tts| is true, the
-  // result will contain TTS. |conversation_id| is a unique identifier of
-  // a conversation turn.
-  void SendTextQuery(const std::string& query,
-                     bool allow_tts,
-                     const std::string& conversation_id);
+  chromeos::libassistant::mojom::ConversationController& controller() {
+    return *conversation_controller_remote_.get();
+  }
 
   // Starts an interaction to edit the reminder uniquely identified by
   // |client_id|.

@@ -12,6 +12,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom-shared.h"
@@ -80,17 +81,52 @@ struct StructTraits<chromeos::libassistant::mojom::AssistantFeedbackDataView,
 };
 
 template <>
-struct EnumTraits<chromeos::libassistant::mojom::AssistantInteractionResolution,
-                  chromeos::assistant::AssistantInteractionResolution> {
-  using AssistantResolution =
-      chromeos::assistant::AssistantInteractionResolution;
-  using MojoResolution =
-      chromeos::libassistant::mojom::AssistantInteractionResolution;
+struct StructTraits<
+    chromeos::libassistant::mojom::AssistantInteractionMetadataDataView,
+    chromeos::assistant::AssistantInteractionMetadata> {
+  using NativeType = chromeos::assistant::AssistantInteractionMetadata;
+  using MojomType =
+      chromeos::libassistant::mojom::AssistantInteractionMetadataDataView;
 
-  static MojoResolution ToMojom(AssistantResolution input);
-  static bool FromMojom(MojoResolution input, AssistantResolution* output);
+  static chromeos::assistant::AssistantInteractionType type(
+      const NativeType& input);
+  static chromeos::assistant::AssistantQuerySource source(
+      const NativeType& input);
+  static const std::string& query(const NativeType& input);
+
+  static bool Read(MojomType data, NativeType* output);
 };
 
+template <>
+struct EnumTraits<chromeos::libassistant::mojom::AssistantInteractionResolution,
+                  chromeos::assistant::AssistantInteractionResolution> {
+  using NativeType = chromeos::assistant::AssistantInteractionResolution;
+  using MojomType =
+      chromeos::libassistant::mojom::AssistantInteractionResolution;
+
+  static MojomType ToMojom(NativeType input);
+  static bool FromMojom(MojomType input, NativeType* output);
+};
+
+template <>
+struct EnumTraits<chromeos::libassistant::mojom::AssistantInteractionType,
+                  chromeos::assistant::AssistantInteractionType> {
+  using NativeType = chromeos::assistant::AssistantInteractionType;
+  using MojomType = chromeos::libassistant::mojom::AssistantInteractionType;
+
+  static MojomType ToMojom(NativeType input);
+  static bool FromMojom(MojomType input, NativeType* output);
+};
+
+template <>
+struct EnumTraits<chromeos::libassistant::mojom::AssistantQuerySource,
+                  chromeos::assistant::AssistantQuerySource> {
+  using NativeType = chromeos::assistant::AssistantQuerySource;
+  using MojomType = chromeos::libassistant::mojom::AssistantQuerySource;
+
+  static MojomType ToMojom(NativeType input);
+  static bool FromMojom(MojomType input, NativeType* output);
+};
 }  // namespace mojo
 
 #endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_

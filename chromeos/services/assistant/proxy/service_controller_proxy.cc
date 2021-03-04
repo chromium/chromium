@@ -34,7 +34,6 @@ struct StartArguments {
   StartArguments& operator=(StartArguments&&) = default;
   ~StartArguments() = default;
 
-  assistant_client::AssistantManagerDelegate* assistant_manager_delegate;
   assistant_client::ConversationStateListener* conversation_state_listener;
 };
 
@@ -46,8 +45,7 @@ void InitializeAssistantManager(
     StartArguments arguments,
     assistant_client::AssistantManager* assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  assistant_manager_internal->SetAssistantManagerDelegate(
-      arguments.assistant_manager_delegate);
+  // TODO(jeroendh): Remove in follow up CL.
 }
 
 }  // namespace
@@ -66,12 +64,10 @@ ServiceControllerProxy::ServiceControllerProxy(
 ServiceControllerProxy::~ServiceControllerProxy() = default;
 
 void ServiceControllerProxy::Start(
-    assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
     chromeos::libassistant::mojom::BootupConfigPtr bootup_config) {
   // We need to initialize the |AssistantManager| once it's created and before
   // it's started, so we register a callback to do just that.
   StartArguments arguments;
-  arguments.assistant_manager_delegate = assistant_manager_delegate;
   host_->SetInitializeCallback(
       base::BindOnce(InitializeAssistantManager, std::move(arguments)));
 
