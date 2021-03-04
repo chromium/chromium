@@ -3215,7 +3215,6 @@ crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-
 
 # Synthetic modules report the wrong location in errors
 crbug.com/994315 virtual/json-modules/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.tentative.html [ Skip ]
-crbug.com/994315 virtual/module-top-level-await/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.tentative.html [ Skip ]
 
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-3-ref.html [ Crash ]
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Timeout Crash ]

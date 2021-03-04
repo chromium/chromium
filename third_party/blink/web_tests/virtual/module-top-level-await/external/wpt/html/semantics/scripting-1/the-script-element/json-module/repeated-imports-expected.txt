@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Importing a specifier that previously failed due to an incorrect type assertion can succeed if the correct assertion is later given
-PASS Importing a specifier that previously succeeded with the correct type assertion should fail if the incorrect assertion is later given
-PASS Two modules of different type with the same specifier can load if the server changes its responses
-PASS An import should always fail if the same specifier/type assertion pair failed previously
-PASS If an import previously succeeded for a given specifier/type assertion pair, future uses of that pair should yield the same result
-Harness: the test ran to completion.
-
