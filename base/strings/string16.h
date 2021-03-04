@@ -18,14 +18,6 @@
 
 #include <string>
 
-// Define a macro for wrapping construction of char16 arrays and string16s from
-// a literal string. This indirection allows for an easier migration of
-// base::char16 to char16_t on platforms where WCHAR_T_IS_UTF16, as only a one
-// character change to the macro will be necessary.
-// TODO(https://crbug.com/911896): Remove this macro once base::char16 is
-// char16_t on all platforms.
-#define STRING16_LITERAL(x) u##x
-
 namespace base {
 using char16 = char16_t;
 using string16 = std::u16string;

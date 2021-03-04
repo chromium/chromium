@@ -64,8 +64,7 @@ void NotificationExample::CreateExampleView(View* container) {
   message_center::RichNotificationData data;
   data.settings_button_handler = message_center::SettingsButtonHandler::INLINE;
   message_center::Notification notification(
-      message_center::NOTIFICATION_TYPE_BASE_FORMAT, "id",
-      STRING16_LITERAL("Title"), STRING16_LITERAL("Message"),
+      message_center::NOTIFICATION_TYPE_BASE_FORMAT, "id", u"Title", u"Message",
       CreateTestImage(gfx::Size(80, 80)), base::string16(), GURL(),
       message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                  "views_examples"),
@@ -73,9 +72,9 @@ void NotificationExample::CreateExampleView(View* container) {
   notification.set_small_image(CreateTestImage(gfx::Size(16, 16)));
   notification.set_image(CreateTestImage(gfx::Size(320, 240)));
   std::vector<message_center::ButtonInfo> buttons = {
-      message_center::ButtonInfo(STRING16_LITERAL("No-op")),
-      message_center::ButtonInfo(STRING16_LITERAL("Text input"))};
-  buttons[1].placeholder = STRING16_LITERAL("Placeholder");
+      message_center::ButtonInfo(u"No-op"),
+      message_center::ButtonInfo(u"Text input")};
+  buttons[1].placeholder = u"Placeholder";
   notification.set_buttons(buttons);
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(notification));
