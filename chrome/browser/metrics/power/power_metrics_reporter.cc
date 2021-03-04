@@ -221,6 +221,8 @@ void PowerMetricsReporter::ReportUKMs(
   builder.SetVideoCaptureSeconds(ukm::GetExponentialBucketMinForUserTiming(
       usage_metrics.time_capturing_video.InSeconds()));
   builder.SetBrowserShuttingDown(browser_shutdown::HasShutdownStarted());
+  builder.SetPlayingAudioSeconds(ukm::GetExponentialBucketMinForUserTiming(
+      usage_metrics.time_playing_audio.InSeconds()));
 
   builder.Record(ukm_recorder);
 }

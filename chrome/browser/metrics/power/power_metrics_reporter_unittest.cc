@@ -176,6 +176,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       base::TimeDelta::FromSeconds(++fake_value);
   fake_interval_data.time_capturing_video =
       base::TimeDelta::FromSeconds(++fake_value);
+  fake_interval_data.time_playing_audio =
+      base::TimeDelta::FromSeconds(++fake_value);
 
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // Pretend that the battery has dropped by 50% in 2 minutes, for a rate of
@@ -268,6 +270,10 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
           fake_interval_data.time_capturing_video.InSeconds()));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBrowserShuttingDownName, false);
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kPlayingAudioSecondsName,
+      ukm::GetExponentialBucketMinForUserTiming(
+          fake_interval_data.time_playing_audio.InSeconds()));
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
