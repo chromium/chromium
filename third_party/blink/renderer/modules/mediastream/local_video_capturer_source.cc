@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind_post_task.h"
+#include "base/callback_helpers.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -118,7 +119,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
           frame && frame->Client()
               ? manager_->UseDevice(session_id_,
                                     &frame->GetBrowserInterfaceBroker())
-              : base::OnceClosure();
+              : base::DoNothing::Once();
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is no longer running.");
