@@ -386,6 +386,8 @@ component("base") {
     "memory/memory_pressure_listener.h",
     "memory/memory_pressure_monitor.cc",
     "memory/memory_pressure_monitor.h",
+    "memory/nonscannable_memory.cc",
+    "memory/nonscannable_memory.h",
     "memory/platform_shared_memory_region.cc",
     "memory/platform_shared_memory_region.h",
     "memory/ptr_util.h",

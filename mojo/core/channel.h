@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/free_deleter.h"
+#include "base/memory/nonscannable_memory.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -58,7 +58,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   struct Message;
 
   using MessagePtr = std::unique_ptr<Message>;
-  using AlignedBuffer = std::unique_ptr<char, base::FreeDeleter>;
+  using AlignedBuffer = std::unique_ptr<char, base::NonScannableDeleter>;
 
   // A message to be written to a channel.
   struct MOJO_SYSTEM_IMPL_EXPORT Message {
