@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/proto/test.pb.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
@@ -98,7 +98,7 @@ class ReportQueueImplTest : public testing::Test {
 
     ASSERT_TRUE(config_result.ok());
 
-    StatusOr<std::unique_ptr<ReportQueueImpl>> report_queue_result =
+    StatusOr<std::unique_ptr<ReportQueue>> report_queue_result =
         ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
                                 storage_module_);
 
@@ -120,7 +120,7 @@ class ReportQueueImplTest : public testing::Test {
 
   const Priority priority_;
 
-  std::unique_ptr<ReportQueueImpl> report_queue_;
+  std::unique_ptr<ReportQueue> report_queue_;
   base::OnceCallback<void(Status)> callback_;
 
  private:

@@ -10,10 +10,10 @@
 
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting//proto/record.pb.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/shared_queue.h"
