@@ -710,6 +710,14 @@ bool BrowserTestBase::UseProductionQuotaSettings() {
 void BrowserTestBase::SimulateNetworkServiceCrash() {
   CHECK(!IsInProcessNetworkService())
       << "Can't crash the network service if it's running in-process!";
+
+  // Check if any unexpected crashes have occurred *before* the expected crash
+  // that we will trigger/simulate below.
+  AssertThatNetworkServiceDidntCrash();
+
+  // `network_service_test_` field might not be ready yet - some tests call
+  // SimulateNetworkServiceCrash from SetUpOnMainThread, before
+  // InitializeNetworkProcess has been called.
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   content::GetNetworkService()->BindTestInterface(
       network_service_test.BindNewPipeAndPassReceiver());
@@ -727,6 +735,10 @@ void BrowserTestBase::SimulateNetworkServiceCrash() {
   // Need to re-initialize the network process.
   initialized_network_process_ = false;
   InitializeNetworkProcess();
+}
+
+void BrowserTestBase::IgnoreNetworkServiceCrashes() {
+  network_service_test_.reset();
 }
 
 #if defined(OS_ANDROID)
@@ -817,6 +829,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     }
     base::ThreadRestrictions::SetIOAllowed(old_io_allowed_value);
     TearDownOnMainThread();
+    AssertThatNetworkServiceDidntCrash();
   }
 
   PostRunTestOnMainThread();
@@ -890,6 +903,26 @@ void BrowserTestBase::SetInitialWebContents(WebContents* web_contents) {
   initial_web_contents_ = web_contents;
 }
 
+void BrowserTestBase::AssertThatNetworkServiceDidntCrash() {
+  if (!IsOutOfProcessNetworkService()) {
+    return;
+  }
+
+  // TODO(https://crbug.com/1169431#c2): Enable NetworkService crash detection
+  // on Fuchsia.
+#if !defined(OS_FUCHSIA)
+  if (network_service_test_.is_bound()) {
+    // If there was a crash, then |network_service_test_| will receive an error
+    // notification, but it's not guaranteed to have arrived at this point.
+    // Flush the remote to make sure the notification has been received.
+    network_service_test_.FlushForTesting();
+
+    EXPECT_TRUE(network_service_test_.is_connected())
+        << "Expecting no NetworkService crashes";
+  }
+#endif
+}
+
 void BrowserTestBase::InitializeNetworkProcess() {
   if (initialized_network_process_)
     return;
@@ -908,15 +941,15 @@ void BrowserTestBase::InitializeNetworkProcess() {
     return;
   }
 
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+  network_service_test_.reset();
   content::GetNetworkService()->BindTestInterface(
-      network_service_test.BindNewPipeAndPassReceiver());
+      network_service_test_.BindNewPipeAndPassReceiver());
 
   // Do not set up host resolver rules if we allow the test to access
   // the network.
   if (allow_network_access_to_host_resolutions_) {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test->SetAllowNetworkAccessToHostResolutions();
+    network_service_test_->SetAllowNetworkAccessToHostResolutions();
     return;
   }
 
@@ -984,7 +1017,7 @@ void BrowserTestBase::InitializeNetworkProcess() {
   // to dispatch a Java callback that makes network process to enter native
   // code.
   base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
-  network_service_test->AddRules(std::move(mojo_rules), loop.QuitClosure());
+  network_service_test_->AddRules(std::move(mojo_rules), loop.QuitClosure());
   loop.Run();
 }
 
