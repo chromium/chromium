@@ -102,7 +102,6 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
-  Browser* const browser_;
   content::WebUI* const web_ui_;
   ui::MojoBubbleWebUIController* const webui_controller_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};

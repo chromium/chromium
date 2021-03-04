@@ -107,6 +107,9 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile()));
+    web_ui_.set_web_contents(web_contents_.get());
     profile2_ = profile_manager()->CreateTestingProfile(
         "testing_profile2", nullptr, base::string16(), 0, std::string(),
         GetTestingFactories());
@@ -132,6 +135,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     browser3_.reset();
     browser4_.reset();
     browser5_.reset();
+    web_contents_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -181,6 +185,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     return browser;
   }
 
+  std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
   Profile* profile2_;
   std::unique_ptr<Browser> browser2_;
