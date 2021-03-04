@@ -124,4 +124,5 @@ class Speedometer2PCScan(Speedometer2):
     return 'speedometer2-pcscan'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--enable-features=PartitionAllocPCScan')
+    options.AppendExtraBrowserArgs(
+        '--enable-features=PartitionAllocPCScanBrowserOnly')
