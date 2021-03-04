@@ -481,10 +481,6 @@ WebFrameLoadType FrameLoader::DetermineFrameLoadType(
       document_loader_->LoadType() == WebFrameLoadType::kReload)
     return WebFrameLoadType::kReload;
 
-  if (url.IsEmpty() && failing_url.IsEmpty()) {
-    return WebFrameLoadType::kReplaceCurrentItem;
-  }
-
   return WebFrameLoadType::kStandard;
 }
 

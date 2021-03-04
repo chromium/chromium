@@ -2282,6 +2282,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // See https://crbug.com/534980.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigationTypeClassification_EmptyGURL) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
   GURL url1(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
@@ -2290,6 +2293,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                             ->GetFrameTree()
                             ->root();
 
+  EXPECT_EQ(1, controller.GetEntryCount());
   {
     // Load an (invalid) empty GURL.  Blink will treat this as an inert commit,
     // but we don't want it to show up as EXISTING_ENTRY.
@@ -2299,7 +2303,26 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_LINK));
     EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+
+    // The navigation should add a new entry to the session history, and not
+    // do any entry replacement.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(2, controller.GetEntryCount());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       RendererInitiatedNavigationToEmptyGURLFails) {
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  // Trying to navigate to an empty URL from the renderer will fail.
+  EXPECT_FALSE(NavigateToURLFromRenderer(root, GURL()));
 }
 
 // Verify that navigations for NAVIGATION_TYPE_NEW_SUBFRAME and
