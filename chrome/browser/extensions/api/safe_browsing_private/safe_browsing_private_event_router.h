@@ -226,13 +226,11 @@ class SafeBrowsingPrivateEventRouter
  protected:
   // Report safe browsing event through real-time reporting channel, if enabled.
   // Declared as virtual for tests. Declared as protected to be called directly
-  // by tests. Events are created lazily to avoid doing useless work if they are
-  // discarded.
-  using EventBuilder = base::OnceCallback<base::Value()>;
+  // by tests.
   virtual void ReportRealtimeEvent(
       const std::string&,
-      enterprise_connectors::ReportingSettings settings,
-      EventBuilder event_builder);
+      const enterprise_connectors::ReportingSettings& settings,
+      base::Value event);
 
  private:
   // Initialize a real-time report client if needed.  This client is used only
