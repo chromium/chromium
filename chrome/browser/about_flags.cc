@@ -7222,6 +7222,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          optimization_guide::features::kOptimizationGuideModelDownloading)},
 
+    {"webid", flag_descriptions::kWebIdName,
+     flag_descriptions::kWebIdDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWebID)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

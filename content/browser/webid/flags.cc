@@ -12,9 +12,7 @@ namespace content {
 
 // Whether WebID is enabled or not.
 bool IsWebIDEnabled() {
-  return base::FeatureList::IsEnabled(features::kWebID) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kEnableExperimentalWebPlatformFeatures);
+  return base::FeatureList::IsEnabled(features::kWebID);
 }
 
 }  // namespace content

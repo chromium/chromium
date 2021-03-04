@@ -22,7 +22,7 @@ namespace content {
 std::unique_ptr<NavigationThrottle>
 FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
-  if (!IsWebIDEnabled())
+  if (!IsWebIDEnabled() || !handle->IsInMainFrame())
     return nullptr;
 
   return std::make_unique<FederatedAuthNavigationThrottle>(handle);

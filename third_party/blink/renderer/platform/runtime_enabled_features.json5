@@ -2237,7 +2237,6 @@
     },
     {
       name: "WebID",
-      status: "experimental"
     },
     {
       name: "WebNFC",

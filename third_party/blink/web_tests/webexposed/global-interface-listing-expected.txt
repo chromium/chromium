@@ -5551,7 +5551,6 @@ interface Navigator
     getter geolocation
     getter hardwareConcurrency
     getter hid
-    getter id
     getter ink
     getter keyboard
     getter language
@@ -10320,11 +10319,6 @@ interface WebGLUniformLocation
 interface WebGLVertexArrayObject
     attribute @@toStringTag
     method constructor
-interface WebId
-    attribute @@toStringTag
-    method constructor
-    method get
-    method provide
 interface WebKitCSSMatrix : DOMMatrixReadOnly
     attribute @@toStringTag
     getter a

@@ -2526,6 +2526,11 @@ const char kWebBundlesDescription[] =
     "Enables experimental supports for Web Bundles (Bundled HTTP Exchanges) "
     "navigation.";
 
+const char kWebIdName[] = "WebID";
+const char kWebIdDescription[] =
+    "Enables WebID HTTP filtering and JavaScript "
+    "API to intermediate federated identity requests.";
+
 const char kWebOtpBackendName[] = "Web OTP";
 const char kWebOtpBackendDescription[] =
     "Enables Web OTP API that uses the specified backend.";
