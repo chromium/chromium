@@ -1,4 +1,3 @@
 monorail: {
-  component: "Platform>Extensions>API"
+  component: "Platform>Apps>MediaGalleries"
 }
-team_email: "extensions-reviews@chromium.org"
