@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<script src="test_utils.js"></script>
+<script>
+
+let gotMessage;
+const messageReceived = new Promise(resolve => {
+  gotMessage = resolve;
+});
+
+const bc = new BroadcastChannel('prerender_test_channel');
+bc.addEventListener('message', e => {
+  gotMessage(e.data);
+});
+
+</script>
+</body>
+</html>
