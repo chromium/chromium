@@ -48,6 +48,8 @@ TEST(VotingTest, SimpleVoter) {
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
 }
 
+// Tests that an observer can receive votes for different contexts from the same
+// voting channel.
 TEST(VotingTest, OneVoterMultipleContexts) {
   DummyVoteObserver observer;
 
