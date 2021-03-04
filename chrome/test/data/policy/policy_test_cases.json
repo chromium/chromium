@@ -8579,7 +8579,7 @@
       }
     ]
   },
-  "FetchKeepaliveDurationOnShutdown": {
+  "FetchKeepaliveDurationSecondsOnShutdown": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -8591,7 +8591,7 @@
         }}
       },
       {
-        "policies": {"FetchKeepaliveDurationOnShutdown": 0},
+        "policies": {"FetchKeepaliveDurationSecondsOnShutdown": 0},
         "prefs": { "fetch_keepalive_duration_on_shutdown": {
           "location": "user_profile",
           "expect_default": false,
@@ -8599,7 +8599,7 @@
         }}
       },
       {
-        "policies": {"FetchKeepaliveDurationOnShutdown": 1},
+        "policies": {"FetchKeepaliveDurationSecondsOnShutdown": 1},
         "prefs": { "fetch_keepalive_duration_on_shutdown": {
           "location": "user_profile",
           "expect_default": false,
@@ -8607,7 +8607,7 @@
         }}
       },
       {
-        "policies": {"FetchKeepaliveDurationOnShutdown": 5},
+        "policies": {"FetchKeepaliveDurationSecondsOnShutdown": 5},
         "prefs": { "fetch_keepalive_duration_on_shutdown": {
           "location": "user_profile",
           "expect_default": false,
