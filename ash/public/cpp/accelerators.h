@@ -14,10 +14,10 @@
 
 namespace ui {
 class Accelerator;
-class AcceleratorHistory;
 }
 
 namespace ash {
+class AcceleratorHistory;
 
 // See documentation in ash/accelerators/accelerator_table.h.
 
@@ -209,11 +209,19 @@ class ASH_PUBLIC_EXPORT AcceleratorController {
   virtual bool IsRegistered(const ui::Accelerator& accelerator) const = 0;
 
   // Returns the accelerator histotry.
-  virtual ui::AcceleratorHistory* GetAcceleratorHistory() = 0;
+  virtual AcceleratorHistory* GetAcceleratorHistory() = 0;
 
  protected:
   AcceleratorController();
   virtual ~AcceleratorController();
+};
+
+// The public facing interface for AcceleratorHistory, which is implemented in
+// ash.
+class ASH_PUBLIC_EXPORT AcceleratorHistory {
+ public:
+  // Stores |accelerator| if it's different than the currently stored one.
+  virtual void StoreCurrentAccelerator(const ui::Accelerator& accelerator) = 0;
 };
 
 }  // namespace ash

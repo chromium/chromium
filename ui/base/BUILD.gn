@@ -328,8 +328,6 @@ component("base") {
     sources += [
       "accelerators/accelerator.cc",
       "accelerators/accelerator.h",
-      "accelerators/accelerator_history.cc",
-      "accelerators/accelerator_history.h",
       "accelerators/accelerator_manager.cc",
       "accelerators/accelerator_manager.h",
       "accelerators/media_keys_listener.cc",
@@ -973,7 +971,6 @@ test("ui_base_unittests") {
     ]
   } else {  # !is_ios
     sources += [
-      "accelerators/accelerator_history_unittest.cc",
       "accelerators/accelerator_manager_unittest.cc",
       "accelerators/accelerator_unittest.cc",
       "accelerators/menu_label_accelerator_util_unittest.cc",

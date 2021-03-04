@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/accelerators/accelerator_confirmation_dialog.h"
+#include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/exit_warning_handler.h"
 #include "ash/ash_export.h"
@@ -21,7 +22,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/accelerators/accelerator_history.h"
 
 namespace ui {
 class AcceleratorManager;
@@ -182,7 +182,7 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
                               const ui::Accelerator& accelerator) override;
   bool OnMenuAccelerator(const ui::Accelerator& accelerator) override;
   bool IsRegistered(const ui::Accelerator& accelerator) const override;
-  ui::AcceleratorHistory* GetAcceleratorHistory() override;
+  AcceleratorHistoryImpl* GetAcceleratorHistory() override;
 
   // Returns true if the |accelerator| is preferred. A preferred accelerator
   // is handled before being passed to an window/web contents, unless
@@ -201,7 +201,7 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
     return &exit_warning_handler_;
   }
 
-  ui::AcceleratorHistory* accelerator_history() {
+  AcceleratorHistoryImpl* accelerator_history() {
     return accelerator_history_.get();
   }
 
@@ -297,7 +297,7 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
   std::unique_ptr<ui::AcceleratorManager> accelerator_manager_;
 
   // A tracker for the current and previous accelerators.
-  std::unique_ptr<ui::AcceleratorHistory> accelerator_history_;
+  std::unique_ptr<AcceleratorHistoryImpl> accelerator_history_;
 
   // Handles the exit accelerator which requires a double press to exit and
   // shows a popup with an explanation.

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_confirmation_dialog.h"
+#include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -1096,7 +1097,7 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
   const ui::Accelerator volume_up(ui::VKEY_VOLUME_UP, ui::EF_NONE);
   {
     base::UserActionTester user_action_tester;
-    ui::AcceleratorHistory* history = controller_->accelerator_history();
+    auto* history = controller_->accelerator_history();
 
     EXPECT_EQ(0, user_action_tester.GetActionCount("Accel_VolumeMute_F8"));
     EXPECT_TRUE(ProcessInController(volume_mute));
@@ -1986,7 +1987,7 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
   const ui::Accelerator volume_up(ui::VKEY_VOLUME_UP, ui::EF_NONE);
   {
     base::UserActionTester user_action_tester;
-    ui::AcceleratorHistory* history = controller_->accelerator_history();
+    auto* history = controller_->accelerator_history();
 
     EXPECT_EQ(0, user_action_tester.GetActionCount("Accel_VolumeMute_F8"));
     EXPECT_TRUE(ProcessInController(volume_mute));
@@ -2608,9 +2609,6 @@ TEST_P(MediaSessionAcceleratorTest, MediaPlaybackAcceleratorsBehavior) {
   const ui::KeyboardCode media_keys[] = {ui::VKEY_MEDIA_NEXT_TRACK,
                                          ui::VKEY_MEDIA_PLAY_PAUSE,
                                          ui::VKEY_MEDIA_PREV_TRACK};
-
-  std::unique_ptr<ui::AcceleratorHistory> accelerator_history(
-      std::make_unique<ui::AcceleratorHistory>());
   ::wm::AcceleratorFilter filter(
       std::make_unique<PreTargetAcceleratorHandler>());
 

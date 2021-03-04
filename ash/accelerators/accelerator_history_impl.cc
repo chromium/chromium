@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/accelerators/accelerator_history.h"
+#include "ash/accelerators/accelerator_history_impl.h"
 
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 
-namespace ui {
+namespace ash {
 
 namespace {
 
@@ -29,32 +29,32 @@ bool ShouldFilter(ui::KeyEvent* event) {
 
 }  // namespace
 
-AcceleratorHistory::AcceleratorHistory() = default;
+AcceleratorHistoryImpl::AcceleratorHistoryImpl() = default;
 
-AcceleratorHistory::~AcceleratorHistory() = default;
+AcceleratorHistoryImpl::~AcceleratorHistoryImpl() = default;
 
-void AcceleratorHistory::OnKeyEvent(ui::KeyEvent* event) {
+void AcceleratorHistoryImpl::OnKeyEvent(ui::KeyEvent* event) {
   DCHECK(event->target());
   if (!ShouldFilter(event))
     StoreCurrentAccelerator(ui::Accelerator(*event));
 }
 
-void AcceleratorHistory::OnMouseEvent(ui::MouseEvent* event) {
+void AcceleratorHistoryImpl::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED ||
       event->type() == ui::ET_MOUSE_RELEASED) {
     InterruptCurrentAccelerator();
   }
 }
 
-void AcceleratorHistory::StoreCurrentAccelerator(
-    const Accelerator& accelerator) {
+void AcceleratorHistoryImpl::StoreCurrentAccelerator(
+    const ui::Accelerator& accelerator) {
   // Track the currently pressed keys so that we don't mistakenly store an
   // already pressed key as a new keypress after another key has been released.
   // As an example, when the user presses and holds Alt+Search, then releases
   // Alt but keeps holding the Search key down, at this point no new Search
   // presses should be stored in the history after the Alt release, since Search
   // was never released in the first place. crbug.com/704280.
-  if (accelerator.key_state() == Accelerator::KeyState::PRESSED) {
+  if (accelerator.key_state() == ui::Accelerator::KeyState::PRESSED) {
     if (!currently_pressed_keys_.emplace(accelerator.key_code()).second)
       return;
   } else {
@@ -67,11 +67,11 @@ void AcceleratorHistory::StoreCurrentAccelerator(
   }
 }
 
-void AcceleratorHistory::InterruptCurrentAccelerator() {
-  if (current_accelerator_.key_state() == Accelerator::KeyState::PRESSED) {
+void AcceleratorHistoryImpl::InterruptCurrentAccelerator() {
+  if (current_accelerator_.key_state() == ui::Accelerator::KeyState::PRESSED) {
     // Only interrupts pressed keys.
     current_accelerator_.set_interrupted_by_mouse_event(true);
   }
 }
 
-} // namespace ui
+}  // namespace ash

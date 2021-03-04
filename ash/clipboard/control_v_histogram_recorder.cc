@@ -5,9 +5,9 @@
 #include "ash/clipboard/control_v_histogram_recorder.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
-#include "ui/base/accelerators/accelerator_history.h"
 #include "ui/events/event.h"
 
 namespace ash {

@@ -1698,7 +1698,7 @@ void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonLocation(
 
 AcceleratorControllerImpl::AcceleratorControllerImpl()
     : accelerator_manager_(std::make_unique<ui::AcceleratorManager>()),
-      accelerator_history_(std::make_unique<ui::AcceleratorHistory>()),
+      accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
       side_volume_button_location_file_path_(
           base::FilePath(kSideVolumeButtonLocationFilePath)) {
   Init();
@@ -1775,7 +1775,7 @@ bool AcceleratorControllerImpl::IsRegistered(
   return accelerator_manager_->IsRegistered(accelerator);
 }
 
-ui::AcceleratorHistory* AcceleratorControllerImpl::GetAcceleratorHistory() {
+AcceleratorHistoryImpl* AcceleratorControllerImpl::GetAcceleratorHistory() {
   return accelerator_history_.get();
 }
 

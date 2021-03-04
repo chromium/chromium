@@ -21,7 +21,6 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
-#include "ui/base/accelerators/accelerator_history.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -102,8 +101,6 @@ TEST_F(AcceleratorFilterTest, TestCapsLockMask) {
 // Tests if special hardware keys like brightness and volume are consumed as
 // expected by the shell.
 TEST_F(AcceleratorFilterTest, CanConsumeSystemKeys) {
-  std::unique_ptr<ui::AcceleratorHistory> accelerator_history(
-      new ui::AcceleratorHistory());
   ::wm::AcceleratorFilter filter(
       std::make_unique<PreTargetAcceleratorHandler>());
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
