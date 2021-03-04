@@ -162,6 +162,14 @@ clang_toolchain("clang_x64_v8_mips64") {
   }
 }
 
+clang_toolchain("clang_x64_v8_riscv64") {
+  toolchain_args = {
+    current_cpu = "x64"
+    v8_current_cpu = "riscv64"
+    current_os = "linux"
+  }
+}
+
 # In a LaCrOS build, this toolchain is intended to be used as an alternate
 # toolchain to build Ash-Chrome in a subdirectory.
 clang_toolchain("ash_clang_x64") {
@@ -256,6 +264,24 @@ gcc_toolchain("mips64el") {
     use_rbe = false
     is_clang = false
     use_goma = false
+  }
+}
+
+gcc_toolchain("riscv64") {
+  toolprefix = "riscv64-linux-gnu"
+
+  cc = "${toolprefix}-gcc"
+  cxx = "${toolprefix}-g++"
+
+  readelf = "${toolprefix}-readelf"
+  nm = "${toolprefix}-nm"
+  ar = "${toolprefix}-ar"
+  ld = cxx
+
+  toolchain_args = {
+    current_cpu = "riscv64"
+    current_os = "linux"
+    is_clang = false
   }
 }
 
