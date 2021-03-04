@@ -11,14 +11,14 @@
 
 namespace blink {
 
-// The FeaturePolicyFeatureDefault enum defines the default enable state for
+// The PermissionsPolicyFeatureDefault enum defines the default enable state for
 // a feature when the feature is not declared in iframe 'allow' attribute.
 // See |FeaturePolicy::InheritedValueForFeature| for usage.
 //
 // The 2 possibilities map directly to Feature Policy Allowlist semantics.
 //
 // The default values for each feature are set in GetDefaultFeatureList.
-enum class FeaturePolicyFeatureDefault {
+enum class PermissionsPolicyFeatureDefault {
   // Equivalent to ["self"]. If this default policy is in effect for a frame,
   // then the feature will be enabled for that frame, and any same-origin
   // child frames, but not for any cross-origin child frames.
@@ -29,11 +29,11 @@ enum class FeaturePolicyFeatureDefault {
   EnableForAll
 };
 
-using FeaturePolicyFeatureList =
-    std::map<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault>;
+using PermissionsPolicyFeatureList =
+    std::map<mojom::FeaturePolicyFeature, PermissionsPolicyFeatureDefault>;
 
-BLINK_COMMON_EXPORT const FeaturePolicyFeatureList&
-GetFeaturePolicyFeatureList();
+BLINK_COMMON_EXPORT const PermissionsPolicyFeatureList&
+GetPermissionsPolicyFeatureList();
 
 // TODO(iclelland): Generate, instead of this map, a set of bool flags, one
 // for each feature, as all features are supposed to be represented here.

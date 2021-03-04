@@ -32,11 +32,12 @@ class FeaturePolicyTest : public testing::Test {
  protected:
   FeaturePolicyTest()
       : feature_list_({{kDefaultOnFeature,
-                        FeaturePolicyFeatureDefault(
-                            FeaturePolicyFeatureDefault::EnableForAll)},
+                        PermissionsPolicyFeatureDefault(
+                            PermissionsPolicyFeatureDefault::EnableForAll)},
                        {kDefaultSelfFeature,
-                        FeaturePolicyFeatureDefault(
-                            FeaturePolicyFeatureDefault::EnableForSelf)}}) {}
+                        PermissionsPolicyFeatureDefault(
+                            PermissionsPolicyFeatureDefault::EnableForSelf)}}) {
+  }
 
   ~FeaturePolicyTest() override = default;
 
@@ -69,7 +70,7 @@ class FeaturePolicyTest : public testing::Test {
  private:
   // Contains the list of controlled features, so that we are guaranteed to
   // have at least one of each kind of default behaviour represented.
-  FeaturePolicyFeatureList feature_list_;
+  PermissionsPolicyFeatureList feature_list_;
 };
 
 TEST_F(FeaturePolicyTest, TestInitialPolicy) {

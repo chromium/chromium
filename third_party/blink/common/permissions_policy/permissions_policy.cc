@@ -18,7 +18,7 @@ namespace {
 // Extracts an Allowlist from a ParsedFeaturePolicyDeclaration.
 FeaturePolicy::Allowlist AllowlistFromDeclaration(
     const ParsedFeaturePolicyDeclaration& parsed_declaration,
-    const FeaturePolicyFeatureList& feature_list) {
+    const PermissionsPolicyFeatureList& feature_list) {
   auto result = FeaturePolicy::Allowlist();
   if (parsed_declaration.matches_all_origins)
     result.AddAll();
@@ -106,7 +106,7 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CreateFromParentPolicy(
     const ParsedFeaturePolicy& container_policy,
     const url::Origin& origin) {
   return CreateFromParentPolicy(parent_policy, container_policy, origin,
-                                GetFeaturePolicyFeatureList());
+                                GetPermissionsPolicyFeatureList());
 }
 
 // static
@@ -116,7 +116,7 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CopyStateFrom(
     return nullptr;
 
   std::unique_ptr<FeaturePolicy> new_policy = base::WrapUnique(
-      new FeaturePolicy(source->origin_, GetFeaturePolicyFeatureList()));
+      new FeaturePolicy(source->origin_, GetPermissionsPolicyFeatureList()));
 
   new_policy->inherited_policies_ = source->inherited_policies_;
   new_policy->allowlists_ = source->allowlists_;
@@ -148,8 +148,9 @@ bool FeaturePolicy::IsFeatureEnabledForOrigin(
   }
 
   // If no "allowlist" is specified, return default feature value.
-  const FeaturePolicyFeatureDefault default_policy = feature_list_.at(feature);
-  if (default_policy == FeaturePolicyFeatureDefault::EnableForSelf &&
+  const PermissionsPolicyFeatureDefault default_policy =
+      feature_list_.at(feature);
+  if (default_policy == PermissionsPolicyFeatureDefault::EnableForSelf &&
       !origin_.IsSameOriginWith(origin))
     return false;
 
@@ -206,12 +207,13 @@ const FeaturePolicy::Allowlist FeaturePolicy::GetAllowlistForFeature(
   if (allowlist != allowlists_.end())
     return allowlist->second;
 
-  const FeaturePolicyFeatureDefault default_policy = feature_list_.at(feature);
+  const PermissionsPolicyFeatureDefault default_policy =
+      feature_list_.at(feature);
   FeaturePolicy::Allowlist default_allowlist;
 
-  if (default_policy == FeaturePolicyFeatureDefault::EnableForAll) {
+  if (default_policy == PermissionsPolicyFeatureDefault::EnableForAll) {
     default_allowlist.AddAll();
-  } else if (default_policy == FeaturePolicyFeatureDefault::EnableForSelf) {
+  } else if (default_policy == PermissionsPolicyFeatureDefault::EnableForSelf) {
     default_allowlist.Add(origin_);
   }
 
@@ -231,13 +233,13 @@ void FeaturePolicy::SetHeaderPolicy(const ParsedFeaturePolicy& parsed_header) {
 
 FeaturePolicyFeatureState FeaturePolicy::GetFeatureState() const {
   FeaturePolicyFeatureState feature_state;
-  for (const auto& pair : GetFeaturePolicyFeatureList())
+  for (const auto& pair : GetPermissionsPolicyFeatureList())
     feature_state[pair.first] = GetFeatureValueForOrigin(pair.first, origin_);
   return feature_state;
 }
 
 FeaturePolicy::FeaturePolicy(url::Origin origin,
-                             const FeaturePolicyFeatureList& feature_list)
+                             const PermissionsPolicyFeatureList& feature_list)
     : origin_(std::move(origin)), feature_list_(feature_list) {}
 
 FeaturePolicy::~FeaturePolicy() = default;
@@ -247,7 +249,7 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CreateFromParentPolicy(
     const FeaturePolicy* parent_policy,
     const ParsedFeaturePolicy& container_policy,
     const url::Origin& origin,
-    const FeaturePolicyFeatureList& features) {
+    const PermissionsPolicyFeatureList& features) {
   // If there is a non-empty container policy, then there must also be a parent
   // policy.
   DCHECK(parent_policy || container_policy.empty());
@@ -267,7 +269,8 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CreateFromParentPolicy(
 // at origin.
 bool FeaturePolicy::InheritedValueForFeature(
     const FeaturePolicy* parent_policy,
-    std::pair<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault> feature,
+    std::pair<mojom::FeaturePolicyFeature, PermissionsPolicyFeatureDefault>
+        feature,
     const ParsedFeaturePolicy& container_policy) const {
   // 9.7 2: Otherwise [If context is not a nested browsing context,] return
   // "Enabled".
@@ -295,7 +298,7 @@ bool FeaturePolicy::InheritedValueForFeature(
     }
   }
   // 9.8 6: If feature’s default allowlist is *, return "Enabled".
-  if (feature.second == FeaturePolicyFeatureDefault::EnableForAll)
+  if (feature.second == PermissionsPolicyFeatureDefault::EnableForAll)
     return true;
 
   // 9.8 7: If feature’s default allowlist is 'self', and origin is same origin
@@ -304,7 +307,7 @@ bool FeaturePolicy::InheritedValueForFeature(
   return origin_.IsSameOriginWith(parent_policy->origin_);
 }
 
-const FeaturePolicyFeatureList& FeaturePolicy::GetFeatureList() const {
+const PermissionsPolicyFeatureList& FeaturePolicy::GetFeatureList() const {
   return feature_list_;
 }
 

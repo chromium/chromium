@@ -25,7 +25,7 @@
     },
 
     // feature_default: Default allowlist state for feature. This corresponds
-    // to enum class |FeaturePolicyFeatureDefault| in
+    // to enum class |PermissionsPolicyFeatureDefault| in
     // public/common/feature_policy/feature_policy_features.h
     feature_default: {
       default: "EnableForSelf",

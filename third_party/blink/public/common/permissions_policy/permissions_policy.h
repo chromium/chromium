@@ -76,8 +76,8 @@ namespace blink {
 //
 // If the default policy is in effect for a frame, then it controls how the
 // feature is inherited by any cross-origin iframes embedded by the frame. (See
-// the comments in |FeaturePolicyFeatureDefault| in feature_policy_features.h
-// for specifics.)
+// the comments in |PermissionsPolicyFeatureDefault| in
+// feature_policy_features.h for specifics.)
 //
 // Policy Inheritance
 // ------------------
@@ -86,7 +86,7 @@ namespace blink {
 // receive the same set of enabled features as the parent frame. Whether or not
 // features are inherited by cross-origin iframes without an explicit policy is
 // determined by the feature's default policy. (Again, see the comments in
-// |FeaturePolicyFeatureDefault| in feature_policy_features.h for details)
+// |PermissionsPolicyFeatureDefault| in feature_policy_features.h for details)
 
 // This struct holds feature policy allowlist data that needs to be replicated
 // between a RenderFrame and any of its associated RenderFrameProxies. A list of
@@ -202,7 +202,7 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
   const url::Origin& GetOriginForTest() const { return origin_; }
 
   // Returns the list of features which can be controlled by Feature Policy.
-  const FeaturePolicyFeatureList& GetFeatureList() const;
+  const PermissionsPolicyFeatureList& GetFeatureList() const;
 
   bool IsFeatureEnabledByInheritedPolicy(
       mojom::FeaturePolicyFeature feature) const;
@@ -211,16 +211,16 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
   friend class FeaturePolicyTest;
 
   FeaturePolicy(url::Origin origin,
-                const FeaturePolicyFeatureList& feature_list);
+                const PermissionsPolicyFeatureList& feature_list);
   static std::unique_ptr<FeaturePolicy> CreateFromParentPolicy(
       const FeaturePolicy* parent_policy,
       const ParsedFeaturePolicy& container_policy,
       const url::Origin& origin,
-      const FeaturePolicyFeatureList& features);
+      const PermissionsPolicyFeatureList& features);
 
   bool InheritedValueForFeature(
       const FeaturePolicy* parent_policy,
-      std::pair<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault>
+      std::pair<mojom::FeaturePolicyFeature, PermissionsPolicyFeatureDefault>
           feature,
       const ParsedFeaturePolicy& container_policy) const;
 
@@ -239,7 +239,7 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
   // parent frame.
   FeaturePolicyFeatureState inherited_policies_;
 
-  const FeaturePolicyFeatureList& feature_list_;
+  const PermissionsPolicyFeatureList& feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(FeaturePolicy);
 };

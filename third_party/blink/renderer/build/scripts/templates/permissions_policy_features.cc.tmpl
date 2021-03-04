@@ -10,12 +10,12 @@
 
 namespace blink {
 
-const FeaturePolicyFeatureList& GetFeaturePolicyFeatureList() {
-  static const base::NoDestructor<FeaturePolicyFeatureList> feature_list({
+const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList() {
+  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list({
     {%- for feature in features %}
       {
         mojom::FeaturePolicyFeature::k{{feature.name}},
-        FeaturePolicyFeatureDefault::{{feature.feature_default}}
+        PermissionsPolicyFeatureDefault::{{feature.feature_default}}
       },
     {%- endfor %}
   });
