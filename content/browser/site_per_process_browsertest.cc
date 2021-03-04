@@ -650,19 +650,12 @@ class SadFrameShownObserver {
 class UpdateViewportIntersectionMessageFilter
     : public blink::mojom::RemoteFrameHostInterceptorForTesting {
  public:
-  // Caller has to guarantee that `rfph` is valid at least as long as
-  // UpdateViewportIntersectionMessageFilter.
   explicit UpdateViewportIntersectionMessageFilter(
       content::RenderFrameProxyHost* rfph)
       : intersection_state_(blink::mojom::ViewportIntersectionState::New()),
         render_frame_proxy_host_(rfph) {
-    old_impl_ = render_frame_proxy_host_->frame_host_receiver_for_testing()
-                    .SwapImplForTesting(this);
-  }
-
-  ~UpdateViewportIntersectionMessageFilter() override {
     render_frame_proxy_host_->frame_host_receiver_for_testing()
-        .SwapImplForTesting(old_impl_);
+        .SwapImplForTesting(this);
   }
 
   const blink::mojom::ViewportIntersectionStatePtr& GetIntersectionState()
@@ -708,10 +701,9 @@ class UpdateViewportIntersectionMessageFilter
 
  private:
   base::RunLoop* run_loop_ = nullptr;
-  bool msg_received_ = false;
+  bool msg_received_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
-  content::RenderFrameProxyHost* render_frame_proxy_host_ = nullptr;
-  blink::mojom::RemoteFrameHost* old_impl_ = nullptr;
+  content::RenderFrameProxyHost* render_frame_proxy_host_;
 };
 
 //
@@ -8182,21 +8174,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 class ShowCreatedWindowInterceptor
     : public blink::mojom::LocalMainFrameHostInterceptorForTesting {
  public:
-  // The caller has to guarantee that `render_frame_host` lives at least as long
-  // as ShowCreatedWindowInterceptor.
   ShowCreatedWindowInterceptor(
       RenderFrameHostImpl* render_frame_host,
       base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
       : render_frame_host_(render_frame_host),
         test_callback_(std::move(test_callback)) {
-    old_impl_ = render_frame_host_->local_main_frame_host_receiver_for_testing()
-                    .SwapImplForTesting(this);
+    render_frame_host_->local_main_frame_host_receiver_for_testing()
+        .SwapImplForTesting(this);
   }
 
-  ~ShowCreatedWindowInterceptor() override {
-    render_frame_host_->local_main_frame_host_receiver_for_testing()
-        .SwapImplForTesting(old_impl_);
-  }
+  ~ShowCreatedWindowInterceptor() override = default;
 
   blink::mojom::LocalMainFrameHost* GetForwardingInterface() override {
     return render_frame_host_;
@@ -8223,14 +8210,13 @@ class ShowCreatedWindowInterceptor
   }
 
  private:
-  RenderFrameHostImpl* render_frame_host_ = nullptr;
+  RenderFrameHostImpl* render_frame_host_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
   ShowCreatedWindowCallback show_callback_;
   blink::LocalFrameToken opener_frame_token_;
   gfx::Rect initial_rect_;
   bool user_gesture_ = false;
   WindowOpenDisposition disposition_;
-  blink::mojom::LocalMainFrameHost* old_impl_ = nullptr;
 };
 
 // Listens for the source WebContents opening the new WebContents then attaches
@@ -13478,22 +13464,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(child_node, site_url));
 
   RenderFrameProxyHost* root_proxy = root->render_manager()->GetProxyToParent();
-  {
-    // Temporarily inject a test mojo interface.
-    auto filter =
-        std::make_unique<UpdateViewportIntersectionMessageFilter>(root_proxy);
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(root_proxy);
 
-    // Position the select element so that it is out of the viewport, then
-    // scroll it into view.
-    EXPECT_TRUE(ExecuteScript(
-        child_node, "document.querySelector('select').style.top='2000px';"));
-    EXPECT_TRUE(ExecuteScript(root, "window.scrollTo(0, 1900);"));
+  // Position the select element so that it is out of the viewport, then scroll
+  // it into view.
+  EXPECT_TRUE(ExecuteScript(
+      child_node, "document.querySelector('select').style.top='2000px';"));
+  EXPECT_TRUE(ExecuteScript(root, "window.scrollTo(0, 1900);"));
 
-    // Wait for a viewport intersection update to be dispatched to the child,
-    // and ensure it is processed by the browser before continuing.
-    filter->Wait();
-  }
-
+  // Wait for a viewport intersection update to be dispatched to the child, and
+  // ensure it is processed by the browser before continuing.
+  filter->Wait();
   {
     // This yields the UI thread in order to ensure that the new viewport
     // intersection is sent to the to child renderer before the mouse click

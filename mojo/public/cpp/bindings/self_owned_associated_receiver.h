@@ -76,12 +76,6 @@ class SelfOwnedAssociatedReceiver {
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   // Allows test code to swap the interface implementation.
-  //
-  // Returns the existing interface implementation to the caller.
-  //
-  // The caller needs to guarentee that `new_impl` will live longer than `this`
-  // AssociatedReceiver.  One way to achieve this is to store the returned old
-  // impl and swap it back in when `new_impl` is getting destroyed.
   std::unique_ptr<Interface> SwapImplForTesting(
       std::unique_ptr<Interface> new_impl) {
     receiver_.SwapImplForTesting(new_impl.get());

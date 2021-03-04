@@ -254,13 +254,6 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   Interface* impl() { return ImplRefTraits::GetRawPointer(&stub_.sink()); }
 
   // Allows test code to swap the interface implementation.
-  //
-  // Returns the existing interface implementation to the caller.
-  //
-  // The caller needs to guarentee that `new_impl` will live longer than
-  // `this` AssociatedReceiver.  One way to achieve this is to store
-  // the returned `old_impl` and swap it back in when `new_impl` is getting
-  // destroyed.
   ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
     Interface* old_impl = impl();
     stub_.set_sink(std::move(new_impl));

@@ -72,7 +72,6 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        MAYBE_NetworkProcessCrashRecovery) {
   if (!IsOutOfProcessNetworkService())
     return;
-
   MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
   SimulateNetworkServiceCrash();
   MakeTypicalPeerConnectionCall("call({video: true, audio: true});");

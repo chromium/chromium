@@ -1239,7 +1239,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       network_service_test.BindNewPipeAndPassReceiver());
 
   // Crash the network service, but do not wait for full startup.
-  IgnoreNetworkServiceCrashes();
   network_service_test.set_disconnect_handler(run_loop.QuitClosure());
   network_service_test->SimulateCrash();
   run_loop.Run();

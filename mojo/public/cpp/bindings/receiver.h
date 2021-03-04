@@ -261,13 +261,6 @@ class Receiver {
   void EnableTestingMode() { internal_state_.EnableTestingMode(); }
 
   // Allows test code to swap the interface implementation.
-  //
-  // Returns the existing interface implementation to the caller.
-  //
-  // The caller needs to guarentee that `new_impl` will live longer than
-  // `this` AssociatedReceiver.  One way to achieve this is to store
-  // the returned `old_impl` and swap it back in when `new_impl` is getting
-  // destroyed.
   ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
     return internal_state_.SwapImplForTesting(new_impl);
   }
