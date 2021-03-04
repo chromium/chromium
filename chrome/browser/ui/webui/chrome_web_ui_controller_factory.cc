@@ -157,7 +157,6 @@
 #include "chrome/browser/ash/web_applications/chrome_media_app_ui_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
-#include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
@@ -213,7 +212,6 @@
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/diagnostics_ui/diagnostics_ui.h"
 #include "chromeos/components/diagnostics_ui/url_constants.h"
-#include "chromeos/components/eche_app_ui/eche_app_manager.h"
 #include "chromeos/components/eche_app_ui/eche_app_ui.h"
 #include "chromeos/components/eche_app_ui/url_constants.h"
 #include "chromeos/components/help_app_ui/help_app_ui.h"
@@ -376,25 +374,6 @@ NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>(
   return new chromeos::printing::printing_manager::PrintManagementUI(
       web_ui,
       base::BindRepeating(&BindPrintManagement, Profile::FromWebUI(web_ui)));
-}
-
-void BindEcheSignalingMessageExchanger(
-    Profile* profile,
-    mojo::PendingReceiver<chromeos::eche_app::mojom::SignalingMessageExchanger>
-        receiver) {
-  chromeos::eche_app::EcheAppManager* manager =
-      chromeos::eche_app::EcheAppManagerFactory::GetForProfile(profile);
-  if (manager) {
-    manager->BindInterface(std::move(receiver));
-  }
-}
-
-template <>
-WebUIController* NewWebUI<chromeos::eche_app::EcheAppUI>(WebUI* web_ui,
-                                                         const GURL& url) {
-  return new chromeos::eche_app::EcheAppUI(
-      web_ui, base::BindRepeating(&BindEcheSignalingMessageExchanger,
-                                  Profile::FromWebUI(web_ui)));
 }
 
 void BindScanService(

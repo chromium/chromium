@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/components/eche_app_ui/eche_app_ui.h"
+
 #include <memory>
 
-#include "chromeos/components/eche_app_ui/eche_app_manager.h"
-#include "chromeos/components/eche_app_ui/eche_app_ui.h"
-#include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
 #include "chromeos/components/eche_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_eche_app_resources.h"
 #include "chromeos/grit/chromeos_eche_bundle_resources.h"
@@ -17,10 +16,7 @@
 namespace chromeos {
 namespace eche_app {
 
-EcheAppUI::EcheAppUI(content::WebUI* web_ui,
-                     BindSignalingMessageExchangerCallback exchanger_callback)
-    : ui::MojoWebUIController(web_ui),
-      bind_exchanger_callback_(std::move(exchanger_callback)) {
+EcheAppUI::EcheAppUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto html_source =
       base::WrapUnique(content::WebUIDataSource::Create(kChromeUIEcheAppHost));
 
@@ -33,9 +29,6 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_JS);
   html_source->AddResourcePath("assets/app_bundle.css",
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
-  html_source->AddResourcePath(
-      "eche_app.mojom-lite.js",
-      IDR_CHROMEOS_ECHE_APP_CHROMEOS_COMPONENTS_ECHE_APP_UI_MOJOM_ECHE_APP_MOJOM_LITE_JS);
   html_source->AddResourcePath("browser_proxy.js",
                                IDR_CHROMEOS_ECHE_APP_BROWSER_PROXY_JS);
 
@@ -48,13 +41,6 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
 }
 
 EcheAppUI::~EcheAppUI() = default;
-
-void EcheAppUI::BindInterface(
-    mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver) {
-  bind_exchanger_callback_.Run(std::move(receiver));
-}
-
-WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)
 
 }  // namespace eche_app
 }  // namespace chromeos

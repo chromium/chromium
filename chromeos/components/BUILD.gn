@@ -22,7 +22,6 @@ test("chromeos_components_unittests") {
     "//chromeos/components/cdm_factory_daemon:unit_tests",
     "//chromeos/components/diagnostics_ui/backend:unit_tests",
     "//chromeos/components/drivefs:unit_tests",
-    "//chromeos/components/eche_app_ui:unit_tests",
     "//chromeos/components/local_search_service:unit_tests",
     "//chromeos/components/local_search_service/public/mojom:unit_tests",
     "//chromeos/components/mojo_bootstrap:unit_tests",
