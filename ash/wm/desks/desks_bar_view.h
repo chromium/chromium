@@ -169,12 +169,17 @@ class ASH_EXPORT DesksBarView : public views::View,
   // their final positions if |initializing_bar_view| is false.
   void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
+  // If the focused |mini_view| is outside of the scroll view's visible bounds,
+  // scrolls the bar to make sure it can always be seen.
+  void ScrollToShowMiniViewIfNecessary(const DeskMiniView* mini_view);
+
   ScrollArrowButton* GetLeftScrollButtonForTesting() const {
     return left_scroll_button_;
   }
   ScrollArrowButton* GetRightScrollButtonForTesting() const {
     return right_scroll_button_;
   }
+  views::ScrollView* GetScrollViewForTesting() const { return scroll_view_; }
 
  private:
   friend class BentoDesksBarLayout;

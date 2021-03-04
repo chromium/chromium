@@ -884,6 +884,22 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
                                   first_time_mini_views);
 }
 
+void DesksBarView::ScrollToShowMiniViewIfNecessary(
+    const DeskMiniView* mini_view) {
+  DCHECK(base::Contains(mini_views_, mini_view));
+  const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
+  const gfx::Rect mini_view_bounds = mini_view->bounds();
+  const bool beyond_left = mini_view_bounds.x() < visible_bounds.x();
+  const bool beyond_right = mini_view_bounds.right() > visible_bounds.right();
+  auto* scroll_bar = scroll_view_->horizontal_scroll_bar();
+  if (beyond_left) {
+    scroll_view_->ScrollToPosition(
+        scroll_bar, mini_view_bounds.right() - scroll_view_->bounds().width());
+  } else if (beyond_right) {
+    scroll_view_->ScrollToPosition(scroll_bar, mini_view_bounds.x());
+  }
+}
+
 DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
   for (auto* mini_view : mini_views_) {
     if (mini_view->desk() == desk)

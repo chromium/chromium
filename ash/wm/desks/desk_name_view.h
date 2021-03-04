@@ -12,6 +12,8 @@
 
 namespace ash {
 
+class DeskMiniView;
+
 // Defines a special textfield that allows modifying the name of its
 // corresponding desk. When it's not focused, it looks like a normal label. It
 // can be highlighted and activated by the OverviewHighlightController, and it
@@ -20,7 +22,7 @@ class ASH_EXPORT DeskNameView
     : public views::Textfield,
       public OverviewHighlightController::OverviewHighlightableView {
  public:
-  DeskNameView();
+  explicit DeskNameView(DeskMiniView* mini_view);
   DeskNameView(const DeskNameView&) = delete;
   DeskNameView& operator=(const DeskNameView&) = delete;
   ~DeskNameView() override;
@@ -63,6 +65,9 @@ class ASH_EXPORT DeskNameView
   // Returns the background color for this view based on whether it has focus
   // and if the mouse is entering/exiting the view.
   SkColor GetBackgroundColor() const;
+
+  // The mini view that associated with this name view.
+  DeskMiniView* const mini_view_;
 
   // Owned by this View via `View::border_`. This is just a convenient pointer
   // to it.

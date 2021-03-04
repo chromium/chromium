@@ -4010,6 +4010,12 @@ class DesksBentoTest : public AshTestBase {
     AshTestBase::SetUp();
   }
 
+  void SendKey(ui::KeyboardCode key_code, int flags = 0) {
+    auto* generator = GetEventGenerator();
+    generator->PressKey(key_code, flags);
+    generator->ReleaseKey(key_code, flags);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -4154,6 +4160,48 @@ TEST_F(DesksBentoTest, ScrollButtons) {
   event_generator->MoveMouseWheel(-x_scroll_delta, 0);
   EXPECT_TRUE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
   EXPECT_FALSE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
+}
+
+// Tests that change the focused mini view should scroll the desks bar and put
+// the focused mini view inside the visible bounds.
+TEST_F(DesksBentoTest, FocusedMiniViewIsVisible) {
+  UpdateDisplay("501x600");
+  for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++)
+    NewDesk();
+
+  EXPECT_EQ(DesksController::Get()->desks().size(),
+            desks_util::GetMaxNumberOfDesks());
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  TabletModeControllerTestApi().EnterTabletMode();
+  // Snap the window to left and then right side of the display should enter
+  // overview mode.
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  SplitViewController::Get(root_window)
+      ->SnapWindow(window.get(), SplitViewController::LEFT);
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  auto* desks_bar = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  auto mini_views = desks_bar->mini_views();
+  ASSERT_EQ(mini_views.size(), desks_util::GetMaxNumberOfDesks());
+  // Traverse all the desks mini views from left to right.
+  for (size_t i = 0; i < desks_util::GetMaxNumberOfDesks(); i++) {
+    // Move the focus to mini view.
+    SendKey(ui::VKEY_TAB);
+    EXPECT_TRUE(desks_bar->GetScrollViewForTesting()->GetVisibleRect().Contains(
+        mini_views[i]->bounds()));
+    // Move the focus to the mini view's associated name view.
+    SendKey(ui::VKEY_TAB);
+  }
+
+  // Traverse from all the desk mini views from right to left.
+  for (size_t i = desks_util::GetMaxNumberOfDesks() - 1; i > 0; i--) {
+    // Move the focus from desk name view to the associated mini view.
+    SendKey(ui::VKEY_LEFT);
+    // Move the focus to previous mini view's name view.
+    SendKey(ui::VKEY_LEFT);
+    EXPECT_TRUE(desks_bar->GetScrollViewForTesting()->GetVisibleRect().Contains(
+        mini_views[i - 1]->bounds()));
+  }
 }
 
 // Tests that the bounds of a window that is visible on all desks is shared
@@ -4537,18 +4585,12 @@ TEST_F(DesksBentoTest, ZeroStateDeskButtonText) {
               event_generator);
   EXPECT_TRUE(desks_bar_view->mini_views()[0]->desk_name_view()->HasFocus());
 
-  auto send_key = [this](ui::KeyboardCode key_code, int flags = 0) {
-    auto* generator = GetEventGenerator();
-    generator->PressKey(key_code, flags);
-    generator->ReleaseKey(key_code, flags);
-  };
-
   // Change the desk name to "test".
-  send_key(ui::VKEY_T);
-  send_key(ui::VKEY_E);
-  send_key(ui::VKEY_S);
-  send_key(ui::VKEY_T);
-  send_key(ui::VKEY_RETURN);
+  SendKey(ui::VKEY_T);
+  SendKey(ui::VKEY_E);
+  SendKey(ui::VKEY_S);
+  SendKey(ui::VKEY_T);
+  SendKey(ui::VKEY_RETURN);
   overview_controller->EndOverview();
   overview_controller->StartOverview();
 
@@ -4561,7 +4603,7 @@ TEST_F(DesksBentoTest, ZeroStateDeskButtonText) {
   // Create 'Desk 2'.
   ClickOnView(desks_bar_view->zero_state_new_desk_button(), event_generator);
   EXPECT_FALSE(desks_bar_view->IsZeroState());
-  send_key(ui::VKEY_RETURN);
+  SendKey(ui::VKEY_RETURN);
   EXPECT_EQ(base::UTF8ToUTF16("Desk 2"),
             DesksController::Get()->desks()[1].get()->name());
 
@@ -4576,8 +4618,8 @@ TEST_F(DesksBentoTest, ZeroStateDeskButtonText) {
   ClickOnView(desks_bar_view->zero_state_default_desk_button(),
               event_generator);
   for (size_t i = 0; i < DeskNameView::kMaxLength + 5; i++)
-    send_key(ui::VKEY_A);
-  send_key(ui::VKEY_RETURN);
+    SendKey(ui::VKEY_A);
+  SendKey(ui::VKEY_RETURN);
   overview_controller->EndOverview();
   overview_controller->StartOverview();
 

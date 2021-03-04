@@ -64,7 +64,7 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
 
   desk_->AddObserver(this);
 
-  auto desk_name_view = std::make_unique<DeskNameView>();
+  auto desk_name_view = std::make_unique<DeskNameView>(this);
   desk_name_view->AddObserver(this);
   desk_name_view->set_controller(this);
   desk_name_view->SetText(desk_->name());
@@ -183,9 +183,11 @@ gfx::Size DeskMiniView::CalculatePreferredSize() const {
     return preview_bounds.size();
 
   // The preferred size takes into account only the width of the preview
-  // view.
+  // view. Desk preview's bottom inset should be excluded to maintain
+  // |kLabelPreviewSpacing| between preview and desk name view.
   return gfx::Size{preview_bounds.width(),
-                   preview_bounds.height() + 2 * kLabelPreviewSpacing +
+                   preview_bounds.height() - GetPreviewBorderInsets().bottom() +
+                       2 * kLabelPreviewSpacing +
                        desk_name_view_->GetPreferredSize().height()};
 }
 
@@ -286,6 +288,7 @@ void DeskMiniView::MaybeSwapHighlightedView(bool right) {
 
 void DeskMiniView::OnViewHighlighted() {
   UpdateBorderColor();
+  owner_bar_->ScrollToShowMiniViewIfNecessary(this);
 }
 
 void DeskMiniView::OnViewUnhighlighted() {
