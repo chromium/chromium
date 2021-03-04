@@ -467,7 +467,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         // Provide NTP as page class in overview mode (when Start Surface is enabled). No call
         // to the backend necessary or possible, since there is no tab or navigation entry.
-        if (isInOverviewAndShowingOmnibox()) return PageClassification.NTP_VALUE;
+        if (isInOverviewAndShowingOmnibox()
+                || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
+            return PageClassification.NTP_VALUE;
+        }
 
         return LocationBarModelJni.get().getPageClassification(
                 mNativeLocationBarModelAndroid, LocationBarModel.this, isFocusedFromFakebox);
