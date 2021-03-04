@@ -187,6 +187,12 @@ void PdfViewPluginBase::NavigateToDestination(int page,
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::NotifyTouchSelectionOccurred() {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "touchSelectionOccurred");
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::GetDocumentPassword(
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK(password_callback_.is_null());

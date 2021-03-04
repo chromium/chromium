@@ -125,8 +125,6 @@ constexpr char kJSSaveRequestType[] = "saveRequestType";
 constexpr char kJSSaveDataType[] = "saveData";
 constexpr char kJSFileName[] = "fileName";
 constexpr char kJSDataToSave[] = "dataToSave";
-// Notify when touch selection occurs (Plugin -> Page)
-constexpr char kJSTouchSelectionOccurredType[] = "touchSelectionOccurred";
 // Reset print preview mode (Page -> Plugin)
 constexpr char kJSResetPrintPreviewModeType[] = "resetPrintPreviewMode";
 constexpr char kJSPrintPreviewUrl[] = "url";
@@ -1049,12 +1047,6 @@ void OutOfProcessInstance::NotifySelectedFindResultChanged(
     int current_find_index) {
   DCHECK_GE(current_find_index, -1);
   SelectedFindResultChanged(current_find_index);
-}
-
-void OutOfProcessInstance::NotifyTouchSelectionOccurred() {
-  pp::VarDictionary message;
-  message.Set(kType, kJSTouchSelectionOccurredType);
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
