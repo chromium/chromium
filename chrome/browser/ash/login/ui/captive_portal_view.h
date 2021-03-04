@@ -7,7 +7,7 @@
 
 #include <string>
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/ui/simple_web_view_dialog.h"
+#include "chrome/browser/ash/login/ui/simple_web_view_dialog.h"
 
 namespace chromeos {
 

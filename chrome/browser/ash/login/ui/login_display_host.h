@@ -17,9 +17,9 @@
 // when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/ui/signin_ui.h"
 #include "components/user_manager/user_type.h"
 
 #include "ui/gfx/native_widget_types.h"

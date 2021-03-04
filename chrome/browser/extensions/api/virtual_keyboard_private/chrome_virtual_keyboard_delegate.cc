@@ -21,7 +21,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"

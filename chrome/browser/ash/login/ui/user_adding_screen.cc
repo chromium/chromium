@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen_input_methods_controller.h"
 #include "chrome/browser/chromeos/login/helper.h"
-#include "chrome/browser/chromeos/login/ui/user_adding_screen_input_methods_controller.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "components/session_manager/core/session_manager.h"

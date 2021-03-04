@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/ui/user_adding_screen_input_methods_controller.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen_input_methods_controller.h"
 
 #include "components/user_manager/user_manager.h"
 

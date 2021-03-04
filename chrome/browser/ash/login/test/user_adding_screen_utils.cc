@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/test/user_adding_screen_utils.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 

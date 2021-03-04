@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/login/ui/views/user_board_view.h"
+#include "chrome/browser/ash/login/ui/views/user_board_view.h"
 
 namespace chromeos {
 

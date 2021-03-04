@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/ui/webui_accelerator_mapping.h"
+#include "chrome/browser/ash/login/ui/webui_accelerator_mapping.h"
 
 #include <string>
 

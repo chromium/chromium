@@ -13,7 +13,7 @@
 #include "base/optional.h"
 #include "chrome/browser/ash/login/ui/kiosk_app_menu_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/ui/signin_ui.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"

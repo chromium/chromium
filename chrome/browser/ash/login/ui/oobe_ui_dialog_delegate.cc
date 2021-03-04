@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/ui/oobe_ui_dialog_delegate.h"
+#include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
 
 #include <memory>
 #include <utility>
@@ -15,8 +15,8 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
+#include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/ash_util.h"

@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/ui/webui_login_view.h"
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"

@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/ui/webui_login_view.h"
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/geometry/rect.h"

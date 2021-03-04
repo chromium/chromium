@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/ui/web_contents_forced_title.h"
+#include "chrome/browser/ash/login/ui/web_contents_forced_title.h"
 
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/navigation_entry.h"

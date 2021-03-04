@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_UI_MOCK_SIGNIN_UI_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_UI_MOCK_SIGNIN_UI_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_
+#define CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/ui/signin_ui.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
@@ -38,4 +38,4 @@ class MockSigninUI : public SigninUI {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_UI_MOCK_SIGNIN_UI_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_

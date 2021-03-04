@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_
+#define CHROME_BROWSER_ASH_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_
 
 #include "base/strings/string16.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -39,4 +39,4 @@ class WebContentsForcedTitle
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_

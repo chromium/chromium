@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_
+#define CHROME_BROWSER_ASH_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_
 
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -54,4 +54,4 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_

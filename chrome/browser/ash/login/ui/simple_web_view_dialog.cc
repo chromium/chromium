@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/ui/simple_web_view_dialog.h"
+#include "chrome/browser/ash/login/ui/simple_web_view_dialog.h"
 
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"

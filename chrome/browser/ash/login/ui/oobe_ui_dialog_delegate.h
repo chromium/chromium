@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_UI_OOBE_UI_DIALOG_DELEGATE_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_UI_OOBE_UI_DIALOG_DELEGATE_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_UI_OOBE_UI_DIALOG_DELEGATE_H_
+#define CHROME_BROWSER_ASH_LOGIN_UI_OOBE_UI_DIALOG_DELEGATE_H_
 
 #include <string>
 
@@ -145,4 +145,4 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_UI_OOBE_UI_DIALOG_DELEGATE_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_UI_OOBE_UI_DIALOG_DELEGATE_H_
