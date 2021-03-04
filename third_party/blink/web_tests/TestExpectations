@@ -5689,7 +5689,6 @@ crbug.com/1181886 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.h
 crbug.com/1182673 [ Win7 ] http/tests/devtools/profiler/live-line-level-heap-profile.js [ Timeout ]
 crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Pass Failure ]
 crbug.com/1182677 [ Linux ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-video.https.html [ Pass Failure ]
-crbug.com/1182678 [ Linux ] external/wpt/touch-events/multi-touch-interactions.html [ Pass Failure ]
 crbug.com/1182680 [ Linux ] http/tests/devtools/console/console-format-collections.js [ Pass Failure ]
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Pass Failure ]
 crbug.com/1182689 [ Mac10.14 ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
