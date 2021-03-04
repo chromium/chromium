@@ -11,7 +11,6 @@
 #include "base/allocator/allocator_extension.h"
 #include "base/allocator/buildflags.h"
 #include "base/debug/profiler.h"
-#include "base/memory/nonscannable_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/traced_value.h"
@@ -67,22 +66,6 @@ void WinHeapMemoryDumpImpl(WinHeapInfo* crt_heap_info) {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-void ReportPartitionAllocDetailedStatsFor(ThreadSafePartitionRoot& root,
-                                          ProcessMemoryDump* pmd,
-                                          const char* name) {
-  SimplePartitionStatsDumper allocator_dumper;
-  root.DumpStats(name, false /* is_light_dump */, &allocator_dumper);
-  // These should be included in the overall figure, so using a child dump.
-  auto* allocator_dump = pmd->CreateAllocatorDump(name);
-  allocator_dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
-                            allocator_dumper.stats().total_mmapped_bytes);
-  allocator_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                            MemoryAllocatorDump::kUnitsBytes,
-                            allocator_dumper.stats().total_resident_bytes);
-  allocator_dump->AddScalar("allocated_size", MemoryAllocatorDump::kUnitsBytes,
-                            allocator_dumper.stats().total_active_bytes);
-}
-
 void ReportPartitionAllocStats(ProcessMemoryDump* pmd, bool detailed) {
   SimplePartitionStatsDumper allocator_dumper;
   auto* allocator = internal::PartitionAllocMalloc::Allocator();
@@ -103,17 +86,26 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd, bool detailed) {
   }
 
   // Not reported in UMA, detailed dumps only.
-  if (detailed) {
-    auto* aligned_allocator =
-        internal::PartitionAllocMalloc::AlignedAllocator();
-    if (aligned_allocator != allocator) {
-      ReportPartitionAllocDetailedStatsFor(
-          *internal::PartitionAllocMalloc::AlignedAllocator(), pmd,
-          "malloc/aligned");
-    }
-    auto& nonscannable_allocator = internal::NonScannableAllocator::Instance();
-    if (auto* root = nonscannable_allocator.root())
-      ReportPartitionAllocDetailedStatsFor(*root, pmd, "malloc/nonscannable");
+  auto* aligned_allocator = internal::PartitionAllocMalloc::AlignedAllocator();
+  if (detailed && (aligned_allocator != allocator)) {
+    SimplePartitionStatsDumper aligned_allocator_dumper;
+    aligned_allocator->DumpStats("malloc/aligned",
+                                 !detailed /* is_light_dump */,
+                                 &aligned_allocator_dumper);
+    // These should be included in the overall figure, so using a child dump.
+    auto* aligned_allocator_dump = pmd->CreateAllocatorDump("malloc/aligned");
+    // See
+    // //base/allocator/allocator_shim_default_dispatch_to_partition_alloc.cc
+    // for the sum of the aligned and regular partitions.
+    aligned_allocator_dump->AddScalar(
+        "virtual_size", MemoryAllocatorDump::kUnitsBytes,
+        aligned_allocator_dumper.stats().total_mmapped_bytes);
+    aligned_allocator_dump->AddScalar(
+        MemoryAllocatorDump::kNameSize, MemoryAllocatorDump::kUnitsBytes,
+        aligned_allocator_dumper.stats().total_resident_bytes);
+    aligned_allocator_dump->AddScalar(
+        "allocated_size", MemoryAllocatorDump::kUnitsBytes,
+        aligned_allocator_dumper.stats().total_active_bytes);
   }
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
