@@ -10,7 +10,7 @@ Dump tree
                 - #document
                     - <html>
                           <head></head>
-                          <body>IFRAME </body>
+                          <body>IFRAME\n</body>
                       </html>
               </iframe>
           </div>
@@ -26,7 +26,7 @@ Dump tree
                 - #document
                     - <html>
                           <head></head>
-                          <body>IFRAME </body>
+                          <body>IFRAME\n</body>
                       </html>
               </iframe>
           </div>

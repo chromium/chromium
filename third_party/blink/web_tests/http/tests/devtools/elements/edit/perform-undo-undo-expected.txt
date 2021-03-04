@@ -1,11 +1,11 @@
 Tests that client can call undo multiple times with non-empty history.
 
 ========= Original ========
-  <div style="display:none" id="container"> </div>
+  <div style="display:none" id="container">\n      </div>
 ===== Modified element =====
-  <div style="display:none" id="container" foo="bar"> </div>
+  <div style="display:none" id="container" foo="bar">\n      </div>
 ===== Undo 1 =====
-  <div style="display:none" id="container"> </div>
+  <div style="display:none" id="container">\n      </div>
 ===== Undo 2 =====
-  <div style="display:none" id="container"> </div>
+  <div style="display:none" id="container">\n      </div>
 

@@ -23,18 +23,18 @@ Running: testEditScript
   </div>
 ==== after ====
 - <div id="testEditScript">
-      <script id="node-to-edit-script">var i = 0; var j = 0; </script>
+      <script id="node-to-edit-script">var i = 0;\n    var j = 0;\n</script>
   </div>
 
 Running: testEditSVGAttribute
 ==== before ====
 - <div id="testEditSVG">
-      <svg id="node-to-edit-svg-attribute" xmlns:xlink="test" width="100"> </svg>
+      <svg id="node-to-edit-svg-attribute" xmlns:xlink="test" width="100">\n        </svg>
   </div>
 <svg id="node-to-edit-svg-attribute" xmlns:xlink="test" width="100">
         </svg>
 ==== after ====
 - <div id="testEditSVG">
-      <svg id="node-to-edit-svg-attribute" xmlns:xlink="test" width="110"> </svg>
+      <svg id="node-to-edit-svg-attribute" xmlns:xlink="test" width="110">\n        </svg>
   </div>
 

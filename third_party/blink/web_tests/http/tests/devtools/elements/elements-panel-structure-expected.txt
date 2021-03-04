@@ -8,7 +8,7 @@ Tests that elements panel shows DOM tree structure.
     - <body>
         - <div id="level1">
             - <div id="level2">
-                  " ><"' &nbsp;_&shy;_&ensp;_&emsp;_&thinsp;_&hairsp;_&ZeroWidthSpace;_&zwnj;_&zwj;_&lrm;_&rlm;_&#x202A;_&#x202B;_&#x202C;_&#x202D;_&#x202E;_&NoBreak;_&#xFEFF; "
+                  "\n          ><"'\n          &nbsp;_&shy;_&ensp;_&emsp;_&thinsp;_&hairsp;_&ZeroWidthSpace;_&zwnj;_&zwj;_&lrm;_&rlm;_&#x202A;_&#x202B;_&#x202C;_&#x202D;_&#x202E;_&NoBreak;_&#xFEFF;\n          "
                   <div id="level3"></div>
               </div>
           </div>

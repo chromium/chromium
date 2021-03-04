@@ -10,7 +10,7 @@ Running: testSetUp
                 - #document
                     - <html>
                           <head></head>
-                          <body> </body>
+                          <body>\n\n</body>
                       </html>
               </portal>
           </div>
@@ -22,6 +22,6 @@ Running: testActivate
 Running: testAfterActivate
 - <html>
       <head></head>
-      <body> </body>
+      <body>\n\n</body>
   </html>
 

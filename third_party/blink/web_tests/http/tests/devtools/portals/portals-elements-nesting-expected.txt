@@ -12,7 +12,7 @@ Running: testRemove
                 - #document
                     - <html>
                           <head></head>
-                          <body> </body>
+                          <body>\n\n</body>
                       </html>
               </portal>
           </div>
