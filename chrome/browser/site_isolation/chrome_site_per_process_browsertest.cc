@@ -48,6 +48,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_notification_tracker.h"
 #include "content/public/test/test_utils.h"
@@ -1444,11 +1445,18 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTestWithVerifiedUserActivation,
       ChildFrameAt(web_contents->GetMainFrame(), 0);
   content::RenderFrameHost* frame_b = ChildFrameAt(frame_a, 0);
 
-  // Activate subframe a. Using frame_b's bound to find a point in subframe a.
-  gfx::Rect bounds = frame_b->GetView()->GetViewBounds();
+  // The test becomes flaky if we don't wait for frame_a's hit-test data before
+  // sending the mouse-event below (crbug.com/1119342).
+  content::WaitForHitTestData(frame_a);
+
+  // Activate frame_a by clicking at the midpoints of top-left corners of
+  // frame_a and frame_b.
+  gfx::Rect bounds_a = frame_a->GetView()->GetViewBounds();
+  gfx::Rect bounds_b = frame_b->GetView()->GetViewBounds();
   content::SimulateMouseClickAt(web_contents, 0 /* modifiers */,
                                 blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point(bounds.x() - 5, bounds.y() - 5));
+                                gfx::Point((bounds_a.x() + bounds_b.x()) / 2,
+                                           (bounds_a.y() + bounds_b.y()) / 2));
 
   // Add a popup observer.
   content::TestNavigationObserver popup_observer(nullptr);
