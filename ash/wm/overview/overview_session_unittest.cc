@@ -3554,7 +3554,8 @@ class OverviewSessionFlingTest : public AshTestBase {
   }
 };
 
-TEST_F(OverviewSessionFlingTest, BasicFling) {
+// TODO(crbug.com/1184114): Disabled for being flaky.
+TEST_F(OverviewSessionFlingTest, DISABLED_BasicFling) {
   std::vector<std::unique_ptr<aura::Window>> windows(16);
   for (int i = 15; i >= 0; --i)
     windows[i] = CreateTestWindow();
