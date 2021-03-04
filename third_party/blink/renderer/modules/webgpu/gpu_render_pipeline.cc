@@ -231,7 +231,8 @@ void GPUVertexStateAsWGPUVertexState(
             AsDawnEnum<WGPUVertexFormat>(attribute->format());
         if (dawn_vertex_attribute.format >= WGPUVertexFormat_UChar2) {
           WTF::String message =
-              String("The vertex format '") + attribute->format() +
+              String("The vertex format '") +
+              IDLEnumAsString(attribute->format()) +
               String("' has been deprecated in favor of '") +
               GetUpdatedVertexFormat(dawn_vertex_attribute.format) + "'.";
           device->AddConsoleWarning(message.Utf8().data());

@@ -20,10 +20,9 @@ namespace {
 WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
   DCHECK_NE(nullptr, descriptor);
 
-  const Vector<String>& feature_names = descriptor->hasExtensions()
-                                            ? descriptor->extensions()
-                                            :  // Deprecated path
-                                            descriptor->nonGuaranteedFeatures();
+  auto&& feature_names = descriptor->hasExtensions() ? descriptor->extensions()
+                                                     :  // Deprecated path
+                             descriptor->nonGuaranteedFeatures();
 
   HashSet<String> feature_set;
   for (auto& feature : feature_names)

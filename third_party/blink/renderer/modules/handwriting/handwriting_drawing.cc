@@ -45,8 +45,7 @@ void OnRecognitionResult(
 HandwritingDrawing::HandwritingDrawing(ExecutionContext* context,
                                        HandwritingRecognizer* recognizer,
                                        const HandwritingHints* hints)
-    : hints_(MakeGarbageCollected<HandwritingHints>(*hints)),
-      recognizer_(recognizer) {}
+    : hints_(hints), recognizer_(recognizer) {}
 
 HandwritingDrawing::~HandwritingDrawing() = default;
 

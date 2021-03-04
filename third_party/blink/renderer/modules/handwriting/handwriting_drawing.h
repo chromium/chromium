@@ -41,7 +41,7 @@ class HandwritingDrawing final : public ScriptWrappable {
  private:
   bool IsValid() const;
 
-  Member<HandwritingHints> hints_;
+  Member<const HandwritingHints> hints_;
 
   HeapVector<Member<HandwritingStroke>> strokes_;
 

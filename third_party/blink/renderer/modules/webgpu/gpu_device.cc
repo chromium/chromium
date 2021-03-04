@@ -41,12 +41,15 @@ namespace blink {
 namespace {
 
 #ifdef USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
-Vector<String> ToStringVector(
-    const Vector<V8GPUExtensionName>& gpu_extension_names) {
-  Vector<String> result;
-  for (auto& name : gpu_extension_names)
-    result.push_back(IDLEnumAsString(name));
-  return result;
+Vector<String> ToStringVector(const Vector<V8GPUFeatureName>& features) {
+  Vector<String> str_features;
+  for (auto&& feature : features)
+    str_features.push_back(IDLEnumAsString(feature));
+  return str_features;
+}
+#else
+const Vector<String>& ToStringVector(const Vector<String>& features) {
+  return features;
 }
 #endif
 
@@ -61,11 +64,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
     : ExecutionContextClient(execution_context),
       DawnObject(dawn_control_client, dawn_device),
       adapter_(adapter),
-#ifdef USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
       feature_name_list_(ToStringVector(descriptor->nonGuaranteedFeatures())),
-#else
-      feature_name_list_(descriptor->nonGuaranteedFeatures()),
-#endif
       queue_(MakeGarbageCollected<GPUQueue>(
           this,
           GetProcs().deviceGetDefaultQueue(GetHandle()))),

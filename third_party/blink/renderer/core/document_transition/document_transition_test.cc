@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_root_transition_type.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
@@ -123,7 +124,8 @@ TEST_F(DocumentTransitionTest, EffectParsing) {
 
   // Test "explode" effect parsing.
   DocumentTransitionInit explode_init;
-  explode_init.setRootTransition("explode");
+  explode_init.setRootTransition(
+      V8RootTransitionType(V8RootTransitionType::Enum::kExplode));
   transition->prepare(script_state, &explode_init, exception_state);
 
   request = transition->TakePendingRequest();

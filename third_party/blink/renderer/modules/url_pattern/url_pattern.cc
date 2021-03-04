@@ -401,7 +401,9 @@ void ApplyInit(const URLPatternInit* init,
       return;
   }
   if (init->hasUsername() || init->hasPassword()) {
-    CanonicalizeUsernameAndPassword(init->username(), init->password(), type,
+    String init_username = init->hasUsername() ? init->username() : String();
+    String init_password = init->hasPassword() ? init->password() : String();
+    CanonicalizeUsernameAndPassword(init_username, init_password, type,
                                     username, password, exception_state);
     if (exception_state.HadException())
       return;
