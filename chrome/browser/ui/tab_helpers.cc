@@ -417,7 +417,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if defined(OS_MAC)
-  if (screentime::TabHelper::IsScreentimeEnabled())
+  if (screentime::TabHelper::IsScreentimeEnabledForProfile(profile))
     screentime::TabHelper::CreateForWebContents(web_contents);
 #endif
 

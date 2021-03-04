@@ -5,6 +5,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/command_line.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/screentime/fake_webpage_controller.h"
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
@@ -13,6 +14,11 @@
 #include "content/public/browser/web_contents.h"
 
 namespace screentime {
+
+const base::Feature TabHelper::kScreenTime{
+    "ScreenTime",
+    base::FEATURE_DISABLED_BY_DEFAULT,
+};
 
 namespace {
 bool g_use_fake_webpage_controller = false;
@@ -24,11 +30,9 @@ void TabHelper::UseFakeWebpageControllerForTesting() {
 }
 
 // static
-bool TabHelper::IsScreentimeEnabled() {
-  static constexpr base::Feature kScreenTime{
-      "ScreenTime",
-      base::FEATURE_DISABLED_BY_DEFAULT,
-  };
+bool TabHelper::IsScreentimeEnabledForProfile(Profile* profile) {
+  if (profile->IsOffTheRecord())
+    return false;
   return base::FeatureList::IsEnabled(kScreenTime);
 }
 
@@ -41,6 +45,11 @@ TabHelper::TabHelper(content::WebContents* contents)
 TabHelper::~TabHelper() = default;
 
 void TabHelper::DidFinishNavigation(content::NavigationHandle* handle) {
+  Profile* profile = Profile::FromBrowserContext(
+      handle->GetWebContents()->GetBrowserContext());
+  // Absolutely ensure that we never record a navigation for an OTR profile.
+  CHECK(!profile->IsOffTheRecord());
+
   // TODO(ellyjones): Some defensive programming around chrome:// URLs would
   // probably be a good idea here. It's not unimaginable that ScreenTime would
   // misbehave and end up occluding those URLs, which would be very bad.
