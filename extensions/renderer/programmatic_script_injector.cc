@@ -45,7 +45,7 @@ bool ProgrammaticScriptInjector::IsUserGesture() const {
   return params_->user_gesture;
 }
 
-CSSOrigin ProgrammaticScriptInjector::GetCssOrigin() const {
+mojom::CSSOrigin ProgrammaticScriptInjector::GetCssOrigin() const {
   return params_->css_origin;
 }
 

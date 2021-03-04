@@ -300,7 +300,7 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
                                    const GURL& webview_src,
                                    const GURL& script_url,
                                    bool user_gesture,
-                                   CSSOrigin css_origin,
+                                   mojom::CSSOrigin css_origin,
                                    ScriptExecutor::ResultType result_type,
                                    ScriptFinishedCallback callback) {
   if (host_id.type() == HostID::EXTENSIONS) {

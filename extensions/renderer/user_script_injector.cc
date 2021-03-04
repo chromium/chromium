@@ -140,8 +140,8 @@ bool UserScriptInjector::ExpectsResults() const {
   return false;
 }
 
-CSSOrigin UserScriptInjector::GetCssOrigin() const {
-  return CSSOrigin::kAuthor;
+mojom::CSSOrigin UserScriptInjector::GetCssOrigin() const {
+  return mojom::CSSOrigin::kAuthor;
 }
 
 bool UserScriptInjector::IsRemovingCSS() const {

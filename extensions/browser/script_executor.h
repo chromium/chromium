@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/user_script.h"
 
 class GURL;
@@ -117,7 +118,7 @@ class ScriptExecutor {
                      const GURL& webview_src,
                      const GURL& script_url,
                      bool user_gesture,
-                     CSSOrigin css_origin,
+                     mojom::CSSOrigin css_origin,
                      ResultType result_type,
                      ScriptFinishedCallback callback);
 

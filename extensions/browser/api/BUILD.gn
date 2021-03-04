@@ -48,6 +48,7 @@ source_set("api") {
     "//build:chromeos_buildflags",
     "//components/keyed_service/content:content",
     "//extensions/browser:browser_sources",
+    "//extensions/common:mojom",
     "//extensions/common/api",
     "//extensions/strings",
     "//services/device/public/cpp/hid",

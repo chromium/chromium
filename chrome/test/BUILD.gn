@@ -2227,6 +2227,7 @@ if (!is_android) {
         # chrome_extensions_browsertests target for more.
         "//extensions:chrome_extensions_browsertests",
         "//extensions/browser:test_support",
+        "//extensions/common:mojom",
         "//extensions/common/api",
       ]
 

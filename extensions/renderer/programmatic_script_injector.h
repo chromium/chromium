@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/renderer/script_injection.h"
 #include "url/gurl.h"
 
@@ -32,7 +33,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
   // ScriptInjector implementation.
   UserScript::InjectionType script_type() const override;
   bool IsUserGesture() const override;
-  CSSOrigin GetCssOrigin() const override;
+  mojom::CSSOrigin GetCssOrigin() const override;
   bool IsRemovingCSS() const override;
   bool IsAddingCSS() const override;
   const base::Optional<std::string> GetInjectionKey() const override;

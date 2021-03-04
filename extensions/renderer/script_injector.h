@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "extensions/common/constants.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -43,7 +44,7 @@ class ScriptInjector {
   virtual bool IsUserGesture() const = 0;
 
   // Returns the CSS origin of this injection.
-  virtual CSSOrigin GetCssOrigin() const = 0;
+  virtual mojom::CSSOrigin GetCssOrigin() const = 0;
 
   // Returns true is CSS is being removed or added respectively.
   //

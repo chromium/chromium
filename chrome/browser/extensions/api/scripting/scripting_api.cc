@@ -19,6 +19,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -36,16 +37,16 @@ constexpr char kExactlyOneOfCssAndFilesError[] =
 constexpr UserScript::RunLocation kCSSRunLocation = UserScript::DOCUMENT_START;
 
 // Converts the given `style_origin` to a CSSOrigin.
-CSSOrigin ConvertStyleOriginToCSSOrigin(
+mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
     api::scripting::StyleOrigin style_origin) {
-  CSSOrigin css_origin = CSSOrigin::kAuthor;
+  mojom::CSSOrigin css_origin = mojom::CSSOrigin::kAuthor;
   switch (style_origin) {
     case api::scripting::STYLE_ORIGIN_NONE:
     case api::scripting::STYLE_ORIGIN_AUTHOR:
-      css_origin = CSSOrigin::kAuthor;
+      css_origin = mojom::CSSOrigin::kAuthor;
       break;
     case api::scripting::STYLE_ORIGIN_USER:
-      css_origin = CSSOrigin::kUser;
+      css_origin = mojom::CSSOrigin::kUser;
       break;
   }
 
@@ -299,7 +300,7 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
       frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
       UserScript::DOCUMENT_IDLE, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), std::move(script_url), user_gesture(),
-      CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
+      mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
   return true;

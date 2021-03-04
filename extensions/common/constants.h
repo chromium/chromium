@@ -145,13 +145,6 @@ enum LaunchType {
   LAUNCH_TYPE_DEFAULT = LAUNCH_TYPE_REGULAR
 };
 
-// The origin of injected CSS.
-enum class CSSOrigin {
-  kAuthor = 0,
-  kUser = 1,
-  kLast = kUser,
-};
-
 }  // namespace extensions
 
 namespace extension_misc {

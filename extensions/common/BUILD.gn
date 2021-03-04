@@ -42,6 +42,7 @@ if (enable_extensions) {
       "mojom/action_type.mojom",
       "mojom/app_window.mojom",
       "mojom/channel.mojom",
+      "mojom/css_origin.mojom",
       "mojom/feature_session_type.mojom",
       "mojom/frame.mojom",
       "mojom/guest_view.mojom",

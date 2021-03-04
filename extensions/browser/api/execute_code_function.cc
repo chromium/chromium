@@ -17,6 +17,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
 
 namespace {
 
@@ -114,14 +115,14 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
   }
   CHECK_NE(UserScript::UNDEFINED, run_at);
 
-  CSSOrigin css_origin = CSSOrigin::kAuthor;
+  mojom::CSSOrigin css_origin = mojom::CSSOrigin::kAuthor;
   switch (details_->css_origin) {
     case api::extension_types::CSS_ORIGIN_NONE:
     case api::extension_types::CSS_ORIGIN_AUTHOR:
-      css_origin = CSSOrigin::kAuthor;
+      css_origin = mojom::CSSOrigin::kAuthor;
       break;
     case api::extension_types::CSS_ORIGIN_USER:
-      css_origin = CSSOrigin::kUser;
+      css_origin = mojom::CSSOrigin::kUser;
       break;
   }
 
