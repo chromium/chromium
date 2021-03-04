@@ -38,18 +38,16 @@ class DWriteFontProxyUnitTest : public testing::Test {
   }
 
   static void SetupFonts(FakeFontCollection* fonts) {
-    fonts->AddFont(STRING16_LITERAL("Aardvark"))
-        .AddFamilyName(STRING16_LITERAL("en-us"), STRING16_LITERAL("Aardvark"))
-        .AddFamilyName(STRING16_LITERAL("de-de"), STRING16_LITERAL("Erdferkel"))
+    fonts->AddFont(u"Aardvark")
+        .AddFamilyName(u"en-us", u"Aardvark")
+        .AddFamilyName(u"de-de", u"Erdferkel")
         .AddFilePath(base::FilePath(L"X:\\Nonexistent\\Folder\\Aardvark.ttf"));
-    FakeFont& arial = fonts->AddFont(STRING16_LITERAL("Arial"))
-                          .AddFamilyName(STRING16_LITERAL("en-us"),
-                                         STRING16_LITERAL("Arial"));
+    FakeFont& arial =
+        fonts->AddFont(u"Arial").AddFamilyName(u"en-us", u"Arial");
     for (auto& path : arial_font_files)
       arial.AddFilePath(base::FilePath(path));
-    fonts->AddFont(STRING16_LITERAL("Times New Roman"))
-        .AddFamilyName(STRING16_LITERAL("en-us"),
-                       STRING16_LITERAL("Times New Roman"))
+    fonts->AddFont(u"Times New Roman")
+        .AddFamilyName(u"en-us", u"Times New Roman")
         .AddFilePath(base::FilePath(L"X:\\Nonexistent\\Folder\\Times.ttf"));
   }
 
@@ -337,9 +335,7 @@ TEST_F(DWriteFontProxyUnitTest, GetFontFromFontFaceShouldFindFont) {
 
 TEST_F(DWriteFontProxyUnitTest, TestCustomFontFiles) {
   FakeFontCollection fonts;
-  FakeFont& arial =
-      fonts.AddFont(STRING16_LITERAL("Arial"))
-          .AddFamilyName(STRING16_LITERAL("en-us"), STRING16_LITERAL("Arial"));
+  FakeFont& arial = fonts.AddFont(u"Arial").AddFamilyName(u"en-us", u"Arial");
   for (auto& path : arial_font_files) {
     base::File file(base::FilePath(path), base::File::FLAG_OPEN |
                                               base::File::FLAG_READ |

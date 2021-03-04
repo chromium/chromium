@@ -285,11 +285,10 @@ struct views::metadata::TypeConverter<OmniboxPopupModel::Selection>
 base::string16
 views::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
     views::metadata::ArgType<OmniboxPopupModel::Selection> source_value) {
-  return STRING16_LITERAL("{") + base::NumberToString16(source_value.line) +
-         STRING16_LITERAL(",") +
+  return u"{" + base::NumberToString16(source_value.line) + u"," +
          TypeConverter<OmniboxPopupModel::LineState>::ToString(
              source_value.state) +
-         STRING16_LITERAL("}");
+         u"}";
 }
 
 // static

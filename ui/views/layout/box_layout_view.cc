@@ -134,23 +134,19 @@ void BoxLayoutView::ClearFlexForView(const View* view) {
 }
 
 DEFINE_ENUM_CONVERTERS(BoxLayout::Orientation,
-                       {BoxLayout::Orientation::kHorizontal,
-                        STRING16_LITERAL("kHorizontal")},
-                       {BoxLayout::Orientation::kVertical,
-                        STRING16_LITERAL("kVertical")})
+                       {BoxLayout::Orientation::kHorizontal, u"kHorizontal"},
+                       {BoxLayout::Orientation::kVertical, u"kVertical"})
 
-DEFINE_ENUM_CONVERTERS(
-    BoxLayout::MainAxisAlignment,
-    {BoxLayout::MainAxisAlignment::kStart, STRING16_LITERAL("kStart")},
-    {BoxLayout::MainAxisAlignment::kCenter, STRING16_LITERAL("kCenter")},
-    {BoxLayout::MainAxisAlignment::kEnd, STRING16_LITERAL("kEnd")})
+DEFINE_ENUM_CONVERTERS(BoxLayout::MainAxisAlignment,
+                       {BoxLayout::MainAxisAlignment::kStart, u"kStart"},
+                       {BoxLayout::MainAxisAlignment::kCenter, u"kCenter"},
+                       {BoxLayout::MainAxisAlignment::kEnd, u"kEnd"})
 
-DEFINE_ENUM_CONVERTERS(
-    BoxLayout::CrossAxisAlignment,
-    {BoxLayout::CrossAxisAlignment::kStretch, STRING16_LITERAL("kStretch")},
-    {BoxLayout::CrossAxisAlignment::kStart, STRING16_LITERAL("kStart")},
-    {BoxLayout::CrossAxisAlignment::kCenter, STRING16_LITERAL("kCenter")},
-    {BoxLayout::CrossAxisAlignment::kEnd, STRING16_LITERAL("kEnd")})
+DEFINE_ENUM_CONVERTERS(BoxLayout::CrossAxisAlignment,
+                       {BoxLayout::CrossAxisAlignment::kStretch, u"kStretch"},
+                       {BoxLayout::CrossAxisAlignment::kStart, u"kStart"},
+                       {BoxLayout::CrossAxisAlignment::kCenter, u"kCenter"},
+                       {BoxLayout::CrossAxisAlignment::kEnd, u"kEnd"})
 
 BEGIN_METADATA(BoxLayoutView, View)
 ADD_PROPERTY_METADATA(BoxLayout::Orientation, Orientation)

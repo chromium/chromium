@@ -666,14 +666,14 @@ TEST_F(BrowserAccessibilityWinTest, TestSimpleHypertext) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
-  const base::string16 text1_name = STRING16_LITERAL("One two three.");
-  const base::string16 combo_box_name = STRING16_LITERAL("City:");
-  const base::string16 combo_box_value = STRING16_LITERAL("Happyland");
-  const base::string16 text2_name = STRING16_LITERAL(" Four five six.");
-  const base::string16 check_box_name = STRING16_LITERAL("I agree");
-  const base::string16 check_box_value = STRING16_LITERAL("Checked");
-  const base::string16 button_text_name = STRING16_LITERAL("Red");
-  const base::string16 link_text_name = STRING16_LITERAL("Blue");
+  const base::string16 text1_name = u"One two three.";
+  const base::string16 combo_box_name = u"City:";
+  const base::string16 combo_box_value = u"Happyland";
+  const base::string16 text2_name = u" Four five six.";
+  const base::string16 check_box_name = u"I agree";
+  const base::string16 check_box_value = u"Checked";
+  const base::string16 button_text_name = u"Red";
+  const base::string16 link_text_name = u"Blue";
   // Each control (combo / check box, button and link) will be represented by an
   // embedded object character.
   const base::string16 embed(1, BrowserAccessibilityComWin::kEmbeddedCharacter);
@@ -2262,7 +2262,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
   base::win::ScopedVariant anchor_target;
   base::win::ScopedBstr bstr;
 
-  base::string16 div_hypertext(STRING16_LITERAL("Click "));
+  base::string16 div_hypertext(u"Click ");
   div_hypertext.push_back(BrowserAccessibilityComWin::kEmbeddedCharacter);
 
   // div_accessible and link_accessible are the only IA2 hyperlinks.

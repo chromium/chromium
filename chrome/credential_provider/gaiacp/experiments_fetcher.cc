@@ -23,8 +23,7 @@ namespace credential_provider {
 namespace {
 
 // HTTP endpoint on the GCPW service to fetch experiments.
-const base::char16 kGcpwServiceFetchExperimentsPath[] =
-    STRING16_LITERAL("/v1/experiments");
+const base::char16 kGcpwServiceFetchExperimentsPath[] = u"/v1/experiments";
 
 // Default timeout when trying to make requests to the GCPW service.
 const base::TimeDelta kDefaultFetchExperimentsRequestTimeout =

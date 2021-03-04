@@ -225,10 +225,8 @@ TEST_F(AXPlatformNodeTextProviderTest,
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(base::WideToUTF16(text_content.Get()),
-            STRING16_LITERAL("Dialog label.Dialog description.") +
-                kEmbeddedCharacterAsString +
-                STRING16_LITERAL("ok.Some more detail ") +
-                STRING16_LITERAL("about dialog."));
+            u"Dialog label.Dialog description." + kEmbeddedCharacterAsString +
+                u"ok.Some more detail " + u"about dialog.");
 
   // Check the reverse relationship that GetEnclosingElement on the text range
   // gives back the dialog.
@@ -617,7 +615,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {
   action_data.target_node_id = 1;
   AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
   owner->GetDelegate()->AccessibilityPerformAction(action_data);
-  const base::string16 active_composition_text = STRING16_LITERAL("a");
+  const base::string16 active_composition_text = u"a";
   owner->OnActiveComposition(gfx::Range(0, 1), active_composition_text, false);
 
   root_text_edit_provider->GetActiveComposition(&text_range_provider);
@@ -677,7 +675,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetConversionTarget) {
   action_data.target_node_id = 1;
   AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
   owner->GetDelegate()->AccessibilityPerformAction(action_data);
-  const base::string16 active_composition_text = STRING16_LITERAL("a");
+  const base::string16 active_composition_text = u"a";
   owner->OnActiveComposition(gfx::Range(0, 1), active_composition_text, false);
 
   root_text_edit_provider->GetConversionTarget(&text_range_provider);

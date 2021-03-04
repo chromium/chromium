@@ -102,8 +102,8 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   View* content = widget.SetContentsView(std::make_unique<View>());
 
   Textfield* textfield = new Textfield;
-  textfield->SetAccessibleName(STRING16_LITERAL("Name"));
-  textfield->SetText(STRING16_LITERAL("Value"));
+  textfield->SetAccessibleName(u"Name");
+  textfield->SetText(u"Value");
   content->AddChildView(textfield);
 
   ComPtr<IAccessible> content_accessible(content->GetNativeViewAccessible());
@@ -137,7 +137,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   ScopedBstr new_value(L"New value");
   ASSERT_EQ(S_OK,
             textfield_accessible->put_accValue(childid_self, new_value.Get()));
-  EXPECT_EQ(STRING16_LITERAL("New value"), textfield->GetText());
+  EXPECT_EQ(u"New value", textfield->GetText());
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
@@ -148,7 +148,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
 
   View* content = widget.SetContentsView(std::make_unique<View>());
 
-  Label* label = new Label(STRING16_LITERAL("Label"));
+  Label* label = new Label(u"Label");
   content->AddChildView(label);
   Textfield* textfield = new Textfield;
   textfield->SetAssociatedLabel(label);
@@ -394,7 +394,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, Overrides) {
 
   View* alert_view = new ScrollView;
   alert_view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
-  alert_view->GetViewAccessibility().OverrideName(STRING16_LITERAL("Name"));
+  alert_view->GetViewAccessibility().OverrideName(u"Name");
   alert_view->GetViewAccessibility().OverrideDescription("Description");
   alert_view->GetViewAccessibility().OverrideIsLeaf(true);
   contents_view->AddChildView(alert_view);

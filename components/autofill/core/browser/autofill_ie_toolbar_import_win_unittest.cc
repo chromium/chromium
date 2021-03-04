@@ -188,10 +188,9 @@ TEST_F(AutofillIeToolbarImportTest, TestAutofillImport) {
             profiles[1].GetInfo(AutofillType(PHONE_HOME_COUNTRY_CODE), "US"));
   EXPECT_EQ(base::WideToUTF16(profile1[6].value),
             profiles[1].GetInfo(AutofillType(PHONE_HOME_CITY_CODE), "US"));
-  EXPECT_EQ(STRING16_LITERAL("5555555"),
+  EXPECT_EQ(u"5555555",
             profiles[1].GetInfo(AutofillType(PHONE_HOME_NUMBER), "US"));
-  EXPECT_EQ(STRING16_LITERAL("1 650-555-5555"),
-            profiles[1].GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"1 650-555-5555", profiles[1].GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
 
   EXPECT_EQ(base::WideToUTF16(profile2[0].value),
             profiles[0].GetRawInfo(NAME_FIRST));
@@ -205,7 +204,7 @@ TEST_F(AutofillIeToolbarImportTest, TestAutofillImport) {
   ASSERT_EQ(1U, credit_cards.size());
   EXPECT_EQ(base::WideToUTF16(credit_card[0].value),
             credit_cards[0].GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(STRING16_LITERAL("4111111111111111"),
+  EXPECT_EQ(u"4111111111111111",
             credit_cards[0].GetRawInfo(CREDIT_CARD_NUMBER));
   EXPECT_EQ(base::WideToUTF16(credit_card[2].value),
             credit_cards[0].GetRawInfo(CREDIT_CARD_EXP_MONTH));

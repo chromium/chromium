@@ -266,8 +266,8 @@ TEST_F(OSExchangeDataWinTest, MultipleFormatsViaCOM) {
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  base::string16 text = STRING16_LITERAL("O hai googlz.");
-  data.SetURL(url, STRING16_LITERAL("Google"));
+  base::string16 text = u"O hai googlz.";
+  data.SetURL(url, u"Google");
   data.SetString(text);
 
   Microsoft::WRL::ComPtr<IDataObject> com_data(
@@ -300,7 +300,7 @@ TEST_F(OSExchangeDataWinTest, MultipleFormatsViaCOM) {
 TEST_F(OSExchangeDataWinTest, EnumerationViaCOM) {
   OSExchangeData data;
   data.SetURL(GURL("http://www.google.com/"), base::string16());
-  data.SetString(STRING16_LITERAL("O hai googlz."));
+  data.SetString(u"O hai googlz.");
 
   CLIPFORMAT cfstr_file_group_descriptor =
       RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR);
@@ -389,7 +389,7 @@ TEST_F(OSExchangeDataWinTest, TestURLExchangeFormatsViaCOM) {
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  base::string16 url_title = STRING16_LITERAL("www.google.com");
+  base::string16 url_title = u"www.google.com";
   data.SetURL(url, url_title);
 
   // File contents access via COM
@@ -904,9 +904,9 @@ TEST_F(OSExchangeDataWinTest, CFHtml) {
   OSExchangeData data;
   GURL url("http://www.google.com/");
   base::string16 html(
-      STRING16_LITERAL("<HTML>\n<BODY>\n"
-                       "<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
-                       "</BODY>\n</HTML>"));
+      u"<HTML>\n<BODY>\n"
+      u"<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
+      u"</BODY>\n</HTML>");
   data.SetHtml(html, url);
 
   // Check the CF_HTML too.
@@ -930,13 +930,13 @@ TEST_F(OSExchangeDataWinTest, CFHtml) {
 
 TEST_F(OSExchangeDataWinTest, SetURLWithMaxPath) {
   OSExchangeData data;
-  base::string16 long_title(MAX_PATH + 1, STRING16_LITERAL('a'));
+  base::string16 long_title(MAX_PATH + 1, u'a');
   data.SetURL(GURL("http://google.com"), long_title);
 }
 
 TEST_F(OSExchangeDataWinTest, ProvideURLForPlainTextURL) {
   OSExchangeData data;
-  data.SetString(STRING16_LITERAL("http://google.com"));
+  data.SetString(u"http://google.com");
 
   OSExchangeData data2(data.provider().Clone());
   ASSERT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));

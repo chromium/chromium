@@ -11031,10 +11031,9 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
 
   // Hello <embedded> world<embedded><embedded>hey<embedded><embedded>
   base::string16 expected_text =
-      base::StrCat({STRING16_LITERAL("Hello "), AXNode::kEmbeddedCharacter,
-                    STRING16_LITERAL(" world"), AXNode::kEmbeddedCharacter,
-                    AXNode::kEmbeddedCharacter, STRING16_LITERAL("hey"),
-                    AXNode::kEmbeddedCharacter});
+      base::StrCat({u"Hello ", AXNode::kEmbeddedCharacter, u" world",
+                    AXNode::kEmbeddedCharacter, AXNode::kEmbeddedCharacter,
+                    u"hey", AXNode::kEmbeddedCharacter});
   EXPECT_EQ(expected_text, position->GetText());
 
   // A position on an empty object that has been replaced by an "embedded object

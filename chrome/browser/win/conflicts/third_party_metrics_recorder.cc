@@ -26,10 +26,8 @@ namespace {
 
 // Returns true if the module is signed by Google.
 bool IsGoogleModule(base::StringPiece16 subject) {
-  static constexpr base::StringPiece16 kGoogleLlc(
-      STRING16_LITERAL("Google LLC"));
-  static constexpr base::StringPiece16 kGoogleInc(
-      STRING16_LITERAL("Google Inc"));
+  static constexpr base::StringPiece16 kGoogleLlc(u"Google LLC");
+  static constexpr base::StringPiece16 kGoogleInc(u"Google Inc");
   return subject == kGoogleLlc || subject == kGoogleInc;
 }
 

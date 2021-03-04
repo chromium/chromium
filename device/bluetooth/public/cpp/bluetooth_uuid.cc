@@ -98,8 +98,7 @@ BluetoothUUID::~BluetoothUUID() = default;
 // static
 GUID BluetoothUUID::GetCanonicalValueAsGUID(base::StringPiece uuid) {
   DCHECK_EQ(36u, uuid.size());
-  base::string16 braced_uuid =
-      STRING16_LITERAL('{') + base::UTF8ToUTF16(uuid) + STRING16_LITERAL('}');
+  base::string16 braced_uuid = u'{' + base::UTF8ToUTF16(uuid) + u'}';
   GUID guid;
   CHECK_EQ(NOERROR, ::CLSIDFromString(base::as_wcstr(braced_uuid), &guid));
   return guid;

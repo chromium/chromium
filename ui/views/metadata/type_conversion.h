@@ -281,14 +281,12 @@ struct TypeConverter<std::vector<T>>
     std::vector<base::string16> serialized;
     base::ranges::transform(source_value, std::back_inserter(serialized),
                             &TypeConverter<T>::ToString);
-    return STRING16_LITERAL("{") +
-           base::JoinString(serialized, STRING16_LITERAL(",")) +
-           STRING16_LITERAL("}");
+    return u"{" + base::JoinString(serialized, u",") + u"}";
   }
   static base::Optional<std::vector<T>> FromString(
       const base::string16& source_value) {
-    if (source_value.empty() || source_value.front() != STRING16_LITERAL('{') ||
-        source_value.back() != STRING16_LITERAL('}'))
+    if (source_value.empty() || source_value.front() != u'{' ||
+        source_value.back() != u'}')
       return base::nullopt;
     const auto values = base::SplitString(
         source_value.substr(1, source_value.length() - 2),

@@ -606,7 +606,7 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
     // Compute a newer version.
     base::Version current_version(CHROME_VERSION_STRING);
     new_version_ = base::StringPrintf(
-        STRING16_LITERAL("%u.%u.%u.%u"), current_version.components()[0],
+        u"%u.%u.%u.%u", current_version.components()[0],
         current_version.components()[1], current_version.components()[2] + 1,
         current_version.components()[3]);
 
@@ -767,7 +767,7 @@ TEST_P(GoogleUpdateWinTest, UpdatesDisabledByPolicy) {
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
   mock_app->PushErrorState(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY,
-                           STRING16_LITERAL("disabled by policy"), -1);
+                           u"disabled by policy", -1);
 
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_DISABLED_BY_POLICY, _, _));
@@ -794,9 +794,8 @@ TEST_P(GoogleUpdateWinTest, ManualUpdatesDisabledByPolicy) {
 
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
-  mock_app->PushErrorState(
-      GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL,
-      STRING16_LITERAL("manual updates disabled by policy"), -1);
+  mock_app->PushErrorState(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL,
+                           u"manual updates disabled by policy", -1);
 
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_DISABLED_BY_POLICY_AUTO_ONLY, _, _));
@@ -829,7 +828,7 @@ TEST_P(GoogleUpdateWinTest, UpdateCheckNoUpdate) {
   task_runner_->RunUntilIdle();
   ASSERT_TRUE(GetLastUpdateState());
   EXPECT_EQ(GetLastUpdateState()->error_code, GOOGLE_UPDATE_NO_ERROR);
-  EXPECT_EQ(GetLastUpdateState()->new_version, STRING16_LITERAL(""));
+  EXPECT_EQ(GetLastUpdateState()->new_version, u"");
 }
 
 // Test an update check where an update is available.
@@ -904,7 +903,7 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalled) {
 
 // Test a failed upgrade where Google Update reports that the installer failed.
 TEST_P(GoogleUpdateWinTest, UpdateFailed) {
-  const base::string16 error(STRING16_LITERAL("It didn't work."));
+  const base::string16 error(u"It didn't work.");
   static const HRESULT GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
   static const int kInstallerError = 12;
 
@@ -1000,7 +999,7 @@ TEST_P(GoogleUpdateWinTest, RetryAfterExternalUpdaterError) {
   task_runner_->RunUntilIdle();
   ASSERT_TRUE(GetLastUpdateState());
   EXPECT_EQ(GetLastUpdateState()->error_code, GOOGLE_UPDATE_NO_ERROR);
-  EXPECT_EQ(GetLastUpdateState()->new_version, STRING16_LITERAL(""));
+  EXPECT_EQ(GetLastUpdateState()->new_version, u"");
 }
 
 TEST_P(GoogleUpdateWinTest, UpdateInstalledMultipleDelegates) {
@@ -1080,8 +1079,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultWithErrorCode) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ONDEMAND_CLASS_NOT_FOUND,
-                      AllOfArray({HasSubstr(STRING16_LITERAL("error code 3:")),
-                                  HasSubstr(STRING16_LITERAL("0x80072EF2"))}),
+                      AllOfArray({HasSubstr(u"error code 3:"),
+                                  HasSubstr(u"0x80072EF2")}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1102,8 +1101,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultOnly) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ERROR_UPDATING,
-                      AllOfArray({HasSubstr(STRING16_LITERAL("error code 7:")),
-                                  HasSubstr(STRING16_LITERAL("0x80072EF2"))}),
+                      AllOfArray({HasSubstr(u"error code 7:"),
+                                  HasSubstr(u"0x80072EF2")}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1122,8 +1121,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultDefault) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ERROR_UPDATING,
-                      AllOfArray({HasSubstr(STRING16_LITERAL("error code 7:")),
-                                  HasSubstr(STRING16_LITERAL("0x80004005"))}),
+                      AllOfArray({HasSubstr(u"error code 7:"),
+                                  HasSubstr(u"0x80004005")}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());

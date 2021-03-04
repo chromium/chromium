@@ -1749,8 +1749,8 @@ TEST_F(AutocompleteResultTest, SortAndCullKeepGroupedSuggestionsLast) {
                           TestSchemeClassifier());
   AutocompleteResult result;
 
-  result.headers_map_[1] = STRING16_LITERAL("1");
-  result.headers_map_[2] = STRING16_LITERAL("2");
+  result.headers_map_[1] = u"1";
+  result.headers_map_[2] = u"2";
 
   result.AppendMatches(input, matches);
   result.SortAndCull(input, template_url_service_.get());

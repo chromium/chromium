@@ -64,7 +64,7 @@ class PrintDataSetter : public content::WebContentsObserver {
     message_data.SetString("content", base64_data);
     std::string json_data;
     base::JSONWriter::Write(message_data, &json_data);
-    message_data_ = STRING16_LITERAL("cp-dialog-set-print-document::");
+    message_data_ = u"cp-dialog-set-print-document::";
     message_data_.append(base::UTF8ToUTF16(json_data));
   }
 

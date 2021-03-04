@@ -16,7 +16,7 @@ namespace password_manager {
 
 namespace {
 
-constexpr base::char16 kUser[] = STRING16_LITERAL("user");
+constexpr base::char16 kUser[] = u"user";
 
 class IsPossibleUsernameValidTest : public testing::Test {
  protected:
@@ -56,25 +56,25 @@ TEST_F(IsPossibleUsernameValidTest, PossibleUsernameValue) {
   // Different capitalization is okay.
   EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data_,
                                       possible_username_data_.signon_realm,
-                                      {STRING16_LITERAL("USER")}));
+                                      {u"USER"}));
   // Different email hosts are okay.
   EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data_,
                                       possible_username_data_.signon_realm,
-                                      {STRING16_LITERAL("user@gmail.com")}));
+                                      {u"user@gmail.com"}));
 
   // Other usernames are okay.
   EXPECT_TRUE(IsPossibleUsernameValid(possible_username_data_,
                                       possible_username_data_.signon_realm,
-                                      {kUser, STRING16_LITERAL("alice")}));
+                                      {kUser, u"alice"}));
 
   // No usernames are not okay.
   EXPECT_FALSE(IsPossibleUsernameValid(
       possible_username_data_, possible_username_data_.signon_realm, {}));
 
   // Completely different usernames are not okay.
-  EXPECT_FALSE(IsPossibleUsernameValid(
-      possible_username_data_, possible_username_data_.signon_realm,
-      {STRING16_LITERAL("alice"), STRING16_LITERAL("bob")}));
+  EXPECT_FALSE(IsPossibleUsernameValid(possible_username_data_,
+                                       possible_username_data_.signon_realm,
+                                       {u"alice", u"bob"}));
 }
 
 }  // namespace

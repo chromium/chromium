@@ -95,9 +95,9 @@ TEST_F(TriggeredProfileResetterTest, HasLongToolName) {
       L"ToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcTool"
       L"ToolMcToolToolMcToolToolMcToolThisIsTheToolThatNeverEndsYesItGoesOnAnd"
       L"OnMyFriend";
-  const base::char16 kExpectedToolName[] = STRING16_LITERAL(
-      "ToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolTo"
-      "olMcToolToolMcToolToolMcTool");
+  const base::char16 kExpectedToolName[] =
+      u"ToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcTool"
+      u"ToolMcToolToolMcToolToolMcTool";
   SetRegTimestampAndToolName(kLongToolName, nullptr);
   TriggeredProfileResetter triggered_profile_resetter(profile_.get());
   triggered_profile_resetter.Activate();

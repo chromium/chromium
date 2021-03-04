@@ -38,8 +38,7 @@ namespace {
 
 constexpr base::FilePath::CharType kCertificatePath[] =
     FILE_PATH_LITERAL("CertificatePath");
-constexpr base::char16 kCertificateSubject[] =
-    STRING16_LITERAL("CertificateSubject");
+constexpr base::char16 kCertificateSubject[] = u"CertificateSubject";
 
 constexpr base::FilePath::CharType kDllPath1[] =
     FILE_PATH_LITERAL("c:\\path\\to\\module.dll");

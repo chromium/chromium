@@ -254,7 +254,7 @@ void GetCertificateInfo(const base::FilePath& filename,
 }
 
 bool IsMicrosoftModule(base::StringPiece16 subject) {
-  static constexpr base::char16 kMicrosoft[] = STRING16_LITERAL("Microsoft ");
+  static constexpr base::char16 kMicrosoft[] = u"Microsoft ";
   return base::StartsWith(subject, kMicrosoft);
 }
 
@@ -267,11 +267,9 @@ StringMapping GetEnvironmentVariablesMapping(
     std::string value;
     if (environment->GetVar(base::WideToASCII(variable).c_str(), &value)) {
       value = base::TrimString(value, "\\", base::TRIM_TRAILING).as_string();
-      string_mapping.push_back(
-          std::make_pair(base::i18n::ToLower(base::UTF8ToUTF16(value)),
-                         STRING16_LITERAL("%") +
-                             base::i18n::ToLower(base::AsString16(variable)) +
-                             STRING16_LITERAL("%")));
+      string_mapping.push_back(std::make_pair(
+          base::i18n::ToLower(base::UTF8ToUTF16(value)),
+          u"%" + base::i18n::ToLower(base::AsString16(variable)) + u"%"));
     }
   }
 

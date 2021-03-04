@@ -816,7 +816,7 @@ int ChromeBrowserMainPartsWin::HandleIconsCommands(
   if (parsed_command_line.HasSwitch(switches::kHideIcons)) {
     // TODO(740976): This is not up-to-date and not localized. Figure out if
     // the --hide-icons and --show-icons switches are still used.
-    base::string16 cp_applet = STRING16_LITERAL("Programs and Features");
+    base::string16 cp_applet = u"Programs and Features";
     const base::string16 msg =
         l10n_util::GetStringFUTF16(IDS_HIDE_ICONS_NOT_SUPPORTED, cp_applet);
     const base::string16 caption = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);

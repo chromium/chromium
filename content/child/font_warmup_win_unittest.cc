@@ -63,10 +63,9 @@ class GDIFontEmulationTest : public testing::Test {
     EXPECT_TRUE(base::PathService::Get(content::DIR_TEST_DATA, &data_path));
 
     base::FilePath gdi_path = data_path.AppendASCII("font/gdi_test.ttf");
-    fonts->AddFont(STRING16_LITERAL("GDITest"))
-        .AddFamilyName(STRING16_LITERAL("en-us"), STRING16_LITERAL("GDITest"))
-        .AddFamilyName(STRING16_LITERAL("de-de"),
-                       STRING16_LITERAL("GDIUntersuchung"))
+    fonts->AddFont(u"GDITest")
+        .AddFamilyName(u"en-us", u"GDITest")
+        .AddFamilyName(u"de-de", u"GDIUntersuchung")
         .AddFilePath(gdi_path);
   }
 

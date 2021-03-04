@@ -460,9 +460,8 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void AddChromeCleanupStrings(content::WebUIDataSource* html_source) {
   const base::char16 kUnwantedSoftwareProtectionWhitePaperUrl[] =
-      STRING16_LITERAL(
-          "https://www.google.ca/chrome/browser/privacy/"
-          "whitepaper.html#unwantedsoftware");
+      u"https://www.google.ca/chrome/browser/privacy/"
+      u"whitepaper.html#unwantedsoftware";
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"chromeCleanupPageTitle",

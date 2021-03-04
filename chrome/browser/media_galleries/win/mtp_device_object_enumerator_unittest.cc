@@ -37,9 +37,9 @@ struct MTPDeviceObjectEntryData {
 };
 
 const MTPDeviceObjectEntryData kTestCases[] = {
-    {STRING16_LITERAL("File_1"), L"o100", false, 10023, 1121},
-    {STRING16_LITERAL("Directory_1"), L"o52", true, 99833, 2231},
-    {STRING16_LITERAL("File_2"), L"o230", false, 8733, 7372},
+    {u"File_1", L"o100", false, 10023, 1121},
+    {u"Directory_1", L"o52", true, 99833, 2231},
+    {u"File_2", L"o230", false, 8733, 7372},
 };
 
 void TestEnumeratorIsEmpty(MTPDeviceObjectEnumerator* enumerator) {

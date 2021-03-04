@@ -182,7 +182,7 @@ bool UpdateTaskCategory(JumpListUpdater* jumplist_updater,
   if (incognito_availability != IncognitoModePrefs::FORCED) {
     scoped_refptr<ShellLinkItem> chrome = CreateShellLink(cmd_line_profile_dir);
     base::string16 chrome_title = l10n_util::GetStringUTF16(IDS_NEW_WINDOW);
-    base::ReplaceSubstringsAfterOffset(&chrome_title, 0, STRING16_LITERAL("&"),
+    base::ReplaceSubstringsAfterOffset(&chrome_title, 0, u"&",
                                        base::StringPiece16());
     chrome->set_title(chrome_title);
     chrome->set_icon(chrome_path, icon_index);
@@ -197,8 +197,8 @@ bool UpdateTaskCategory(JumpListUpdater* jumplist_updater,
     incognito->GetCommandLine()->AppendSwitch(switches::kIncognito);
     base::string16 incognito_title =
         l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW);
-    base::ReplaceSubstringsAfterOffset(
-        &incognito_title, 0, STRING16_LITERAL("&"), base::StringPiece16());
+    base::ReplaceSubstringsAfterOffset(&incognito_title, 0, u"&",
+                                       base::StringPiece16());
     incognito->set_title(incognito_title);
     incognito->set_icon(chrome_path, icon_resources::kIncognitoIndex);
     items.push_back(incognito);

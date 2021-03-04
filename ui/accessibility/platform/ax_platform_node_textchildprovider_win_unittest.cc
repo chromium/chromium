@@ -271,9 +271,8 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(
-      base::WideToUTF16(text_content.Get()),
-      kEmbeddedCharacterAsString + STRING16_LITERAL("text child of nontext."));
+  EXPECT_EQ(base::WideToUTF16(text_content.Get()),
+            kEmbeddedCharacterAsString + u"text child of nontext.");
 
   ComPtr<IRawElementProviderSimple> enclosing_element;
   text_range_provider->GetEnclosingElement(&enclosing_element);

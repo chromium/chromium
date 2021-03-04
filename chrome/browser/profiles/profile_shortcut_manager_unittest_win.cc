@@ -52,11 +52,11 @@ class ProfileShortcutManagerTest : public testing::Test {
         profile_manager_->profile_attributes_storage();
     profile_shortcut_manager_ =
         ProfileShortcutManager::Create(profile_manager_->profile_manager());
-    profile_1_name_ = STRING16_LITERAL("My profile");
+    profile_1_name_ = u"My profile";
     profile_1_path_ = CreateProfileDirectory(profile_1_name_);
-    profile_2_name_ = STRING16_LITERAL("My profile 2");
+    profile_2_name_ = u"My profile 2";
     profile_2_path_ = CreateProfileDirectory(profile_2_name_);
-    profile_3_name_ = STRING16_LITERAL("My profile 3");
+    profile_3_name_ = u"My profile 3";
     profile_3_path_ = CreateProfileDirectory(profile_3_name_);
   }
 
@@ -358,7 +358,7 @@ class ProfileShortcutManagerTest : public testing::Test {
 };
 
 TEST_F(ProfileShortcutManagerTest, ShortcutFilename) {
-  const base::string16 kProfileName = STRING16_LITERAL("Harry");
+  const base::string16 kProfileName = u"Harry";
   const std::wstring expected_name =
       base::AsWString(kProfileName) + L" - " +
       base::AsWString(l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)) +
@@ -368,17 +368,17 @@ TEST_F(ProfileShortcutManagerTest, ShortcutFilename) {
 }
 
 TEST_F(ProfileShortcutManagerTest, ShortcutLongFilenameIsTrimmed) {
-  const base::string16 kLongProfileName = STRING16_LITERAL(
-      "Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry "
-      "Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry "
-      "Harry Harry Harry Harry Harry");
+  const base::string16 kLongProfileName =
+      u"Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry "
+      u"Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry Harry "
+      u"Harry Harry Harry Harry Harry Harry Harry";
   const std::wstring file_name =
       profiles::internal::GetShortcutFilenameForProfile(kLongProfileName);
   EXPECT_LT(file_name.size(), kLongProfileName.size());
 }
 
 TEST_F(ProfileShortcutManagerTest, ShortcutFilenameStripsReservedCharacters) {
-  const base::string16 kProfileName = STRING16_LITERAL("<Harry/>");
+  const base::string16 kProfileName = u"<Harry/>";
   const std::wstring kSanitizedProfileName = L"Harry";
   const std::wstring expected_name =
       kSanitizedProfileName + L" - " +
@@ -430,8 +430,7 @@ TEST_F(ProfileShortcutManagerTest, DesktopShortcutsUpdate) {
 
   // Cause an update in ProfileShortcutManager by modifying the profile info
   // cache.
-  const base::string16 new_profile_2_name =
-      STRING16_LITERAL("New Profile Name");
+  const base::string16 new_profile_2_name = u"New Profile Name";
   RenameProfile(FROM_HERE, profile_2_path_, new_profile_2_name);
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_2_name_));
   ValidateProfileShortcut(FROM_HERE, new_profile_2_name, profile_2_path_);
@@ -653,7 +652,7 @@ TEST_F(ProfileShortcutManagerTest, RenamedDesktopShortcutsAfterProfileRename) {
                                 profile_2_path_);
 
   // Now, rename the profile.
-  const base::string16 new_profile_2_name = STRING16_LITERAL("New profile");
+  const base::string16 new_profile_2_name = u"New profile";
   RenameProfile(FROM_HERE, profile_2_path_, new_profile_2_name);
 
   // The original shortcut should be renamed but the copied shortcut should
@@ -804,14 +803,14 @@ TEST_F(ProfileShortcutManagerTest, ProfileShortcutsWithSystemLevelShortcut) {
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_3_name_));
 
-  const base::string16 new_profile_3_name = STRING16_LITERAL("New Name 3");
+  const base::string16 new_profile_3_name = u"New Name 3";
   entry_3->SetLocalProfileName(new_profile_3_name, /*is_default_name=*/false);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_3_name_));
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(new_profile_3_name));
 
   // Rename the second profile and ensure its shortcut got renamed.
-  const base::string16 new_profile_2_name = STRING16_LITERAL("New Name 2");
+  const base::string16 new_profile_2_name = u"New Name 2";
   ProfileAttributesEntry* entry_2 =
       profile_attributes_storage_->GetProfileAttributesWithPath(
           profile_2_path_);
@@ -970,38 +969,38 @@ TEST_F(ProfileShortcutManagerTest, ShortcutFilenameUniquified) {
   std::set<base::FilePath> excludes;
 
   std::wstring shortcut_filename =
-      profiles::internal::GetUniqueShortcutFilenameForProfile(
-          STRING16_LITERAL("Carrie"), excludes);
+      profiles::internal::GetUniqueShortcutFilenameForProfile(u"Carrie",
+                                                              excludes);
   EXPECT_EQ(
       L"Carrie - " + suffix + installer::kLnkExt, shortcut_filename);
   excludes.insert(GetUserShortcutsDirectory().Append(shortcut_filename));
 
   shortcut_filename = profiles::internal::GetUniqueShortcutFilenameForProfile(
-      STRING16_LITERAL("Carrie"), excludes);
+      u"Carrie", excludes);
   EXPECT_EQ(
       L"Carrie - " + suffix + L" (1)" + installer::kLnkExt, shortcut_filename);
   excludes.insert(GetUserShortcutsDirectory().Append(shortcut_filename));
 
   shortcut_filename = profiles::internal::GetUniqueShortcutFilenameForProfile(
-      STRING16_LITERAL("Carrie"), excludes);
+      u"Carrie", excludes);
   EXPECT_EQ(
       L"Carrie - " + suffix + L" (2)" + installer::kLnkExt, shortcut_filename);
   excludes.insert(GetUserShortcutsDirectory().Append(shortcut_filename));
 
   shortcut_filename = profiles::internal::GetUniqueShortcutFilenameForProfile(
-      STRING16_LITERAL("Steven"), excludes);
+      u"Steven", excludes);
   EXPECT_EQ(
       L"Steven - " + suffix + installer::kLnkExt, shortcut_filename);
   excludes.insert(GetUserShortcutsDirectory().Append(shortcut_filename));
 
   shortcut_filename = profiles::internal::GetUniqueShortcutFilenameForProfile(
-      STRING16_LITERAL("Steven"), excludes);
+      u"Steven", excludes);
   EXPECT_EQ(
       L"Steven - " + suffix + L" (1)" + installer::kLnkExt, shortcut_filename);
   excludes.insert(GetUserShortcutsDirectory().Append(shortcut_filename));
 
   shortcut_filename = profiles::internal::GetUniqueShortcutFilenameForProfile(
-      STRING16_LITERAL("Carrie"), excludes);
+      u"Carrie", excludes);
   EXPECT_EQ(
       L"Carrie - " + suffix + L" (3)" + installer::kLnkExt, shortcut_filename);
   excludes.insert(GetUserShortcutsDirectory().Append(shortcut_filename));
@@ -1010,14 +1009,13 @@ TEST_F(ProfileShortcutManagerTest, ShortcutFilenameUniquified) {
       GetUserShortcutsDirectory().Append(
           L"Carrie - " + suffix + installer::kLnkExt));
   shortcut_filename = profiles::internal::GetUniqueShortcutFilenameForProfile(
-      STRING16_LITERAL("Carrie"), excludes);
+      u"Carrie", excludes);
   EXPECT_EQ(
       L"Carrie - " + suffix + installer::kLnkExt, shortcut_filename);
 }
 
 TEST_F(ProfileShortcutManagerTest, ShortcutFilenameMatcher) {
-  profiles::internal::ShortcutFilenameMatcher matcher(
-      STRING16_LITERAL("Carrie"));
+  profiles::internal::ShortcutFilenameMatcher matcher(u"Carrie");
   const std::wstring suffix =
       base::AsWString(l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));
 
@@ -1098,7 +1096,7 @@ TEST_F(ProfileShortcutManagerTest, ShortcutsForProfilesWithIdenticalNames) {
                                 profile_1_path_);
 
   // Rename profile1 again.
-  new_profile_1_name = STRING16_LITERAL("Carrie");
+  new_profile_1_name = u"Carrie";
   RenameProfile(FROM_HERE, profile_1_path_, new_profile_1_name);
   ValidateProfileShortcut(FROM_HERE, new_profile_1_name, profile_1_path_);
   // Check that nothing is changed for profile2 and profile3.

@@ -87,10 +87,10 @@ base::OnceClosure& GetRegistrationCBForTesting() {
 }
 
 void ReportUploadsWithUma(const base::string16& upload_results) {
-  base::String16Tokenizer tokenizer(upload_results, STRING16_LITERAL(";"));
+  base::String16Tokenizer tokenizer(upload_results, u";");
   bool last_result = false;
   while (tokenizer.GetNext()) {
-    last_result = (tokenizer.token_piece() != STRING16_LITERAL("0"));
+    last_result = (tokenizer.token_piece() != u"0");
   }
 
   UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.LastUploadResult", last_result);

@@ -2532,13 +2532,13 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   // The Hindi string has two characters, the first one 32 bits and the second
   // 64 bits in length. It is formatted in UTF16.
-  const std::string hindi = base::UTF16ToUTF8(
-      STRING16_LITERAL("\x0939\x093F\x0928\x094D\x0926\x0940"));
+  const std::string hindi =
+      base::UTF16ToUTF8(u"\x0939\x093F\x0928\x094D\x0926\x0940");
 
   // The Thai string has three characters, the first one 48, the second 32 and
   // the last one 16 bits in length. It is formatted in UTF16.
-  const std::string thai = base::UTF16ToUTF8(
-      STRING16_LITERAL("\x0E23\x0E39\x0E49\x0E2A\x0E36\x0E01"));
+  const std::string thai =
+      base::UTF16ToUTF8(u"\x0E23\x0E39\x0E49\x0E2A\x0E36\x0E01");
 
   Init(BuildTextDocument({english, hindi, thai}));
 

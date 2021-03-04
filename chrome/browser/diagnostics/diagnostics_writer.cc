@@ -87,7 +87,7 @@ class WinConsole : public SimpleConsole {
   void OnQuit() override {
     // Block here so the user can see the results.
     SetColor(SimpleConsole::DEFAULT);
-    Write(STRING16_LITERAL("Press [enter] to continue\n"));
+    Write(u"Press [enter] to continue\n");
     wchar_t buf[256];
     DWORD read = base::size(buf);
     ::ReadConsoleW(std_in_, buf, read, &read, NULL);

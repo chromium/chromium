@@ -225,7 +225,7 @@ TEST_F(TypeConversionTest, TestConversion_VectorToString) {
   base::string16 to_string =
       metadata::TypeConverter<std::vector<int>>::ToString(kVector);
 
-  EXPECT_EQ(to_string, STRING16_LITERAL("{3,5,7,9}"));
+  EXPECT_EQ(to_string, u"{3,5,7,9}");
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToVector) {

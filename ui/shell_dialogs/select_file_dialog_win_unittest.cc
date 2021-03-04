@@ -275,7 +275,7 @@ TEST_F(SelectFileDialogWinTest, UploadFolderCheckStrings) {
 // Specifying the title when opening a dialog to select a file, select multiple
 // files or save a file doesn't do anything.
 TEST_F(SelectFileDialogWinTest, SpecifyTitle) {
-  static constexpr base::char16 kTitle[] = STRING16_LITERAL("FooBar Title");
+  static constexpr base::char16 kTitle[] = u"FooBar Title";
 
   // Create some file in a test folder.
   base::ScopedTempDir scoped_temp_dir;

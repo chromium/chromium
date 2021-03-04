@@ -564,9 +564,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
 
   // Show a new notification.
   message_center::Notification notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id",
-      STRING16_LITERAL("Text1"), STRING16_LITERAL("Text2"), gfx::Image(),
-      base::string16(), GURL("https://example.com/"),
+      message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", u"Text1",
+      u"Text2", gfx::Image(), base::string16(), GURL("https://example.com/"),
       message_center::NotifierId(), message_center::RichNotificationData(),
       nullptr);
   base::RunLoop display_run_loop;
@@ -609,9 +608,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, DisplayWithFakeAC) {
   ASSERT_TRUE(launch_id.is_valid());
 
   auto notification = std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id",
-      STRING16_LITERAL("Text1"), STRING16_LITERAL("Text2"), gfx::Image(),
-      base::string16(), GURL("https://example.com/"),
+      message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", u"Text1",
+      u"Text2", gfx::Image(), base::string16(), GURL("https://example.com/"),
       message_center::NotifierId(), message_center::RichNotificationData(),
       nullptr);
 
@@ -661,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
   EXPECT_EQ(GURL("https://example.com/"), last_origin_);
   EXPECT_EQ("notification_id", last_notification_id_);
   EXPECT_EQ(0, last_action_index_);
-  EXPECT_EQ(STRING16_LITERAL("Inline reply"), last_reply_);
+  EXPECT_EQ(u"Inline reply", last_reply_);
   EXPECT_TRUE(last_by_user_);
 }
 

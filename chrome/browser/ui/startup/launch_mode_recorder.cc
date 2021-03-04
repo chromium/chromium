@@ -66,8 +66,7 @@ LaunchMode GetLaunchModeSlow() {
       base::i18n::ToLower(base::WideToUTF16(shortcut_path.value())));
 
   // The windows quick launch path is not localized.
-  if (shortcut.find(STRING16_LITERAL("\\quick launch\\")) !=
-      base::StringPiece16::npos)
+  if (shortcut.find(u"\\quick launch\\") != base::StringPiece16::npos)
     return LaunchMode::kShortcutTaskbar;
 
   // Check the common shortcut locations.

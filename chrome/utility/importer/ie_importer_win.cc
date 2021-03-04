@@ -632,7 +632,7 @@ bool IEImporter::GetFavoritesInfo(IEImporter::FavoritesInfo* info) {
     // Source path exists during testing as well as when importing from Edge.
     info->path = source_path_;
     info->path = info->path.AppendASCII("Favorites");
-    info->links_folder = STRING16_LITERAL("Links");
+    info->links_folder = u"Links";
     return true;
   }
 
@@ -648,7 +648,7 @@ bool IEImporter::GetFavoritesInfo(IEImporter::FavoritesInfo* info) {
   // under Favorites folder since it looks like there is not name different in
   // every language version of Windows.
   info->path = base::FilePath(buffer);
-  info->links_folder = STRING16_LITERAL("Links");
+  info->links_folder = u"Links";
 
   return true;
 }

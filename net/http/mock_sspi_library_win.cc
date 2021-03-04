@@ -119,8 +119,8 @@ SECURITY_STATUS MockSSPILibrary::AcquireCredentialsHandle(
     PTimeStamp ptsExpiry) {
   DCHECK(!SecIsValidHandle(phCredential));
   auto* credential = new MockCredential;
-  credential->source_principal = pszPrincipal ? base::as_u16cstr(pszPrincipal)
-                                              : STRING16_LITERAL("<Default>");
+  credential->source_principal =
+      pszPrincipal ? base::as_u16cstr(pszPrincipal) : u"<Default>";
   credential->package = base::as_u16cstr(package_name_.c_str());
   credential->has_explicit_credentials = !!pvAuthData;
 

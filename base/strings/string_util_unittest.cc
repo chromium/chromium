@@ -1325,7 +1325,7 @@ TEST(StringUtilTest, MakeBasicStringPieceTest) {
   EXPECT_EQ(MakeStringPiece(foo.begin(), foo.end()).size(), foo.size());
   EXPECT_TRUE(MakeStringPiece(foo.end(), foo.end()).empty());
 
-  constexpr char16 kBar[] = STRING16_LITERAL("Bar");
+  constexpr char16 kBar[] = u"Bar";
   static_assert(MakeStringPiece16(kBar, kBar + 3) == kBar, "");
   static_assert(MakeStringPiece16(kBar, kBar + 3).data() == kBar, "");
   static_assert(MakeStringPiece16(kBar, kBar + 3).size() == 3, "");

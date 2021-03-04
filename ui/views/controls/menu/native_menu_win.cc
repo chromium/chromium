@@ -191,13 +191,12 @@ void NativeMenuWin::UpdateMenuItemInfoForString(MENUITEMINFO* mii,
   ui::MenuModel::ItemType type = model_->GetTypeAt(model_index);
   // Strip out any tabs, otherwise they get interpreted as accelerators and can
   // lead to weird behavior.
-  base::ReplaceSubstringsAfterOffset(&formatted, 0, STRING16_LITERAL("\t"),
-                                     STRING16_LITERAL(" "));
+  base::ReplaceSubstringsAfterOffset(&formatted, 0, u"\t", u" ");
   if (type != ui::MenuModel::TYPE_SUBMENU) {
     // Add accelerator details to the label if provided.
     ui::Accelerator accelerator(ui::VKEY_UNKNOWN, ui::EF_NONE);
     if (model_->GetAcceleratorAt(model_index, &accelerator)) {
-      formatted += STRING16_LITERAL("\t");
+      formatted += u"\t";
       formatted += accelerator.GetShortcutText();
     }
   }

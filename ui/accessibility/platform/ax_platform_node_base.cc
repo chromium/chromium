@@ -63,8 +63,7 @@ bool FindDescendantRoleWithMaxDepth(AXPlatformNodeBase* node,
 
 }  // namespace
 
-const base::char16 AXPlatformNodeBase::kEmbeddedCharacter =
-    STRING16_LITERAL('\xfffc');
+const base::char16 AXPlatformNodeBase::kEmbeddedCharacter = u'\xfffc';
 
 // Map from each AXPlatformNode's unique id to its instance.
 using UniqueIdMap = std::unordered_map<int32_t, AXPlatformNode*>;

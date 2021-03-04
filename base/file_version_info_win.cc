@@ -97,43 +97,43 @@ FileVersionInfoWin::CreateFileVersionInfoWin(const base::FilePath& file_path) {
 }
 
 base::string16 FileVersionInfoWin::company_name() {
-  return GetStringValue(STRING16_LITERAL("CompanyName"));
+  return GetStringValue(u"CompanyName");
 }
 
 base::string16 FileVersionInfoWin::company_short_name() {
-  return GetStringValue(STRING16_LITERAL("CompanyShortName"));
+  return GetStringValue(u"CompanyShortName");
 }
 
 base::string16 FileVersionInfoWin::internal_name() {
-  return GetStringValue(STRING16_LITERAL("InternalName"));
+  return GetStringValue(u"InternalName");
 }
 
 base::string16 FileVersionInfoWin::product_name() {
-  return GetStringValue(STRING16_LITERAL("ProductName"));
+  return GetStringValue(u"ProductName");
 }
 
 base::string16 FileVersionInfoWin::product_short_name() {
-  return GetStringValue(STRING16_LITERAL("ProductShortName"));
+  return GetStringValue(u"ProductShortName");
 }
 
 base::string16 FileVersionInfoWin::product_version() {
-  return GetStringValue(STRING16_LITERAL("ProductVersion"));
+  return GetStringValue(u"ProductVersion");
 }
 
 base::string16 FileVersionInfoWin::file_description() {
-  return GetStringValue(STRING16_LITERAL("FileDescription"));
+  return GetStringValue(u"FileDescription");
 }
 
 base::string16 FileVersionInfoWin::file_version() {
-  return GetStringValue(STRING16_LITERAL("FileVersion"));
+  return GetStringValue(u"FileVersion");
 }
 
 base::string16 FileVersionInfoWin::original_filename() {
-  return GetStringValue(STRING16_LITERAL("OriginalFilename"));
+  return GetStringValue(u"OriginalFilename");
 }
 
 base::string16 FileVersionInfoWin::special_build() {
-  return GetStringValue(STRING16_LITERAL("SpecialBuild"));
+  return GetStringValue(u"SpecialBuild");
 }
 
 bool FileVersionInfoWin::GetValue(const base::char16* name,

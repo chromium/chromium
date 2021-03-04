@@ -195,8 +195,7 @@ TEST(DhcpPacFileAdapterFetcher, NormalCaseURLInDhcp) {
   client.WaitForResult(OK);
   ASSERT_TRUE(client.fetcher_->DidFinish());
   EXPECT_THAT(client.fetcher_->GetResult(), IsOk());
-  EXPECT_EQ(base::string16(STRING16_LITERAL("bingo")),
-            client.fetcher_->GetPacScript());
+  EXPECT_EQ(base::string16(u"bingo"), client.fetcher_->GetPacScript());
   EXPECT_EQ(GURL(kPacUrl), client.fetcher_->GetPacURL());
 }
 
@@ -276,8 +275,7 @@ TEST(DhcpPacFileAdapterFetcher, CancelAtCompletion) {
   // are identical expectations to the NormalCaseURLInDhcp test.
   ASSERT_TRUE(client.fetcher_->DidFinish());
   EXPECT_THAT(client.fetcher_->GetResult(), IsOk());
-  EXPECT_EQ(base::string16(STRING16_LITERAL("bingo")),
-            client.fetcher_->GetPacScript());
+  EXPECT_EQ(base::string16(u"bingo"), client.fetcher_->GetPacScript());
   EXPECT_EQ(GURL(kPacUrl), client.fetcher_->GetPacURL());
   client.FinishTestAllowCleanup();
 }
@@ -322,7 +320,7 @@ TEST(DhcpPacFileAdapterFetcher, MockDhcpRealFetch) {
   client.WaitForResult(OK);
   ASSERT_TRUE(client.fetcher_->DidFinish());
   EXPECT_THAT(client.fetcher_->GetResult(), IsOk());
-  EXPECT_EQ(base::string16(STRING16_LITERAL("-downloadable.pac-\n")),
+  EXPECT_EQ(base::string16(u"-downloadable.pac-\n"),
             client.fetcher_->GetPacScript());
   EXPECT_EQ(configured_url,
             client.fetcher_->GetPacURL());

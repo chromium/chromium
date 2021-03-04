@@ -443,8 +443,8 @@ bool TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
     base::string16::const_iterator end,
     base::string16& color,
     base::string16::const_iterator& next_token) {
-  static const auto open_paren = STRING16_LITERAL('(');
-  static const auto close_paren = STRING16_LITERAL(')');
+  static const auto open_paren = u'(';
+  static const auto close_paren = u')';
   static const std::vector<base::string16> schemes = {
       base::ASCIIToUTF16("hsl"), base::ASCIIToUTF16("hsla"),
       base::ASCIIToUTF16("rgb"), base::ASCIIToUTF16("rgba")};

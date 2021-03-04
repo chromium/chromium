@@ -171,8 +171,7 @@ class ModuleListFilterTest : public ::testing::Test {
 };
 
 TEST_F(ModuleListFilterTest, IsAllowlistedStringPieceVersion) {
-  base::string16 basename =
-      STRING16_LITERAL("basename.dll");  // Must be lowercase.
+  base::string16 basename = u"basename.dll";  // Must be lowercase.
   std::string code_id = GetCodeId(12u, 32u);
 
   ModuleListBuilder module_list_builder(module_list_path());

@@ -49,10 +49,8 @@ void UnexpectedCallback(int result) {
 }  // namespace
 
 TEST(HttpAuthSSPITest, SplitUserAndDomain) {
-  MatchDomainUserAfterSplit(STRING16_LITERAL("foobar"), STRING16_LITERAL(""),
-                            STRING16_LITERAL("foobar"));
-  MatchDomainUserAfterSplit(STRING16_LITERAL("FOO\\bar"),
-                            STRING16_LITERAL("FOO"), STRING16_LITERAL("bar"));
+  MatchDomainUserAfterSplit(u"foobar", u"", u"foobar");
+  MatchDomainUserAfterSplit(u"FOO\\bar", u"FOO", u"bar");
 }
 
 TEST(HttpAuthSSPITest, DetermineMaxTokenLength_Normal) {

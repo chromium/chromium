@@ -263,7 +263,7 @@ TEST_F(StorageMonitorWinTest, DevicesAttached) {
   EXPECT_EQ(L"F:\\", info.location());
   EXPECT_EQ("dcim:\\\\?\\Volume{F0000000-0000-0000-0000-000000000000}\\",
             info.device_id());
-  EXPECT_EQ(STRING16_LITERAL("F:\\ Drive"), info.storage_label());
+  EXPECT_EQ(u"F:\\ Drive", info.storage_label());
 
   EXPECT_FALSE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("G:\\")), &info));
@@ -275,9 +275,9 @@ TEST_F(StorageMonitorWinTest, DevicesAttached) {
   StorageInfo info2;
   EXPECT_TRUE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("F:\\subdir\\sub")), &info2));
-  EXPECT_EQ(STRING16_LITERAL("F:\\ Drive"), info.storage_label());
-  EXPECT_EQ(STRING16_LITERAL("F:\\ Drive"), info1.storage_label());
-  EXPECT_EQ(STRING16_LITERAL("F:\\ Drive"), info2.storage_label());
+  EXPECT_EQ(u"F:\\ Drive", info.storage_label());
+  EXPECT_EQ(u"F:\\ Drive", info1.storage_label());
+  EXPECT_EQ(u"F:\\ Drive", info2.storage_label());
 }
 
 TEST_F(StorageMonitorWinTest, PathMountDevices) {
@@ -285,40 +285,40 @@ TEST_F(StorageMonitorWinTest, PathMountDevices) {
   size_t init_storages = monitor_->GetAllAvailableStorages().size();
 
   volume_mount_watcher_->AddDeviceForTesting(
-      base::FilePath(FILE_PATH_LITERAL("F:\\mount1")), "dcim:mount1",
-      STRING16_LITERAL("mount1"), 100);
+      base::FilePath(FILE_PATH_LITERAL("F:\\mount1")), "dcim:mount1", u"mount1",
+      100);
   volume_mount_watcher_->AddDeviceForTesting(
       base::FilePath(FILE_PATH_LITERAL("F:\\mount1\\subdir")),
-      "dcim:mount1subdir", STRING16_LITERAL("mount1subdir"), 100);
+      "dcim:mount1subdir", u"mount1subdir", 100);
   volume_mount_watcher_->AddDeviceForTesting(
-      base::FilePath(FILE_PATH_LITERAL("F:\\mount2")), "dcim:mount2",
-      STRING16_LITERAL("mount2"), 100);
+      base::FilePath(FILE_PATH_LITERAL("F:\\mount2")), "dcim:mount2", u"mount2",
+      100);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(init_storages + 3, monitor_->GetAllAvailableStorages().size());
 
   StorageInfo info;
   EXPECT_TRUE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("F:\\dir")), &info));
-  EXPECT_EQ(STRING16_LITERAL("F:\\ Drive"), info.GetDisplayName(false));
+  EXPECT_EQ(u"F:\\ Drive", info.GetDisplayName(false));
   EXPECT_TRUE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("F:\\mount1")), &info));
-  EXPECT_EQ(STRING16_LITERAL("mount1"), info.GetDisplayName(false));
+  EXPECT_EQ(u"mount1", info.GetDisplayName(false));
   EXPECT_TRUE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("F:\\mount1\\dir")), &info));
-  EXPECT_EQ(STRING16_LITERAL("mount1"), info.GetDisplayName(false));
+  EXPECT_EQ(u"mount1", info.GetDisplayName(false));
   EXPECT_TRUE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("F:\\mount2\\dir")), &info));
-  EXPECT_EQ(STRING16_LITERAL("mount2"), info.GetDisplayName(false));
+  EXPECT_EQ(u"mount2", info.GetDisplayName(false));
   EXPECT_TRUE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("F:\\mount1\\subdir")), &info));
-  EXPECT_EQ(STRING16_LITERAL("mount1subdir"), info.GetDisplayName(false));
+  EXPECT_EQ(u"mount1subdir", info.GetDisplayName(false));
   EXPECT_TRUE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("F:\\mount1\\subdir\\dir")), &info));
-  EXPECT_EQ(STRING16_LITERAL("mount1subdir"), info.GetDisplayName(false));
+  EXPECT_EQ(u"mount1subdir", info.GetDisplayName(false));
   EXPECT_TRUE(monitor_->GetStorageInfoForPath(
       base::FilePath(FILE_PATH_LITERAL("F:\\mount1\\subdir\\dir\\dir")),
       &info));
-  EXPECT_EQ(STRING16_LITERAL("mount1subdir"), info.GetDisplayName(false));
+  EXPECT_EQ(u"mount1subdir", info.GetDisplayName(false));
 }
 
 TEST_F(StorageMonitorWinTest, DevicesAttachedHighBoundary) {

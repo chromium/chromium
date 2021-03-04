@@ -78,8 +78,7 @@ class MockInstalledApplications : public InstalledApplications {
 };
 
 constexpr wchar_t kCertificatePath[] = L"CertificatePath";
-constexpr base::char16 kCertificateSubject[] =
-    STRING16_LITERAL("CertificateSubject");
+constexpr base::char16 kCertificateSubject[] = u"CertificateSubject";
 
 constexpr wchar_t kDllPath1[] = L"c:\\path\\to\\module.dll";
 constexpr wchar_t kDllPath2[] = L"c:\\some\\shellextension.dll";

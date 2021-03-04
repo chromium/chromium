@@ -34,7 +34,7 @@
 namespace {
 
 // Toolbar favorites are placed under this special folder name.
-const base::char16 kFavoritesBarTitle[] = STRING16_LITERAL("_Favorites_Bar_");
+const base::char16 kFavoritesBarTitle[] = u"_Favorites_Bar_";
 const wchar_t kSpartanDatabaseFile[] = L"spartan.edb";
 
 struct EdgeFavoriteEntry {
@@ -125,7 +125,7 @@ void BuildBookmarkEntries(const EdgeFavoriteEntry& current_entry,
       // If the favorites bar then load all children as toolbar items.
       if (base::EqualsCaseInsensitiveASCII(entry->title, kFavoritesBarTitle)) {
         // Replace name with Links similar to IE.
-        path->push_back(STRING16_LITERAL("Links"));
+        path->push_back(u"Links");
         BuildBookmarkEntries(*entry, true, bookmarks, favicons, path);
         path->pop_back();
       } else {

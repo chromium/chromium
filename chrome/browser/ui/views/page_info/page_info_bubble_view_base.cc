@@ -98,15 +98,12 @@ void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
   GetWidget()->Close();
 }
 
-DEFINE_ENUM_CONVERTERS(PageInfoUI::SecurityDescriptionType,
-                       {PageInfoUI::SecurityDescriptionType::CONNECTION,
-                        STRING16_LITERAL("CONNECTION")},
-                       {PageInfoUI::SecurityDescriptionType::INTERNAL,
-                        STRING16_LITERAL("INTERNAL")},
-                       {PageInfoUI::SecurityDescriptionType::SAFE_BROWSING,
-                        STRING16_LITERAL("SAFE_BROWSING")},
-                       {PageInfoUI::SecurityDescriptionType::SAFETY_TIP,
-                        STRING16_LITERAL("SAFETY_TIP")})
+DEFINE_ENUM_CONVERTERS(
+    PageInfoUI::SecurityDescriptionType,
+    {PageInfoUI::SecurityDescriptionType::CONNECTION, u"CONNECTION"},
+    {PageInfoUI::SecurityDescriptionType::INTERNAL, u"INTERNAL"},
+    {PageInfoUI::SecurityDescriptionType::SAFE_BROWSING, u"SAFE_BROWSING"},
+    {PageInfoUI::SecurityDescriptionType::SAFETY_TIP, u"SAFETY_TIP"})
 
 BEGIN_METADATA(PageInfoBubbleViewBase, views::BubbleDialogDelegateView)
 ADD_PROPERTY_METADATA(PageInfoUI::SecurityDescriptionType,

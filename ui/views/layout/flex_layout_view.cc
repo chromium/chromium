@@ -146,23 +146,18 @@ FlexRule FlexLayoutView::GetDefaultFlexRule() const {
 }
 
 DEFINE_ENUM_CONVERTERS(LayoutOrientation,
-                       {LayoutOrientation::kHorizontal,
-                        STRING16_LITERAL("kHorizontal")},
-                       {LayoutOrientation::kVertical,
-                        STRING16_LITERAL("kVertical")})
+                       {LayoutOrientation::kHorizontal, u"kHorizontal"},
+                       {LayoutOrientation::kVertical, u"kVertical"})
 
 DEFINE_ENUM_CONVERTERS(LayoutAlignment,
-                       {LayoutAlignment::kStart, STRING16_LITERAL("kStart")},
-                       {LayoutAlignment::kCenter, STRING16_LITERAL("kCenter")},
-                       {LayoutAlignment::kEnd, STRING16_LITERAL("kEnd")},
-                       {LayoutAlignment::kStretch,
-                        STRING16_LITERAL("kStretch")})
+                       {LayoutAlignment::kStart, u"kStart"},
+                       {LayoutAlignment::kCenter, u"kCenter"},
+                       {LayoutAlignment::kEnd, u"kEnd"},
+                       {LayoutAlignment::kStretch, u"kStretch"})
 
 DEFINE_ENUM_CONVERTERS(FlexAllocationOrder,
-                       {FlexAllocationOrder::kNormal,
-                        STRING16_LITERAL("kNormal")},
-                       {FlexAllocationOrder::kReverse,
-                        STRING16_LITERAL("kReverse")})
+                       {FlexAllocationOrder::kNormal, u"kNormal"},
+                       {FlexAllocationOrder::kReverse, u"kReverse"})
 
 BEGIN_METADATA(FlexLayoutView, View)
 ADD_PROPERTY_METADATA(LayoutOrientation, Orientation)

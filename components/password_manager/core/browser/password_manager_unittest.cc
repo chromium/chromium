@@ -3775,7 +3775,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
 
 // Similar test as above with fields that have empty names.
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
-  constexpr base::char16 kEmptyName[] = STRING16_LITERAL("");
+  constexpr base::char16 kEmptyName[] = u"";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
@@ -3880,7 +3880,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
 
 // Similar test as above with fields that have empty names.
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
-  constexpr base::char16 kEmptyName[] = STRING16_LITERAL("");
+  constexpr base::char16 kEmptyName[] = u"";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));

@@ -77,7 +77,7 @@ TEST(StatusTrayWinTest, CreateIconAndMenu) {
   StatusTrayWin tray;
   StatusIcon* icon = CreateStatusIcon(&tray);
   std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(NULL));
-  menu->AddItem(0, STRING16_LITERAL("foo"));
+  menu->AddItem(0, u"foo");
   icon->SetContextMenu(std::move(menu));
 }
 

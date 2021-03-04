@@ -373,12 +373,11 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   Widget* widget_ = nullptr;
 };
 
-DEFINE_ENUM_CONVERTERS(
-    gfx::SelectionBound::Type,
-    {gfx::SelectionBound::Type::LEFT, STRING16_LITERAL("LEFT")},
-    {gfx::SelectionBound::Type::RIGHT, STRING16_LITERAL("RIGHT")},
-    {gfx::SelectionBound::Type::CENTER, STRING16_LITERAL("CENTER")},
-    {gfx::SelectionBound::Type::EMPTY, STRING16_LITERAL("EMPTY")})
+DEFINE_ENUM_CONVERTERS(gfx::SelectionBound::Type,
+                       {gfx::SelectionBound::Type::LEFT, u"LEFT"},
+                       {gfx::SelectionBound::Type::RIGHT, u"RIGHT"},
+                       {gfx::SelectionBound::Type::CENTER, u"CENTER"},
+                       {gfx::SelectionBound::Type::EMPTY, u"EMPTY"})
 
 BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
 ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)

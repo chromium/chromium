@@ -92,8 +92,8 @@ TEST(ModuleInfoUtilTest, GetEnvironmentVariablesMapping) {
 
   ASSERT_EQ(2u, string_mapping.size());
 
-  EXPECT_EQ(STRING16_LITERAL("c:\\bar"), string_mapping[0].first);
-  EXPECT_EQ(STRING16_LITERAL("%foo%"), string_mapping[0].second);
+  EXPECT_EQ(u"c:\\bar", string_mapping[0].first);
+  EXPECT_EQ(u"%foo%", string_mapping[0].second);
   EXPECT_FALSE(string_mapping[1].second.empty());
 }
 
@@ -102,19 +102,18 @@ const struct CollapsePathList {
   base::string16 test_case;
 } kCollapsePathList[] = {
     // Negative testing (should not collapse this path).
-    {STRING16_LITERAL("c:\\a\\a.dll"), STRING16_LITERAL("c:\\a\\a.dll")},
+    {u"c:\\a\\a.dll", u"c:\\a\\a.dll"},
     // These two are to test that we select the maximum collapsed path.
-    {STRING16_LITERAL("%foo%\\a.dll"), STRING16_LITERAL("c:\\foo\\a.dll")},
-    {STRING16_LITERAL("%x%\\a.dll"), STRING16_LITERAL("c:\\foo\\bar\\a.dll")},
+    {u"%foo%\\a.dll", u"c:\\foo\\a.dll"},
+    {u"%x%\\a.dll", u"c:\\foo\\bar\\a.dll"},
     // Tests that only full path components are collapsed.
-    {STRING16_LITERAL("c:\\foo_bar\\a.dll"),
-     STRING16_LITERAL("c:\\foo_bar\\a.dll")},
+    {u"c:\\foo_bar\\a.dll", u"c:\\foo_bar\\a.dll"},
 };
 
 TEST(ModuleInfoUtilTest, CollapseMatchingPrefixInPath) {
   StringMapping string_mapping = {
-      std::make_pair(STRING16_LITERAL("c:\\foo"), STRING16_LITERAL("%foo%")),
-      std::make_pair(STRING16_LITERAL("c:\\foo\\bar"), STRING16_LITERAL("%x%")),
+      std::make_pair(u"c:\\foo", u"%foo%"),
+      std::make_pair(u"c:\\foo\\bar", u"%x%"),
   };
 
   for (size_t i = 0; i < base::size(kCollapsePathList); ++i) {

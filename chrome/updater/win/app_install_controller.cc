@@ -40,7 +40,7 @@ namespace {
 
 // TODO(sorin): remove the hardcoding of the application name.
 // https://crbug.com/1065588
-constexpr base::char16 kAppNameChrome[] = STRING16_LITERAL("Google Chrome");
+constexpr base::char16 kAppNameChrome[] = u"Google Chrome";
 
 // Implements a simple inter-thread communication protocol based on Windows
 // messages exchanged between the application installer and its UI.
@@ -572,7 +572,7 @@ void AppInstallControllerImpl::HandleInstallResult(
   observer_info.completion_code = completion_code;
   observer_info.completion_text = completion_text;
   // TODO(sorin): implement handling the help URL. https://crbug.com/1014622
-  observer_info.help_url = STRING16_LITERAL("http://www.google.com");
+  observer_info.help_url = u"http://www.google.com";
   // TODO(sorin): implement the installer API and provide the
   // application info in the observer info. https://crbug.com/1014630
   observer_info.apps_info.push_back({});

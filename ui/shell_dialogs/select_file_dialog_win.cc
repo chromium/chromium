@@ -70,7 +70,7 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
     const std::vector<base::string16>& ext_desc,
     bool include_all_files,
     bool keep_extension_visible) {
-  const base::string16 all_ext = STRING16_LITERAL("*.*");
+  const base::string16 all_ext = u"*.*";
   const base::string16 all_desc =
       l10n_util::GetStringUTF16(IDS_APP_SAVEAS_ALL_FILES);
 
@@ -96,17 +96,15 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
     }
 
     if (desc.empty()) {
-      DCHECK(ext.find(STRING16_LITERAL('.')) != base::string16::npos);
-      base::string16 first_extension =
-          ext.substr(ext.find(STRING16_LITERAL('.')));
-      size_t first_separator_index =
-          first_extension.find(STRING16_LITERAL(';'));
+      DCHECK(ext.find(u'.') != base::string16::npos);
+      base::string16 first_extension = ext.substr(ext.find(u'.'));
+      size_t first_separator_index = first_extension.find(u';');
       if (first_separator_index != base::string16::npos)
         first_extension = first_extension.substr(0, first_separator_index);
 
       // Find the extension name without the preceeding '.' character.
       base::string16 ext_name = first_extension;
-      size_t ext_index = ext_name.find_first_not_of(STRING16_LITERAL('.'));
+      size_t ext_index = ext_name.find_first_not_of(u'.');
       if (ext_index != base::string16::npos)
         ext_name = ext_name.substr(ext_index);
 
@@ -119,13 +117,12 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
         include_all_files = true;
       }
       if (desc.empty())
-        desc = STRING16_LITERAL("*.") + ext_name;
+        desc = u"*." + ext_name;
     } else if (keep_extension_visible) {
       // Having '*' in the description could cause the windows file dialog to
       // not include the file extension in the file dialog. So strip out any '*'
       // characters if `keep_extension_visible` is set.
-      base::ReplaceChars(desc, STRING16_LITERAL("*"), base::StringPiece16(),
-                         &desc);
+      base::ReplaceChars(desc, u"*", base::StringPiece16(), &desc);
     }
 
     result.push_back({desc, ext});
@@ -326,8 +323,8 @@ std::vector<FileFilterSpec> SelectFileDialogImpl::GetFilterForFileTypes(
     base::string16 ext_string;
     for (size_t j = 0; j < inner_exts.size(); ++j) {
       if (!ext_string.empty())
-        ext_string.push_back(STRING16_LITERAL(';'));
-      ext_string.append(STRING16_LITERAL("*."));
+        ext_string.push_back(u';');
+      ext_string.append(u"*.");
       ext_string.append(base::WideToUTF16(inner_exts[j]));
     }
     exts.push_back(ext_string);

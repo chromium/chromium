@@ -94,9 +94,8 @@ ElementType DetectElementType(IUIAutomation* automation,
     return ElementType::DEFAULT_BROWSER;
   if (aid == L"SystemSettings_DefaultApps_Browser_App0_HyperlinkButton")
     return ElementType::SWITCH_ANYWAY;
-  if (base::MatchPattern(
-          base::AsString16(aid),
-          STRING16_LITERAL("SystemSettings_DefaultApps_Browser_*_Button"))) {
+  if (base::MatchPattern(base::AsString16(aid),
+                         u"SystemSettings_DefaultApps_Browser_*_Button")) {
     // This element type depends on the automation id of one of its ancestors.
     std::wstring automation_id =
         GetFlyoutParentAutomationId(automation, sender);

@@ -42,9 +42,8 @@ class FontFallbackUnitTest : public testing::Test {
                                     .Append(L"\\seguisym.ttf");
 
     fake_collection_ = std::make_unique<FakeFontCollection>();
-    fake_collection_->AddFont(STRING16_LITERAL("Segoe UI Symbol"))
-        .AddFamilyName(STRING16_LITERAL("en-us"),
-                       STRING16_LITERAL("Segoe UI Symbol"))
+    fake_collection_->AddFont(u"Segoe UI Symbol")
+        .AddFamilyName(u"en-us", u"Segoe UI Symbol")
         .AddFilePath(segoe_path);
 
     DWriteFontCollectionProxy::Create(&collection_, factory_.Get(),

@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // Set focus to the radio group.
   auto waiter = std::make_unique<AccessibilityNotificationWaiter>(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
-  ExecuteScript(STRING16_LITERAL("document.body.children[0].focus();"));
+  ExecuteScript(u"document.body.children[0].focus();");
   waiter->WaitForNotification();
 
   // Check that the accessibility tree of the browser has been updated.
@@ -990,8 +990,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // Set the active descendant of the radio group
   waiter.reset(new AccessibilityNotificationWaiter(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus));
-  ExecuteScript(STRING16_LITERAL(
-      "document.body.children[0].setAttribute('aria-activedescendant', 'li')"));
+  ExecuteScript(
+      u"document.body.children[0].setAttribute('aria-activedescendant', 'li')");
   waiter->WaitForNotification();
 
   // Check that the accessibility tree of the browser has been updated.
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kCheckedStateChanged);
-  ExecuteScript(STRING16_LITERAL("document.body.children[0].checked=true"));
+  ExecuteScript(u"document.body.children[0].checked=true");
   waiter.WaitForNotification();
 
   // Check that the accessibility tree of the browser has been updated.
@@ -1048,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kChildrenChanged);
-  ExecuteScript(STRING16_LITERAL("document.body.innerHTML='<b>new text</b>'"));
+  ExecuteScript(u"document.body.innerHTML='<b>new text</b>'");
   waiter.WaitForNotification();
 
   // Check that the accessibility tree of the browser has been updated.
@@ -1073,8 +1073,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kChildrenChanged);
-  ExecuteScript(
-      STRING16_LITERAL("document.body.children[0].style.visibility='visible'"));
+  ExecuteScript(u"document.body.children[0].style.visibility='visible'");
   waiter.WaitForNotification();
 
   // Check that the accessibility tree of the browser has been updated.
@@ -1108,7 +1107,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
     // Focus the div in the document
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
-    ExecuteScript(STRING16_LITERAL("document.body.children[0].focus();"));
+    ExecuteScript(u"document.body.children[0].focus();");
     waiter.WaitForNotification();
   }
 
@@ -1171,9 +1170,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, NoFocusEventOnRootChange) {
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kLayoutComplete);
   ExecuteScript(
-      STRING16_LITERAL("let iframe = document.createElement('iframe');"
-                       "iframe.srcdoc = '<button>Button</button>';"
-                       "document.body.appendChild(iframe);"));
+      u"let iframe = document.createElement('iframe');"
+      u"iframe.srcdoc = '<button>Button</button>';"
+      u"document.body.appendChild(iframe);");
   waiter.WaitForNotification();
 
   Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
@@ -1205,10 +1204,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   {
     AccessibilityNotificationWaiter iframe_waiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
-    ExecuteScript(STRING16_LITERAL(
-        "let iframe = document.createElement('iframe');"
-        "iframe.srcdoc = '<button autofocus>Inner button</button>';"
-        "document.body.appendChild(iframe);"));
+    ExecuteScript(
+        u"let iframe = document.createElement('iframe');"
+        u"iframe.srcdoc = '<button autofocus>Inner button</button>';"
+        u"document.body.appendChild(iframe);");
     WaitForAccessibilityFocusChange();
     iframe_waiter.WaitForNotification();
 
@@ -1230,7 +1229,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
     AccessibilityNotificationWaiter iframe_waiter(
         shell()->web_contents(), ui::kAXModeComplete,
         ax::mojom::Event::kLayoutComplete);
-    ExecuteScript(STRING16_LITERAL("document.body.removeChild(iframe);"));
+    ExecuteScript(u"document.body.removeChild(iframe);");
     WaitForAccessibilityFocusChange();
     iframe_waiter.WaitForNotification();
 
@@ -1263,9 +1262,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLayoutComplete);
     ExecuteScript(
-        STRING16_LITERAL("let iframe = document.createElement('iframe');"
-                         "iframe.srcdoc = '<button>Inner button</button>';"
-                         "document.body.appendChild(iframe);"));
+        u"let iframe = document.createElement('iframe');"
+        u"iframe.srcdoc = '<button>Inner button</button>';"
+        u"document.body.appendChild(iframe);");
     waiter.WaitForNotification();
 
     base::win::ScopedVariant focus;
@@ -1279,7 +1278,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLayoutComplete);
-    ExecuteScript(STRING16_LITERAL("document.body.removeChild(iframe);"));
+    ExecuteScript(u"document.body.removeChild(iframe);");
     waiter.WaitForNotification();
 
     base::win::ScopedVariant focus;
@@ -1311,8 +1310,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kValueChanged);
-  ExecuteScript(
-      STRING16_LITERAL("document.body.children[0].value='new value'"));
+  ExecuteScript(u"document.body.children[0].value='new value'");
   waiter.WaitForNotification();
 
   // Check that the accessibility tree of the browser has been updated.
@@ -1864,7 +1862,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kValueChanged);
-  ExecuteScript(STRING16_LITERAL("document.querySelector('input').value='';"));
+  ExecuteScript(u"document.querySelector('input').value='';");
   waiter.WaitForNotification();
 
   ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
@@ -1923,7 +1921,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kValueChanged);
-  ExecuteScript(STRING16_LITERAL("document.querySelector('input').value='';"));
+  ExecuteScript(u"document.querySelector('input').value='';");
   waiter.WaitForNotification();
 
   ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
@@ -2070,8 +2068,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kChildrenChanged);
-  ExecuteScript(STRING16_LITERAL(
-      "document.querySelector('[contenteditable]').innerText='';"));
+  ExecuteScript(u"document.querySelector('[contenteditable]').innerText='';");
   waiter.WaitForNotification();
 
   ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
@@ -2130,8 +2127,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kValueChanged);
-  ExecuteScript(
-      STRING16_LITERAL("document.querySelector('textarea').innerText='';"));
+  ExecuteScript(u"document.querySelector('textarea').innerText='';");
   waiter.WaitForNotification();
 
   ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
@@ -2191,8 +2187,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kValueChanged);
   ExecuteScript(
-      STRING16_LITERAL("const input = document.querySelector('input');"
-                       "input.value='';"));
+      u"const input = document.querySelector('input');"
+      u"input.value='';");
   waiter.WaitForNotification();
 
   ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
@@ -4788,9 +4784,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kLayoutComplete);
   ExecuteScript(
-      STRING16_LITERAL("let new_frame = document.createElement('iframe');"
-                       "new_frame.setAttribute('src', 'about:blank');"
-                       "document.body.appendChild(new_frame);"));
+      u"let new_frame = document.createElement('iframe');"
+      u"new_frame.setAttribute('src', 'about:blank');"
+      u"document.body.appendChild(new_frame);");
   waiter.WaitForNotification();
 
   // Content root node's parent's child should still be the content root node.
@@ -5375,9 +5371,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, FixedRuntimeId) {
   EXPECT_FALSE(are_same);
 
   ExecuteScript(
-      STRING16_LITERAL("let target = document.getElementById('target');"
-                       "let parent = document.getElementById('newParent');"
-                       "parent.appendChild(target);"));
+      u"let target = document.getElementById('target');"
+      u"let parent = document.getElementById('newParent');"
+      u"parent.appendChild(target);");
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,

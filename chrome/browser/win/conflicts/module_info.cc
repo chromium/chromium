@@ -173,14 +173,12 @@ void NormalizeInspectionResult(ModuleInspectionResult* inspection_result) {
   }
 
   // Some version strings use ", " instead ".". Convert those.
-  base::ReplaceSubstringsAfterOffset(&inspection_result->version, 0,
-                                     STRING16_LITERAL(", "),
-                                     STRING16_LITERAL("."));
+  base::ReplaceSubstringsAfterOffset(&inspection_result->version, 0, u", ",
+                                     u".");
 
   // Some version strings have things like (win7_rtm.090713-1255) appended
   // to them. Remove that.
-  size_t first_space =
-      inspection_result->version.find_first_of(STRING16_LITERAL(" "));
+  size_t first_space = inspection_result->version.find_first_of(u" ");
   if (first_space != base::string16::npos)
     inspection_result->version =
         inspection_result->version.substr(0, first_space);

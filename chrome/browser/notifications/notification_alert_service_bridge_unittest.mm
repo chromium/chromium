@@ -120,15 +120,15 @@ TEST_F(NotificationAlertServiceBridgeTest, DeliverNotification) {
         EXPECT_EQ("profileId", identifier->profile->id);
         EXPECT_TRUE(identifier->profile->incognito);
 
-        EXPECT_EQ(STRING16_LITERAL("title"), notification->title);
-        EXPECT_EQ(STRING16_LITERAL("subtitle"), notification->subtitle);
-        EXPECT_EQ(STRING16_LITERAL("body"), notification->body);
+        EXPECT_EQ(u"title", notification->title);
+        EXPECT_EQ(u"subtitle", notification->subtitle);
+        EXPECT_EQ(u"body", notification->body);
         EXPECT_FALSE(notification->renotify);
         EXPECT_TRUE(notification->show_settings_button);
 
         ASSERT_EQ(2u, notification->buttons.size());
-        EXPECT_EQ(STRING16_LITERAL("button1"), notification->buttons[0]->title);
-        EXPECT_EQ(STRING16_LITERAL("button2"), notification->buttons[1]->title);
+        EXPECT_EQ(u"button1", notification->buttons[0]->title);
+        EXPECT_EQ(u"button2", notification->buttons[1]->title);
         run_loop.Quit();
       });
 

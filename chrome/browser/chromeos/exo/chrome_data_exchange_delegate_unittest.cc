@@ -450,13 +450,13 @@ TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
   std::unordered_map<base::string16, base::string16> m;
   ui::ReadCustomDataIntoMap(pickle.data(), pickle.size(), &m);
   EXPECT_EQ(2, m.size());
-  EXPECT_EQ("exo", base::UTF16ToUTF8(m[STRING16_LITERAL("fs/tag")]));
+  EXPECT_EQ("exo", base::UTF16ToUTF8(m[u"fs/tag"]));
   EXPECT_EQ(
       "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/external/"
       "Downloads-test%2540example.com-hash/shared/file1\n"
       "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/external/"
       "Downloads-test%2540example.com-hash/shared/file2",
-      base::UTF16ToUTF8(m[STRING16_LITERAL("fs/sources")]));
+      base::UTF16ToUTF8(m[u"fs/sources"]));
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   {

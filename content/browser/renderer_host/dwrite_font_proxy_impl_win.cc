@@ -61,12 +61,12 @@ struct RequiredFontStyle {
 const RequiredFontStyle kRequiredStyles[] = {
     // The regular version of Gill Sans is actually in the Gill Sans MT family,
     // and the Gill Sans family typically contains just the ultra-bold styles.
-    {STRING16_LITERAL("gill sans"), DWRITE_FONT_WEIGHT_NORMAL,
-     DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL},
-    {STRING16_LITERAL("helvetica"), DWRITE_FONT_WEIGHT_NORMAL,
-     DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL},
-    {STRING16_LITERAL("open sans"), DWRITE_FONT_WEIGHT_NORMAL,
-     DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL},
+    {u"gill sans", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
+     DWRITE_FONT_STYLE_NORMAL},
+    {u"helvetica", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
+     DWRITE_FONT_STYLE_NORMAL},
+    {u"open sans", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
+     DWRITE_FONT_STYLE_NORMAL},
 };
 
 // As a workaround for crbug.com/635932, refuse to load some common fonts that
@@ -295,7 +295,7 @@ void DWriteFontProxyImpl::MapCharacters(
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
       blink::mojom::MapCharactersResult::New(
-          UINT32_MAX, STRING16_LITERAL(""), text.length(), 0.0,
+          UINT32_MAX, u"", text.length(), 0.0,
           blink::mojom::DWriteFontStyle::New(DWRITE_FONT_STYLE_NORMAL,
                                              DWRITE_FONT_STRETCH_NORMAL,
                                              DWRITE_FONT_WEIGHT_NORMAL)));
@@ -326,7 +326,7 @@ void DWriteFontProxyImpl::MapCharacters(
   }
 
   auto result = blink::mojom::MapCharactersResult::New(
-      UINT32_MAX, STRING16_LITERAL(""), text.length(), 0.0,
+      UINT32_MAX, u"", text.length(), 0.0,
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL,
                                          DWRITE_FONT_WEIGHT_NORMAL));

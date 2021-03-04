@@ -671,8 +671,7 @@ static base::string16 ProcessAccessiblesArray(IUnknown** accessibles,
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   for (int index = 0; index < num_accessibles; index++) {
-    related_accessibles_string +=
-        (index > 0) ? STRING16_LITERAL(",") : STRING16_LITERAL("<");
+    related_accessibles_string += (index > 0) ? u"," : u"<";
     Microsoft::WRL::ComPtr<IUnknown> unknown = accessibles[index];
     Microsoft::WRL::ComPtr<IAccessible> accessible;
     if (SUCCEEDED(unknown.As(&accessible))) {
@@ -680,11 +679,11 @@ static base::string16 ProcessAccessiblesArray(IUnknown** accessibles,
       if (S_OK == accessible->get_accName(variant_self, temp_bstr.Receive()))
         related_accessibles_string += base::WideToUTF16(temp_bstr.Get());
       else
-        related_accessibles_string += STRING16_LITERAL("no name");
+        related_accessibles_string += u"no name";
     }
   }
 
-  return related_accessibles_string + STRING16_LITERAL(">");
+  return related_accessibles_string + u">";
 }
 
 void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(

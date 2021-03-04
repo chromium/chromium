@@ -207,17 +207,16 @@ CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
   // Windows errors to a smaller set of CtapDeviceResponseCodes.
   static base::flat_map<base::string16, CtapDeviceResponseCode>
       kResponseCodeMap({
-          {STRING16_LITERAL("Success"), CtapDeviceResponseCode::kSuccess},
-          {STRING16_LITERAL("InvalidStateError"),
+          {u"Success", CtapDeviceResponseCode::kSuccess},
+          {u"InvalidStateError",
            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded},
-          {STRING16_LITERAL("ConstraintError"),
+          {u"ConstraintError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("NotSupportedError"),
+          {u"NotSupportedError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("NotAllowedError"),
+          {u"NotAllowedError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("UnknownError"),
-           CtapDeviceResponseCode::kCtap2ErrOperationDenied},
+          {u"UnknownError", CtapDeviceResponseCode::kCtap2ErrOperationDenied},
       });
   if (!base::Contains(kResponseCodeMap, error_name)) {
     FIDO_LOG(ERROR) << "Unexpected error name: " << error_name;

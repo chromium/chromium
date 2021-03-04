@@ -126,24 +126,22 @@ TEST_F(DWriteFontProxyImplUnitTest, GetFamilyCount) {
 
 TEST_F(DWriteFontProxyImplUnitTest, FindFamily) {
   UINT32 arial_index = 0;
-  dwrite_font_proxy().FindFamily(STRING16_LITERAL("Arial"), &arial_index);
+  dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
   EXPECT_NE(UINT_MAX, arial_index);
 
   UINT32 times_index = 0;
-  dwrite_font_proxy().FindFamily(STRING16_LITERAL("Times New Roman"),
-                                 &times_index);
+  dwrite_font_proxy().FindFamily(u"Times New Roman", &times_index);
   EXPECT_NE(UINT_MAX, times_index);
   EXPECT_NE(arial_index, times_index);
 
   UINT32 unknown_index = 0;
-  dwrite_font_proxy().FindFamily(STRING16_LITERAL("Not a font family"),
-                                 &unknown_index);
+  dwrite_font_proxy().FindFamily(u"Not a font family", &unknown_index);
   EXPECT_EQ(UINT_MAX, unknown_index);
 }
 
 TEST_F(DWriteFontProxyImplUnitTest, GetFamilyNames) {
   UINT32 arial_index = 0;
-  dwrite_font_proxy().FindFamily(STRING16_LITERAL("Arial"), &arial_index);
+  dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
 
   std::vector<blink::mojom::DWriteStringPairPtr> names;
   dwrite_font_proxy().GetFamilyNames(arial_index, &names);
@@ -165,7 +163,7 @@ TEST_F(DWriteFontProxyImplUnitTest, GetFamilyNamesIndexOutOfBounds) {
 
 TEST_F(DWriteFontProxyImplUnitTest, GetFontFiles) {
   UINT32 arial_index = 0;
-  dwrite_font_proxy().FindFamily(STRING16_LITERAL("Arial"), &arial_index);
+  dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
 
   std::vector<base::FilePath> files;
   std::vector<base::File> handles;
@@ -192,7 +190,7 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacter) {
 
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
-      STRING16_LITERAL("abc"),
+      u"abc",
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
@@ -214,12 +212,12 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidCharacter) {
 
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
-      STRING16_LITERAL("\ufffe\uffffabc"),
+      u"\ufffe\uffffabc",
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
-      STRING16_LITERAL("en-us"), DWRITE_READING_DIRECTION_LEFT_TO_RIGHT,
-      base::string16(), &result);
+      u"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, base::string16(),
+      &result);
 
   EXPECT_EQ(UINT32_MAX, result->family_index);
   EXPECT_EQ(base::string16(), result->family_name);
@@ -232,12 +230,12 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidAfterValid) {
 
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
-      STRING16_LITERAL("abc\ufffe\uffff"),
+      u"abc\ufffe\uffff",
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
-      STRING16_LITERAL("en-us"), DWRITE_READING_DIRECTION_LEFT_TO_RIGHT,
-      base::string16(), &result);
+      u"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, base::string16(),
+      &result);
 
   EXPECT_NE(UINT32_MAX, result->family_index);
   EXPECT_NE(base::string16(), result->family_name);
@@ -250,10 +248,10 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidAfterValid) {
 
 TEST_F(DWriteFontProxyImplUnitTest, TestCustomFontFiles) {
   // Override windows fonts path to force the custom font file codepath.
-  impl_.SetWindowsFontsPathForTesting(STRING16_LITERAL("X:\\NotWindowsFonts"));
+  impl_.SetWindowsFontsPathForTesting(u"X:\\NotWindowsFonts");
 
   UINT32 arial_index = 0;
-  dwrite_font_proxy().FindFamily(STRING16_LITERAL("Arial"), &arial_index);
+  dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
 
   std::vector<base::FilePath> files;
   std::vector<base::File> handles;

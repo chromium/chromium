@@ -84,13 +84,12 @@ const BookmarkInfo kIESortedBookmarks[] = {
   {false, 0, {}, L"c", "http://www.google.com/3"},
 };
 
-const base::char16 kIEIdentifyUrl[] = STRING16_LITERAL(
-    "http://A79029D6-753E-4e27-B807-3D46AB1545DF.com:8080/path?key=value");
-const base::char16 kIEIdentifyTitle[] = STRING16_LITERAL("Unittest GUID");
+const base::char16 kIEIdentifyUrl[] =
+    u"http://A79029D6-753E-4e27-B807-3D46AB1545DF.com:8080/path?key=value";
+const base::char16 kIEIdentifyTitle[] = u"Unittest GUID";
 const base::char16 kIECacheItemUrl[] =
-    STRING16_LITERAL("http://B2EF40C8-2569-4D7E-97EA-BAD9DF468D9C.com");
-const base::char16 kIECacheItemTitle[] =
-    STRING16_LITERAL("Unittest Cache Item GUID");
+    u"http://B2EF40C8-2569-4D7E-97EA-BAD9DF468D9C.com";
+const base::char16 kIECacheItemTitle[] = u"Unittest Cache Item GUID";
 
 const wchar_t kFaviconStreamSuffix[] = L"url:favicon:$DATA";
 const char kDummyFaviconImageData[] =
@@ -110,12 +109,10 @@ struct FaviconGroup {
 };
 
 const FaviconGroup kIEFaviconGroup[2] = {
-    {STRING16_LITERAL("http://www.google.com/favicon.ico"),
-     {STRING16_LITERAL("http://www.google.com/"),
-      STRING16_LITERAL("http://www.subfolder.com/")}},
-    {STRING16_LITERAL("http://example.com/favicon.ico"),
-     {STRING16_LITERAL("http://host:8080/cgi?q=query"),
-      STRING16_LITERAL("http://chinese-title-favorite/")}},
+    {u"http://www.google.com/favicon.ico",
+     {u"http://www.google.com/", u"http://www.subfolder.com/"}},
+    {u"http://example.com/favicon.ico",
+     {u"http://host:8080/cgi?q=query", u"http://chinese-title-favorite/"}},
 };
 
 bool CreateOrderBlob(const base::FilePath& favorites_folder,

@@ -298,9 +298,8 @@ void BluetoothSocketWin::DoListen(const BluetoothUUID& uuid,
   reg_data->address_info.iSocketType = SOCK_STREAM;
   reg_data->address_info.iProtocol = BTHPROTO_RFCOMM;
 
-  base::string16 cannonical_uuid = STRING16_LITERAL("{") +
-                                   base::ASCIIToUTF16(uuid.canonical_value()) +
-                                   STRING16_LITERAL("}");
+  base::string16 cannonical_uuid =
+      u"{" + base::ASCIIToUTF16(uuid.canonical_value()) + u"}";
   if (!SUCCEEDED(
           CLSIDFromString(base::as_wcstr(cannonical_uuid), &reg_data->uuid))) {
     LOG(WARNING) << "Failed to start service: "

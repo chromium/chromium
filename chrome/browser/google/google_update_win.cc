@@ -882,17 +882,15 @@ void UpdateCheckDriver::OnUpgradeError(UpdateCheckResult check_result,
   }
 
   base::string16 html_error_msg = base::StringPrintf(
-      STRING16_LITERAL("%d: <a href='%ls0x%X' target=_blank>0x%X</a>"),
-      update_state_.error_code,
+      u"%d: <a href='%ls0x%X' target=_blank>0x%X</a>", update_state_.error_code,
       base::UTF8ToWide(chrome::kUpgradeHelpCenterBaseURL).c_str(),
       update_state_.hresult, update_state_.hresult);
   if (update_state_.installer_exit_code) {
     html_error_msg +=
-        STRING16_LITERAL(": ") +
-        base::NumberToString16(*update_state_.installer_exit_code);
+        u": " + base::NumberToString16(*update_state_.installer_exit_code);
   }
   if (system_level_install_)
-    html_error_msg += STRING16_LITERAL(" -- system level");
+    html_error_msg += u" -- system level";
   if (error_string.empty()) {
     html_error_message_ = l10n_util::GetStringFUTF16(
         IDS_ABOUT_BOX_ERROR_UPDATE_CHECK_FAILED, html_error_msg);

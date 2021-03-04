@@ -19,7 +19,7 @@ void AddFamily(const base::FilePath& font_path,
                const std::wstring& base_family_name,
                FakeFontCollection* collection) {
   collection->AddFont(family_name)
-      .AddFamilyName(STRING16_LITERAL("en-us"), family_name)
+      .AddFamilyName(u"en-us", family_name)
       .AddFilePath(font_path.Append(L"\\" + base_family_name + L".ttf"))
       .AddFilePath(font_path.Append(L"\\" + base_family_name + L"bd.ttf"))
       .AddFilePath(font_path.Append(L"\\" + base_family_name + L"bi.ttf"))
@@ -42,12 +42,9 @@ CreateFakeCollectionSender() {
   base::FilePath font_path(std::wstring(font_path_chars.data()));
   std::unique_ptr<FakeFontCollection> fake_collection =
       std::make_unique<FakeFontCollection>();
-  AddFamily(font_path, STRING16_LITERAL("Arial"), L"arial",
-            fake_collection.get());
-  AddFamily(font_path, STRING16_LITERAL("Courier New"), L"cour",
-            fake_collection.get());
-  AddFamily(font_path, STRING16_LITERAL("Times New Roman"), L"times",
-            fake_collection.get());
+  AddFamily(font_path, u"Arial", L"arial", fake_collection.get());
+  AddFamily(font_path, u"Courier New", L"cour", fake_collection.get());
+  AddFamily(font_path, u"Times New Roman", L"times", fake_collection.get());
   return base::BindRepeating(&CreateFakeCollectionRemote,
                              std::move(fake_collection));
 }

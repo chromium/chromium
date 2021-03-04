@@ -1060,7 +1060,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyleForProperties(
   for (USHORT i = 0; i < num_style_properties; ++i) {
     base::string16 name =
         base::ToLowerASCII(base::as_u16cstr(style_properties[i]));
-    if (name == STRING16_LITERAL("display")) {
+    if (name == u"display") {
       base::string16 display =
           owner()->GetString16Attribute(ax::mojom::StringAttribute::kDisplay);
       style_values[i] = SysAllocString(base::as_wcstr(display));

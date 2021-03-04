@@ -41,13 +41,11 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-DEFINE_ENUM_CONVERTERS(chromeos::OobeDialogPaddingMode,
-                       {chromeos::OobeDialogPaddingMode::PADDING_AUTO,
-                        STRING16_LITERAL("PADDING_AUTO")},
-                       {chromeos::OobeDialogPaddingMode::PADDING_WIDE,
-                        STRING16_LITERAL("PADDING_WIDE")},
-                       {chromeos::OobeDialogPaddingMode::PADDING_NARROW,
-                        STRING16_LITERAL("PADDING_NARROW")})
+DEFINE_ENUM_CONVERTERS(
+    chromeos::OobeDialogPaddingMode,
+    {chromeos::OobeDialogPaddingMode::PADDING_AUTO, u"PADDING_AUTO"},
+    {chromeos::OobeDialogPaddingMode::PADDING_WIDE, u"PADDING_WIDE"},
+    {chromeos::OobeDialogPaddingMode::PADDING_NARROW, u"PADDING_NARROW"})
 
 namespace chromeos {
 

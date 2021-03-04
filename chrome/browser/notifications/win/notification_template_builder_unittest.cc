@@ -406,7 +406,7 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
 TEST_F(NotificationTemplateBuilderTest, ContextMessage) {
   message_center::Notification notification = BuildNotification();
 
-  notification.set_context_message(STRING16_LITERAL("context_message"));
+  notification.set_context_message(u"context_message");
 
   const wchar_t kExpectedXml[] =
       LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
@@ -509,12 +509,11 @@ TEST_F(NotificationTemplateBuilderTest, ListEntries) {
 
   notification.set_type(message_center::NOTIFICATION_TYPE_MULTIPLE);
   std::vector<message_center::NotificationItem> items;
-  items.push_back({STRING16_LITERAL("title1"), STRING16_LITERAL("message1")});
-  items.push_back({STRING16_LITERAL("title2"), STRING16_LITERAL("message2"}));
-  items.push_back({STRING16_LITERAL("title3"), STRING16_LITERAL("message3"}));
-  items.push_back({STRING16_LITERAL("title4"), STRING16_LITERAL("message4"}));
-  items.push_back({STRING16_LITERAL("title5"),
-                   STRING16_LITERAL("message5"}));  // Will be truncated.
+  items.push_back({u"title1", u"message1"});
+  items.push_back({u"title2", u"message2"});
+  items.push_back({u"title3", u"message3"});
+  items.push_back({u"title4", u"message4"});
+  items.push_back({u"title5", u"message5"});  // Will be truncated.
   notification.set_items(items);
 
   const wchar_t kExpectedXml[] =
