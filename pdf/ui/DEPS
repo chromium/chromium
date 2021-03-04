@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/strings/grit/components_strings.h",
+  "+third_party/icu/source/i18n/unicode/ulocdata.h",
+  "+ui/base/l10n/l10n_util.h",
+]
+
+specific_include_rules = {
+  "format_page_size_unittest.cc": [
+    "+ui/base/resource",
+  ],
+}
