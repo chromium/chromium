@@ -142,7 +142,7 @@ builder(
     executable = "recipe:webrtc/chromium_ios",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
 )
 
 builder(
@@ -150,5 +150,5 @@ builder(
     executable = "recipe:webrtc/chromium_ios",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
 )
