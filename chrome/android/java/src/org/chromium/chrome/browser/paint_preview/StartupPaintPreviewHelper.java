@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.SystemClock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -130,8 +131,11 @@ public class StartupPaintPreviewHelper {
      * Attempts to display the Paint Preview representation for the given Tab.
      */
     public static void showPaintPreviewOnRestore(Tab tab) {
-        StartupPaintPreviewHelper paintPreviewHelper =
-                StartupPaintPreviewHelperSupplier.from(tab.getWindowAndroid()).get();
+        ObservableSupplier<StartupPaintPreviewHelper> paintPreviewSupplier =
+                StartupPaintPreviewHelperSupplier.from(tab.getWindowAndroid());
+        if (paintPreviewSupplier == null) return;
+
+        StartupPaintPreviewHelper paintPreviewHelper = paintPreviewSupplier.get();
         if (paintPreviewHelper == null || !sShouldShowOnRestore) {
             return;
         }
