@@ -172,7 +172,19 @@ class WTF_EXPORT StringBuilder {
   bool IsEmpty() const { return !length_; }
 
   unsigned Capacity() const;
+  // Increase the capacity of the backing buffer to at least |new_capacity|. The
+  // behavior is the same as |Vector::ReserveCapacity|:
+  // * Increase the capacity even when there are existing characters or a
+  //   capacity.
+  // * The characters in the backing buffer are not affected.
+  // * This function does not shrink the size of the backing buffer, even if
+  //   |new_capacity| is small.
+  // * This function may cause a reallocation.
   void ReserveCapacity(unsigned new_capacity);
+  // This is analogous to |Ensure16Bit| and |ReserveCapacity|, but can avoid
+  // double reallocations when the current buffer is 8 bits and is smaller than
+  // |new_capacity|.
+  void Reserve16BitCapacity(unsigned new_capacity);
 
   // TODO(esprehn): Rename to shrink().
   void Resize(unsigned new_size);
@@ -206,10 +218,6 @@ class WTF_EXPORT StringBuilder {
 
   bool Is8Bit() const { return is_8bit_; }
   void Ensure16Bit();
-  // This is analogous to |Ensure16Bit| and |ReserveCapacity|, but can avoid two
-  // reallocations when the current buffer is 8 bits and is smaller than
-  // |new_capacity|.
-  void Ensure16Bit(unsigned new_capacity);
 
   void Clear();
   void Swap(StringBuilder&);

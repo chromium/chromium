@@ -386,9 +386,10 @@ TEST(StringBuilderTest, ReserveCapacityAfterEnsure16Bit) {
   EXPECT_LE(100u, builder.Capacity());
 }
 
-TEST(StringBuilderTest, ReserveCapacityWithEnsure16Bit) {
+TEST(StringBuilderTest, Reserve16BitCapacity) {
   StringBuilder builder;
-  builder.Ensure16Bit(100);
+  builder.Reserve16BitCapacity(100);
+  EXPECT_FALSE(builder.Is8Bit());
   EXPECT_LE(100u, builder.Capacity());
 }
 

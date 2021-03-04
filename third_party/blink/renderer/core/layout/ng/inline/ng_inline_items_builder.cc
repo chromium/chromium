@@ -482,10 +482,10 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     return;
   }
   const wtf_size_t new_capacity = text_.length() + string.length();
-  if (text_.Is8Bit() && !string.Is8Bit())
-    text_.Ensure16Bit(new_capacity);
-  else
+  if (string.Is8Bit())
     text_.ReserveCapacity(new_capacity);
+  else
+    text_.Reserve16BitCapacity(new_capacity);
 
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        layout_object);
