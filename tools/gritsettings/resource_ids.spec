@@ -419,7 +419,14 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2670],
   },
+  # Both eche_bundle_resources.grd and eche_bundle_mock_resources.grd
+  # start with the same id because only one of them is built depending on if
+  # src_internal is available.
   "chromeos/components/eche_app_ui/resources/prod/eche_bundle_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [2680],
+  },
+  "chromeos/components/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2680],
   },
