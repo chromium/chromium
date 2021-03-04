@@ -44,6 +44,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
@@ -190,6 +191,22 @@ void WorkerScriptFetchInitiator::Start(
       devtools_agent_host, devtools_worker_token, std::move(callback));
 }
 
+bool ShouldCreateWebUILoader(RenderFrameHost* creator_render_frame_host) {
+  if (!creator_render_frame_host)
+    return false;
+
+  if (creator_render_frame_host->GetWebUI() == nullptr)
+    return false;
+
+  auto requesting_scheme =
+      creator_render_frame_host->GetLastCommittedOrigin().scheme();
+  if (requesting_scheme == kChromeUIScheme)
+    return true;
+  if (requesting_scheme == kChromeUIUntrustedScheme)
+    return true;
+  return false;
+}
+
 std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
 WorkerScriptFetchInitiator::CreateFactoryBundle(
     LoaderType loader_type,
@@ -240,20 +257,16 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
       break;
   }
 
-  // Create WebUI loader for chrome:// workers from WebUI frames.
-  // TODO(crbug.com/1128243): Enable shared worker on "chrome-untrusted://" as
-  // well.
-  if (creator_render_frame_host) {
+  // Create WebUI loader for chrome:// or chrome-untrusted:// workers from WebUI
+  // frames of the same scheme.
+  if (ShouldCreateWebUILoader(creator_render_frame_host)) {
     auto requesting_scheme =
         creator_render_frame_host->GetLastCommittedOrigin().scheme();
-    if (requesting_scheme == kChromeUIScheme &&
-        creator_render_frame_host->GetWebUI() != nullptr) {
-      non_network_factories.emplace(
-          kChromeUIScheme,
-          CreateWebUIURLLoaderFactory(
-              creator_render_frame_host, kChromeUIScheme,
-              /*allowed_webui_hosts=*/base::flat_set<std::string>()));
-    }
+    non_network_factories.emplace(
+        requesting_scheme,
+        CreateWebUIURLLoaderFactory(
+            creator_render_frame_host, requesting_scheme,
+            /*allowed_hosts=*/base::flat_set<std::string>()));
   }
 
   auto factory_bundle =
