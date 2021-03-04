@@ -2969,6 +2969,14 @@ TEST_P(AutofillManagerStructuredProfileTest,
     form.fields.push_back(field);
   }
 
+  // Create a selection box for the state that hat the correct entry to be
+  // filled with user data. Note, TN is the official abbreviation for Tennessee.
+  for (int i = 0; i < 20; ++i) {
+    test::CreateTestSelectField("Country", "country", "", {"DE", "FR", "US"},
+                                {"DE", "FR", "US"}, 3, &field);
+    form.fields.push_back(field);
+  }
+
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
@@ -3005,17 +3013,18 @@ TEST_P(AutofillManagerStructuredProfileTest,
                       response_data.fields[4 + i]);
   }
 
-  // Verify that the next 8 selection boxes are correctly filled again.
-  for (int i = 0; i < 8; i++) {
+  // Verify that the remaining selection boxes are correctly filled again
+  // because there's no limit on filling ADDRESS_HOME_STATE fields.
+  for (int i = 0; i < 20; i++) {
     ExpectFilledField("State", "state", "TN", "select-one",
                       response_data.fields[24 + i]);
   }
 
-  // Verify that the last 12 boxes are not filled because the filling limit for
-  // the state type is already reached.
-  for (int i = 0; i < 12; i++) {
-    ExpectFilledField("State", "state", "", "select-one",
-                      response_data.fields[32 + i]);
+  // Verify that only the first 9 of the remaining selection boxes are
+  // correctly filled due to the limit on filling ADDRESS_HOME_COUNTRY fields.
+  for (int i = 0; i < 20; i++) {
+    ExpectFilledField("Country", "country", i < 9 ? "US" : "", "select-one",
+                      response_data.fields[44 + i]);
   }
 }
 

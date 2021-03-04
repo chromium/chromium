@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
@@ -423,9 +424,15 @@ const char* SubmissionSourceToString(SubmissionSource source) {
 
 // Returns how many fields with type |field_type| may be filled in a form at
 // maximum.
-int TypeValueFormFillingLimit(ServerFieldType field_type) {
-  return field_type == CREDIT_CARD_NUMBER ? kCreditCardTypeValueFormFillingLimit
-                                          : kTypeValueFormFillingLimit;
+size_t TypeValueFormFillingLimit(ServerFieldType field_type) {
+  switch (field_type) {
+    case CREDIT_CARD_NUMBER:
+      return kCreditCardTypeValueFormFillingLimit;
+    case ADDRESS_HOME_STATE:
+      return kStateTypeValueFormFillingLimit;
+    default:
+      return kTypeValueFormFillingLimit;
+  }
 }
 
 }  // namespace
@@ -1763,7 +1770,8 @@ void AutofillManager::FillOrPreviewDataModelForm(
 
   // Count the number of times the value of a specific type was filled into the
   // form.
-  std::map<ServerFieldType, int> type_filling_count;
+  base::flat_map<ServerFieldType, size_t> type_filling_count;
+  type_filling_count.reserve(form_structure->field_count());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     std::string field_number = base::StringPrintf("Field %zu", i);
@@ -1862,7 +1870,7 @@ void AutofillManager::FillOrPreviewDataModelForm(
 
     // A field with a specific type is only allowed to be filled a limited
     // number of times given by |TypeValueFormFillingLimit(field_type)|.
-    if (type_filling_count[field_type] >=
+    if (++type_filling_count[field_type] >
         TypeValueFormFillingLimit(field_type)) {
       buffer << Tr{} << field_number
              << "Skipped: field-type filling-limit reached";
@@ -1896,10 +1904,6 @@ void AutofillManager::FillOrPreviewDataModelForm(
 
     bool has_value_after = !result.fields[i].value.empty();
     bool is_autofilled_after = result.fields[i].is_autofilled;
-
-    // If the field was actually filled, increment the filling counter.
-    if (is_autofilled_after)
-      type_filling_count[field_type]++;
 
     buffer << Tr{} << field_number
            << base::StringPrintf(
