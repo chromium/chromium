@@ -106,8 +106,10 @@ void PaymentCredentialEnrollmentController::ShowProcessingSpinner() {
 }
 
 void PaymentCredentialEnrollmentController::CloseDialog() {
-  if (view_)
+  if (view_) {
     view_->HideDialog();
+    view_.reset();
+  }
 }
 
 void PaymentCredentialEnrollmentController::OnCancel() {
