@@ -39,6 +39,11 @@ loadable_module("clear_key_cdm") {
     "//url",
   ]
 
+  if (!enable_library_cdms) {
+    # cdm_type_conversion is not included via //media.
+    deps += [ "//media/cdm:cdm_type_conversion" ]
+  }
+
   # TODO(xhwang): Convert this to use media::FFmpegAudioDecoder.
   if (media_use_ffmpeg) {
     sources += [

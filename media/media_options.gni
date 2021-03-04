@@ -158,7 +158,7 @@ declare_args() {
 # On Fuchsia, this is only enabled to build libclearkeycdm.so, the mojo CDM
 # service is not used.
 enable_library_cdms = (is_linux && !is_chromecast) || is_chromeos_lacros ||
-                      is_chromeos_ash || is_mac || is_win || is_fuchsia
+                      is_chromeos_ash || is_mac || is_win
 
 declare_args() {
   # When enabled, this feature allows developers to use a runtime flag to
@@ -212,11 +212,9 @@ if (is_chromecast) {
 }
 
 # When |enable_library_cdms| is true, the "cdm" service will run in a separate
-# CdmService in the CDM (utility) process. Therefor there's no need to specify
+# CdmService in the CDM (utility) process. Therefore there's no need to specify
 # |_default_mojo_media_host| which controls where the MediaService runs in.
-# On Fuchsia, |enable_library_cdms| is only enabled to build libclearkeycdm.so,
-# the mojo CDM service is not used.
-if (enable_library_cdms && !is_fuchsia) {
+if (enable_library_cdms) {
   _default_mojo_media_services += [ "cdm" ]
 }
 
@@ -256,4 +254,10 @@ declare_args() {
   # Media Remoting RPC is disabled on Android since it's unused but increases
   # the native binary size by ~70Kb.
   enable_media_remoting_rpc = enable_media_remoting && !is_android
+}
+
+# TODO(ddorwin): Reorder this file so that all media_subcomponent_deps
+# modifications can be together.
+if (enable_library_cdms) {
+  media_subcomponent_deps += [ "//media/cdm:cdm_type_conversion" ]
 }

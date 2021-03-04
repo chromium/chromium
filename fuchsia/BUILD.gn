@@ -44,6 +44,9 @@ group("gn_all") {
     "runners:cast_runner_unittests",
     "runners:web_runner",
     "//chromecast/bindings:bindings_manager_fuchsia",
+
+    # Ensure this target, which is used by cipd, is built in all configurations.
+    "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm",
   ]
 
   if (is_official_build) {
