@@ -90,16 +90,19 @@ void WebViewContentScriptManager::AddContentScripts(
   }
 
   if (!to_delete.empty())
-    loader->RemoveScripts(to_delete);
+    loader->RemoveScripts(to_delete, UserScriptLoader::ScriptsLoadedCallback());
 
   // Step 3: makes WebViewContentScriptManager become an observer of the
   // |loader| for scripts loaded event.
+  // TODO(crbug.com/1180408): Use callbacks instead to remove the need to
+  // observe this loader for when the load has finished.
   if (!user_script_loader_observer_.IsObserving(loader))
     user_script_loader_observer_.Add(loader);
 
   // Step 4: adds new scripts to the set.
   loader->AddScripts(std::move(scripts), embedder_process_id,
-                     render_frame_host->GetRoutingID());
+                     render_frame_host->GetRoutingID(),
+                     UserScriptLoader::ScriptsLoadedCallback());
 
   // Step 5: creates an entry in |webview_host_id_map_| for the given
   // |embedder_process_id| and |view_instance_id| if it doesn't exist.
@@ -180,11 +183,14 @@ void WebViewContentScriptManager::RemoveContentScripts(
 
   // Step 2: makes WebViewContentScriptManager become an observer of the
   // |loader| for scripts loaded event.
+  // TODO(crbug.com/1180408): Use callbacks instead to remove the need to
+  // observe this loader for when the load has finished.
   if (!user_script_loader_observer_.IsObserving(loader))
     user_script_loader_observer_.Add(loader);
 
   // Step 3: removes content scripts from set.
-  loader->RemoveScripts(scripts_to_delete);
+  loader->RemoveScripts(scripts_to_delete,
+                        UserScriptLoader::ScriptsLoadedCallback());
 
   // Step 4: updates WebViewRenderState.
   if (!ids_to_delete.empty()) {

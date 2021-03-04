@@ -58,12 +58,14 @@ WebUIUserScriptLoader::~WebUIUserScriptLoader() {
 void WebUIUserScriptLoader::AddScripts(
     std::unique_ptr<extensions::UserScriptList> scripts,
     int render_process_id,
-    int render_frame_id) {
+    int render_frame_id,
+    ScriptsLoadedCallback callback) {
   UserScriptRenderInfo info(render_process_id, render_frame_id);
   for (const std::unique_ptr<extensions::UserScript>& script : *scripts)
     script_render_info_map_.emplace(script->id(), info);
 
-  extensions::UserScriptLoader::AddScripts(std::move(scripts));
+  extensions::UserScriptLoader::AddScripts(std::move(scripts),
+                                           std::move(callback));
 }
 
 void WebUIUserScriptLoader::LoadScripts(

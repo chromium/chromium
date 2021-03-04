@@ -302,7 +302,8 @@ RequestContentScript::RequestContentScript(
 RequestContentScript::~RequestContentScript() {
   DCHECK(script_loader_);
   script_loader_->RemoveScripts(
-      {UserScriptIDPair(script_.id(), script_.host_id())});
+      {UserScriptIDPair(script_.id(), script_.host_id())},
+      UserScriptLoader::ScriptsLoadedCallback());
 }
 
 void RequestContentScript::InitScript(const HostID& host_id,
@@ -336,7 +337,8 @@ void RequestContentScript::AddScript() {
   DCHECK(script_loader_);
   auto scripts = std::make_unique<UserScriptList>();
   scripts->push_back(UserScript::CopyMetadataFrom(script_));
-  script_loader_->AddScripts(std::move(scripts));
+  script_loader_->AddScripts(std::move(scripts),
+                             UserScriptLoader::ScriptsLoadedCallback());
 }
 
 void RequestContentScript::Apply(const ApplyInfo& apply_info) const {

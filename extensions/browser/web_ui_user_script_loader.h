@@ -35,7 +35,8 @@ class WebUIUserScriptLoader : public extensions::UserScriptLoader {
   // UserScriptLoader:
   void AddScripts(std::unique_ptr<extensions::UserScriptList> scripts,
                   int render_process_id,
-                  int render_frame_id) override;
+                  int render_frame_id,
+                  ScriptsLoadedCallback callback) override;
   void LoadScripts(std::unique_ptr<extensions::UserScriptList> user_scripts,
                    const std::set<HostID>& changed_hosts,
                    const std::set<std::string>& added_script_ids,

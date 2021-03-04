@@ -28,6 +28,11 @@ namespace extensions {
 
 namespace {
 
+// The error message passed inside ScriptsLoadedCallback if the shared memory
+// region where scripts are supposed to b e loaded into is invalid.
+const char kSharedMemoryInvalidErrorMsg[] =
+    "Script could not be loaded into invalid shared memory.";
+
 #if DCHECK_IS_ON()
 bool AreScriptsUnique(const UserScriptList& scripts) {
   std::set<std::string> script_ids;
@@ -171,7 +176,8 @@ UserScriptLoader::~UserScriptLoader() {
     observer.OnUserScriptLoaderDestroyed(this);
 }
 
-void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts) {
+void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts,
+                                  ScriptsLoadedCallback callback) {
 #if DCHECK_IS_ON()
   // |scripts| with non-unique IDs will work, but that would indicate we are
   // doing something wrong somewhere, so DCHECK that.
@@ -184,17 +190,21 @@ void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts) {
     if (added_scripts_map_.count(id) == 0)
       added_scripts_map_[id] = std::move(user_script);
   }
+
+  if (!callback.is_null())
+    queued_load_callbacks_.push_back(std::move(callback));
   AttemptLoad();
 }
 
 void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts,
                                   int render_process_id,
-                                  int render_frame_id) {
-  AddScripts(std::move(scripts));
+                                  int render_frame_id,
+                                  ScriptsLoadedCallback callback) {
+  AddScripts(std::move(scripts), std::move(callback));
 }
 
-void UserScriptLoader::RemoveScripts(
-    const std::set<UserScriptIDPair>& scripts) {
+void UserScriptLoader::RemoveScripts(const std::set<UserScriptIDPair>& scripts,
+                                     ScriptsLoadedCallback callback) {
   for (const UserScriptIDPair& id_pair : scripts) {
     removed_script_hosts_.insert(UserScriptIDPair(id_pair.id, id_pair.host_id));
     // TODO(lazyboy): We shouldn't be trying to remove scripts that were never
@@ -202,6 +212,9 @@ void UserScriptLoader::RemoveScripts(
     // through |loaded_scripts_|. This would reduce sending redundant IPC.
     added_scripts_map_.erase(id_pair.id);
   }
+
+  if (!callback.is_null())
+    queued_load_callbacks_.push_back(std::move(callback));
   AttemptLoad();
 }
 
@@ -246,6 +259,10 @@ void UserScriptLoader::StartLoad() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!is_loading());
 
+  // There should not be a load happening, so there should be no callbacks in
+  // the loading state.
+  DCHECK(loading_callbacks_.empty());
+
   // Reload any loaded scripts, and clear out |loaded_scripts_| to indicate that
   // the scripts aren't currently ready.
   std::unique_ptr<UserScriptList> scripts_to_load = std::move(loaded_scripts_);
@@ -280,6 +297,9 @@ void UserScriptLoader::StartLoad() {
   for (const UserScriptIDPair& id_pair : removed_script_hosts_)
     changed_hosts_.insert(id_pair.host_id);
 
+  // All queued updates are now being loaded. Similarly, move all
+  // |queued_load_callbacks_| to |loading_callbacks_|.
+  loading_callbacks_.splice(loading_callbacks_.end(), queued_load_callbacks_);
   LoadScripts(std::move(scripts_to_load), changed_hosts_, added_script_ids,
               base::BindOnce(&UserScriptLoader::OnScriptsLoaded,
                              weak_factory_.GetWeakPtr()));
@@ -365,6 +385,15 @@ void UserScriptLoader::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void UserScriptLoader::StartLoadForTesting(ScriptsLoadedCallback callback) {
+  if (!callback.is_null())
+    queued_load_callbacks_.push_back(std::move(callback));
+  if (is_loading())
+    queued_load_ = true;
+  else
+    StartLoad();
+}
+
 void UserScriptLoader::SetReady(bool ready) {
   bool was_ready = ready_;
   ready_ = ready;
@@ -376,6 +405,20 @@ void UserScriptLoader::OnScriptsLoaded(
     std::unique_ptr<UserScriptList> user_scripts,
     base::ReadOnlySharedMemoryRegion shared_memory) {
   loaded_scripts_ = std::move(user_scripts);
+
+  bool shared_memory_valid = shared_memory.IsValid();
+  base::Optional<std::string> error =
+      shared_memory_valid ? base::nullopt
+                          : base::make_optional(kSharedMemoryInvalidErrorMsg);
+
+  // Move callbacks in |loading_callbacks_| into a temporary container. This
+  // guards callbacks which modify |loading_callbacks_| mid-iteration.
+  std::list<ScriptsLoadedCallback> loaded_callbacks;
+  loaded_callbacks.splice(loaded_callbacks.end(), loading_callbacks_);
+  for (auto& callback : loaded_callbacks)
+    std::move(callback).Run(this, error);
+  loaded_callbacks.clear();
+
   if (queued_load_) {
     // While we were loading, there were further changes. Don't bother
     // notifying about these scripts and instead just immediately reload.
@@ -384,7 +427,7 @@ void UserScriptLoader::OnScriptsLoaded(
     return;
   }
 
-  if (!shared_memory.IsValid()) {
+  if (!shared_memory_valid) {
     // This can happen if we run out of file descriptors.  In that case, we
     // have a choice between silently omitting all user scripts for new tabs,
     // by nulling out shared_memory_, or only silently omitting new ones by

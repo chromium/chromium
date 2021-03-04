@@ -50,7 +50,8 @@ WebUIUserScriptLoader* UserScriptManager::GetUserScriptLoaderForWebUI(
 void UserScriptManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  manifest_script_loader_.AddScripts(GetManifestScriptsMetadata(extension));
+  manifest_script_loader_.AddScripts(GetManifestScriptsMetadata(extension),
+                                     UserScriptLoader::ScriptsLoadedCallback());
 }
 
 void UserScriptManager::OnExtensionUnloaded(
@@ -62,7 +63,8 @@ void UserScriptManager::OnExtensionUnloaded(
   std::set<UserScriptIDPair> scripts_to_remove;
   for (const std::unique_ptr<UserScript>& script : script_list)
     scripts_to_remove.insert(UserScriptIDPair(script->id(), script->host_id()));
-  manifest_script_loader_.RemoveScripts(scripts_to_remove);
+  manifest_script_loader_.RemoveScripts(
+      scripts_to_remove, UserScriptLoader::ScriptsLoadedCallback());
 
   auto it = extension_script_loaders_.find(extension->id());
   if (it != extension_script_loaders_.end())

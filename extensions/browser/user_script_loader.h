@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_USER_SCRIPT_LOADER_H_
 #define EXTENSIONS_BROWSER_USER_SCRIPT_LOADER_H_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
@@ -15,6 +16,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "extensions/common/host_id.h"
@@ -43,6 +45,11 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   using LoadScriptsCallback =
       base::OnceCallback<void(std::unique_ptr<UserScriptList>,
                               base::ReadOnlySharedMemoryRegion shared_memory)>;
+
+  using ScriptsLoadedCallback =
+      base::OnceCallback<void(UserScriptLoader* loader,
+                              const base::Optional<std::string>& error)>;
+
   class Observer {
    public:
     virtual void OnScriptsLoaded(UserScriptLoader* loader,
@@ -58,8 +65,10 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
                    const HostID& host_id);
   ~UserScriptLoader() override;
 
-  // Add |scripts| to the set of scripts managed by this loader.
-  void AddScripts(std::unique_ptr<UserScriptList> scripts);
+  // Add |scripts| to the set of scripts managed by this loader. If provided,
+  // |callback| is called when |scripts| have been loaded.
+  void AddScripts(std::unique_ptr<UserScriptList> scripts,
+                  ScriptsLoadedCallback callback);
 
   // Add |scripts| to the set of scripts managed by this loader.
   // The fetch of the content of the script starts URL request
@@ -69,19 +78,19 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // class, but it's not an easy fix.
   virtual void AddScripts(std::unique_ptr<UserScriptList> scripts,
                           int render_process_id,
-                          int render_frame_id);
+                          int render_frame_id,
+                          ScriptsLoadedCallback callback);
 
   // Removes scripts with ids specified in |scripts| from the set of scripts
-  // managed by this loader.
+  // managed by this loader and calls |callback| once these scripts have been
+  // removed, if specified.
   // TODO(lazyboy): Likely we can make |scripts| a std::vector, but
   // WebViewContentScriptManager makes this non-trivial.
-  void RemoveScripts(const std::set<UserScriptIDPair>& scripts);
+  void RemoveScripts(const std::set<UserScriptIDPair>& scripts,
+                     ScriptsLoadedCallback callback);
 
   // Clears the set of scripts managed by this loader.
   void ClearScripts();
-
-  // Initiates procedure to start loading scripts on the file thread.
-  void StartLoad();
 
   // Returns true if the scripts for the given |host_id| have been loaded.
   bool HasLoadedScripts(const HostID& host_id) const;
@@ -96,6 +105,11 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // Adds or removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Manually attempts a load for this loader, and optionally adds a callback to
+  // |queued_load_callbacks_|, to be called when the next load has completed.
+  // Only used for tests which manually trigger loads.
+  void StartLoadForTesting(ScriptsLoadedCallback callback);
 
  protected:
   // Allows the derived classes to have different ways to load user scripts.
@@ -124,6 +138,9 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // Attempts to initiate a load.
   void AttemptLoad();
+
+  // Initiates procedure to start loading scripts on the file thread.
+  void StartLoad();
 
   // Called once we have finished loading the scripts on the file thread.
   void OnScriptsLoaded(std::unique_ptr<UserScriptList> user_scripts,
@@ -180,6 +197,16 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // The associated observers.
   base::ObserverList<Observer>::Unchecked observers_;
+
+  // A list of callbacks associated with script updates that are queued for the
+  // next script load (if one is already in progress). These callbacks are moved
+  // to |loading_callbacks_| once a new script load starts.
+  std::list<ScriptsLoadedCallback> queued_load_callbacks_;
+
+  // A list of callbacks associated with script updates that will be applied in
+  // the current script load. These callbacks are called once scripts have
+  // finished loading.
+  std::list<ScriptsLoadedCallback> loading_callbacks_;
 
   base::WeakPtrFactory<UserScriptLoader> weak_factory_{this};
 
