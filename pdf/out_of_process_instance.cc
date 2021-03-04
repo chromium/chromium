@@ -127,8 +127,6 @@ constexpr char kJSSaveRequestType[] = "saveRequestType";
 constexpr char kJSSaveDataType[] = "saveData";
 constexpr char kJSFileName[] = "fileName";
 constexpr char kJSDataToSave[] = "dataToSave";
-// Consume save token (Plugin -> Page)
-constexpr char kJSConsumeSaveTokenType[] = "consumeSaveToken";
 // Notify when touch selection occurs (Plugin -> Page)
 constexpr char kJSTouchSelectionOccurredType[] = "touchSelectionOccurred";
 // Reset print preview mode (Page -> Plugin)
@@ -1130,13 +1128,6 @@ void OutOfProcessInstance::SaveToFile(const std::string& token) {
   engine()->KillFormFocus();
   ConsumeSaveToken(token);
   pp::PDF::SaveAs(this);
-}
-
-void OutOfProcessInstance::ConsumeSaveToken(const std::string& token) {
-  pp::VarDictionary message;
-  message.Set(kType, kJSConsumeSaveTokenType);
-  message.Set(kJSToken, pp::Var(token));
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::Beep() {

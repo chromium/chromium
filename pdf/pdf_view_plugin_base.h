@@ -136,6 +136,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // non-blocking.
   virtual void SendMessage(base::Value message) = 0;
 
+  // Consumes a token for saving the document.
+  void ConsumeSaveToken(const std::string& token);
+
   // Sends the bookmarks data.
   void SendBookmarks();
 

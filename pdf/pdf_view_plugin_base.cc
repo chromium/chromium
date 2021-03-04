@@ -247,6 +247,13 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
   (this->*handler)(message);
 }
 
+void PdfViewPluginBase::ConsumeSaveToken(const std::string& token) {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "consumeSaveToken");
+  message.SetStringKey("token", token);
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::SendBookmarks() {
   base::Value bookmarks = engine()->GetBookmarks();
   if (bookmarks.GetList().empty())
