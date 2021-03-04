@@ -484,6 +484,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // failed, |error_| should be set.
   void SendResponseImpl(bool success);
 
+  // The callback for mojom::Renderer::TransferBlobs().
+  void OnTransferBlobsAck(int process_id,
+                          const std::vector<std::string>& blob_uuids);
+
   base::ElapsedTimer timer_;
 
   // The results of the API. This should be populated through the Respond()/

@@ -638,14 +638,6 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
 IPC_MESSAGE_CONTROL1(ExtensionMsg_WatchPages,
                      std::vector<std::string> /* CSS selectors */)
 
-// Send by the browser to indicate a Blob handle has been transferred to the
-// renderer. This is sent after the actual extension response, and depends on
-// the sequential nature of IPCs so that the blob has already been caught.
-// This is a separate control message, so that the renderer process will send
-// an acknowledgement even if the RenderView has closed or navigated away.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_TransferBlobs,
-                     std::vector<std::string> /* blob_uuids */)
-
 // Messages sent from the renderer to the browser:
 
 // A renderer sends this message when an extension process starts an API
@@ -858,10 +850,6 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddDOMActionToActivityLog,
 //   to change.
 IPC_MESSAGE_ROUTED1(ExtensionHostMsg_OnWatchedPageChange,
                     std::vector<std::string> /* Matching CSS selectors */)
-
-// Sent by the renderer when it has received a Blob handle from the browser.
-IPC_MESSAGE_CONTROL1(ExtensionHostMsg_TransferBlobsAck,
-                     std::vector<std::string> /* blob_uuids */)
 
 // Asks the browser to wake the event page of an extension.
 // The browser will reply with ExtensionHostMsg_WakeEventPageResponse.

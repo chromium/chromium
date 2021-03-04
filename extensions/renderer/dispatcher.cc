@@ -871,7 +871,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect, OnDispatchOnDisconnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_Loaded, OnLoaded)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_TransferBlobs, OnTransferBlobs)
   IPC_MESSAGE_HANDLER(ExtensionMsg_UpdatePermissions, OnUpdatePermissions)
   IPC_MESSAGE_FORWARD(ExtensionMsg_WatchPages,
                       content_watcher_.get(),
@@ -1235,8 +1234,8 @@ void Dispatcher::ShouldSuspend(ShouldSuspendCallback callback) {
   std::move(callback).Run();
 }
 
-void Dispatcher::OnTransferBlobs(const std::vector<std::string>& blob_uuids) {
-  RenderThread::Get()->Send(new ExtensionHostMsg_TransferBlobsAck(blob_uuids));
+void Dispatcher::TransferBlobs(TransferBlobsCallback callback) {
+  std::move(callback).Run();
 }
 
 void Dispatcher::OnUpdatePermissions(

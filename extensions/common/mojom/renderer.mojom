@@ -54,6 +54,13 @@ interface Renderer {
   // back to the browser. This is sent when the page is considered idle.
   ShouldSuspend() => ();
 
+  // Sent by the browser to indicate a Blob handle has been transferred to the
+  // renderer. The reply is sent back to the browser when it has received the
+  // Blob handle.
+  // This is sent after the actual extension response, and depends on the
+  // sequential nature of IPCs so that the blob has already been caught.
+  TransferBlobs() => ();
+
   // Tells the renderer to update an extension's policy_blocked_hosts set.
   UpdateDefaultPolicyHostRestrictions(
         URLPatternSet default_policy_blocked_hosts,

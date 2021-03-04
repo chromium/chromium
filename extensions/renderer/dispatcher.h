@@ -229,6 +229,7 @@ class Dispatcher : public content::RenderThreadObserver,
   void SetScriptingAllowlist(
       const std::vector<std::string>& extension_ids) override;
   void ShouldSuspend(ShouldSuspendCallback callback) override;
+  void TransferBlobs(TransferBlobsCallback callback) override;
   void UpdateDefaultPolicyHostRestrictions(
       const extensions::URLPatternSet& default_policy_blocked_hosts,
       const extensions::URLPatternSet& default_policy_allowed_hosts) override;
@@ -258,7 +259,6 @@ class Dispatcher : public content::RenderThreadObserver,
       const std::vector<ExtensionMsg_Loaded_Params>& loaded_extensions);
   void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
                        const base::ListValue& event_args);
-  void OnTransferBlobs(const std::vector<std::string>& blob_uuids);
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
 
   // UserScriptSetManager::Observer implementation.

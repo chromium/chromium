@@ -13,7 +13,6 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/blob_holder.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -101,7 +100,6 @@ void ExtensionMessageFilter::OverrideThreadForMessage(
     case ExtensionHostMsg_RemoveLazyServiceWorkerListener::ID:
     case ExtensionHostMsg_AddFilteredListener::ID:
     case ExtensionHostMsg_RemoveFilteredListener::ID:
-    case ExtensionHostMsg_TransferBlobsAck::ID:
     case ExtensionHostMsg_WakeEventPage::ID:
     case ExtensionHostMsg_OpenChannelToExtension::ID:
     case ExtensionHostMsg_OpenChannelToTab::ID:
@@ -139,8 +137,6 @@ bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
                         OnExtensionAddFilteredListener)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveFilteredListener,
                         OnExtensionRemoveFilteredListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_TransferBlobsAck,
-                        OnExtensionTransferBlobsAck)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_WakeEventPage,
                         OnExtensionWakeEventPage)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_OpenChannelToExtension,
@@ -300,19 +296,6 @@ void ExtensionMessageFilter::OnExtensionRemoveFilteredListener(
 
   GetEventRouter()->RemoveFilteredEventListener(
       event_name, process, extension_id, sw_identifier, filter, lazy);
-}
-
-void ExtensionMessageFilter::OnExtensionTransferBlobsAck(
-    const std::vector<std::string>& blob_uuids) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  BlobHolder::FromRenderProcessHost(process)->DropBlobs(blob_uuids);
 }
 
 void ExtensionMessageFilter::OnExtensionWakeEventPage(
