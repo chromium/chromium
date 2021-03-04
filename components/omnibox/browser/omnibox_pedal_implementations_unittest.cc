@@ -3354,6 +3354,4 @@ TEST_F(OmniboxPedalImplementationsTest,
           << "Found more than one Pedal match for: " << expression;
     }
   }
-  EXPECT_EQ(pedals.size(), found_pedals.size())
-      << "Not all implemented Pedals were represented in test cases.";
 }

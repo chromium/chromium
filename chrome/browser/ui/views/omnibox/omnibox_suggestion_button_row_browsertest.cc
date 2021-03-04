@@ -91,7 +91,6 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
         OmniboxPedalId::CLEAR_BROWSING_DATA,
         OmniboxPedal::LabelStrings(
             IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
-            IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT_SHORT,
             IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
             IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
             IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),

@@ -26,7 +26,6 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
             OmniboxPedalId::CLEAR_BROWSING_DATA,
             LabelStrings(
                 IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
-                IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT_SHORT,
                 IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
@@ -41,7 +40,6 @@ class OmniboxPedalManagePasswords : public OmniboxPedal {
       : OmniboxPedal(
             OmniboxPedalId::MANAGE_PASSWORDS,
             LabelStrings(IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT,
-                         IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT_SHORT,
                          IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS),
@@ -57,7 +55,6 @@ class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
             OmniboxPedalId::UPDATE_CREDIT_CARD,
             OmniboxPedal::LabelStrings(
                 IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT,
-                IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT_SHORT,
                 IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD),
@@ -72,7 +69,6 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
       : OmniboxPedal(
             OmniboxPedalId::LAUNCH_INCOGNITO,
             LabelStrings(IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT,
-                         IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT_SHORT,
                          IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO),
@@ -97,7 +93,6 @@ class OmniboxPedalTranslate : public OmniboxPedal {
       : OmniboxPedal(
             OmniboxPedalId::TRANSLATE,
             LabelStrings(IDS_OMNIBOX_PEDAL_TRANSLATE_HINT,
-                         IDS_OMNIBOX_PEDAL_TRANSLATE_HINT_SHORT,
                          IDS_OMNIBOX_PEDAL_TRANSLATE_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_TRANSLATE_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_TRANSLATE),
@@ -128,11 +123,25 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
       : OmniboxPedal(
             OmniboxPedalId::UPDATE_CHROME,
             LabelStrings(IDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT,
-                         IDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT_SHORT,
                          IDS_OMNIBOX_PEDAL_UPDATE_CHROME_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME),
             GURL("chrome://settings/help")) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
+ public:
+  OmniboxPedalRunChromeSafetyCheck()
+      : OmniboxPedal(
+            OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
+            OmniboxPedal::LabelStrings(
+                IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT,
+                IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
+            GURL("chrome://settings/safetyCheck")) {}
 };
 
 // =============================================================================
@@ -149,5 +158,7 @@ GetPedalImplementations() {
   add(OmniboxPedalId::LAUNCH_INCOGNITO, new OmniboxPedalLaunchIncognito());
   add(OmniboxPedalId::TRANSLATE, new OmniboxPedalTranslate());
   add(OmniboxPedalId::UPDATE_CHROME, new OmniboxPedalUpdateChrome());
+  add(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
+      new OmniboxPedalRunChromeSafetyCheck());
   return pedals;
 }

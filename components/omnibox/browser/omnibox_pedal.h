@@ -40,7 +40,6 @@ class OmniboxPedal {
 
   struct LabelStrings {
     LabelStrings(int id_hint,
-                 int id_hint_short,
                  int id_suggestion_contents,
                  int id_accessibility_suffix,
                  int id_accessibility_hint);
