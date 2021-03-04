@@ -320,7 +320,14 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 // the tab is properly transferred, incuding navigation stack.
 - (void)testDragAndDropAtEdgeToCreateNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
+
+// TODO(crbug.com/1184267): Test is flaky on iPad devices.
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
+  }
+#endif
 
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
@@ -370,7 +377,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 // TODO(crbug.com/1176180): re-enable this test when it is fixed.
 - (void)DISABLED_testIncognitoDragAndDropAtEdgeToCreateNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewIncognitoTab];
@@ -420,7 +427,14 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 // Tests dragging tab grid item between windows.
 - (void)testDragAndDropBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
+
+// TODO(crbug.com/1184267): Test is flaky on iPad devices.
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
+  }
+#endif
 
   // Setup first window with tabs 1 and 2.
   [ChromeEarlGrey loadURL:_URL1];
@@ -502,7 +516,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 // TODO(crbug.com/1176669): re-enable this test when it is fixed.
 - (void)DISABLED_testDragAndDropIncognitoBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
   // Setup first window with one incognito tab.
   [ChromeEarlGrey closeAllNormalTabs];
@@ -574,7 +588,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 // Tests dragging tab grid item as URL between windows.
 - (void)testDragAndDropURLBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
   // Setup first window with tabs 1 and 2.
   [ChromeEarlGrey loadURL:_URL1];
@@ -634,7 +648,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 // Tests dragging tab grid incognito item as URL to a main windows.
 - (void)testDragAndDropIncognitoURLInMainWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
   // Setup first window with one incognito tab 1.
   [ChromeEarlGrey closeAllNormalTabs];
@@ -697,8 +711,15 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 // Tests dragging tab grid main item as URL to an incognito windows.
 - (void)testDragAndDropMainURLInIncognitoWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
+// TODO(crbug.com/1184267): Test is flaky on iPad devices.
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
+  }
+#endif
+  
   // Setup first window with one incognito tab 1.
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewIncognitoTab];
