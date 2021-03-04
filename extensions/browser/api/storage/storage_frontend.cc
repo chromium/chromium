@@ -62,6 +62,9 @@ class DefaultObserver : public SettingsObserver {
   void OnSettingsChanged(const std::string& extension_id,
                          settings_namespace::Namespace settings_namespace,
                          const std::string& change_json) override {
+    TRACE_EVENT2("browser", "SettingsObserver:OnSettingsChanged",
+                 "extension_id", extension_id, "change_size",
+                 change_json.size());
     std::unique_ptr<base::Value> changes =
         base::JSONReader::ReadDeprecated(change_json);
     DCHECK(changes);
