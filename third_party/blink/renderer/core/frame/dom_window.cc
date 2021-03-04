@@ -516,7 +516,7 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
   // Iframes are allowed to trigger reports, only when they are same-origin with
   // their top-level document.
-  if (accessing_frame->IsCrossOriginToParentFrame())
+  if (accessing_frame->IsCrossOriginToMainFrame())
     return;
 
   LocalFrame& accessing_main_frame =
