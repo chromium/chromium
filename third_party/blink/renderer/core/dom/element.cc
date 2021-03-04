@@ -5215,16 +5215,14 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
     const StyleRecalcContext& style_recalc_context,
     const PseudoElementStyleRequest& request,
     const ComputedStyle* parent_style) {
-  const ComputedStyle* style = GetComputedStyle();
   const bool is_before_or_after = request.pseudo_id == kPseudoIdBefore ||
                                   request.pseudo_id == kPseudoIdAfter;
 
-  DCHECK(style);
-  DCHECK(!parent_style || !is_before_or_after);
+  DCHECK(parent_style);
 
   if (is_before_or_after) {
-    const ComputedStyle* layout_parent_style = style;
-    if (style->Display() == EDisplay::kContents) {
+    const ComputedStyle* layout_parent_style = parent_style;
+    if (parent_style->Display() == EDisplay::kContents) {
       // TODO(futhark@chromium.org): Calling getComputedStyle for elements
       // outside the flat tree should return empty styles, but currently we do
       // not. See issue https://crbug.com/831568. We can replace the if-test
@@ -5235,11 +5233,8 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
       }
     }
     return GetDocument().GetStyleResolver().PseudoStyleForElement(
-        this, style_recalc_context, request, style, layout_parent_style);
+        this, style_recalc_context, request, parent_style, layout_parent_style);
   }
-
-  if (!parent_style)
-    parent_style = style;
 
   if (request.pseudo_id == kPseudoIdFirstLineInherited) {
     scoped_refptr<ComputedStyle> result;

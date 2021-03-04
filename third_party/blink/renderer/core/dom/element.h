@@ -741,7 +741,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // situation.
   scoped_refptr<ComputedStyle> UncachedStyleForPseudoElement(
       const PseudoElementStyleRequest&,
-      const ComputedStyle* parent_style = nullptr);
+      const ComputedStyle* parent_style);
 
   // This is the same as UncachedStyleForPseudoElement, except that the caller
   // must provide an appropriate StyleRecalcContext such that e.g. @container
@@ -751,7 +751,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   scoped_refptr<ComputedStyle> StyleForPseudoElement(
       const StyleRecalcContext&,
       const PseudoElementStyleRequest&,
-      const ComputedStyle* parent_style = nullptr);
+      const ComputedStyle* parent_style);
 
   virtual bool CanGeneratePseudoElement(PseudoId) const;
 
