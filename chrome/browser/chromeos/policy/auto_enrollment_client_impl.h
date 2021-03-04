@@ -68,6 +68,16 @@ enum class PsmHashDanceComparison {
   kMaxValue = kBothError,
 };
 
+// Indicates all possible different results of PSM and Hash dance protocols,
+// after both protocols have executed successfully. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class PsmHashDanceDifferentResultsComparison {
+  kHashDanceTruePsmFalse = 0,
+  kPsmTrueHashDanceFalse = 1,
+  kMaxValue = kPsmTrueHashDanceFalse,
+};
+
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
 // OOBE.

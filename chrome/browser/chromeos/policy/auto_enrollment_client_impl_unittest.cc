@@ -1569,6 +1569,17 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
                                          /*expected_count=*/1);
   }
 
+  // Expects a sample for kUMAPsmHashDanceDifferentResultsComparison to be
+  // recorded once with value |different_results_comparison|.
+  void ExpectPsmHashDanceDifferentResultsComparisonRecorded(
+      PsmHashDanceDifferentResultsComparison different_results_comparison)
+      const {
+    histogram_tester_.ExpectUniqueSample(
+        kUMAPsmHashDanceDifferentResultsComparison,
+        different_results_comparison,
+        /*expected_count=*/1);
+  }
+
   void VerifyPsmLastRequestJobType() const {
     EXPECT_EQ(DeviceManagementService::JobConfiguration::
                   TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
@@ -1942,6 +1953,12 @@ TEST_P(PsmHelperAndHashDanceTest, PsmSucceedAndHashDanceSucceed) {
           ? PsmHashDanceComparison::kEqualResults
           : PsmHashDanceComparison::kDifferentResults);
 
+  if (GetExpectedMembershipResult() != kExpectedHashDanceResult) {
+    // Verify recorded different results for PSM and Hash dance.
+    ExpectPsmHashDanceDifferentResultsComparisonRecorded(
+        PsmHashDanceDifferentResultsComparison::kHashDanceTruePsmFalse);
+  }
+
   // Verify device state result.
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -1988,6 +2005,12 @@ TEST_P(PsmHelperAndHashDanceTest,
       (GetExpectedMembershipResult() == kExpectedHashDanceResult)
           ? PsmHashDanceComparison::kEqualResults
           : PsmHashDanceComparison::kDifferentResults);
+
+  if (GetExpectedMembershipResult() != kExpectedHashDanceResult) {
+    // Verify recorded different results for PSM and Hash dance.
+    ExpectPsmHashDanceDifferentResultsComparisonRecorded(
+        PsmHashDanceDifferentResultsComparison::kPsmTrueHashDanceFalse);
+  }
 
   // Verify that no enrollment has been done, and no state has been retrieved.
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -2092,6 +2115,12 @@ TEST_P(PsmHelperAndHashDanceTest,
       (GetExpectedMembershipResult() == kExpectedHashDanceResult)
           ? PsmHashDanceComparison::kEqualResults
           : PsmHashDanceComparison::kDifferentResults);
+
+  if (GetExpectedMembershipResult() != kExpectedHashDanceResult) {
+    // Verify recorded different results for PSM and Hash dance.
+    ExpectPsmHashDanceDifferentResultsComparisonRecorded(
+        PsmHashDanceDifferentResultsComparison::kHashDanceTruePsmFalse);
+  }
 }
 
 TEST_P(PsmHelperAndHashDanceTest,

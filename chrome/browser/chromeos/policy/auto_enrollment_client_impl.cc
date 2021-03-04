@@ -1384,6 +1384,18 @@ void AutoEnrollmentClientImpl::RecordPsmHashDanceComparison() {
     comparison = (hash_dance_decision == psm_decision.value())
                      ? PsmHashDanceComparison::kEqualResults
                      : PsmHashDanceComparison::kDifferentResults;
+
+    if (hash_dance_decision != psm_decision.value()) {
+      // Reports the different values of the protocols, after both have finished
+      // executing successfully.
+      auto different_protocols_results_comparison =
+          (psm_decision.value()
+               ? PsmHashDanceDifferentResultsComparison::kPsmTrueHashDanceFalse
+               : PsmHashDanceDifferentResultsComparison::
+                     kHashDanceTruePsmFalse);
+      base::UmaHistogramEnumeration(kUMAPsmHashDanceDifferentResultsComparison,
+                                    different_protocols_results_comparison);
+    }
   } else if (hash_dance_error && !psm_error) {
     comparison = PsmHashDanceComparison::kPSMSuccessHashDanceError;
   } else if (!hash_dance_error && psm_error) {
