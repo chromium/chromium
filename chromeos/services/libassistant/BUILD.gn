@@ -76,6 +76,7 @@ source_set("internal") {
   deps = [
     ":audio",
     "//build/util:webkit_version",
+    "//chromeos/assistant:buildflags",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant",
     "//chromeos/assistant/internal:support",
@@ -127,6 +128,7 @@ source_set("audio") {
     ":fake_input_device",
     "//ash/public/mojom",
     "//base",
+    "//chromeos/assistant:buildflags",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",

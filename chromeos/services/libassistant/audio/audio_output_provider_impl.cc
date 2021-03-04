@@ -178,22 +178,21 @@ void AudioOutputProviderImpl::Bind(
 AudioOutputProviderImpl::~AudioOutputProviderImpl() = default;
 
 // Called from the Libassistant thread.
+#if BUILDFLAG(ENABLE_LIBASSISTANT_146S)
 assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
     assistant_client::OutputStreamType type,
     const assistant_client::OutputStreamFormat& stream_format) {
-  mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory;
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AudioOutputProviderImpl::BindStreamFactory,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     stream_factory.InitWithNewPipeAndPassReceiver()));
-  // Owned by one arbitrary thread inside libassistant. It will be destroyed
-  // once assistant_client::AudioOutput::Delegate::OnStopped() is called.
-  return new AudioOutputImpl(std::move(stream_factory), main_task_runner_,
-                             audio_decoder_factory_.get(),
-                             audio_output_delegate_.get(), type, stream_format,
-                             device_id_);
+  return CreateAudioOutputInternal(type, stream_format);
 }
+#endif  // ENABLE_LIBASSISTANT_146S
+
+#if BUILDFLAG(ENABLE_LIBASSISTANT_152S)
+assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
+    assistant_client::OutputStreamMetadata metadata) {
+  return CreateAudioOutputInternal(metadata.type,
+                                   metadata.buffer_stream_format);
+}
+#endif  // ENABLE_LIBASSISTANT_152S
 
 // Called from the Libassistant thread.
 std::vector<assistant_client::OutputStreamEncoding>
@@ -232,6 +231,24 @@ void AudioOutputProviderImpl::RegisterAudioEmittingStateCallback(
 void AudioOutputProviderImpl::BindStreamFactory(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   platform_delegate_->BindAudioStreamFactory(std::move(receiver));
+}
+
+assistant_client::AudioOutput*
+AudioOutputProviderImpl::CreateAudioOutputInternal(
+    assistant_client::OutputStreamType type,
+    const assistant_client::OutputStreamFormat& stream_format) {
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory;
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AudioOutputProviderImpl::BindStreamFactory,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     stream_factory.InitWithNewPipeAndPassReceiver()));
+  // Owned by one arbitrary thread inside libassistant. It will be destroyed
+  // once assistant_client::AudioOutput::Delegate::OnStopped() is called.
+  return new AudioOutputImpl(std::move(stream_factory), main_task_runner_,
+                             audio_decoder_factory_.get(),
+                             audio_output_delegate_.get(), type, stream_format,
+                             device_id_);
 }
 
 }  // namespace libassistant
