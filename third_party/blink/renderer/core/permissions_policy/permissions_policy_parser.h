@@ -94,42 +94,44 @@ class CORE_EXPORT FeaturePolicyParser {
 };
 
 // Returns true iff any declaration in the policy is for the given feature.
-CORE_EXPORT bool IsFeatureDeclared(mojom::blink::FeaturePolicyFeature,
+CORE_EXPORT bool IsFeatureDeclared(mojom::blink::PermissionsPolicyFeature,
                                    const ParsedFeaturePolicy&);
 
 // Removes any declaration in the policy for the given feature. Returns true if
 // the policy was modified.
-CORE_EXPORT bool RemoveFeatureIfPresent(mojom::blink::FeaturePolicyFeature,
+CORE_EXPORT bool RemoveFeatureIfPresent(mojom::blink::PermissionsPolicyFeature,
                                         ParsedFeaturePolicy&);
 
 // If no declaration in the policy exists already for the feature, adds a
 // declaration which disallows the feature in all origins. Returns true if the
 // policy was modified.
-CORE_EXPORT bool DisallowFeatureIfNotPresent(mojom::blink::FeaturePolicyFeature,
-                                             ParsedFeaturePolicy&);
+CORE_EXPORT bool DisallowFeatureIfNotPresent(
+    mojom::blink::PermissionsPolicyFeature,
+    ParsedFeaturePolicy&);
 
 // If no declaration in the policy exists already for the feature, adds a
 // declaration which allows the feature in all origins. Returns true if the
 // policy was modified.
 CORE_EXPORT bool AllowFeatureEverywhereIfNotPresent(
-    mojom::blink::FeaturePolicyFeature,
+    mojom::blink::PermissionsPolicyFeature,
     ParsedFeaturePolicy&);
 
 // Replaces any existing declarations in the policy for the given feature with
 // a declaration which disallows the feature in all origins.
-CORE_EXPORT void DisallowFeature(mojom::blink::FeaturePolicyFeature,
+CORE_EXPORT void DisallowFeature(mojom::blink::PermissionsPolicyFeature,
                                  ParsedFeaturePolicy&);
 
 // Returns true iff the feature should not be exposed to script.
 CORE_EXPORT bool IsFeatureForMeasurementOnly(
-    mojom::blink::FeaturePolicyFeature);
+    mojom::blink::PermissionsPolicyFeature);
 
 // Replaces any existing declarations in the policy for the given feature with
 // a declaration which allows the feature in all origins.
-CORE_EXPORT void AllowFeatureEverywhere(mojom::blink::FeaturePolicyFeature,
+CORE_EXPORT void AllowFeatureEverywhere(mojom::blink::PermissionsPolicyFeature,
                                         ParsedFeaturePolicy&);
 
-CORE_EXPORT const String& GetNameForFeature(mojom::blink::FeaturePolicyFeature);
+CORE_EXPORT const String& GetNameForFeature(
+    mojom::blink::PermissionsPolicyFeature);
 
 }  // namespace blink
 

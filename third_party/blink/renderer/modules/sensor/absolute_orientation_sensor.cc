@@ -30,13 +30,14 @@ AbsoluteOrientationSensor::AbsoluteOrientationSensor(
     ExecutionContext* execution_context,
     const SpatialSensorOptions* options,
     ExceptionState& exception_state)
-    : OrientationSensor(execution_context,
-                        options,
-                        exception_state,
-                        SensorType::ABSOLUTE_ORIENTATION_QUATERNION,
-                        {mojom::blink::FeaturePolicyFeature::kAccelerometer,
-                         mojom::blink::FeaturePolicyFeature::kGyroscope,
-                         mojom::blink::FeaturePolicyFeature::kMagnetometer}) {}
+    : OrientationSensor(
+          execution_context,
+          options,
+          exception_state,
+          SensorType::ABSOLUTE_ORIENTATION_QUATERNION,
+          {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
+           mojom::blink::PermissionsPolicyFeature::kGyroscope,
+           mojom::blink::PermissionsPolicyFeature::kMagnetometer}) {}
 
 void AbsoluteOrientationSensor::Trace(Visitor* visitor) const {
   OrientationSensor::Trace(visitor);

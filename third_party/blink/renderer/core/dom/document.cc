@@ -811,7 +811,7 @@ Document::Document(const DocumentInit& initializer,
       GetFrame() && !GetFrame()->IsMainFrame() &&
       RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
       !dom_window_->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kVerticalScroll);
+          mojom::blink::PermissionsPolicyFeature::kVerticalScroll);
 
   InitDNSPrefetch();
 
@@ -5757,7 +5757,7 @@ void Document::setDomain(const String& raw_domain,
   const String feature_policy_error =
       "Setting `document.domain` is disabled by permissions policy.";
   if (!dom_window_->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kDocumentDomain,
+          mojom::blink::PermissionsPolicyFeature::kDocumentDomain,
           ReportOptions::kReportOnFailure, feature_policy_error)) {
     exception_state.ThrowSecurityError(feature_policy_error);
     return;
@@ -6236,7 +6236,7 @@ ScriptPromise Document::interestCohort(ScriptState* script_state,
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kInterestCohort)) {
+          mojom::blink::PermissionsPolicyFeature::kInterestCohort)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         "The \"interest-cohort\" Permissions Policy denied the use of "
@@ -8214,7 +8214,7 @@ bool Document::IsFocusAllowed() const {
   if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled())
     return true;
   return GetExecutionContext()->IsFeatureEnabled(
-      mojom::blink::FeaturePolicyFeature::kFocusWithoutUserActivation);
+      mojom::blink::PermissionsPolicyFeature::kFocusWithoutUserActivation);
 }
 
 LazyLoadImageObserver& Document::EnsureLazyLoadImageObserver() {

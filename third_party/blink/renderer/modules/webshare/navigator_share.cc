@@ -214,7 +214,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   // The feature policy is currently not enforced.
   LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
   window->CountUse(execution_context->IsFeatureEnabled(
-                       mojom::blink::FeaturePolicyFeature::kWebShare)
+                       mojom::blink::PermissionsPolicyFeature::kWebShare)
                        ? WebFeature::kWebSharePolicyAllow
                        : WebFeature::kWebSharePolicyDisallow);
 

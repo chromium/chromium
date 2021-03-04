@@ -47,9 +47,10 @@ using chromeos::attestation::PlatformVerificationDialog;
 ProtectedMediaIdentifierPermissionContext::
     ProtectedMediaIdentifierPermissionContext(
         content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-                            blink::mojom::FeaturePolicyFeature::kEncryptedMedia)
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif

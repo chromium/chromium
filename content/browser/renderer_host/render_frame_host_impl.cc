@@ -722,7 +722,7 @@ DetermineWhetherToForbidTrustTokenRedemption(
       parent_policy, container_policy, subframe_origin);
 
   if (subframe_policy->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)) {
+          blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
     return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
   }
   return network::mojom::TrustTokenRedemptionPolicy::kForbid;
@@ -739,7 +739,7 @@ network::mojom::TrustTokenRedemptionPolicy
 DetermineAfterCommitWhetherToForbidTrustTokenRedemption(
     RenderFrameHostImpl* impl) {
   return impl->IsFeatureEnabled(
-             blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)
+             blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
              ? network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit
              : network::mojom::TrustTokenRedemptionPolicy::kForbid;
 }
@@ -4032,7 +4032,7 @@ void RenderFrameHostImpl::DetachForTesting() {
 }
 
 bool RenderFrameHostImpl::IsFeatureEnabled(
-    blink::mojom::FeaturePolicyFeature feature) {
+    blink::mojom::PermissionsPolicyFeature feature) {
   return feature_policy_ && feature_policy_->IsFeatureEnabledForOrigin(
                                 feature, GetLastCommittedOrigin());
 }
@@ -5646,7 +5646,7 @@ void RenderFrameHostImpl::BeginNavigation(
       ParentNeedsTrustTokenFeaturePolicy(*begin_params)) {
     RenderFrameHostImpl* parent = GetParent();
     if (!parent->IsFeatureEnabled(
-            blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)) {
+            blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
       mojo::ReportBadMessage(
           "RFHI: Mandatory Trust Tokens Feature Policy feature is absent");
       return;
@@ -7767,7 +7767,7 @@ void RenderFrameHostImpl::RequestAXTreeSnapshotCallback(
 
 void RenderFrameHostImpl::CreatePaymentManager(
     mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) {
-  if (!IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::kPayment)) {
+  if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kPayment)) {
     mojo::ReportBadMessage("Feature policy blocks Payment");
     return;
   }
@@ -8039,7 +8039,7 @@ void RenderFrameHostImpl::BindNFCReceiver(
 #if !defined(OS_ANDROID)
 void RenderFrameHostImpl::BindSerialService(
     mojo::PendingReceiver<blink::mojom::SerialService> receiver) {
-  if (!IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::kSerial)) {
+  if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kSerial)) {
     mojo::ReportBadMessage("Feature policy blocks access to Serial.");
     return;
   }
@@ -8067,7 +8067,8 @@ IdleManager* RenderFrameHostImpl::GetIdleManager() {
 
 void RenderFrameHostImpl::BindIdleManager(
     mojo::PendingReceiver<blink::mojom::IdleManager> receiver) {
-  if (!IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::kIdleDetection)) {
+  if (!IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kIdleDetection)) {
     mojo::ReportBadMessage("Feature policy blocks access to IdleDetection.");
     return;
   }

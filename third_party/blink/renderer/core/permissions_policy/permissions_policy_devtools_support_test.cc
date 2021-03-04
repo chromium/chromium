@@ -29,7 +29,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectIframeAttributeBlockage) {
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -55,7 +55,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest,
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -76,7 +76,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectHeaderBlockage) {
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -102,7 +102,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNestedHeaderBlockage) {
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -135,7 +135,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectRootHeaderBlockage) {
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -165,7 +165,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectCrossOriginHeaderBlockage) {
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -187,7 +187,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest,
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -218,7 +218,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest,
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
@@ -257,23 +257,23 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNestedCrossOriginNoBlockage) {
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   EXPECT_TRUE(MainFrame().GetFrame()->GetSecurityContext()->IsFeatureEnabled(
-      mojom::blink::FeaturePolicyFeature::kFullscreen));
-  EXPECT_TRUE(
-      MainFrame()
-          .GetFrame()
-          ->FirstChild()
-          ->GetSecurityContext()
-          ->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kFullscreen));
-  EXPECT_TRUE(
-      MainFrame()
-          .GetFrame()
-          ->FirstChild()
-          ->FirstChild()
-          ->GetSecurityContext()
-          ->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kFullscreen));
+      mojom::blink::PermissionsPolicyFeature::kFullscreen));
+  EXPECT_TRUE(MainFrame()
+                  .GetFrame()
+                  ->FirstChild()
+                  ->GetSecurityContext()
+                  ->IsFeatureEnabled(
+                      mojom::blink::PermissionsPolicyFeature::kFullscreen));
+  EXPECT_TRUE(MainFrame()
+                  .GetFrame()
+                  ->FirstChild()
+                  ->FirstChild()
+                  ->GetSecurityContext()
+                  ->IsFeatureEnabled(
+                      mojom::blink::PermissionsPolicyFeature::kFullscreen));
   EXPECT_EQ(locator, base::nullopt);
 }
 
@@ -290,7 +290,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNoBlockage) {
   base::Optional<FeaturePolicyBlockLocator> locator =
       TraceFeaturePolicyBlockSource(
           MainFrame().GetFrame(),
-          mojom::blink::FeaturePolicyFeature::kFullscreen);
+          mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   EXPECT_EQ(locator, base::nullopt);
 }

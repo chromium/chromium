@@ -57,12 +57,18 @@ def _json5_load_from_file(file_path):
         return _json5_load(f.read())
 
 
-def uma_histogram_checks_factory(mojom_file, enum_name, update_script_file):
+def uma_histogram_checks_factory(mojom_file,
+                                 enum_name,
+                                 update_script_file,
+                                 histogram_enum_name=None):
     """
     :param mojom_file: str mojom_file name
-    :param enum_name: str enum name used in both mojom file and enums.xml
+    :param enum_name: str enum name used in both mojom file
     :param update_script_file: str update_script_file name
+    :param histogram_enum_name: str enum name used in enums.xml for histogram.
     """
+    if histogram_enum_name is None:
+        histogram_enum_name = enum_name
 
     def run_uma_histogram_checks(input_api, output_api):
         source_path = ''
@@ -77,7 +83,7 @@ def uma_histogram_checks_factory(mojom_file, enum_name, update_script_file):
         end_marker = '^};'
         presubmit_error = _import_update_histogram_enum(
             input_api).CheckPresubmitErrors(
-                histogram_enum_name=enum_name,
+                histogram_enum_name=histogram_enum_name,
                 update_script_name=update_script_file,
                 source_enum_path=source_path,
                 start_marker=start_marker,
@@ -151,8 +157,9 @@ def json5_config_checks_factory(mojom_source_path, json5_config_path,
 checks = [
     uma_histogram_checks_factory(
         mojom_file="permissions_policy_feature.mojom",
-        enum_name="FeaturePolicyFeature",
-        update_script_file="update_permissions_policy_enum.py"),
+        enum_name="PermissionsPolicyFeature",
+        update_script_file="update_permissions_policy_enum.py",
+        histogram_enum_name='FeaturePolicyFeature'),
     uma_histogram_checks_factory(
         mojom_file="document_policy_feature.mojom",
         enum_name="DocumentPolicyFeature",
@@ -164,7 +171,7 @@ checks = [
         json5_config_path=os.path.join('third_party', 'blink', 'renderer',
                                        'core', 'permissions_policy',
                                        'permissions_policy_features.json5'),
-        enum_name="FeaturePolicyFeature",
+        enum_name="PermissionsPolicyFeature",
         ignore_enums={'NotFound'}),
     json5_config_checks_factory(
         mojom_source_path=os.path.join('third_party', 'blink', 'public',

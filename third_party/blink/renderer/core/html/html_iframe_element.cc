@@ -330,7 +330,7 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   // enable the feature for all origins.
   if (AllowFullscreen()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
-        mojom::blink::FeaturePolicyFeature::kFullscreen, container_policy);
+        mojom::blink::PermissionsPolicyFeature::kFullscreen, container_policy);
     if (!policy_changed) {
       logger.Warn(
           "Allow attribute will take precedence over 'allowfullscreen'.");
@@ -340,7 +340,7 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   // set, enable the feature for all origins.
   if (AllowPaymentRequest()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
-        mojom::blink::FeaturePolicyFeature::kPayment, container_policy);
+        mojom::blink::PermissionsPolicyFeature::kPayment, container_policy);
     if (!policy_changed) {
       logger.Warn(
           "Allow attribute will take precedence over 'allowpaymentrequest'.");
@@ -439,7 +439,7 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
 
   if (operation_requires_feature_policy &&
       (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kTrustTokenRedemption))) {
+          mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption))) {
     GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,

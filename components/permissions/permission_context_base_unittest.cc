@@ -54,9 +54,10 @@ class TestPermissionContext : public PermissionContextBase {
  public:
   TestPermissionContext(content::BrowserContext* browser_context,
                         const ContentSettingsType content_settings_type)
-      : PermissionContextBase(browser_context,
-                              content_settings_type,
-                              blink::mojom::FeaturePolicyFeature::kNotFound),
+      : PermissionContextBase(
+            browser_context,
+            content_settings_type,
+            blink::mojom::PermissionsPolicyFeature::kNotFound),
         tab_context_updated_(false) {}
 
   ~TestPermissionContext() override {}

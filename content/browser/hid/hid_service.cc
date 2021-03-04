@@ -99,7 +99,7 @@ void HidService::Create(
   DCHECK(render_frame_host);
 
   if (!render_frame_host->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kHid)) {
+          blink::mojom::PermissionsPolicyFeature::kHid)) {
     mojo::ReportBadMessage("Feature policy blocks access to HID.");
     return;
   }

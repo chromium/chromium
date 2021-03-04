@@ -208,7 +208,7 @@ void SecurityContextInit::ApplyFeaturePolicy(
     // Enforcing the policy for sandbox frames (for context see
     // https://crbug.com/954349).
     DisallowFeatureIfNotPresent(
-        mojom::blink::FeaturePolicyFeature::kFocusWithoutUserActivation,
+        mojom::blink::PermissionsPolicyFeature::kFocusWithoutUserActivation,
         container_policy);
   }
 

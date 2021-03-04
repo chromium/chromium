@@ -69,13 +69,13 @@ class MODULES_EXPORT Sensor : public EventTargetWithInlineData,
          const SensorOptions*,
          ExceptionState&,
          device::mojom::blink::SensorType,
-         const Vector<mojom::blink::FeaturePolicyFeature>&);
+         const Vector<mojom::blink::PermissionsPolicyFeature>&);
 
   Sensor(ExecutionContext*,
          const SpatialSensorOptions*,
          ExceptionState&,
          device::mojom::blink::SensorType,
-         const Vector<mojom::blink::FeaturePolicyFeature>&);
+         const Vector<mojom::blink::PermissionsPolicyFeature>&);
 
   using SensorConfigurationPtr = device::mojom::blink::SensorConfigurationPtr;
   using SensorConfiguration = device::mojom::blink::SensorConfiguration;

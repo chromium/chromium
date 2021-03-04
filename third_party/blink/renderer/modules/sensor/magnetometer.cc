@@ -32,7 +32,7 @@ Magnetometer::Magnetometer(ExecutionContext* execution_context,
              options,
              exception_state,
              SensorType::MAGNETOMETER,
-             {mojom::blink::FeaturePolicyFeature::kMagnetometer}) {}
+             {mojom::blink::PermissionsPolicyFeature::kMagnetometer}) {}
 
 base::Optional<double> Magnetometer::x() const {
   if (hasReading())

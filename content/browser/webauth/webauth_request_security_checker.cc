@@ -139,11 +139,11 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
        !base::FeatureList::IsEnabled(
            device::kWebAuthGetAssertionFeaturePolicy) ||
        !render_frame_host_->IsFeatureEnabled(
-           blink::mojom::FeaturePolicyFeature::kPublicKeyCredentialsGet)) &&
+           blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) &&
       (type != RequestType::kMakePaymentCredential ||
        !base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation) ||
        !render_frame_host_->IsFeatureEnabled(
-           blink::mojom::FeaturePolicyFeature::kPayment)) &&
+           blink::mojom::PermissionsPolicyFeature::kPayment)) &&
       *is_cross_origin) {
     return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   }

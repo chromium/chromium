@@ -36,14 +36,14 @@ const FeatureNameMap& GetDefaultFeatureNameMap() {
     {% for feature in feature_policy_features %}
     {% if not feature.depends_on or feature.name in fp_origin_trial_dependency_map %}
     default_feature_name_map.Set(k{{feature.name}}PolicyName,
-                                 mojom::FeaturePolicyFeature::k{{feature.name}});
+                                 mojom::PermissionsPolicyFeature::k{{feature.name}});
     {% endif %}
     {% endfor %}
     {% for runtime_feature_name, dependent_features in runtime_to_feature_policy_map.items() | sort %}
     if (RuntimeEnabledFeatures::{{runtime_feature_name}}Enabled()) {
       {% for feature in dependent_features %}
       default_feature_name_map.Set(k{{feature}}PolicyName,
-                                   mojom::FeaturePolicyFeature::k{{feature}});
+                                   mojom::PermissionsPolicyFeature::k{{feature}});
       {% endfor %}
     }
     {% endfor %}
@@ -112,13 +112,13 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature feature,
   return false;
 }
 
-String PermissionsPolicyFeatureToProtocol(mojom::blink::FeaturePolicyFeature feature) {
+String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature feature) {
   switch (feature) {
     {% for feature in feature_policy_features %}
-    case mojom::blink::FeaturePolicyFeature::k{{feature.name}}:
+    case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
       return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
     {% endfor %}
-    case mojom::blink::FeaturePolicyFeature::kNotFound:
+    case mojom::blink::PermissionsPolicyFeature::kNotFound:
       NOTREACHED();
       return "";
   }

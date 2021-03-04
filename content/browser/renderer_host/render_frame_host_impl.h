@@ -383,7 +383,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsBeforeUnloadHangMonitorDisabledForTesting() override;
   bool GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType disabler_type) override;
-  bool IsFeatureEnabled(blink::mojom::FeaturePolicyFeature feature) override;
+  bool IsFeatureEnabled(
+      blink::mojom::PermissionsPolicyFeature feature) override;
   void ViewSource() override;
   void ExecuteMediaPlayerActionAtLocation(
       const gfx::Point&,

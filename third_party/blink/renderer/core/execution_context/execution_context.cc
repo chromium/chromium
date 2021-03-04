@@ -547,7 +547,7 @@ bool ExecutionContext::FeatureEnabled(OriginTrialFeature feature) const {
 }
 
 bool ExecutionContext::IsFeatureEnabled(
-    mojom::blink::FeaturePolicyFeature feature,
+    mojom::blink::PermissionsPolicyFeature feature,
     ReportOptions report_on_failure,
     const String& message) const {
   if (report_on_failure == ReportOptions::kReportOnFailure) {

@@ -37,7 +37,8 @@ PeriodicBackgroundSyncPermissionContext::
         content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::PERIODIC_BACKGROUND_SYNC,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 PeriodicBackgroundSyncPermissionContext::
     ~PeriodicBackgroundSyncPermissionContext() = default;

@@ -33,7 +33,7 @@ struct FeaturePolicyBlockLocator {
 // Traces the root reason for a feature to be disabled in a frame.
 // Returns base::nullopt when the feature is enabled in the frame.
 CORE_EXPORT base::Optional<FeaturePolicyBlockLocator>
-TraceFeaturePolicyBlockSource(Frame*, mojom::FeaturePolicyFeature);
+TraceFeaturePolicyBlockSource(Frame*, mojom::PermissionsPolicyFeature);
 
 }  // namespace blink
 

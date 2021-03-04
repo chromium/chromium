@@ -749,7 +749,7 @@ bool AllowedToUsePaymentRequest(const ExecutionContext* execution_context) {
 
   // 2. If Feature Policy is enabled, return the policy for "payment" feature.
   return execution_context->IsFeatureEnabled(
-      mojom::blink::FeaturePolicyFeature::kPayment,
+      mojom::blink::PermissionsPolicyFeature::kPayment,
       ReportOptions::kReportOnFailure);
 }
 

@@ -534,7 +534,7 @@ bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
 // If the origins list is empty, it's treated as matches all origins
 // (Equivalent to the declared policy "feature *")
 blink::ParsedFeaturePolicyDeclaration CreateParsedFeaturePolicyDeclaration(
-    blink::mojom::FeaturePolicyFeature feature,
+    blink::mojom::PermissionsPolicyFeature feature,
     const std::vector<GURL>& origins,
     bool match_all_origins = false) {
   blink::ParsedFeaturePolicyDeclaration declaration;
@@ -553,7 +553,7 @@ blink::ParsedFeaturePolicyDeclaration CreateParsedFeaturePolicyDeclaration(
 }
 
 blink::ParsedFeaturePolicy CreateParsedFeaturePolicy(
-    const std::vector<blink::mojom::FeaturePolicyFeature>& features,
+    const std::vector<blink::mojom::PermissionsPolicyFeature>& features,
     const std::vector<GURL>& origins,
     bool match_all_origins = false) {
   blink::ParsedFeaturePolicy result;
@@ -565,12 +565,12 @@ blink::ParsedFeaturePolicy CreateParsedFeaturePolicy(
 }
 
 blink::ParsedFeaturePolicy CreateParsedFeaturePolicyMatchesAll(
-    const std::vector<blink::mojom::FeaturePolicyFeature>& features) {
+    const std::vector<blink::mojom::PermissionsPolicyFeature>& features) {
   return CreateParsedFeaturePolicy(features, {}, true);
 }
 
 blink::ParsedFeaturePolicy CreateParsedFeaturePolicyMatchesNone(
-    const std::vector<blink::mojom::FeaturePolicyFeature>& features) {
+    const std::vector<blink::mojom::PermissionsPolicyFeature>& features) {
   return CreateParsedFeaturePolicy(features, {});
 }
 
@@ -9132,7 +9132,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   EXPECT_EQ(CreateParsedFeaturePolicy(
-                {blink::mojom::FeaturePolicyFeature::kGeolocation},
+                {blink::mojom::PermissionsPolicyFeature::kGeolocation},
                 {url.GetOrigin()}),
             root->current_replication_state().feature_policy_header);
 }
@@ -9149,8 +9149,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   EXPECT_EQ(CreateParsedFeaturePolicy(
-                {blink::mojom::FeaturePolicyFeature::kGeolocation,
-                 blink::mojom::FeaturePolicyFeature::kPayment},
+                {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+                 blink::mojom::PermissionsPolicyFeature::kPayment},
                 {start_url.GetOrigin()}),
             root->current_replication_state().feature_policy_header);
 
@@ -9158,8 +9158,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // overwrite the old one.
   EXPECT_TRUE(NavigateToURL(shell(), first_nav_url));
   EXPECT_EQ(CreateParsedFeaturePolicyMatchesAll(
-                {blink::mojom::FeaturePolicyFeature::kGeolocation,
-                 blink::mojom::FeaturePolicyFeature::kPayment}),
+                {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+                 blink::mojom::PermissionsPolicyFeature::kPayment}),
             root->current_replication_state().feature_policy_header);
 
   // When the main frame navigates to a page without a policy, the replicated
@@ -9180,8 +9180,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   EXPECT_EQ(CreateParsedFeaturePolicy(
-                {blink::mojom::FeaturePolicyFeature::kGeolocation,
-                 blink::mojom::FeaturePolicyFeature::kPayment},
+                {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+                 blink::mojom::PermissionsPolicyFeature::kPayment},
                 {start_url.GetOrigin()}),
             root->current_replication_state().feature_policy_header);
 
@@ -9189,8 +9189,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // overwrite the old one.
   EXPECT_TRUE(NavigateToURL(shell(), first_nav_url));
   EXPECT_EQ(CreateParsedFeaturePolicyMatchesAll(
-                {blink::mojom::FeaturePolicyFeature::kGeolocation,
-                 blink::mojom::FeaturePolicyFeature::kPayment}),
+                {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+                 blink::mojom::PermissionsPolicyFeature::kPayment}),
             root->current_replication_state().feature_policy_header);
 
   // When the main frame navigates to a page without a policy, the replicated
@@ -9213,15 +9213,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   EXPECT_EQ(CreateParsedFeaturePolicy(
-                {blink::mojom::FeaturePolicyFeature::kGeolocation,
-                 blink::mojom::FeaturePolicyFeature::kPayment},
+                {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+                 blink::mojom::PermissionsPolicyFeature::kPayment},
                 {main_url.GetOrigin(), GURL("http://example.com/")}),
             root->current_replication_state().feature_policy_header);
   EXPECT_EQ(1UL, root->child_count());
   EXPECT_EQ(
       CreateParsedFeaturePolicy(
-          {blink::mojom::FeaturePolicyFeature::kGeolocation,
-           blink::mojom::FeaturePolicyFeature::kPayment},
+          {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+           blink::mojom::PermissionsPolicyFeature::kPayment},
           {main_url.GetOrigin()}),
       root->child_at(0)->current_replication_state().feature_policy_header);
 
@@ -9229,8 +9229,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), first_nav_url));
   EXPECT_EQ(
       CreateParsedFeaturePolicyMatchesAll(
-          {blink::mojom::FeaturePolicyFeature::kGeolocation,
-           blink::mojom::FeaturePolicyFeature::kPayment}),
+          {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+           blink::mojom::PermissionsPolicyFeature::kPayment}),
       root->child_at(0)->current_replication_state().feature_policy_header);
 
   // Navigate the iframe to another location, this one with no policy header
@@ -9243,8 +9243,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), first_nav_url));
   EXPECT_EQ(
       CreateParsedFeaturePolicyMatchesAll(
-          {blink::mojom::FeaturePolicyFeature::kGeolocation,
-           blink::mojom::FeaturePolicyFeature::kPayment}),
+          {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+           blink::mojom::PermissionsPolicyFeature::kPayment}),
       root->child_at(0)->current_replication_state().feature_policy_header);
 }
 
@@ -9274,8 +9274,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), first_nav_url));
   EXPECT_EQ(
       CreateParsedFeaturePolicyMatchesNone(
-          {blink::mojom::FeaturePolicyFeature::kGeolocation,
-           blink::mojom::FeaturePolicyFeature::kPayment}),
+          {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+           blink::mojom::PermissionsPolicyFeature::kPayment}),
       root->child_at(1)->current_replication_state().feature_policy_header);
 
   EXPECT_EQ(1UL, root->child_at(1)->child_count());

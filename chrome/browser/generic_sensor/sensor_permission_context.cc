@@ -17,7 +17,8 @@ SensorPermissionContext::SensorPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::SENSORS,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 SensorPermissionContext::~SensorPermissionContext() {}
 

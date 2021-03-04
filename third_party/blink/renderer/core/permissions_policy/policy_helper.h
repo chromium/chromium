@@ -59,7 +59,7 @@ class PolicyParserMessageBuffer {
   bool discard_message_ = false;
 };
 
-using FeatureNameMap = HashMap<String, mojom::blink::FeaturePolicyFeature>;
+using FeatureNameMap = HashMap<String, mojom::blink::PermissionsPolicyFeature>;
 
 using DocumentPolicyFeatureSet = HashSet<
     mojom::blink::DocumentPolicyFeature,
@@ -83,9 +83,10 @@ const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures();
 // Refresh the set content based on current RuntimeFeatures environment.
 CORE_EXPORT void ResetAvailableDocumentPolicyFeaturesForTest();
 
-// Returns true if this FeaturePolicyFeature is currently disabled by an origin
-// trial (it is origin trial controlled, and the origin trial is not enabled).
-// The first String param should be a name of FeaturePolicyFeature.
+// Returns true if this PermissionsPolicyFeature is currently disabled by an
+// origin trial (it is origin trial controlled, and the origin trial is not
+// enabled). The first String param should be a name of
+// PermissionsPolicyFeature.
 bool DisabledByOriginTrial(const String&, FeatureContext*);
 
 // Returns true if this DocumentPolicyFeature is currently disabled by an origin
@@ -93,9 +94,10 @@ bool DisabledByOriginTrial(const String&, FeatureContext*);
 bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature,
                            FeatureContext*);
 
-// Converts |mojom::blink::FeaturePolicyFeature| to enum used in devtools
+// Converts |mojom::blink::PermissionsPolicyFeature| to enum used in devtools
 // protocol.
-String PermissionsPolicyFeatureToProtocol(mojom::blink::FeaturePolicyFeature);
+String PermissionsPolicyFeatureToProtocol(
+    mojom::blink::PermissionsPolicyFeature);
 
 }  // namespace blink
 

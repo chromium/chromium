@@ -402,7 +402,7 @@ class MediaStreamUIProxyFeaturePolicyTest
   // The header policy should only be set once on page load, so we refresh the
   // page to simulate that.
   void RefreshPageAndSetHeaderPolicy(
-      blink::mojom::FeaturePolicyFeature feature) {
+      blink::mojom::PermissionsPolicyFeature feature) {
     auto navigation = NavigationSimulator::CreateRendererInitiated(
         main_rfh()->GetLastCommittedURL(), main_rfh());
     navigation->SetFeaturePolicyHeader({{feature, {}, false, false}});
@@ -527,7 +527,7 @@ TEST_F(MediaStreamUIProxyFeaturePolicyTest, FeaturePolicy) {
 
   // Mic disabled.
   RefreshPageAndSetHeaderPolicy(
-      blink::mojom::FeaturePolicyFeature::kMicrophone);
+      blink::mojom::PermissionsPolicyFeature::kMicrophone);
   GetResultForRequest(
       CreateRequest(main_rfh(),
                     blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
@@ -539,7 +539,8 @@ TEST_F(MediaStreamUIProxyFeaturePolicyTest, FeaturePolicy) {
             devices[0].type);
 
   // Camera disabled.
-  RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature::kCamera);
+  RefreshPageAndSetHeaderPolicy(
+      blink::mojom::PermissionsPolicyFeature::kCamera);
   GetResultForRequest(
       CreateRequest(main_rfh(),
                     blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
@@ -551,7 +552,8 @@ TEST_F(MediaStreamUIProxyFeaturePolicyTest, FeaturePolicy) {
             devices[0].type);
 
   // Camera disabled resulting in no devices being returned.
-  RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature::kCamera);
+  RefreshPageAndSetHeaderPolicy(
+      blink::mojom::PermissionsPolicyFeature::kCamera);
   GetResultForRequest(
       CreateRequest(main_rfh(), blink::mojom::MediaStreamType::NO_SERVICE,
                     blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE),

@@ -95,7 +95,7 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
   //      promise.
   if (type == "screen" &&
       !context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kScreenWakeLock,
+          mojom::blink::PermissionsPolicyFeature::kScreenWakeLock,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Access to Screen Wake Lock features is "

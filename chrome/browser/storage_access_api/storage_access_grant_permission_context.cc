@@ -48,7 +48,7 @@ StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::STORAGE_ACCESS,
-          blink::mojom::FeaturePolicyFeature::kStorageAccessAPI),
+          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI),
       content_settings_type_(ContentSettingsType::STORAGE_ACCESS) {}
 
 StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =

@@ -442,11 +442,11 @@ void ClipboardPromise::RequestPermission(
 
   if ((permission == mojom::blink::PermissionName::CLIPBOARD_READ &&
        !window.IsFeatureEnabled(
-           mojom::blink::FeaturePolicyFeature::kClipboardRead,
+           mojom::blink::PermissionsPolicyFeature::kClipboardRead,
            ReportOptions::kReportOnFailure, kFeaturePolicyMessage)) ||
       (permission == mojom::blink::PermissionName::CLIPBOARD_WRITE &&
        !window.IsFeatureEnabled(
-           mojom::blink::FeaturePolicyFeature::kClipboardWrite,
+           mojom::blink::PermissionsPolicyFeature::kClipboardWrite,
            ReportOptions::kReportOnFailure, kFeaturePolicyMessage))) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,

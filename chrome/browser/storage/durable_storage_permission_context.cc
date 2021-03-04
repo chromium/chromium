@@ -30,7 +30,8 @@ DurableStoragePermissionContext::DurableStoragePermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::DURABLE_STORAGE,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 void DurableStoragePermissionContext::DecidePermission(
     content::WebContents* web_contents,

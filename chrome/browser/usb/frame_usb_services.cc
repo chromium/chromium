@@ -67,7 +67,7 @@ void FrameUsbServices::InitializeWebUsbService(
 
 bool FrameUsbServices::AllowedByFeaturePolicy() const {
   return render_frame_host_->IsFeatureEnabled(
-      blink::mojom::FeaturePolicyFeature::kUsb);
+      blink::mojom::PermissionsPolicyFeature::kUsb);
 }
 
 // static

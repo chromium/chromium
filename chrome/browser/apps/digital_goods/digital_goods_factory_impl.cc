@@ -38,7 +38,7 @@ void DigitalGoodsFactoryImpl::CreateDigitalGoods(
     const std::string& payment_method,
     CreateDigitalGoodsCallback callback) {
   if (!render_frame_host_->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kPayment)) {
+          blink::mojom::PermissionsPolicyFeature::kPayment)) {
     mojo::ReportBadMessage("Feature policy blocks Payment");
     return;
   }

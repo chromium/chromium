@@ -14,7 +14,7 @@ const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList() {
   static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list({
     {%- for feature in features %}
       {
-        mojom::FeaturePolicyFeature::k{{feature.name}},
+        mojom::PermissionsPolicyFeature::k{{feature.name}},
         PermissionsPolicyFeatureDefault::{{feature.feature_default}}
       },
     {%- endfor %}

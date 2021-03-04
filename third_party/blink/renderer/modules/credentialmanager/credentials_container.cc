@@ -203,7 +203,8 @@ bool CheckSecurityRequirementsBeforeRequest(
       // "self", which means the webauthn feature is allowed by default in
       // same-origin child browsing contexts.
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-              mojom::blink::FeaturePolicyFeature::kPublicKeyCredentialsGet)) {
+              mojom::blink::PermissionsPolicyFeature::
+                  kPublicKeyCredentialsGet)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The 'publickey-credentials-get' feature is not enabled in this "
@@ -219,7 +220,7 @@ bool CheckSecurityRequirementsBeforeRequest(
 
     case RequiredOriginType::kSecureAndPermittedByWebOTPAssertionFeaturePolicy:
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-              mojom::blink::FeaturePolicyFeature::kOTPCredentials)) {
+              mojom::blink::PermissionsPolicyFeature::kOTPCredentials)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The 'otp-credentials` feature is not enabled in this document."));
@@ -262,13 +263,13 @@ void AssertSecurityRequirementsBeforeResponse(
     case RequiredOriginType::
         kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kPublicKeyCredentialsGet));
+          mojom::blink::PermissionsPolicyFeature::kPublicKeyCredentialsGet));
       break;
 
     case RequiredOriginType::kSecureAndPermittedByWebOTPAssertionFeaturePolicy:
       SECURITY_CHECK(
           resolver->GetExecutionContext()->IsFeatureEnabled(
-              mojom::blink::FeaturePolicyFeature::kOTPCredentials) &&
+              mojom::blink::PermissionsPolicyFeature::kOTPCredentials) &&
           IsAncestorChainValidForWebOTP(resolver->DomWindow()->GetFrame()));
       break;
   }
@@ -639,7 +640,7 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
                   const WTF::String& otp) {
   AssertSecurityRequirementsBeforeResponse(
       resolver, resolver->GetExecutionContext()->IsFeatureEnabled(
-                    mojom::blink::FeaturePolicyFeature::kOTPCredentials)
+                    mojom::blink::PermissionsPolicyFeature::kOTPCredentials)
                     ? RequiredOriginType::
                           kSecureAndPermittedByWebOTPAssertionFeaturePolicy
                     : RequiredOriginType::kSecureAndSameWithAncestors);
@@ -1218,7 +1219,7 @@ ScriptPromise CredentialsContainer::create(
     if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
             resolver->GetExecutionContext()) &&
         resolver->GetExecutionContext()->IsFeatureEnabled(
-            mojom::blink::FeaturePolicyFeature::kPayment)) {
+            mojom::blink::PermissionsPolicyFeature::kPayment)) {
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kSecurePaymentConfirmation);
       CreatePublicKeyCredentialForPaymentCredential(options->payment(),

@@ -28,10 +28,10 @@ class RenderFrameHostFeaturePolicyTest
   static constexpr const char* kOrigin3 = "https://example.com";
   static constexpr const char* kOrigin4 = "https://test.com";
 
-  static const blink::mojom::FeaturePolicyFeature kDefaultEnabledFeature =
-      blink::mojom::FeaturePolicyFeature::kSyncXHR;
-  static const blink::mojom::FeaturePolicyFeature kDefaultSelfFeature =
-      blink::mojom::FeaturePolicyFeature::kGeolocation;
+  static const blink::mojom::PermissionsPolicyFeature kDefaultEnabledFeature =
+      blink::mojom::PermissionsPolicyFeature::kSyncXHR;
+  static const blink::mojom::PermissionsPolicyFeature kDefaultSelfFeature =
+      blink::mojom::PermissionsPolicyFeature::kGeolocation;
 
   RenderFrameHost* GetMainRFH(const char* origin) {
     RenderFrameHost* result = web_contents()->GetMainFrame();
@@ -50,9 +50,10 @@ class RenderFrameHostFeaturePolicyTest
 
   // The header policy should only be set once on page load, so we refresh the
   // page to simulate that.
-  void RefreshPageAndSetHeaderPolicy(RenderFrameHost** rfh,
-                                     blink::mojom::FeaturePolicyFeature feature,
-                                     const std::vector<std::string>& origins) {
+  void RefreshPageAndSetHeaderPolicy(
+      RenderFrameHost** rfh,
+      blink::mojom::PermissionsPolicyFeature feature,
+      const std::vector<std::string>& origins) {
     RenderFrameHost* current = *rfh;
     auto navigation = NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
@@ -63,7 +64,7 @@ class RenderFrameHostFeaturePolicyTest
 
   void SetContainerPolicy(RenderFrameHost* parent,
                           RenderFrameHost* child,
-                          blink::mojom::FeaturePolicyFeature feature,
+                          blink::mojom::PermissionsPolicyFeature feature,
                           const std::vector<std::string>& origins) {
     static_cast<TestRenderFrameHost*>(parent)->DidChangeFramePolicy(
         child->GetFrameToken(), {network::mojom::WebSandboxFlags::kNone,
@@ -80,7 +81,7 @@ class RenderFrameHostFeaturePolicyTest
 
  private:
   blink::ParsedFeaturePolicy CreateFPHeader(
-      blink::mojom::FeaturePolicyFeature feature,
+      blink::mojom::PermissionsPolicyFeature feature,
       const std::vector<std::string>& origins) {
     blink::ParsedFeaturePolicy result(1);
     result[0].feature = feature;

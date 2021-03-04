@@ -11,7 +11,7 @@ module blink.mojom;
 // Not all listed features are supported in Blink, and many are gated by runtime
 // flags. See renderer/core/feature_policy/feature_policy_features.json5 for the
 // feature names which will be recognized in policy declarations.
-enum FeaturePolicyFeature {
+enum PermissionsPolicyFeature {
   kNotFound = 0,
   // Controls access to media autoplay.
   kAutoplay = 1,

@@ -239,7 +239,7 @@ void Geolocation::StartRequest(GeoNotifier* notifier) {
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kGeolocation,
+          mojom::blink::PermissionsPolicyFeature::kGeolocation,
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationDisabledByFeaturePolicy);

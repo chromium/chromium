@@ -25,7 +25,7 @@ namespace content {
 
 bool IsFeatureEnabled(RenderFrameHost* rfh,
                       bool tests_use_fake_render_frame_hosts,
-                      blink::mojom::FeaturePolicyFeature feature) {
+                      blink::mojom::PermissionsPolicyFeature feature) {
   // Some tests don't (or can't) set up the RenderFrameHost. In these cases we
   // just ignore feature policy checks (there is no feature policy to test).
   if (!rfh && tests_use_fake_render_frame_hosts)
@@ -185,14 +185,15 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
   auto* host = RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
   for (const blink::MediaStreamDevice& device : devices) {
     if (device.type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
-        !IsFeatureEnabled(host, tests_use_fake_render_frame_hosts_,
-                          blink::mojom::FeaturePolicyFeature::kMicrophone)) {
+        !IsFeatureEnabled(
+            host, tests_use_fake_render_frame_hosts_,
+            blink::mojom::PermissionsPolicyFeature::kMicrophone)) {
       continue;
     }
 
     if (device.type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
         !IsFeatureEnabled(host, tests_use_fake_render_frame_hosts_,
-                          blink::mojom::FeaturePolicyFeature::kCamera)) {
+                          blink::mojom::PermissionsPolicyFeature::kCamera)) {
       continue;
     }
 

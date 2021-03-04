@@ -32,7 +32,7 @@ GravitySensor::GravitySensor(ExecutionContext* execution_context,
                     options,
                     exception_state,
                     SensorType::GRAVITY,
-                    {mojom::blink::FeaturePolicyFeature::kAccelerometer}) {}
+                    {mojom::blink::PermissionsPolicyFeature::kAccelerometer}) {}
 
 void GravitySensor::Trace(Visitor* visitor) const {
   Accelerometer::Trace(visitor);

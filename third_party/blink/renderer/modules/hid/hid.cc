@@ -130,7 +130,7 @@ void HID::AddedEventListener(const AtomicString& event_type,
 
   auto* context = GetExecutionContext();
   if (!context ||
-      !context->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kHid,
+      !context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
                                  ReportOptions::kDoNotReport)) {
     return;
   }
@@ -163,7 +163,7 @@ ScriptPromise HID::getDevices(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (!context->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kHid,
+  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
                                  ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();
@@ -188,7 +188,7 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kHid,
+          mojom::blink::PermissionsPolicyFeature::kHid,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();

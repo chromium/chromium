@@ -35,11 +35,11 @@ FeaturePolicy::Allowlist AllowlistFromDeclaration(
 ParsedFeaturePolicyDeclaration::ParsedFeaturePolicyDeclaration() = default;
 
 ParsedFeaturePolicyDeclaration::ParsedFeaturePolicyDeclaration(
-    mojom::FeaturePolicyFeature feature)
+    mojom::PermissionsPolicyFeature feature)
     : feature(feature) {}
 
 ParsedFeaturePolicyDeclaration::ParsedFeaturePolicyDeclaration(
-    mojom::FeaturePolicyFeature feature,
+    mojom::PermissionsPolicyFeature feature,
     const std::vector<url::Origin>& allowed_origins,
     bool matches_all_origins,
     bool matches_opaque_src)
@@ -125,18 +125,18 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CopyStateFrom(
 }
 
 bool FeaturePolicy::IsFeatureEnabledByInheritedPolicy(
-    mojom::FeaturePolicyFeature feature) const {
+    mojom::PermissionsPolicyFeature feature) const {
   DCHECK(base::Contains(inherited_policies_, feature));
   return inherited_policies_.at(feature);
 }
 
 bool FeaturePolicy::IsFeatureEnabled(
-    mojom::FeaturePolicyFeature feature) const {
+    mojom::PermissionsPolicyFeature feature) const {
   return IsFeatureEnabledForOrigin(feature, origin_);
 }
 
 bool FeaturePolicy::IsFeatureEnabledForOrigin(
-    mojom::FeaturePolicyFeature feature,
+    mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) const {
   DCHECK(base::Contains(feature_list_, feature));
   DCHECK(base::Contains(inherited_policies_, feature));
@@ -158,7 +158,7 @@ bool FeaturePolicy::IsFeatureEnabledForOrigin(
 }
 
 bool FeaturePolicy::GetFeatureValueForOrigin(
-    mojom::FeaturePolicyFeature feature,
+    mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) const {
   DCHECK(base::Contains(feature_list_, feature));
   DCHECK(base::Contains(inherited_policies_, feature));
@@ -173,7 +173,7 @@ bool FeaturePolicy::GetFeatureValueForOrigin(
 }
 
 const FeaturePolicy::Allowlist FeaturePolicy::GetAllowlistForDevTools(
-    mojom::FeaturePolicyFeature feature) const {
+    mojom::PermissionsPolicyFeature feature) const {
   // Return an empty allowlist when disabled through inheritance.
   if (!IsFeatureEnabledByInheritedPolicy(feature))
     return FeaturePolicy::Allowlist();
@@ -195,7 +195,7 @@ const FeaturePolicy::Allowlist FeaturePolicy::GetAllowlistForDevTools(
 // to replace this method. This method uses legacy |default_allowlist|
 // calculation method.
 const FeaturePolicy::Allowlist FeaturePolicy::GetAllowlistForFeature(
-    mojom::FeaturePolicyFeature feature) const {
+    mojom::PermissionsPolicyFeature feature) const {
   DCHECK(base::Contains(feature_list_, feature));
   DCHECK(base::Contains(inherited_policies_, feature));
   // Return an empty allowlist when disabled through inheritance.
@@ -224,15 +224,15 @@ void FeaturePolicy::SetHeaderPolicy(const ParsedFeaturePolicy& parsed_header) {
   DCHECK(allowlists_.empty());
   for (const ParsedFeaturePolicyDeclaration& parsed_declaration :
        parsed_header) {
-    mojom::FeaturePolicyFeature feature = parsed_declaration.feature;
-    DCHECK(feature != mojom::FeaturePolicyFeature::kNotFound);
+    mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
+    DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
     allowlists_.emplace(
         feature, AllowlistFromDeclaration(parsed_declaration, feature_list_));
   }
 }
 
-FeaturePolicyFeatureState FeaturePolicy::GetFeatureState() const {
-  FeaturePolicyFeatureState feature_state;
+PermissionsPolicyFeatureState FeaturePolicy::GetFeatureState() const {
+  PermissionsPolicyFeatureState feature_state;
   for (const auto& pair : GetPermissionsPolicyFeatureList())
     feature_state[pair.first] = GetFeatureValueForOrigin(pair.first, origin_);
   return feature_state;
@@ -269,7 +269,7 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CreateFromParentPolicy(
 // at origin.
 bool FeaturePolicy::InheritedValueForFeature(
     const FeaturePolicy* parent_policy,
-    std::pair<mojom::FeaturePolicyFeature, PermissionsPolicyFeatureDefault>
+    std::pair<mojom::PermissionsPolicyFeature, PermissionsPolicyFeatureDefault>
         feature,
     const ParsedFeaturePolicy& container_policy) const {
   // 9.7 2: Otherwise [If context is not a nested browsing context,] return

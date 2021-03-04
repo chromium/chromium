@@ -11,7 +11,8 @@ NfcPermissionContext::NfcPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::NFC,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 NfcPermissionContext::~NfcPermissionContext() = default;
 

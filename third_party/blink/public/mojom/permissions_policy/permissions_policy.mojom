@@ -12,7 +12,7 @@ import "third_party/blink/public/mojom/permissions_policy/permissions_policy_fea
 // these form a ParsedFeaturePolicy.
 // NOTE: These types are used for replication frame state between processes.
 struct ParsedFeaturePolicyDeclaration {
-  FeaturePolicyFeature feature;
+  PermissionsPolicyFeature feature;
   array<url.mojom.Origin> allowed_origins;
   bool matches_all_origins;
   bool matches_opaque_src;

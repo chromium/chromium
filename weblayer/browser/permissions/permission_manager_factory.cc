@@ -80,17 +80,17 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-          blink::mojom::FeaturePolicyFeature::kEncryptedMedia);
+          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia);
 #endif
 
   permission_contexts[ContentSettingsType::MEDIASTREAM_MIC] =
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_MIC,
-          blink::mojom::FeaturePolicyFeature::kMicrophone);
+          blink::mojom::PermissionsPolicyFeature::kMicrophone);
   permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_CAMERA,
-          blink::mojom::FeaturePolicyFeature::kCamera);
+          blink::mojom::PermissionsPolicyFeature::kCamera);
   permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
       std::make_unique<BackgroundSyncPermissionContext>(browser_context);
 
@@ -115,7 +115,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       permission_contexts[content_settings_type] =
           std::make_unique<DeniedPermissionContext>(
               browser_context, content_settings_type,
-              blink::mojom::FeaturePolicyFeature::kNotFound);
+              blink::mojom::PermissionsPolicyFeature::kNotFound);
     }
   }
   return permission_contexts;

@@ -53,7 +53,7 @@ FlocEligibilityObserver::OnCommit(
   // the floc inclusion, the navigation history is not eligible for floc. We can
   // stop observing now.
   if (!navigation_handle->GetRenderFrameHost()->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kInterestCohort)) {
+          blink::mojom::PermissionsPolicyFeature::kInterestCohort)) {
     return ObservePolicy::STOP_OBSERVING;
   }
 

@@ -733,7 +733,7 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
     if (GetExecutionContext()->IsWindow()) {
       bool sync_xhr_disabled_by_feature_policy =
           !GetExecutionContext()->IsFeatureEnabled(
-              mojom::blink::FeaturePolicyFeature::kSyncXHR,
+              mojom::blink::PermissionsPolicyFeature::kSyncXHR,
               ReportOptions::kReportOnFailure,
               "Synchronous requests are disabled by permissions policy.");
 
@@ -1469,7 +1469,7 @@ void XMLHttpRequest::setTrustToken(const TrustToken* trust_token,
       params->type == network::mojom::blink::TrustTokenOperationType::kSigning;
   if (operation_requires_feature_policy &&
       !GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kTrustTokenRedemption)) {
+          mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Trust Tokens redemption and signing require the "

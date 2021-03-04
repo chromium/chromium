@@ -823,7 +823,7 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     return false;
 
   if (!document_->domWindow()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kConversionMeasurement)) {
+          mojom::blink::PermissionsPolicyFeature::kConversionMeasurement)) {
     String message =
         "The 'conversion-measurement' feature policy must be enabled to "
         "register a conversion.";

@@ -41,7 +41,7 @@ blink::mojom::SerialPortInfoPtr ToBlinkType(
 SerialService::SerialService(RenderFrameHost* render_frame_host)
     : render_frame_host_(render_frame_host) {
   DCHECK(render_frame_host_->IsFeatureEnabled(
-      blink::mojom::FeaturePolicyFeature::kSerial));
+      blink::mojom::PermissionsPolicyFeature::kSerial));
   // Serial API is not supported for back-forward cache for now because we
   // don't have support for closing/freezing ports when the frame is added to
   // the back-forward cache, so we mark frames that use this API as disabled

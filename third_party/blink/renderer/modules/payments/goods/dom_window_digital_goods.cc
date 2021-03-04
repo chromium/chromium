@@ -81,7 +81,7 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
   }
 
   if (!execution_context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kPayment)) {
+          mojom::blink::PermissionsPolicyFeature::kPayment)) {
     LogConsoleError(script_state,
                     "GetDigitalGoodsService: Payments not enabled.");
     resolver->Resolve(v8::Null(script_state->GetIsolate()));

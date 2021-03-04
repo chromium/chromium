@@ -60,9 +60,9 @@ void DeviceOrientationAbsoluteController::DidAddEventListener(
 
   if (!has_event_listener_) {
     if (!CheckPolicyFeatures(
-            {mojom::blink::FeaturePolicyFeature::kAccelerometer,
-             mojom::blink::FeaturePolicyFeature::kGyroscope,
-             mojom::blink::FeaturePolicyFeature::kMagnetometer})) {
+            {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
+             mojom::blink::PermissionsPolicyFeature::kGyroscope,
+             mojom::blink::PermissionsPolicyFeature::kMagnetometer})) {
       LogToConsolePolicyFeaturesDisabled(*GetWindow().GetFrame(),
                                          EventTypeName());
       return;

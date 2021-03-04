@@ -8,12 +8,12 @@ from collections import defaultdict
 from make_runtime_features_utilities import origin_trials
 
 
-class FeaturePolicyFeatureWriter(json5_generator.Writer):
+class PermissionsPolicyFeatureWriter(json5_generator.Writer):
     file_basename = 'policy_helper'
 
     def __init__(self, json5_file_path, output_dir):
-        super(FeaturePolicyFeatureWriter, self).__init__(
-            json5_file_path, output_dir)
+        super(PermissionsPolicyFeatureWriter,
+              self).__init__(json5_file_path, output_dir)
         runtime_features = []
         feature_policy_features = []
         # Note: there can be feature with same 'name' attribute in
@@ -83,4 +83,4 @@ class FeaturePolicyFeatureWriter(json5_generator.Writer):
 
 
 if __name__ == '__main__':
-    json5_generator.Maker(FeaturePolicyFeatureWriter).main()
+    json5_generator.Maker(PermissionsPolicyFeatureWriter).main()

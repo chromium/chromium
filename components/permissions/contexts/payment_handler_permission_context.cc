@@ -17,7 +17,8 @@ PaymentHandlerPermissionContext::PaymentHandlerPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::PAYMENT_HANDLER,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 PaymentHandlerPermissionContext::~PaymentHandlerPermissionContext() {}
 

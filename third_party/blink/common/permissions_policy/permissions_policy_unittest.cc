@@ -13,18 +13,18 @@ namespace blink {
 
 namespace {
 
-mojom::FeaturePolicyFeature kDefaultOnFeature =
-    static_cast<mojom::FeaturePolicyFeature>(
-        static_cast<int>(mojom::FeaturePolicyFeature::kMaxValue) + 1);
+mojom::PermissionsPolicyFeature kDefaultOnFeature =
+    static_cast<mojom::PermissionsPolicyFeature>(
+        static_cast<int>(mojom::PermissionsPolicyFeature::kMaxValue) + 1);
 
-mojom::FeaturePolicyFeature kDefaultSelfFeature =
-    static_cast<mojom::FeaturePolicyFeature>(
-        static_cast<int>(mojom::FeaturePolicyFeature::kMaxValue) + 2);
+mojom::PermissionsPolicyFeature kDefaultSelfFeature =
+    static_cast<mojom::PermissionsPolicyFeature>(
+        static_cast<int>(mojom::PermissionsPolicyFeature::kMaxValue) + 2);
 
 // This feature is defined in code, but not present in the feature list.
-mojom::FeaturePolicyFeature kUnavailableFeature =
-    static_cast<mojom::FeaturePolicyFeature>(
-        static_cast<int>(mojom::FeaturePolicyFeature::kMaxValue) + 4);
+mojom::PermissionsPolicyFeature kUnavailableFeature =
+    static_cast<mojom::PermissionsPolicyFeature>(
+        static_cast<int>(mojom::PermissionsPolicyFeature::kMaxValue) + 4);
 
 }  // namespace
 
@@ -58,7 +58,7 @@ class FeaturePolicyTest : public testing::Test {
   }
 
   bool PolicyContainsInheritedValue(const FeaturePolicy* policy,
-                                    mojom::FeaturePolicyFeature feature) {
+                                    mojom::PermissionsPolicyFeature feature) {
     return policy->inherited_policies_.find(feature) !=
            policy->inherited_policies_.end();
   }
@@ -1310,17 +1310,17 @@ TEST_F(FeaturePolicyTest, TestUndefinedFeaturesInFramePolicy) {
   std::unique_ptr<FeaturePolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
   ParsedFeaturePolicy frame_policy = {
-      {{mojom::FeaturePolicyFeature::kNotFound, /* allowed_origins */ {}, false,
-        true},
+      {{mojom::PermissionsPolicyFeature::kNotFound, /* allowed_origins */ {},
+        false, true},
        {kUnavailableFeature, /* allowed_origins */ {}, false, true}}};
   std::unique_ptr<FeaturePolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
   EXPECT_FALSE(PolicyContainsInheritedValue(
-      policy1.get(), mojom::FeaturePolicyFeature::kNotFound));
+      policy1.get(), mojom::PermissionsPolicyFeature::kNotFound));
   EXPECT_FALSE(
       PolicyContainsInheritedValue(policy1.get(), kUnavailableFeature));
   EXPECT_FALSE(PolicyContainsInheritedValue(
-      policy2.get(), mojom::FeaturePolicyFeature::kNotFound));
+      policy2.get(), mojom::PermissionsPolicyFeature::kNotFound));
   EXPECT_FALSE(
       PolicyContainsInheritedValue(policy2.get(), kUnavailableFeature));
 }

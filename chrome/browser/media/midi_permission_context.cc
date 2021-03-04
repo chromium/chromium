@@ -7,9 +7,10 @@
 
 MidiPermissionContext::MidiPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::MIDI,
-                            blink::mojom::FeaturePolicyFeature::kMidiFeature) {}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::MIDI,
+          blink::mojom::PermissionsPolicyFeature::kMidiFeature) {}
 
 MidiPermissionContext::~MidiPermissionContext() {
 }

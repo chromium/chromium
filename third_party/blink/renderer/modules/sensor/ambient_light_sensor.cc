@@ -55,7 +55,7 @@ AmbientLightSensor::AmbientLightSensor(ExecutionContext* execution_context,
              options,
              exception_state,
              SensorType::AMBIENT_LIGHT,
-             {mojom::blink::FeaturePolicyFeature::kAmbientLightSensor}) {}
+             {mojom::blink::PermissionsPolicyFeature::kAmbientLightSensor}) {}
 
 bool AmbientLightSensor::hasReading() const {
   return latest_reading_.has_value() && Sensor::hasReading();

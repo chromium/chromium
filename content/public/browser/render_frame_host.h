@@ -45,7 +45,7 @@ namespace blink {
 class AssociatedInterfaceProvider;
 namespace mojom {
 enum class AuthenticatorStatus;
-enum class FeaturePolicyFeature;
+enum class PermissionsPolicyFeature;
 }  // namespace mojom
 }  // namespace blink
 
@@ -565,9 +565,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual bool GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType disabler_type) = 0;
 
-  // Returns true if the queried FeaturePolicyFeature is allowed by
+  // Returns true if the queried PermissionsPolicyFeature is allowed by
   // feature policy.
-  virtual bool IsFeatureEnabled(blink::mojom::FeaturePolicyFeature feature) = 0;
+  virtual bool IsFeatureEnabled(
+      blink::mojom::PermissionsPolicyFeature feature) = 0;
 
   // Opens view-source tab for the document last committed in this
   // RenderFrameHost.

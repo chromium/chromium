@@ -43,7 +43,7 @@ void CreatePaymentRequest(
   }
 
   if (!render_frame_host->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kPayment)) {
+          blink::mojom::PermissionsPolicyFeature::kPayment)) {
     mojo::ReportBadMessage("Feature policy blocks Payment");
     return;
   }

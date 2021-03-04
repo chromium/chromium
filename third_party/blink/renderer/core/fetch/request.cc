@@ -536,7 +536,7 @@ Request* Request::CreateRequestWithRequestOrString(
     if ((params.type == TrustTokenOperationType::kRedemption ||
          params.type == TrustTokenOperationType::kSigning) &&
         !execution_context->IsFeatureEnabled(
-            mojom::blink::FeaturePolicyFeature::kTrustTokenRedemption)) {
+            mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
       exception_state.ThrowTypeError(
           "trustToken: Redemption ('token-redemption') and signing "
           "('send-redemption-record') operations require that the "

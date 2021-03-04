@@ -46,9 +46,9 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
   bool mic_feature_policy = true;
   bool camera_feature_policy = true;
   mic_feature_policy = frame_host->IsFeatureEnabled(
-      blink::mojom::FeaturePolicyFeature::kMicrophone);
-  camera_feature_policy =
-      frame_host->IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::kCamera);
+      blink::mojom::PermissionsPolicyFeature::kMicrophone);
+  camera_feature_policy = frame_host->IsFeatureEnabled(
+      blink::mojom::PermissionsPolicyFeature::kCamera);
 
   MediaDevicesManager::BoolDeviceTypes result;
   // Speakers.

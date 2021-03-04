@@ -325,7 +325,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // is disabled. The optional ConsoleMessage will be sent to the console if
   // present, or else a default message will be used instead.
   bool IsFeatureEnabled(
-      mojom::blink::FeaturePolicyFeature,
+      mojom::blink::PermissionsPolicyFeature,
       ReportOptions report_on_failure = ReportOptions::kDoNotReport,
       const String& message = g_empty_string) const;
   bool IsFeatureEnabled(
@@ -341,13 +341,13 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& source_file = g_empty_string) const;
 
   virtual void CountPotentialPermissionsPolicyViolation(
-      mojom::blink::FeaturePolicyFeature) const {}
+      mojom::blink::PermissionsPolicyFeature) const {}
 
   // Report policy violations is delegated to Document because in order
   // to both remain const qualified and output console message, needs
   // to call |frame_->Console().AddMessage()| directly.
   virtual void ReportPermissionsPolicyViolation(
-      mojom::blink::FeaturePolicyFeature,
+      mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
       const String& message = g_empty_string) const {}
   virtual void ReportDocumentPolicyViolation(

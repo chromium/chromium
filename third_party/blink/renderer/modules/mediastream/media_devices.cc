@@ -203,7 +203,7 @@ ScriptPromise MediaDevices::getCurrentBrowsingContextMedia(
   CHECK(RuntimeEnabledFeatures::GetCurrentBrowsingContextMediaEnabled(context));
 
   if (!context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kDisplayCapture,
+          mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();

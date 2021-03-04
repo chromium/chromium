@@ -62,8 +62,8 @@ void DeviceMotionController::DidAddEventListener(
 
   if (!has_event_listener_) {
     if (!CheckPolicyFeatures(
-            {mojom::blink::FeaturePolicyFeature::kAccelerometer,
-             mojom::blink::FeaturePolicyFeature::kGyroscope})) {
+            {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
+             mojom::blink::PermissionsPolicyFeature::kGyroscope})) {
       DeviceOrientationController::LogToConsolePolicyFeaturesDisabled(
           *GetWindow().GetFrame(), EventTypeName());
       return;

@@ -290,7 +290,7 @@ ParsedFeaturePolicy HTMLPlugInElement::ConstructContainerPolicy() const {
   // https://fullscreen.spec.whatwg.org/#model
   ParsedFeaturePolicy container_policy;
   ParsedFeaturePolicyDeclaration allowlist(
-      mojom::blink::FeaturePolicyFeature::kFullscreen);
+      mojom::blink::PermissionsPolicyFeature::kFullscreen);
   container_policy.push_back(allowlist);
   return container_policy;
 }

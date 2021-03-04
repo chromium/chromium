@@ -9,7 +9,8 @@ AccessibilityPermissionContext::AccessibilityPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::ACCESSIBILITY_EVENTS,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 AccessibilityPermissionContext::~AccessibilityPermissionContext() = default;
 

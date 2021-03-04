@@ -1883,7 +1883,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
       client, interface_registry, frame_token);
   network::mojom::blink::WebSandboxFlags sandbox_flags =
       network::mojom::blink::WebSandboxFlags::kNone;
-  FeaturePolicyFeatureState feature_state;
+  PermissionsPolicyFeatureState feature_state;
   if (!previous_frame->Owner()) {
     // Provisional main frames need to force sandbox flags.  This is necessary
     // to inherit sandbox flags when a sandboxed frame does a window.open()

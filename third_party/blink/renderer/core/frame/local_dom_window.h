@@ -167,9 +167,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   }
   ScriptWrappable* ToScriptWrappable() final { return this; }
   void CountPotentialPermissionsPolicyViolation(
-      mojom::blink::FeaturePolicyFeature) const final;
+      mojom::blink::PermissionsPolicyFeature) const final;
   void ReportPermissionsPolicyViolation(
-      mojom::blink::FeaturePolicyFeature,
+      mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
       const String& message = g_empty_string) const final;
   void ReportDocumentPolicyViolation(

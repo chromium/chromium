@@ -125,7 +125,7 @@ bool RenderFrameHostAndroid::IsFeatureEnabled(
     const base::android::JavaParamRef<jobject>&,
     jint feature) const {
   return render_frame_host_->IsFeatureEnabled(
-      static_cast<blink::mojom::FeaturePolicyFeature>(feature));
+      static_cast<blink::mojom::PermissionsPolicyFeature>(feature));
 }
 
 ScopedJavaLocalRef<jobject>

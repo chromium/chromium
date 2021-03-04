@@ -160,7 +160,7 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
       frame_element_->GetFramePolicy().container_policy;
 
   EXPECT_EQ(1UL, container_policy1.size());
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kFullscreen,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
             container_policy1[0].feature);
   EXPECT_FALSE(container_policy1[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy1[0].allowed_origins.size());
@@ -174,13 +174,13 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
       frame_element_->GetFramePolicy().container_policy;
   EXPECT_EQ(2UL, container_policy2.size());
   EXPECT_TRUE(container_policy2[0].feature ==
-                  mojom::blink::FeaturePolicyFeature::kFullscreen ||
+                  mojom::blink::PermissionsPolicyFeature::kFullscreen ||
               container_policy2[1].feature ==
-                  mojom::blink::FeaturePolicyFeature::kFullscreen);
+                  mojom::blink::PermissionsPolicyFeature::kFullscreen);
   EXPECT_TRUE(container_policy2[0].feature ==
-                  mojom::blink::FeaturePolicyFeature::kPayment ||
+                  mojom::blink::PermissionsPolicyFeature::kPayment ||
               container_policy2[1].feature ==
-                  mojom::blink::FeaturePolicyFeature::kPayment);
+                  mojom::blink::PermissionsPolicyFeature::kPayment);
   EXPECT_EQ(1UL, container_policy2[0].allowed_origins.size());
   EXPECT_EQ("http://example.net",
             container_policy2[0].allowed_origins.begin()->Serialize());
@@ -205,13 +205,13 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicy) {
   ParsedFeaturePolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(2UL, container_policy.size());
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kPayment,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kPayment,
             container_policy[0].feature);
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
   EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
       GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kUsb,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kUsb,
             container_policy[1].feature);
   EXPECT_EQ(1UL, container_policy[1].allowed_origins.size());
   EXPECT_TRUE(container_policy[1].allowed_origins.begin()->IsSameOriginWith(
@@ -226,7 +226,7 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowFullscreen) {
   ParsedFeaturePolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(1UL, container_policy.size());
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kFullscreen,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
             container_policy[0].feature);
   EXPECT_TRUE(container_policy[0].matches_all_origins);
 }
@@ -241,13 +241,13 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowPaymentRequest) {
   ParsedFeaturePolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(2UL, container_policy.size());
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kUsb,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kUsb,
             container_policy[0].feature);
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
   EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
       GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kPayment,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kPayment,
             container_policy[1].feature);
 }
 
@@ -266,18 +266,18 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowAttributes) {
   ParsedFeaturePolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(3UL, container_policy.size());
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kPayment,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kPayment,
             container_policy[0].feature);
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
   EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
       GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kUsb,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kUsb,
             container_policy[1].feature);
   EXPECT_EQ(1UL, container_policy[1].allowed_origins.size());
   EXPECT_TRUE(container_policy[1].allowed_origins.begin()->IsSameOriginWith(
       GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kFullscreen,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
             container_policy[2].feature);
 }
 

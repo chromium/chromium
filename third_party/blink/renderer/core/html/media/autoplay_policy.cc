@@ -91,7 +91,7 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
 
   bool feature_policy_enabled =
       document.GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kAutoplay);
+          mojom::blink::PermissionsPolicyFeature::kAutoplay);
 
   for (Frame* frame = document.GetFrame(); frame;
        frame = frame->Tree().Parent()) {
@@ -370,7 +370,7 @@ void AutoplayPolicy::MaybeSetAutoplayInitiated() {
   bool feature_policy_enabled =
       element_->GetExecutionContext() &&
       element_->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kAutoplay);
+          mojom::blink::PermissionsPolicyFeature::kAutoplay);
 
   for (Frame* frame = element_->GetDocument().GetFrame(); frame;
        frame = frame->Tree().Parent()) {

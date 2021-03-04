@@ -385,7 +385,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           ancestor_render_frame_host->BuildClientSecurityState(),
           std::move(coep_reporter), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
-              blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)
+              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
               ? network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit
               : network::mojom::TrustTokenRedemptionPolicy::kForbid,
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");

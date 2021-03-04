@@ -14,7 +14,7 @@ namespace blink {
 
 base::Optional<FeaturePolicyBlockLocator> TraceFeaturePolicyBlockSource(
     Frame* frame,
-    mojom::FeaturePolicyFeature feature) {
+    mojom::PermissionsPolicyFeature feature) {
   const FeaturePolicy* current_policy =
       frame->GetSecurityContext()->GetFeaturePolicy();
   DCHECK(current_policy);

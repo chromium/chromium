@@ -27,7 +27,7 @@ BLINK_COMMON_EXPORT extern const char* const kClientHintsHeaderMapping[];
 // Mapping from WebClientHintsType to the corresponding Feature-Policy (e.g.
 // kDpr => kClientHintsDPR). The order matches the header mapping and the enum
 // order in services/network/public/mojom/web_client_hints_types.mojom
-BLINK_COMMON_EXPORT extern const mojom::FeaturePolicyFeature
+BLINK_COMMON_EXPORT extern const mojom::PermissionsPolicyFeature
     kClientHintsFeaturePolicyMapping[];
 
 // The size of the mapping arrays.

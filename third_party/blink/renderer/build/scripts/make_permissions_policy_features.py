@@ -6,11 +6,11 @@ import json5_generator
 import template_expander
 
 
-class FeaturePolicyFeatureWriter(json5_generator.Writer):
+class PermissionsPolicyFeatureWriter(json5_generator.Writer):
     file_basename = 'permissions_policy_features'
 
     def __init__(self, json5_file_path, output_dir):
-        super(FeaturePolicyFeatureWriter,
+        super(PermissionsPolicyFeatureWriter,
               self).__init__(json5_file_path, output_dir)
 
         @template_expander.use_jinja('templates/' + self.file_basename +
@@ -32,4 +32,4 @@ class FeaturePolicyFeatureWriter(json5_generator.Writer):
 
 
 if __name__ == '__main__':
-    json5_generator.Maker(FeaturePolicyFeatureWriter).main()
+    json5_generator.Maker(PermissionsPolicyFeatureWriter).main()

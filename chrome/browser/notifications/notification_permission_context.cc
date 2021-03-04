@@ -86,7 +86,8 @@ NotificationPermissionContext::NotificationPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::NOTIFICATIONS,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 NotificationPermissionContext::~NotificationPermissionContext() {}
 

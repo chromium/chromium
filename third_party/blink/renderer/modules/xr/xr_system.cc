@@ -333,7 +333,7 @@ bool HasRequiredFeaturePolicy(const ExecutionContext* context,
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
     case device::mojom::XRSessionFeature::HAND_INPUT:
       return context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kWebXr,
+          mojom::blink::PermissionsPolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure);
   }
 }
@@ -1119,7 +1119,7 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kWebXr,
+          mojom::blink::PermissionsPolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure)) {
     // Only allow the call to be made if the appropriate feature policy is in
     // place.
@@ -1528,7 +1528,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
 void XRSystem::MakeXrCompatibleAsync(
     device::mojom::blink::VRService::MakeXrCompatibleCallback callback) {
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kWebXr)) {
+          mojom::blink::PermissionsPolicyFeature::kWebXr)) {
     std::move(callback).Run(
         device::mojom::XrCompatibleResult::kWebXrFeaturePolicyBlocked);
     return;
@@ -1546,7 +1546,7 @@ void XRSystem::MakeXrCompatibleAsync(
 void XRSystem::MakeXrCompatibleSync(
     device::mojom::XrCompatibleResult* xr_compatible_result) {
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kWebXr)) {
+          mojom::blink::PermissionsPolicyFeature::kWebXr)) {
     *xr_compatible_result =
         device::mojom::XrCompatibleResult::kWebXrFeaturePolicyBlocked;
     return;
@@ -1563,8 +1563,8 @@ void XRSystem::MakeXrCompatibleSync(
 // it might be able to support immersive sessions, where it couldn't before.
 void XRSystem::OnDeviceChanged() {
   ExecutionContext* context = GetExecutionContext();
-  if (context &&
-      context->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kWebXr)) {
+  if (context && context->IsFeatureEnabled(
+                     mojom::blink::PermissionsPolicyFeature::kWebXr)) {
     DispatchEvent(*blink::Event::Create(event_type_names::kDevicechange));
   }
 }

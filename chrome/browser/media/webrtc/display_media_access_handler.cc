@@ -149,7 +149,7 @@ void DisplayMediaAccessHandler::HandleRequest(
       return;
     }
     if (!rfh->IsFeatureEnabled(
-            blink::mojom::FeaturePolicyFeature::kDisplayCapture)) {
+            blink::mojom::PermissionsPolicyFeature::kDisplayCapture)) {
       bad_message::ReceivedBadMessage(
           rfh->GetProcess(), bad_message::BadMessageReason::
                                  RFH_DISPLAY_CAPTURE_PERMISSION_MISSING);

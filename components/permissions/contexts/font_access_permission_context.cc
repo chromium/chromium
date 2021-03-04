@@ -11,7 +11,8 @@ FontAccessPermissionContext::FontAccessPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::FONT_ACCESS,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 FontAccessPermissionContext::~FontAccessPermissionContext() = default;
 

@@ -15,7 +15,7 @@
 
 namespace blink {
 namespace mojom {
-enum class FeaturePolicyFeature;
+enum class PermissionsPolicyFeature;
 }  // namespace mojom
 
 class ExecutionContext;

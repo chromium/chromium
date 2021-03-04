@@ -103,7 +103,7 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
 
     if (!floc_feature_policy_enabled) {
       simulator->SetFeaturePolicyHeader(
-          {{blink::mojom::FeaturePolicyFeature::kInterestCohort,
+          {{blink::mojom::PermissionsPolicyFeature::kInterestCohort,
             /*values=*/{}, /*matches_all_origins=*/false,
             /*matches_opaque_src=*/false}});
     }

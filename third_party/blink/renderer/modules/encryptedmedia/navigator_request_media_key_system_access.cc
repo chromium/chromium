@@ -113,7 +113,7 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   if (!window->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kEncryptedMedia,
+          mojom::blink::PermissionsPolicyFeature::kEncryptedMedia,
           ReportOptions::kReportOnFailure)) {
     UseCounter::Count(window,
                       WebFeature::kEncryptedMediaDisabledByFeaturePolicy);

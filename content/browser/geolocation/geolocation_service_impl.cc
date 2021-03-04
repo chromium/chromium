@@ -76,7 +76,7 @@ void GeolocationServiceImpl::CreateGeolocation(
     bool user_gesture,
     CreateGeolocationCallback callback) {
   if (!render_frame_host_->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kGeolocation)) {
+          blink::mojom::PermissionsPolicyFeature::kGeolocation)) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }

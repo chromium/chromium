@@ -148,7 +148,7 @@ GamepadList* NavigatorGamepad::getGamepads(Navigator& navigator,
   }
 
   if (!context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kGamepad)) {
+          mojom::blink::PermissionsPolicyFeature::kGamepad)) {
     if (base::FeatureList::IsEnabled(features::kRestrictGamepadAccess)) {
       exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
       return nullptr;

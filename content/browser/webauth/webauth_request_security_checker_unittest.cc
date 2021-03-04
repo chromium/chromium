@@ -24,14 +24,14 @@ namespace {
 
 blink::ParsedFeaturePolicy CreatePolicyToAllowWebAuthn() {
   return {blink::ParsedFeaturePolicyDeclaration(
-      blink::mojom::FeaturePolicyFeature::kPublicKeyCredentialsGet,
+      blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
       /*values=*/{}, /*matches_all_origins=*/true,
       /*matches_opaque_src=*/false)};
 }
 
 blink::ParsedFeaturePolicy CreatePolicyToAllowWebPayments() {
   return {blink::ParsedFeaturePolicyDeclaration(
-      blink::mojom::FeaturePolicyFeature::kPayment, /*values=*/{},
+      blink::mojom::PermissionsPolicyFeature::kPayment, /*values=*/{},
       /*matches_all_origins=*/true, /*matches_opaque_src=*/false)};
 }
 

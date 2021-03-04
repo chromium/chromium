@@ -13,6 +13,6 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({FeaturePolicyFeature.PAYMENT, FeaturePolicyFeature.WEB_SHARE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeaturePolicyFeature {
-    int PAYMENT = org.chromium.blink.mojom.FeaturePolicyFeature.PAYMENT;
-    int WEB_SHARE = org.chromium.blink.mojom.FeaturePolicyFeature.WEB_SHARE;
+    int PAYMENT = org.chromium.blink.mojom.PermissionsPolicyFeature.PAYMENT;
+    int WEB_SHARE = org.chromium.blink.mojom.PermissionsPolicyFeature.WEB_SHARE;
 }

@@ -31,7 +31,7 @@ Gyroscope::Gyroscope(ExecutionContext* execution_context,
              options,
              exception_state,
              SensorType::GYROSCOPE,
-             {mojom::blink::FeaturePolicyFeature::kGyroscope}) {}
+             {mojom::blink::PermissionsPolicyFeature::kGyroscope}) {}
 
 base::Optional<double> Gyroscope::x() const {
   if (hasReading())

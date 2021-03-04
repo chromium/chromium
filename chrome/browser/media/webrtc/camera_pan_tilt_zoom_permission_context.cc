@@ -17,7 +17,7 @@ CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
   host_content_settings_map_ =
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
   host_content_settings_map_->AddObserver(this);

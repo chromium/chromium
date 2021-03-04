@@ -30,14 +30,15 @@ enum class PermissionsPolicyFeatureDefault {
 };
 
 using PermissionsPolicyFeatureList =
-    std::map<mojom::FeaturePolicyFeature, PermissionsPolicyFeatureDefault>;
+    std::map<mojom::PermissionsPolicyFeature, PermissionsPolicyFeatureDefault>;
 
 BLINK_COMMON_EXPORT const PermissionsPolicyFeatureList&
 GetPermissionsPolicyFeatureList();
 
 // TODO(iclelland): Generate, instead of this map, a set of bool flags, one
 // for each feature, as all features are supposed to be represented here.
-using FeaturePolicyFeatureState = std::map<mojom::FeaturePolicyFeature, bool>;
+using PermissionsPolicyFeatureState =
+    std::map<mojom::PermissionsPolicyFeature, bool>;
 
 }  // namespace blink
 

@@ -449,11 +449,12 @@ scoped_refptr<base::SingleThreadTaskRunner> LocalDOMWindow::GetTaskRunner(
 }
 
 void LocalDOMWindow::CountPotentialPermissionsPolicyViolation(
-    mojom::blink::FeaturePolicyFeature feature) const {
+    mojom::blink::PermissionsPolicyFeature feature) const {
   wtf_size_t index = static_cast<wtf_size_t>(feature);
   if (potentially_violated_features_.size() == 0) {
     potentially_violated_features_.resize(
-        static_cast<wtf_size_t>(mojom::blink::FeaturePolicyFeature::kMaxValue) +
+        static_cast<wtf_size_t>(
+            mojom::blink::PermissionsPolicyFeature::kMaxValue) +
         1);
   } else if (potentially_violated_features_[index]) {
     return;
@@ -464,7 +465,7 @@ void LocalDOMWindow::CountPotentialPermissionsPolicyViolation(
 }
 
 void LocalDOMWindow::ReportPermissionsPolicyViolation(
-    mojom::blink::FeaturePolicyFeature feature,
+    mojom::blink::PermissionsPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,
     const String& message) const {
   if (!RuntimeEnabledFeatures::FeaturePolicyReportingEnabled(this))
@@ -2135,7 +2136,7 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
 bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated() &&
          IsFeatureEnabled(
-             mojom::blink::FeaturePolicyFeature::kCrossOriginIsolated);
+             mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated);
 }
 
 ukm::UkmRecorder* LocalDOMWindow::UkmRecorder() {
