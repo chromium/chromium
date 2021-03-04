@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/timer/timer.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
@@ -58,12 +59,10 @@ class WaylandCursor {
   // again.
   void UpdateBitmap(const std::vector<SkBitmap>& bitmaps,
                     const gfx::Point& hotspot_in_dips,
-                    uint32_t serial,
                     int buffer_scale);
 
   // Takes data managed by the platform (without taking ownership).
   void SetPlatformShape(wl_cursor* cursor_data,
-                        uint32_t serial,
                         int buffer_scale);
 
   void set_listener(WaylandCursorBufferListener* listener) {
@@ -74,16 +73,31 @@ class WaylandCursor {
   // wl_buffer_listener:
   static void OnBufferRelease(void* data, wl_buffer* wl_buffer);
 
-  void HideCursor(uint32_t serial);
+  void HideCursor();
+
+  // Prepares the platform cursor data for use.  Starts animation if needed.
+  void SetPlatformShapeInternal();
+
+  // Does all Wayland-level calls necessary to update the cursor shape.
+  void AttachAndCommit(wl_buffer* buffer,
+                       uint32_t buffer_width,
+                       uint32_t buffer_height,
+                       uint32_t hotspot_x_dip,
+                       uint32_t hotspot_y_dip);
 
   WaylandPointer* const pointer_;
   WaylandConnection* const connection_;
-
-  WaylandCursorBufferListener* listener_ = nullptr;
+  const wl::Object<wl_surface> pointer_surface_;
 
   // Holds the buffers and their memory until the compositor releases them.
   base::flat_map<wl_buffer*, WaylandShmBuffer> buffers_;
-  const wl::Object<wl_surface> pointer_surface_;
+  WaylandCursorBufferListener* listener_ = nullptr;
+
+  // Current platform cursor.
+  wl_cursor* cursor_data_ = nullptr;
+  size_t current_image_index_ = 0;
+  int buffer_scale_ = 1;
+  base::RepeatingTimer animation_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(WaylandCursor);
 };

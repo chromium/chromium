@@ -187,7 +187,7 @@ void WaylandConnection::SetPlatformCursor(wl_cursor* cursor_data,
                                           int buffer_scale) {
   if (!cursor_)
     return;
-  cursor_->SetPlatformShape(cursor_data, serial(), buffer_scale);
+  cursor_->SetPlatformShape(cursor_data, buffer_scale);
 }
 
 void WaylandConnection::SetCursorBufferListener(
@@ -203,7 +203,7 @@ void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
                                         int buffer_scale) {
   if (!cursor_)
     return;
-  cursor_->UpdateBitmap(bitmaps, hotspot_in_dips, serial(), buffer_scale);
+  cursor_->UpdateBitmap(bitmaps, hotspot_in_dips, buffer_scale);
 }
 
 bool WaylandConnection::IsDragInProgress() const {
