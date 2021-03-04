@@ -138,18 +138,15 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
     init_params->show_state = ui::SHOW_STATE_MAXIMIZED;
   }
 
-  const int32_t restore_window_id =
-      full_restore::FetchRestoreWindowId(app_window()->extension_id());
   init_params->init_properties_container.SetProperty(
       full_restore::kWindowIdKey, app_window()->session_id().id());
   init_params->init_properties_container.SetProperty(
-      full_restore::kRestoreWindowIdKey, restore_window_id);
+      full_restore::kRestoreWindowIdKey,
+      full_restore::FetchRestoreWindowId(app_window()->extension_id()));
   init_params->init_properties_container.SetProperty(
       full_restore::kAppIdKey, app_window()->extension_id());
   init_params->init_properties_container.SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));
-
-  full_restore::ModifyWidgetParams(restore_window_id, init_params);
 }
 
 std::unique_ptr<views::NonClientFrameView>
