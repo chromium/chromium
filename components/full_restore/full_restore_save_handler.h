@@ -143,9 +143,6 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // path.
   std::map<std::string, AppLaunchInfos> app_id_to_app_launch_infos_;
 
-  // The map from the task id to the app id for ARC apps.
-  std::map<int, std::string> task_id_to_app_id_;
-
   // The map from the task id to the AppWindowInfo for ARC apps.
   std::map<int, AppWindowInfo> task_id_to_app_window_info_;
 

@@ -154,6 +154,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   }
 
  private:
+  // Returns the pointer to AppRestoreData for the given |app_id| and
+  // |window_id|. Returns null if there is no AppRestoreData.
+  AppRestoreData* GetAppRestoreData(const std::string& app_id, int window_id);
+
   AppIdToLaunchList app_id_to_launch_list_;
 
   // Saves the next restore window_id to be handled for each chrome app.
