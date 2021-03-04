@@ -364,13 +364,25 @@ bool MessagePumpKqueue::DoInternalWork(Delegate::NextWorkInfo* next_work_info) {
 
   bool poll = next_work_info == nullptr;
   int flags = poll ? KEVENT_FLAG_IMMEDIATE : 0;
-  if (!poll && scheduled_wakeup_time_ != next_work_info->delayed_run_time) {
-    UpdateWakeupTimer(next_work_info->delayed_run_time);
-    DCHECK_EQ(scheduled_wakeup_time_, next_work_info->delayed_run_time);
-  }
+  bool indefinite =
+      next_work_info != nullptr && next_work_info->delayed_run_time.is_max();
 
-  int rv = HANDLE_EINTR(kevent64(kqueue_.get(), nullptr, 0, events_.data(),
-                                 events_.size(), flags, nullptr));
+  int rv = 0;
+  do {
+    timespec timeout{};
+    if (!indefinite && !poll) {
+      if (rv != 0) {
+        // The wait was interrupted and made |next_work_info|'s view of
+        // TimeTicks::Now() stale. Refresh it before doing another wait.
+        next_work_info->recent_now = TimeTicks::Now();
+      }
+      timeout = next_work_info->remaining_delay().ToTimeSpec();
+    }
+    // This does not use HANDLE_EINTR, since retrying the syscall requires
+    // adjusting the timeout to account for time already waited.
+    rv = kevent64(kqueue_.get(), nullptr, 0, events_.data(), events_.size(),
+                  flags, indefinite ? nullptr : &timeout);
+  } while (rv < 0 && errno == EINTR);
 
   PCHECK(rv >= 0) << "kevent64";
   return ProcessEvents(rv);
@@ -433,61 +445,12 @@ bool MessagePumpKqueue::ProcessEvents(int count) {
       if (controller) {
         controller->watcher()->OnMachMessageReceived(port);
       }
-    } else if (event->filter == EVFILT_TIMER) {
-      // The wakeup timer fired.
-      DCHECK_LE(scheduled_wakeup_time_, base::TimeTicks::Now());
-      DCHECK_NE(scheduled_wakeup_time_, base::TimeTicks::Max());
-      scheduled_wakeup_time_ = base::TimeTicks::Max();
-      --event_count_;
     } else {
       NOTREACHED() << "Unexpected event for filter " << event->filter;
     }
   }
 
   return did_work;
-}
-
-void MessagePumpKqueue::UpdateWakeupTimer(const base::TimeTicks& wakeup_time) {
-  DCHECK_NE(wakeup_time, scheduled_wakeup_time_);
-
-  // The ident of the wakeup timer. There's only the one timer as the pair
-  // (ident, filter) is the identity of the event.
-  constexpr uint64_t kWakeupTimerIdent = 0x0;
-  if (wakeup_time == base::TimeTicks::Max()) {
-    // Clear the timer.
-    kevent64_s timer{};
-    timer.ident = kWakeupTimerIdent;
-    timer.filter = EVFILT_TIMER;
-    timer.flags = EV_DELETE;
-
-    int rv = ChangeOneEvent(kqueue_, &timer);
-    PCHECK(rv == 0) << "kevent64, delete timer";
-    --event_count_;
-  } else {
-    // Set/reset the timer.
-    kevent64_s timer{};
-    timer.ident = kWakeupTimerIdent;
-    timer.filter = EVFILT_TIMER;
-    // This updates the timer if it already exists in |kqueue_|.
-    timer.flags = EV_ADD | EV_ONESHOT;
-    // Specify the sleep in microseconds to avoid undersleeping due to
-    // numeric problems. The sleep is computed from TimeTicks::Now rather than
-    // NextWorkInfo::recent_now because recent_now is strictly earlier than
-    // current wall-clock. Using an earlier wall clock time  to compute the
-    // delta to the next wakeup wall-clock time would guarantee oversleep.
-    // If wakeup_time is in the past, the delta below will be negative and the
-    // timer is set immediately.
-    timer.fflags = NOTE_USECONDS;
-    timer.data = (wakeup_time - base::TimeTicks::Now()).InMicroseconds();
-    int rv = ChangeOneEvent(kqueue_, &timer);
-    PCHECK(rv == 0) << "kevent64, set timer";
-
-    // Bump the event count if we just added the timer.
-    if (scheduled_wakeup_time_ == base::TimeTicks::Max())
-      ++event_count_;
-  }
-
-  scheduled_wakeup_time_ = wakeup_time;
 }
 
 }  // namespace base
