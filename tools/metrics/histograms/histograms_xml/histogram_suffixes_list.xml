@@ -14773,6 +14773,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="DeferAllScript" label="Defers execution of script"/>
+  <suffix name="HttpsImageCompression"
+      label="Page Info opened when https image compression was enabled"/>
   <suffix name="LitePage" label="Lite page previews">
     <obsolete>
       Functionality removed in M86.
