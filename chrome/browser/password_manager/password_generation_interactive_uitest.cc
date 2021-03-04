@@ -209,7 +209,12 @@ class PasswordGenerationInteractiveTest
     observer_.WaitForStatus(status);
   }
 
-  void WaitForPopupStatusChange() { observer_.WaitForStatusChange(); }
+  void WaitForGenerationPopupShowing() {
+    if (GenerationPopupShowing())
+      return;
+    observer_.WaitForStatusChange();
+    EXPECT_TRUE(GenerationPopupShowing());
+  }
 
  private:
   TestPopupObserver observer_;
@@ -261,9 +266,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   // Delete the password. The generation prompt should be visible.
   base::HistogramTester histogram_tester;
   SimulateUserDeletingFieldContent("password_field");
-  WaitForPopupStatusChange();
-  EXPECT_FALSE(EditingPopupShowing());
-  EXPECT_TRUE(GenerationPopupShowing());
+  WaitForGenerationPopupShowing();
 
   // The metrics are recorded on navigation when the frame is destroyed.
   NavigateToFile("/password/done.html");
