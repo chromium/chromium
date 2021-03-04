@@ -88,9 +88,12 @@ class LayoutNGTableCellInterface;
 class LayoutView;
 class LocalFrameView;
 class PaintLayer;
-class PseudoElementStyleRequest;
+class StyleRequest;
 struct PaintInfo;
 struct PaintInvalidatorContext;
+
+// TODO(andruud): Callers should use StyleRequest directly.
+using PseudoElementStyleRequest = StyleRequest;
 
 enum VisualRectFlags {
   kDefaultVisualRectFlags = 0,

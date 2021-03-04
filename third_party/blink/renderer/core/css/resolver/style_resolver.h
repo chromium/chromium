@@ -28,11 +28,11 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
-#include "third_party/blink/renderer/core/css/pseudo_style_request.h"
 #include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
+#include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -53,8 +53,6 @@ class StyleCascade;
 class StyleRecalcContext;
 class StyleRuleUsageTracker;
 
-enum RuleMatchingBehavior { kMatchAllRules, kMatchAllRulesExcludingSMIL };
-
 // This class selects a ComputedStyle for a given element in a document based on
 // the document's collection of stylesheets (user styles, author styles, UA
 // style). There is a 1-1 relationship of StyleResolver and Document.
@@ -66,12 +64,17 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   ~StyleResolver();
   void Dispose();
 
+  // TODO(andruud): Remove this function, use ResolveStyle directly.
   scoped_refptr<ComputedStyle> StyleForElement(
       Element*,
       const StyleRecalcContext&,
       const ComputedStyle* parent_style = nullptr,
       const ComputedStyle* layout_parent_style = nullptr,
       RuleMatchingBehavior = kMatchAllRules);
+
+  scoped_refptr<ComputedStyle> ResolveStyle(Element*,
+                                            const StyleRecalcContext&,
+                                            const StyleRequest&);
 
   static scoped_refptr<ComputedStyle> InitialStyleForElement(Document&);
 

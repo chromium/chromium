@@ -79,7 +79,7 @@ class MutableCSSPropertyValueSet;
 class NamedNodeMap;
 class PointerLockOptions;
 class PseudoElement;
-class PseudoElementStyleRequest;
+class StyleRequest;
 class ResizeObservation;
 class ResizeObserver;
 class ScrollIntoViewOptions;
@@ -101,6 +101,9 @@ enum class DocumentUpdateReason;
 struct FocusParams;
 
 using ScrollOffset = FloatSize;
+
+// TODO(andruud): Callers should use StyleRequest directly.
+using PseudoElementStyleRequest = StyleRequest;
 
 enum SpellcheckAttributeState {
   kSpellcheckAttributeTrue,

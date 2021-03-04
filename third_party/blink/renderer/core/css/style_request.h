@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PSEUDO_STYLE_REQUEST_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PSEUDO_STYLE_REQUEST_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_
 
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -31,39 +31,50 @@ namespace blink {
 
 class ComputedStyle;
 
-class PseudoElementStyleRequest {
-  DISALLOW_NEW();
+enum RuleMatchingBehavior { kMatchAllRules, kMatchAllRulesExcludingSMIL };
+
+class StyleRequest {
+  STACK_ALLOCATED();
 
  public:
   enum RequestType { kForRenderer, kForComputedStyle };
 
-  PseudoElementStyleRequest(PseudoId pseudo_id,
-                            CustomScrollbar* scrollbar = nullptr,
-                            ScrollbarPart scrollbar_part = kNoPart)
+  StyleRequest() = default;
+
+  bool IsPseudoStyleRequest() const { return pseudo_id != kPseudoIdNone; }
+
+  const ComputedStyle* parent_override{nullptr};
+  const ComputedStyle* layout_parent_override{nullptr};
+  RuleMatchingBehavior matching_behavior{kMatchAllRules};
+
+  PseudoId pseudo_id{kPseudoIdNone};
+  RequestType type{kForRenderer};
+  ScrollbarPart scrollbar_part{kNoPart};
+  CustomScrollbar* scrollbar{nullptr};
+
+  StyleRequest(PseudoId pseudo_id,
+               CustomScrollbar* scrollbar = nullptr,
+               ScrollbarPart scrollbar_part = kNoPart)
       : pseudo_id(pseudo_id),
         type(kForRenderer),
         scrollbar_part(scrollbar_part),
         scrollbar(scrollbar) {}
 
-  PseudoElementStyleRequest(PseudoId pseudo_id, RequestType request_type)
+  StyleRequest(PseudoId pseudo_id, RequestType request_type)
       : pseudo_id(pseudo_id),
         type(request_type),
         scrollbar_part(kNoPart),
         scrollbar(nullptr) {}
 
-  void Trace(Visitor* visitor) const { visitor->Trace(scrollbar); }
-
   // The spec disallows inheritance for ::backdrop.
   bool AllowsInheritance(const ComputedStyle* parent_style) const {
     return parent_style && pseudo_id != kPseudoIdBackdrop;
   }
-
-  PseudoId pseudo_id;
-  RequestType type;
-  ScrollbarPart scrollbar_part;
-  Member<CustomScrollbar> scrollbar;
 };
+
+// TODO(andruud): Callers should use StyleRequest directly.
+using PseudoElementStyleRequest = StyleRequest;
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PSEUDO_STYLE_REQUEST_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_

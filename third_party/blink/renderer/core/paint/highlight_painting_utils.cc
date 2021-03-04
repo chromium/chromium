@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 
 #include "components/shared_highlighting/core/common/text_fragments_constants.h"
-#include "third_party/blink/renderer/core/css/pseudo_style_request.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"

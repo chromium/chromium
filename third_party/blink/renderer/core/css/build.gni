@@ -486,7 +486,7 @@ blink_core_sources_css = [
   "property_registry.h",
   "property_set_css_style_declaration.cc",
   "property_set_css_style_declaration.h",
-  "pseudo_style_request.h",
+  "style_request.h",
   "remote_font_face_source.cc",
   "remote_font_face_source.h",
   "resolver/cascade_expansion.cc",

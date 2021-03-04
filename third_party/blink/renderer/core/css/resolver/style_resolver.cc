@@ -707,6 +707,17 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForElement(
     const ComputedStyle* default_parent,
     const ComputedStyle* default_layout_parent,
     RuleMatchingBehavior matching_behavior) {
+  StyleRequest style_request;
+  style_request.parent_override = default_parent;
+  style_request.layout_parent_override = default_layout_parent;
+  style_request.matching_behavior = matching_behavior;
+  return ResolveStyle(element, style_recalc_context, style_request);
+}
+
+scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
+    Element* element,
+    const StyleRecalcContext& style_recalc_context,
+    const StyleRequest& style_request) {
   DCHECK(GetDocument().GetFrame());
   DCHECK(GetDocument().GetSettings());
 
@@ -716,21 +727,22 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForElement(
 
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-  StyleResolverState state(GetDocument(), *element, default_parent,
-                           default_layout_parent);
+  StyleResolverState state(GetDocument(), *element,
+                           style_request.parent_override,
+                           style_request.layout_parent_override);
 
   // This function can return different results with different last 3 params,
   // but we can only cache one base computed style for animations, thus we cache
   // only when this function is called with default last 3 params.
   bool can_cache_animation_base_computed_style =
-      !default_parent && !default_layout_parent &&
-      matching_behavior == kMatchAllRules;
+      !style_request.parent_override && !style_request.layout_parent_override &&
+      style_request.matching_behavior == kMatchAllRules;
   state.SetCanCacheBaseStyle(can_cache_animation_base_computed_style);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
   ApplyBaseStyle(element, style_recalc_context, state, cascade,
-                 cascade.MutableMatchResult(), matching_behavior,
+                 cascade.MutableMatchResult(), style_request.matching_behavior,
                  can_cache_animation_base_computed_style);
 
   if (ApplyAnimatedStyle(state, cascade)) {
