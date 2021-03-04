@@ -145,6 +145,14 @@ const char kArcStartMode[] = "arc-start-mode";
 // Sets ARC Terms Of Service hostname url for testing.
 const char kArcTosHostForTests[] = "arc-tos-host-for-tests";
 
+// Sets the mode of operation for ureadahead during ARCVM boot. If this switch
+// is not set, ARCVM ureadahead will check for the presence and age of pack
+// file and reads ahead files to page cache for improved boot performance.
+// generate - used during Android PFQ data collector to pre-generate pack file
+//            and upload to Google Cloud as build artifact for CrOS build image.
+// disabled - used for test purpose to disable ureadahead during ARCVM boot.
+const char kArcVmUreadaheadMode[] = "arcvm-ureadahead-mode";
+
 // If this flag is set, it indicates that this device is a "Cellular First"
 // device. Cellular First devices use cellular telephone data networks as
 // their primary means of connecting to the internet.
@@ -254,10 +262,10 @@ const char kDisableVolumeAdjustSound[] = "disable-volume-adjust-sound";
 // Enables starting the ARC instance upon session start.
 const char kEnableArc[] = "enable-arc";
 
-// Enables ARC VM.
+// Enables ARCVM.
 const char kEnableArcVm[] = "enable-arcvm";
 
-// Enable ARC VM realtime VCPU feature.
+// Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
 
 // Enables the Cast Receiver.

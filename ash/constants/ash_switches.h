@@ -51,6 +51,7 @@ extern const char kArcPlayStoreAutoUpdate[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcScale[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcStartMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcTosHostForTests[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUreadaheadMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCellularFirst[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperSmall[];

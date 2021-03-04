@@ -47,6 +47,16 @@ enum class UpstartOperation {
   JOB_STOP_AND_START,
 };
 
+// Enum for configuring ureadahead mode of operation during ARCVM boot process.
+enum class ArcVmUreadaheadMode {
+  // ARCVM ureadahead is in readahead mode for normal user boot flow.
+  READAHEAD = 0,
+  // ARCVM ureadahead is turned on for generate mode in data collector flow.
+  GENERATE,
+  // ARCVM ureadahead is turned off for disabled mode.
+  DISABLED,
+};
+
 // Upstart Job Description
 struct JobDesc {
   // Explicit ctor/dtor declaration is necessary for complex struct. See
@@ -85,6 +95,10 @@ bool IsArcVmRtVcpuEnabled();
 // Returns true if all development configuration directives in the
 // vm_tools/init/arcvm_dev.conf file are ignored during ARCVM start.
 bool IsArcVmDevConfIgnored();
+
+// Returns mode of operation for ureadahead during the ARCVM boot flow.
+// Valid modes are readahead (default), generate, or disabled.
+ArcVmUreadaheadMode GetArcVmUreadaheadMode();
 
 // Returns true if ARC should always start within the primary user session
 // (opted in user or not), and other supported mode such as guest and Kiosk

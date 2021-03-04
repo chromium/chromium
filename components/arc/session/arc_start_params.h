@@ -78,7 +78,6 @@ struct StartParams {
   bool disable_download_provider = false;
 
   // The number of logical CPU cores that are currently disabled on the host.
-  // This parameter is used only for starting ARCVM.
   uint32_t num_cores_disabled = 0;
 
   // Enables developer options used to generate Play Auto Install rosters.

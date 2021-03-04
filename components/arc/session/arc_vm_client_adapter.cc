@@ -232,6 +232,18 @@ std::vector<std::string> GenerateKernelCmdline(
                          BUILDFLAG(USE_IIOSERVICE)),
   };
 
+  ArcVmUreadaheadMode mode = GetArcVmUreadaheadMode();
+  switch (mode) {
+    case ArcVmUreadaheadMode::READAHEAD:
+      result.push_back("androidboot.arcvm_ureadahead_mode=readahead");
+      break;
+    case ArcVmUreadaheadMode::GENERATE:
+      result.push_back("androidboot.arcvm_ureadahead_mode=generate");
+      break;
+    case ArcVmUreadaheadMode::DISABLED:
+      break;
+  }
+
   // We run vshd under a restricted domain on non-test images.
   // (go/arcvm-android-sh-restricted)
   if (channel == "testimage")
