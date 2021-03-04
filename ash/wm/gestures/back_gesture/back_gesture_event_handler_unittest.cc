@@ -210,6 +210,15 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, GoBackInOverviewMode) {
   // Should trigger go back instead of minimize the window since it is in
   // overview mode.
   EXPECT_EQ(1, target_back_release.accelerator_count());
+
+  // Swipe back at overview mode without opened window should still trigger
+  // going back.
+  shell->overview_controller()->EndOverview();
+  ResetTopWindow();
+  shell->overview_controller()->StartOverview();
+  GenerateBackSequence();
+  EXPECT_EQ(2, target_back_release.accelerator_count());
+  EXPECT_TRUE(shell->home_screen_controller()->IsHomeScreenVisible());
 }
 
 TEST_F(BackGestureEventHandlerTest, GoBackInHomeScreenPage) {

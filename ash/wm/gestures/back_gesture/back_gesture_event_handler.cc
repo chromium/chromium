@@ -361,7 +361,6 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
             shell->app_list_controller()->Back();
           } else {
             auto* top_window = window_util::GetTopWindow();
-            DCHECK(top_window);
             auto* top_window_state = WindowState::Get(top_window);
             if (top_window_state && top_window_state->IsFullscreen() &&
                 !shell->overview_controller()->InOverviewSession()) {
@@ -402,8 +401,12 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
               // window.
               SendBackEvent(screen_location);
             }
-            RecordUnderneathWindowType(
-                GetUnderneathWindowType(back_gesture_start_scenario_type_));
+            // |top_window| could be nullptr while in overview mode since back
+            // gesture is allowed in overview mode even no window opens.
+            if (top_window) {
+              RecordUnderneathWindowType(
+                  GetUnderneathWindowType(back_gesture_start_scenario_type_));
+            }
           }
         }
         back_gesture_affordance_->Complete();
