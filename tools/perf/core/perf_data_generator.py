@@ -1022,7 +1022,8 @@ GTEST_BENCHMARKS = {
     BenchmarkMetadata('xhwang@chromium.org, jrummell@chromium.org',
                       'Internals>Media>Encrypted'),
     'performance_browser_tests':
-    BenchmarkMetadata('johnchen@chromium.org', 'Internals>Media>ScreenCapture'),
+    BenchmarkMetadata('johnchen@chromium.org, jophba@chromium.org',
+                      'Internals>Media>ScreenCapture'),
     'views_perftests':
     BenchmarkMetadata('tapted@chromium.org', 'Internals>Views'),
     'components_perftests':
