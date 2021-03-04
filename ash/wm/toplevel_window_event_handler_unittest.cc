@@ -1097,6 +1097,8 @@ TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
   // To determine the state, WindowWorkspaceResizer determines the display by
   // checking the CursorManager for the correct display. EventGenerator does not
   // update the display in the CursorManager, so we manually do it here.
+  // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+  // without having to call |CursorManager::SetDisplay|.
   const gfx::Point drag_location = gfx::Point(472, -462);
   Shell::Get()->cursor_manager()->SetDisplay(
       display::Screen::GetScreen()->GetDisplayNearestPoint(drag_location));
