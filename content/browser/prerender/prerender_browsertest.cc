@@ -249,7 +249,7 @@ class PrerenderBrowserTest
     }
   }
 
-  void TestRenderFrameHostPrerenderingState(const GURL& prerender_url) {
+  void TestHostPrerenderingState(const GURL& prerender_url) {
     const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
 
     // Navigate to an initial page.
@@ -259,7 +259,10 @@ class PrerenderBrowserTest
     RenderFrameHostImpl* initiator_render_frame_host =
         static_cast<RenderFrameHostImpl*>(
             shell()->web_contents()->GetMainFrame());
-    EXPECT_FALSE(initiator_render_frame_host->IsPrerendering());
+    EXPECT_FALSE(initiator_render_frame_host->frame_tree()->is_prerendering());
+    EXPECT_NE(initiator_render_frame_host->lifecycle_state(),
+              LifecycleState::kPrerendering);
+
     // Start a prerender.
     AddPrerender(prerender_url);
     PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
@@ -278,7 +281,7 @@ class PrerenderBrowserTest
       // before activation.
       EXPECT_EQ(rfhi->lifecycle_state(),
                 RenderFrameHostImpl::LifecycleState::kPrerendering);
-      EXPECT_TRUE(rfhi->IsPrerendering());
+      EXPECT_TRUE(rfhi->frame_tree()->is_prerendering());
     }
 
     // Activate the prerendered page.
@@ -297,7 +300,7 @@ class PrerenderBrowserTest
       // state after activation.
       EXPECT_EQ(rfhi->lifecycle_state(),
                 RenderFrameHostImpl::LifecycleState::kActive);
-      EXPECT_FALSE(rfhi->IsPrerendering());
+      EXPECT_FALSE(rfhi->frame_tree()->is_prerendering());
     }
   }
 
@@ -593,13 +596,13 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, HistoryAfterActivation) {
 // Tests that all RenderFrameHostImpls in the prerendering page know the
 // prerendering state.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderIframe) {
-  TestRenderFrameHostPrerenderingState(GetUrl("/page_with_iframe.html"));
+  TestHostPrerenderingState(GetUrl("/page_with_iframe.html"));
 }
 
 // Blank <iframe> is a special case. Tests that the blank iframe knows the
 // prerendering state as well.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderBlankIframe) {
-  TestRenderFrameHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
+  TestHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
 
 class MojoCapabilityControlTestContentBrowserClient
@@ -685,7 +688,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
   mojo::RemoteSet<mojom::TestInterfaceForGrant> grant_remote_set;
   for (auto* frame : frames) {
     auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
-    EXPECT_TRUE(rfhi->IsPrerendering());
+    EXPECT_TRUE(rfhi->frame_tree()->is_prerendering());
+    EXPECT_EQ(rfhi->lifecycle_state(), LifecycleState::kPrerendering);
 
     mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
         rfhi->browser_interface_broker_receiver_for_testing();

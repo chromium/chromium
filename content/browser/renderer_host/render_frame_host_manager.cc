@@ -3247,7 +3247,6 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   // user, unlike kActive state.
   if (render_frame_host_) {
     if (frame_tree->is_prerendering()) {
-      DCHECK(render_frame_host_->IsPrerendering());
       if (render_frame_host_->lifecycle_state() == LifecycleState::kSpeculative)
         render_frame_host_->SetLifecycleStateToPrerendering();
     } else {

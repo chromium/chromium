@@ -1557,13 +1557,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CancelPrerendering();
 
   // Prerender2:
-  // Returns true if this frame is for a prerendering page.
-  // Please note that this method considers the frame tree rather than the
-  // document lifecycle and can return true even if lifecycle_state() !=
-  // kPrerendering.
-  bool IsPrerendering() const;
-
-  // Prerender2:
   // Called by PrerenderHost when a prerendered WebContents is activated.
   void OnPrerenderedPageActivated();
 

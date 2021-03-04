@@ -117,7 +117,7 @@ int PrerenderHostRegistry::ReserveHostToActivate(
                base::trace_event::ToTracedValue(render_frame_host));
 
   // Disallow activation when the navigation is for prerendering.
-  if (render_frame_host->IsPrerendering())
+  if (frame_tree_node.frame_tree()->is_prerendering())
     return RenderFrameHost::kNoFrameTreeNodeId;
 
   // Disallow activation when the render frame host is for a nested browsing

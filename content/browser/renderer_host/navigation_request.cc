@@ -945,9 +945,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*data_url_as_string=*/std::string(),
 #endif
           /*is_browser_initiated=*/false,
-          frame_tree_node->parent()
-              ? frame_tree_node->parent()->IsPrerendering()
-              : false,
+          frame_tree_node->frame_tree()->is_prerendering(),
           /*web_bundle_physical_url=*/GURL(),
           /*base_url_override_for_web_bundle=*/GURL(),
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
@@ -1058,9 +1056,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           std::string() /* data_url_as_string */,
 #endif
           false /* is_browser_initiated */,
-          frame_tree_node->parent()
-              ? frame_tree_node->parent()->IsPrerendering()
-              : false,
+          frame_tree_node->frame_tree()->is_prerendering(),
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
           ukm::kInvalidSourceId /* document_ukm_source_id */,
