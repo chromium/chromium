@@ -11,11 +11,9 @@
 #include "components/metrics/persistent_histograms.h"
 
 void AwFieldTrials::SetupFieldTrials() {
-  // https://crbug.com/1093420: enable for persistent metrics.
   // Persistent histograms must be enabled as soon as possible.
   base::FilePath metrics_dir;
   if (base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir)) {
-    InstantiatePersistentHistograms(metrics_dir,
-                                    /*default_local_memory=*/true);
+    InstantiatePersistentHistograms(metrics_dir);
   }
 }
