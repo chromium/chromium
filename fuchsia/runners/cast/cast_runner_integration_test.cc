@@ -222,146 +222,6 @@ class FakeComponentState : public cr_fuchsia::AgentImpl::ComponentStateBase {
   base::OnceClosure on_delete_;
 };
 
-enum CastRunnerFeatures {
-  kCastRunnerFeaturesNone = 0,
-  kCastRunnerFeaturesHeadless = 1,
-  kCastRunnerFeaturesVulkan = 1 << 1,
-  kCastRunnerFeaturesFrameHost = 1 << 2
-};
-
-sys::ServiceDirectory StartCastRunner(
-    fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_host_directory,
-    CastRunnerFeatures runner_features,
-    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-        component_controller_request) {
-  fuchsia::sys::LaunchInfo launch_info;
-  launch_info.url =
-      "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cmx";
-
-  // Clone stderr from the current process to CastRunner and ask it to
-  // redirect all logs to stderr.
-  launch_info.err = fuchsia::sys::FileDescriptor::New();
-  launch_info.err->type0 = PA_FD;
-  zx_status_t status = fdio_fd_clone(
-      STDERR_FILENO, launch_info.err->handle0.reset_and_get_address());
-  ZX_CHECK(status == ZX_OK, status);
-
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII("enable-logging", "stderr");
-
-  if (runner_features & kCastRunnerFeaturesHeadless)
-    command_line.AppendSwitch(kForceHeadlessForTestsSwitch);
-  if (!(runner_features & kCastRunnerFeaturesVulkan))
-    command_line.AppendSwitch(kDisableVulkanForTestsSwitch);
-  if (runner_features & kCastRunnerFeaturesFrameHost)
-    command_line.AppendSwitch(kEnableFrameHostComponent);
-
-  // Add all switches and arguments, skipping the program.
-  launch_info.arguments.emplace(std::vector<std::string>(
-      command_line.argv().begin() + 1, command_line.argv().end()));
-
-  fidl::InterfaceHandle<fuchsia::io::Directory> cast_runner_services_dir;
-  launch_info.directory_request =
-      cast_runner_services_dir.NewRequest().TakeChannel();
-
-  // Redirect ContextProvider to |web_engine_host_directory|.
-  launch_info.additional_services =
-      std::make_unique<fuchsia::sys::ServiceList>();
-  launch_info.additional_services->host_directory =
-      web_engine_host_directory.TakeChannel();
-  launch_info.additional_services->names.push_back(
-      fuchsia::web::ContextProvider::Name_);
-
-  fuchsia::sys::LauncherPtr launcher;
-  base::ComponentContextForProcess()->svc()->Connect(launcher.NewRequest());
-  launcher->CreateComponent(std::move(launch_info),
-                            std::move(component_controller_request));
-  return sys::ServiceDirectory(std::move(cast_runner_services_dir));
-}
-
-}  // namespace
-
-class CastRunnerIntegrationTest : public testing::Test {
- public:
-  CastRunnerIntegrationTest()
-      : CastRunnerIntegrationTest(kCastRunnerFeaturesNone) {}
-
-  CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;
-  CastRunnerIntegrationTest& operator=(const CastRunnerIntegrationTest&) =
-      delete;
-
-  void TearDown() override {
-    // Unbind the Runner channel, to prevent it from triggering an error when
-    // the CastRunner and WebEngine are torn down.
-    cast_runner_.Unbind();
-  }
-
- protected:
-  explicit CastRunnerIntegrationTest(CastRunnerFeatures runner_features) {
-    StartAndPublishWebEngine();
-
-    // Start CastRunner.
-    fidl::InterfaceHandle<::fuchsia::io::Directory> incoming_services;
-    services_for_cast_runner_.GetOrCreateDirectory("svc")->Serve(
-        ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
-        incoming_services.NewRequest().TakeChannel());
-    sys::ServiceDirectory cast_runner_services =
-        StartCastRunner(std::move(incoming_services), runner_features,
-                        cast_runner_controller_.ptr().NewRequest());
-
-    // Connect to the CastRunner's fuchsia.sys.Runner interface.
-    cast_runner_ = cast_runner_services.Connect<fuchsia::sys::Runner>();
-    cast_runner_.set_error_handler([](zx_status_t status) {
-      ZX_LOG(ERROR, status) << "CastRunner closed channel.";
-      ADD_FAILURE();
-    });
-
-    test_server_.ServeFilesFromSourceDirectory(kTestServerRoot);
-    net::test_server::RegisterDefaultHandlers(&test_server_);
-    EXPECT_TRUE(test_server_.Start());
-  }
-
-  void StartAndPublishWebEngine() {
-    fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_outgoing_dir =
-        cr_fuchsia::StartWebEngineForTests(
-            web_engine_controller_.ptr().NewRequest());
-    sys::ServiceDirectory web_engine_outgoing_services(
-        std::move(web_engine_outgoing_dir));
-
-    services_for_cast_runner_
-        .RemovePublicService<fuchsia::web::ContextProvider>();
-    services_for_cast_runner_.AddPublicService(
-        std::make_unique<vfs::Service>(
-            [web_engine_outgoing_services =
-                 std::move(web_engine_outgoing_services)](
-                zx::channel channel, async_dispatcher_t* dispatcher) {
-              web_engine_outgoing_services.Connect(
-                  fuchsia::web::ContextProvider::Name_, std::move(channel));
-            }),
-        fuchsia::web::ContextProvider::Name_);
-  }
-
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-  net::EmbeddedTestServer test_server_;
-
-  // TODO(https://crbug.com/1168538): Override the RunLoop timeout set by
-  // |task_environment_| to allow for the very high variability in web.Context
-  // launch times.
-  const base::test::ScopedRunLoopTimeout scoped_timeout_{
-      FROM_HERE, TestTimeouts::action_max_timeout()};
-
-  base::TestComponentController web_engine_controller_;
-  base::TestComponentController cast_runner_controller_;
-
-  // Directory used to publish test ContextProvider to CastRunner. Some tests
-  // restart ContextProvider, so we can't pass the services directory from
-  // ContextProvider to CastRunner directly.
-  sys::OutgoingDirectory services_for_cast_runner_;
-
-  fuchsia::sys::RunnerPtr cast_runner_;
-};
-
 class TestCastComponent {
  public:
   TestCastComponent(fuchsia::sys::Runner* cast_runner)
@@ -625,6 +485,146 @@ class TestCastComponent {
 
   base::OnceClosure component_state_created_callback_;
   fuchsia::sys::Runner* cast_runner_;
+};
+
+enum CastRunnerFeatures {
+  kCastRunnerFeaturesNone = 0,
+  kCastRunnerFeaturesHeadless = 1,
+  kCastRunnerFeaturesVulkan = 1 << 1,
+  kCastRunnerFeaturesFrameHost = 1 << 2
+};
+
+sys::ServiceDirectory StartCastRunner(
+    fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_host_directory,
+    CastRunnerFeatures runner_features,
+    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+        component_controller_request) {
+  fuchsia::sys::LaunchInfo launch_info;
+  launch_info.url =
+      "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cmx";
+
+  // Clone stderr from the current process to CastRunner and ask it to
+  // redirect all logs to stderr.
+  launch_info.err = fuchsia::sys::FileDescriptor::New();
+  launch_info.err->type0 = PA_FD;
+  zx_status_t status = fdio_fd_clone(
+      STDERR_FILENO, launch_info.err->handle0.reset_and_get_address());
+  ZX_CHECK(status == ZX_OK, status);
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII("enable-logging", "stderr");
+
+  if (runner_features & kCastRunnerFeaturesHeadless)
+    command_line.AppendSwitch(kForceHeadlessForTestsSwitch);
+  if (!(runner_features & kCastRunnerFeaturesVulkan))
+    command_line.AppendSwitch(kDisableVulkanForTestsSwitch);
+  if (runner_features & kCastRunnerFeaturesFrameHost)
+    command_line.AppendSwitch(kEnableFrameHostComponent);
+
+  // Add all switches and arguments, skipping the program.
+  launch_info.arguments.emplace(std::vector<std::string>(
+      command_line.argv().begin() + 1, command_line.argv().end()));
+
+  fidl::InterfaceHandle<fuchsia::io::Directory> cast_runner_services_dir;
+  launch_info.directory_request =
+      cast_runner_services_dir.NewRequest().TakeChannel();
+
+  // Redirect ContextProvider to |web_engine_host_directory|.
+  launch_info.additional_services =
+      std::make_unique<fuchsia::sys::ServiceList>();
+  launch_info.additional_services->host_directory =
+      web_engine_host_directory.TakeChannel();
+  launch_info.additional_services->names.push_back(
+      fuchsia::web::ContextProvider::Name_);
+
+  fuchsia::sys::LauncherPtr launcher;
+  base::ComponentContextForProcess()->svc()->Connect(launcher.NewRequest());
+  launcher->CreateComponent(std::move(launch_info),
+                            std::move(component_controller_request));
+  return sys::ServiceDirectory(std::move(cast_runner_services_dir));
+}
+
+}  // namespace
+
+class CastRunnerIntegrationTest : public testing::Test {
+ public:
+  CastRunnerIntegrationTest()
+      : CastRunnerIntegrationTest(kCastRunnerFeaturesNone) {}
+
+  CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;
+  CastRunnerIntegrationTest& operator=(const CastRunnerIntegrationTest&) =
+      delete;
+
+  void TearDown() override {
+    // Unbind the Runner channel, to prevent it from triggering an error when
+    // the CastRunner and WebEngine are torn down.
+    cast_runner_.Unbind();
+  }
+
+ protected:
+  explicit CastRunnerIntegrationTest(CastRunnerFeatures runner_features) {
+    StartAndPublishWebEngine();
+
+    // Start CastRunner.
+    fidl::InterfaceHandle<::fuchsia::io::Directory> incoming_services;
+    services_for_cast_runner_.GetOrCreateDirectory("svc")->Serve(
+        ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
+        incoming_services.NewRequest().TakeChannel());
+    sys::ServiceDirectory cast_runner_services =
+        StartCastRunner(std::move(incoming_services), runner_features,
+                        cast_runner_controller_.ptr().NewRequest());
+
+    // Connect to the CastRunner's fuchsia.sys.Runner interface.
+    cast_runner_ = cast_runner_services.Connect<fuchsia::sys::Runner>();
+    cast_runner_.set_error_handler([](zx_status_t status) {
+      ZX_LOG(ERROR, status) << "CastRunner closed channel.";
+      ADD_FAILURE();
+    });
+
+    test_server_.ServeFilesFromSourceDirectory(kTestServerRoot);
+    net::test_server::RegisterDefaultHandlers(&test_server_);
+    EXPECT_TRUE(test_server_.Start());
+  }
+
+  void StartAndPublishWebEngine() {
+    fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_outgoing_dir =
+        cr_fuchsia::StartWebEngineForTests(
+            web_engine_controller_.ptr().NewRequest());
+    sys::ServiceDirectory web_engine_outgoing_services(
+        std::move(web_engine_outgoing_dir));
+
+    services_for_cast_runner_
+        .RemovePublicService<fuchsia::web::ContextProvider>();
+    services_for_cast_runner_.AddPublicService(
+        std::make_unique<vfs::Service>(
+            [web_engine_outgoing_services =
+                 std::move(web_engine_outgoing_services)](
+                zx::channel channel, async_dispatcher_t* dispatcher) {
+              web_engine_outgoing_services.Connect(
+                  fuchsia::web::ContextProvider::Name_, std::move(channel));
+            }),
+        fuchsia::web::ContextProvider::Name_);
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  net::EmbeddedTestServer test_server_;
+
+  // TODO(https://crbug.com/1168538): Override the RunLoop timeout set by
+  // |task_environment_| to allow for the very high variability in web.Context
+  // launch times.
+  const base::test::ScopedRunLoopTimeout scoped_timeout_{
+      FROM_HERE, TestTimeouts::action_max_timeout()};
+
+  base::TestComponentController web_engine_controller_;
+  base::TestComponentController cast_runner_controller_;
+
+  // Directory used to publish test ContextProvider to CastRunner. Some tests
+  // restart ContextProvider, so we can't pass the services directory from
+  // ContextProvider to CastRunner directly.
+  sys::OutgoingDirectory services_for_cast_runner_;
+
+  fuchsia::sys::RunnerPtr cast_runner_;
 };
 
 // A basic integration test ensuring a basic cast request launches the right
