@@ -372,6 +372,7 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
 
   if (!is_first_ever_desk) {
     desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+    desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
     UMA_HISTOGRAM_ENUMERATION(kNewDeskHistogramName, source);
     ReportDesksCountHistogram();
   }
@@ -422,8 +423,10 @@ void DesksController::ReorderDesk(int old_index, int new_index) {
   // Meanwhile, only the primary user needs to update the active desk, which is
   // independent across profiles but only recoverable for the primary user.
 
-  // 1. Update desk name list in the user prefs to maintain the right order.
+  // 1. Update desk name and metrics lists in the user prefs to maintain the
+  // right order.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+  desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
   // 2. For multi-profile switching, update all affected active desk index in
   // |user_to_active_desk_index_|.
@@ -673,6 +676,14 @@ void DesksController::RestoreNameOfDeskAtIndex(base::string16 name,
   desks_[index]->SetName(std::move(name), /*set_by_user=*/true);
 }
 
+void DesksController::RestoreMetricsOfDeskAtIndex(base::Time creation_time,
+                                                  size_t index) {
+  DCHECK_LT(index, desks_.size());
+
+  const auto& target_desk = desks_[index];
+  target_desk->set_creation_time(std::move(creation_time));
+}
+
 void DesksController::OnRootWindowAdded(aura::Window* root_window) {
   for (auto& desk : desks_)
     desk->OnRootWindowAdded(root_window);
@@ -886,6 +897,9 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   // Used by accessibility to indicate the desk that has been removed.
   const int removed_desk_number = std::distance(desks_.begin(), iter) + 1;
 
+  // Record |desk|'s lifetime before it's removed from |desks_|.
+  const_cast<Desk*>(desk)->RecordLifetimeHistogram();
+
   // Keep the removed desk alive until the end of this function.
   std::unique_ptr<Desk> removed_desk = std::move(*iter);
   removed_desk->SetDeskBeingRemoved();
@@ -1017,6 +1031,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
           active_desk_->name()));
 
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+  desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
   DCHECK_LE(available_container_ids_.size(), desks_util::GetMaxNumberOfDesks());
 }

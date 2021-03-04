@@ -25,6 +25,11 @@ namespace desks_restore_util {
 
 namespace {
 
+// Keys for the dictionaries stored in |kDesksMetricsList|. The entry is an int
+// which represents the number of minutes for
+// base::Time::FromDeltaSinceWindowsEpoch().
+constexpr char kCreationTimeKey[] = "creation_time";
+
 // While restore is in progress, changes are being made to the desks and their
 // names. Those changes should not trigger an update to the prefs.
 bool g_pause_desks_prefs_updates = false;
@@ -46,6 +51,7 @@ bool IsValidDeskIndex(int desk_index) {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   constexpr int kDefaultActiveDeskIndex = 0;
   registry->RegisterListPref(prefs::kDesksNamesList);
+  registry->RegisterListPref(prefs::kDesksMetricsList);
   if (features::IsBentoEnabled()) {
     registry->RegisterIntegerPref(prefs::kDesksActiveDesk,
                                   kDefaultActiveDeskIndex);
@@ -61,11 +67,13 @@ void RestorePrimaryUserDesks() {
     return;
   }
 
-  const base::ListValue* desks_names_list =
+  const base::ListValue* desks_names =
       primary_user_prefs->GetList(prefs::kDesksNamesList);
+  const base::ListValue* desks_metrics =
+      primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
   // First create the same number of desks.
-  const size_t restore_size = desks_names_list->GetSize();
+  const size_t restore_size = desks_names->GetSize();
 
   // If we don't have any restore data, or the list is corrupt for some reason,
   // abort.
@@ -76,9 +84,12 @@ void RestorePrimaryUserDesks() {
   while (desks_controller->desks().size() < restore_size)
     desks_controller->NewDesk(DesksCreationRemovalSource::kDesksRestore);
 
-  size_t index = 0;
-  for (const auto& value : desks_names_list->GetList()) {
-    const std::string& desk_name = value.GetString();
+  const auto& desks_names_list = desks_names->GetList();
+  const auto& desks_metrics_list = desks_metrics->GetList();
+  const size_t desks_metrics_list_size = desks_metrics->GetSize();
+  const auto now = base::Time::Now();
+  for (size_t index = 0; index < restore_size; ++index) {
+    const std::string& desk_name = desks_names_list[index].GetString();
     // Empty desks names are just place holders for desks whose names haven't
     // been modified by the user. Those don't need to be restored; they already
     // have the correct default names based on their positions in the desks
@@ -87,7 +98,20 @@ void RestorePrimaryUserDesks() {
       desks_controller->RestoreNameOfDeskAtIndex(base::UTF8ToUTF16(desk_name),
                                                  index);
     }
-    ++index;
+
+    if (index >= desks_metrics_list_size)
+      continue;
+
+    // Only restore metrics if there is existing data.
+    const auto& desks_metrics_dict = desks_metrics_list[index];
+    const auto& creation_time_entry =
+        desks_metrics_dict.FindIntPath(kCreationTimeKey);
+    if (creation_time_entry.has_value()) {
+      const auto creation_time = base::Time::FromDeltaSinceWindowsEpoch(
+          base::TimeDelta::FromMinutes(*creation_time_entry));
+      if (!creation_time.is_null() && creation_time < now)
+        desks_controller->RestoreMetricsOfDeskAtIndex(creation_time, index);
+    }
   }
 
   // Restore an active desk for the primary user.
@@ -114,20 +138,47 @@ void UpdatePrimaryUserDeskNamesPrefs() {
     return;
   }
 
-  ListPrefUpdate update(primary_user_prefs, prefs::kDesksNamesList);
-  base::ListValue* pref_data = update.Get();
-  pref_data->Clear();
+  ListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
+  base::ListValue* name_pref_data = name_update.Get();
+  name_pref_data->Clear();
+
   const auto& desks = DesksController::Get()->desks();
   for (const auto& desk : desks) {
     // Desks whose names were not changed by the user, are stored as empty
     // strings. They're just place holders to restore the correct desks count.
     // RestorePrimaryUserDesks() restores only non-empty desks names.
-    pref_data->Append(desk->is_name_set_by_user()
-                          ? base::UTF16ToUTF8(desk->name())
-                          : std::string());
+    name_pref_data->Append(desk->is_name_set_by_user()
+                               ? base::UTF16ToUTF8(desk->name())
+                               : std::string());
   }
 
-  DCHECK_EQ(pref_data->GetSize(), desks.size());
+  DCHECK_EQ(name_pref_data->GetSize(), desks.size());
+}
+
+void UpdatePrimaryUserDeskMetricsPrefs() {
+  if (g_pause_desks_prefs_updates)
+    return;
+
+  PrefService* primary_user_prefs = GetPrimaryUserPrefService();
+  if (!primary_user_prefs) {
+    // Can be null in tests.
+    return;
+  }
+
+  ListPrefUpdate metrics_update(primary_user_prefs, prefs::kDesksMetricsList);
+  base::ListValue* metrics_pref_data = metrics_update.Get();
+  metrics_pref_data->Clear();
+
+  const auto& desks = DesksController::Get()->desks();
+  for (const auto& desk : desks) {
+    base::DictionaryValue metrics_dict;
+    metrics_dict.SetInteger(
+        kCreationTimeKey,
+        desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());
+    metrics_pref_data->Append(std::move(metrics_dict));
+  }
+
+  DCHECK_EQ(metrics_pref_data->GetSize(), desks.size());
 }
 
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index) {
