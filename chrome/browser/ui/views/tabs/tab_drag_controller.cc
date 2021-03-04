@@ -1397,6 +1397,10 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
 
   move_loop_widget_ = GetAttachedBrowserWidget();
   DCHECK(move_loop_widget_);
+
+  // RunMoveLoop can be called reentrantly from within another RunMoveLoop,
+  // in which case the observation is already established.
+  widget_observation_.Reset();
   widget_observation_.Observe(move_loop_widget_);
   current_state_ = DragState::kDraggingWindow;
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
