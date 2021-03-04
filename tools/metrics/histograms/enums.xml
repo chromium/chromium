@@ -33851,6 +33851,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="29" label="Not a ZIP">
     ZIP_ER_BASE from fuse-zip + ZIP_ER_NOZIP from libzip
   </int>
+  <int value="31" label="Inconsistent ZIP">
+    ZIP_ER_BASE from fuse-zip + ZIP_ER_INCONS from libzip
+  </int>
   <int value="36" label="Missing password">
     ZIP_ER_BASE from fuse-zip + ZIP_ER_NOPASSWD from libzip
   </int>
