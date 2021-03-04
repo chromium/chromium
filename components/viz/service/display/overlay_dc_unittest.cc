@@ -366,21 +366,11 @@ TEST_F(DCLayerOverlayTest, Occluded) {
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.front().z_order);
     EXPECT_EQ(-2, dc_layer_list.back().z_order);
+
     // The underlay rectangle is the same, so the damage for first video quad is
     // contained within the combined occluding rects for this and the last
     // frame. Second video quad also adds its damage.
-
-    // This is calculated by carving out the underlay rect size from the
-    // damage_rect, adding back the quads on top and then the overlay/underlay
-    // rects from the previous frame. The damage rect carried over from the
-    // previous frame with multiple overlays cannot be skipped if
-    // kDirectCompositionUseOverlayDamageList is disabled.
-    if (base::FeatureList::IsEnabled(
-            features::kDirectCompositionUseOverlayDamageList)) {
-      EXPECT_EQ(gfx::Rect(1, 1, 10, 10), damage_rect_);
-    } else {
-      EXPECT_EQ(gfx::Rect(0, 0, 256, 256), damage_rect_);
-    }
+    EXPECT_EQ(gfx::Rect(1, 1, 10, 10), damage_rect_);
   }
 }
 

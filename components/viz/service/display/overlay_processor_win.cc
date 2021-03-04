@@ -67,8 +67,8 @@ void OverlayProcessorWin::ProcessForOverlays(
   // enabled. When video capture is enabled, some frames might not have copy
   // request.
   if (!root_render_pass->copy_requests.empty() || is_video_capture_enabled_) {
-    damage_rect->Union(dc_layer_overlay_processor_
-                           ->previous_frame_overlay_damage_contribution());
+    damage_rect->Union(
+        dc_layer_overlay_processor_->PreviousFrameOverlayDamageContribution());
     // Update damage rect before calling ClearOverlayState, otherwise
     // previous_frame_overlay_rect_union will be empty.
     dc_layer_overlay_processor_->ClearOverlayState();
