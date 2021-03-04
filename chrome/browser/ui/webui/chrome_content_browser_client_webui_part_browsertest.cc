@@ -11,61 +11,124 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/ui_base_switches.h"
 
+namespace {
+const blink::web_pref::WebPreferences GetCustomFontPrefs() {
+  blink::web_pref::WebPreferences prefs;
+  prefs.default_font_size += 1;
+  prefs.default_fixed_font_size += 2;
+  prefs.minimum_font_size += 3;
+  prefs.minimum_logical_font_size += 4;
+  return prefs;
+}
+}  // namespace
+
 class ChromeContentBrowserClientWebUIPartTest : public InProcessBrowserTest {
- public:
-  std::unique_ptr<content::WebContents> CreateWebContents() {
-    std::unique_ptr<content::WebContents> webui_contents =
-        content::WebContents::Create(
-            content::WebContents::CreateParams(browser()->profile()));
-    webui_contents->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(
-            GURL(chrome::kChromeUIExtensionsURL)));
-    return webui_contents;
+ protected:
+  // Registers and returns custom preferences for font size, which differ from
+  // the default preferences.
+  const blink::web_pref::WebPreferences RegisterCustomFontPrefs() {
+    const blink::web_pref::WebPreferences prefs = GetCustomFontPrefs();
+    Profile* profile = browser()->profile();
+    PrefService* profile_prefs = profile->GetPrefs();
+    profile_prefs->SetInteger(prefs::kWebKitDefaultFontSize,
+                              prefs.default_font_size);
+    profile_prefs->SetInteger(prefs::kWebKitDefaultFixedFontSize,
+                              prefs.default_fixed_font_size);
+    profile_prefs->SetInteger(prefs::kWebKitMinimumFontSize,
+                              prefs.minimum_font_size);
+    profile_prefs->SetInteger(prefs::kWebKitMinimumLogicalFontSize,
+                              prefs.minimum_logical_font_size);
+    return prefs;
   }
 
- protected:
-  std::unique_ptr<content::WebContents> webui_contents_;
+  void AssertFontPrefsEqual(const blink::web_pref::WebPreferences& expected,
+                            blink::web_pref::WebPreferences& actual) {
+    EXPECT_EQ(expected.default_font_size, actual.default_font_size);
+    EXPECT_EQ(expected.default_fixed_font_size, actual.default_fixed_font_size);
+    EXPECT_EQ(expected.minimum_font_size, actual.minimum_font_size);
+    EXPECT_EQ(expected.minimum_logical_font_size,
+              actual.minimum_logical_font_size);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientWebUIPartTest,
                        HasDefaultFontSizes) {
+  RegisterCustomFontPrefs();
+
+  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIExtensionsURL));
+
   const blink::web_pref::WebPreferences default_prefs;
-  const int kDefaultFontSize = default_prefs.default_font_size;
-  const int kDefaultFixedFontSize = default_prefs.default_fixed_font_size;
-  const int kDefaultMinimumFontSize = default_prefs.minimum_font_size;
-  const int kDefaultMinimumLogicalFontSize =
-      default_prefs.minimum_logical_font_size;
 
   blink::web_pref::WebPreferences preexisting_prefs =
-      CreateWebContents()->GetOrCreateWebPreferences();
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetOrCreateWebPreferences();
+  AssertFontPrefsEqual(default_prefs, preexisting_prefs);
 
-  Profile* profile = browser()->profile();
-  PrefService* profile_prefs = profile->GetPrefs();
-  profile_prefs->SetInteger(prefs::kWebKitDefaultFontSize,
-                            kDefaultFontSize + 1);
-  profile_prefs->SetInteger(prefs::kWebKitDefaultFixedFontSize,
-                            kDefaultFixedFontSize + 2);
-  profile_prefs->SetInteger(prefs::kWebKitMinimumFontSize,
-                            kDefaultMinimumFontSize + 3);
-  profile_prefs->SetInteger(prefs::kWebKitMinimumLogicalFontSize,
-                            kDefaultMinimumLogicalFontSize + 4);
+  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIExtensionsURL));
+  blink::web_pref::WebPreferences new_prefs = browser()
+                                                  ->tab_strip_model()
+                                                  ->GetActiveWebContents()
+                                                  ->GetOrCreateWebPreferences();
+  AssertFontPrefsEqual(default_prefs, new_prefs);
+}
 
-  EXPECT_EQ(kDefaultFontSize, preexisting_prefs.default_font_size);
-  EXPECT_EQ(kDefaultFixedFontSize, preexisting_prefs.default_fixed_font_size);
-  EXPECT_EQ(kDefaultMinimumFontSize, preexisting_prefs.minimum_font_size);
-  EXPECT_EQ(kDefaultMinimumLogicalFontSize,
-            preexisting_prefs.minimum_logical_font_size);
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientWebUIPartTest,
+                       NavigateFromWebUIToNonWebUI) {
+  const blink::web_pref::WebPreferences custom_prefs =
+      RegisterCustomFontPrefs();
+  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIExtensionsURL));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL url = web_contents->GetController().GetVisibleEntry()->GetURL();
+  ASSERT_TRUE(url.SchemeIs(content::kChromeUIScheme));
 
-  blink::web_pref::WebPreferences new_prefs =
-      CreateWebContents()->GetOrCreateWebPreferences();
-  EXPECT_EQ(kDefaultFontSize, new_prefs.default_font_size);
-  EXPECT_EQ(kDefaultFixedFontSize, new_prefs.default_fixed_font_size);
-  EXPECT_EQ(kDefaultMinimumFontSize, new_prefs.minimum_font_size);
-  EXPECT_EQ(kDefaultMinimumLogicalFontSize,
-            new_prefs.minimum_logical_font_size);
+  // Assert that WebUI uses the default prefs, and not the user's defined custom
+  // prefs.
+  const blink::web_pref::WebPreferences default_prefs;
+  blink::web_pref::WebPreferences active_webui_prefs =
+      web_contents->GetOrCreateWebPreferences();
+  AssertFontPrefsEqual(default_prefs, active_webui_prefs);
+
+  // Assert that transitioning from a WebUI URL to a non-WebUI URL in the same
+  // tab, uses the user's defined custom prefs.
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  const GURL url2 = web_contents->GetController().GetVisibleEntry()->GetURL();
+  ASSERT_FALSE(url2.SchemeIs(content::kChromeUIScheme));
+  blink::web_pref::WebPreferences active_non_webui_prefs =
+      web_contents->GetOrCreateWebPreferences();
+  AssertFontPrefsEqual(custom_prefs, active_non_webui_prefs);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientWebUIPartTest,
+                       NavigateFromNonWebUIToWebUI) {
+  const blink::web_pref::WebPreferences custom_prefs =
+      RegisterCustomFontPrefs();
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL url2 = web_contents->GetController().GetVisibleEntry()->GetURL();
+  ASSERT_FALSE(url2.SchemeIs(content::kChromeUIScheme));
+
+  // Assert that non-WebUI uses the user's defined custom prefs.
+  blink::web_pref::WebPreferences active_non_webui_prefs =
+      web_contents->GetOrCreateWebPreferences();
+  AssertFontPrefsEqual(custom_prefs, active_non_webui_prefs);
+
+  // Assert that transitioning from a non-WebUI URL to a WebUI URL in the same
+  // tab, uses the default prefs.
+  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIExtensionsURL));
+  const GURL url = web_contents->GetController().GetVisibleEntry()->GetURL();
+  ASSERT_TRUE(url.SchemeIs(content::kChromeUIScheme));
+  const blink::web_pref::WebPreferences default_prefs;
+  blink::web_pref::WebPreferences active_webui_prefs =
+      web_contents->GetOrCreateWebPreferences();
+  AssertFontPrefsEqual(default_prefs, active_webui_prefs);
 }

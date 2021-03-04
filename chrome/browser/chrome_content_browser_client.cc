@@ -3551,8 +3551,18 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     WebPreferences* prefs) {
-  return UpdatePreferredColorScheme(prefs, web_contents->GetLastCommittedURL(),
-                                    web_contents, GetWebTheme());
+  bool changed = false;
+  for (ChromeContentBrowserClientParts* parts : extra_parts_) {
+    changed =
+        parts->OverrideWebPreferencesAfterNavigation(web_contents, prefs) ||
+        changed;
+  }
+
+  changed =
+      UpdatePreferredColorScheme(prefs, web_contents->GetLastCommittedURL(),
+                                 web_contents, GetWebTheme()) ||
+      changed;
+  return changed;
 }
 
 void ChromeContentBrowserClient::BrowserURLHandlerCreated(

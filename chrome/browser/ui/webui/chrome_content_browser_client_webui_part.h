@@ -19,6 +19,9 @@ class ChromeContentBrowserClientWebUIPart
   // ChromeContentBrowserClientParts:
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) override;
+  bool OverrideWebPreferencesAfterNavigation(
+      content::WebContents* web_contents,
+      blink::web_pref::WebPreferences* web_prefs) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientWebUIPart);
