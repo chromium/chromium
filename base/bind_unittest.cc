@@ -826,8 +826,9 @@ struct RepeatingTestConfig {
   using ClosureType = RepeatingClosure;
 
   template <typename F, typename... Args>
-  static CallbackType<MakeUnboundRunType<F, Args...>>
-  Bind(F&& f, Args&&... args) {
+  static CallbackType<internal::MakeUnboundRunType<F, Args...>> Bind(
+      F&& f,
+      Args&&... args) {
     return BindRepeating(std::forward<F>(f), std::forward<Args>(args)...);
   }
 };
@@ -838,8 +839,9 @@ struct OnceTestConfig {
   using ClosureType = OnceClosure;
 
   template <typename F, typename... Args>
-  static CallbackType<MakeUnboundRunType<F, Args...>>
-  Bind(F&& f, Args&&... args) {
+  static CallbackType<internal::MakeUnboundRunType<F, Args...>> Bind(
+      F&& f,
+      Args&&... args) {
     return BindOnce(std::forward<F>(f), std::forward<Args>(args)...);
   }
 };

@@ -230,7 +230,7 @@ void WontCompile() {
   weak_ptr_with_non_void_return_type.Run();
 }
 
-#elif defined(NCTEST_DISALLOW_ASSIGN_DIFFERENT_TYPES)  // [r"fatal error: no viable conversion from 'RepeatingCallback<MakeUnboundRunType<void \(\*\)\(int\)>>' to 'RepeatingCallback<void \(\)>'"]
+#elif defined(NCTEST_DISALLOW_ASSIGN_DIFFERENT_TYPES)  // [r"fatal error: no viable conversion from 'RepeatingCallback<internal::MakeUnboundRunType<void \(\*\)\(int\)>>' to 'RepeatingCallback<void \(\)>'"]
 
 // Bind result cannot be assigned to Callbacks with a mismatching type.
 void WontCompile() {
