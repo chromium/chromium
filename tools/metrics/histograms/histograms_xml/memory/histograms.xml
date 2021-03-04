@@ -34,6 +34,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -64,6 +71,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -336,6 +350,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
 
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
@@ -367,6 +388,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1024,6 +1052,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the first page navigation, Y mins after the first page navigation]. (X, Y]
     is (0, 2], (2, 4], (4, 8], and (8, 16]. The metric is recorded at the Y's
     timing.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1044,6 +1079,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The peak RSS size(VmHMW) of a render process when the highest private memory
     footprint is observed after the first navigation start.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1140,6 +1182,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1162,6 +1211,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The renderer process' private memory footprint right before a memory
     pressure signal is generated.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1240,6 +1296,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1257,6 +1320,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1336,6 +1406,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
 
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
@@ -1364,6 +1441,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1511,6 +1595,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1546,6 +1637,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1697,6 +1795,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -1728,6 +1833,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -2233,6 +2345,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
 
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
+
     Do not modify this metric in any way without contacting
     speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
   </summary>
@@ -2251,6 +2370,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -2357,6 +2483,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
 
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
@@ -2370,6 +2503,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -2391,6 +2531,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     this cause some double accounting for the shared portion of the working set.
     As a result this metric doesn't give an exact representation of how much
     physical memory is used by Chrome.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -2427,6 +2574,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
 </histogram>
 
@@ -2457,6 +2611,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
   </summary>
 </histogram>
 
