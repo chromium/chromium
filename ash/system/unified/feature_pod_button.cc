@@ -64,7 +64,8 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
   // the same size as the content.
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   focus_ring()->SetPathGenerator(
-      std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
+      std::make_unique<views::CircleHighlightPathGenerator>(
+          kUnifiedFeaturePodHoverPadding));
   views::InstallCircleHighlightPathGenerator(this,
                                              kUnifiedFeaturePodIconPadding);
 }
