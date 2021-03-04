@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_USERS_MOCK_USER_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_USERS_MOCK_USER_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_USERS_MOCK_USER_MANAGER_H_
+#define CHROME_BROWSER_ASH_LOGIN_USERS_MOCK_USER_MANAGER_H_
 
 #include <string>
 
@@ -195,4 +195,4 @@ namespace ash {
 using ::chromeos::MockUserManager;
 }
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_USERS_MOCK_USER_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_USERS_MOCK_USER_MANAGER_H_

@@ -4,8 +4,8 @@
 
 // Constants for Chrome OS test user accounts.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_USERS_TEST_USERS_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_USERS_TEST_USERS_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_USERS_TEST_USERS_H_
+#define CHROME_BROWSER_ASH_LOGIN_USERS_TEST_USERS_H_
 
 namespace chromeos {
 
@@ -23,4 +23,4 @@ extern const char kFifthUserExampleTestEmail[];
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_USERS_TEST_USERS_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_USERS_TEST_USERS_H_

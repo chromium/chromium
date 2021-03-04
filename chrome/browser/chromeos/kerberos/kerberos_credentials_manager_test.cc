@@ -18,7 +18,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/chromeos/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

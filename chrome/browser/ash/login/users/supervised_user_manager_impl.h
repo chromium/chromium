@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_USERS_SUPERVISED_USER_MANAGER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_USERS_SUPERVISED_USER_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_USERS_SUPERVISED_USER_MANAGER_IMPL_H_
+#define CHROME_BROWSER_ASH_LOGIN_USERS_SUPERVISED_USER_MANAGER_IMPL_H_
 
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/users/supervised_user_manager.h"
+#include "chrome/browser/ash/login/users/supervised_user_manager.h"
 
 namespace chromeos {
 
@@ -82,4 +82,4 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_USERS_SUPERVISED_USER_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_USERS_SUPERVISED_USER_MANAGER_IMPL_H_

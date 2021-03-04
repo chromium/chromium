@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/users/supervised_user_manager.h"
+#include "chrome/browser/ash/login/users/supervised_user_manager.h"
 
 namespace chromeos {
 

@@ -13,7 +13,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #endif
 
 class Profile;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

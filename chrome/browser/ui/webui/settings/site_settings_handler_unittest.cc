@@ -69,7 +69,7 @@
 #include "ui/webui/webui_allowlist.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
