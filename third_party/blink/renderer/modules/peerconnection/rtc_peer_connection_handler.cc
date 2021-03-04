@@ -1588,7 +1588,7 @@ void RTCPeerConnectionHandler::AddICECandidate(
 
   auto callback_on_task_runner =
       [](base::WeakPtr<RTCPeerConnectionHandler> handler_weak_ptr,
-         CrossThreadPersistent<PeerConnectionTracker> tracker_weak_ptr,
+         CrossThreadPersistent<PeerConnectionTracker> tracker_ptr,
          std::unique_ptr<webrtc::SessionDescriptionInterface>
              pending_local_description,
          std::unique_ptr<webrtc::SessionDescriptionInterface>
@@ -1597,11 +1597,14 @@ void RTCPeerConnectionHandler::AddICECandidate(
              pending_remote_description,
          std::unique_ptr<webrtc::SessionDescriptionInterface>
              current_remote_description,
-         RTCIceCandidatePlatform* candidate, webrtc::RTCError result,
-         RTCVoidRequest* request) {
+         CrossThreadPersistent<RTCIceCandidatePlatform> candidate,
+         webrtc::RTCError result, RTCVoidRequest* request) {
         // Inform tracker (chrome://webrtc-internals).
-        if (handler_weak_ptr && tracker_weak_ptr) {
-          tracker_weak_ptr->TrackAddIceCandidate(
+        // Note that because the WTF::CrossThreadBindOnce() below uses a
+        // CrossThreadWeakPersistent when binding |tracker_ptr| this lambda may
+        // be invoked with a null |tracker_ptr| so we have to guard against it.
+        if (handler_weak_ptr && tracker_ptr) {
+          tracker_ptr->TrackAddIceCandidate(
               handler_weak_ptr.get(), candidate,
               PeerConnectionTracker::SOURCE_REMOTE, result.ok());
         }
