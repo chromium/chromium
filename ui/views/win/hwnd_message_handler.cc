@@ -994,6 +994,8 @@ LRESULT HWNDMessageHandler::OnWndProc(UINT message,
                 perfetto::protos::pbzero::ChromeWindowHandleEventInfo* args =
                     ctx.event()->set_chrome_window_handle_event_info();
                 args->set_message_id(message);
+                args->set_hwnd_ptr(
+                    static_cast<uint64_t>(reinterpret_cast<uintptr_t>(hwnd())));
               });
 
   HWND window = hwnd();
