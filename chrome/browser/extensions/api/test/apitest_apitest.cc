@@ -13,7 +13,7 @@ namespace extensions {
 
 namespace {
 
-constexpr char kManifestStub[] =
+constexpr char kBackgroundScriptManifestStub[] =
     R"({
          "name": "extension",
          "version": "0.1",
@@ -21,15 +21,39 @@ constexpr char kManifestStub[] =
          "background": { "scripts": ["background.js"] }
        })";
 
+constexpr char kWorkerScriptManifestStub[] =
+    R"({
+         "name": "extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "background": { "service_worker": "worker.js" }
+       })";
+
+// NOTE(devlin): When running tests using the chrome.tests.runTests API, it's
+// not possible to validate the failure message of individual sub-tests using
+// the ResultCatcher interface. This is because the test suite always fail with
+// an error message like `kExpectedFailureMessage` below without any
+// information about the failure of the individual sub-tests. If we expand this
+// suite significantly, we should investigate having more information available
+// on the C++ side, so that we can assert failures with more specificity.
+// TODO(devlin): Investigate using WebContentsConsoleObserver to watch for
+// specific errors / patterns.
+constexpr char kExpectedFailureMessage[] = "Failed 1 of 1 tests";
+
 }  // namespace
 
 class TestAPITest : public ExtensionApiTest {
  public:
   ~TestAPITest() override = default;
 
-  // Loads and returns an extension with the given |background_script|.
+  // Loads and returns an extension with the given |background_script| as a
+  // manifest v2 extension.
   const Extension* LoadExtensionWithBackgroundScript(
       const char* background_script);
+
+  // Loads and returns an extension with the given |worker_script| as a manifest
+  // v3 extension.
+  const Extension* LoadExtensionWithWorkerScript(const char* worker_script);
 
  private:
   std::vector<std::unique_ptr<TestExtensionDir>> test_dirs_;
@@ -38,8 +62,18 @@ class TestAPITest : public ExtensionApiTest {
 const Extension* TestAPITest::LoadExtensionWithBackgroundScript(
     const char* background_script) {
   auto test_dir = std::make_unique<TestExtensionDir>();
-  test_dir->WriteManifest(kManifestStub);
+  test_dir->WriteManifest(kBackgroundScriptManifestStub);
   test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), background_script);
+  const Extension* extension = LoadExtension(test_dir->UnpackedPath());
+  test_dirs_.push_back(std::move(test_dir));
+  return extension;
+}
+
+const Extension* TestAPITest::LoadExtensionWithWorkerScript(
+    const char* worker_script) {
+  auto test_dir = std::make_unique<TestExtensionDir>();
+  test_dir->WriteManifest(kWorkerScriptManifestStub);
+  test_dir->WriteFile(FILE_PATH_LITERAL("worker.js"), worker_script);
   const Extension* extension = LoadExtension(test_dir->UnpackedPath());
   test_dirs_.push_back(std::move(test_dir));
   return extension;
@@ -66,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, FailedAssertsInPromises) {
          ]);)";
   ASSERT_TRUE(LoadExtensionWithBackgroundScript(kBackgroundJs));
   EXPECT_FALSE(result_catcher.GetNextResult());
-  EXPECT_EQ("Failed 1 of 1 tests", result_catcher.message());
+  EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
 
 // Verifies that using await and assert'ing aspects of the results succeeds.
@@ -102,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_Failed) {
          ]);)";
   ASSERT_TRUE(LoadExtensionWithBackgroundScript(kBackgroundJs));
   EXPECT_FALSE(result_catcher.GetNextResult());
-  EXPECT_EQ("Failed 1 of 1 tests", result_catcher.message());
+  EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
 
 // Verifies that we can assert values on chrome.runtime.lastError after using
@@ -123,6 +157,77 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_LastError) {
          ]);)";
   ASSERT_TRUE(LoadExtensionWithBackgroundScript(kBackgroundJs));
   EXPECT_TRUE(result_catcher.GetNextResult());
+}
+
+// Verifies that chrome.test.assertPromiseRejects() succeeds using
+// promises that reject with the expected message.
+IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_Successful) {
+  ResultCatcher result_catcher;
+  constexpr char kWorkerJs[] =
+      R"(const TEST_ERROR = 'Expected Error';
+         chrome.test.runTests([
+           async function successfulAssert_PromiseAlreadyRejected() {
+             let p = Promise.reject(TEST_ERROR);
+             await chrome.test.assertPromiseRejects(p, TEST_ERROR);
+             chrome.test.succeed();
+           },
+           async function successfulAssert_PromiseRejectedLater() {
+             let rejectPromise;
+             let p = new Promise(
+                 (resolve, reject) => { rejectPromise = reject; });
+             let assertPromise =
+                 chrome.test.assertPromiseRejects(p, TEST_ERROR);
+             rejectPromise(TEST_ERROR);
+             assertPromise.then(() => {
+               chrome.test.succeed();
+             }).catch(e => {
+               chrome.test.fail(e);
+             });
+           },
+           async function successfulAssert_RegExpMatching() {
+             const regexp = /.*pect.*rror/;
+             chrome.test.assertTrue(regexp.test(TEST_ERROR));
+             let p = Promise.reject(TEST_ERROR);
+             await chrome.test.assertPromiseRejects(p, regexp);
+             chrome.test.succeed();
+           },
+         ]);)";
+  ASSERT_TRUE(LoadExtensionWithWorkerScript(kWorkerJs));
+  EXPECT_TRUE(result_catcher.GetNextResult());
+}
+
+// Tests that chrome.test.assertPromiseRejects() properly fails the test when
+// the promise is rejected with an improper message.
+IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_WrongErrorMessage) {
+  ResultCatcher result_catcher;
+  constexpr char kWorkerJs[] =
+      R"(chrome.test.runTests([
+           async function failedAssert_WrongErrorMessage() {
+             let p = Promise.reject('Wrong Error');
+             await chrome.test.assertPromiseRejects(p, 'Expected Error');
+             chrome.test.succeed();
+           },
+         ]);)";
+  ASSERT_TRUE(LoadExtensionWithWorkerScript(kWorkerJs));
+  EXPECT_FALSE(result_catcher.GetNextResult());
+  EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
+}
+
+// Tests that chrome.test.assertPromiseRejects() properly fails the test when
+// the promise resolves instead of rejects.
+IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_PromiseResolved) {
+  ResultCatcher result_catcher;
+  constexpr char kWorkerJs[] =
+      R"(chrome.test.runTests([
+           async function failedAssert_PromiseResolved() {
+             let p = Promise.resolve(42);
+             await chrome.test.assertPromiseRejects(p, 'Expected Error');
+             chrome.test.succeed();
+           },
+         ]);)";
+  ASSERT_TRUE(LoadExtensionWithWorkerScript(kWorkerJs));
+  EXPECT_FALSE(result_catcher.GetNextResult());
+  EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
 
 }  // namespace extensions

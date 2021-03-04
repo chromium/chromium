@@ -284,6 +284,25 @@ apiBridge.registerCustomHook(function(api) {
     }
   });
 
+  apiFunctions.setHandleRequest('assertPromiseRejects',
+                                function(promise, expectedMessage) {
+    return promise.then(
+        () => {
+          chromeTest.fail(
+              'Promise did not reject. Expected error: ' + expectedMessage);
+        },
+        (e) => {
+          if (expectedMessage instanceof RegExp) {
+            chromeTest.assertTrue(
+                expectedMessage.test(e.toString()),
+                `"${e.message}" should match "${expectedMessage}"`);
+          } else {
+            chromeTest.assertEq('string', typeof expectedMessage);
+            chromeTest.assertEq(expectedMessage, e.toString());
+          }
+        });
+  });
+
   // Wrapper for generating test functions, that takes care of calling
   // assertNoLastError() and (optionally) succeed() for you.
   apiFunctions.setHandleRequest('callback', function(func, expectedError) {
