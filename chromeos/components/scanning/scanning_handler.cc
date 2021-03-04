@@ -58,6 +58,42 @@ void ScanningHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
+void ScanningHandler::FileSelected(const base::FilePath& path,
+                                   int index,
+                                   void* params) {
+  if (!IsJavascriptAllowed())
+    return;
+
+  ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
+                            CreateSelectedPathValue(path));
+}
+
+void ScanningHandler::FileSelectionCanceled(void* params) {
+  if (!IsJavascriptAllowed())
+    return;
+
+  ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
+                            CreateSelectedPathValue(base::FilePath()));
+}
+
+base::Value ScanningHandler::CreateSelectedPathValue(
+    const base::FilePath& path) {
+  base::Value selected_path(base::Value::Type::DICTIONARY);
+  selected_path.SetStringKey(kFilePath, path.value());
+  selected_path.SetStringKey(
+      kBaseName, scanning_paths_provider_->GetBaseNameFromPath(web_ui(), path));
+  return selected_path;
+}
+
+void ScanningHandler::AddStringToPluralMap(const std::string& name,
+                                           int string_id) {
+  string_id_map_[name] = string_id;
+}
+
+void ScanningHandler::SetWebUIForTest(content::WebUI* web_ui) {
+  set_web_ui(web_ui);
+}
+
 void ScanningHandler::HandleInitialize(const base::ListValue* args) {
   DCHECK(args && args->empty());
   AllowJavascript();
@@ -93,29 +129,6 @@ void ScanningHandler::HandleShowFileInLocation(const base::ListValue* args) {
   ResolveJavascriptCallback(base::Value(callback), base::Value(file_opened));
 }
 
-void ScanningHandler::FileSelected(const base::FilePath& path,
-                                   int index,
-                                   void* params) {
-  if (!IsJavascriptAllowed())
-    return;
-
-  ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
-                            CreateSelectedPathValue(path));
-}
-
-void ScanningHandler::FileSelectionCanceled(void* params) {
-  if (!IsJavascriptAllowed())
-    return;
-
-  ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
-                            CreateSelectedPathValue(base::FilePath()));
-}
-
-void ScanningHandler::AddStringToPluralMap(const std::string& name,
-                                           int string_id) {
-  string_id_map_[name] = string_id;
-}
-
 void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
   if (!IsJavascriptAllowed())
     return;
@@ -142,22 +155,6 @@ void ScanningHandler::HandleGetMyFilesPath(const base::ListValue* args) {
       scanning_paths_provider_->GetMyFilesPath(web_ui());
   ResolveJavascriptCallback(base::Value(callback),
                             base::Value(my_files_path.value()));
-}
-
-// Uses the full filepath and the base directory (lowest level directory in the
-// filepath, used to display in the UI) to create a Value object to return to
-// the Scanning UI.
-base::Value ScanningHandler::CreateSelectedPathValue(
-    const base::FilePath& path) {
-  base::Value selected_path(base::Value::Type::DICTIONARY);
-  selected_path.SetStringKey(kFilePath, path.value());
-  selected_path.SetStringKey(
-      kBaseName, scanning_paths_provider_->GetBaseNameFromPath(web_ui(), path));
-  return selected_path;
-}
-
-void ScanningHandler::SetWebUIForTest(content::WebUI* web_ui) {
-  set_web_ui(web_ui);
 }
 
 }  // namespace chromeos
