@@ -2479,11 +2479,7 @@ enum WebFeature {
 
   kLargeStickyAd = 3155,
   kCSSComparisonFunctions = 3157,
-  // Triggered if the proposed change in
-  // https://github.com/w3c/webappsec-feature-policy/issues/357 would cause the
-  // use of a feature to be denied in a document in which it is currently
-  // allowed. See https://crbug.com/937131.
-  kFeaturePolicyProposalWouldChangeBehaviour = 3158,
+  kOBSOLETE_FeaturePolicyProposalWouldChangeBehaviour = 3158,
   kRTCLocalSdpModificationSimulcast = 3159,
   kTrustedTypesEnabledEnforcing = 3160,
   kTrustedTypesEnabledReportOnly = 3161,

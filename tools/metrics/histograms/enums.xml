@@ -31002,7 +31002,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3155" label="LargeStickyAd"/>
   <int value="3156" label="ObsoleteOverlayInterstitialAd"/>
   <int value="3157" label="CSSComparisonFunctions"/>
-  <int value="3158" label="FeaturePolicyProposalWouldChangeBehaviour"/>
+  <int value="3158" label="OBSOLETE_FeaturePolicyProposalWouldChangeBehaviour"/>
   <int value="3159" label="RTCLocalSdpModificationSimulcast"/>
   <int value="3160" label="TrustedTypesEnabledEnforcing"/>
   <int value="3161" label="TrustedTypesEnabledReportOnly"/>

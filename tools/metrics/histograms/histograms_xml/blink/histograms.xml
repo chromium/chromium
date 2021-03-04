@@ -2461,6 +2461,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.UseCounter.FeaturePolicy.ProposalWouldChangeBehaviour"
     enum="FeaturePolicyFeature" expires_after="2021-03-07">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
