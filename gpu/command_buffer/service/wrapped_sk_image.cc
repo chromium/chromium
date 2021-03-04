@@ -52,14 +52,13 @@ SkImageInfo MakeSkImageInfo(const gfx::Size& size, viz::ResourceFormat format) {
 class WrappedSkImage : public ClearTrackingSharedImageBacking {
  public:
   ~WrappedSkImage() override {
+    context_state_->MakeCurrent(nullptr);
     promise_texture_.reset();
     context_state_->EraseCachedSkSurface(this);
 
     if (backend_texture_.isValid())
       DeleteGrBackendTexture(context_state_.get(), &backend_texture_);
 
-    DCHECK(context_state_->context_lost() ||
-           context_state_->IsCurrent(nullptr));
     if (!context_state_->context_lost())
       context_state_->set_need_context_state_reset(true);
   }
