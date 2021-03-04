@@ -243,6 +243,9 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kPluginVmAllowed[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kPluginVmLicenseKey[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kBorealisAllowedForDevice[];
+
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceRebootOnUserSignout[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)

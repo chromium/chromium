@@ -1762,6 +1762,11 @@ message DevicePciPeripheralDataAccessEnabledProto {
   optional bool enabled = 1 [default = false];
 }
 
+// Setting that controls whether Borealis will be allowed on the device.
+message DeviceBorealisAllowedProto {
+  optional bool allowed = 1 [default = true];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1914,4 +1919,5 @@ message ChromeDeviceSettingsProto {
       device_system_wide_tracing_enabled = 117;
   optional DevicePciPeripheralDataAccessEnabledProto
       device_pci_peripheral_data_access_enabled = 118;
+  optional DeviceBorealisAllowedProto device_borealis_allowed = 119;
 }

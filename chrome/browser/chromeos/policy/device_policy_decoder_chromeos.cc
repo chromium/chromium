@@ -1919,6 +1919,14 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_device_borealis_allowed() &&
+      policy.device_borealis_allowed().has_allowed()) {
+    policies->Set(key::kDeviceBorealisAllowed, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  base::Value(policy.device_borealis_allowed().allowed()),
+                  nullptr);
+  }
 }
 
 }  // namespace

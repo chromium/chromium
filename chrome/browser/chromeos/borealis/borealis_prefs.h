@@ -14,6 +14,10 @@ namespace prefs {
 // on the device.
 extern const char kBorealisInstalledOnDevice[];
 
+// A boolean preference for managing whether borealis is allowed for the user
+// (mainly used by enterprises).
+extern const char kBorealisAllowedForUser[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs

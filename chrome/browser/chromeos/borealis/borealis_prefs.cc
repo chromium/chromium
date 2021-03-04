@@ -10,8 +10,11 @@ namespace prefs {
 
 const char kBorealisInstalledOnDevice[] = "borealis.installed_on_device";
 
+const char kBorealisAllowedForUser[] = "borealis.allowed_for_user";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kBorealisInstalledOnDevice, false);
+  registry->RegisterBooleanPref(kBorealisAllowedForUser, true);
 }
 
 }  // namespace prefs

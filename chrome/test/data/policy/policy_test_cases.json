@@ -5534,6 +5534,18 @@
     ]
   },
 
+  "UserBorealisAllowed": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "UserBorealisAllowed": false
+        },
+        "prefs": { "borealis.allowed_for_user": { "value": false } }
+      }
+    ]
+  },
+
   "----- Chrome OS device policies ---------------------------------------": {},
 
   "DevicePolicyRefreshRate": {
@@ -7460,6 +7472,18 @@
         "prefs": {
           "arc.snapshot_hours": { "location": "local_state" }
         }
+      }
+    ]
+  },
+
+  "DeviceBorealisAllowed": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceBorealisAllowed": false
+        },
+        "prefs": { "cros.device.borealis_allowed": { "value": false } }
       }
     ]
   },

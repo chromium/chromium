@@ -72,6 +72,7 @@ const char* const kKnownSettings[] = {
     kAllowedConnectionTypesForUpdate,
     kAllowRedeemChromeOsRegistrationOffers,
     kAttestationForContentProtectionEnabled,
+    kBorealisAllowedForDevice,
     kCastReceiverName,
     kDeviceAttestationEnabled,
     kDeviceAutoUpdateTimeRestrictions,
@@ -1059,6 +1060,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       allowlist.Append(std::move(ids));
     }
     new_values_cache->SetValue(kUsbDetachableAllowlist, std::move(allowlist));
+  }
+
+  if (policy.has_device_borealis_allowed()) {
+    const em::DeviceBorealisAllowedProto& container(
+        policy.device_borealis_allowed());
+    if (container.has_allowed()) {
+      new_values_cache->SetValue(kBorealisAllowedForDevice,
+                                 base::Value(container.allowed()));
+    }
   }
 }
 
