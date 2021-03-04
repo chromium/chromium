@@ -1,5 +1,6 @@
 include_rules = [
   "+components/services/app_service/public",
+  "+components/full_restore/full_restore_utils.h",
 ]
 
 specific_include_rules = {

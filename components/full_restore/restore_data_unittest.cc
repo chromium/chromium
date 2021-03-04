@@ -289,8 +289,12 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
   ModifyWindowInfos();
   VerifyRestoreData(restore_data());
 
+  EXPECT_TRUE(restore_data().HasAppRestoreData(kAppId1, kWindowId1));
+
   // Remove kAppId1's kWindowId1.
   restore_data().RemoveAppRestoreData(kAppId1, kWindowId1);
+
+  EXPECT_FALSE(restore_data().HasAppRestoreData(kAppId1, kWindowId1));
 
   EXPECT_EQ(2u, app_id_to_launch_list().size());
 
@@ -309,8 +313,12 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
 
   EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
 
+  EXPECT_TRUE(restore_data().HasAppRestoreData(kAppId1, kWindowId2));
+
   // Remove kAppId1's kWindowId2.
   restore_data().RemoveAppRestoreData(kAppId1, kWindowId2);
+
+  EXPECT_FALSE(restore_data().HasAppRestoreData(kAppId1, kWindowId2));
 
   EXPECT_EQ(1u, app_id_to_launch_list().size());
 
@@ -324,10 +332,32 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
 
   EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
 
+  EXPECT_TRUE(restore_data().HasAppRestoreData(kAppId2, kWindowId3));
+
   // Remove kAppId2's kWindowId3.
   restore_data().RemoveAppRestoreData(kAppId2, kWindowId3);
 
+  EXPECT_FALSE(restore_data().HasAppRestoreData(kAppId2, kWindowId3));
+
   EXPECT_EQ(0u, app_id_to_launch_list().size());
+}
+
+TEST_F(RestoreDataTest, RemoveWindowInfo) {
+  AddAppLaunchInfos();
+  ModifyWindowInfos();
+  VerifyRestoreData(restore_data());
+
+  // Remove kAppId1.
+  restore_data().RemoveWindowInfo(kAppId1, kWindowId1);
+
+  auto window_info = restore_data().GetWindowInfo(kAppId1, kWindowId1);
+  EXPECT_TRUE(window_info);
+  EXPECT_FALSE(window_info->activation_index.has_value());
+  EXPECT_FALSE(window_info->desk_id.has_value());
+  EXPECT_FALSE(window_info->visible_on_all_workspaces.has_value());
+  EXPECT_FALSE(window_info->restore_bounds.has_value());
+  EXPECT_FALSE(window_info->current_bounds.has_value());
+  EXPECT_FALSE(window_info->window_state_type.has_value());
 }
 
 TEST_F(RestoreDataTest, RemoveApp) {

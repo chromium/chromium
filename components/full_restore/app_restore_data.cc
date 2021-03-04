@@ -301,6 +301,15 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
     display_id = window_info.display_id.value();
 }
 
+void AppRestoreData::ClearWindowInfo() {
+  activation_index.reset();
+  desk_id.reset();
+  visible_on_all_workspaces.reset();
+  restore_bounds.reset();
+  current_bounds.reset();
+  window_state_type.reset();
+}
+
 std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
   auto window_info = std::make_unique<WindowInfo>();
 

@@ -57,8 +57,11 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   // }
   base::Value ConvertToValue() const;
 
-  // Modify the window's information based on |window_info|.
+  // Modifies the window's information based on |window_info|.
   void ModifyWindowInfo(const WindowInfo& window_info);
+
+  // Clears the window's information.
+  void ClearWindowInfo();
 
   // Gets the window information.
   std::unique_ptr<WindowInfo> GetWindowInfo() const;

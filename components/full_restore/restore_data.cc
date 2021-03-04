@@ -82,6 +82,15 @@ base::Value RestoreData::ConvertToValue() const {
   return restore_data_dict;
 }
 
+bool RestoreData::HasAppRestoreData(const std::string& app_id,
+                                    int32_t window_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return false;
+
+  return base::Contains(it->second, window_id);
+}
+
 void RestoreData::AddAppLaunchInfo(
     std::unique_ptr<AppLaunchInfo> app_launch_info) {
   if (!app_launch_info || !app_launch_info->window_id.has_value())
@@ -132,6 +141,18 @@ void RestoreData::RemoveAppRestoreData(const std::string& app_id,
   app_id_to_launch_list_[app_id].erase(window_id);
   if (app_id_to_launch_list_[app_id].empty())
     app_id_to_launch_list_.erase(app_id);
+}
+
+void RestoreData::RemoveWindowInfo(const std::string& app_id, int window_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return;
+
+  auto data_it = it->second.find(window_id);
+  if (data_it == it->second.end())
+    return;
+
+  data_it->second->ClearWindowInfo();
 }
 
 void RestoreData::RemoveApp(const std::string& app_id) {

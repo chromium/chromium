@@ -57,9 +57,21 @@ void FullRestoreSaveHandler::SetActiveProfilePath(
 }
 
 void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
-  // TODO(crbug.com/1146900): Handle ARC app windows.
-
   int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::ARC_APP)) {
+    task_id_to_app_window_info_[window_id].window = window;
+    observed_windows_.AddObservation(window);
+
+    // If the task id has an app id, OnTaskCreated has been invoked, and the app
+    // launch info has been saved, so OnAppLaunched can be called to save the
+    // window info.
+    if (!task_id_to_app_window_info_[window_id].app_id.empty())
+      FullRestoreInfo::GetInstance()->OnAppLaunched(window);
+
+    return;
+  }
 
   if (!SessionID::IsValidValue(window_id))
     return;
@@ -99,12 +111,23 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
 }
 
 void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
-  // TODO(crbug.com/1146900): Handle ARC app windows.
-
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
 
   int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::ARC_APP)) {
+    auto it = task_id_to_app_window_info_.find(window_id);
+    if (it != task_id_to_app_window_info_.end()) {
+      // The window could be recreated, so only remove the window info. When the
+      // task is destroyed, the full restore data can be removed.
+      it->second.window = nullptr;
+      RemoveWindowInfo(it->second.app_id, window_id);
+    }
+    return;
+  }
+
   DCHECK(SessionID::IsValidValue(window_id));
 
   RemoveAppRestoreData(window_id);
@@ -164,28 +187,19 @@ void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
 
   if (window_info.window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
-    // TODO(crbug.com/1146900): Handle ARC app windows.
+    ModifyWindowInfo(window_id, window_info);
     return;
   }
 
   if (!SessionID::IsValidValue(window_id))
     return;
 
-  auto it = window_id_to_app_restore_info_.find(window_id);
-  if (it == window_id_to_app_restore_info_.end())
-    return;
-
-  profile_path_to_restore_data_[it->second.first].ModifyWindowInfo(
-      it->second.second, window_id, window_info);
-
-  pending_save_profile_paths_.insert(it->second.first);
-
-  MaybeStartSaveTimer();
+  ModifyWindowInfo(window_id, window_info);
 }
 
 void FullRestoreSaveHandler::OnTaskCreated(const std::string app_id,
                                            int task_id) {
-  task_id_to_app_id_[task_id] = app_id;
+  task_id_to_app_window_info_[task_id].app_id = app_id;
 
   auto it = app_id_to_app_launch_infos_.find(app_id);
   if (it == app_id_to_app_launch_infos_.end())
@@ -202,11 +216,18 @@ void FullRestoreSaveHandler::OnTaskCreated(const std::string app_id,
     app_id_to_app_launch_infos_.erase(it);
 
   AddAppLaunchInfo(primary_profile_path_, std::move(app_launch_info));
+
+  // If the window has been created, OnAppLaunched can be called to save the
+  // window info.
+  if (task_id_to_app_window_info_[task_id].window) {
+    FullRestoreInfo::GetInstance()->OnAppLaunched(
+        task_id_to_app_window_info_[task_id].window);
+  }
 }
 
 void FullRestoreSaveHandler::OnTaskDestroyed(int task_id) {
   RemoveAppRestoreData(task_id);
-  task_id_to_app_id_.erase(task_id);
+  task_id_to_app_window_info_.erase(task_id);
 }
 
 void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
@@ -298,6 +319,28 @@ void FullRestoreSaveHandler::AddAppLaunchInfo(
   MaybeStartSaveTimer();
 }
 
+void FullRestoreSaveHandler::ModifyWindowInfo(int window_id,
+                                              const WindowInfo& window_info) {
+  auto it = window_id_to_app_restore_info_.find(window_id);
+  if (it == window_id_to_app_restore_info_.end())
+    return;
+
+  const auto& profile_path = it->second.first;
+  const auto& app_id = it->second.second;
+  auto restore_data_it = profile_path_to_restore_data_.find(profile_path);
+  if (restore_data_it == profile_path_to_restore_data_.end() ||
+      !restore_data_it->second.HasAppRestoreData(app_id, window_id)) {
+    return;
+  }
+
+  profile_path_to_restore_data_[profile_path].ModifyWindowInfo(
+      app_id, window_id, window_info);
+
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
 void FullRestoreSaveHandler::RemoveAppRestoreData(int window_id) {
   auto it = window_id_to_app_restore_info_.find(window_id);
   if (it == window_id_to_app_restore_info_.end())
@@ -311,6 +354,18 @@ void FullRestoreSaveHandler::RemoveAppRestoreData(int window_id) {
   window_id_to_app_restore_info_.erase(it);
 
   MaybeStartSaveTimer();
+}
+
+void FullRestoreSaveHandler::RemoveWindowInfo(const std::string& app_id,
+                                              int window_id) {
+  if (app_id.empty())
+    return;
+
+  auto it = profile_path_to_restore_data_.find(primary_profile_path_);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  it->second.RemoveWindowInfo(app_id, window_id);
 }
 
 }  // namespace full_restore

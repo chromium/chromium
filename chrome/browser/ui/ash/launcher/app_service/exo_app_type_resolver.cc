@@ -11,6 +11,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/arc/arc_util.h"
 #include "components/exo/permission.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/class_property.h"
 
@@ -36,9 +37,6 @@ void ExoAppTypeResolver::PopulateProperties(
     out_properties_container.SetProperty(
         exo::kPermissionKey,
         new exo::Permission(exo::Permission::Capability::kActivate));
-  } else if (arc::GetTaskIdFromWindowAppId(app_id) != arc::kNoTaskId) {
-    out_properties_container.SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
   } else if (borealis::BorealisWindowManager::IsBorealisWindowId(
                  app_id.empty() ? startup_id : app_id)) {
     // TODO(b/165865831): Stop using CROSTINI_APP for borealis windows.
@@ -49,4 +47,12 @@ void ExoAppTypeResolver::PopulateProperties(
     out_properties_container.SetProperty(chromeos::kAutoMaximizeXdgShellEnabled,
                                          false);
   }
+
+  int task_id = arc::GetTaskIdFromWindowAppId(app_id);
+  if (task_id == arc::kNoTaskId)
+    return;
+
+  out_properties_container.SetProperty(aura::client::kAppType,
+                                       static_cast<int>(ash::AppType::ARC_APP));
+  out_properties_container.SetProperty(full_restore::kWindowIdKey, task_id);
 }

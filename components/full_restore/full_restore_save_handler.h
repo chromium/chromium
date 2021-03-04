@@ -82,6 +82,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
  private:
+  struct AppWindowInfo {
+    std::string app_id;
+    aura::Window* window;
+  };
+
   using AppLaunchInfoPtr = std::unique_ptr<AppLaunchInfo>;
 
   // Map from a profile path to AppLaunchInfos.
@@ -101,12 +106,20 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   base::SequencedTaskRunner* BackendTaskRunner(
       const base::FilePath& profile_path);
 
-  // Add |app_launch_info| to |app_id_to_launch_list_|.
+  // Saves |app_launch_info| to |profile_path_to_file_handler_| for
+  // |profile_path| which will be written to the full restore file, if
+  // |app_launch_info| has a window_id.
   void AddAppLaunchInfo(const base::FilePath& profile_path,
                         AppLaunchInfoPtr app_launch_info);
 
+  // Saves |window_info| to |profile_path_to_file_handler_|.
+  void ModifyWindowInfo(int window_id, const WindowInfo& window_info);
+
   // Removes AppRestoreData for |window_id|.
   void RemoveAppRestoreData(int window_id);
+
+  // Removes WindowInfo for |app_id| and |window_id|.
+  void RemoveWindowInfo(const std::string& app_id, int window_id);
 
   // Records whether there are new updates for saving between each saving delay.
   // |pending_save_profile_paths_| is cleared when Save is invoked.
@@ -132,6 +145,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   // The map from the task id to the app id for ARC apps.
   std::map<int, std::string> task_id_to_app_id_;
+
+  // The map from the task id to the AppWindowInfo for ARC apps.
+  std::map<int, AppWindowInfo> task_id_to_app_window_info_;
 
   // The current active user profile path.
   base::FilePath active_profile_path_;

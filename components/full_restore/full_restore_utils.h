@@ -27,6 +27,8 @@ struct AppLaunchInfo;
 struct WindowInfo;
 
 // A property key to indicate the id for the window to be saved in RestoreData.
+// For web apps, browser windows or Chrome app windows, this is the session id.
+// For ARC apps, this is the task id.
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kWindowIdKey;
 
