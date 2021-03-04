@@ -1921,4 +1921,9 @@ void RenderThreadImpl::SetRenderingColorSpace(
   }
 }
 
+gfx::ColorSpace RenderThreadImpl::GetRenderingColorSpace() {
+  DCHECK(IsMainThread());
+  return rendering_color_space_;
+}
+
 }  // namespace content

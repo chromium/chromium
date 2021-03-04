@@ -33,6 +33,10 @@ namespace rtc {
 class Thread;
 }
 
+namespace gfx {
+class ColorSpace;
+}
+
 namespace blink {
 
 class IpcNetworkManager;
@@ -144,6 +148,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   void CreatePeerConnectionFactory();
 
   void InitializeSignalingThread(
+      const gfx::ColorSpace& render_color_space,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       media::GpuVideoAcceleratorFactories* gpu_factories,
       media::DecoderFactory* media_decoder_factory,
       base::WaitableEvent* event);

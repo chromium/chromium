@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/stun_field_trial.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/call/call_factory_interface.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -257,6 +258,8 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
       CrossThreadBindOnce(
           &PeerConnectionDependencyFactory::InitializeSignalingThread,
           CrossThreadUnretained(this),
+          Platform::Current()->GetRenderingColorSpace(),
+          Platform::Current()->MediaThreadTaskRunner(),
           CrossThreadUnretained(Platform::Current()->GetGpuFactories()),
           CrossThreadUnretained(Platform::Current()->GetMediaDecoderFactory()),
           CrossThreadUnretained(&start_signaling_event)));
@@ -266,6 +269,8 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 }
 
 void PeerConnectionDependencyFactory::InitializeSignalingThread(
+    const gfx::ColorSpace& render_color_space,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     media::GpuVideoAcceleratorFactories* gpu_factories,
     media::DecoderFactory* media_decoder_factory,
     base::WaitableEvent* event) {
@@ -320,8 +325,9 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
       blink::CreateWebrtcVideoEncoderFactory(gpu_factories);
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
-      blink::CreateWebrtcVideoDecoderFactory(gpu_factories,
-                                             media_decoder_factory);
+      blink::CreateWebrtcVideoDecoderFactory(
+          gpu_factories, media_decoder_factory, std::move(media_task_runner),
+          render_color_space);
 
   // Enable Multiplex codec in SDP optionally.
   if (base::FeatureList::IsEnabled(blink::features::kWebRtcMultiplexCodec)) {

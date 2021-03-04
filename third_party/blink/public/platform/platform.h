@@ -754,6 +754,8 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   virtual void SetRenderingColorSpace(const gfx::ColorSpace& color_space) {}
 
+  virtual gfx::ColorSpace GetRenderingColorSpace() const { return {}; }
+
   // Renderer Memory Metrics ----------------------------------------------
 
   virtual void RecordMetricsForBackgroundedRendererPurge() {}

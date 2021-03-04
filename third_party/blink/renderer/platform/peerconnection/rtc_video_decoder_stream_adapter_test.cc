@@ -134,24 +134,18 @@ class DecodedImageCallback : public webrtc::DecodedImageCallback {
 
 }  // namespace
 
-class RTCVideoDecoderStreamAdapterTest : public ::testing::Test {
+class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
  public:
   RTCVideoDecoderStreamAdapterTest()
       : task_environment_(
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
         media_thread_task_runner_(
             base::ThreadPool::CreateSequencedTaskRunner({})),
+        use_hw_decoders_(GetParam()),
         decoded_image_callback_(decoded_cb_.Get()),
         sdp_format_(webrtc::SdpVideoFormat(
             webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecVP9))) {
     decoder_factory_ = std::make_unique<MockDecoderFactory>();
-
-    ON_CALL(gpu_factories_, GetTaskRunner())
-        .WillByDefault(Return(media_thread_task_runner_));
-    EXPECT_CALL(gpu_factories_, GetTaskRunner()).Times(AtLeast(0));
-    EXPECT_CALL(gpu_factories_, GetRenderingColorSpace())
-        .Times(AtLeast(0))
-        .WillRepeatedly(ReturnRef(rendering_colorspace_));
   }
 
   ~RTCVideoDecoderStreamAdapterTest() override {
@@ -190,7 +184,8 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::Test {
                     ? media::OkStatus()
                     : media::Status(media::StatusCode::kCodeOnlyForTesting))));
     adapter_ = RTCVideoDecoderStreamAdapter::Create(
-        &gpu_factories_, decoder_factory_.get(), sdp_format_);
+        use_hw_decoders_ ? &gpu_factories_ : nullptr, decoder_factory_.get(),
+        media_thread_task_runner_, gfx::ColorSpace{}, sdp_format_);
     return !!adapter_;
   }
 
@@ -256,6 +251,7 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> media_thread_task_runner_;
 
+  const bool use_hw_decoders_;
   StrictMock<media::MockGpuVideoAcceleratorFactories> gpu_factories_{
       nullptr /* SharedImageInterface* */};
   std::unique_ptr<MockDecoderFactory> decoder_factory_;
@@ -276,14 +272,15 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(RTCVideoDecoderStreamAdapterTest);
 };
 
-TEST_F(RTCVideoDecoderStreamAdapterTest, Create_UnknownFormat) {
+TEST_P(RTCVideoDecoderStreamAdapterTest, Create_UnknownFormat) {
   auto adapter = RTCVideoDecoderAdapter::Create(
-      &gpu_factories_, webrtc::SdpVideoFormat(webrtc::CodecTypeToPayloadString(
-                           webrtc::kVideoCodecGeneric)));
+      use_hw_decoders_ ? &gpu_factories_ : nullptr,
+      webrtc::SdpVideoFormat(
+          webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecGeneric)));
   ASSERT_FALSE(adapter);
 }
 
-TEST_F(RTCVideoDecoderStreamAdapterTest, FailInit_InitDecodeFails) {
+TEST_P(RTCVideoDecoderStreamAdapterTest, FailInit_InitDecodeFails) {
   // If initialization fails before InitDecode runs, then InitDecode should too.
   EXPECT_TRUE(CreateAndInitialize(false));
   task_environment_.RunUntilIdle();
@@ -291,7 +288,7 @@ TEST_F(RTCVideoDecoderStreamAdapterTest, FailInit_InitDecodeFails) {
   EXPECT_FALSE(BasicTeardown());
 }
 
-TEST_F(RTCVideoDecoderStreamAdapterTest, FailInit_DecodeFails) {
+TEST_P(RTCVideoDecoderStreamAdapterTest, FailInit_DecodeFails) {
   // If initialization fails after InitDecode runs, then the first Decode should
   // fail instead.
   EXPECT_TRUE(CreateAndInitialize(false));
@@ -301,12 +298,12 @@ TEST_F(RTCVideoDecoderStreamAdapterTest, FailInit_DecodeFails) {
   EXPECT_FALSE(BasicTeardown());
 }
 
-TEST_F(RTCVideoDecoderStreamAdapterTest, MissingFramesRequestsKeyframe) {
+TEST_P(RTCVideoDecoderStreamAdapterTest, MissingFramesRequestsKeyframe) {
   EXPECT_TRUE(BasicSetup());
   EXPECT_EQ(Decode(0, true), WEBRTC_VIDEO_CODEC_ERROR);
 }
 
-TEST_F(RTCVideoDecoderStreamAdapterTest, DecodeOneFrame) {
+TEST_P(RTCVideoDecoderStreamAdapterTest, DecodeOneFrame) {
   auto* decoder = decoder_factory_->decoder();
   EXPECT_TRUE(BasicSetup());
   EXPECT_CALL(*decoder, Decode_(_, _))
@@ -318,7 +315,7 @@ TEST_F(RTCVideoDecoderStreamAdapterTest, DecodeOneFrame) {
   EXPECT_TRUE(BasicTeardown());
 }
 
-TEST_F(RTCVideoDecoderStreamAdapterTest, SlowDecodingCausesReset) {
+TEST_P(RTCVideoDecoderStreamAdapterTest, SlowDecodingCausesReset) {
   // If we send enough(tm) decodes without returning any decoded frames, then
   // the decoder should try a flush + reset.
   auto* decoder = decoder_factory_->decoder();
@@ -365,7 +362,7 @@ TEST_F(RTCVideoDecoderStreamAdapterTest, SlowDecodingCausesReset) {
   EXPECT_TRUE(BasicTeardown());
 }
 
-TEST_F(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
+TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
   // If we send really enough(tm) decodes without returning any decoded frames,
   // then the decoder should fall back to software.
   auto* decoder = decoder_factory_->decoder();
@@ -404,5 +401,9 @@ TEST_F(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(BasicTeardown());
 }
+
+INSTANTIATE_TEST_SUITE_P(UseHwDecoding,
+                         RTCVideoDecoderStreamAdapterTest,
+                         ::testing::Values(false, true));
 
 }  // namespace blink

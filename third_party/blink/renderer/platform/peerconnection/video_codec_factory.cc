@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_factory.h"
@@ -212,13 +214,22 @@ std::unique_ptr<webrtc::VideoEncoderFactory> CreateWebrtcVideoEncoderFactory(
 
 std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    media::DecoderFactory* media_decoder_factory) {
-  std::unique_ptr<webrtc::VideoDecoderFactory> decoder_factory;
+    media::DecoderFactory* media_decoder_factory,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+    const gfx::ColorSpace& render_color_space) {
+  const bool use_hw_decoding = gpu_factories != nullptr &&
+                               gpu_factories->IsGpuVideoAcceleratorEnabled() &&
+                               Platform::Current()->IsWebRtcHWDecodingEnabled();
 
-  if (gpu_factories && gpu_factories->IsGpuVideoAcceleratorEnabled() &&
-      Platform::Current()->IsWebRtcHWDecodingEnabled()) {
+  // If RTCVideoDecoderStreamAdapter is used then RTCVideoDecoderFactory can
+  // support both SW and HW decoding, and should therefore always be
+  // instantiated regardless of whether HW decoding is enabled or not.
+  std::unique_ptr<RTCVideoDecoderFactory> decoder_factory;
+  if (use_hw_decoding ||
+      base::FeatureList::IsEnabled(media::kUseDecoderStreamForWebRTC)) {
     decoder_factory = std::make_unique<RTCVideoDecoderFactory>(
-        gpu_factories, media_decoder_factory);
+        use_hw_decoding ? gpu_factories : nullptr, media_decoder_factory,
+        std::move(media_task_runner), render_color_space);
   }
 
   return std::make_unique<DecoderAdapter>(std::move(decoder_factory));

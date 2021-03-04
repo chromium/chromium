@@ -1017,6 +1017,14 @@ void RendererBlinkPlatformImpl::SetRenderingColorSpace(
   render_thread->SetRenderingColorSpace(color_space);
 }
 
+gfx::ColorSpace RendererBlinkPlatformImpl::GetRenderingColorSpace() const {
+  auto* render_thread = RenderThreadImpl::current();
+  if (!render_thread)
+    return {};
+
+  return render_thread->GetRenderingColorSpace();
+}
+
 //------------------------------------------------------------------------------
 
 void RendererBlinkPlatformImpl::SetActiveURL(const blink::WebURL& url,

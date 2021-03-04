@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
+#include "ui/gfx/color_space.h"
 
 namespace webrtc {
 class VideoDecoder;
@@ -26,7 +27,9 @@ class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
  public:
   explicit RTCVideoDecoderFactory(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      media::DecoderFactory* decoder_factory);
+      media::DecoderFactory* decoder_factory,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+      const gfx::ColorSpace& render_color_space);
   ~RTCVideoDecoderFactory() override;
 
   // Runs on Chrome_libJingle_WorkerThread. The child thread is blocked while
@@ -38,11 +41,13 @@ class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
 
  private:
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;
-
   media::GpuVideoAcceleratorFactories* gpu_factories_;
   media::DecoderFactory* decoder_factory_;
 
-  GpuCodecSupportWaiter gpu_codec_support_waiter_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+  gfx::ColorSpace render_color_space_;
+
+  std::unique_ptr<GpuCodecSupportWaiter> gpu_codec_support_waiter_;
 
   DISALLOW_COPY_AND_ASSIGN(RTCVideoDecoderFactory);
 };

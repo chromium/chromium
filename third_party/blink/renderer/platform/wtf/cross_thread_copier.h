@@ -59,6 +59,7 @@ template <typename T>
 class sk_sp;
 
 namespace gfx {
+class ColorSpace;
 class Size;
 }
 
@@ -333,6 +334,12 @@ struct CrossThreadCopier<
 template <>
 struct CrossThreadCopier<gfx::Size>
     : public CrossThreadCopierPassThrough<gfx::Size> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<gfx::ColorSpace>
+    : public CrossThreadCopierPassThrough<gfx::ColorSpace> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

@@ -178,17 +178,27 @@ class ScopedVideoDecoder : public webrtc::VideoDecoder {
 
 RTCVideoDecoderFactory::RTCVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    media::DecoderFactory* decoder_factory)
+    media::DecoderFactory* decoder_factory,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+    const gfx::ColorSpace& render_color_space)
     : gpu_factories_(gpu_factories),
       decoder_factory_(decoder_factory),
-      gpu_codec_support_waiter_(gpu_factories) {
+      media_task_runner_(std::move(media_task_runner)),
+      render_color_space_(render_color_space) {
+  if (gpu_factories_) {
+    gpu_codec_support_waiter_ =
+        std::make_unique<GpuCodecSupportWaiter>(gpu_factories_);
+  }
   DVLOG(2) << __func__;
 }
 
 void RTCVideoDecoderFactory::CheckAndWaitDecoderSupportStatusIfNeeded() const {
-  if (!gpu_codec_support_waiter_.IsDecoderSupportKnown()) {
+  if (!gpu_codec_support_waiter_)
+    return;
+
+  if (!gpu_codec_support_waiter_->IsDecoderSupportKnown()) {
     DLOG(WARNING) << "Decoder support is unknown. Timeout "
-                  << gpu_codec_support_waiter_.wait_timeout_ms()
+                  << gpu_codec_support_waiter_->wait_timeout_ms()
                          .value_or(base::TimeDelta())
                          .InMilliseconds()
                   << "ms. Decoders might not be available.";
@@ -214,11 +224,16 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
         gfx::Rect(kDefaultSize), kDefaultSize, media::EmptyExtraData(),
         media::EncryptionScheme::kUnencrypted);
     base::Optional<webrtc::SdpVideoFormat> format;
-    for (auto impl : RTCVideoDecoderAdapter::SupportedImplementations()) {
-      if (gpu_factories_->IsDecoderConfigSupported(impl, config) ==
-          media::GpuVideoAcceleratorFactories::Supported::kTrue) {
-        format = VdcToWebRtcFormat(config);
-        break;
+
+    // The RTCVideoDecoderAdapter is for HW decoders only, so ignore it if there
+    // are no gpu_factories_.
+    if (gpu_factories_) {
+      for (auto impl : RTCVideoDecoderAdapter::SupportedImplementations()) {
+        if (gpu_factories_->IsDecoderConfigSupported(impl, config) ==
+            media::GpuVideoAcceleratorFactories::Supported::kTrue) {
+          format = VdcToWebRtcFormat(config);
+          break;
+        }
       }
     }
 
@@ -252,15 +267,16 @@ RTCVideoDecoderFactory::CreateVideoDecoder(
 
   std::unique_ptr<webrtc::VideoDecoder> decoder;
   if (base::FeatureList::IsEnabled(media::kUseDecoderStreamForWebRTC)) {
-    decoder = RTCVideoDecoderStreamAdapter::Create(gpu_factories_,
-                                                   decoder_factory_, format);
+    decoder = RTCVideoDecoderStreamAdapter::Create(
+        gpu_factories_, decoder_factory_, media_task_runner_,
+        render_color_space_, format);
   } else {
     decoder = RTCVideoDecoderAdapter::Create(gpu_factories_, format);
   }
   // ScopedVideoDecoder uses the task runner to make sure the decoder is
   // destructed on the correct thread.
-  return decoder ? std::make_unique<ScopedVideoDecoder>(
-                       gpu_factories_->GetTaskRunner(), std::move(decoder))
+  return decoder ? std::make_unique<ScopedVideoDecoder>(media_task_runner_,
+                                                        std::move(decoder))
                  : nullptr;
 }
 
