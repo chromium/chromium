@@ -944,16 +944,34 @@ void LayoutInline::CollectCulledLineBoxRectsInFlippedBlocksDirection(
   }
 }
 
+void LayoutInline::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+  QuadsForSelfInternal(quads, 0, false);
+}
+
 void LayoutInline::AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
                                         MapCoordinatesFlags mode) const {
+  QuadsForSelfInternal(quads, mode, true);
+}
+
+void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
+                                        MapCoordinatesFlags mode,
+                                        bool map_to_absolute) const {
   NOT_DESTROYED();
   LayoutGeometryMap geometry_map(mode);
   geometry_map.PushMappingsToAncestor(this, nullptr);
-  CollectLineBoxRects([&quads, &geometry_map](const PhysicalRect& r) {
-    quads.push_back(geometry_map.AbsoluteQuad(r));
-  });
-  if (quads.IsEmpty())
-    quads.push_back(geometry_map.AbsoluteQuad(PhysicalRect()));
+  CollectLineBoxRects(
+      [&quads, &geometry_map, &map_to_absolute](const PhysicalRect& r) {
+        if (map_to_absolute)
+          quads.push_back(geometry_map.AbsoluteQuad(r));
+        else
+          quads.push_back(FloatQuad(FloatRect(r)));
+      });
+  if (quads.IsEmpty()) {
+    if (map_to_absolute)
+      quads.push_back(geometry_map.AbsoluteQuad(PhysicalRect()));
+    else
+      quads.push_back(FloatQuad(FloatRect()));
+  }
 }
 
 base::Optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()

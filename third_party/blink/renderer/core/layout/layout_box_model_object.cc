@@ -657,10 +657,28 @@ void LayoutBoxModelObject::AbsoluteQuadsForSelf(
   NOTREACHED();
 }
 
+void LayoutBoxModelObject::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+  NOT_DESTROYED();
+  NOTREACHED();
+}
+
 void LayoutBoxModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
                                          MapCoordinatesFlags mode) const {
+  QuadsInternal(quads, mode, true);
+}
+
+void LayoutBoxModelObject::LocalQuads(Vector<FloatQuad>& quads) const {
+  QuadsInternal(quads, 0, false);
+}
+
+void LayoutBoxModelObject::QuadsInternal(Vector<FloatQuad>& quads,
+                                         MapCoordinatesFlags mode,
+                                         bool map_to_absolute) const {
   NOT_DESTROYED();
-  AbsoluteQuadsForSelf(quads, mode);
+  if (map_to_absolute)
+    AbsoluteQuadsForSelf(quads, mode);
+  else
+    LocalQuadsForSelf(quads);
 
   // Iterate over continuations, avoiding recursion in case there are
   // many of them. See crbug.com/653767.
@@ -672,8 +690,26 @@ void LayoutBoxModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
     DCHECK(continuation_object->IsLayoutInline() ||
            (continuation_block_flow &&
             continuation_block_flow->IsAnonymousBlockContinuation()));
-    continuation_object->AbsoluteQuadsForSelf(quads, mode);
+    if (map_to_absolute)
+      continuation_object->AbsoluteQuadsForSelf(quads);
+    else
+      continuation_object->LocalQuadsForSelf(quads);
   }
+}
+
+FloatRect LayoutBoxModelObject::LocalBoundingBoxFloatRect() const {
+  NOT_DESTROYED();
+  Vector<FloatQuad> quads;
+  LocalQuads(quads);
+
+  wtf_size_t n = quads.size();
+  if (n == 0)
+    return FloatRect();
+
+  FloatRect result = quads[0].BoundingBox();
+  for (wtf_size_t i = 1; i < n; ++i)
+    result.Unite(quads[i].BoundingBox());
+  return result;
 }
 
 void LayoutBoxModelObject::UpdateFromStyle() {
