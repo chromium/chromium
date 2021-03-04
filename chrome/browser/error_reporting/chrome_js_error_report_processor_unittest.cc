@@ -148,11 +148,12 @@ TEST_F(ChromeJsErrorReportProcessorTest, Basic) {
 
 void ChromeJsErrorReportProcessorTest::TestAllFields() {
   auto report = MakeErrorReport("Hello World");
-  report.url = "https://www.chromium.org/Home";
+  report.url = "https://www.chromium.org/Home/scripts.js";
   report.product = "Unit test";
   report.version = "6.2.3.4";
   report.line_number = 83;
   report.column_number = 14;
+  report.page_url = "https://www.chromium.org/Home.html";
   report.stack_trace = "bad_func(1, 2)\nonclick()\n";
   report.renderer_process_uptime_ms = 1234;
   report.window_type = WindowType::kSystemWebApp;
@@ -171,11 +172,15 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
               HasSubstr("renderer_process_uptime_ms=1234"));
   EXPECT_THAT(actual_report->query, HasSubstr("window_type=SYSTEM_WEB_APP"));
   // TODO(iby) research why URL is repeated...
+  EXPECT_THAT(
+      actual_report->query,
+      HasSubstr("src=https%3A%2F%2Fwww.chromium.org%2FHome%2Fscripts.js"));
+  EXPECT_THAT(
+      actual_report->query,
+      HasSubstr("full_url=https%3A%2F%2Fwww.chromium.org%2FHome%2Fscripts.js"));
+  EXPECT_THAT(actual_report->query, HasSubstr("url=%2FHome%2Fscripts.js"));
   EXPECT_THAT(actual_report->query,
-              HasSubstr("src=https%3A%2F%2Fwww.chromium.org%2FHome"));
-  EXPECT_THAT(actual_report->query,
-              HasSubstr("full_url=https%3A%2F%2Fwww.chromium.org%2FHome"));
-  EXPECT_THAT(actual_report->query, HasSubstr("url=%2FHome"));
+              HasSubstr("page_url=https%3A%2F%2Fwww.chromium.org%2FHome.html"));
   EXPECT_THAT(actual_report->query, HasSubstr("browser=Chrome"));
   // product is double-escaped. The first time, it transforms to Unit%20test,
   // then the % is turned into %25.

@@ -29,6 +29,26 @@
 
 namespace content {
 
+namespace {
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Remove the pieces of the URL we don't want to send back with the error
+// reports. In particular, do not send query or fragments as those can have
+// privacy-sensitive information in them.
+std::string RedactURL(const GURL& url) {
+  std::string redacted_url = url.GetOrigin().spec();
+  // Path will start with / and GetOrigin ends with /. Cut one / to avoid
+  // chrome://discards//graph.
+  if (!redacted_url.empty() && redacted_url.back() == '/') {
+    redacted_url.pop_back();
+  }
+  base::StrAppend(&redacted_url, {url.path_piece()});
+  return redacted_url;
+}
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+}  // namespace
+
 WebUIMainFrameObserver::WebUIMainFrameObserver(WebUIImpl* web_ui,
                                                WebContents* contents)
     : WebContentsObserver(contents), web_ui_(web_ui) {}
@@ -107,24 +127,21 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     return;
   }
 
-  std::string redacted_url = url.GetOrigin().spec();
-  // Path will start with / and GetOrigin ends with /. Cut one / to avoid
-  // chrome://discards//graph.
-  if (!redacted_url.empty() && redacted_url.back() == '/') {
-    redacted_url.pop_back();
-  }
-  base::StrAppend(&redacted_url, {url.path_piece()});
-
   JavaScriptErrorReport report;
   report.message = base::UTF16ToUTF8(message);
   report.line_number = line_no;
-  report.url = std::move(redacted_url);
+  report.url = RedactURL(url);
   report.source_system = JavaScriptErrorReport::SourceSystem::kWebUIObserver;
   if (untrusted_stack_trace) {
     report.stack_trace = base::UTF16ToUTF8(*untrusted_stack_trace);
   }
   report.send_to_production_servers =
       features::kWebUIJavaScriptErrorReportsSendToProductionParam.Get();
+
+  GURL page_url = source_frame->GetLastCommittedURL();
+  if (page_url.is_valid()) {
+    report.page_url = RedactURL(page_url);
+  }
 
   DVLOG(3) << "Error being sent to Google";
   processor->SendErrorReport(std::move(report), base::DoNothing(),

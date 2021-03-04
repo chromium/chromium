@@ -33,8 +33,10 @@ struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
   // The error message. Must be present
   std::string message;
 
-  // URL where the error occurred. Must be the full URL, containing the protocol
-  // (e.g. http://www.example.com).
+  // URL of the resource that threw or reported the error. Generally the URL of
+  // the JavaScript, not the page's URL. Must include the protocol (e.g.
+  // http://www.example.com/main.js) but not query, fragment, or other
+  // privacy-sensitive details we don't want to send.
   std::string url;
 
   // The system that created the error report. Useful for checking that each of
@@ -67,6 +69,11 @@ struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
 
   // String containing the application locale. Not sent if not present.
   base::Optional<std::string> app_locale;
+
+  // URL of the page the user was on when the error occurred. Must include the
+  // protocol (e.g. http://www.example.com) but not query, fragment, or other
+  // privacy-sensitive details we don't want to send.
+  base::Optional<std::string> page_url;
 
   // Uptime of the renderer process in milliseconds. 0 if the callee
   // |web_contents| is null (shouldn't really happen as this is caled from a JS

@@ -195,6 +195,8 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   }
   if (error_report->app_locale)
     params["app_locale"] = std::move(*error_report->app_locale);
+  if (error_report->page_url)
+    params["page_url"] = std::move(*error_report->page_url);
 
   SendReport(std::move(params), std::move(error_report->stack_trace),
              error_report->send_to_production_servers,
