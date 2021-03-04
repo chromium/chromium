@@ -5,12 +5,15 @@
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_bridge.h"
 
 #include <fcntl.h>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
@@ -94,18 +97,16 @@ void GetFileSizeOnIOThread(scoped_refptr<storage::FileSystemContext> context,
       url,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
           storage::FileSystemOperation::GET_METADATA_FIELD_SIZE,
-      base::BindOnce(
-          [](ArcFileSystemBridge::GetFileSizeCallback callback,
-             base::File::Error result, const base::File::Info& file_info) {
-            int64_t size = -1;
-            if (result == base::File::FILE_OK && !file_info.is_directory &&
-                file_info.size >= 0) {
-              size = file_info.size;
-            }
-            content::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), size));
-          },
-          base::Passed(&callback)));
+      base::BindOnce([](base::File::Error result,
+                        const base::File::Info& file_info) -> int64_t {
+        if (result == base::File::FILE_OK && !file_info.is_directory &&
+            file_info.size >= 0) {
+          return file_info.size;
+        }
+        return -1;
+      })
+          .Then(base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                                   std::move(callback))));
 }
 
 // TODO(risan): Write test.
@@ -252,13 +253,10 @@ void ArcFileSystemBridge::GetFileType(const std::string& url,
       GetFileSystemURL(*context, url_decoded);
   extensions::app_file_handler_util::GetMimeTypeForLocalPath(
       profile_, file_system_url_and_handle.url.path(),
-      base::BindOnce(
-          [](GetFileTypeCallback callback, const std::string& mime_type) {
-            std::move(callback).Run(mime_type.empty()
-                                        ? base::nullopt
-                                        : base::make_optional(mime_type));
-          },
-          base::Passed(&callback)));
+      base::BindOnce([](const std::string& mime_type) {
+        return mime_type.empty() ? base::nullopt
+                                 : base::make_optional(mime_type);
+      }).Then(std::move(callback)));
 }
 
 void ArcFileSystemBridge::OnDocumentChanged(
