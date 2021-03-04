@@ -69,6 +69,14 @@ Polymer({
     },
 
     /**
+     * @type {boolean}
+     */
+    startAdvertisingFailed: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * A null |setupState_| indicates that the operation has not yet started.
      * @private {?NearbyVisibilityErrorState}
      */
@@ -77,7 +85,7 @@ Polymer({
       value: null,
       computed:
           'computeErrorState_(shutoffTimestamp, remainingTimeInSeconds_,' +
-          'registerResult, nearbyProcessStopped)'
+          'registerResult, nearbyProcessStopped, startAdvertisingFailed)'
     }
 
   },
@@ -142,7 +150,7 @@ Polymer({
     }
     if (this.registerResult ===
             nearbyShare.mojom.RegisterReceiveSurfaceResult.kFailure ||
-        this.nearbyProcessStopped) {
+        this.nearbyProcessStopped || this.startAdvertisingFailed) {
       return NearbyVisibilityErrorState.SOMETHING_WRONG;
     }
     return null;

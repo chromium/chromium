@@ -71,6 +71,14 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * @private {boolean}
+     */
+    startAdvertisingFailed_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   listeners: {
@@ -156,6 +164,13 @@ Polymer({
       // refactor to not require the use of a timeout.
       this.closeTimeoutId_ = setTimeout(this.close_.bind(this), 25);
     }
+
+    // If high visibility has been attained, then the process must be up and
+    // advertising must be on.
+    if (inHighVisibility) {
+      this.startAdvertisingFailed_ = false;
+      this.nearbyProcessStopped_ = false;
+    }
   },
 
   /**
@@ -181,6 +196,13 @@ Polymer({
    */
   onNearbyProcessStopped() {
     this.nearbyProcessStopped_ = true;
+  },
+
+  /**
+   * Mojo callback when advertising fails to start.
+   */
+  onStartAdvertisingFailure() {
+    this.startAdvertisingFailed_ = true;
   },
 
   /**

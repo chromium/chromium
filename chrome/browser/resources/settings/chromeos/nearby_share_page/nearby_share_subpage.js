@@ -223,6 +223,12 @@ Polymer({
     // Note: Intentionally left empty.
   },
 
+  /**
+   * Mojo callback when advertising fails to start.
+   */
+  onStartAdvertisingFailure() {
+    // Note: Intentionally left empty.
+  },
 
   /** @private */
   onInHighVisibilityToggledByUser_() {

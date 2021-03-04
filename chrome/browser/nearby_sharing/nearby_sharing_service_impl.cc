@@ -3770,9 +3770,6 @@ void NearbySharingServiceImpl::OnStartAdvertisingResult(
         << __func__
         << ": StartAdvertising over Nearby Connections was successful.";
     SetInHighVisibility(used_device_name);
-    for (auto& observer : observers_) {
-      observer.OnStartAdvertisingResult(used_device_name);
-    }
   } else {
     NS_LOG(ERROR) << __func__
                   << ": StartAdvertising over Nearby Connections failed: "
@@ -3780,7 +3777,7 @@ void NearbySharingServiceImpl::OnStartAdvertisingResult(
                          status);
     SetInHighVisibility(false);
     for (auto& observer : observers_) {
-      observer.OnStartAdvertisingResult(false);
+      observer.OnStartAdvertisingFailure();
     }
   }
 }

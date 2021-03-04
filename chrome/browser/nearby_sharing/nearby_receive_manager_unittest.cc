@@ -34,10 +34,15 @@ class FakeReceiveObserver : public nearby_share::mojom::ReceiveObserver {
     on_nearby_process_stopped_called_ = true;
   }
 
+  void OnStartAdvertisingFailure() override {
+    on_start_advertising_failure_called_ = true;
+  }
+
   base::Optional<nearby_share::mojom::TransferMetadata> last_metadata_;
   base::Optional<bool> in_high_visibility_;
   ShareTarget last_share_target_;
   bool on_nearby_process_stopped_called_ = false;
+  bool on_start_advertising_failure_called_ = false;
   mojo::Receiver<nearby_share::mojom::ReceiveObserver> receiver_{this};
 };
 
@@ -269,6 +274,15 @@ TEST_F(NearbyReceiveManagerTest, OnHighVisibilityChangedObserver) {
   FlushMojoMessages();
   ASSERT_TRUE(observer_.in_high_visibility_.has_value());
   EXPECT_TRUE(*observer_.in_high_visibility_);
+
+  ExpectUnregister();
+}
+
+TEST_F(NearbyReceiveManagerTest, OnStartAdvertisingFailureObserver) {
+  EXPECT_FALSE(observer_.on_start_advertising_failure_called_);
+  receive_manager_.OnStartAdvertisingFailure();
+  FlushMojoMessages();
+  EXPECT_TRUE(observer_.on_start_advertising_failure_called_);
 
   ExpectUnregister();
 }

@@ -155,6 +155,19 @@ suite('NearbyShare', function() {
           Polymer.dom.flush();
           assertFalse(dialog.closing_);
         });
+
+    test('onStartAdvertisingFailure shows an error', async function() {
+      await test_util.waitAfterNextRender(dialog);
+      assertTrue(isVisible('nearby-share-high-visibility-page'));
+      const highVisibilityPage = dialog.$$('nearby-share-high-visibility-page');
+      assertFalse(!!highVisibilityPage.$$('#errorTitle'));
+
+      dialog.onStartAdvertisingFailure();
+      await test_util.waitAfterNextRender(dialog);
+
+      const errorTitle = highVisibilityPage.$$('#errorTitle');
+      assertTrue(!!errorTitle && errorTitle.textContent.length > 0);
+    });
   });
 
   suite('DisabledTests', function() {

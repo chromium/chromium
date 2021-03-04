@@ -74,7 +74,7 @@ class NearbySharingService : public KeyedService {
     virtual void OnHighVisibilityChanged(bool in_high_visibility) = 0;
 
     virtual void OnNearbyProcessStopped() {}
-    virtual void OnStartAdvertisingResult(bool success) {}
+    virtual void OnStartAdvertisingFailure() {}
     virtual void OnStartDiscoveryResult(bool success) {}
 
     // Called during the |KeyedService| shutdown, but before everything has been

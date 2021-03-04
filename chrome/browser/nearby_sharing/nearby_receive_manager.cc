@@ -135,6 +135,12 @@ void NearbyReceiveManager::OnNearbyProcessStopped() {
   }
 }
 
+void NearbyReceiveManager::OnStartAdvertisingFailure() {
+  for (auto& remote : observers_set_) {
+    remote->OnStartAdvertisingFailure();
+  }
+}
+
 void NearbyReceiveManager::NotifyOnTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& metadata) {

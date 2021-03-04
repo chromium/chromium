@@ -209,6 +209,12 @@ interface ReceiveObserver {
 
   // Called when the Nearby utility process stops.
   OnNearbyProcessStopped();
+
+  // Called when advertising fails to start. If advertising fails, then high
+  // visibility will not be turned on.
+  // |ReceiveManager.RegisterForegroundReceiveSurface()| may be called again
+  // to reattempt.
+  OnStartAdvertisingFailure();
 };
 
 // Allows the caller to observe changes to or query high visibility, or
