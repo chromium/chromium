@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/common/process_type.h"
 #include "net/http/http_response_headers.h"
@@ -365,6 +367,16 @@ const char kHistogramEarlyHintsFinalRequestStartToEarlyHints[] =
     "PageLoad.Experimental.EarlyHints.FinalRequestStartToEarlyHints";
 const char kHistogramEarlyHintsEarlyHintsToFinalResponseStart[] =
     "PageLoad.Experimental.EarlyHints.EarlyHintsToFinalResponseStart";
+
+// V8 memory usage metrics.
+const char kHistogramMemoryMainframe[] =
+    "PageLoad.Experimental.Memory.Core.MainFrame.Max";
+const char kHistogramMemorySubframeAggregate[] =
+    "PageLoad.Experimental.Memory.Core.Subframe.Aggregate.Max";
+const char kHistogramMemoryTotal[] =
+    "PageLoad.Experimental.Memory.Core.Total.Max";
+const char kHistogramMemoryUpdateReceived[] =
+    "PageLoad.Experimental.Memory.Core.UpdateReceived";
 
 }  // namespace internal
 
@@ -732,6 +744,7 @@ void UmaPageLoadMetricsObserver::OnComplete(
   RecordByteAndResourceHistograms(timing);
   RecordCpuUsageHistograms();
   RecordForegroundDurationHistograms(timing, base::TimeTicks());
+  RecordV8MemoryHistograms();
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -746,6 +759,7 @@ UmaPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     RecordTimingHistograms(timing);
     RecordByteAndResourceHistograms(timing);
     RecordCpuUsageHistograms();
+    RecordV8MemoryHistograms();
   }
   RecordForegroundDurationHistograms(timing, base::TimeTicks::Now());
   return STOP_OBSERVING;
@@ -1190,4 +1204,46 @@ void UmaPageLoadMetricsObserver::OnRestoreFromBackForwardCache(
   UMA_HISTOGRAM_ENUMERATION(
       internal::kHistogramBackForwardCacheEvent,
       internal::PageLoadBackForwardCacheEvent::kRestoreFromBackForwardCache);
+}
+
+void UmaPageLoadMetricsObserver::OnV8MemoryChanged(
+    const std::vector<page_load_metrics::MemoryUpdate>& memory_updates) {
+  DCHECK(base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring));
+
+  for (const auto& update : memory_updates) {
+    memory_update_received_ = true;
+
+    content::RenderFrameHost* render_frame_host =
+        content::RenderFrameHost::FromID(update.routing_id);
+
+    if (!render_frame_host)
+      continue;
+
+    if (!render_frame_host->GetParent()) {
+      // |render_frame_host| is the main frame.
+      main_frame_memory_usage_.UpdateUsage(update.delta_bytes);
+    } else {
+      aggregate_subframe_memory_usage_.UpdateUsage(update.delta_bytes);
+    }
+
+    aggregate_total_memory_usage_.UpdateUsage(update.delta_bytes);
+  }
+}
+
+void UmaPageLoadMetricsObserver::RecordV8MemoryHistograms() {
+  if (base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring)) {
+    PAGE_BYTES_HISTOGRAM(internal::kHistogramMemoryMainframe,
+                         main_frame_memory_usage_.max_bytes_used());
+    PAGE_BYTES_HISTOGRAM(internal::kHistogramMemorySubframeAggregate,
+                         aggregate_subframe_memory_usage_.max_bytes_used());
+    PAGE_BYTES_HISTOGRAM(internal::kHistogramMemoryTotal,
+                         aggregate_total_memory_usage_.max_bytes_used());
+    UMA_HISTOGRAM_BOOLEAN(internal::kHistogramMemoryUpdateReceived,
+                          memory_update_received_);
+  }
+}
+
+void UmaPageLoadMetricsObserver::MemoryUsage::UpdateUsage(int64_t delta_bytes) {
+  current_bytes_used_ += delta_bytes;
+  max_bytes_used_ = std::max(max_bytes_used_, current_bytes_used_);
 }

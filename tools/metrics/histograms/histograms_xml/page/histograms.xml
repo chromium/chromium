@@ -1091,6 +1091,62 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Experimental.Memory.Core.MainFrame.Max" units="KiB"
+    expires_after="2021-08-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    The maximum reported number of kilobytes of memory used by V8 by the main
+    frame in this pageload.
+
+    Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
+    when the page is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Experimental.Memory.Core.Subframe.Aggregate.Max"
+    units="KiB" expires_after="2021-08-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    The maximum reported aggregate number of kilobytes of memory used by V8 by
+    subframes in this pageload. The value recorded is the maximum simultaneous
+    usage by all subframes during this pageload, not including the main frame.
+
+    Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
+    when the page is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Experimental.Memory.Core.Total.Max" units="KiB"
+    expires_after="2021-08-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    The maximum reported aggregate number of kilobytes of memory used by V8 by
+    all frames in this pageload. The value recorded is the maximum simultaneous
+    usage by all frames during this pageload, including the main frame.
+
+    Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
+    when the page is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Experimental.Memory.Core.UpdateReceived"
+    units="BooleanReceived" expires_after="2021-08-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    Whether or not any V8 memory measurement updates were received by
+    UmaPageLoadMetricsObserver for this pageload. Only recorded if memory
+    tracking is enabled. Recorded in PageLoadMetrics when the page is destroyed.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Experimental.NavigationTiming.FinalLoaderCallbackToNavigationCommitSent"
     units="ms" expires_after="2021-05-08">
@@ -1897,7 +1953,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Memory.Aggregate.Max" units="KiB"
-    expires_after="2021-07-31">
+    expires_after="2021-08-31">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

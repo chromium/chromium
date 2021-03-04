@@ -134,6 +134,12 @@ extern const char kHistogramEarlyHintsFirstRequestStartToEarlyHints[];
 extern const char kHistogramEarlyHintsFinalRequestStartToEarlyHints[];
 extern const char kHistogramEarlyHintsEarlyHintsToFinalResponseStart[];
 
+// V8 memory usage metrics.
+extern const char kHistogramMemoryMainframe[];
+extern const char kHistogramMemorySubframeAggregate[];
+extern const char kHistogramMemoryTotal[];
+extern const char kHistogramMemoryUpdateReceived[];
+
 enum FirstMeaningfulPaintStatus {
   FIRST_MEANINGFUL_PAINT_RECORDED,
   FIRST_MEANINGFUL_PAINT_BACKGROUNDED,
@@ -207,8 +213,23 @@ class UmaPageLoadMetricsObserver
   void OnRestoreFromBackForwardCache(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       content::NavigationHandle* navigation_handle) override;
+  void OnV8MemoryChanged(const std::vector<page_load_metrics::MemoryUpdate>&
+                             memory_updates) override;
 
  private:
+  // Class to keep track of per-frame memory usage by V8.
+  class MemoryUsage {
+   public:
+    void UpdateUsage(int64_t delta_bytes);
+
+    uint64_t current_bytes_used() { return current_bytes_used_; }
+    uint64_t max_bytes_used() { return max_bytes_used_; }
+
+   private:
+    uint64_t current_bytes_used_ = 0U;
+    uint64_t max_bytes_used_ = 0U;
+  };
+
   void RecordNavigationTimingHistograms();
   void RecordTimingHistograms(
       const page_load_metrics::mojom::PageLoadTiming& main_frame_timing);
@@ -218,6 +239,7 @@ class UmaPageLoadMetricsObserver
   void RecordForegroundDurationHistograms(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       base::TimeTicks app_background_time);
+  void RecordV8MemoryHistograms();
 
   content::NavigationHandleTiming navigation_handle_timing_;
 
@@ -255,6 +277,15 @@ class UmaPageLoadMetricsObserver
 
   // Tracks user input clicks for possible click burst.
   page_load_metrics::ClickInputTracker click_tracker_;
+
+  // V8 Memory Usage: whether a memory update was received, the usage of the
+  // mainframe, the aggregate usage of all subframes on the page, and the
+  // aggregate usage of all frames on the page (including the main frame),
+  // respectively.
+  bool memory_update_received_ = false;
+  MemoryUsage main_frame_memory_usage_;
+  MemoryUsage aggregate_subframe_memory_usage_;
+  MemoryUsage aggregate_total_memory_usage_;
 
   DISALLOW_COPY_AND_ASSIGN(UmaPageLoadMetricsObserver);
 };
