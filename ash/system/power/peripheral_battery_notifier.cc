@@ -44,8 +44,6 @@ constexpr base::TimeDelta kNotificationInterval =
 
 constexpr char kNotifierStylusBattery[] = "ash.stylus-battery";
 
-// TODO(sammiequon): Add a notification url to chrome://settings/stylus once
-// battery related information is shown there.
 constexpr char kNotificationOriginUrl[] = "chrome://peripheral-battery";
 constexpr char kNotifierNonStylusBattery[] = "power.peripheral-battery";
 
