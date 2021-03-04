@@ -86,11 +86,11 @@ void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
 }
 
 void OnStartTracingDoneCallback(
-    base::trace_event::MemoryDumpLevelOfDetail explicit_dump_type,
-    base::OnceClosure quit_closure) {
+    base::trace_event::MemoryDumpLevelOfDetail dump_type,
+    base::Closure quit_closure) {
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
-          MemoryDumpType::EXPLICITLY_TRIGGERED, explicit_dump_type,
+          MemoryDumpType::PERIODIC_INTERVAL, dump_type,
           MemoryDumpDeterminism::NONE,
           BindOnce(&RequestGlobalDumpCallback, std::move(quit_closure)));
 }
@@ -762,8 +762,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
   ASSERT_GT(events.size(), 1u);
   ASSERT_TRUE(trace_analyzer::CountMatches(
-      events, trace_analyzer::Query::EventNameIs(MemoryDumpTypeToString(
-                  MemoryDumpType::EXPLICITLY_TRIGGERED))));
+      events, trace_analyzer::Query::EventNameIs(
+                  MemoryDumpTypeToString(MemoryDumpType::PERIODIC_INTERVAL))));
 
   constexpr int kNumRenderers = 2;
   EXPECT_EQ(kNumRenderers, GetNumRenderers(browser()));

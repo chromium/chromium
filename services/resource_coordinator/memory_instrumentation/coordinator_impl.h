@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
@@ -83,6 +84,10 @@ class CoordinatorImpl : public Registry,
   using RequestGlobalMemoryDumpInternalCallback =
       base::OnceCallback<void(bool, uint64_t, mojom::GlobalMemoryDumpPtr)>;
   friend class CoordinatorImplTest;             // For testing
+  FRIEND_TEST_ALL_PREFIXES(CoordinatorImplTest,
+                           DumpsAreAddedToTraceWhenRequested);
+  FRIEND_TEST_ALL_PREFIXES(CoordinatorImplTest,
+                           DumpsArentAddedToTraceUnlessRequested);
 
   // Holds metadata and a client pipe connected to every client process.
   struct ClientInfo {

@@ -90,6 +90,40 @@ class TestTraceWriter : public perfetto::TraceWriter {
   TestProducerClient* producer_client_;
 };
 
+// Wrapper class around TestProducerClient useful for testing a trace data
+// source.
+//
+// Usage:
+//  DataSourceTester tester(source);
+//  tester.BeginTrace();
+//  source.WriteTracePackets();
+//  tester.EndTracing();
+//
+//  EXPECT_TRUE(tester.producer().GetFinalizedPacket());
+class DataSourceTester {
+ public:
+  explicit DataSourceTester(
+      tracing::PerfettoTracedProcess::DataSourceBase* data_source);
+  ~DataSourceTester();
+
+  tracing::TestProducerClient* producer() { return producer_.get(); }
+
+  void BeginTrace() {
+    data_source_->StartTracingWithID(
+        /*data_source_id=*/1, producer_.get(), perfetto::DataSourceConfig());
+  }
+
+  void EndTracing() {
+    base::RunLoop wait_for_end;
+    data_source_->StopTracing(wait_for_end.QuitClosure());
+    wait_for_end.Run();
+  }
+
+ private:
+  std::unique_ptr<tracing::TestProducerClient> producer_;
+  tracing::PerfettoTracedProcess::DataSourceBase* data_source_;
+};
+
 }  // namespace tracing
 
 #endif  // SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PRODUCER_TEST_UTILS_H_

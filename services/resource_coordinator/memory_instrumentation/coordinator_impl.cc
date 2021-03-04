@@ -64,8 +64,8 @@ class StringWrapper : public base::trace_event::ConvertableToTraceFormat {
 CoordinatorImpl::CoordinatorImpl()
     : next_dump_id_(0),
       client_process_timeout_(base::TimeDelta::FromSeconds(15)),
-      use_proto_writer_(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMemoryTrackingProtoWriter)) {
+      use_proto_writer_(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseMemoryTrackingJsonWriter)) {
   DCHECK(!g_coordinator_impl);
   g_coordinator_impl = this;
   base::trace_event::MemoryDumpManager::GetInstance()->set_tracing_process_id(
