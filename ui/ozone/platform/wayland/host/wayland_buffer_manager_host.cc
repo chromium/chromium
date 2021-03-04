@@ -222,6 +222,7 @@ class WaylandBufferManagerHost::Surface {
 
     wayland_surface_->AttachBuffer(nullptr);
     wayland_surface_->Commit();
+    wl_frame_callback_.reset(nullptr);
 
     // ResetSurfaceContents happens upon WaylandWindow::Hide call, which
     // destroys xdg_surface, xdg_popup, etc. They are going to be reinitialized
