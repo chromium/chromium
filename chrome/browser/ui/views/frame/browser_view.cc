@@ -1010,10 +1010,6 @@ bool BrowserView::DoBrowserControlsShrinkRendererSize(
              contents);
 }
 
-ui::NativeTheme* BrowserView::GetNativeTheme() {
-  return views::ClientView::GetNativeTheme();
-}
-
 int BrowserView::GetTopControlsHeight() const {
   if (top_controls_slide_controller_ &&
       top_controls_slide_controller_->IsEnabled()) {

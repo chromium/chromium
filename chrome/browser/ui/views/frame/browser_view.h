@@ -77,12 +77,11 @@ class TopControlsSlideControllerTest;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
-namespace ui {
-class NativeTheme;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ui {
 class ThroughputTracker;
+}
 #endif
-}  // namespace ui
 
 namespace version_info {
 enum class Channel;
@@ -349,7 +348,6 @@ class BrowserView : public BrowserWindow,
                                 float ratio) override;
   bool DoBrowserControlsShrinkRendererSize(
       const content::WebContents* contents) const override;
-  ui::NativeTheme* GetNativeTheme() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   StatusBubble* GetStatusBubble() override;

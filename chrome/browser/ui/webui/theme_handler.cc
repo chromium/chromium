@@ -13,7 +13,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/theme_resources.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui.h"
@@ -41,10 +40,7 @@ void ThemeHandler::OnJavascriptAllowed() {
                  content::Source<ThemeService>(
                      ThemeServiceFactory::GetForProfile(GetProfile())));
   // Or native theme change.
-  if (web_ui()) {
-    theme_observation_.Observe(
-        webui::GetNativeTheme(web_ui()->GetWebContents()));
-  }
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 
 void ThemeHandler::OnJavascriptDisallowed() {
@@ -60,15 +56,7 @@ void ThemeHandler::Observe(int type,
 }
 
 void ThemeHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  // There are two types of theme update. a) The observed theme change. e.g.
-  // switch between light/dark mode. b) A different theme is enabled. e.g.
-  // switch between GTK and classic theme on Linux. Reset observer in case b).
-  ui::NativeTheme* current_theme =
-      webui::GetNativeTheme(web_ui()->GetWebContents());
-  if (observed_theme != current_theme) {
-    theme_observation_.Reset();
-    theme_observation_.Observe(current_theme);
-  }
+  DCHECK_EQ(observed_theme, ui::NativeTheme::GetInstanceForNativeUi());
   SendThemeChanged();
 }
 

@@ -74,10 +74,6 @@ class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
-namespace ui {
-class NativeTheme;
-}
-
 namespace web_modal {
 class WebContentsModalDialogHost;
 }
@@ -176,9 +172,6 @@ class BrowserWindow : public ui::BaseWindow {
   // renderer-initiated animation of the top controls shown ratio).
   virtual bool DoBrowserControlsShrinkRendererSize(
       const content::WebContents* contents) const = 0;
-
-  // Returns the native theme associated with the frame.
-  virtual ui::NativeTheme* GetNativeTheme() = 0;
 
   // Returns the height of the browser's top controls. This height doesn't
   // change with the current shown ratio above. Renderers will call this to

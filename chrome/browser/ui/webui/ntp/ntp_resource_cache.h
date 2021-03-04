@@ -16,7 +16,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 
@@ -56,9 +55,7 @@ class NTPResourceCache : public content::NotificationObserver,
 
   base::RefCountedMemory* GetNewTabGuestHTML();
   base::RefCountedMemory* GetNewTabHTML(WindowType win_type);
-  base::RefCountedMemory* GetNewTabCSS(
-      WindowType win_type,
-      const content::WebContents::Getter wc_getter);
+  base::RefCountedMemory* GetNewTabCSS(WindowType win_type);
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -108,10 +105,10 @@ class NTPResourceCache : public content::NotificationObserver,
   bool NewTabHTMLNeedsRefresh();
 
   void CreateNewTabHTML();
-  void CreateNewTabCSS(const content::WebContents::Getter wc_getter);
+  void CreateNewTabCSS();
 
   void CreateNewTabIncognitoHTML();
-  void CreateNewTabIncognitoCSS(const content::WebContents::Getter wc_getter);
+  void CreateNewTabIncognitoCSS();
 
   scoped_refptr<base::RefCountedString> CreateNewTabGuestHTML(
       const GuestNTPInfo& guest_ntp_info);
