@@ -132,7 +132,7 @@
 -PDFExtensionTestWithTestGuestViewManager*
 -PermissionRequestManagerWithBackForwardCacheBrowserTest.RequestsForPagesInCacheNotGrouped
 -PermissionsApiTest.AlwaysAllowed
--PictureInPicturePixelComparisonBrowserTest.PlayAndPauseControls
+-PictureInPicturePixelComparisonBrowserTest.*
 -PictureInPictureWindowControllerBrowserTest.*
 -PopupTrackerBrowserTest.PopupInWindow_IsWindowTrue
 -PopupTrackerBrowserTest.ShiftClick_HasTracker
