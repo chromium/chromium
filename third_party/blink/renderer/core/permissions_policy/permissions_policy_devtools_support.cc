@@ -15,7 +15,7 @@ namespace blink {
 base::Optional<FeaturePolicyBlockLocator> TraceFeaturePolicyBlockSource(
     Frame* frame,
     mojom::PermissionsPolicyFeature feature) {
-  const FeaturePolicy* current_policy =
+  const PermissionsPolicy* current_policy =
       frame->GetSecurityContext()->GetFeaturePolicy();
   DCHECK(current_policy);
   if (current_policy->IsFeatureEnabled(feature))
@@ -42,7 +42,7 @@ base::Optional<FeaturePolicyBlockLocator> TraceFeaturePolicyBlockSource(
     current_frame = current_frame->Tree().Parent();
   }
 
-  const FeaturePolicy::Allowlist allowlist =
+  const PermissionsPolicy::Allowlist allowlist =
       current_policy->GetAllowlistForDevTools(feature);
 
   bool allowed_by_current_frame = allowlist.Contains(

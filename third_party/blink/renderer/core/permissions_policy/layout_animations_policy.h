@@ -27,7 +27,8 @@ class LayoutAnimationsPolicy {
   // Generates a violation report for the blocked |animation_property| only if
   // the feature 'layout-animations' is disabled in |document|. Invoking
   // this method emits a potential violation of the 'layout-animations' policy
-  // which is tracked by Blink.UserCounters.FeaturePolicy.PotentialViolation.
+  // which is tracked by
+  // Blink.UserCounters.FeaturePolicy.PotentialViolation.
   static void ReportViolation(const CSSProperty& animated_property,
                               const ExecutionContext& context);
 

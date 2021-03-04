@@ -182,13 +182,13 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   Settings* GetSettings() const;
   String GetUserAgent() const;
   base::Optional<UserAgentMetadata> GetUserAgentMetadata() const;
-  const FeaturePolicy* GetFeaturePolicy() const override;
+  const PermissionsPolicy* GetFeaturePolicy() const override;
   const ClientHintsPreferences GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;
 
   enum class ClientHintsMode { kLegacy, kStandard };
   bool ShouldSendClientHint(ClientHintsMode mode,
-                            const FeaturePolicy*,
+                            const PermissionsPolicy*,
                             const url::Origin& resource_origin,
                             bool is_1p_origin,
                             network::mojom::blink::WebClientHintsType,

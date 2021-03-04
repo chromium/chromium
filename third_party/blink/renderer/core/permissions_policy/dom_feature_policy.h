@@ -53,7 +53,7 @@ class CORE_EXPORT DOMFeaturePolicy : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  protected:
-  virtual const FeaturePolicy* GetPolicy() const {
+  virtual const PermissionsPolicy* GetPolicy() const {
     return context_->GetSecurityContext().GetFeaturePolicy();
   }
 

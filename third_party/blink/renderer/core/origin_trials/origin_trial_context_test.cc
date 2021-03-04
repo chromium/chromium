@@ -407,7 +407,7 @@ TEST_F(OriginTrialContextTest, ParseHeaderValue_NotCommaSeparated) {
   EXPECT_FALSE(OriginTrialContext::ParseHeaderValue("\"foo\" bar"));
 }
 
-TEST_F(OriginTrialContextTest, FeaturePolicy) {
+TEST_F(OriginTrialContextTest, PermissionsPolicy) {
   // Create a dummy window/document with an OriginTrialContext.
   auto dummy = std::make_unique<DummyPageHolder>();
   LocalDOMWindow* window = dummy->GetFrame().DomWindow();

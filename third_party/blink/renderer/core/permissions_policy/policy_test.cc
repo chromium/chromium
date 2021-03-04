@@ -29,7 +29,7 @@ class PolicyTest : public testing::Test {
 
     auto origin = SecurityOrigin::CreateFromString(kSelfOrigin);
 
-    auto feature_policy = FeaturePolicy::CreateFromParentPolicy(
+    auto feature_policy = PermissionsPolicy::CreateFromParentPolicy(
         nullptr, ParsedFeaturePolicy(), origin->ToUrlOrigin());
     auto header = FeaturePolicyParser::ParseHeader(
         "fullscreen *; payment 'self'; midi 'none'; camera 'self' "

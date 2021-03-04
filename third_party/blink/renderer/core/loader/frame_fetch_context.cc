@@ -447,7 +447,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   // When the runtime flag "FeaturePolicyForClientHints" is enabled, feature
   // policy is used to enable hints for all subresources, based on the policy of
   // the requesting document, and the origin of the resource.
-  const FeaturePolicy* policy =
+  const PermissionsPolicy* policy =
       document_
           ? document_->domWindow()->GetSecurityContext().GetFeaturePolicy()
           : nullptr;
@@ -735,7 +735,7 @@ base::Optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
   return GetLocalFrameClient()->UserAgentMetadata();
 }
 
-const FeaturePolicy* FrameFetchContext::GetFeaturePolicy() const {
+const PermissionsPolicy* FrameFetchContext::GetFeaturePolicy() const {
   return document_
              ? document_->domWindow()->GetSecurityContext().GetFeaturePolicy()
              : nullptr;

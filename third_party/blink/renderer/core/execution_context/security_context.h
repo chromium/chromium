@@ -47,7 +47,7 @@ namespace blink {
 
 class DocumentPolicy;
 class ExecutionContext;
-class FeaturePolicy;
+class PermissionsPolicy;
 class PolicyValue;
 class SecurityOrigin;
 struct ParsedFeaturePolicyDeclaration;
@@ -133,14 +133,14 @@ class CORE_EXPORT SecurityContext {
     return insecure_request_policy_;
   }
 
-  const FeaturePolicy* GetFeaturePolicy() const {
+  const PermissionsPolicy* GetFeaturePolicy() const {
     return feature_policy_.get();
   }
-  const FeaturePolicy* GetReportOnlyFeaturePolicy() const {
+  const PermissionsPolicy* GetReportOnlyFeaturePolicy() const {
     return report_only_feature_policy_.get();
   }
-  void SetFeaturePolicy(std::unique_ptr<FeaturePolicy>);
-  void SetReportOnlyFeaturePolicy(std::unique_ptr<FeaturePolicy>);
+  void SetFeaturePolicy(std::unique_ptr<PermissionsPolicy>);
+  void SetReportOnlyFeaturePolicy(std::unique_ptr<PermissionsPolicy>);
 
   const DocumentPolicy* GetDocumentPolicy() const {
     return document_policy_.get();
@@ -178,8 +178,8 @@ class CORE_EXPORT SecurityContext {
  protected:
   network::mojom::blink::WebSandboxFlags sandbox_flags_;
   scoped_refptr<SecurityOrigin> security_origin_;
-  std::unique_ptr<FeaturePolicy> feature_policy_;
-  std::unique_ptr<FeaturePolicy> report_only_feature_policy_;
+  std::unique_ptr<PermissionsPolicy> feature_policy_;
+  std::unique_ptr<PermissionsPolicy> report_only_feature_policy_;
   std::unique_ptr<DocumentPolicy> document_policy_;
   std::unique_ptr<DocumentPolicy> report_only_document_policy_;
 

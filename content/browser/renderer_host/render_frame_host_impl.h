@@ -1100,7 +1100,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ResetLoadingState();
 
   // Returns the feature policy which should be enforced on this RenderFrame.
-  const blink::FeaturePolicy* feature_policy() const {
+  const blink::PermissionsPolicy* feature_policy() const {
     return feature_policy_.get();
   }
 
@@ -3196,7 +3196,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   blink::ParsedFeaturePolicy feature_policy_header_;
 
   // Tracks the feature policy which has been set on this frame.
-  std::unique_ptr<blink::FeaturePolicy> feature_policy_;
+  std::unique_ptr<blink::PermissionsPolicy> feature_policy_;
 
   // Tracks the document policy which has been set on this frame.
   std::unique_ptr<blink::DocumentPolicy> document_policy_;

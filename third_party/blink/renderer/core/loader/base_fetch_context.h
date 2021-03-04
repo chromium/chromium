@@ -106,7 +106,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const url::Origin& resource_origin,
       bool is_1p_origin,
       base::Optional<UserAgentMetadata> ua,
-      const FeaturePolicy* policy,
+      const PermissionsPolicy* policy,
       const base::Optional<ClientHintImageInfo>& image_info,
       const base::Optional<WTF::AtomicString>& lang,
       ResourceRequest& request);
@@ -177,7 +177,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
 
   enum class ClientHintsMode { kLegacy, kStandard };
   bool ShouldSendClientHint(ClientHintsMode mode,
-                            const FeaturePolicy*,
+                            const PermissionsPolicy*,
                             const url::Origin&,
                             bool is_1p_origin,
                             network::mojom::blink::WebClientHintsType,

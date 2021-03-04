@@ -892,7 +892,7 @@ bool RemoteFrame::DetachChildren() {
 }
 
 void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
-  const FeaturePolicy* parent_feature_policy = nullptr;
+  const PermissionsPolicy* parent_feature_policy = nullptr;
   if (Frame* parent_frame = Parent()) {
     parent_feature_policy =
         parent_frame->GetSecurityContext()->GetFeaturePolicy();

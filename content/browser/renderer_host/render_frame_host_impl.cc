@@ -714,11 +714,11 @@ DetermineWhetherToForbidTrustTokenRedemption(
   if (!parent)
     return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
 
-  const blink::FeaturePolicy* parent_policy = parent->feature_policy();
+  const blink::PermissionsPolicy* parent_policy = parent->feature_policy();
   blink::ParsedFeaturePolicy container_policy =
       commit_params.frame_policy.container_policy;
 
-  auto subframe_policy = blink::FeaturePolicy::CreateFromParentPolicy(
+  auto subframe_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, container_policy, subframe_origin);
 
   if (subframe_policy->IsFeatureEnabled(
@@ -2950,9 +2950,9 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
 
   // Construct the frame's feature policy only once we know its initial
   // committed origin. It's necessary to wait for the origin because the feature
-  // policy's state depends on the origin, so the FeaturePolicy object could be
-  // configured incorrectly if it were initialized before knowing the value of
-  // |last_committed_origin_|. More at crbug.com/1112959.
+  // policy's state depends on the origin, so the PermissionsPolicy object could
+  // be configured incorrectly if it were initialized before knowing the value
+  // of |last_committed_origin_|. More at crbug.com/1112959.
   ResetFeaturePolicy();
 }
 
@@ -7822,11 +7822,11 @@ void RenderFrameHostImpl::CreateWebUsbService(
 
 void RenderFrameHostImpl::ResetFeaturePolicy() {
   RenderFrameHostImpl* parent_frame_host = GetParent();
-  const blink::FeaturePolicy* parent_policy =
+  const blink::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->feature_policy() : nullptr;
   blink::ParsedFeaturePolicy container_policy =
       frame_tree_node()->effective_frame_policy().container_policy;
-  feature_policy_ = blink::FeaturePolicy::CreateFromParentPolicy(
+  feature_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, container_policy, last_committed_origin_);
 }
 

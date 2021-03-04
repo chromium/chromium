@@ -13,7 +13,7 @@ namespace blink {
 
 // The PermissionsPolicyFeatureDefault enum defines the default enable state for
 // a feature when the feature is not declared in iframe 'allow' attribute.
-// See |FeaturePolicy::InheritedValueForFeature| for usage.
+// See |PermissionsPolicy::InheritedValueForFeature| for usage.
 //
 // The 2 possibilities map directly to Feature Policy Allowlist semantics.
 //

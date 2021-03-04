@@ -55,7 +55,7 @@ namespace blink {
 
 enum class ResourceType : uint8_t;
 class ClientHintsPreferences;
-class FeaturePolicy;
+class PermissionsPolicy;
 class KURL;
 struct ResourceLoaderOptions;
 class ResourceTimingInfo;
@@ -161,7 +161,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return MakeGarbageCollected<FetchContext>();
   }
 
-  virtual const FeaturePolicy* GetFeaturePolicy() const { return nullptr; }
+  virtual const PermissionsPolicy* GetFeaturePolicy() const { return nullptr; }
 
   // Determine if the request is on behalf of an advertisement. If so, return
   // true. Checks `resource_request.Url()` unless `alias_url` is non-null, in

@@ -17,7 +17,7 @@
 namespace content {
 
 // Integration tests for feature policy setup and querying through a RFH. These
-// tests are not meant to cover every edge case as the FeaturePolicy class
+// tests are not meant to cover every edge case as the PermissionsPolicy class
 // itself is tested thoroughly in feature_policy_unittest.cc. Instead they are
 // meant to ensure that integration with RenderFrameHost works correctly.
 class RenderFrameHostFeaturePolicyTest

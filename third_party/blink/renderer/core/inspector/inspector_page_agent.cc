@@ -872,7 +872,7 @@ Response InspectorPageAgent::getPermissionsPolicyState(
   if (!frame)
     return Response::ServerError("No frame for given id found in this target");
 
-  const blink::FeaturePolicy* feature_policy =
+  const blink::PermissionsPolicy* feature_policy =
       frame->GetSecurityContext()->GetFeaturePolicy();
 
   if (!feature_policy)

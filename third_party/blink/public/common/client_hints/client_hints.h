@@ -17,7 +17,7 @@ class GURL;
 
 namespace blink {
 
-class FeaturePolicy;
+class PermissionsPolicy;
 
 // Mapping from WebClientHintsType to the hint's outgoing header
 // (e.g. kLang => "sec-ch-lang"). The ordering matches the ordering of enums in
@@ -67,7 +67,7 @@ bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type);
 // Add a list of Client Hints headers to be removed to the output vector, based
 // on FeaturePolicy and the url's origin.
 BLINK_COMMON_EXPORT void FindClientHintsToRemove(
-    const FeaturePolicy* feature_policy,
+    const PermissionsPolicy* feature_policy,
     const GURL& url,
     std::vector<std::string>* removed_headers);
 

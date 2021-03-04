@@ -92,7 +92,7 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
 
 // Basic tests for feature policy checks through the
 // MediaDevicesPermissionChecker.  These tests are not meant to cover every edge
-// case as the FeaturePolicy class itself is tested thoroughly in
+// case as the PermissionsPolicy class itself is tested thoroughly in
 // feature_policy_unittest.cc and in
 // render_frame_host_feature_policy_unittest.cc.
 TEST_F(MediaDevicesPermissionCheckerTest, CheckPermissionWithFeaturePolicy) {

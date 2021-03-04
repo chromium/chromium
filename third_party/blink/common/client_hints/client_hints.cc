@@ -39,8 +39,8 @@ const char* const kClientHintsHeaderMapping[] = {
 const unsigned kClientHintsNumberOfLegacyHints = 4;
 
 const mojom::PermissionsPolicyFeature kClientHintsFeaturePolicyMapping[] = {
-    // Legacy Hints that are sent cross-origin regardless of FeaturePolicy when
-    // kAllowClientHintsToThirdParty is enabled
+    // Legacy Hints that are sent cross-origin regardless of Permissions Policy
+    // when kAllowClientHintsToThirdParty is enabled.
     mojom::PermissionsPolicyFeature::kClientHintDeviceMemory,
     mojom::PermissionsPolicyFeature::kClientHintDPR,
     mojom::PermissionsPolicyFeature::kClientHintWidth,
@@ -132,8 +132,8 @@ bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
 }
 
 // Add a list of Client Hints headers to be removed to the output vector, based
-// on FeaturePolicy and the url's origin.
-void FindClientHintsToRemove(const FeaturePolicy* feature_policy,
+// on PermissionsPolicy and the url's origin.
+void FindClientHintsToRemove(const PermissionsPolicy* feature_policy,
                              const GURL& url,
                              std::vector<std::string>* removed_headers) {
   DCHECK(removed_headers);

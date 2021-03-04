@@ -116,7 +116,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     const url::Origin& resource_origin,
     bool is_1p_origin,
     base::Optional<UserAgentMetadata> ua,
-    const FeaturePolicy* policy,
+    const PermissionsPolicy* policy,
     const base::Optional<ClientHintImageInfo>& image_info,
     const base::Optional<WTF::AtomicString>& lang,
     ResourceRequest& request) {
@@ -151,7 +151,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     // Formatted using the "sh-boolean" format from:
     // https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html#boolean
     // ShouldSendClientHint is called to make sure it's controlled by
-    // FeaturePolicy.
+    // PermissionsPolicy.
     if (ShouldSendClientHint(
             ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAMobile,
@@ -175,7 +175,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   }
 
   // The next 4 hints should be enabled if we're allowing legacy hints to third
-  // parties, or if FeaturePolicy delegation says they are allowed.
+  // parties, or if PermissionsPolicy delegation says they are allowed.
   if (ShouldSendClientHint(
           ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
           network::mojom::blink::WebClientHintsType::kDeviceMemory,
@@ -540,7 +540,7 @@ BaseFetchContext::CanRequestInternal(
 
 bool BaseFetchContext::ShouldSendClientHint(
     ClientHintsMode mode,
-    const FeaturePolicy* policy,
+    const PermissionsPolicy* policy,
     const url::Origin& resource_origin,
     bool is_1p_origin,
     network::mojom::blink::WebClientHintsType type,

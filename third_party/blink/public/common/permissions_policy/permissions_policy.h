@@ -124,7 +124,7 @@ using ParsedFeaturePolicy = std::vector<ParsedFeaturePolicyDeclaration>;
 bool BLINK_COMMON_EXPORT operator==(const ParsedFeaturePolicyDeclaration& lhs,
                                     const ParsedFeaturePolicyDeclaration& rhs);
 
-class BLINK_COMMON_EXPORT FeaturePolicy {
+class BLINK_COMMON_EXPORT PermissionsPolicy {
  public:
   // Represents a collection of origins which make up an allowlist in a feature
   // policy. This collection may be set to match every origin (corresponding to
@@ -166,14 +166,15 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
     bool matches_opaque_src_{false};
   };
 
-  ~FeaturePolicy();
+  ~PermissionsPolicy();
 
-  static std::unique_ptr<FeaturePolicy> CreateFromParentPolicy(
-      const FeaturePolicy* parent_policy,
+  static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
+      const PermissionsPolicy* parent_policy,
       const ParsedFeaturePolicy& container_policy,
       const url::Origin& origin);
 
-  static std::unique_ptr<FeaturePolicy> CopyStateFrom(const FeaturePolicy*);
+  static std::unique_ptr<PermissionsPolicy> CopyStateFrom(
+      const PermissionsPolicy*);
 
   bool IsFeatureEnabled(mojom::PermissionsPolicyFeature feature) const;
 
@@ -186,7 +187,7 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
       mojom::PermissionsPolicyFeature feature) const;
 
   // Returns the allowlist of a given feature by this policy.
-  // TODO(crbug.com/937131): Use |FeaturePolicy::GetAllowlistForDevTools|
+  // TODO(crbug.com/937131): Use |PermissionsPolicy::GetAllowlistForDevTools|
   // to replace this method. This method uses legacy |default_allowlist|
   // calculation method.
   const Allowlist GetAllowlistForFeature(
@@ -211,16 +212,16 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
  private:
   friend class FeaturePolicyTest;
 
-  FeaturePolicy(url::Origin origin,
-                const PermissionsPolicyFeatureList& feature_list);
-  static std::unique_ptr<FeaturePolicy> CreateFromParentPolicy(
-      const FeaturePolicy* parent_policy,
+  PermissionsPolicy(url::Origin origin,
+                    const PermissionsPolicyFeatureList& feature_list);
+  static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
+      const PermissionsPolicy* parent_policy,
       const ParsedFeaturePolicy& container_policy,
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 
   bool InheritedValueForFeature(
-      const FeaturePolicy* parent_policy,
+      const PermissionsPolicy* parent_policy,
       std::pair<mojom::PermissionsPolicyFeature,
                 PermissionsPolicyFeatureDefault> feature,
       const ParsedFeaturePolicy& container_policy) const;
@@ -242,7 +243,7 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
 
   const PermissionsPolicyFeatureList& feature_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(FeaturePolicy);
+  DISALLOW_COPY_AND_ASSIGN(PermissionsPolicy);
 };
 
 }  // namespace blink

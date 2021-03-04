@@ -417,7 +417,7 @@ struct ClientHintsExtendedData {
   url::Origin resource_origin;
   bool is_main_frame = false;
   GURL main_frame_url;
-  const blink::FeaturePolicy* feature_policy = nullptr;
+  const blink::PermissionsPolicy* feature_policy = nullptr;
   bool is_1p_origin = false;
 };
 

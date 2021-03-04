@@ -2056,8 +2056,8 @@ void DocumentLoader::CommitNavigation() {
     security_init.InitFeaturePolicyFrom(previous_window->GetSecurityContext());
     security_init.InitDocumentPolicyFrom(previous_window->GetSecurityContext());
   } else {
-    // FeaturePolicy and DocumentPolicy require SecurityOrigin and origin trials
-    // to be initialized.
+    // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
+    // trials to be initialized.
     // TODO(iclelland): Add Feature-Policy-Report-Only to Origin Policy.
     security_init.ApplyFeaturePolicy(frame_.Get(), response_, origin_policy_,
                                      frame_policy_);

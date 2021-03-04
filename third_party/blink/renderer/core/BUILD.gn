@@ -1833,7 +1833,7 @@ fuzzer_test("blink_html_tokenizer_fuzzer") {
   ]
 }
 
-# Fuzzers for blink::FeaturePolicy.
+# Fuzzers for blink::PermissionsPolicy.
 fuzzer_test("feature_policy_fuzzer") {
   sources = [ "permissions_policy/feature_policy_fuzzer.cc" ]
   deps = [

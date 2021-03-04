@@ -113,7 +113,7 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
   if (FeatureAvailable(feature, execution_context)) {
     auto feature_name = GetDefaultFeatureNameMap().at(feature);
 
-    const FeaturePolicy::Allowlist allowlist =
+    const PermissionsPolicy::Allowlist allowlist =
         GetPolicy()->GetAllowlistForFeature(feature_name);
     const auto& allowed_origins = allowlist.AllowedOrigins();
     if (allowed_origins.empty()) {

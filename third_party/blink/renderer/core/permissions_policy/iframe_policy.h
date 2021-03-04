@@ -33,18 +33,18 @@ class IFramePolicy final : public DOMFeaturePolicy {
   void UpdateContainerPolicy(
       const ParsedFeaturePolicy& container_policy,
       scoped_refptr<const SecurityOrigin> src_origin) override {
-    policy_ = FeaturePolicy::CreateFromParentPolicy(
+    policy_ = PermissionsPolicy::CreateFromParentPolicy(
         context_->GetSecurityContext().GetFeaturePolicy(), container_policy,
         src_origin->ToUrlOrigin());
   }
 
  protected:
-  const FeaturePolicy* GetPolicy() const override { return policy_.get(); }
+  const PermissionsPolicy* GetPolicy() const override { return policy_.get(); }
 
   bool IsIFramePolicy() const override { return true; }
 
  private:
-  std::unique_ptr<FeaturePolicy> policy_;
+  std::unique_ptr<PermissionsPolicy> policy_;
 };
 
 }  // namespace blink
