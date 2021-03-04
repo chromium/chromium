@@ -292,9 +292,9 @@ suite('network-config', function() {
         return flushAsync().then(() => {
           let outer = networkConfig.$$('#outer');
           assertEquals('EAP-TLS', outer.value);
-          // Check that with no certificates, 'do-not-check' amd 'no-certs'
-          // are selected.
-          assertEquals('do-not-check', networkConfig.selectedServerCaHash_);
+          // Check that with no certificates, 'default' and 'no-certs' are
+          // selected.
+          assertEquals('default', networkConfig.selectedServerCaHash_);
           assertEquals('no-certs', networkConfig.selectedUserCertHash_);
         });
       });
