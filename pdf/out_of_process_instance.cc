@@ -46,6 +46,7 @@
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ppapi_migration/value_conversions.h"
 #include "pdf/thumbnail.h"
+#include "pdf/ui/format_page_size.h"
 #include "ppapi/c/dev/ppb_cursor_control_dev.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/private/ppb_pdf.h"
@@ -110,6 +111,7 @@ constexpr char kJSCreator[] = "creator";
 constexpr char kJSProducer[] = "producer";
 constexpr char kJSCreationDate[] = "creationDate";
 constexpr char kJSModDate[] = "modDate";
+constexpr char kJSPageSize[] = "pageSize";
 constexpr char kJSCanSerializeDocument[] = "canSerializeDocument";
 // Print (Page -> Plugin)
 constexpr char kJSPrintType[] = "print";
@@ -1812,6 +1814,10 @@ void OutOfProcessInstance::SendMetadata() {
         pp::Var(base::UTF16ToUTF8(
             base::TimeFormatShortDateAndTime(document_metadata.mod_date))));
   }
+
+  metadata_data.Set(pp::Var(kJSPageSize),
+                    pp::Var(base::UTF16ToUTF8(
+                        FormatPageSize(engine()->GetUniformPageSizePoints()))));
 
   metadata_data.Set(
       pp::Var(kJSCanSerializeDocument),
