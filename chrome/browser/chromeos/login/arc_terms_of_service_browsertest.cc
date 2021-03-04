@@ -8,7 +8,6 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
@@ -138,47 +137,6 @@ ArcGoogleLocationServiceConsent BuildArcGoogleLocationServiceConsent(
                                                : UserConsentTypes::NOT_GIVEN);
   return location_service_consent;
 }
-
-// Helper class that waits for a single 'contentload' event from the
-// specified webview.
-// This class can only wait for a single load event per object lifetime.
-class WebViewLoadWaiter {
- public:
-  explicit WebViewLoadWaiter(
-      std::initializer_list<base::StringPiece> element_ids)
-      : expected_message_(base::GenerateGUID()) {
-    std::string element_id = test::GetOobeElementPath(element_ids);
-    std::string js = base::StringPrintf(
-        R"(
-          (function() {
-            var policy_webview = %s;
-            var f = function() {
-              policy_webview.removeEventListener('contentload', f);
-              window.domAutomationController.send('%s');
-            };
-            policy_webview.addEventListener('contentload', f);
-          })()
-        )",
-        element_id.c_str(), expected_message_.c_str());
-    test::OobeJS().Evaluate(js);
-  }
-
-  ~WebViewLoadWaiter() = default;
-
-  void Wait() {
-    std::string message;
-    do {
-      ASSERT_TRUE(message_queue_.WaitForMessage(&message));
-    } while (message !=
-             base::StringPrintf("\"%s\"", expected_message_.c_str()));
-  }
-
- private:
-  std::string expected_message_;
-  content::DOMMessageQueue message_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewLoadWaiter);
-};
 
 }  // namespace
 
@@ -467,17 +425,19 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, ReviewPlayOptions) {
 }
 
 // Test whether google privacy policy can be loaded.
-// TODO(crbug.com/1177111) Re-enable test
-IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, DISABLED_PrivacyPolicy) {
+IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, PrivacyPolicy) {
   // Privacy policy link is parsed from the footer of the TOS content response.
   set_serve_tos_with_privacy_policy_footer(true);
   TriggerArcTosScreen();
   ASSERT_NO_FATAL_FAILURE(WaitForTermsOfServiceWebViewToLoad());
 
-  WebViewLoadWaiter waiter(kArcTosOverlayWebview);
   test::OobeJS().ClickOnPath(kArcTosNextButton);
   test::OobeJS().ClickOnPath(kArcPolicyLink);
-  waiter.Wait();
+
+  test::OobeJS()
+      .CreateWaiter(base::StrCat(
+          {"!", test::GetOobeElementPath({kArcTosID}), ".overlayLoading_"}))
+      ->Wait();
   EXPECT_EQ(test::GetWebViewContents(kArcTosOverlayWebview),
             kPrivacyPolicyContent);
 
