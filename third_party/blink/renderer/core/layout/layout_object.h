@@ -2977,6 +2977,32 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return fragment_;
   }
 
+  // Attempt to return the top/left fragment, to be used in block-fragmentation-
+  // unaware code. Do NOT call this method from code that wants to handle block
+  // fragmentation correctly!
+  //
+  // There are cases where we need to pretend that we're not block-fragmented as
+  // far as painting / hit-testing is concerned, even if layout has fragmented
+  // the content correctly. This is the situation in LayoutNG when a paint layer
+  // gets both fragmented and composited (and CompositingAfterPaint isn't
+  // enabled). Then the fragments will be stitched together during pre-paint,
+  // and if we're interested in the "correct" paint offset, we typically need to
+  // look at the topmost and leftmost one, which may not be the same as the
+  // first (layout / document order wise). In such stitched situations, note
+  // that it's expected that paint properties be identical across all
+  // FragmentData objects. The paint offset is the only thing expected to vary.
+  //
+  // Any call to this method is a sign of something not being right in some way,
+  // and it should be possible to get rid of it once CompositeAfterPaint has
+  // shipped and the old code has been deleted.
+  const FragmentData& PrimaryStitchingFragment() const {
+    NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+    if (LIKELY(!HasFlippedBlocksWritingMode() || !IsLayoutNGObject()))
+      return fragment_;
+    return fragment_.LastFragment();
+  }
+
   enum OverflowRecalcType {
     kOnlyVisualOverflowRecalc,
     kLayoutAndVisualOverflowRecalc,

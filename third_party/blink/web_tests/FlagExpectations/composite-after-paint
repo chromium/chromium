@@ -70,3 +70,6 @@ crbug.com/1184035 external/wpt/css/css-values/round-function.html [ Crash ]
 
 crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
+
+# This test expects fragment stitching when composited, which isn't correct rendering.
+crbug.com/1058792 fast/multicol/composited-with-child-layer-vertical-rl.html [ Skip ]

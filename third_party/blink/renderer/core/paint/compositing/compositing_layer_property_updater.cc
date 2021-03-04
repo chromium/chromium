@@ -35,10 +35,10 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
   if (!mapping)
     return;
 
-  const FragmentData& fragment_data = object.FirstFragment();
+  const FragmentData& fragment_data = object.PrimaryStitchingFragment();
   DCHECK(fragment_data.HasLocalBorderBoxProperties());
   // SPv1 compositing forces single fragment for directly composited elements.
-  DCHECK(!fragment_data.NextFragment() ||
+  DCHECK(object.IsLayoutNGObject() || !object.FirstFragment().NextFragment() ||
          // We create multiple fragments for composited repeating fixed-position
          // during printing.
          object.GetDocument().Printing() ||

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_table_row.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
@@ -272,6 +274,17 @@ class FragmentPaintPropertyTreeBuilder {
                                                  namespace_id);
   }
 
+  // If we need to composite, and CompositeAfterPaint isn't enabled, we're not
+  // really allowed to fragment for real, but LayoutNG has already done that for
+  // us. Return true if this is the situation and we need to Stitch all
+  // fragments back together, like a tall strip.
+  bool RequiresFragmentStitching() const {
+    return pre_paint_info_ && object_.IsBox() &&
+           !RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+           CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
+               object_);
+  }
+
   const LayoutObject& object_;
   NGPrePaintInfo* pre_paint_info_;
   // The tree builder context for the whole object.
@@ -492,8 +505,65 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     return;
   }
 
-  PhysicalOffset subpixel_accumulation =
-      context_.current.paint_offset - PhysicalOffset(*paint_offset_translation);
+  // LayoutNG block fragmentation rocket science: If we need to composite, and
+  // CompositeAfterPaint isn't enabled, we're not really allowed to fragment for
+  // real, but the layout engine has already done that. Stitch all fragments
+  // together like a tall strip. This will match legacy behavior pretty well,
+  // including the concept of "pagination struts" found in legacy fragmentation.
+  PhysicalOffset new_paint_offset;
+  PhysicalOffset subpixel_accumulation;
+  if (RequiresFragmentStitching()) {
+    const LayoutBox& box = To<LayoutBox>(object_);
+    const NGFragmentChildIterator& iterator = pre_paint_info_->iterator;
+    const NGPhysicalBoxFragment& fragment = *iterator->BoxFragment();
+    const NGBlockBreakToken* incoming_break_token = iterator->BlockBreakToken();
+
+    // Calculate this fragment's rectangle relatively to the enclosing stitched
+    // layout object, with help from the break token.
+    //
+    // Note that we're using the writing mode of this object here. Since the
+    // object got fragmented, though, we can be sure that it's in the same
+    // writing mode as the fragmentation context (or it would have been treated
+    // as a monolithic element).
+    WritingModeConverter converter(box.StyleRef().GetWritingDirection(),
+                                   PhysicalSize(box.Size()));
+    LogicalOffset logical_offset;
+    if (incoming_break_token)
+      logical_offset.block_offset = incoming_break_token->ConsumedBlockSize();
+    LogicalRect logical_rect(logical_offset,
+                             converter.ToLogical(fragment.Size()));
+    // Find the offset relatively to the top/left edge of the enclosing stitched
+    // layout object. This is the paint offset that we need to store in the
+    // FragmentData. The paint offset is normally simply reset when applying
+    // PaintOffsetTranslation, but in the stitching case we're cloning the
+    // PaintOffsetTranslation across all fragments, so we'll need the paint
+    // offset in order to get to the right offset for each fragment.
+    new_paint_offset = converter.ToPhysical(logical_rect).offset;
+
+    if (&pre_paint_info_->fragment_data == &object_.FirstFragment()) {
+      // Make the translation relatively to the top/left corner of the box. In
+      // vertical-rl writing mode, the first fragment is not the leftmost one.
+      PhysicalOffset topleft = context_.current.paint_offset - new_paint_offset;
+      paint_offset_translation = RoundedIntPoint(topleft);
+      subpixel_accumulation =
+          topleft - PhysicalOffset(*paint_offset_translation);
+    } else {
+      // We're not at the first fragment. Clone the paint offset translation of
+      // the first fragment.
+      const FragmentData& first_fragment = object_.FirstFragment();
+      const auto* properties = first_fragment.PaintProperties();
+      FloatSize translation =
+          properties->PaintOffsetTranslation()->Translation2D();
+      paint_offset_translation = RoundedIntPoint(FloatPoint(translation));
+      subpixel_accumulation =
+          first_fragment.PaintOffset() -
+          PhysicalOffset(RoundedIntPoint(first_fragment.PaintOffset()));
+    }
+  } else {
+    subpixel_accumulation = context_.current.paint_offset -
+                            PhysicalOffset(*paint_offset_translation);
+  }
+
   if (!subpixel_accumulation.IsZero() ||
       !context_.current
            .directly_composited_container_paint_offset_subpixel_delta
@@ -501,7 +571,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     // If the object has a non-translation transform, discard the fractional
     // paint offset which can't be transformed by the transform.
     if (!CanPropagateSubpixelAccumulation()) {
-      context_.current.paint_offset = PhysicalOffset();
+      context_.current.paint_offset = new_paint_offset;
       context_.current
           .directly_composited_container_paint_offset_subpixel_delta =
           PhysicalOffset();
@@ -509,7 +579,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     }
   }
 
-  context_.current.paint_offset = subpixel_accumulation;
+  context_.current.paint_offset = new_paint_offset + subpixel_accumulation;
 
   bool can_be_directly_composited =
       RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
@@ -519,7 +589,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     return;
 
   if (paint_offset_translation && properties_ &&
-      properties_->PaintOffsetTranslation()) {
+      properties_->PaintOffsetTranslation() && new_paint_offset.IsZero()) {
     // The composited subpixel movement optimization applies only if the
     // composited layer has and had PaintOffsetTranslation, so that both the
     // the old and new paint offsets are just subpixel accumulations.

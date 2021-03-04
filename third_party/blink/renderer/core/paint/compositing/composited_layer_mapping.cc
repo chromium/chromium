@@ -1479,9 +1479,10 @@ void CompositedLayerMapping::UpdateLocalClipRectForSquashedLayer(
   // disallowed squashing.
   DCHECK(ancestor_paint_info);
 
+  const PaintLayer* ancestor_layer = ancestor_paint_info->paint_layer;
   ClipRectsContext clip_rects_context(
-      ancestor_paint_info->paint_layer,
-      &ancestor_paint_info->paint_layer->GetLayoutObject().FirstFragment(),
+      ancestor_layer,
+      &ancestor_layer->GetLayoutObject().PrimaryStitchingFragment(),
       kUncachedClipRects);
   ClipRect parent_clip_rect;
   paint_info.paint_layer
@@ -1754,7 +1755,8 @@ IntRect CompositedLayerMapping::ComputeInterestRect(
 IntRect CompositedLayerMapping::PaintableRegion(
     const GraphicsLayer* graphics_layer) const {
   DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
-  const auto& fragment = OwningLayer().GetLayoutObject().FirstFragment();
+  const auto& fragment =
+      OwningLayer().GetLayoutObject().PrimaryStitchingFragment();
   CullRect cull_rect = graphics_layer == scrolling_contents_layer_.get() ||
                                (graphics_layer == foreground_layer_.get() &&
                                 scrolling_contents_layer_)

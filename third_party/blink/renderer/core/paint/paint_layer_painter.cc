@@ -279,6 +279,9 @@ void PaintLayerPainter::AdjustForPaintProperties(
       auto& cull_rect = painting_info.cull_rect;
       // CullRect::ApplyTransforms() requires the cull rect in the source
       // transform space. Convert cull_rect from the root layer's local space.
+      //
+      // TODO(paint-dev): Become block fragmentation aware. Just using the first
+      // fragment seems wrong.
       cull_rect.MoveBy(RoundedIntPoint(first_root_fragment.PaintOffset()));
       base::Optional<CullRect> old_cull_rect;
       if (!paint_layer_.SelfOrDescendantNeedsRepaint() &&
@@ -304,7 +307,13 @@ void PaintLayerPainter::AdjustForPaintProperties(
       cull_rect.MoveBy(-RoundedIntPoint(first_fragment.PaintOffset()));
     } else if (!painting_info.cull_rect.IsInfinite()) {
       auto rect = painting_info.cull_rect.Rect();
-      first_root_fragment.MapRectToFragment(first_fragment, rect);
+      const FragmentData& primary_stitching_fragment =
+          paint_layer_.GetLayoutObject().PrimaryStitchingFragment();
+      const FragmentData& primary_root_stitching_fragment =
+          painting_info.root_layer->GetLayoutObject()
+              .PrimaryStitchingFragment();
+      primary_root_stitching_fragment.MapRectToFragment(
+          primary_stitching_fragment, rect);
       painting_info.cull_rect = CullRect(rect);
     }
   }
@@ -437,6 +446,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(
     subsequence_recorder.emplace(context, paint_layer_);
   }
 
+  // TODO(paint-dev): Become block fragmentation aware. Unconditionally using
+  // the first fragment doesn't seem right.
   PhysicalOffset offset_from_root = object.FirstFragment().PaintOffset();
   if (const PaintLayer* root = painting_info.root_layer)
     offset_from_root -= root->GetLayoutObject().FirstFragment().PaintOffset();

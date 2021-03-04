@@ -454,10 +454,11 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
     ClipRect clip_rect;
     layer->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
         .CalculateBackgroundClipRect(
-            ClipRectsContext(root_layer_,
-                             &root_layer_->GetLayoutObject().FirstFragment(),
-                             cache_slot, kIgnoreOverlayScrollbarSize,
-                             kIgnoreOverflowClipAndScroll),
+            ClipRectsContext(
+                root_layer_,
+                &root_layer_->GetLayoutObject().PrimaryStitchingFragment(),
+                cache_slot, kIgnoreOverlayScrollbarSize,
+                kIgnoreOverflowClipAndScroll),
             clip_rect);
     IntRect snapped_clip_rect = PixelSnappedIntRect(clip_rect.Rect());
     // |snapped_clip_rect| is in absolute space space, but with scroll applied.
