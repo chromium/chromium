@@ -6189,6 +6189,8 @@ static_library("browser") {
       "sessions/session_restore_stats_collector.h",
       "sessions/session_service.cc",
       "sessions/session_service.h",
+      "sessions/session_service_base.cc",
+      "sessions/session_service_base.h",
       "sessions/session_service_factory.cc",
       "sessions/session_service_factory.h",
       "sessions/session_service_log.cc",

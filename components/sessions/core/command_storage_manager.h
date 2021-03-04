@@ -43,7 +43,7 @@ class SESSIONS_EXPORT CommandStorageManager {
   // with consumers building the path (similar to weblayer). Remove in
   // approximately a year (1/2022), when we shouldn't need to worry too much
   // about migrating older data.
-  enum SessionType { kSessionRestore, kTabRestore, kOther };
+  enum SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
 
   // Creates a new CommandStorageManager. After creation you need to invoke
   // Init(). `delegate` is not owned by this and must outlive this. If

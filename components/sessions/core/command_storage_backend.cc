@@ -369,6 +369,11 @@ base::FilePath::StringType GetSessionBaseName(
     CommandStorageManager::SessionType type,
     const base::FilePath& supplied_path) {
   switch (type) {
+    case CommandStorageManager::kAppRestore:
+      // TODO(stahon@microsoft.com) Until AppSessionService is implemented this
+      // should never be called.
+      NOTREACHED();
+      return kSessionFileNamePrefix;
     case CommandStorageManager::kTabRestore:
       return kTabSessionFileNamePrefix;
     case CommandStorageManager::kSessionRestore:
@@ -391,6 +396,11 @@ base::FilePath GetLegacySessionPath(CommandStorageManager::SessionType type,
                                     const base::FilePath& base_path,
                                     bool current) {
   switch (type) {
+    case CommandStorageManager::kAppRestore:
+      // TODO(stahon@microsoft.com) Until AppSessionService is implemented
+      // this code should never be called.
+      NOTREACHED();
+      return base_path;
     case CommandStorageManager::kTabRestore:
       return base_path.Append(current ? kLegacyCurrentTabSessionFileName
                                       : kLegacyLastTabSessionFileName);
