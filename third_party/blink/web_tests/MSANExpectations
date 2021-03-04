@@ -167,6 +167,3 @@ crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-stick-t
 crbug.com/1179829 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-log-linkify-stack-in-errors.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Timeout ]
-
-# Sheriff 2021-03-03
-crbug.com/1182532 [ Linux ] external/wpt/uievents/order-of-events/mouse-events/mousemove-between.html [ Pass Timeout ]
