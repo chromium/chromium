@@ -8890,9 +8890,12 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   isolation_info_ = navigation_request->isolation_info_for_subresources();
 
+  // Navigations in the same document, or navigations that activate an existing
+  // bfcached or prerendered document, do not create a new document.
   bool created_new_document =
       !is_same_document_navigation &&
-      !navigation_request->IsServedFromBackForwardCache();
+      !navigation_request->IsServedFromBackForwardCache() &&
+      !navigation_request->IsPrerenderedPageActivation();
 
   // TODO(crbug.com/936696): Remove this after we have RenderDocument.
   // IsWaitingToCommit can be false inside DidCommitNavigationInternal only in
@@ -8915,13 +8918,14 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     last_committed_cross_document_navigation_id_ =
         navigation_request->GetNavigationId();
 
-    if (IsCurrent() && !committed_speculative_rfh_before_navigation_commit_) {
-      // Clear all the user data associated with the non speculative
-      // RenderFrameHost when the navigation is a cross-document navigation not
-      // served from the back-forward cache. Make sure the data doesn't get
-      // cleared for the cases when the RenderFrameHost commits before the
-      // navigation commits. This happens when the current RenderFrameHost
-      // crashes before navigating to a new URL.
+    if (lifecycle_state() != LifecycleState::kSpeculative &&
+        !committed_speculative_rfh_before_navigation_commit_) {
+      // Clear all the user data associated with the non-speculative
+      // RenderFrameHost because the navigation has created a new document.
+      // Make sure the data doesn't get cleared for the cases when the
+      // RenderFrameHost commits before the navigation commits. This happens
+      // when the current RenderFrameHost crashes before navigating to a new
+      // URL.
       document_associated_data_.ClearAllUserData();
     }
 

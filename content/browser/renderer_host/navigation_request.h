@@ -814,6 +814,11 @@ class CONTENT_EXPORT NavigationRequest
   // navigation.
   const GURL& GetOriginalRequestURL();
 
+  // Prerender2:
+  // Returns true if this navigation will activate a prerendered page. It is
+  // only meaningful to call this after BeginNavigation().
+  bool IsPrerenderedPageActivation() const;
+
  private:
   friend class NavigationRequestTest;
 
@@ -1198,11 +1203,6 @@ class CONTENT_EXPORT NavigationRequest
   // If appropriate, this applies (2), deletes |this|, and returns true.
   // In that case, the caller must immediately return.
   bool MaybeCancelFailedNavigation();
-
-  // Prerender2:
-  // Returns true if this navigation will activate a prerendered page. It is
-  // only meaningful to call this after BeginNavigation().
-  bool IsPrerenderedPageActivation() const;
 
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;

@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -25,6 +26,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -48,6 +50,28 @@
 
 namespace content {
 namespace {
+
+// Example class which inherits the RenderDocumentHostUserData, all the data is
+// associated to the lifetime of the document.
+class DocumentData : public RenderDocumentHostUserData<DocumentData> {
+ public:
+  ~DocumentData() override = default;
+
+  base::WeakPtr<DocumentData> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  explicit DocumentData(RenderFrameHost* render_frame_host) {}
+
+  friend class content::RenderDocumentHostUserData<DocumentData>;
+
+  base::WeakPtrFactory<DocumentData> weak_ptr_factory_{this};
+
+  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+};
+
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DocumentData)
 
 // TODO(https://crbug.com/1132746): There are two different ways of prerendering
 // the page: a dedicated WebContents instance or using a separate FrameTree
@@ -1319,6 +1343,54 @@ IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
             EvalJs(prerender_render_frame_host, "result;"));
 
   ui::SelectFileDialog::SetFactory(nullptr);
+}
+
+// Tests that RenderDocumentHostUserData object is not cleared on activating a
+// prerendered page.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderDocumentHostUserData) {
+  // This test is only meaningful with activation.
+  if (IsActivationDisabled())
+    return;
+
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  // Get the DocumentData associated with prerender RenderFrameHost.
+  DocumentData::CreateForCurrentDocument(prerendered_render_frame_host);
+  base::WeakPtr<DocumentData> data =
+      DocumentData::GetForCurrentDocument(prerendered_render_frame_host)
+          ->GetWeakPtr();
+  EXPECT_TRUE(data);
+
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+
+  // The prerender host should be consumed.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+
+  // DocumentData associated with document shouldn't have been cleared on
+  // activating prerendered page.
+  base::WeakPtr<DocumentData> data_after_activation =
+      DocumentData::GetForCurrentDocument(current_frame_host())->GetWeakPtr();
+  EXPECT_TRUE(data_after_activation);
+
+  // Both the instances of DocumentData before and after activation should point
+  // to the same object and make sure they aren't null.
+  EXPECT_EQ(data_after_activation.get(), data.get());
 }
 
 // - End: Tests for Mojo capability control methodology restrictions ===========
