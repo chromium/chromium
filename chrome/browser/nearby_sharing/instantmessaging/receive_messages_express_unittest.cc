@@ -324,3 +324,12 @@ TEST_F(ReceiveMessagesExpressTest, NoOnCompleteWithoutFastPathReady) {
   ASSERT_EQ(0, GetTestUrlLoaderFactory().NumPending());
   ASSERT_FALSE(OnCompleteResult().has_value());
 }
+
+TEST_F(ReceiveMessagesExpressTest, FastPathTimeout) {
+  base::RunLoop run_loop;
+  StartReceivingMessages(&run_loop, /*token_success=*/true);
+  run_loop.Run();
+  ASSERT_TRUE(start_receive_success_.has_value());
+  EXPECT_FALSE(start_receive_success_.value());
+  ASSERT_FALSE(OnCompleteResult().has_value());
+}
