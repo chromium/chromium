@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -228,12 +229,13 @@ class SequenceBound {
   using ConstPostTaskCallback = base::OnceCallback<void(const T&)>;
   void PostTaskWithThisObject(const base::Location& from_here,
                               ConstPostTaskCallback callback) const {
-    DCHECK(t_);
+    DCHECK(!is_null());
+    // Even though the lifetime of the object pointed to by `t_` may not have
+    // begun yet, the storage has been allocated. Per [basic.life/6] and
+    // [basic.life/7], "Indirection through such a pointer is permitted but the
+    // resulting lvalue may only be used in limited ways, as described below."
     impl_task_runner_->PostTask(
-        from_here,
-        base::BindOnce([](ConstPostTaskCallback callback,
-                          const T* t) { std::move(callback).Run(*t); },
-                       std::move(callback), t_));
+        from_here, base::BindOnce(std::move(callback), std::cref(*t_)));
   }
 
   // Same as above, but for non-const operations. The callback takes a pointer
@@ -241,7 +243,7 @@ class SequenceBound {
   using PostTaskCallback = base::OnceCallback<void(T*)>;
   void PostTaskWithThisObject(const base::Location& from_here,
                               PostTaskCallback callback) const {
-    DCHECK(t_);
+    DCHECK(!is_null());
     impl_task_runner_->PostTask(from_here,
                                 base::BindOnce(std::move(callback), t_));
   }
@@ -264,25 +266,21 @@ class SequenceBound {
     storage_ = nullptr;
   }
 
-  // Same as above, but allows the caller to provide a closure to be invoked
-  // immediately after destruction. The Closure is invoked on
-  // `impl_task_runner_`, iff the owned object was non-null.
-  //
-  // TODO(dcheng): Consider removing this; this appears to be used for test
-  // synchronization, but that could be achieved by posting
-  // `run_loop.QuitClosure()` to the destination sequence after calling
-  // `Reset()`.
-  void ResetWithCallbackAfterDestruction(base::OnceClosure callback) {
+  // Resets `this` to null. If `this` is not currently null, posts destruction
+  // of the managed `T` to `impl_task_runner_`. Blocks until the destructor has
+  // run.
+  void SynchronouslyResetForTest() {
     if (is_null())
       return;
 
-    impl_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](base::OnceClosure callback, T* t, void* storage) {
-                         DeleteOwnerRecord(t, storage);
-                         std::move(callback).Run();
-                       },
-                       std::move(callback), t_, storage_));
+    base::RunLoop run_loop;
+    impl_task_runner_->PostTask(FROM_HERE, base::BindOnce(
+                                               [](T* t, void* storage) {
+                                                 DeleteOwnerRecord(t, storage);
+                                               },
+                                               t_, storage_)
+                                               .Then(run_loop.QuitClosure()));
+    run_loop.Run();
 
     impl_task_runner_ = nullptr;
     t_ = nullptr;

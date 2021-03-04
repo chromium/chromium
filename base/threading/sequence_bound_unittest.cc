@@ -385,21 +385,15 @@ TEST_F(SequenceBoundTest, PostTaskWithThisObject) {
   loop.Run();
 }
 
-TEST_F(SequenceBoundTest, ResetWithCallbackAfterDestruction) {
+TEST_F(SequenceBoundTest, SynchronouslyResetForTest) {
   base::SequenceBound<BoxedValue> value(task_runner_, 0);
 
-  // Verify that the callback passed to ResetWithCallbackAfterDestruction always
-  // does happen *after* destruction.
   bool destroyed = false;
   value.AsyncCall(&BoxedValue::set_destruction_callback)
       .WithArgs(base::BindLambdaForTesting([&] { destroyed = true; }));
 
-  base::RunLoop loop;
-  value.ResetWithCallbackAfterDestruction(base::BindLambdaForTesting([&] {
-    EXPECT_TRUE(destroyed);
-    loop.Quit();
-  }));
-  loop.Run();
+  value.SynchronouslyResetForTest();
+  EXPECT_TRUE(destroyed);
 }
 
 TEST_F(SequenceBoundTest, SmallObject) {

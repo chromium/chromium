@@ -164,9 +164,7 @@ class SiteDataRecorderTest : public PerformanceManagerTestHarness {
   void TearDown() override {
     DeleteContents();
     recorder_ = nullptr;
-    base::RunLoop run_loop;
-    cache_factory_.ResetWithCallbackAfterDestruction(run_loop.QuitClosure());
-    run_loop.Run();
+    cache_factory_.SynchronouslyResetForTest();
     PerformanceManagerTestHarness::TearDown();
   }
 
