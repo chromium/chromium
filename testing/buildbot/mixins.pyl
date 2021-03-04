@@ -433,6 +433,13 @@
       'linux-release-64/sizes',
     ],
   },
+  'linux-bionic': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-18.04',
+      },
+    },
+  },
   'linux-trusty': {
     'swarming': {
       'dimensions': {

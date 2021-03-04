@@ -5789,7 +5789,7 @@
       },
       'WebRTC Chromium Linux Tester': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
