@@ -259,8 +259,13 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         std::move(source_frame), ExecutionContext::From(script_state));
   }
 
+  // Some elements like OffscreenCanvas won't choose a default size, so we must
+  // ask them what size they think they are first.
+  auto source_size =
+      image_source->ElementSize(FloatSize(), kRespectImageOrientation);
+
   SourceImageStatus status = kInvalidSourceImageStatus;
-  auto image = image_source->GetSourceImageForCanvas(&status, FloatSize());
+  auto image = image_source->GetSourceImageForCanvas(&status, source_size);
   if (!image || status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid source state");
