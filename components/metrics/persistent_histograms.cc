@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -79,18 +78,30 @@ constexpr base::TimeDelta kDeleteOldWindowsTempFilesDelay =
 
 #endif  // defined(OS_WIN)
 
-}  // namespace
+// Create persistent/shared memory and allow histograms to be stored in
+// it. Memory that is not actually used won't be physically mapped by the
+// system. BrowserMetrics usage, as reported in UMA, has the 99.99
+// percentile around 3MiB as of 2018-10-22.
+// Please update ServicificationBackgroundServiceTest.java if the |kAllocSize|
+// is changed.
+const size_t kAllocSize = 4 << 20;     // 4 MiB
+const uint32_t kAllocId = 0x935DDD43;  // SHA1(BrowserMetrics)
 
-const char kBrowserMetricsName[] = "BrowserMetrics";
+// Logged to UMA - keep in sync with enums.xml.
+enum InitResult {
+  kLocalMemorySuccess,
+  kLocalMemoryFailed,
+  kMappedFileSuccess,
+  kMappedFileFailed,
+  kMappedFileExists,
+  kNoSpareFile,
+  kNoUploadDir,
+  kMaxValue = kNoUploadDir
+};
 
-void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
-                                     bool default_local_memory) {
-  // Create a directory for storing completed metrics files. Files in this
-  // directory must have embedded system profiles. If the directory can't be
-  // created, the file will just be deleted below.
-  base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
-  base::CreateDirectory(upload_dir);
-
+// Initializes persistent histograms with a memory-mapped file.
+InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
+                              const base::FilePath& upload_dir) {
   // The spare file in the user data dir ("BrowserMetrics-spare.pma") would
   // have been created in the previous session. We will move it to |upload_dir|
   // and rename it with the current time and process id for use as |active_file|
@@ -103,97 +114,80 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
           upload_dir, kBrowserMetricsName, base::Time::Now(),
           base::GetCurrentProcId());
 
-  // This is used to report results to an UMA histogram.
-  enum InitResult {
-    kLocalMemorySuccess,
-    kLocalMemoryFailed,
-    kMappedFileSuccess,
-    kMappedFileFailed,
-    kMappedFileExists,
-    kNoSpareFile,
-    kNoUploadDir,
-    kMaxValue = kNoUploadDir
-  };
+  InitResult result;
+  if (!base::PathExists(upload_dir)) {
+    // Handle failure to create the directory.
+    result = kNoUploadDir;
+  } else if (base::PathExists(active_file)) {
+    // "active" filename is supposed to be unique so this shouldn't happen.
+    result = kMappedFileExists;
+  } else {
+    // Move any spare file into the active position.
+    // TODO(crbug.com/1183166): Don't do this if |kSpareFileRequired| = false.
+    base::ReplaceFile(spare_file, active_file, nullptr);
+    // Create global allocator using the |active_file|.
+    if (kSpareFileRequired && !base::PathExists(active_file)) {
+      result = kNoSpareFile;
+    } else if (base::GlobalHistogramAllocator::CreateWithFile(
+                   active_file, kAllocSize, kAllocId, kBrowserMetricsName)) {
+      result = kMappedFileSuccess;
+    } else {
+      result = kMappedFileFailed;
+    }
+  }
+  // Schedule the creation of a "spare" file for use on the next run.
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::LOWEST,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(
+          base::IgnoreResult(&base::GlobalHistogramAllocator::CreateSpareFile),
+          std::move(spare_file), kAllocSize),
+      base::TimeDelta::FromSeconds(kSpareFileCreateDelaySeconds));
+
+  return result;
+}
+
+enum PersistentHistogramsMode {
+  kNotEnabled,
+  kMappedFile,
+  kLocalMemory,
+};
+
+// Implementation of InstantiatePersistentHistograms() that does the work after
+// the desired |mode| has been determined.
+void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
+                                         PersistentHistogramsMode mode) {
+  // Create a directory for storing completed metrics files. Files in this
+  // directory must have embedded system profiles. If the directory can't be
+  // created, the file will just be deleted below.
+  base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
+  // TODO(crbug.com/1183166): Only create the dir in kMappedFile mode.
+  base::CreateDirectory(upload_dir);
+
   InitResult result;
 
-  // Create persistent/shared memory and allow histograms to be stored in
-  // it. Memory that is not actualy used won't be physically mapped by the
-  // system. BrowserMetrics usage, as reported in UMA, has the 99.99
-  // percentile around 3MiB as of 2018-10-22.
-  // Please update ServicificationBackgroundServiceTest.java if the |kAllocSize|
-  // is changed.
-  const size_t kAllocSize = 4 << 20;     // 4 MiB
-  const uint32_t kAllocId = 0x935DDD43;  // SHA1(BrowserMetrics)
-  std::string storage = variations::GetVariationParamValueByFeature(
-      base::kPersistentHistogramsFeature, "storage");
-
-  static const char kMappedFile[] = "MappedFile";
-  static const char kLocalMemory[] = "LocalMemory";
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Linux kernel 4.4.0.* shows a huge number of SIGBUS crashes with persistent
-  // histograms enabled using a mapped file.  Change this to use local memory.
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=753741
-  if (storage.empty() || storage == kMappedFile) {
-    int major, minor, bugfix;
-    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
-    if (major == 4 && minor == 4 && bugfix == 0)
-      storage = kLocalMemory;
-  }
-#endif
-
-  // Don't use mapped-file memory by default on low-end devices, especially
-  // Android. The extra disk consumption and/or extra disk access could have
-  // a significant performance impact. https://crbug.com/896394
-  if (storage.empty() && base::SysInfo::IsLowEndDevice())
-    storage = kLocalMemory;
-
   // Create a global histogram allocator using the desired storage type.
-  if (storage == kMappedFile || (storage.empty() && !default_local_memory)) {
-    if (!base::PathExists(upload_dir)) {
-      // Handle failure to create the directory.
-      result = kNoUploadDir;
-    } else if (base::PathExists(active_file)) {
-      // "active" filename is supposed to be unique so this shouldn't happen.
-      result = kMappedFileExists;
-    } else {
-      // Move any sparse file into the active position.
-      base::ReplaceFile(spare_file, active_file, nullptr);
-      // Create global allocator using the |active_file|.
-      if (kSpareFileRequired && !base::PathExists(active_file)) {
-        result = kNoSpareFile;
-      } else if (base::GlobalHistogramAllocator::CreateWithFile(
-                     active_file, kAllocSize, kAllocId, kBrowserMetricsName)) {
-        result = kMappedFileSuccess;
-      } else {
-        result = kMappedFileFailed;
-      }
-    }
-    // Schedule the creation of a "spare" file for use on the next run.
-    base::ThreadPool::PostDelayedTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::LOWEST,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(base::IgnoreResult(
-                           &base::GlobalHistogramAllocator::CreateSpareFile),
-                       std::move(spare_file), kAllocSize),
-        base::TimeDelta::FromSeconds(kSpareFileCreateDelaySeconds));
-  } else if (storage == kLocalMemory ||
-             (default_local_memory && storage.empty())) {
-    // Use local memory for storage even though it will not persist across
-    // an unclean shutdown. This sets the result but the actual creation is
-    // done below.
-    result = kLocalMemorySuccess;
-  } else {
-    // Persistent metric storage is disabled. Must return here.
-    return;
+  switch (mode) {
+    case kMappedFile:
+      result = InitWithMappedFile(metrics_dir, upload_dir);
+      break;
+    case kLocalMemory:
+      // Use local memory for storage even though it will not persist across
+      // an unclean shutdown. This sets the result but the actual creation is
+      // done below.
+      result = kLocalMemorySuccess;
+      break;
+    case kNotEnabled:
+      // Persistent metric storage is disabled. Must return here.
+      // TODO(crbug.com/1183166): Run DeleteOldWindowsTempFiles() here too.
+      // TODO(crbug.com/1183166): Log the histogram below in this case too.
+      return;
   }
 
   // Get the allocator that was just created and report result. Exit if the
   // allocator could not be created.
-  UMA_HISTOGRAM_ENUMERATION("UMA.PersistentHistograms.InitResult", result);
+  base::UmaHistogramEnumeration("UMA.PersistentHistograms.InitResult", result);
 
   base::GlobalHistogramAllocator* allocator =
       base::GlobalHistogramAllocator::Get();
@@ -204,8 +198,10 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
     base::GlobalHistogramAllocator::CreateWithLocalMemory(kAllocSize, kAllocId,
                                                           kBrowserMetricsName);
     allocator = base::GlobalHistogramAllocator::Get();
-    if (!allocator)
+    if (!allocator) {
+      // TODO(crbug.com/1183166): Run DeleteOldWindowsTempFiles() here too.
       return;
+    }
   }
 
   // Store a copy of the system profile in this allocator.
@@ -223,4 +219,46 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
       base::BindOnce(&DeleteOldWindowsTempFiles, std::move(metrics_dir)),
       kDeleteOldWindowsTempFilesDelay);
 #endif  // defined(OS_WIN)
+}
+
+}  // namespace
+
+const char kBrowserMetricsName[] = "BrowserMetrics";
+
+void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
+                                     bool default_local_memory) {
+  // TODO(crbug.com/1183166): Enable feature by default and use its state to
+  // determine if persistent histograms should be disabled. Move it out of base.
+  std::string storage = variations::GetVariationParamValueByFeature(
+      base::kPersistentHistogramsFeature, "storage");
+
+  static const char kMappedFileStr[] = "MappedFile";
+  static const char kLocalMemoryStr[] = "LocalMemory";
+
+  PersistentHistogramsMode mode;
+  if (storage == kMappedFileStr) {
+    mode = kMappedFile;
+  } else if (storage == kLocalMemoryStr) {
+    mode = kLocalMemory;
+  } else if (storage.empty()) {
+    mode = (default_local_memory ? kLocalMemory : kMappedFile);
+  } else {
+    mode = kNotEnabled;
+  }
+
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Linux kernel 4.4.0.* shows a huge number of SIGBUS crashes with persistent
+  // histograms enabled using a mapped file.  Change this to use local memory.
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=753741
+  if (mode == kMappedFile) {
+    int major, minor, bugfix;
+    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+    if (major == 4 && minor == 4 && bugfix == 0)
+      mode = kLocalMemory;
+  }
+#endif
+
+  InstantiatePersistentHistogramsImpl(metrics_dir, mode);
 }

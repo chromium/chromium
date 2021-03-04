@@ -387,73 +387,63 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="UMA.PersistentAllocator.{PersistentMemoryErrors}Errors"
+<histogram name="UMA.PersistentAllocator.{Type}.Errors"
     enum="PersistentAllocatorErrors" expires_after="M85">
   <owner>bcwhite@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Errors detected by the persistent memory allocator. These are set when they
-    occur. {PersistentMemoryErrors}
+    occur. {Type}
   </summary>
-  <token key="PersistentMemoryErrors">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-    <variant name="BrowserMetrics." summary="For browser process metrics."/>
-    <variant name="CrashpadMetrics." summary="For metrics from Crashpad."/>
-    <variant name="FieldTrialAllocator." summary="For field-trial allocator."/>
-    <variant name="GpuMetrics." summary="For GPU process metrics."/>
-    <variant name="NotificationHelperMetrics."
+  <token key="Type">
+    <variant name="BrowserMetrics" summary="For browser process metrics."/>
+    <variant name="CrashpadMetrics" summary="For metrics from Crashpad."/>
+    <variant name="FieldTrialAllocator" summary="For field-trial allocator."/>
+    <variant name="GpuMetrics" summary="For GPU process metrics."/>
+    <variant name="NotificationHelperMetrics"
         summary="For notification_helper process metrics."/>
-    <variant name="PpapiBrokerMetrics."
+    <variant name="PpapiBrokerMetrics"
         summary="For &quot;PPAPI broker&quot; process metrics."/>
-    <variant name="PpapiPluginMetrics."
+    <variant name="PpapiPluginMetrics"
         summary="For &quot;PPAPI plugin&quot; process metrics."/>
-    <variant name="RendererMetrics." summary="For renderer process metrics."/>
-    <variant name="SandboxHelperMetrics."
+    <variant name="RendererMetrics" summary="For renderer process metrics."/>
+    <variant name="SandboxHelperMetrics"
         summary="For &quot;sandbox helper&quot; process metrics."/>
-    <variant name="SetupMetrics." summary="For setup metrics."/>
-    <variant name="UtilityMetrics."
+    <variant name="SetupMetrics" summary="For setup metrics."/>
+    <variant name="UtilityMetrics"
         summary="For &quot;utility&quot; process metrics."/>
-    <variant name="ZygoteMetrics."
+    <variant name="ZygoteMetrics"
         summary="For &quot;zygote&quot; process metrics."/>
   </token>
 </histogram>
 
-<histogram name="UMA.PersistentAllocator.{PersistentMemoryUsedPct}UsedPct"
-    units="%" expires_after="M87">
+<histogram name="UMA.PersistentAllocator.{Type}.UsedPct" units="%"
+    expires_after="M87">
   <owner>bcwhite@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Percentage of persistent memory segment that has been allocated. This is
-    updated only once per reporting cycle. {PersistentMemoryUsedPct}
+    updated only once per reporting cycle. {Type}
   </summary>
-  <token key="PersistentMemoryUsedPct">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-    <variant name="BrowserMetrics." summary="For browser process metrics."/>
-    <variant name="FieldTrialAllocator." summary="For field-trial allocator."/>
-    <variant name="GpuMetrics." summary="For GPU process metrics."/>
-    <variant name="NotificationHelperMetrics."
+  <token key="Type">
+    <variant name="BrowserMetrics" summary="For browser process metrics."/>
+    <variant name="FieldTrialAllocator" summary="For field-trial allocator."/>
+    <variant name="GpuMetrics" summary="For GPU process metrics."/>
+    <variant name="NotificationHelperMetrics"
         summary="For notification_helper process metrics."/>
-    <variant name="PpapiBrokerMetrics."
+    <variant name="PpapiBrokerMetrics"
         summary="For &quot;PPAPI broker&quot; process metrics."/>
-    <variant name="PpapiPluginMetrics."
+    <variant name="PpapiPluginMetrics"
         summary="For &quot;PPAPI plugin&quot; process metrics."/>
-    <variant name="RendererMetrics." summary="For renderer process metrics."/>
-    <variant name="SandboxHelperMetrics."
+    <variant name="RendererMetrics" summary="For renderer process metrics."/>
+    <variant name="SandboxHelperMetrics"
         summary="For &quot;sandbox helper&quot; process metrics."/>
-    <variant name="SetupMetrics." summary="For setup metrics."/>
-    <variant name="UtilityMetrics."
+    <variant name="SetupMetrics" summary="For setup metrics."/>
+    <variant name="UtilityMetrics"
         summary="For &quot;utility&quot; process metrics."/>
-    <variant name="ZygoteMetrics."
+    <variant name="ZygoteMetrics"
         summary="For &quot;zygote&quot; process metrics."/>
   </token>
 </histogram>

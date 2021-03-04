@@ -278,9 +278,9 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // is done seperately from construction for situations such as when the
   // histograms will be backed by memory provided by this very allocator.
   //
-  // IMPORTANT: Callers must update tools/metrics/histograms/histograms.xml
-  // with the following histograms:
-  //    UMA.PersistentAllocator.name.Allocs
+  // IMPORTANT: tools/metrics/histograms/histograms_xml/uma/histograms.xml must
+  // be updated with the following histograms for each |name| param:
+  //    UMA.PersistentAllocator.name.Errors
   //    UMA.PersistentAllocator.name.UsedPct
   void CreateTrackingHistograms(StringPiece name);
   void UpdateTrackingHistograms();
