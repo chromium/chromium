@@ -203,6 +203,12 @@ void PdfViewPluginBase::GetDocumentPassword(
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::Beep() {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "beep");
+  SendMessage(std::move(message));
+}
+
 std::string PdfViewPluginBase::GetURL() {
   return url_;
 }

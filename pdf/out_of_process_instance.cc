@@ -89,8 +89,6 @@ constexpr char kType[] = "type";
 // Name of identifier field passed from JS to the plugin and back, to associate
 // Page->Plugin messages to Plugin->Page responses.
 constexpr char kJSMessageId[] = "messageId";
-// Beep message arguments. (Plugin -> Page).
-constexpr char kJSBeepType[] = "beep";
 // Document print preview loaded (Plugin -> Page)
 constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
 // Metadata (Plugin -> Page)
@@ -1088,12 +1086,6 @@ void OutOfProcessInstance::SaveToFile(const std::string& token) {
   engine()->KillFormFocus();
   ConsumeSaveToken(token);
   pp::PDF::SaveAs(this);
-}
-
-void OutOfProcessInstance::Beep() {
-  pp::VarDictionary message;
-  message.Set(pp::Var(kType), pp::Var(kJSBeepType));
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::Alert(const std::string& message) {

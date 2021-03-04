@@ -210,8 +210,6 @@ void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
 void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
 }
 
-void PdfViewWebPlugin::Beep() {}
-
 void PdfViewWebPlugin::Alert(const std::string& message) {}
 
 bool PdfViewWebPlugin::Confirm(const std::string& message) {

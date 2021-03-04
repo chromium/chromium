@@ -65,6 +65,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void NotifyTouchSelectionOccurred() override;
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
+  void Beep() override;
   std::string GetURL() override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
