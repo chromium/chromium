@@ -287,11 +287,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>skyostil@chromium.org</owner>
   <summary>
     Total seconds of CPU time consumed by Chrome/WebView in the {Visibility}
-    state, split by process type. Currently only implemented in the browser
-    process on Android. For every second of CPU time consumed by one process, a
-    sample is recorded into the bucket for the process's type. The histogram
-    thus shows the total sum of CPU time seconds spent per process type across
-    all users.
+    state, split by process type. Currently only implemented on Android. For
+    every second of CPU time consumed by one process, a sample is recorded into
+    the bucket for the process's type. The histogram thus shows the total sum of
+    CPU time seconds spent per process type across all users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
