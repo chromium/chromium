@@ -2966,20 +2966,9 @@
       },
     },
 
-    'gpu_gles2_conform_d3d11_test': {
-      'gles2_conform_d3d11_test': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--use-angle=d3d11',
-          '--disable-gpu-sandbox',
-        ],
-        'test': 'gles2_conform_test',
-      },
-    },
-
     'gpu_gles2_conform_gtests': {
       # The gles2_conform_tests are closed-source and deliberately only
-      # run on the FYI waterfall and the optional and ANGLE tryservers.
+      # run on the FYI waterfall and the optional tryservers.
       'gles2_conform_test': {
         'args': ['--use-gpu-in-tests'],
       },
@@ -5899,40 +5888,9 @@
       'gpu_angle_deqp_gles3_metal_gtests',
     ],
 
-    'gpu_angle_deqp_win7_nvidia_gtests': [
-      'gpu_angle_deqp_egl_d3d11_gtests',
-      'gpu_angle_deqp_gles2_d3d11_gtests',
-      'gpu_angle_deqp_gles3_d3d11_gtests',
-    ],
-
     'gpu_angle_deqp_win_amd_gtests': [
       'gpu_angle_deqp_gles2_d3d11_gtests',
       'gpu_angle_deqp_gles2_vulkan_gtests',
-    ],
-
-    'gpu_angle_deqp_win_nvidia_gtests': [
-      'gpu_angle_deqp_egl_d3d11_gtests',
-      'gpu_angle_deqp_egl_gl_gtests',
-      'gpu_angle_deqp_egl_vulkan_gtests',
-      'gpu_angle_deqp_gles2_d3d11_gtests',
-      'gpu_angle_deqp_gles2_gl_gtests',
-      'gpu_angle_deqp_gles2_vulkan_gtests',
-      'gpu_angle_deqp_gles31_d3d11_gtests',
-      'gpu_angle_deqp_gles31_gl_gtests',
-      'gpu_angle_deqp_gles31_vulkan_gtests',
-      'gpu_angle_deqp_gles31_vulkan_rotate180_gtests',
-      'gpu_angle_deqp_gles31_vulkan_rotate270_gtests',
-      'gpu_angle_deqp_gles31_vulkan_rotate90_gtests',
-      'gpu_angle_deqp_gles3_d3d11_gtests',
-      'gpu_angle_deqp_gles3_gl_gtests',
-      'gpu_angle_deqp_gles3_vulkan_gtests',
-      'gpu_angle_deqp_gles3_vulkan_rotate180_gtests',
-      'gpu_angle_deqp_gles3_vulkan_rotate270_gtests',
-      'gpu_angle_deqp_gles3_vulkan_rotate90_gtests',
-      'gpu_angle_deqp_khr_gles2_vulkan_gtests',
-      'gpu_angle_deqp_khr_gles31_vulkan_gtests',
-      'gpu_angle_deqp_khr_gles32_vulkan_gtests',
-      'gpu_angle_deqp_khr_gles3_vulkan_gtests',
     ],
 
     'gpu_angle_fyi_win_optional_and_representative_perf_isolated_scripts': [
@@ -6050,15 +6008,6 @@
       'gpu_angle_end2end_with_retry_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
-    ],
-
-    'gpu_angle_win_gtests': [
-      'gpu_angle_end2end_gtests',
-      'gpu_angle_gles1_conformance_gtests',
-      'gpu_angle_unit_gtests',
-      'gpu_angle_white_box_gtests',
-      'gpu_fyi_and_optional_win_specific_gtests',
-      'gpu_gles2_conform_d3d11_test',
     ],
 
     'gpu_angle_win_intel_gtests': [

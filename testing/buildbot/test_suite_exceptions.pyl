@@ -70,11 +70,6 @@
     ],
     'modifications': {
       # anglebug.com/5328 suspecting blue screen caused by multiprocess
-      'ANGLE GPU Win10 x64 Release (Intel HD 630)': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
       'Optional Win10 x64 Release (Intel HD 630)': {
         'args': [
           '--max-processes=1',
@@ -125,11 +120,6 @@
   'angle_white_box_tests': {
     'modifications': {
       # anglebug.com/5328 suspecting blue screen caused by multiprocess
-      'ANGLE GPU Win10 x64 Release (Intel HD 630)': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
       'Optional Win10 x64 Release (Intel HD 630)': {
         'args': [
           '--max-processes=1',
@@ -2699,7 +2689,6 @@
   'video_decode_accelerator_gl_unittest': {
     'remove_from': [
       # Windows Intel doesn't have the GL extensions to support this test.
-      'ANGLE GPU Win10 x64 Release (Intel HD 630)',
       'Optional Win10 x64 Release (Intel HD 630)',
       'Win10 FYI x64 Release (Intel HD 630)',
       'Win10 FYI x64 Exp Release (Intel HD 630)',

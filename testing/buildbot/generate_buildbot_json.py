@@ -1467,8 +1467,6 @@ class BBJSONGenerator(object):
         'ANGLE GPU Mac Release (Intel)',
         'ANGLE GPU Mac Retina Release (AMD)',
         'ANGLE GPU Mac Retina Release (NVIDIA)',
-        'ANGLE GPU Win10 x64 Release (Intel HD 630)',
-        'ANGLE GPU Win10 x64 Release (NVIDIA)',
         'Optional Android Release (Nexus 5X)',
         'Optional Linux Release (Intel HD 630)',
         'Optional Linux Release (NVIDIA)',

@@ -4573,24 +4573,6 @@ ci.gpu_fyi_windows_builder(
 )
 
 ci.gpu_fyi_thin_tester(
-    name = "Win10 FYI x64 dEQP Release (Intel HD 630)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Intel",
-        short_name = "dqp",
-    ),
-    triggered_by = ["GPU FYI Win x64 dEQP Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
-    name = "Win10 FYI x64 dEQP Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Nvidia",
-        short_name = "dqp",
-    ),
-    triggered_by = ["GPU FYI Win x64 dEQP Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
     name = "Win10 FYI x86 Release (NVIDIA)",
     console_view_entry = consoles.console_view_entry(
         category = "Windows|10|x86|Nvidia",
@@ -4644,15 +4626,6 @@ ci.gpu_fyi_thin_tester(
     triggered_by = ["GPU FYI Win x64 Builder"],
 )
 
-ci.gpu_fyi_thin_tester(
-    name = "Win7 FYI x64 dEQP Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|7|x64|Nvidia",
-        short_name = "dqp",
-    ),
-    triggered_by = ["GPU FYI Win x64 dEQP Builder"],
-)
-
 ci.gpu_fyi_windows_builder(
     name = "GPU FYI Win Builder",
     console_view_entry = consoles.console_view_entry(
@@ -4689,14 +4662,6 @@ ci.gpu_fyi_windows_builder(
     name = "GPU FYI Win x64 Builder (dbg)",
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Debug",
-        short_name = "x64",
-    ),
-)
-
-ci.gpu_fyi_windows_builder(
-    name = "GPU FYI Win x64 dEQP Builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Builder|dEQP",
         short_name = "x64",
     ),
 )

@@ -655,17 +655,7 @@ try_.chromium_angle_builder(
 )
 
 try_.chromium_angle_builder(
-    name = "win-angle-deqp-rel-64",
-    os = os.WINDOWS_ANY,
-)
-
-try_.chromium_angle_builder(
     name = "win-angle-rel-32",
-    os = os.WINDOWS_ANY,
-)
-
-try_.chromium_angle_builder(
-    name = "win-angle-rel-64",
     os = os.WINDOWS_ANY,
 )
 
