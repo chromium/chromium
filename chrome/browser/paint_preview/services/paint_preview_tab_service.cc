@@ -17,7 +17,6 @@
 #include "chrome/browser/paint_preview/services/paint_preview_tab_service_file_mixin.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/warm_compositor.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/rect.h"
@@ -110,6 +109,7 @@ PaintPreviewTabService::~PaintPreviewTabService() {
 
 void PaintPreviewTabService::CaptureTab(int tab_id,
                                         content::WebContents* contents,
+                                        bool accessibility_enabled,
                                         FinishedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -146,7 +146,7 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
                      GetFileMixin()->GetFileManager(), key, true),
       base::BindOnce(&PaintPreviewTabService::CaptureTabInternal,
                      weak_ptr_factory_.GetWeakPtr(),
-                     it.first->second->GetWeakPtr()));
+                     it.first->second->GetWeakPtr(), accessibility_enabled));
 }
 
 void PaintPreviewTabService::TabClosed(int tab_id) {
@@ -200,10 +200,11 @@ void PaintPreviewTabService::CaptureTabAndroid(
     JNIEnv* env,
     jint j_tab_id,
     const base::android::JavaParamRef<jobject>& j_web_contents,
+    jboolean accessibility_enabled,
     const base::android::JavaParamRef<jobject>& j_callback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
-  CaptureTab(static_cast<int>(j_tab_id), web_contents,
+  CaptureTab(static_cast<int>(j_tab_id), web_contents, accessibility_enabled,
              base::BindOnce(
                  &JavaBooleanCallbackAdapter,
                  base::BindOnce(
@@ -257,6 +258,7 @@ void PaintPreviewTabService::InitializeCache(
 
 void PaintPreviewTabService::CaptureTabInternal(
     base::WeakPtr<TabServiceTask> task,
+    bool accessibility_enabled,
     const base::Optional<base::FilePath>& file_path) {
   if (!task) {
     return;
@@ -276,8 +278,7 @@ void PaintPreviewTabService::CaptureTabInternal(
     task->OnCaptured(Status::kWebContentsGone);
     return;
   }
-  if (content::BrowserAccessibilityState::GetInstance()
-          ->IsAccessibleBrowser()) {
+  if (accessibility_enabled) {
     task->SetWaitForAccessibility();
     contents->RequestAXTreeSnapshot(
         base::BindOnce(&PaintPreviewFileMixin::WriteAXTreeUpdate,

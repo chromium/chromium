@@ -237,6 +237,11 @@ public class TabbedPaintPreview implements UserData {
         return mTabbedPainPreviewViewProvider.getView();
     }
 
+    @VisibleForTesting
+    PlayerManager getPlayerManagerForTesting() {
+        return mPlayerManager;
+    }
+
     private class TabbedPaintPreviewViewProvider implements TabViewProvider {
         @Override
         public int getTabViewProviderType() {

@@ -21,7 +21,10 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
 import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
+import org.chromium.components.paintpreview.player.accessibility.PlayerAccessibilityDelegate;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameCoordinator;
+import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -91,6 +94,8 @@ public class PlayerManager {
     private PlayerGestureListener mPlayerGestureListener;
     private boolean mIgnoreInitialScrollOffset;
     private Listener mListener;
+    private PlayerAccessibilityDelegate mAccessibilityDelegate;
+    private WebContentsAccessibilityImpl mWebContentsAccessibility;
 
     /**
      * Creates a new {@link PlayerManager}.
@@ -164,7 +169,13 @@ public class PlayerManager {
             mHostView.addView(mPlayerSwipeRefreshHandler.getView());
         }
 
-        // TODO: Initialize FDT WebContentsAccessibility.
+        if (nativeAxTree != 0) {
+            mAccessibilityDelegate =
+                    new PlayerAccessibilityDelegate(mRootFrameCoordinator, nativeAxTree);
+            mWebContentsAccessibility =
+                    WebContentsAccessibilityImpl.fromDelegate(mAccessibilityDelegate);
+            mRootFrameCoordinator.getView().setWebContentsAccessibility(mWebContentsAccessibility);
+        }
         TraceEvent.finishAsync(sInitEvent, hashCode());
         mListener.onViewReady();
     }
@@ -240,6 +251,12 @@ public class PlayerManager {
     }
 
     public void destroy() {
+        if (mWebContentsAccessibility != null) {
+            mRootFrameCoordinator.getView().setWebContentsAccessibility(null);
+            mWebContentsAccessibility.destroy();
+            mWebContentsAccessibility = null;
+            mAccessibilityDelegate = null;
+        }
         if (mDelegate != null) {
             mDelegate.destroy();
             mDelegate = null;
@@ -282,6 +299,11 @@ public class PlayerManager {
     @VisibleForTesting
     public boolean checkRequiredBitmapsLoadedForTest() {
         return mRootFrameCoordinator.checkRequiredBitmapsLoadedForTest();
+    }
+
+    @VisibleForTesting
+    public WebContentsAccessibility getWebContentsAccessibilityForTesting() {
+        return mWebContentsAccessibility;
     }
 
     @VisibleForTesting

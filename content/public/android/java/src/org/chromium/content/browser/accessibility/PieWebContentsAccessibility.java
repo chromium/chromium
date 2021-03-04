@@ -10,7 +10,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.autofill.AutofillManager;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.content_public.browser.WebContents;
 
 /**
  * Subclass of WebContentsAccessibility for P
@@ -18,8 +17,8 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("content")
 @TargetApi(Build.VERSION_CODES.P)
 public class PieWebContentsAccessibility extends OWebContentsAccessibility {
-    PieWebContentsAccessibility(WebContents webContents) {
-        super(webContents);
+    PieWebContentsAccessibility(AccessibilityDelegate delegate) {
+        super(delegate);
         AutofillManager autofillManager = mContext.getSystemService(AutofillManager.class);
         if (autofillManager != null && autofillManager.isEnabled()) {
             // Native accessibility is usually initialized when getAccessibilityNodeProvider is

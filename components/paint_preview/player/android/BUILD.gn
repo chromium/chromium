@@ -10,6 +10,7 @@ java_cpp_enum("compositor_status_generated_enum") {
 
 source_set("android") {
   sources = [
+    "player_accessibility_snapshot_helper.cc",
     "player_compositor_delegate_android.cc",
     "player_compositor_delegate_android.h",
   ]
@@ -19,6 +20,8 @@ source_set("android") {
     "//base",
     "//components/paint_preview/browser",
     "//components/paint_preview/player",
+    "//ui/accessibility:ax_assistant",
+    "//ui/accessibility:ax_base",
     "//ui/gfx",
     "//url",
   ]
@@ -44,7 +47,10 @@ source_set("unit_tests") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/components/paintpreview/player/PlayerCompositorDelegateImpl.java" ]
+  sources = [
+    "java/src/org/chromium/components/paintpreview/player/PlayerCompositorDelegateImpl.java",
+    "java/src/org/chromium/components/paintpreview/player/accessibility/PlayerAccessibilitySnapshotHelper.java",
+  ]
 }
 
 android_library("java") {
@@ -61,6 +67,8 @@ android_library("java") {
     "java/src/org/chromium/components/paintpreview/player/PlayerSwipeRefreshHandler.java",
     "java/src/org/chromium/components/paintpreview/player/PlayerUserActionRecorder.java",
     "java/src/org/chromium/components/paintpreview/player/PlayerUserFrustrationDetector.java",
+    "java/src/org/chromium/components/paintpreview/player/accessibility/PlayerAccessibilityDelegate.java",
+    "java/src/org/chromium/components/paintpreview/player/accessibility/PlayerAccessibilitySnapshotHelper.java",
     "java/src/org/chromium/components/paintpreview/player/frame/CompressibleBitmap.java",
     "java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameBitmapPainter.java",
     "java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameBitmapState.java",

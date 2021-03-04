@@ -63,6 +63,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   // status.
   void CaptureTab(int tab_id,
                   content::WebContents* contents,
+                  bool accessibility_enabled,
                   FinishedCallback callback);
 
   // Destroys the Paint Preview associated with |tab_id|. This MUST be called
@@ -85,6 +86,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
       JNIEnv* env,
       jint j_tab_id,
       const base::android::JavaParamRef<jobject>& j_web_contents,
+      jboolean accessibility_enabled,
       const base::android::JavaParamRef<jobject>& j_callback);
   void TabClosedAndroid(JNIEnv* env, jint j_tab_id);
   jboolean HasCaptureForTabAndroid(JNIEnv* env, jint j_tab_id);
@@ -163,6 +165,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
 
   // The FTN ID is to look-up the content::WebContents.
   void CaptureTabInternal(base::WeakPtr<TabServiceTask> task,
+                          bool accessibility_enabled,
                           const base::Optional<base::FilePath>& file_path);
 
   void OnAXTreeWritten(base::WeakPtr<TabServiceTask> task, bool result);

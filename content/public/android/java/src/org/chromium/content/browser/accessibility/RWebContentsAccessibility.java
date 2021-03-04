@@ -9,7 +9,6 @@ import android.os.Build;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.content_public.browser.WebContents;
 
 /**
  * Subclass of WebContentsAccessibility for R
@@ -17,8 +16,8 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("content")
 @TargetApi(Build.VERSION_CODES.R)
 public class RWebContentsAccessibility extends PieWebContentsAccessibility {
-    RWebContentsAccessibility(WebContents webContents) {
-        super(webContents);
+    RWebContentsAccessibility(AccessibilityDelegate delegate) {
+        super(delegate);
     }
 
     @Override

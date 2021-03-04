@@ -51,6 +51,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       WebContents* web_contents);
+  WebContentsAccessibilityAndroid(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jlong ax_tree_update_ptr);
   ~WebContentsAccessibilityAndroid() override;
 
   // Notify the root BrowserAccessibilityManager that this is the
@@ -98,6 +102,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jint id);
+  base::android::ScopedJavaLocalRef<jintArray> GetAbsolutePositionForNode(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint unique_id);
 
   // Populate Java accessibility data structures with info about a node.
   jboolean UpdateCachedAccessibilityNodeInfo(
@@ -348,6 +356,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Owns itself, and destroyed upon WebContentsObserver::WebContentsDestroyed.
   class Connector;
   Connector* connector_ = nullptr;
+  // This isn't associated with a real WebContents and is only populated when
+  // this class is constructed with a ui::AXTreeUpdate.
+  std::unique_ptr<BrowserAccessibilityManagerAndroid> manager_;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 
