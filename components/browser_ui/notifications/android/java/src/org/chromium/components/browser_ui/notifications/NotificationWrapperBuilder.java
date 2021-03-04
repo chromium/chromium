@@ -102,9 +102,9 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setContent(RemoteViews views);
 
-    NotificationWrapperBuilder setStyle(Notification.BigPictureStyle style);
+    NotificationWrapperBuilder setBigPictureStyle(Bitmap bigPicture, CharSequence summaryText);
 
-    NotificationWrapperBuilder setStyle(Notification.BigTextStyle bigTextStyle);
+    NotificationWrapperBuilder setBigTextStyle(CharSequence bigText);
 
     NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions);
 

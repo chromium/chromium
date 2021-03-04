@@ -16,6 +16,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.graphics.drawable.IconCompat;
 
 import org.chromium.base.Log;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
@@ -27,6 +28,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     private static final String TAG = "NotifCompatBuilder";
     private final NotificationCompat.Builder mBuilder;
     private final NotificationMetadata mMetadata;
+    private final Context mContext;
 
     public NotificationWrapperCompatBuilder(Context context, String channelId,
             ChannelsInitializer channelsInitializer, NotificationMetadata metadata) {
@@ -35,6 +37,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
         }
         mBuilder = new NotificationCompat.Builder(context, channelId);
         mMetadata = metadata;
+        mContext = context;
     }
 
     @Override
@@ -75,7 +78,9 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
 
     @Override
     public NotificationWrapperBuilder setSmallIcon(Icon icon) {
-        assert false; // unused
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mBuilder.setSmallIcon(IconCompat.createFromIcon(mContext, icon));
+        }
         return this;
     }
 
@@ -249,14 +254,22 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
-    public NotificationWrapperBuilder setStyle(Notification.BigPictureStyle style) {
-        assert false; // unused
+    public NotificationWrapperBuilder setBigPictureStyle(
+            Bitmap bigPicture, CharSequence summaryText) {
+        NotificationCompat.BigPictureStyle style =
+                new NotificationCompat.BigPictureStyle().bigPicture(bigPicture);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Android N doesn't show content text when expanded, so duplicate body text as a
+            // summary for the big picture.
+            style.setSummaryText(summaryText);
+        }
+        mBuilder.setStyle(style);
         return this;
     }
 
     @Override
-    public NotificationWrapperBuilder setStyle(Notification.BigTextStyle bigTextStyle) {
-        assert false; // unused
+    public NotificationWrapperBuilder setBigTextStyle(CharSequence bigText) {
+        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
         return this;
     }
 

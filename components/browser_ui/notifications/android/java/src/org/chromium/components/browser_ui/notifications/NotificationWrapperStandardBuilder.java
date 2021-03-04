@@ -277,14 +277,22 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     }
 
     @Override
-    public NotificationWrapperBuilder setStyle(Notification.BigPictureStyle style) {
+    public NotificationWrapperBuilder setBigPictureStyle(
+            Bitmap bigPicture, CharSequence summaryText) {
+        Notification.BigPictureStyle style =
+                new Notification.BigPictureStyle().bigPicture(bigPicture);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Android N doesn't show content text when expanded, so duplicate body text as a
+            // summary for the big picture.
+            style.setSummaryText(summaryText);
+        }
         mBuilder.setStyle(style);
         return this;
     }
 
     @Override
-    public NotificationWrapperBuilder setStyle(Notification.BigTextStyle style) {
-        mBuilder.setStyle(style);
+    public NotificationWrapperBuilder setBigTextStyle(CharSequence bigText) {
+        mBuilder.setStyle(new Notification.BigTextStyle().bigText(bigText));
         return this;
     }
 

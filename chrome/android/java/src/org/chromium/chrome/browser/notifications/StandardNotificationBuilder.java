@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.app.Notification;
 import android.content.Context;
-import android.os.Build;
 
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -38,17 +36,9 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
         builder.setSubText(mOrigin);
         builder.setTicker(mTickerText);
         if (mImage != null) {
-            Notification.BigPictureStyle style =
-                    new Notification.BigPictureStyle().bigPicture(mImage);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                // Android N doesn't show content text when expanded, so duplicate body text as a
-                // summary for the big picture.
-                style.setSummaryText(mBody);
-            }
-            builder.setStyle(style);
+            builder.setBigPictureStyle(mImage, mBody);
         } else {
-            // If there is no image, let the body text wrap only multiple lines when expanded.
-            builder.setStyle(new Notification.BigTextStyle().bigText(mBody));
+            builder.setBigTextStyle(mBody);
         }
         builder.setLargeIcon(getNormalizedLargeIcon());
         setStatusBarIcon(builder, mSmallIconId, mSmallIconBitmapForStatusBar);
