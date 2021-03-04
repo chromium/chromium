@@ -3068,11 +3068,16 @@ const FeatureEntry kFeatureEntries[] = {
     {"stylus-battery-status", flag_descriptions::kStylusBatteryStatusName,
      flag_descriptions::kStylusBatteryStatusDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kStylusBatteryStatus)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_CHROMEOS)
+    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
+    // kOsCrOS.
     {"deprecate-low-usage-codecs",
      flag_descriptions::kDeprecateLowUsageCodecsName,
-     flag_descriptions::kDeprecateLowUsageCodecsDescription, kOsCrOS,
+     flag_descriptions::kDeprecateLowUsageCodecsDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(media::kDeprecateLowUsageCodecs)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_LINUX) && !defined(OS_ANDROID)
     {

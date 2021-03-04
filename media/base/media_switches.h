@@ -240,7 +240,7 @@ MEDIA_EXPORT extern const base::Feature kAVFoundationCaptureV2;
 MEDIA_EXPORT extern const base::Feature kAVFoundationCaptureV2ZeroCopy;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kDeprecateLowUsageCodecs;
 #endif
 

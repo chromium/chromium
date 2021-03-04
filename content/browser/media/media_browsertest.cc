@@ -55,7 +55,7 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     features::kAudioServiceOutOfProcess,
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     media::kDeprecateLowUsageCodecs,
 #endif
   };

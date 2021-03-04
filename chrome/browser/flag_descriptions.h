@@ -2255,9 +2255,6 @@ extern const char kBluetoothFixA2dpPacketSizeDescription[];
 extern const char kBluetoothWbsDogfoodName[];
 extern const char kBluetoothWbsDogfoodDescription[];
 
-extern const char kDeprecateLowUsageCodecsName[];
-extern const char kDeprecateLowUsageCodecsDescription[];
-
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 
@@ -2841,6 +2838,11 @@ extern const char kWifiSyncAndroidDescription[];
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_CHROMEOS)
+extern const char kDeprecateLowUsageCodecsName[];
+extern const char kDeprecateLowUsageCodecsDescription[];
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 extern const char kChromeOSDirectVideoDecoderName[];
