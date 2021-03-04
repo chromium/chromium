@@ -109,6 +109,7 @@ void SandboxedShortcutParser::OnShortcutsParsingDone(
     std::vector<ShortcutInformation>* found_shortcuts,
     mojom::LnkParsingResult parsing_result,
     const base::Optional<std::wstring>& optional_file_path,
+    const base::Optional<std::wstring>& optional_working_dir,
     const base::Optional<std::wstring>& optional_command_line_arguments,
     const base::Optional<std::wstring>& optional_icon_location,
     int32_t icon_index) {
@@ -117,6 +118,9 @@ void SandboxedShortcutParser::OnShortcutsParsingDone(
   if (parsing_result == mojom::LnkParsingResult::SUCCESS) {
     if (optional_file_path.has_value())
       parsed_shortcut.target_path = optional_file_path.value();
+
+    if (optional_working_dir.has_value())
+      parsed_shortcut.working_dir = optional_working_dir.value();
 
     if (optional_command_line_arguments.has_value()) {
       parsed_shortcut.command_line_arguments =

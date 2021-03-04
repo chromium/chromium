@@ -45,6 +45,7 @@ void ParserImpl::ParseShortcut(mojo::PlatformHandle lnk_file_handle,
                             base::make_optional<std::wstring>(),
                             base::make_optional<std::wstring>(),
                             base::make_optional<std::wstring>(),
+                            base::make_optional<std::wstring>(),
                             /*icon_index=*/-1);
     return;
   }
@@ -58,11 +59,13 @@ void ParserImpl::ParseShortcut(mojo::PlatformHandle lnk_file_handle,
     std::move(callback).Run(result, base::make_optional<std::wstring>(),
                             base::make_optional<std::wstring>(),
                             base::make_optional<std::wstring>(),
+                            base::make_optional<std::wstring>(),
                             /*icon_index=*/-1);
     return;
   }
   std::move(callback).Run(
       result, base::make_optional<std::wstring>(parsed_shortcut.target_path),
+      base::make_optional<std::wstring>(parsed_shortcut.working_dir),
       base::make_optional<std::wstring>(parsed_shortcut.command_line_arguments),
       base::make_optional<std::wstring>(parsed_shortcut.icon_location),
       parsed_shortcut.icon_index);

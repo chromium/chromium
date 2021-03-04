@@ -411,11 +411,11 @@ bool RemoveExtensionSettingsPoliciesExtension(
 void GetMasterPreferencesExtensions(JsonParserAPI* json_parser,
                                     std::vector<ExtensionPolicyFile>* policies,
                                     base::WaitableEvent* done) {
-  std::set<base::FilePath> exe_paths;
-  ListChromeExePaths(&exe_paths);
+  std::set<base::FilePath> chrome_exe_directories;
+  ListChromeExeDirectories(&chrome_exe_directories);
 
   std::map<base::FilePath, std::string> files_read;
-  for (const base::FilePath& path : exe_paths) {
+  for (const base::FilePath& path : chrome_exe_directories) {
     const base::FilePath& master_preferences(
         path.Append(kMasterPreferencesFileName));
     if (!base::PathExists(master_preferences))
