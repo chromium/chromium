@@ -207,12 +207,7 @@ enum StoreAvailabilityResult {
 };
 
 void RecordTimeSinceLastUpdateHistograms(const base::Time& last_response_time) {
-  bool response_received = !last_response_time.is_null();
-  UMA_HISTOGRAM_BOOLEAN(
-      "SafeBrowsing.V4LocalDatabaseManager.HasReceivedUpdateResponse",
-      response_received);
-
-  if (!response_received)
+  if (last_response_time.is_null())
     return;
 
   base::TimeDelta time_since_update = base::Time::Now() - last_response_time;

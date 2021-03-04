@@ -1424,6 +1424,9 @@ Safe Browsing lookup mechanism is working as expected -->
 
 <histogram name="SafeBrowsing.V4LocalDatabaseManager.HasReceivedUpdateResponse"
     enum="BooleanUpdateReceived" expires_after="2021-03-04">
+  <obsolete>
+    Removed 03-03-2021 due to stability and lack of use.
+  </obsolete>
   <owner>ajuma@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
