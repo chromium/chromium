@@ -32,8 +32,8 @@ const char kPhoneHubHostSupportedString[] = "PHONE_HUB_HOST_SUPPORTED";
 const char kPhoneHubClientSupportedString[] = "PHONE_HUB_CLIENT_SUPPORTED";
 const char kWifiSyncHostSupportedString[] = "WIFI_SYNC_HOST_SUPPORTED";
 const char kWifiSyncClientSupportedString[] = "WIFI_SYNC_CLIENT_SUPPORTED";
-const char kEcheHostSupportedString[] = "ECHE_HOST_SUPPORTED";
-const char kEcheClientSupportedString[] = "ECHE_CLIENT_SUPPORTED";
+const char kEcheHostSupportedString[] = "EXO_HOST_SUPPORTED";
+const char kEcheClientSupportedString[] = "EXO_CLIENT_SUPPORTED";
 
 const char kBetterTogetherHostEnabledString[] = "BETTER_TOGETHER_HOST";
 const char kBetterTogetherClientEnabledString[] = "BETTER_TOGETHER_CLIENT";
@@ -47,8 +47,8 @@ const char kPhoneHubHostEnabledString[] = "PHONE_HUB_HOST";
 const char kPhoneHubClientEnabledString[] = "PHONE_HUB_CLIENT";
 const char kWifiSyncHostEnabledString[] = "WIFI_SYNC_HOST";
 const char kWifiSyncClientEnabledString[] = "WIFI_SYNC_CLIENT";
-const char kEcheHostEnabledString[] = "ECHE_HOST";
-const char kEcheClientEnabledString[] = "ECHE_CLIENT";
+const char kEcheHostEnabledString[] = "EXO_HOST";
+const char kEcheClientEnabledString[] = "EXO_CLIENT";
 
 }  // namespace
 
