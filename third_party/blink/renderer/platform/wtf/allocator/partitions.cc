@@ -111,6 +111,7 @@ bool Partitions::InitializeOnce() {
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
     auto& pcscan =
         base::internal::PCScan<base::internal::ThreadSafe>::Instance();
+    pcscan.Initialize();
     pcscan.RegisterNonScannableRoot(array_buffer_root_);
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     pcscan.RegisterScannableRoot(fast_malloc_root_);

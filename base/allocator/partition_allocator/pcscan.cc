@@ -1035,7 +1035,31 @@ void PCScan<thread_safe>::Roots::ClearForTesting() {
 }
 
 template <bool thread_safe>
+void PCScan<thread_safe>::Initialize() {
+  if (initialized_)
+    return;
+
+#if defined(PA_HAS_64_BITS_POINTERS)
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    PartitionAddressSpace::Init();
+    RecommitSystemPages(
+        reinterpret_cast<void*>(PartitionAddressSpace::NormalBucketPoolBase()),
+        sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
+  }
+#endif
+
+  initialized_ = true;
+}
+
+template <bool thread_safe>
+void PCScan<thread_safe>::UninitializeForTesting() {
+  PA_DCHECK(initialized_);
+  initialized_ = false;
+}
+
+template <bool thread_safe>
 void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
+  PA_DCHECK(initialized_);
   PA_DCHECK(scannable_roots_.size() > 0);
   PA_DCHECK(std::all_of(scannable_roots_.begin(), scannable_roots_.end(),
                         [](Root* root) { return root->IsScanEnabled(); }));

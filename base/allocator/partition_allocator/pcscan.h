@@ -60,6 +60,10 @@ class BASE_EXPORT PCScan final {
     return instance_;
   }
 
+  // Perform initialization for global PCScan object. This commits memory for
+  // the quarantine card table in case GigaCage is enabled.
+  void Initialize();
+
   PCScan(const PCScan&) = delete;
   PCScan& operator=(const PCScan&) = delete;
 
@@ -83,6 +87,7 @@ class BASE_EXPORT PCScan final {
   void SetProcessName(const char* name);
 
   void ClearRootsForTesting();
+  void UninitializeForTesting();
 
  private:
   class PCScanTask;
@@ -162,6 +167,7 @@ class BASE_EXPORT PCScan final {
   QuarantineData quarantine_data_{};
   std::atomic<bool> in_progress_{false};
   const char* process_name_ = nullptr;
+  bool initialized_ = false;
 };
 
 template <bool thread_safe>
