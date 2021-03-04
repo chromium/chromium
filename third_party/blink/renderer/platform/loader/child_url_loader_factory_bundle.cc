@@ -237,17 +237,13 @@ network::mojom::URLLoaderFactory* ChildURLLoaderFactoryBundle::GetFactory(
   if (base_result)
     return base_result;
 
-  if (is_deprecated_process_wide_factory_) {
-    // The process-wide factory is deprecated.  (Frame-specific factories
-    // received in CommitNavigation IPC should be used instead.)
-    //
-    // TODO(https://crbug.com/1114822): Remove `direct_network_factory_getter_`,
-    // `direct_network_factory_` and `is_deprecated_process_wide_factory_`
-    // altogether if the NOTREACHED/DwoC below is not hit.  Also remove
-    // ScopedOriginCrashKey in the anonymous namespace above.
-    ScopedRequestCrashKeys request_crash_keys(request);
-    NOTREACHED() << "request.url = " << request.url;
-  }
+  // TODO(https://crbug.com/1114822): Add a
+  // `DCHECK(!is_deprecated_process_wide_factory_)` assertion below (and later a
+  // DwoC with ScopedRequestCrashKeys) once we know of no more cases when the
+  // assertion may fire.  After confirming that the assertion (and a DwoC) no
+  // longer fire, it may be possible to remove `direct_network_factory_` and
+  // `is_deprecated_process_wide_factory_` and the ScopedOriginCrashKey in the
+  // anonymous namespace above.
 
   InitDirectNetworkFactoryIfNecessary();
   DCHECK(direct_network_factory_);
