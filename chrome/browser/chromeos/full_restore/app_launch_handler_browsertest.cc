@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/autotest_desks_api.h"
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -413,12 +412,10 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
-  // Have 3 desks total.
+  // Have 4 desks total.
   ash::AutotestDesksApi().CreateNewDesk();
-  base::RunLoop().RunUntilIdle();
-
   ash::AutotestDesksApi().CreateNewDesk();
-  base::RunLoop().RunUntilIdle();
+  ash::AutotestDesksApi().CreateNewDesk();
 
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
