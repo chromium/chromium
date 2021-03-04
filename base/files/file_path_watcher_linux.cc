@@ -29,6 +29,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/single_thread_task_runner.h"
@@ -38,6 +39,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -110,11 +112,20 @@ class InotifyReader {
   // Remove |watch| if it's valid.
   void RemoveWatch(Watch watch, FilePathWatcherImpl* watcher);
 
-  // Callback for InotifyReaderTask.
+  // Invoked on "inotify_reader" thread to notify relevant watchers.
   void OnInotifyEvent(const inotify_event* event);
+
+  // Returns true if any paths are actively being watched.
+  bool HasWatches();
 
  private:
   friend struct LazyInstanceTraitsBase<InotifyReader>;
+
+  // Record of watchers tracked for watch descriptors.
+  struct WatcherEntry {
+    scoped_refptr<SequencedTaskRunner> task_runner;
+    WeakPtr<FilePathWatcherImpl> watcher;
+  };
 
   InotifyReader();
   // There is no destructor because |g_inotify_reader| is a
@@ -126,9 +137,11 @@ class InotifyReader {
 
   Lock lock_;
 
-  // We keep track of which delegates want to be notified on which watches.
-  std::unordered_map<Watch, std::set<FilePathWatcherImpl*>> watchers_
-      GUARDED_BY(lock_);
+  // Tracks which FilePathWatcherImpls to be notified on which watches.
+  // The tracked FilePathWatcherImpl is keyed by raw pointers for fast look up
+  // and mapped to a WatchEntry that is used to safely post a notification.
+  std::unordered_map<Watch, std::map<FilePathWatcherImpl*, WatcherEntry>>
+      watchers_ GUARDED_BY(lock_);
 
   // File descriptor returned by inotify_init.
   const int inotify_fd_;
@@ -147,9 +160,9 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   FilePathWatcherImpl& operator=(const FilePathWatcherImpl&) = delete;
   ~FilePathWatcherImpl() override;
 
-  // Called for each event coming from the watch. |fired_watch| identifies the
-  // watch that fired, |child| indicates what has changed, and is relative to
-  // the currently watched path for |fired_watch|.
+  // Called for each event coming from the watch on the original thread.
+  // |fired_watch| identifies the watch that fired, |child| indicates what has
+  // changed, and is relative to the currently watched path for |fired_watch|.
   //
   // |created| is true if the object appears.
   // |deleted| is true if the object disappears.
@@ -168,13 +181,13 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // FilePathWatcherImpl instance.
   void DecreaseWatch();
 
- private:
-  void OnFilePathChangedOnOriginSequence(InotifyReader::Watch fired_watch,
-                                         const FilePath::StringType& child,
-                                         bool created,
-                                         bool deleted,
-                                         bool is_dir);
+  // Returns the task runner to be used with this.
+  scoped_refptr<SequencedTaskRunner> GetTaskRunner() const;
 
+  // Returns the WeakPtr of this, must be called on the original sequence.
+  WeakPtr<FilePathWatcherImpl> GetWeakPtr() const;
+
+ private:
   // Start watching |path| for changes and notify |delegate| on each change.
   // Returns true if watch for |path| has been added successfully.
   bool Watch(const FilePath& path,
@@ -248,12 +261,6 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   std::unordered_map<InotifyReader::Watch, FilePath> recursive_paths_by_watch_;
   std::map<FilePath, InotifyReader::Watch> recursive_watches_by_path_;
-
-  // Read only while INotifyReader::lock_ is held, and used to post asynchronous
-  // notifications to the Watcher on its home task_runner(). Ideally this should
-  // be const, but since it is initialized from |weak_factory_|, which must
-  // appear after it, that is not possible.
-  WeakPtr<FilePathWatcherImpl> weak_ptr_;
 
   WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 };
@@ -351,7 +358,8 @@ InotifyReader::Watch InotifyReader::AddWatch(
     return kInvalidWatch;
   }
 
-  watchers_[watch].insert(watcher);
+  watchers_[watch].emplace(std::make_pair(
+      watcher, WatcherEntry{watcher->GetTaskRunner(), watcher->GetWeakPtr()}));
 
   return watch;
 }
@@ -362,11 +370,16 @@ void InotifyReader::RemoveWatch(Watch watch, FilePathWatcherImpl* watcher) {
 
   AutoLock auto_lock(lock_);
 
-  watchers_[watch].erase(watcher);
+  auto watchers_it = watchers_.find(watch);
+  if (watchers_it == watchers_.end())
+    return;
+
+  auto& watcher_map = watchers_it->second;
+  watcher_map.erase(watcher);
   watcher->DecreaseWatch();
 
-  if (watchers_[watch].empty()) {
-    watchers_.erase(watch);
+  if (watcher_map.empty()) {
+    watchers_.erase(watchers_it);
 
     ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                             BlockingType::WILL_BLOCK);
@@ -381,17 +394,31 @@ void InotifyReader::OnInotifyEvent(const inotify_event* event) {
   FilePath::StringType child(event->len ? event->name : FILE_PATH_LITERAL(""));
   AutoLock auto_lock(lock_);
 
-  auto& watcher_set = watchers_[event->wd];
-  for (FilePathWatcherImpl* watcher : watcher_set) {
-    watcher->OnFilePathChanged(
-        event->wd, child, event->mask & (IN_CREATE | IN_MOVED_TO),
-        event->mask & (IN_DELETE | IN_MOVED_FROM), event->mask & IN_ISDIR);
+  // In racing conditions, RemoveWatch() could grab `lock_` first and remove
+  // the entry for `event->wd`.
+  auto watchers_it = watchers_.find(event->wd);
+  if (watchers_it == watchers_.end())
+    return;
+
+  auto& watcher_map = watchers_it->second;
+  for (const auto& entry : watcher_map) {
+    auto& watcher_entry = entry.second;
+    watcher_entry.task_runner->PostTask(
+        FROM_HERE,
+        BindOnce(&FilePathWatcherImpl::OnFilePathChanged, watcher_entry.watcher,
+                 event->wd, child, event->mask & (IN_CREATE | IN_MOVED_TO),
+                 event->mask & (IN_DELETE | IN_MOVED_FROM),
+                 event->mask & IN_ISDIR));
   }
 }
 
-FilePathWatcherImpl::FilePathWatcherImpl() {
-  weak_ptr_ = weak_factory_.GetWeakPtr();
+bool InotifyReader::HasWatches() {
+  AutoLock auto_lock(lock_);
+
+  return !watchers_.empty();
 }
+
+FilePathWatcherImpl::FilePathWatcherImpl() = default;
 
 FilePathWatcherImpl::~FilePathWatcherImpl() {
   DCHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence());
@@ -402,23 +429,6 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
                                             bool created,
                                             bool deleted,
                                             bool is_dir) {
-  DCHECK(!task_runner()->RunsTasksInCurrentSequence());
-
-  // This method is invoked on the Inotify thread. Switch to task_runner() to
-  // access |watches_| safely. Use a WeakPtr to prevent the callback from
-  // running after |this| is destroyed (i.e. after the watch is cancelled).
-  task_runner()->PostTask(
-      FROM_HERE,
-      BindOnce(&FilePathWatcherImpl::OnFilePathChangedOnOriginSequence,
-               weak_ptr_, fired_watch, child, created, deleted, is_dir));
-}
-
-void FilePathWatcherImpl::OnFilePathChangedOnOriginSequence(
-    InotifyReader::Watch fired_watch,
-    const FilePath::StringType& child,
-    bool created,
-    bool deleted,
-    bool is_dir) {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!watches_.empty());
   DCHECK(HasValidWatchVector());
@@ -426,7 +436,7 @@ void FilePathWatcherImpl::OnFilePathChangedOnOriginSequence(
   // Used below to avoid multiple recursive updates.
   bool did_update = false;
 
-  // Find the entry in |watches_| that corresponds to |fired_watch|.
+  // Find the entries in |watches_| that correspond to |fired_watch|.
   for (size_t i = 0; i < watches_.size(); ++i) {
     const WatchEntry& watch_entry = watches_[i];
     if (fired_watch != watch_entry.watch)
@@ -516,6 +526,16 @@ void FilePathWatcherImpl::DecreaseWatch() {
   --number_of_inotify_watches_;
   // Sanity check:
   DCHECK_GE(number_of_inotify_watches_, 0);
+}
+
+scoped_refptr<SequencedTaskRunner> FilePathWatcherImpl::GetTaskRunner() const {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  return task_runner();
+}
+
+WeakPtr<FilePathWatcherImpl> FilePathWatcherImpl::GetWeakPtr() const {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  return weak_factory_.GetWeakPtr();
 }
 
 bool FilePathWatcherImpl::Watch(const FilePath& path,
@@ -625,8 +645,21 @@ void FilePathWatcherImpl::UpdateRecursiveWatches(
     const FilePath& cur_path = end_it->first;
     if (!changed_dir.IsParent(cur_path))
       break;
-    if (!DirectoryExists(cur_path))
-      g_inotify_reader.Get().RemoveWatch(end_it->second, this);
+
+    // There could be a race when another process is changing contents under
+    // `changed_dir` while chrome is watching (e.g. an Android app updating
+    // a dir with Chrome OS file manager open for the dir). In such case,
+    // `cur_dir` under `changed_dir` could exist in this loop but not in
+    // the FileEnumerator loop in the upcoming UpdateRecursiveWatchesForPath(),
+    // As a result, `g_inotify_reader` would have an entry in its `watchers_`
+    // pointing to `this` but `this` is no longer aware of that. Crash in
+    // http://crbug/990004 could happen later.
+    //
+    // Remove the watcher of `cur_path` regardless of whether it exists
+    // or not to keep `this` and `g_inotify_reader` consistent even when the
+    // race happens. The watcher will be added back if `cur_path` exists in
+    // the FileEnumerator loop in UpdateRecursiveWatchesForPath().
+    g_inotify_reader.Get().RemoveWatch(end_it->second, this);
 
     // Keep it in sync with |recursive_watches_by_path_| crbug.com/995196.
     recursive_paths_by_watch_.erase(end_it->second);
@@ -746,5 +779,15 @@ FilePathWatcher::FilePathWatcher() {
   sequence_checker_.DetachFromSequence();
   impl_ = std::make_unique<FilePathWatcherImpl>();
 }
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Put inside "defined(OS_LINUX) || defined(OS_CHROMEOS)" because Android
+// includes file_path_watcher_linux.cc.
+
+// static
+bool FilePathWatcher::HasWatchesForTest() {
+  return g_inotify_reader.Get().HasWatches();
+}
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace base

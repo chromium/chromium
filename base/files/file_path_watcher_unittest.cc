@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #endif
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -28,9 +29,11 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -820,6 +823,79 @@ TEST_F(FilePathWatcherTest, LinkedDirectoryPart3) {
   ASSERT_TRUE(base::DeleteFile(file));
   VLOG(1) << "Waiting for file deletion";
   ASSERT_TRUE(WaitForEvents());
+}
+
+// Regression tests that FilePathWatcherImpl does not leave its reference in
+// `g_inotify_reader` due to a race in recursive watch.
+// See https://crbug.com/990004.
+TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
+  if (!FilePathWatcher::RecursiveWatchAvailable()) {
+    GTEST_SKIP();
+    return;
+  }
+
+  FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
+
+  // Create and delete many subdirs. 20 is an arbitrary number big enough
+  // to have more chances to make FilePathWatcherImpl leak watchers.
+  std::vector<FilePath> subdirs;
+  for (int i = 0; i < 20; ++i)
+    subdirs.emplace_back(dir.AppendASCII(base::StringPrintf("subdir_%d", i)));
+
+  Thread subdir_updater("SubDir Updater");
+  ASSERT_TRUE(subdir_updater.Start());
+
+  auto subdir_update_task = base::BindLambdaForTesting([&]() {
+    for (const auto& subdir : subdirs) {
+      // First update event to trigger watch callback.
+      ASSERT_TRUE(CreateDirectory(subdir));
+
+      // Second update event. The notification sent for this event will race
+      // with the upcoming deletion of the directory below. This test is about
+      // verifying that the impl handles this.
+      FilePath subdir_file(subdir.AppendASCII("subdir_file"));
+      ASSERT_TRUE(WriteFile(subdir_file, "content"));
+
+      // Racy subdir delete to trigger watcher leak.
+      ASSERT_TRUE(DeletePathRecursively(subdir));
+    }
+  });
+
+  // Try the racy subdir update 100 times.
+  for (int i = 0; i < 100; ++i) {
+    RunLoop run_loop;
+    auto watcher = std::make_unique<FilePathWatcher>();
+
+    // Keep watch callback in `watcher_callback` so that "watcher.reset()"
+    // inside does not release the callback and the lambda capture with it.
+    // Otherwise, accessing `run_loop` as part of the lamda capture would be
+    // use-after-free under asan.
+    auto watcher_callback =
+        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+          // Release watchers in callback so that the leaked watchers of
+          // the subdir stays. Otherwise, when the subdir is deleted,
+          // its delete event would clean up leaked watchers in
+          // `g_inotify_reader`.
+          watcher.reset();
+
+          run_loop.Quit();
+        });
+
+    bool setup_result = watcher->Watch(dir, FilePathWatcher::Type::kRecursive,
+                                       watcher_callback);
+    ASSERT_TRUE(setup_result);
+
+    subdir_updater.task_runner()->PostTask(FROM_HERE, subdir_update_task);
+
+    // Wait for the watch callback.
+    run_loop.Run();
+
+    // `watcher` should have been released.
+    ASSERT_FALSE(watcher);
+
+    // There should be no outstanding watchers.
+    ASSERT_FALSE(FilePathWatcher::HasWatchesForTest());
+  }
 }
 
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
