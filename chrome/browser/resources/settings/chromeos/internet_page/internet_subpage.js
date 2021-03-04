@@ -767,6 +767,12 @@ Polymer({
       return false;
     }
 
+    // Locked SIM profiles must be unlocked before a connection can occur.
+    if (state.type === mojom.NetworkType.kCellular &&
+        state.typeState.cellular.simLocked) {
+      return false;
+    }
+
     return true;
   },
 

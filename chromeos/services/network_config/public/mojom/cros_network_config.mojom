@@ -507,6 +507,8 @@ struct ManagedOpenVPNProperties {
 
 struct ManagedCellularProperties {
   ActivationStateType activation_state;
+  // Note: |sim_locked| field is not part of ONC spec.
+  bool sim_locked = false;
   bool allow_roaming = false;
   ManagedApnList? apn_list;
   ManagedBoolean? auto_connect;
