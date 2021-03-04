@@ -86,7 +86,7 @@ public class ShareServiceImpl implements ShareService {
                     "jpg", // image/jpeg
                     "m4a", // audio/x-m4a
                     "m4v", // video/mp4
-                    "mp3", // audio/mp3
+                    "mp3", // audio/mpeg audio/mp3
                     "mp4", // video/mp4
                     "mpeg", // video/mpeg
                     "mpg", // video/mpeg
@@ -117,6 +117,7 @@ public class ShareServiceImpl implements ShareService {
             Collections.unmodifiableSet(CollectionUtil.newHashSet(
                      "audio/flac",
                      "audio/mp3",
+                     "audio/mpeg",
                      "audio/ogg",
                      "audio/wav",
                      "audio/webm",

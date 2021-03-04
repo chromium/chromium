@@ -208,6 +208,9 @@ TEST_F(ShareServiceUnitTest, DangerousMimeType) {
 
   EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("audio/Flac"));
   EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("Video/webm"));
+
+  EXPECT_FALSE(ShareServiceImpl::IsDangerousMimeType("audio/mp3"));
+  EXPECT_FALSE(ShareServiceImpl::IsDangerousMimeType("audio/mpeg"));
 }
 
 TEST_F(ShareServiceUnitTest, Multimedia) {
