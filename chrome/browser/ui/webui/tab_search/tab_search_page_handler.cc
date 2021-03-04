@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -32,14 +31,13 @@
 namespace {
 constexpr base::TimeDelta kTabsChangeDelay =
     base::TimeDelta::FromMilliseconds(50);
-constexpr int kMaxRecentlyClosedTabCount = 100;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kFeedbackCategoryTag[] = "FromTabSearch";
 #else
 constexpr char kFeedbackCategoryTag[] = "FromTabSearchBrowser";
 #endif
-}  // namespace
+}
 
 TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
@@ -173,49 +171,14 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
     window->height = browser->window()->GetContentsSize().height();
     for (int i = 0; i < tab_strip_model->count(); ++i) {
       window->tabs.push_back(
-          GetTab(tab_strip_model, tab_strip_model->GetWebContentsAt(i), i));
+          GetTabData(tab_strip_model, tab_strip_model->GetWebContentsAt(i), i));
     }
     profile_data->windows.push_back(std::move(window));
   }
-
-  CreateRecentlyClosedTabs(profile_data->recently_closed_tabs);
   return profile_data;
 }
 
-void TabSearchPageHandler::CreateRecentlyClosedTabs(
-    std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
-        recently_closed_tabs) {
-  sessions::TabRestoreService* tab_restore_service =
-      TabRestoreServiceFactory::GetForProfile(browser_->profile());
-  // TabRestoreService is only available for non off the record profiles.
-  if (tab_restore_service) {
-    // Flatten tab restore service entries into tabs
-    for (auto& entry : tab_restore_service->entries()) {
-      if (entry->type == sessions::TabRestoreService::Type::WINDOW) {
-        sessions::TabRestoreService::Window* window =
-            static_cast<sessions::TabRestoreService::Window*>(entry.get());
-        for (auto& tab : window->tabs) {
-          if (tab->navigations.size() == 0)
-            continue;
-          if (recently_closed_tabs.size() >= kMaxRecentlyClosedTabCount)
-            break;
-          recently_closed_tabs.push_back(GetRecentlyClosedTab(tab.get()));
-        }
-      } else if (entry->type == sessions::TabRestoreService::Type::TAB) {
-        sessions::TabRestoreService::Tab* tab =
-            static_cast<sessions::TabRestoreService::Tab*>(entry.get());
-        if (tab->navigations.size() == 0)
-          continue;
-        if (recently_closed_tabs.size() >= kMaxRecentlyClosedTabCount)
-          break;
-        recently_closed_tabs.push_back(GetRecentlyClosedTab(tab));
-      }
-    }
-  }
-  DCHECK(recently_closed_tabs.size() <= kMaxRecentlyClosedTabCount);
-}
-
-tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
+tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
     TabStripModel* tab_strip_model,
     content::WebContents* contents,
     int index) {
@@ -251,19 +214,6 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   return tab_data;
 }
 
-tab_search::mojom::RecentlyClosedTabPtr
-TabSearchPageHandler::GetRecentlyClosedTab(
-    sessions::TabRestoreService::Tab* tab) {
-  auto recently_closed_tab = tab_search::mojom::RecentlyClosedTab::New();
-  DCHECK(tab->navigations.size() > 0);
-  sessions::SerializedNavigationEntry& entry =
-      tab->navigations[tab->current_navigation_index];
-  recently_closed_tab->title = base::UTF16ToUTF8(entry.title());
-  recently_closed_tab->url = entry.original_request_url().spec();
-  recently_closed_tab->last_active_time_ticks = entry.timestamp();
-  return recently_closed_tab;
-}
-
 void TabSearchPageHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -297,7 +247,7 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   if (!browser)
     return;
   TRACE_EVENT0("browser", "custom_metric:TabSearchPageHandler:TabChangedAt");
-  page_->TabUpdated(GetTab(browser->tab_strip_model(), contents, index));
+  page_->TabUpdated(GetTabData(browser->tab_strip_model(), contents, index));
 }
 
 void TabSearchPageHandler::ScheduleDebounce() {
