@@ -69,6 +69,7 @@ found in the LICENSE file.
       var onChangeIncrement = function(event) {
         event.target.value = parseInt(event.target.value) + 1;
       }
+
     </script>
 
     <style>
@@ -81,86 +82,89 @@ found in the LICENSE file.
       }
 
       #terms-and-conditions {
+        left: -9999px;
         position: absolute;
         z-index: -1;
-        left: -9999px;
       }
 
       #terms-and-conditions::before {
-          content: "before";
+        content: 'before';
       }
 
       #with_inner_text span::before {
-          content: "before";
+        content: 'before';
       }
 
       #button::before {
-          content: "before";
-          display: none;
+        content: 'before';
+        display: none;
       }
 
-      label[for="terms-and-conditions"] {
-        padding-left: 48px;
-        position: relative;
+      label[for='terms-and-conditions'] {
         display: inline-block;
-        min-height: 48px;
         font-weight: normal;
+        min-height: 48px;
+        padding-inline-start: 48px;
+        position: relative;
       }
 
-      label[for="terms-and-conditions"]:before {
-        content: "";
-        width: 32px;
-        height: 32px;
-        line-height: 32px;
+      label[for='terms-and-conditions']::before {
         border: 1px solid #acacac;
-        position: absolute;
-        z-index: 0;
-        top: 0;
+        content: '';
+        height: 32px;
         left: 0;
+        line-height: 32px;
+        position: absolute;
         text-align: center;
+        top: 0;
+        width: 32px;
+        z-index: 0;
       }
 
-      #terms-and-conditions:checked + label[for="terms-and-conditions"]:before {
-        content: "\2714";
+      #terms-and-conditions:checked + label[for='terms-and-conditions']::before {
+        content: '\2714';
       }
 
       #random_moving_button {
-        position: absolute;
         left: 200px;
+        position: absolute;
         top: 200px;
       }
 
       #moving_button {
-        position: absolute;
         left: 400px;
+        position: absolute;
         top: 400px;
       }
+
       #overlay {
-          visibility: hidden;
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: 9999;
-          background-color: #ff0000;
+        background-color: rgb(255, 0, 0);
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+        visibility: hidden;
+        z-index: 9999;
       }
 
       #input1_container {
-          position: relative;
+        position: relative;
       }
+
       #input1_container > label {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          z-index: 2;
-          background-color: yellow;
+        background-color: yellow;
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 2;
       }
+
       #input1_container input:focus + label {
-          top: 100%;
-          margin-top: 0px;
+        margin-top: 0;
+        top: 100%;
       }
     </style>
   </head>
@@ -402,5 +406,16 @@ found in the LICENSE file.
     <div class="label">Label 1</div>
     <div class="label">Label 2</div>
     <div class="label">Label 3</div>
+
+    <div>
+      <input id="duplexweb" type="text" value="empty"></input>
+      <script>
+        var onDuplexwebEvent = function(event) {
+          document.querySelector('#duplexweb').value = 'received';
+        }
+        document.addEventListener('duplexweb', onDuplexwebEvent);
+      </script>
+    </div>
+
   </body>
 </html>

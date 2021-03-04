@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 #include "components/autofill_assistant/browser/actions/configure_bottom_sheet_action.h"
 #include "components/autofill_assistant/browser/actions/configure_ui_state_action.h"
+#include "components/autofill_assistant/browser/actions/dispatch_js_event_action.h"
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
@@ -323,6 +324,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
                          delegate->GetWebController()->GetWeakPtr()));
     case ActionProto::ActionInfoCase::kReleaseElements:
       return std::make_unique<ReleaseElementsAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kDispatchJsEvent:
+      return std::make_unique<DispatchJsEventAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);

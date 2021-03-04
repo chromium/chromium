@@ -731,6 +731,7 @@ message ActionProto {
     WaitForElementToBecomeStableProto wait_for_element_to_become_stable = 68;
     CheckElementIsOnTopProto check_element_is_on_top = 69;
     ReleaseElementsProto release_elements = 70;
+    DispatchJsEventProto dispatch_js_event = 71;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1082,6 +1083,9 @@ message WebControllerErrorInfoProto {
 
     // Trigger a change event.
     SEND_CHANGE_EVENT = 19;
+
+    // Dispatch a 'duplexweb' event on document.
+    DISPATCH_EVENT_ON_DOCUMENT = 20;
   }
 
   // The web-action that failed. This is usually a step in an execution chain
@@ -2977,3 +2981,6 @@ message GetElementStatusProto {
 message ReleaseElementsProto {
   repeated ClientIdProto client_ids = 1;
 }
+
+// Action to unconditionally dispatch a custom JS event 'duplexweb' on document.
+message DispatchJsEventProto {}

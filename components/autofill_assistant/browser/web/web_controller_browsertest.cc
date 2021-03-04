@@ -2817,4 +2817,11 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendChangeEvent) {
   GetFieldsValue({selector}, {"2"});
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendDuplexwebEvent) {
+  Selector selector({"#duplexweb"});
+  GetFieldsValue({selector}, {"empty"});
+  web_controller_->DispatchJsEvent(base::DoNothing());
+  GetFieldsValue({selector}, {"received"});
+}
+
 }  // namespace autofill_assistant

@@ -198,6 +198,10 @@ const char* const kSendChangeEventScript =
          this.dispatchEvent(e);
        })";
 
+const char* const kDispatchEventToDocument =
+    R"(const event = new Event('duplexweb');
+       document.dispatchEvent(event);)";
+
 // Converts a int that correspond to the DocumentReadyState enum into an
 // equivalent quoted Javascript string.
 std::string DocumentReadyStateToQuotedJsString(int state) {
@@ -1375,6 +1379,35 @@ void WebController::SendChangeEvent(
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::SEND_CHANGE_EVENT,
                          std::move(callback))));
+}
+
+void WebController::DispatchJsEvent(
+    base::OnceCallback<void(const ClientStatus&)> callback) const {
+  devtools_client_->GetRuntime()->Evaluate(
+      runtime::EvaluateParams::Builder()
+          .SetExpression(kDispatchEventToDocument)
+          .SetReturnByValue(true)
+          .Build(),
+      ElementFinder::Result().node_frame_id(),
+      base::BindOnce(
+          &WebController::OnDispatchJsEvent, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(
+              &DecorateWebControllerStatus,
+              WebControllerErrorInfoProto::DISPATCH_EVENT_ON_DOCUMENT,
+              std::move(callback))));
+}
+
+void WebController::OnDispatchJsEvent(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::EvaluateResult> result) const {
+  ClientStatus status =
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+  if (!status.ok()) {
+    VLOG(1) << __func__
+            << "Failed dispatching JavaScript event with status: " << status;
+  }
+  std::move(callback).Run(status);
 }
 
 base::WeakPtr<WebController> WebController::GetWeakPtr() const {

@@ -283,6 +283,10 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  // Dispatch a custom JS event 'duplexweb' with an optional payload.
+  virtual void DispatchJsEvent(
+      base::OnceCallback<void(const ClientStatus&)> callback) const;
+
   virtual base::WeakPtr<WebController> GetWeakPtr() const;
 
  private:
@@ -436,6 +440,10 @@ class WebController {
       base::TimeTicks wait_start_time,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::EvaluateResult> result);
+
+  void OnDispatchJsEvent(base::OnceCallback<void(const ClientStatus&)> callback,
+                         const DevtoolsClient::ReplyStatus& reply_status,
+                         std::unique_ptr<runtime::EvaluateResult> result) const;
 
   // Wrapper for calling the |callback| after re-enabling the keyboard by
   // setting the assistant action state to "not running".

@@ -459,10 +459,16 @@ class ActionDelegate {
   // detected, depending on the current settings.
   virtual void MaybeShowSlowConnectionWarning() = 0;
 
+  // Dispatches a custom JS event 'duplexweb' on document.
+  virtual void DispatchJsEvent(
+      base::OnceCallback<void(const ClientStatus&)> callback) const = 0;
+
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 
  protected:
   ActionDelegate() = default;
 };
+
 }  // namespace autofill_assistant
+
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_ACTION_DELEGATE_H_

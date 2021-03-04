@@ -229,6 +229,7 @@ bool ScriptExecutor::ShouldInterruptOnPause(const ActionProto& proto) {
     case ActionProto::ActionInfoCase::kWaitForElementToBecomeStable:
     case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
     case ActionProto::ActionInfoCase::kReleaseElements:
+    case ActionProto::ActionInfoCase::kDispatchJsEvent:
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       return false;
   }
@@ -901,6 +902,11 @@ bool ScriptExecutor::MaybeShowSlowWarning(const std::string& message,
   }
 
   return true;
+}
+
+void ScriptExecutor::DispatchJsEvent(
+    base::OnceCallback<void(const ClientStatus&)> callback) const {
+  delegate_->GetWebController()->DispatchJsEvent(std::move(callback));
 }
 
 base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
