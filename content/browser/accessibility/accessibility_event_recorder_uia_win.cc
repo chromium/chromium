@@ -150,7 +150,7 @@ void AccessibilityEventRecorderUia::Thread::ThreadMain() {
   // Subscribe to all automation events (except structure-change events and
   // live-region events, which are handled elsewhere).
   static const EVENTID kMinEvent = UIA_ToolTipOpenedEventId;
-  static const EVENTID kMaxEvent = UIA_NotificationEventId;
+  static const EVENTID kMaxEvent = UIA_ActiveTextPositionChangedEventId;
   for (EVENTID event_id = kMinEvent; event_id <= kMaxEvent; ++event_id) {
     if (event_id != UIA_StructureChangedEventId &&
         event_id != UIA_LiveRegionChangedEventId) {

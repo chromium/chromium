@@ -850,6 +850,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsSamePageLinkNavigation) {
+  RunEventTest(FILE_PATH_LITERAL("same-page-link-navigation.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsScrollHorizontalScrollPercentChange) {
   RunEventTest(
       FILE_PATH_LITERAL("scroll-horizontal-scroll-percent-change.html"));

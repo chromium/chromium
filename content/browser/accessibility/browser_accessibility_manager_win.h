@@ -52,6 +52,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
                                    BrowserAccessibility* node);
   void FireUiaStructureChangedEvent(StructureChangeType change_type,
                                     BrowserAccessibility* node);
+  void FireUiaActiveTextPositionChangedEvent(BrowserAccessibility* node);
 
   // Do event pre-processing
   void BeforeAccessibilityEvents() override;
