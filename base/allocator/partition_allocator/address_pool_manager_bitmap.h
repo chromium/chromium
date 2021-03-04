@@ -50,6 +50,8 @@ class BASE_EXPORT AddressPoolManagerBitmap {
         .test(address_as_uintptr / PageAllocationGranularity());
   }
 
+  // BackupRefPtrImpl hardcodes assumption:
+  // IsManagedByNormalBucketPool(nullptr) == false
   static bool IsManagedByNormalBucketPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
     // It is safe to read |normal_bucket_bits_| without a lock since the caller
@@ -75,6 +77,8 @@ ALWAYS_INLINE bool IsManagedByPartitionAllocDirectMap(const void* address) {
   return internal::AddressPoolManagerBitmap::IsManagedByDirectMapPool(address);
 }
 
+// BackupRefPtrImpl hardcodes assumption:
+// IsManagedByPartitionAllocNormalBuckets(nullptr) == false
 ALWAYS_INLINE bool IsManagedByPartitionAllocNormalBuckets(const void* address) {
   return internal::AddressPoolManagerBitmap::IsManagedByNormalBucketPool(
       address);

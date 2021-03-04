@@ -107,10 +107,29 @@ struct BackupRefPtrImpl {
   // will occur.
 
   static ALWAYS_INLINE bool IsSupportedAndNotNull(void* ptr) {
-#if BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE)
     // This covers the nullptr case, as address 0 is never in GigaCage.
     bool ret = IsManagedByPartitionAllocNormalBuckets(ptr);
 
+    // There are many situations where the compiler can prove that
+    // ReleaseWrappedPtr is called on a value that is always NULL, but the way
+    // the check above is written, the compiler can't prove that NULL is not
+    // managed by PartitionAlloc; and so the compiler has to emit a useless
+    // check and dead code.
+    // To avoid that without making the runtime check slower, explicitly promise
+    // to the compiler that ret will always be false for NULL pointers.
+    //
+    // This condition would look nicer and might also theoretically be nicer for
+    // the optimizer if it was written as "if (ptr == nullptr) { ... }", but
+    // LLVM currently has issues with optimizing that away properly; see:
+    // https://bugs.llvm.org/show_bug.cgi?id=49403
+    // https://reviews.llvm.org/D97848
+    // https://chromium-review.googlesource.com/c/chromium/src/+/2727400/2/base/memory/checked_ptr.h#120
+    DCHECK(ptr != nullptr || !ret);
+#if HAS_BUILTIN(__builtin_assume)
+    __builtin_assume(ptr != nullptr || !ret);
+#endif
+
+#if BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE)
     // There may be pointers immediately after the allocation, e.g.
     //   CheckedPtr<T> ptr = AllocateNotFromPartitionAlloc(X * sizeof(T));
     //   for (size_t i = 0; i < X; i++) { ptr++; }
@@ -128,7 +147,6 @@ struct BackupRefPtrImpl {
       DCHECK(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize >=
              PartitionPageSize());
     }
-    return ret;
 #else
     // There is a problem on 32-bit systems, where the fake "GigaCage" has many
     // normal bucket pool regions spread throughout the address space. A pointer
@@ -144,16 +162,13 @@ struct BackupRefPtrImpl {
     //
     // 64-bit systems don't have this problem, because there is only one normal
     // bucket pool region, positioned after the direct map pool.
-    bool is_in_normal_buckets = true;
 #if !(defined(ARCH_CPU_64_BITS) && !defined(OS_NACL))
     auto* adjusted_ptr = reinterpret_cast<char*>(ptr) - 1;
-    is_in_normal_buckets &=
-        IsManagedByPartitionAllocNormalBuckets(adjusted_ptr);
+    ret &= IsManagedByPartitionAllocNormalBuckets(adjusted_ptr);
 #endif
-    // This covers the nullptr case, as address 0 is never in GigaCage.
-    is_in_normal_buckets &= IsManagedByPartitionAllocNormalBuckets(ptr);
-    return is_in_normal_buckets;
 #endif
+
+    return ret;
   }
 
   // Wraps a pointer, and returns its uintptr_t representation.

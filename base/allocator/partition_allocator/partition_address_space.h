@@ -58,6 +58,8 @@ class BASE_EXPORT PartitionAddressSpace {
     return (reinterpret_cast<uintptr_t>(address) & kDirectMapPoolBaseMask) ==
            direct_map_pool_base_address_;
   }
+  // BackupRefPtrImpl hardcodes assumption:
+  // IsInNormalBucketPool(nullptr) == false
   static ALWAYS_INLINE bool IsInNormalBucketPool(const void* address) {
     return (reinterpret_cast<uintptr_t>(address) & kNormalBucketPoolBaseMask) ==
            normal_bucket_pool_base_address_;
@@ -171,6 +173,8 @@ ALWAYS_INLINE bool IsManagedByPartitionAllocDirectMap(const void* address) {
   return internal::PartitionAddressSpace::IsInDirectMapPool(address);
 }
 
+// BackupRefPtrImpl hardcodes assumption:
+// IsManagedByPartitionAllocNormalBuckets(nullptr) == false
 ALWAYS_INLINE bool IsManagedByPartitionAllocNormalBuckets(const void* address) {
   return internal::PartitionAddressSpace::IsInNormalBucketPool(address);
 }
