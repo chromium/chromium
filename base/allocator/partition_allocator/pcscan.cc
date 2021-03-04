@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/pcscan.h"
 
 #include <algorithm>
+#include <array>
 #include <condition_variable>
 #include <mutex>
 #include <numeric>
@@ -28,8 +29,10 @@
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
@@ -163,7 +166,7 @@ class MetadataAllocator {
   }
 };
 
-void ReportStats(size_t swept_bytes, size_t last_size, size_t new_size) {
+void LogStats(size_t swept_bytes, size_t last_size, size_t new_size) {
   VLOG(2) << "quarantine size: " << last_size << " -> " << new_size
           << ", swept bytes: " << swept_bytes
           << ", survival rate: " << static_cast<double>(new_size) / last_size;
@@ -193,14 +196,148 @@ bool IsScannerQuarantineBitmapEmpty(char* super_page, size_t epoch) {
 }
 #endif
 
-namespace scopes {
-constexpr char kPCScan[] = "PCScan";
-constexpr char kClear[] = "PCScan.Clear";
-constexpr char kScan[] = "PCScan.Scan";
-constexpr char kSweep[] = "PCScan.Sweep";
-}  // namespace scopes
-constexpr char kTraceCategory[] = "partition_alloc";
-#define PCSCAN_EVENT(scope) TRACE_EVENT0(kTraceCategory, (scope))
+#define FOR_ALL_PCSCAN_SCANNER_SCOPES(V) \
+  V(Clear)                               \
+  V(Scan)                                \
+  V(Sweep)                               \
+  V(Overall)
+
+#define FOR_ALL_PCSCAN_MUTATOR_SCOPES(V) V(Scan)
+
+class StatsCollector final {
+ public:
+  enum class ScannerId {
+#define DECLARE_ENUM(name) k##name,
+    FOR_ALL_PCSCAN_SCANNER_SCOPES(DECLARE_ENUM)
+#undef DECLARE_ENUM
+  };
+
+  enum class MutatorId {
+#define DECLARE_ENUM(name) k##name,
+    FOR_ALL_PCSCAN_MUTATOR_SCOPES(DECLARE_ENUM)
+#undef DECLARE_ENUM
+  };
+
+  enum class Context {
+    // For tasks executed from mutator threads (safepoints).
+    kMutator,
+    // For concurrent scanner tasks.
+    kScanner
+  };
+
+  template <Context context>
+  class Scope final {
+    using IdType =
+        std::conditional_t<context == Context::kMutator, MutatorId, ScannerId>;
+
+   public:
+    Scope(StatsCollector& stats, IdType type)
+        : stats_(stats), type_(type), start_time_(base::TimeTicks::Now()) {
+      TRACE_EVENT_BEGIN0(kTraceCategory, ToTracingString(type));
+    }
+
+    Scope(const Scope&) = delete;
+    Scope& operator=(const Scope&) = delete;
+
+    ~Scope() {
+      TRACE_EVENT_END0(kTraceCategory, ToTracingString(type_));
+      stats_.IncreaseScopeTime(type_, base::TimeTicks::Now() - start_time_);
+    }
+
+   private:
+    static constexpr char kTraceCategory[] = "partition_alloc";
+
+    static constexpr const char* ToTracingString(ScannerId id) {
+      switch (id) {
+        case ScannerId::kClear:
+          return "PCScan.Scanner.Clear";
+        case ScannerId::kScan:
+          return "PCScan.Scanner.Scan";
+        case ScannerId::kSweep:
+          return "PCScan.Scanner.Sweep";
+        case ScannerId::kOverall:
+          return "PCScan.Scanner";
+      }
+    }
+
+    static constexpr const char* ToTracingString(MutatorId id) {
+      PA_DCHECK(id == MutatorId::kScan);
+      return "PCScan.Mutator.Sweep";
+    }
+
+    StatsCollector& stats_;
+    IdType type_;
+    base::TimeTicks start_time_;
+  };
+
+  using ScannerScope = Scope<Context::kScanner>;
+  using MutatorScope = Scope<Context::kMutator>;
+
+  explicit StatsCollector(const char* process_name)
+      : process_name_(process_name) {}
+
+  StatsCollector(const StatsCollector&) = delete;
+  StatsCollector& operator=(const StatsCollector&) = delete;
+
+  void IncreaseScopeTime(ScannerId type, base::TimeDelta duration) {
+    scanner_scopes_[static_cast<size_t>(type)] += duration;
+  }
+
+  void IncreaseScopeTime(MutatorId type, base::TimeDelta duration) {
+    mutator_scopes_[static_cast<size_t>(type)] += duration;
+  }
+
+  void UpdateHistograms() {
+    if (!process_name_) {
+      // Don't update histograms if |process_name_| is not set.
+      return;
+    }
+#define UPDATE_UMA(name)                       \
+  UMA_HISTOGRAM_TIMES(                         \
+      ToUMAString(ScannerId::k##name).c_str(), \
+      scanner_scopes_[static_cast<size_t>(ScannerId::k##name)]);
+    FOR_ALL_PCSCAN_SCANNER_SCOPES(UPDATE_UMA)
+#undef UPDATE_UMA
+#define UPDATE_UMA(name)                       \
+  UMA_HISTOGRAM_TIMES(                         \
+      ToUMAString(MutatorId::k##name).c_str(), \
+      mutator_scopes_[static_cast<size_t>(MutatorId::k##name)]);
+    FOR_ALL_PCSCAN_MUTATOR_SCOPES(UPDATE_UMA)
+#undef UPDATE_UMA
+  }
+
+ private:
+  using MetadataString =
+      std::basic_string<char, std::char_traits<char>, MetadataAllocator<char>>;
+
+  MetadataString ToUMAString(ScannerId id) const {
+    PA_DCHECK(process_name_);
+    const MetadataString process_name = process_name_;
+    switch (id) {
+      case ScannerId::kClear:
+        return "PA.PCScan." + process_name + ".Scanner.Clear";
+      case ScannerId::kScan:
+        return "PA.PCScan." + process_name + ".Scanner.Scan";
+      case ScannerId::kSweep:
+        return "PA.PCScan." + process_name + ".Scanner.Sweep";
+      case ScannerId::kOverall:
+        return "PA.PCScan." + process_name + ".Scanner";
+    }
+  }
+
+  MetadataString ToUMAString(MutatorId id) const {
+    PA_DCHECK(process_name_);
+    PA_DCHECK(id == MutatorId::kScan);
+    return "PA.PCScan." + MetadataString(process_name_) + ".Mutator.Scan";
+  }
+
+  const char* process_name_ = nullptr;
+  std::array<base::TimeDelta, 4> scanner_scopes_;
+  std::array<base::TimeDelta, 1> mutator_scopes_;
+};
+
+#undef FOR_ALL_PCSCAN_MUTATOR_SCOPES
+#undef FOR_ALL_PCSCAN_SCANNER_SCOPES
 
 }  // namespace
 
@@ -311,6 +448,8 @@ class PCScan<thread_safe>::PCScanTask final {
   ScanAreas scan_areas_;
   LargeScanAreas large_scan_areas_;
   SuperPages super_pages_;
+
+  StatsCollector stats_;
 };
 
 template <bool thread_safe>
@@ -391,7 +530,8 @@ void PCScan<
     thread_safe>::PCScanTask::ClearQuarantinedObjectsAndFilterSuperPages() {
   using AccessType = QuarantineBitmap::AccessType;
 
-  PCSCAN_EVENT(scopes::kClear);
+  StatsCollector::ScannerScope clear_scope(stats_,
+                                           StatsCollector::ScannerId::kClear);
 
   const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
   SuperPages filtered_super_pages;
@@ -628,7 +768,8 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
 
 template <bool thread_safe>
 size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
-  PCSCAN_EVENT(scopes::kScan);
+  StatsCollector::ScannerScope scan_scope(stats_,
+                                          StatsCollector::ScannerId::kScan);
 
   const ScanLoop scan_loop(*this);
 
@@ -668,7 +809,8 @@ template <bool thread_safe>
 size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
   using AccessType = QuarantineBitmap::AccessType;
 
-  PCSCAN_EVENT(scopes::kSweep);
+  StatsCollector::ScannerScope sweep_scope(stats_,
+                                           StatsCollector::ScannerId::kSweep);
   size_t swept_bytes = 0;
 
   const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
@@ -705,7 +847,9 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
 
 template <bool thread_safe>
 PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
-    : pcscan_(pcscan), pcscan_epoch_(pcscan.quarantine_data_.epoch()) {
+    : pcscan_(pcscan),
+      pcscan_epoch_(pcscan.quarantine_data_.epoch()),
+      stats_(pcscan_.process_name_) {
   // Threshold for which bucket size it is worthwhile in checking whether the
   // object is a quarantined object and can be skipped.
   static constexpr size_t kLargeScanAreaThreshold = 8192;
@@ -776,18 +920,25 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
 
 template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::RunOnce() && {
-  PCSCAN_EVENT(scopes::kPCScan);
+  size_t new_quarantine_size = 0;
+  size_t swept_bytes = 0;
 
-  // First, clear all quarantined objects and filter out super pages that don't
-  // contain quarantined objects.
-  ClearQuarantinedObjectsAndFilterSuperPages();
+  {
+    StatsCollector::ScannerScope overall_scope(
+        stats_, StatsCollector::ScannerId::kOverall);
 
-  // Mark and sweep the quarantine list.
-  const size_t new_quarantine_size = ScanPartitions();
-  const size_t swept_bytes = SweepQuarantine();
+    // First, clear all quarantined objects and filter out super pages that
+    // don't contain quarantined objects.
+    ClearQuarantinedObjectsAndFilterSuperPages();
 
-  ReportStats(swept_bytes, pcscan_.quarantine_data_.last_size(),
-              new_quarantine_size);
+    // Mark and sweep the quarantine list.
+    new_quarantine_size = ScanPartitions();
+    swept_bytes = SweepQuarantine();
+  }
+
+  stats_.UpdateHistograms();
+  LogStats(swept_bytes, pcscan_.quarantine_data_.last_size(),
+           new_quarantine_size);
 
   const size_t total_pa_heap_size = pcscan_.CalculateTotalHeapSize();
 
@@ -973,6 +1124,13 @@ void PCScan<thread_safe>::RegisterNonScannableRoot(Root* root) {
   CommitQuarantineBitmaps(*root);
   root->quarantine_mode = Root::QuarantineMode::kEnabled;
   nonscannable_roots_.Add(root);
+}
+
+template <bool thread_safe>
+void PCScan<thread_safe>::SetProcessName(const char* process_name) {
+  PA_DCHECK(process_name);
+  PA_DCHECK(!process_name_);
+  process_name_ = process_name;
 }
 
 template <bool thread_safe>

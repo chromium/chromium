@@ -10,6 +10,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/pcscan.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/feature_list.h"
 #include "base/partition_alloc_buildflags.h"
@@ -24,6 +25,27 @@ namespace content {
 namespace internal {
 
 namespace {
+
+void SetProcessNameForPCScan(const std::string& process_type) {
+  const char* name = [&process_type] {
+    if (process_type.empty()) {
+      // Empty means browser process.
+      return "Browser";
+    }
+    if (process_type == switches::kRendererProcess)
+      return "Renderer";
+    if (process_type == switches::kGpuProcess)
+      return "Gpu";
+    if (process_type == switches::kUtilityProcess)
+      return "Utility";
+    return static_cast<const char*>(nullptr);
+  }();
+
+  if (name) {
+    base::internal::PCScan<base::internal::ThreadSafe>::Instance()
+        .SetProcessName(name);
+  }
+}
 
 void EnablePCScanForMallocPartitionsIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
@@ -177,6 +199,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   if (process_type.empty()) {
     EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   }
+  SetProcessNameForPCScan(process_type);
 }
 
 void PartitionAllocSupport::ReconfigureAfterThreadPoolInit(

@@ -107,6 +107,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/histograms_xml/page/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/password/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/payment/histograms.xml",
+      "//tools/metrics/histograms/histograms_xml/pcscan/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/permissions/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/phonehub/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/platform/histograms.xml",

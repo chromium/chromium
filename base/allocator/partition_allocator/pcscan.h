@@ -74,11 +74,15 @@ class BASE_EXPORT PCScan final {
   // Performs scanning only if a certain quarantine threshold was reached.
   void PerformScanIfNeeded(InvocationMode invocation_mode);
 
-  void ClearRootsForTesting();
-
-  bool IsInProgress() const {
+  // Checks if there is a PCScan task currently in progress.
+  ALWAYS_INLINE bool IsInProgress() const {
     return in_progress_.load(std::memory_order_relaxed);
   }
+
+  // Sets process name (used for histograms). |name| must be a string literal.
+  void SetProcessName(const char* name);
+
+  void ClearRootsForTesting();
 
  private:
   class PCScanTask;
@@ -157,6 +161,7 @@ class BASE_EXPORT PCScan final {
   Roots nonscannable_roots_{};
   QuarantineData quarantine_data_{};
   std::atomic<bool> in_progress_{false};
+  const char* process_name_ = nullptr;
 };
 
 template <bool thread_safe>
