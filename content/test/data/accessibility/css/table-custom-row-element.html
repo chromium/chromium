@@ -1,0 +1,46 @@
+<!--
+@AURALINUX-ALLOW:table-cell-index*
+@MAC-ALLOW:AXColumnIndexRange=*
+@MAC-ALLOW:AXIndex=*
+@MAC-ALLOW:AXRowIndexRange=*
+@WIN-ALLOW:column_*
+@WIN-ALLOW:row_*
+@WIN-ALLOW:table*
+-->
+<!-- Ensure that table row defined as custom element still contains table cell -->
+<style>
+  td {
+    border: 1px solid black;
+  }
+  custom-row {
+    display: table-row;
+  }
+
+</style>
+<template id="custom-row-shadow">
+  <td>a</td>
+  <td>b</td>
+  <td>c</td>
+</template>
+
+<div style="display:table;border:1px solid gray">
+  <div style="display:table-header-group">
+     <custom-row></custom-row>
+  </div>
+  <div style="display:table-row-group">
+    <custom-row></custom-row>
+    <custom-row></custom-row>
+  </div>
+</table>
+<script>
+  class CustomRowElement extends HTMLElement {
+    constructor() {
+      super();
+      let template = document.getElementById('custom-row-shadow');
+      let templateContent = template.content;
+      const shadowRoot = this.attachShadow({mode: 'open'})
+        .appendChild(templateContent.cloneNode(true));
+    }
+  }
+  customElements.define('custom-row', CustomRowElement);
+</script>

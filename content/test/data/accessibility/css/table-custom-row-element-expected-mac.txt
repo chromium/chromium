@@ -1,0 +1,23 @@
+AXWebArea
+++AXGroup
+++++AXGroup
+++++++AXGroup AXTitle='a'
+++++++++AXStaticText AXValue='a'
+++++++AXGroup AXTitle='b'
+++++++++AXStaticText AXValue='b'
+++++++AXGroup AXTitle='c'
+++++++++AXStaticText AXValue='c'
+++++AXGroup
+++++++AXGroup AXTitle='a'
+++++++++AXStaticText AXValue='a'
+++++++AXGroup AXTitle='b'
+++++++++AXStaticText AXValue='b'
+++++++AXGroup AXTitle='c'
+++++++++AXStaticText AXValue='c'
+++++AXGroup
+++++++AXGroup AXTitle='a'
+++++++++AXStaticText AXValue='a'
+++++++AXGroup AXTitle='b'
+++++++++AXStaticText AXValue='b'
+++++++AXGroup AXTitle='c'
+++++++++AXStaticText AXValue='c'

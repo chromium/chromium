@@ -158,7 +158,7 @@ blink::AXObject* GetDOMTableAXAncestor(blink::Node* node,
     return nullptr;
 
   while (true) {
-    node = blink::NodeTraversal::Parent(*node);
+    node = blink::LayoutTreeBuilderTraversal::Parent(*node);
     if (!node)
       return nullptr;
 
