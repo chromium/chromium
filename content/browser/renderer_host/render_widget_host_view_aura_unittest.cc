@@ -2884,14 +2884,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ConflictingAllocationsResolve) {
 
 // Checks that WidgetInputHandler::CursorVisibilityChange IPC messages are
 // dispatched to the renderer at the correct times.
-//
-// TODO(crbug.com/1164453): Investigate CrOS failure.
-#if defined(OS_CHROMEOS)
-#define MAYBE_CursorVisibilityChange DISABLED_CursorVisibilityChange
-#else
-#define MAYBE_CursorVisibilityChange CursorVisibilityChange
-#endif
-TEST_F(RenderWidgetHostViewAuraTest, MAYBE_CursorVisibilityChange) {
+TEST_F(RenderWidgetHostViewAuraTest, CursorVisibilityChange) {
   InitViewForFrame(nullptr);
   aura::client::ParentWindowWithContext(
       view_->GetNativeView(),
@@ -2967,8 +2960,14 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_CursorVisibilityChange) {
   // a message is expected to be sent.
   view_->Show();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("CursorVisibilityChanged",
-            GetMessageNames(GetAndResetDispatchedMessages()));
+  auto events = GetAndResetDispatchedMessages();
+#if defined(OS_CHROMEOS)
+  // TODO(crbug.com/1164453): Investigate occasional extra mousemoves in CrOS.
+  EXPECT_GE(1u, events.size());
+#else
+  EXPECT_EQ(1u, events.size());
+#endif
+  EXPECT_EQ("CursorVisibilityChanged", events[0]->name());
 
   cursor_client.RemoveObserver(view_);
 }
