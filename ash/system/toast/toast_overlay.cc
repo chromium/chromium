@@ -9,6 +9,8 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -52,9 +54,18 @@ constexpr int kToastButtonMaximumWidth = 160;
 
 // Returns the work area bounds for the root window where new windows are added
 // (including new toasts).
-gfx::Rect GetUserWorkAreaBounds() {
-  return WorkAreaInsets::ForWindow(Shell::GetRootWindowForNewWindows())
-      ->user_work_area_bounds();
+gfx::Rect GetUserWorkAreaBounds(aura::Window* window) {
+  return WorkAreaInsets::ForWindow(window)->user_work_area_bounds();
+}
+
+// Offsets the bottom of bounds for toast to accommodate the hotseat, based on
+// the current hotseat state
+void AdjustWorkAreaBoundsForHotseatState(gfx::Rect& bounds,
+                                         const HotseatWidget* hotseat_widget) {
+  if (hotseat_widget->state() == HotseatState::kExtended)
+    bounds.set_height(bounds.height() - hotseat_widget->GetHotseatSize());
+  if (hotseat_widget->state() == HotseatState::kShownHomeLauncher)
+    bounds.set_height(hotseat_widget->GetTargetBounds().y() - bounds.y());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -220,8 +231,10 @@ class ToastOverlayView : public views::View {
   }
 
   gfx::Size GetMaximumSize() const override {
-    return gfx::Size(kToastMaximumWidth, GetUserWorkAreaBounds().height() -
-                                             ToastOverlay::kOffset * 2);
+    return gfx::Size(
+        kToastMaximumWidth,
+        GetUserWorkAreaBounds(Shell::GetRootWindowForNewWindows()).height() -
+            ToastOverlay::kOffset * 2);
   }
 
   void OnThemeChanged() override {
@@ -318,7 +331,20 @@ void ToastOverlay::UpdateOverlayBounds() {
 }
 
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {
-  gfx::Rect bounds = GetUserWorkAreaBounds();
+  // If the native window has not been initialized, as in the first call, get
+  // the default root window. Otherwise get the window for this overlay_widget
+  // to handle multiple monitors properly.
+  auto* window = overlay_widget_->IsNativeWidgetInitialized()
+                     ? overlay_widget_->GetNativeWindow()
+                     : Shell::GetRootWindowForNewWindows();
+  auto* window_controller = RootWindowController::ForWindow(window);
+  auto* hotseat_widget = window_controller->shelf()->hotseat_widget();
+
+  gfx::Rect bounds = GetUserWorkAreaBounds(window);
+
+  if (hotseat_widget)
+    AdjustWorkAreaBoundsForHotseatState(bounds, hotseat_widget);
+
   int target_y =
       bounds.bottom() - widget_size_.height() - ToastOverlay::kOffset;
   bounds.ClampToCenteredSize(widget_size_);

@@ -5,11 +5,14 @@
 #include "ash/system/toast/toast_manager_impl.h"
 
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
@@ -213,6 +216,109 @@ TEST_F(ToastManagerImplTest, PositionWithVisibleBottomShelf) {
   EXPECT_EQ(
       root_bounds.bottom() - shelf_bounds.height() - ToastOverlay::kOffset,
       toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatShown) {
+  Shelf* shelf = GetPrimaryShelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  gfx::Rect hotseat_bounds = hotseat->GetWindowBoundsInScreen();
+
+  EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
+  EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
+  EXPECT_EQ(hotseat->GetTargetBounds().y() -
+                GetPrimaryWorkAreaInsets()->user_work_area_bounds().y() -
+                ToastOverlay::kOffset,
+            toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatExtended) {
+  Shelf* shelf = GetPrimaryShelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  hotseat->SetState(HotseatState::kExtended);
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  gfx::Rect hotseat_bounds = hotseat->GetWindowBoundsInScreen();
+
+  EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
+  EXPECT_EQ(GetPrimaryWorkAreaInsets()->user_work_area_bounds().height() -
+                hotseat->GetHotseatSize() - ToastOverlay::kOffset,
+            toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatShownForMultipleMonitors) {
+  UpdateDisplay("600x400,600x400");
+  Shelf* shelf = GetPrimaryShelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  gfx::Rect hotseat_bounds = hotseat->GetWindowBoundsInScreen();
+
+  EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
+  EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
+  EXPECT_EQ(hotseat->GetTargetBounds().y() -
+                GetPrimaryWorkAreaInsets()->user_work_area_bounds().y() -
+                ToastOverlay::kOffset,
+            toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
+  UpdateDisplay("600x400,600x400");
+  Shelf* const shelf =
+      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+          ->shelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
+
+  hotseat->SetState(HotseatState::kExtended);
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  gfx::Rect hotseat_bounds = hotseat->GetWindowBoundsInScreen();
+
+  EXPECT_EQ(hotseat->state(), HotseatState::kExtended);
+  EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
+  EXPECT_EQ(hotseat->GetTargetBounds().y() -
+                GetPrimaryWorkAreaInsets()->user_work_area_bounds().y() -
+                ToastOverlay::kOffset,
+            toast_bounds.bottom());
 }
 
 TEST_F(ToastManagerImplTest, PositionWithAutoHiddenBottomShelf) {
