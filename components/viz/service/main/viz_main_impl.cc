@@ -170,13 +170,13 @@ void VizMainImpl::CreateGpuService(
       gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
           subpixel_rendering));
 
-  gpu_service_->Bind(std::move(pending_receiver));
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),
       gpu::GpuProcessActivityFlags(std::move(activity_flags)),
       gpu_init_->TakeDefaultOffscreenSurface(),
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
       dependencies_.shutdown_event);
+  gpu_service_->Bind(std::move(pending_receiver));
 
   if (!pending_frame_sink_manager_params_.is_null()) {
     CreateFrameSinkManagerInternal(
