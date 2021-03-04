@@ -1568,7 +1568,7 @@
   {
     "name": "enable-cros-system-latin-physical-typing",
     "owners": [ "shend", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-virtual-keyboard-bordered-key",
