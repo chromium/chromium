@@ -1586,7 +1586,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes"
     enum="AutofillSaveType" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records when credit card save is not offered (either at all on mobile or by
     simply not showing the bubble on desktop) due to the candidate card having
@@ -1598,7 +1598,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.StrikeDatabase.LocalCardMigrationNotOfferedDueToMaxStrikes"
     enum="AutofillSaveType" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records when local card migration is not offered due to the candidate's
     LocalCardMigration strike count reaching maximum strikes.
@@ -1610,7 +1610,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- Name completed by histogram_suffixes name="AutofillStrikeDatabaseProjectType" -->
 
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of &quot;strikes&quot; a particular feature has when a
     new strike is added for that feature.
@@ -1620,7 +1620,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.StrikeDatabase.StrikeDatabaseInitFailed"
     units="attempts" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     When a StrikeDatabase fails to initialize, records the number of consecutive
     failed initialization attempts.
@@ -1631,7 +1631,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.StrikeDatabase.StrikesPresentWhenLocalCardMigrationAccepted"
     units="strikes" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of &quot;strikes&quot; a user has when local card
     migration is accepted.
@@ -1641,7 +1641,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenLocalCardSaved"
     units="strikes" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of &quot;strikes&quot; a given card had when a user opted
     to save the card to Chrome.
@@ -1651,7 +1651,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenServerCardSaved"
     units="strikes" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of &quot;strikes&quot; a given card had when a user
     successfully uploaded the card to Google Payments.
@@ -1663,7 +1663,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- Name completed by histogram_suffixes name="AutofillStrikeDatabaseProjectType" -->
 
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of &quot;strikes&quot; present in a StrikeDatabase entry
     when a strike expires.
@@ -1954,9 +1954,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UsedCachedServerCard" units="uses"
-    expires_after="2021-04-03">
+    expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of times that the cache for unmasked server cards has
     been accessed for a given card. For example, if the cache is being accessed
