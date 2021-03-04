@@ -910,6 +910,40 @@ ci.android_builder(
 )
 
 ci.android_fyi_builder(
+    name = "Android arm64 Builder (dbg) (reclient)",
+    branch_selector = branches.STANDARD_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|arm",
+        short_name = "64",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    execution_timeout = 5 * time.hour,
+    main_console_view = main_console_if_on_branch(),
+    tree_closing = True,
+    reclient_instance = "goma-rbe-chromium",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.android_fyi_builder(
+    name = "Android ASAN (dbg) (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|arm",
+        short_name = "san",
+    ),
+    # Higher build timeout since dbg ASAN builds can take a while on a clobber
+    # build.
+    execution_timeout = 4 * time.hour,
+    tree_closing = True,
+    reclient_instance = "goma-rbe-chromium",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.android_fyi_builder(
     name = "android-pie-arm64-wpt-rel-non-cq",
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
@@ -3500,6 +3534,53 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_instance = "goma-rbe-chromium",
     reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "ASAN Debug (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux asan",
+        short_name = "dbg",
+    ),
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 4,
+    ),
+    goma_backend = None,
+    reclient_instance = "goma-rbe-chromium",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "UBSan Release (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux UBSan",
+        short_name = "rel",
+    ),
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 4,
+    ),
+    goma_backend = None,
+    reclient_instance = "goma-rbe-chromium",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "VR Linux (reclient)",
+    branch_selector = branches.STANDARD_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = main_console_if_on_branch(),
+    goma_backend = None,
+    reclient_instance = "goma-rbe-chromium",
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,

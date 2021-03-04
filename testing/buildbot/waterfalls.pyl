@@ -1135,6 +1135,11 @@
     'name': 'chromium.android.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'Android ASAN (dbg) (reclient)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'Android WebView P FYI (rel)': {
         'mixins': [
           'enable_resultdb',
@@ -1146,6 +1151,11 @@
         },
         'use_swarming': True,
         'os_type': 'android',
+      },
+      'Android arm64 Builder (dbg) (reclient)': {
+        'additional_compile_targets': [
+          'all',
+        ],
       },
       'android-pie-arm64-wpt-rel-non-cq': {
         'mixins': [
@@ -2510,6 +2520,11 @@
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'ASAN Debug (reclient)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
       'Linux Builder (goma cache silo)': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/master:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
@@ -2596,7 +2611,24 @@
           'chromium_builder_asan',
         ],
       },
+      'UBSan Release (reclient)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
       'VR Linux': {
+        'mixins': [
+          'enable_resultdb',
+          'linux-xenial',
+        ],
+        'additional_compile_targets': [
+          'vr_common_perftests',
+        ],
+        'test_suites': {
+          'gtest_tests': 'vr_platform_specific_chromium_gtests',
+        },
+      },
+      'VR Linux (reclient)': {
         'mixins': [
           'enable_resultdb',
           'linux-xenial',
