@@ -43,13 +43,12 @@ base::Value CreateNetLogIPEndPointParams(const IPEndPoint* address) {
   return dict;
 }
 
-base::Value CreateNetLogSourceAddressParams(const struct sockaddr* net_address,
-                                            socklen_t address_len) {
+base::Value CreateNetLogAddressPairParams(
+    const net::IPEndPoint& local_address,
+    const net::IPEndPoint& remote_address) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  IPEndPoint ipe;
-  bool result = ipe.FromSockAddr(net_address, address_len);
-  DCHECK(result);
-  dict.SetStringKey("source_address", ipe.ToString());
+  dict.SetStringKey("local_address", local_address.ToString());
+  dict.SetStringKey("remote_address", remote_address.ToString());
   return dict;
 }
 

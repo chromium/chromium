@@ -30,9 +30,11 @@ base::Value CreateNetLogHostPortPairParams(const HostPortPair* host_and_port);
 // Creates a NetLog parameters for an IPEndPoint.
 base::Value CreateNetLogIPEndPointParams(const IPEndPoint* address);
 
-// Creates a NetLog parameters for the source sockaddr on connect events.
-base::Value CreateNetLogSourceAddressParams(const struct sockaddr* net_address,
-                                            socklen_t address_len);
+// Creates a NetLog parameters for the local and remote IPEndPoints on connect
+// events.
+base::Value CreateNetLogAddressPairParams(
+    const net::IPEndPoint& local_address,
+    const net::IPEndPoint& remote_address);
 
 }  // namespace net
 

@@ -35,6 +35,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
+#include "net/log/net_log_values.h"
 #include "net/socket/socket_net_log_params.h"
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_posix.h"
@@ -549,17 +550,15 @@ void TCPSocketPosix::LogConnectEnd(int net_error) const {
     return;
   }
 
-  SockaddrStorage storage;
-  int rv = socket_->GetLocalAddress(&storage);
-  if (rv != OK) {
-    PLOG(ERROR) << "GetLocalAddress() [rv: " << rv << "] error: ";
-    NOTREACHED();
-    net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_CONNECT, rv);
-    return;
-  }
-
   net_log_.EndEvent(NetLogEventType::TCP_CONNECT, [&] {
-    return CreateNetLogSourceAddressParams(storage.addr, storage.addr_len);
+    net::IPEndPoint local_address;
+    int net_error = GetLocalAddress(&local_address);
+    net::IPEndPoint remote_address;
+    if (net_error == net::OK)
+      net_error = GetPeerAddress(&remote_address);
+    if (net_error != net::OK)
+      return NetLogParamsWithInt("get_address_net_error", net_error);
+    return CreateNetLogAddressPairParams(local_address, remote_address);
   });
 }
 

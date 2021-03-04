@@ -392,10 +392,21 @@ EVENT_TYPE(TCP_CONNECT)
 //     "address": <String of the network address>,
 //   }
 //
-// And the END event will contain the system error code if it failed:
+// The END event will contain one of the following:
+//
+// On success:
+//   {
+//     "local_address": <The local address, as a string>,
+//     "remote_address": <The remote address, as a string>,
+//   }
+//
+// On success, but unable to determine the connected address:
+//   {
+//     "get_address_net_error": <Net integer error code>,
+//   }
 //
 //   {
-//     "os_error": <Integer error code the operating system returned>,
+//     "net_error": <Net integer error code>,
 //   }
 EVENT_TYPE(TCP_CONNECT_ATTEMPT)
 
