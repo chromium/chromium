@@ -214,6 +214,14 @@
       default_value: "false",
       custom_compare: true,
     },
+    // True if this ComputedStyle is the result of CustomStyleForLayoutObject()
+    // that uses font metrics in its calculation.
+    {
+      name: "CustomStyleCallbackDependsOnFont",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // These properties only have generated storage, and their methods are handwritten in ComputedStyle.
     {
       name: "StyleType",

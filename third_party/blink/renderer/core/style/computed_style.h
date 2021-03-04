@@ -1011,7 +1011,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   // If true, the ComputedStyle must be recalculated when fonts are updated.
   bool DependsOnFontMetrics() const {
-    return HasGlyphRelativeUnits() || HasFontSizeAdjust();
+    return HasGlyphRelativeUnits() || HasFontSizeAdjust() ||
+           CustomStyleCallbackDependsOnFont();
   }
   bool CachedPseudoElementStylesDependOnFontMetrics() const;
 
