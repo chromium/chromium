@@ -305,9 +305,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.CryptographerReady" enum="SyncCryptographerReadyState"
-    expires_after="2021-03-07">
+    expires_after="2022-03-07">
+  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
   <summary>
     Breakdown of sync users whose cryptographer is fully ready for encryption
     and decryption (initialized and no pending keys).
