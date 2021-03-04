@@ -2689,9 +2689,9 @@ bool WebGLRenderingContextBase::ValidateWebGLProgramOrShader(
   return true;
 }
 
-void WebGLRenderingContextBase::drawArraysImpl(GLenum mode,
-                                               GLint first,
-                                               GLsizei count) {
+void WebGLRenderingContextBase::drawArrays(GLenum mode,
+                                           GLint first,
+                                           GLsizei count) {
   if (!ValidateDrawArrays("drawArrays"))
     return;
 
@@ -2708,10 +2708,10 @@ void WebGLRenderingContextBase::drawArraysImpl(GLenum mode,
   RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
 
-void WebGLRenderingContextBase::drawElementsImpl(GLenum mode,
-                                                 GLsizei count,
-                                                 GLenum type,
-                                                 int64_t offset) {
+void WebGLRenderingContextBase::drawElements(GLenum mode,
+                                             GLsizei count,
+                                             GLenum type,
+                                             int64_t offset) {
   if (!ValidateDrawElements("drawElements", type, offset))
     return;
 
@@ -4681,9 +4681,9 @@ void WebGLRenderingContextBase::RenderbufferStorageImpl(
     GLsizei width,
     GLsizei height,
     const char* function_name) {
-  DCHECK(!samples);             // |samples| > 0 is only valid in WebGL2's
-                                // renderbufferStorageMultisample().
-  DCHECK(!IsWebGL2());          // Make sure this is overridden in WebGL 2.
+  DCHECK(!samples);     // |samples| > 0 is only valid in WebGL2's
+                        // renderbufferStorageMultisample().
+  DCHECK(!IsWebGL2());  // Make sure this is overridden in WebGL 2.
   switch (internalformat) {
     case GL_DEPTH_COMPONENT16:
     case GL_RGBA4:
@@ -8104,42 +8104,39 @@ void WebGLRenderingContextBase::PrintGLErrorToConsole(const String& message) {
 }
 
 void WebGLRenderingContextBase::PrintWarningToConsole(const String& message) {
-  if (fast_call_.InFastCall()) {
-    fast_call_.AddDeferredConsoleWarning(message);
-    return;
-  }
-
   blink::ExecutionContext* context = Host()->GetTopExecutionContext();
-  if (context && !context->IsContextDestroyed()) {
-    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kRendering,
-        mojom::ConsoleMessageLevel::kWarning, message));
-  }
+  PostDeferrableAction(WTF::Bind(
+      [](blink::ExecutionContext* context, const String& message) {
+        if (context && !context->IsContextDestroyed()) {
+          context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kRendering,
+              mojom::blink::ConsoleMessageLevel::kWarning, message));
+        }
+      },
+      WrapPersistent(context), message));
 }
 
 void WebGLRenderingContextBase::NotifyWebGLErrorOrWarning(
     const String& message) {
-  if (fast_call_.InFastCall()) {
-    fast_call_.AddDeferredErrorOrWarningNotification(message);
-    return;
-  }
-  probe::DidFireWebGLErrorOrWarning(canvas(), message);
+  PostDeferrableAction(WTF::Bind(
+      [](HTMLCanvasElement* canvas, const String& message) {
+        probe::DidFireWebGLErrorOrWarning(canvas, message);
+      },
+      WrapPersistent(canvas()), message));
 }
 
 void WebGLRenderingContextBase::NotifyWebGLError(const String& error_type) {
-  if (fast_call_.InFastCall()) {
-    fast_call_.AddDeferredErrorNotification(error_type);
-    return;
-  }
-  probe::DidFireWebGLError(canvas(), error_type);
+  PostDeferrableAction(WTF::Bind(
+      [](HTMLCanvasElement* canvas, const String& error_type) {
+        probe::DidFireWebGLError(canvas, error_type);
+      },
+      WrapPersistent(canvas()), error_type));
 }
 
 void WebGLRenderingContextBase::NotifyWebGLWarning() {
-  if (fast_call_.InFastCall()) {
-    fast_call_.AddDeferredWarningNotification();
-    return;
-  }
-  probe::DidFireWebGLWarning(canvas());
+  PostDeferrableAction(WTF::Bind(
+      [](HTMLCanvasElement* canvas) { probe::DidFireWebGLWarning(canvas); },
+      WrapPersistent(canvas())));
 }
 
 bool WebGLRenderingContextBase::ValidateFramebufferFuncParameters(

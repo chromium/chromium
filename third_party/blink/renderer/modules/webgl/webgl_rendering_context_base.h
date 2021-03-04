@@ -47,10 +47,10 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_fast_call.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_base.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
+#include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
@@ -61,7 +61,6 @@
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES3/gl31.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "v8/include/v8-fast-api-calls.h"
 
 namespace cc {
 class Layer;
@@ -137,7 +136,8 @@ class ScopedRGBEmulationColorMask {
 };
 
 class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
-                                                 public DrawingBuffer::Client {
+                                                 public DrawingBuffer::Client,
+                                                 public NoAllocDirectCallHost {
  public:
   ~WebGLRenderingContextBase() override;
 
@@ -263,39 +263,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void disable(GLenum cap);
   void disableVertexAttribArray(GLuint index);
 
-  void drawArraysImpl(GLenum mode, GLint first, GLsizei count);
-  void drawArrays(GLenum mode, GLint first, GLsizei count) {
-    if (fast_call_.FlushDeferredEvents(this)) {
-      return;
-    }
-    drawArraysImpl(mode, first, count);
-  }
-  void drawArrays(GLenum mode,
-                  GLint first,
-                  GLsizei count,
-                  v8::FastApiCallbackOptions& options) {
-    auto scoped_call = fast_call_.EnterScoped(&options.fallback);
-    drawArraysImpl(mode, first, count);
-  }
+  void drawArrays(GLenum mode, GLint first, GLsizei count);
 
-  void drawElementsImpl(GLenum mode,
-                        GLsizei count,
-                        GLenum type,
-                        int64_t offset);
-  void drawElements(GLenum mode, GLsizei count, GLenum type, int64_t offset) {
-    if (fast_call_.FlushDeferredEvents(this)) {
-      return;
-    }
-    drawElementsImpl(mode, count, type, offset);
-  }
-  void drawElements(GLenum mode,
-                    GLsizei count,
-                    GLenum type,
-                    int64_t offset,
-                    v8::FastApiCallbackOptions& options) {
-    auto scoped_call = fast_call_.EnterScoped(&options.fallback);
-    drawElementsImpl(mode, count, type, offset);
-  }
+  void drawElements(GLenum mode, GLsizei count, GLenum type, int64_t offset);
 
   void DrawArraysInstancedANGLE(GLenum mode,
                                 GLint first,
@@ -1923,8 +1893,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   int number_of_user_allocated_multisampled_renderbuffers_;
 
-  friend class WebGLFastCallHelper;
-  WebGLFastCallHelper fast_call_;
   bool has_been_drawn_to_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebGLRenderingContextBase);

@@ -132,14 +132,6 @@ void GPURenderPassEncoder::draw(uint32_t vertexCount,
                                    firstVertex, firstInstance);
 }
 
-void GPURenderPassEncoder::draw(uint32_t vertexCount,
-                                uint32_t instanceCount,
-                                uint32_t firstVertex,
-                                uint32_t firstInstance,
-                                v8::FastApiCallbackOptions& options) {
-  draw(vertexCount, instanceCount, firstVertex, firstInstance);
-}
-
 void GPURenderPassEncoder::drawIndexed(uint32_t indexCount,
                                        uint32_t instanceCount,
                                        uint32_t firstIndex,
@@ -148,15 +140,6 @@ void GPURenderPassEncoder::drawIndexed(uint32_t indexCount,
   GetProcs().renderPassEncoderDrawIndexed(GetHandle(), indexCount,
                                           instanceCount, firstIndex, baseVertex,
                                           firstInstance);
-}
-
-void GPURenderPassEncoder::drawIndexed(uint32_t indexCount,
-                                       uint32_t instanceCount,
-                                       uint32_t firstIndex,
-                                       int32_t baseVertex,
-                                       uint32_t firstInstance,
-                                       v8::FastApiCallbackOptions& options) {
-  drawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
 }
 
 void GPURenderPassEncoder::drawIndirect(GPUBuffer* indirectBuffer,

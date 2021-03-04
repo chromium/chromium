@@ -1,5 +1,5 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
+# Copyright 2014 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
 import("//base/trace_event/tracing.gni")
@@ -102,7 +102,7 @@ executable("character_data_generator") {
   ]
   configs += [ "//third_party/blink/renderer:config" ]
   deps = [
-    # Default manifest on Windows (a no-op elsewhere).
+    # Default manifest on Windows(a no - op elsewhere).
     "//base",
     "//build/win:default_exe_manifest",
     "//third_party/icu",
@@ -112,7 +112,7 @@ executable("character_data_generator") {
 # This isn't strictly necessary since we can just add the deps to "platform",
 # but it helps to have the targets match the GYP build.
 group("make_platform_generated") {
-  visibility = []  # Allow re-assignment of list.
+  visibility = []  # Allow re - assignment of list.
   visibility = [ "//third_party/blink/renderer/*" ]
   public_deps = [
     ":bindings_buildflags",
@@ -134,15 +134,15 @@ config("blink_platform_config") {
     "//third_party/blink/renderer:inside_blink",
     "//build/config/compiler:noshadowing",
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+    # TODO(jschuh): crbug.com / 167187 fix size_t to int truncations.
     "//build/config/compiler:no_size_t_to_int_warning",
   ]
 }
 
-# Deps and configs required to include platform headers. Applied to all
+# Deps and configs required to include platform headers.Applied to all
 # platform constituent targets and exported to dependents.
 group("blink_platform_public_deps") {
-  visibility = []  # Allow re-assignment of list.
+  visibility = []  # Allow re - assignment of list.
   visibility = [ "//third_party/blink/renderer/platform/*" ]
   public_deps = [
     ":make_platform_generated",
@@ -220,13 +220,13 @@ config("blink_platform_pch") {
   visibility = [ "./*" ]
   if (enable_precompiled_headers) {
     if (is_win) {
-      # This is a string rather than a file GN knows about. It has to match
+      # This is a string rather than a file GN knows about.It has to match
       # exactly what's in the /FI flag below, and what might appear in the
       # source code in quotes for an #include directive.
       precompiled_header = rebase_path("precompile_platform.h", root_build_dir)
 
-      # This is a file that GN will compile with the above header. It will be
-      # implicitly added to the sources (potentially multiple times, with one
+      # This is a file that GN will compile with the above header.It will be
+      # implicitly added to the sources(potentially multiple times, with one
       # variant for each language used in the target).
       precompiled_source =
           "//third_party/blink/renderer/platform/win/precompile_platform.cc"
@@ -243,7 +243,7 @@ config("blink_platform_pch") {
 source_set("platform_export") {
   sources = [ "platform_export.h" ]
 
-  visibility = []  # Allow re-assignment of list.
+  visibility = []  # Allow re - assignment of list.
   visibility = [
     "//mojo/public/cpp/bindings:wtf_support",
     "//third_party/blink/renderer/platform/*",
@@ -251,7 +251,7 @@ source_set("platform_export") {
 }
 
 component("platform") {
-  visibility = []  # Allow re-assignment of list.
+  visibility = []  # Allow re - assignment of list.
   visibility = [
     "//components/pdf/common:interfaces_blink",
     "//services/device/public/mojom:mojom_blink",
@@ -433,6 +433,8 @@ component("platform") {
     "bindings/microtask.cc",
     "bindings/microtask.h",
     "bindings/name_client.h",
+    "bindings/no_alloc_direct_call_host.cc",
+    "bindings/no_alloc_direct_call_host.h",
     "bindings/origin_trial_features.cc",
     "bindings/origin_trial_features.h",
     "bindings/parkable_string.cc",
@@ -1731,7 +1733,7 @@ component("platform") {
       "text/locale_icu.h",
     ]
     cflags = [
-      "/wd4334",  # Result of 32-bit shift implicitly converted to 64 bits.
+      "/wd4334",  # Result of 32 - bit shift implicitly converted to 64 bits.
       "/wd4724",  # Modulo by 0.
     ]
   }
@@ -1927,15 +1929,15 @@ test("blink_platform_unittests") {
 }
 
 source_set("blink_platform_unittests_sources") {
-  visibility = []  # Allow re-assignment of list.
+  visibility = []  # Allow re - assignment of list.
   visibility = [ "*" ]
   testonly = true
 
-  # TODO(crbug.com/1173961): avoid depending on testonly webrtc targets.
+  # TODO(crbug.com / 1173961): avoid depending on testonly webrtc targets.
   if (rtc_include_tests) {
     # This target uses some webrtc targets that are not part of
-    # "webrtc_component". This target relies on the fact that including a header
-    # that is not tracked by GN works without raising any warning. However it
+    # "webrtc_component".This target relies on the fact that including a header
+    # that is not tracked by GN works without raising any warning.However it
     # leads to build errors if rtc_include_tests = true.
     check_includes = false
   }
@@ -1952,6 +1954,7 @@ source_set("blink_platform_unittests_sources") {
     "audio/push_pull_fifo_multithread_test.cc",
     "audio/push_pull_fifo_test.cc",
     "audio/vector_math_test.cc",
+    "bindings/no_alloc_direct_call_host_test.cc",
     "bindings/parkable_string_test.cc",
     "bindings/runtime_call_stats_test.cc",
     "disk_data_allocator_test.cc",
@@ -2244,7 +2247,7 @@ source_set("blink_platform_unittests_sources") {
 }
 
 executable("image_decode_bench") {
-  visibility = []  # Allow re-assignment of list.
+  visibility = []  # Allow re - assignment of list.
   visibility = [ "*" ]
 
   sources = [ "testing/image_decode_bench.cc" ]
@@ -2265,7 +2268,7 @@ executable("image_decode_bench") {
 }
 
 executable("image_decode_to_nia") {
-  visibility = []  # Allow re-assignment of list.
+  visibility = []  # Allow re - assignment of list.
   visibility = [ "*" ]
 
   sources = [ "testing/image_decode_to_nia.cc" ]
@@ -2294,7 +2297,7 @@ test("blink_platform_perftests") {
   ]
 
   configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+    # TODO(jschuh): crbug.com / 167187 fix size_t to int truncations.
     "//build/config/compiler:no_size_t_to_int_warning",
     "//third_party/blink/renderer/platform/wtf:wtf_config",
     "//third_party/blink/renderer:config",
@@ -2374,7 +2377,7 @@ test("blink_fuzzer_unittests") {
 # tests.
 source_set("blink_fuzzer_test_support") {
   testonly = true
-  visibility = []  # Allow re-assignment of list.
+  visibility = []  # Allow re - assignment of list.
   visibility = [ "*" ]
   sources = [
     "testing/blink_fuzzer_test_support.cc",
@@ -2388,7 +2391,7 @@ source_set("blink_fuzzer_test_support") {
   ]
 }
 
-# Fuzzer for blink::MHTMLParser.
+# Fuzzer for blink:: MHTMLParser.
 fuzzer_test("mhtml_parser_fuzzer") {
   sources = [ "mhtml/mhtml_fuzzer.cc" ]
   deps = [
@@ -2403,7 +2406,7 @@ fuzzer_test("mhtml_parser_fuzzer") {
   ]
 }
 
-# Fuzzer for blink::WebIconSizesParser.
+# Fuzzer for blink:: WebIconSizesParser.
 fuzzer_test("web_icon_sizes_fuzzer") {
   sources = [ "exported/web_icon_sizes_fuzzer.cc" ]
   deps = [
@@ -2428,7 +2431,7 @@ fuzzer_test("blink_png_decoder_fuzzer") {
   ]
 }
 
-# Fuzzer for blink::DateTimeFormat.
+# Fuzzer for blink:: DateTimeFormat.
 fuzzer_test("blink_date_time_format_fuzzer") {
   sources = [ "text/date_time_format_fuzzer.cc" ]
   deps = [
@@ -2439,7 +2442,7 @@ fuzzer_test("blink_date_time_format_fuzzer") {
   seed_corpus = "text/date_time_format_fuzzer_seed_corpus"
 }
 
-# Fuzzer for blink::JSONParser.
+# Fuzzer for blink:: JSONParser.
 fuzzer_test("blink_json_parser_fuzzer") {
   sources = [ "json/json_parser_fuzzer.cc" ]
   deps = [
@@ -2449,7 +2452,7 @@ fuzzer_test("blink_json_parser_fuzzer") {
   dict = "//testing/libfuzzer/fuzzers/dicts/json.dict"
 }
 
-# Fuzzer for blink::SecurityOrigin
+# Fuzzer for blink:: SecurityOrigin
 fuzzer_test("blink_security_origin_fuzzer") {
   sources = [ "weborigin/security_origin_fuzzer.cc" ]
   deps = [
@@ -2479,7 +2482,7 @@ fuzzer_test("blink_http_parsers_fuzzer") {
   dict = "network/HTTPParsersFuzzer.dict"
 }
 
-# Fuzzer template for WTF::TextCodec.
+# Fuzzer template for WTF:: TextCodec.
 template("blink_text_codec_fuzzer") {
   forward_variables_from(invoker, "*")
   config(target_name + "_config") {
@@ -2504,7 +2507,7 @@ blink_text_codec_fuzzer("WINDOWS_1252") {
 }
 
 # NOTE: These are legacy unit tests and tests that require a Platform
-# object. Do not add more unless the test requires a Platform object.
+# object.Do not add more unless the test requires a Platform object.
 # These tests are a part of the blink_unittests binary.
 source_set("unit_tests") {
   testonly = true
@@ -2526,7 +2529,7 @@ source_set("unit_tests") {
     "graphics/paint_worklet_paint_dispatcher_test.cc",
     "graphics/test/stub_image.h",
 
-    # Tests migrated from the web/tests directory.
+    # Tests migrated from the web / tests directory.
     "exported/web_url_request_extra_data_test.cc",
     "exported/web_url_response_test.cc",
     "timer_perf_test.cc",

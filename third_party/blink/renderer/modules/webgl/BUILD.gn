@@ -99,8 +99,6 @@ blink_modules_sources("webgl") {
     "webgl_extension.cc",
     "webgl_extension.h",
     "webgl_extension_name.h",
-    "webgl_fast_call.cc",
-    "webgl_fast_call.h",
     "webgl_fence_sync.cc",
     "webgl_fence_sync.h",
     "webgl_framebuffer.cc",
@@ -168,7 +166,7 @@ blink_modules_sources("webgl") {
   public_deps = [ "//device/vr/public/mojom:vr_service_blink" ]
   deps = [
     "//build:chromeos_buildflags",
-    "//third_party/blink/renderer/modules/xr:xr"
+    "//third_party/blink/renderer/modules/xr:xr",
   ]
   deps += [ "//third_party/blink/renderer/modules/webcodecs:webcodecs" ]
   allow_circular_includes_from = deps

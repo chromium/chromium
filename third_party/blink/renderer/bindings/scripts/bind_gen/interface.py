@@ -2134,7 +2134,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name):
     body = func_def.body
 
     pattern = """\
-ThreadState::NoAllocationScope no_alloc_scope(ThreadState::Current());
+ThreadState::NoAllocationScope thread_no_alloc_scope(ThreadState::Current());
 v8::Object* v8_receiver = reinterpret_cast<v8::Object*>(&arg0_receiver);
 v8::Isolate* isolate = v8_receiver->GetIsolate();
 v8::Isolate::DisallowJavascriptExecutionScope no_js_exec_scope(
@@ -2142,7 +2142,9 @@ v8::Isolate::DisallowJavascriptExecutionScope no_js_exec_scope(
     v8::Isolate::DisallowJavascriptExecutionScope::CRASH_ON_FAILURE);
 {blink_class}* blink_receiver =
     ToScriptWrappable(v8_receiver)->ToImpl<{blink_class}>();
-return blink_receiver->{member_func}({blink_arguments}, arg_callback_options);\
+blink::NoAllocDirectCallScope no_alloc_direct_call_scope(blink_receiver,
+                                                         &arg_callback_options);
+return blink_receiver->{member_func}({blink_arguments});\
 """
     blink_class = blink_class_name(cg_context.interface)
     member_func = backward_compatible_api_func(cg_context)
@@ -2156,6 +2158,18 @@ return blink_receiver->{member_func}({blink_arguments}, arg_callback_options);\
                     blink_arguments=blink_arguments)))
 
     return func_def
+
+
+def make_no_alloc_direct_call_flush_deferred_actions(cg_context):
+    if "NoAllocDirectCall" not in cg_context.operation.extended_attributes:
+        return None
+
+    return CxxUnlikelyIfNode(
+        cond="UNLIKELY(${blink_receiver}->HasDeferredActions())",
+        body=[
+            TextNode("${blink_receiver}->FlushDeferredActions();"),
+            TextNode("return;"),
+        ])
 
 
 def make_operation_entry(cg_context):
@@ -2185,6 +2199,8 @@ def make_operation_function_def(cg_context, function_name):
         make_report_deprecate_as(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
+        EmptyNode(),
+        make_no_alloc_direct_call_flush_deferred_actions(cg_context),
         EmptyNode(),
     ])
 
