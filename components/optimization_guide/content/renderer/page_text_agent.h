@@ -15,7 +15,7 @@
 #include "base/strings/string16.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 
@@ -69,7 +69,7 @@ class PageTextAgent
                 mojo::PendingRemote<mojom::PageTextConsumer>>;
   std::map<mojom::TextDumpEvent, RequestAndConsumer> requests_by_event_;
 
-  mojo::AssociatedReceiver<mojom::PageTextService> receiver_{this};
+  mojo::AssociatedReceiverSet<mojom::PageTextService> receivers_;
 
   base::WeakPtrFactory<PageTextAgent> weak_factory_{this};
 };

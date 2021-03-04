@@ -232,4 +232,14 @@ TEST_F(PageTextAgentTest, NoRequests) {
   EXPECT_EQ(123U, size);
 }
 
+TEST_F(PageTextAgentTest, MultipleBindWithSet) {
+  PageTextAgent agent(nullptr);
+
+  mojo::PendingAssociatedRemote<mojom::PageTextService> remote_1;
+  mojo::PendingAssociatedRemote<mojom::PageTextService> remote_2;
+
+  agent.Bind(remote_1.InitWithNewEndpointAndPassReceiver());
+  agent.Bind(remote_2.InitWithNewEndpointAndPassReceiver());
+}
+
 }  // namespace optimization_guide

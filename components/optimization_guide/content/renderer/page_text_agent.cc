@@ -42,7 +42,7 @@ PageTextAgent::~PageTextAgent() = default;
 
 void PageTextAgent::Bind(
     mojo::PendingAssociatedReceiver<mojom::PageTextService> receiver) {
-  receiver_.Bind(std::move(receiver));
+  receivers_.Add(this, std::move(receiver));
 }
 
 base::OnceCallback<void(const base::string16&)>
