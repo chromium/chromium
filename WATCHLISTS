@@ -1111,6 +1111,9 @@
     'headless': {
       'filepath': 'headless/'
     },
+    'heap_mojo': {
+      'filepath': 'third_party/blink/renderer/platform/mojo/heap_mojo_.*'
+    },
     'holding_space': {
       'filepath': 'ash/public/cpp/holding_space|'\
                   'ash/system/holding_space|'\
@@ -2093,7 +2096,8 @@
                           'hanxi+watch@chromium.org',
                           'pkotwicz+watch@chromium.org',
                           'webapks-watchlist@chromium.org'],
-    'agent_scheduling_group': ['blink-isolation-reviews@chromium.org'],
+    'agent_scheduling_group': ['blink-isolation-reviews@chromium.org',
+                               'chikamune+watch@chromium.org'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
     'android_crazy_linker': ['johnmaguire+watch@google.com'],
@@ -2190,7 +2194,8 @@
                  'robliao+watch@chromium.org',
                  'wfh+watch@chromium.org'],
     'battery_status': ['timvolodine@chromium.org'],
-    'bfcache': ['bfcache-bugs@chromium.org'],
+    'bfcache': ['bfcache-bugs@chromium.org',
+                'chikamune+watch@chromium.org'],
     'binary_size': ['agrieve+watch@chromium.org'],
     'blink': ['blink-reviews@chromium.org'],
     'blink_accessibility': ['aboxhall@chromium.org',
@@ -2292,7 +2297,8 @@
                         'yoavweiss@chromium.org'],
     'blink_public_api': ['blink-reviews-api@chromium.org'],
     'blink_quota': ['kinuko+fileapi@chromium.org'],
-    'blink_scheduler': ['scheduler-bugs+blink@chromium.org'],
+    'blink_scheduler': ['chikamune+watch@chromium.org',
+                        'scheduler-bugs+blink@chromium.org'],
     'blink_scheduling_api': ['web-scheduling-api-reviews@chromium.org'],
     'blink_screen_orientation': ['mlamouri+watch-blink@chromium.org'],
     'blink_script': ['kouhei+script@chromium.org',
@@ -2535,6 +2541,7 @@
                    'wjmaclean@chromium.org'],
     'hats': ['cros-telemetry+hats@google.com'],
     'headless': ['headless-reviews@chromium.org'],
+    'heap_mojo': ['chikamune+watch@chromium.org'],
     'holding_space': ['tote-eng+reviews@google.com'],
     'i18n': ['jshin+watch@chromium.org'],
     'image_editor': ['chrome-sharing-eng+watch@google.com',
