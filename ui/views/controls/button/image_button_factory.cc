@@ -23,28 +23,32 @@ namespace {
 class ColorTrackingVectorImageButton : public ImageButton {
  public:
   ColorTrackingVectorImageButton(PressedCallback callback,
-                                 const gfx::VectorIcon& icon)
-      : ImageButton(std::move(callback)), icon_(icon) {}
+                                 const gfx::VectorIcon& icon,
+                                 int dip_size)
+      : ImageButton(std::move(callback)), icon_(icon), dip_size_(dip_size) {}
 
   // ImageButton:
   void OnThemeChanged() override {
     ImageButton::OnThemeChanged();
     const SkColor color = GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_DefaultIconColor);
-    SetImageFromVectorIconWithColor(this, icon_, color);
+    SetImageFromVectorIconWithColor(this, icon_, dip_size_, color);
   }
 
  private:
   const gfx::VectorIcon& icon_;
+  int dip_size_;
 };
 
 }  // namespace
 
 std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
     Button::PressedCallback callback,
-    const gfx::VectorIcon& icon) {
+    const gfx::VectorIcon& icon,
+    base::Optional<int> dip_size) {
   auto button = std::make_unique<ColorTrackingVectorImageButton>(
-      std::move(callback), icon);
+      std::move(callback), icon,
+      dip_size.value_or(GetDefaultSizeOfVectorIcon(icon)));
   ConfigureVectorImageButton(button.get());
   return button;
 }
