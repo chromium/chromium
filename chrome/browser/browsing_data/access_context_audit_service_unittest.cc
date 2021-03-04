@@ -238,6 +238,30 @@ TEST_F(AccessContextAuditServiceTest, CookieRecords) {
   CheckContainsCookieRecord(test_non_persistent_cookie.get(), kTopFrameOrigin,
                             kAccessTime2, records);
 
+  // Test GetCookieRecords by inserting a non-cookie record and then make
+  // sure GetCookieRecords does not include it in the result.
+  service()->RecordStorageAPIAccess(
+      url::Origin::Create(kTestCookieURL),
+      AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
+      kTopFrameOrigin);
+  EXPECT_EQ(3u, GetAllAccessRecords().size());
+  base::RunLoop run_loop;
+  std::vector<AccessContextAuditDatabase::AccessRecord> cookie_records;
+  service()->GetCookieAccessRecords(base::BindLambdaForTesting(
+      [&](std::vector<AccessContextAuditDatabase::AccessRecord> records) {
+        cookie_records = records;
+        run_loop.QuitWhenIdle();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(2u, cookie_records.size());
+  for (auto cr : cookie_records) {
+    EXPECT_EQ(AccessContextAuditDatabase::StorageAPIType::kCookie, cr.type);
+  }
+  service()->RemoveAllRecordsForOriginKeyedStorage(
+      url::Origin::Create(kTestCookieURL),
+      AccessContextAuditDatabase::StorageAPIType::kLocalStorage);
+  EXPECT_EQ(2u, GetAllAccessRecords().size());
+
   // Inform the service the cookies have been deleted and check they are no
   // longer returned.
   service()->OnCookieChange(
@@ -261,6 +285,44 @@ TEST_F(AccessContextAuditServiceTest, ExpiredCookies) {
                                 url::Origin::Create(kTestURL));
 
   EXPECT_EQ(0u, GetAllAccessRecords().size());
+}
+
+TEST_F(AccessContextAuditServiceTest, GetStorageRecords) {
+  GURL kTestUrl = GURL("https://example.com");
+  const base::Time kAccessTime1 = base::Time::Now();
+
+  // Insert a cookie access and several storage access records into the
+  // database.
+  url::Origin kTopFrameOrigin = url::Origin::Create(GURL("https://test.com"));
+  service()->RecordCookieAccess(
+      {*net::CanonicalCookie::Create(kTestUrl, "foo=bar; max-age=3600",
+                                     kAccessTime1,
+                                     base::nullopt /* server_time */)},
+      kTopFrameOrigin);
+  url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
+  service()->RecordStorageAPIAccess(
+      kTestOrigin, AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
+      kTopFrameOrigin);
+  service()->RecordStorageAPIAccess(
+      kTestOrigin, AccessContextAuditDatabase::StorageAPIType::kIndexedDB,
+      kTopFrameOrigin);
+  service()->RecordStorageAPIAccess(
+      kTestOrigin, AccessContextAuditDatabase::StorageAPIType::kServiceWorker,
+      kTopFrameOrigin);
+  EXPECT_EQ(4u, GetAllAccessRecords().size());
+
+  base::RunLoop run_loop;
+  std::vector<AccessContextAuditDatabase::AccessRecord> storage_records;
+  service()->GetStorageAccessRecords(base::BindLambdaForTesting(
+      [&](std::vector<AccessContextAuditDatabase::AccessRecord> records) {
+        storage_records = records;
+        run_loop.QuitWhenIdle();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(3u, storage_records.size());
+  for (auto sr : storage_records) {
+    EXPECT_NE(AccessContextAuditDatabase::StorageAPIType::kCookie, sr.type);
+  }
 }
 
 TEST_F(AccessContextAuditServiceTest, OriginKeyedStorageDeleted) {

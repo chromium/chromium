@@ -539,7 +539,7 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTopFrameOrigins(
 }
 
 std::vector<AccessContextAuditDatabase::AccessRecord>
-AccessContextAuditDatabase::GetAllRecords() {
+AccessContextAuditDatabase::GetCookieRecords() {
   std::vector<AccessContextAuditDatabase::AccessRecord> records;
 
   const char kSelectCookieRecords[] =
@@ -558,6 +558,13 @@ AccessContextAuditDatabase::GetAllRecords() {
         select_cookies.ColumnBool(5));
   }
 
+  return records;
+}
+
+std::vector<AccessContextAuditDatabase::AccessRecord>
+AccessContextAuditDatabase::GetStorageRecords() {
+  std::vector<AccessContextAuditDatabase::AccessRecord> records;
+
   const char kSelectStorageApiRecords[] =
       "SELECT top_frame_origin, type, origin, access_utc FROM "
       "originStorageAPIs";
@@ -574,6 +581,17 @@ AccessContextAuditDatabase::GetAllRecords() {
                 select_storage_api.ColumnInt64(3))));
   }
 
+  return records;
+}
+
+std::vector<AccessContextAuditDatabase::AccessRecord>
+AccessContextAuditDatabase::GetAllRecords() {
+  std::vector<AccessContextAuditDatabase::AccessRecord> records =
+      GetCookieRecords();
+  std::vector<AccessContextAuditDatabase::AccessRecord> tmp_records =
+      GetStorageRecords();
+  records.insert(records.end(), std::make_move_iterator(tmp_records.begin()),
+                 std::make_move_iterator(tmp_records.end()));
   return records;
 }
 

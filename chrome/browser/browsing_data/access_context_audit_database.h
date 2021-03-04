@@ -82,6 +82,12 @@ class AccessContextAuditDatabase
   // Persists the provided list of |records| in the database.
   void AddRecords(const std::vector<AccessRecord>& records);
 
+  // Returns all cookie entries in the database. No ordering is enforced.
+  std::vector<AccessRecord> GetCookieRecords();
+
+  // Returns all storage entries in the database. No ordering is enforced.
+  std::vector<AccessRecord> GetStorageRecords();
+
   // Returns all entries in the database. No ordering is enforced.
   std::vector<AccessRecord> GetAllRecords();
 

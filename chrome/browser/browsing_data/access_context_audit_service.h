@@ -85,14 +85,17 @@ class AccessContextAuditService
                               AccessContextAuditDatabase::StorageAPIType type,
                               const url::Origin& top_frame_origin);
 
+  // Queries database for all access context records for cookies, which are
+  // provided via |callback|.
+  void GetCookieAccessRecords(AccessContextRecordsCallback callback);
+
+  // Queries database for all access context records for storage, which are
+  // provided via |callback|.
+  void GetStorageAccessRecords(AccessContextRecordsCallback callback);
+
   // Queries database for all access context records, which are provided via
   // |callback|.
   void GetAllAccessRecords(AccessContextRecordsCallback callback);
-
-  // Called on completion of GetAllAccessRecords.
-  void CompleteGetAllAccessRecordsInternal(
-      AccessContextRecordsCallback callback,
-      std::vector<AccessContextAuditDatabase::AccessRecord> records);
 
   // Remove all records of access to |origin|'s storage API of |type|.
   void RemoveAllRecordsForOriginKeyedStorage(
@@ -129,6 +132,7 @@ class AccessContextAuditService
   friend class AccessContextAuditServiceTest;
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, CookieRecords);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, ExpiredCookies);
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, GetStorageRecords);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, HistoryDeletion);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, AllHistoryDeletion);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest,
@@ -144,6 +148,12 @@ class AccessContextAuditService
 
   // Removes any records which are session only from the database.
   void ClearSessionOnlyRecords();
+
+  // Called on completion of GetCookieRecords, GetStorageRecords, or
+  // GetAllAccessRecords.
+  void CompleteGetAccessRecordsInternal(
+      AccessContextRecordsCallback callback,
+      std::vector<AccessContextAuditDatabase::AccessRecord> records);
 
   scoped_refptr<AccessContextAuditDatabase> database_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> database_task_runner_;
