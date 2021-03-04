@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -493,7 +494,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // Use Incognito CCT if the source page is in Incognito mode. This is gated by
         // flag ChromeFeatureList.CCT_INCOGNITO.
         if (mTab.isIncognito()) {
-            customTabsIntent.intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+            IncognitoCustomTabIntentDataProvider.addIncongitoExtrasForChromeFeatures(
+                    customTabsIntent.intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
         }
 
         customTabsIntent.launchUrl(activity, Uri.parse(distillerUrl));

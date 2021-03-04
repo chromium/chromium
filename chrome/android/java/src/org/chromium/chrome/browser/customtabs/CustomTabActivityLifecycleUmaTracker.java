@@ -33,6 +33,34 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
     private WebappCustomTabTimeSpentLogger mWebappTimeSpentLogger;
     private boolean mIsInitialResume = true;
 
+    private void recordIncognitoLaunchReason() {
+        IncognitoCustomTabIntentDataProvider incognitoProvider =
+                (IncognitoCustomTabIntentDataProvider) mIntentDataProvider;
+        RecordHistogram.recordEnumeratedHistogram("CustomTabs.IncognitoCCTCallerId",
+                incognitoProvider.getFeatureIdForMetricsCollection(),
+                IntentHandler.IncognitoCCTCallerId.NUM_ENTRIES);
+    }
+
+    private void recordUserAction() {
+        if (mIntentDataProvider.isOpenedByChrome()) {
+            RecordUserAction.record("ChromeGeneratedCustomTab.StartedInitially");
+        } else {
+            RecordUserAction.record("CustomTabs.StartedInitially");
+        }
+    }
+
+    private void recordMetrics() {
+        if (mIntentDataProvider.isIncognito()) {
+            recordIncognitoLaunchReason();
+        } else {
+            @IntentHandler.ExternalAppId
+            int externalId =
+                    IntentHandler.determineExternalIntentSource(mIntentDataProvider.getIntent());
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.ClientAppId", externalId, IntentHandler.ExternalAppId.NUM_ENTRIES);
+        }
+    }
+
     @Inject
     public CustomTabActivityLifecycleUmaTracker(ActivityLifecycleDispatcher lifecycleDispatcher,
             ChromeActivity<?> activity, BrowserServicesIntentDataProvider intentDataProvider,
@@ -63,17 +91,8 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
                 preferences.writeString(ChromePreferenceKeys.CUSTOM_TABS_LAST_URL, urlToLoad);
             }
 
-            if (mIntentDataProvider.isOpenedByChrome()) {
-                RecordUserAction.record("ChromeGeneratedCustomTab.StartedInitially");
-            } else {
-                @IntentHandler.ExternalAppId
-                int externalId = IntentHandler
-                        .determineExternalIntentSource(mIntentDataProvider.getIntent());
-                RecordHistogram.recordEnumeratedHistogram("CustomTabs.ClientAppId",
-                        externalId, IntentHandler.ExternalAppId.NUM_ENTRIES);
-
-                RecordUserAction.record("CustomTabs.StartedInitially");
-            }
+            recordUserAction();
+            recordMetrics();
         }
         mIsInitialResume = false;
 

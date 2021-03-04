@@ -192,6 +192,13 @@ public class IntentHandler {
             "com.android.chrome.from_open_in_browser";
 
     /**
+     * Interested entities within Chrome relying on launching Incognito CCT should set this in their
+     *{@link CustomTabIntent} in order to identify themselves for metric purposes.
+     **/
+    public static final String EXTRA_INCOGNITO_CCT_CALLER_ID =
+            "org.chromium.chrome.browser.customtabs.EXTRA_INCOGNITO_CCT_CALLER_ID";
+
+    /**
      * Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA.
      */
     private static ComponentName sFakeComponentName;
@@ -252,6 +259,30 @@ public class IntentHandler {
         int YOUTUBE = 15;
         // Update ClientAppId in enums.xml when adding new items.
         int NUM_ENTRIES = 16;
+    }
+
+    /**
+     * Represents apps that launch Incognito CCT.
+     * DO NOT reorder items in this interface, because it's mirrored to UMA (as
+     * {@link IncognitoCCTCallerId}). Values should be enumerated from 0.
+     * When removing items, comment them out and keep existing numeric values stable.
+     */
+    @IntDef({IncognitoCCTCallerId.OTHER_APPS, IncognitoCCTCallerId.GOOGLE_APPS,
+            IncognitoCCTCallerId.OTHER_CHROME_FEATURES, IncognitoCCTCallerId.READER_MODE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IncognitoCCTCallerId {
+        int OTHER_APPS = 0;
+        int GOOGLE_APPS = 1;
+        // This should not be used, it's a fallback for Chrome features that didn't identify
+        // themselves. Please see {@link
+        // IncognitoCustomTabIntentDataProvider#addIncongitoExtrasForChromeFeatures}
+        int OTHER_CHROME_FEATURES = 2;
+
+        // Chrome Features
+        int READER_MODE = 3;
+
+        // Update {@link IncognitoCCTCallerId} in enums.xml when adding new items.
+        int NUM_ENTRIES = 4;
     }
 
     private static ComponentName getFakeComponentName(String packageName) {
