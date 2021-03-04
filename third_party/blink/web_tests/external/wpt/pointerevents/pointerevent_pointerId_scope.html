@@ -11,6 +11,9 @@ http://www.w3.org/wiki/PointerEvents/TestAssertions
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
+        <script src="/resources/testdriver.js"></script>
+        <script src="/resources/testdriver-actions.js"></script>
+        <script src="/resources/testdriver-vendor.js"></script>
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script>
@@ -22,8 +25,10 @@ http://www.w3.org/wiki/PointerEvents/TestAssertions
             add_completion_callback(showPointerTypes);
             var detected_pointertypes = {};
 
-            function run() {
+            async function run() {
                 var target0 = document.getElementById("target0");
+                var innerframe = document.getElementById("innerframe");
+                var target1 = innerframe.contentWindow.document.getElementsByTagName("div")[0];
                 var pointerover_pointerId = null;
                 var pointerover_pointerType = null;
 
@@ -42,9 +47,11 @@ http://www.w3.org/wiki/PointerEvents/TestAssertions
                 }
 
                 on_event(window, "message", function(event) {
-                    var pe_event = JSON.parse(event.data);
-                    receivedEventsInnerFrame[pe_event.type] = 1;
-                    checkPointerId(pe_event, true);
+                    if (event.source != innerframe.contentWindow) {
+                      return;
+                    }
+                    receivedEventsInnerFrame[event.data.type] = 1;
+                    checkPointerId(event.data, true);
                     if (Object.keys(receivedEvents).length == eventList.length && Object.keys(receivedEventsInnerFrame).length == eventList.length)
                         test_pointerEvent.done();
                 });
@@ -59,7 +66,17 @@ http://www.w3.org/wiki/PointerEvents/TestAssertions
                         }
                         receivedEvents[event.type] = 1;
                     });
-               });
+                });
+
+                var iframeRect = innerframe.getClientRects()[0];
+                var rect = target1.getClientRects()[0];
+                var center_x = Math.round(iframeRect.left + (rect.left + rect.right) / 2);
+                var center_y = Math.round(iframeRect.top + (rect.top + rect.bottom) / 2);
+                await new test_driver.Actions()
+                      .pointerMove(0, 0, {origin: target0})
+                      .pointerMove(center_x, center_y)
+                      .pointerMove(center_y, center_y + 100)
+                      .send();
             }
         </script>
     </head>

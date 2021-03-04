@@ -2241,7 +2241,6 @@ crbug.com/626703 external/wpt/pointerevents/html/pointerevent_drag_interaction-m
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/focus-contained-manual.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/pointerevent_multiple_primary_pointers_boundary_events-manual.html [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/legacy-manual.html [ Skip ]
-crbug.com/626703 external/wpt/pointerevents/pointerevent_pointerId_scope-manual.html [ Skip ]
 
 # Requires EyeDropper feature to pass. Remove from virtual tests and this file
 # once that feature is on by default.
