@@ -1812,3 +1812,46 @@ chrome_internal_verifier(
     builder = "win64-chrome-stable",
     branch_selector = branches.STANDARD_MILESTONE,
 )
+
+# The PGO autorollers are not quite right at the moment, so the beta autoroller
+# (currently for M90 is running against M89 and M90), so we need for them to be
+# able to trigger the chrome-m90 builders
+def chrome_m90_internal_verifier(
+        *,
+        builder,
+        **kwargs):
+    branches.cq_tryjob_verifier(
+        builder = "chrome-m90:try/" + builder,
+        cq_group = "cq",
+        includable_only = True,
+        owner_whitelist = [
+            "googlers",
+            "project-chromium-robot-committers",
+        ],
+        **kwargs
+    )
+
+chrome_m90_internal_verifier(
+    builder = "linux-chrome",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_m90_internal_verifier(
+    builder = "linux-chromeos-chrome",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_m90_internal_verifier(
+    builder = "mac-chrome",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_m90_internal_verifier(
+    builder = "win-chrome",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_m90_internal_verifier(
+    builder = "win64-chrome",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
