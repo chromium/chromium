@@ -90,8 +90,8 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options) {
   return RunExtensionTest(run_options, {});
 }
 
-bool ExtensionApiTest::RunExtensionTest(const std::string& extension_name) {
-  return RunExtensionTest({.name = extension_name.c_str()}, {});
+bool ExtensionApiTest::RunExtensionTest(const char* extension_name) {
+  return RunExtensionTest({.name = extension_name}, {});
 }
 
 bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,

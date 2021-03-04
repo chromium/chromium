@@ -99,7 +99,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Loads the extension with |extension_name| and default RunOptions and
   // LoadOptions.
-  bool RunExtensionTest(const std::string& extension_name) WARN_UNUSED_RESULT;
+  bool RunExtensionTest(const char* extension_name) WARN_UNUSED_RESULT;
 
   // Same as RunExtensionTest, but loads extension as component.
   bool RunComponentExtensionTest(const std::string& extension_name)

@@ -279,7 +279,7 @@ class CommandsApiTest : public ExtensionApiTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void RunChromeOSConversionTest(const std::string& extension_path) {
+  void RunChromeOSConversionTest(const char* extension_path) {
     // Setup the environment.
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
