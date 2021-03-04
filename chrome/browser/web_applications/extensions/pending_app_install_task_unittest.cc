@@ -672,7 +672,7 @@ TEST_F(PendingAppInstallTaskTest, InstallPlaceholder) {
         EXPECT_EQ(WebAppUrl(), web_app_info.start_url);
         EXPECT_TRUE(web_app_info.open_as_window);
         EXPECT_TRUE(web_app_info.icon_infos.empty());
-        EXPECT_TRUE(web_app_info.icon_bitmaps_any.empty());
+        EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
 
         run_loop.Quit();
       }));
@@ -712,7 +712,7 @@ TEST_F(PendingAppInstallTaskTest, InstallPlaceholderNoCreateOsShorcuts) {
         EXPECT_EQ(WebAppUrl(), web_app_info.start_url);
         EXPECT_TRUE(web_app_info.open_as_window);
         EXPECT_TRUE(web_app_info.icon_infos.empty());
-        EXPECT_TRUE(web_app_info.icon_bitmaps_any.empty());
+        EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
 
         run_loop.Quit();
       }));

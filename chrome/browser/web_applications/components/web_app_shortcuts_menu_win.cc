@@ -54,21 +54,21 @@ base::FilePath GetShortcutIconPath(const base::FilePath& shortcut_data_dir,
 // Writes .ico file to disk.
 bool WriteShortcutsMenuIconsToIcoFiles(
     const base::FilePath& shortcut_data_dir,
-    const ShortcutsMenuIconsBitmaps& shortcut_icons) {
+    const ShortcutsMenuIconBitmaps& shortcut_icons) {
   if (!base::CreateDirectory(
           GetShortcutsMenuIconsDirectory(shortcut_data_dir))) {
     return false;
   }
   int icon_index = -1;
-  for (const auto& shortcut_icon : shortcut_icons) {
+  for (const IconBitmaps& icon_bitmaps : shortcut_icons) {
     ++icon_index;
-    if (shortcut_icon.empty())
+    if (icon_bitmaps.any.empty())
       continue;
 
     base::FilePath icon_file =
         GetShortcutIconPath(shortcut_data_dir, icon_index);
     gfx::ImageFamily image_family;
-    for (const auto& item : shortcut_icon) {
+    for (const auto& item : icon_bitmaps.any) {
       DCHECK_NE(item.second.colorType(), kUnknown_SkColorType);
       image_family.Add(gfx::Image::CreateFrom1xBitmap(item.second));
     }
@@ -99,13 +99,13 @@ void RegisterShortcutsMenuWithOsTask(
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebApplicationShortcutsMenuItemInfo>&
         shortcuts_menu_item_infos,
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps) {
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   // Each entry in the ShortcutsMenu (JumpList on Windows) needs an icon in .ico
   // format. This helper writes these icon files to disk as a series of
   // <index>.ico files, where index is a particular shortcut's index in the
   // shortcuts vector.
   if (!WriteShortcutsMenuIconsToIcoFiles(shortcut_data_dir,
-                                         shortcuts_menu_icons_bitmaps)) {
+                                         shortcuts_menu_icon_bitmaps)) {
     return;
   }
 
@@ -151,12 +151,12 @@ void RegisterShortcutsMenuWithOs(
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebApplicationShortcutsMenuItemInfo>&
         shortcuts_menu_item_infos,
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps) {
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&RegisterShortcutsMenuWithOsTask, app_id, profile_path,
                      shortcut_data_dir, shortcuts_menu_item_infos,
-                     shortcuts_menu_icons_bitmaps));
+                     shortcuts_menu_icon_bitmaps));
 }
 
 bool UnregisterShortcutsMenuWithOs(const AppId& app_id,

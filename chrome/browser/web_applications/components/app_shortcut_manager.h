@@ -77,7 +77,7 @@ class AppShortcutManager {
       const AppId& app_id,
       const std::vector<WebApplicationShortcutsMenuItemInfo>&
           shortcuts_menu_item_infos,
-      const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps);
+      const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps);
 
   void UnregisterShortcutsMenuWithOs(const AppId& app_id);
 
@@ -124,7 +124,7 @@ class AppShortcutManager {
   void OnShortcutsMenuIconsReadRegisterShortcutsMenu(
       const AppId& app_id,
       RegisterShortcutsMenuCallback callback,
-      ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps);
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
   bool suppress_shortcuts_for_testing_ = false;
 

@@ -559,7 +559,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
     ASSERT_EQ(sizes_px.size(), colors.size());
     ASSERT_TRUE(!purposes.empty());
 
-    web_app::IconBitmaps icon_bitmaps;
+    IconBitmaps icon_bitmaps;
     for (size_t i = 0; i < sizes_px.size(); ++i) {
       if (base::Contains(purposes, IconPurpose::ANY)) {
         web_app::AddGeneratedIcon(&icon_bitmaps.any, sizes_px[i], colors[i]);

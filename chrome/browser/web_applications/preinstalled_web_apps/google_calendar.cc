@@ -118,7 +118,7 @@ ExternalInstallOptions GetConfigForGoogleCalendar() {
     info->start_url = GURL("https://calendar.google.com/calendar/r");
     info->scope = GURL("https://calendar.google.com/calendar/");
     info->display_mode = DisplayMode::kStandalone;
-    info->icon_bitmaps_any = LoadBundledIcons(
+    info->icon_bitmaps.any = LoadBundledIcons(
         {IDR_PREINSTALLED_WEB_APPS_GOOGLE_CALENDAR_ICON_192_PNG});
     return info;
   });

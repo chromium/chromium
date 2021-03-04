@@ -242,7 +242,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     web_app_info->open_as_window = false;
 
     if (!image_result.image.IsEmpty()) {
-      web_app_info->icon_bitmaps_any[image_result.image.Width()] =
+      web_app_info->icon_bitmaps.any[image_result.image.Width()] =
           image_result.image.AsBitmap();
     }
 

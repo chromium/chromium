@@ -144,7 +144,7 @@ void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
   DCHECK(web_app_info_);
 
   if (decoded_image.width() == decoded_image.height())
-    web_app_info_->icon_bitmaps_any[decoded_image.width()] = decoded_image;
+    web_app_info_->icon_bitmaps.any[decoded_image.width()] = decoded_image;
 
   if (!weak_owner_.get()) {
     // Assume |profile_| is no longer valid - destroy this object and

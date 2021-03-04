@@ -201,8 +201,8 @@ TEST_F(ExternalWebAppUtilsTest, MAYBE_OfflineManifestValid) {
   EXPECT_EQ(app_info->start_url, GURL("https://test.org/start.html"));
   EXPECT_EQ(app_info->scope, GURL("https://test.org/"));
   EXPECT_EQ(app_info->display_mode, DisplayMode::kStandalone);
-  EXPECT_EQ(app_info->icon_bitmaps_any.size(), 1u);
-  EXPECT_EQ(app_info->icon_bitmaps_any.at(192).getColor(0, 0), SK_ColorBLUE);
+  EXPECT_EQ(app_info->icon_bitmaps.any.size(), 1u);
+  EXPECT_EQ(app_info->icon_bitmaps.any.at(192).getColor(0, 0), SK_ColorBLUE);
   EXPECT_EQ(app_info->theme_color, SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
 }
 

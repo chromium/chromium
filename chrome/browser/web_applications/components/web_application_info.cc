@@ -7,6 +7,41 @@
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
+// IconBitmaps
+IconBitmaps::IconBitmaps() = default;
+
+IconBitmaps::~IconBitmaps() = default;
+
+IconBitmaps::IconBitmaps(const IconBitmaps&) = default;
+
+IconBitmaps::IconBitmaps(IconBitmaps&&) = default;
+
+IconBitmaps& IconBitmaps::operator=(const IconBitmaps&) = default;
+
+IconBitmaps& IconBitmaps::operator=(IconBitmaps&&) = default;
+
+void IconBitmaps::SetBitmapsForPurpose(
+    IconPurpose purpose,
+    std::map<SquareSizePx, SkBitmap> bitmaps) {
+  switch (purpose) {
+    case IconPurpose::ANY:
+      any = std::move(bitmaps);
+      return;
+    case IconPurpose::MONOCHROME:
+      // TODO (crbug.com/1114638): Monochrome support.
+      NOTREACHED();
+      return;
+    case IconPurpose::MASKABLE:
+      maskable = std::move(bitmaps);
+      return;
+  }
+}
+
+bool IconBitmaps::empty() const {
+  // TODO (crbug.com/1114638): Check Monochrome if supported.
+  return any.empty() && maskable.empty();
+}
+
 // WebApplicationIconInfo
 WebApplicationIconInfo::WebApplicationIconInfo() = default;
 WebApplicationIconInfo::WebApplicationIconInfo(const GURL& url,

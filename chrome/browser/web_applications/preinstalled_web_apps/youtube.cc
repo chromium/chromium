@@ -36,7 +36,7 @@ ExternalInstallOptions GetConfigForYouTube() {
     info->start_url = GURL("https://www.youtube.com/?feature=ytca");
     info->scope = GURL("https://www.youtube.com/");
     info->display_mode = DisplayMode::kMinimalUi;
-    info->icon_bitmaps_any =
+    info->icon_bitmaps.any =
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG});
     return info;
   });

@@ -132,7 +132,7 @@ class WebAppsChromeOs : public WebAppsBase,
       apps::mojom::MenuType menu_type,
       apps::mojom::MenuItemsPtr menu_items,
       GetMenuModelCallback callback,
-      ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps);
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
   bool MaybeAddNotification(const std::string& app_id,
                             const std::string& notification_id);

@@ -1553,9 +1553,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
   GetProvider().icon_manager().ReadAllShortcutsMenuIcons(
       app_id,
       base::BindLambdaForTesting(
-          [&run_loop](ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps) {
+          [&run_loop](ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
             run_loop.Quit();
-            EXPECT_EQ(shortcuts_menu_icons_bitmaps[0].at(192).getColor(0, 0),
+            EXPECT_EQ(shortcuts_menu_icon_bitmaps[0].any.at(192).getColor(0, 0),
                       SK_ColorBLUE);
           }));
   run_loop.Run();

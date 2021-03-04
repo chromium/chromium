@@ -216,8 +216,8 @@ void WebKioskAppData::UpdateFromWebAppInfo(
   if (delegate_)
     delegate_->GetKioskAppIconCacheDir(&cache_dir);
 
-  auto it = app_info->icon_bitmaps_any.find(kIconSize);
-  if (it != app_info->icon_bitmaps_any.end()) {
+  auto it = app_info->icon_bitmaps.any.find(kIconSize);
+  if (it != app_info->icon_bitmaps.any.end()) {
     const SkBitmap& bitmap = it->second;
     icon_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     icon_.MakeThreadSafe();

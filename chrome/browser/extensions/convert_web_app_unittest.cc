@@ -289,7 +289,7 @@ TEST_F(ExtensionFromWebApp, Basic) {
         web_app.start_url.Resolve(base::StringPrintf("%i.png", sizes[i]));
     icon_info.square_size_px = sizes[i];
     web_app.icon_infos.push_back(std::move(icon_info));
-    web_app.icon_bitmaps_any[sizes[i]] = GetIconBitmap(sizes[i]);
+    web_app.icon_bitmaps.any[sizes[i]] = GetIconBitmap(sizes[i]);
   }
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
@@ -331,10 +331,10 @@ TEST_F(ExtensionFromWebApp, Basic) {
     EXPECT_EQ(web_app.icon_infos[i].square_size_px, linked_icons.icons[i].size);
   }
 
-  EXPECT_EQ(web_app.icon_bitmaps_any.size(),
+  EXPECT_EQ(web_app.icon_bitmaps.any.size(),
             IconsInfo::GetIcons(extension.get()).map().size());
   for (const std::pair<const SquareSizePx, SkBitmap>& icon :
-       web_app.icon_bitmaps_any) {
+       web_app.icon_bitmaps.any) {
     int size = icon.first;
     EXPECT_EQ(base::StringPrintf("icons/%i.png", size),
               IconsInfo::GetIcons(extension.get())
@@ -575,7 +575,6 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   StartExtensionService();
   WebApplicationInfo web_app;
   WebApplicationShortcutsMenuItemInfo shortcut_item;
-  std::map<SquareSizePx, SkBitmap> shortcut_icon_bitmaps;
   web_app.title = base::ASCIIToUTF16("Shortcut App");
   web_app.description = base::ASCIIToUTF16("We have shortcuts.");
   web_app.start_url = GURL("https://shortcut-app.io/");
@@ -584,6 +583,7 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   shortcut_item.name = base::ASCIIToUTF16("Shortcut 1");
   shortcut_item.url = GURL("https://shortcut-app.io/shortcuts/shortcut1");
   {
+    IconBitmaps shortcut_icon_bitmaps;
     const int sizes[] = {16, 128};
     for (const auto& size : sizes) {
       WebApplicationShortcutsMenuItemInfo::Icon icon_info;
@@ -591,9 +591,9 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
           base::StringPrintf("shortcut1/%i.png", size));
       icon_info.square_size_px = size;
       shortcut_item.shortcut_icon_infos.push_back(std::move(icon_info));
-      shortcut_icon_bitmaps[size] = GetIconBitmap(size);
+      shortcut_icon_bitmaps.any[size] = GetIconBitmap(size);
     }
-    web_app.shortcuts_menu_icons_bitmaps.emplace_back(
+    web_app.shortcuts_menu_icon_bitmaps.emplace_back(
         std::move(shortcut_icon_bitmaps));
   }
   web_app.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
@@ -601,6 +601,7 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   shortcut_item.name = base::ASCIIToUTF16("Shortcut 2");
   shortcut_item.url = GURL("https://shortcut-app.io/shortcuts/shortcut2");
   {
+    IconBitmaps shortcut_icon_bitmaps;
     const int sizes[] = {16, 48};
     for (const auto& size : sizes) {
       WebApplicationShortcutsMenuItemInfo::Icon icon_info;
@@ -608,9 +609,9 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
           web_app.start_url.Resolve(base::StringPrintf("0/%i.png", size));
       icon_info.square_size_px = size;
       shortcut_item.shortcut_icon_infos.push_back(std::move(icon_info));
-      shortcut_icon_bitmaps[size] = GetIconBitmap(size);
+      shortcut_icon_bitmaps.any[size] = GetIconBitmap(size);
     }
-    web_app.shortcuts_menu_icons_bitmaps.emplace_back(
+    web_app.shortcuts_menu_icon_bitmaps.emplace_back(
         std::move(shortcut_icon_bitmaps));
   }
   web_app.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
@@ -640,7 +641,7 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
     }
 
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps =
-        web_app.shortcuts_menu_icons_bitmaps[i];
+        web_app.shortcuts_menu_icon_bitmaps[i].any;
     EXPECT_EQ(icon_bitmaps.size(), shortcut_icons.at(i).map().size());
     for (const std::pair<const SquareSizePx, SkBitmap>& icon : icon_bitmaps) {
       int size = icon.first;

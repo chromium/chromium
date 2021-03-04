@@ -32,7 +32,7 @@ ExternalInstallOptions GetConfigForGmail() {
     info->start_url = GURL("https://mail.google.com/?usp=installed_webapp");
     info->scope = GURL("https://mail.google.com/");
     info->display_mode = DisplayMode::kBrowser;
-    info->icon_bitmaps_any =
+    info->icon_bitmaps.any =
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GMAIL_ICON_192_PNG});
     return info;
   });

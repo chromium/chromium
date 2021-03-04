@@ -292,7 +292,7 @@ void WebAppsChromeOs::OnShortcutsMenuIconsRead(
     apps::mojom::MenuType menu_type,
     apps::mojom::MenuItemsPtr menu_items,
     GetMenuModelCallback callback,
-    ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps) {
+    ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     std::move(callback).Run(apps::mojom::MenuItems::New());
@@ -306,8 +306,9 @@ void WebAppsChromeOs::OnShortcutsMenuIconsRead(
   for (const WebApplicationShortcutsMenuItemInfo& menu_item_info :
        web_app->shortcuts_menu_item_infos()) {
     const std::map<SquareSizePx, SkBitmap>* menu_item_icon_bitmaps = nullptr;
-    if (menu_item_index < shortcuts_menu_icons_bitmaps.size()) {
-      menu_item_icon_bitmaps = &shortcuts_menu_icons_bitmaps[menu_item_index];
+    if (menu_item_index < shortcuts_menu_icon_bitmaps.size()) {
+      menu_item_icon_bitmaps =
+          &shortcuts_menu_icon_bitmaps[menu_item_index].any;
     }
 
     if (menu_item_index != 0) {

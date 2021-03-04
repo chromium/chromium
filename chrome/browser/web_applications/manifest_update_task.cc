@@ -52,6 +52,14 @@ bool HaveIconContentsChanged(
   return false;
 }
 
+bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
+                            const IconBitmaps& downloaded_icon_bitmaps) {
+  return HaveIconContentsChanged(disk_icon_bitmaps.any,
+                                 downloaded_icon_bitmaps.any) ||
+         HaveIconContentsChanged(disk_icon_bitmaps.maskable,
+                                 downloaded_icon_bitmaps.maskable);
+}
+
 }  // namespace
 
 ManifestUpdateTask::ManifestUpdateTask(const GURL& url,
@@ -286,30 +294,18 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
 bool ManifestUpdateTask::IsUpdateNeededForIconContents(
     const IconBitmaps& disk_icon_bitmaps) const {
   DCHECK(web_application_info_.has_value());
-  const std::map<SquareSizePx, SkBitmap>& downloaded_icon_bitmaps_any =
-      web_application_info_->icon_bitmaps_any;
-  if (HaveIconContentsChanged(disk_icon_bitmaps.any,
-                              downloaded_icon_bitmaps_any)) {
-    return true;
-  }
-  const std::map<SquareSizePx, SkBitmap>& downloaded_icon_bitmaps_maskable =
-      web_application_info_->icon_bitmaps_maskable;
-  if (HaveIconContentsChanged(disk_icon_bitmaps.maskable,
-                              downloaded_icon_bitmaps_maskable)) {
-    return true;
-  }
-
-  return false;
+  return HaveIconBitmapsChanged(disk_icon_bitmaps,
+                                web_application_info_->icon_bitmaps);
 }
 
 void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
-    ShortcutsMenuIconsBitmaps disk_shortcuts_menu_icons_bitmaps) {
+    ShortcutsMenuIconBitmaps disk_shortcuts_menu_icon_bitmaps) {
   DCHECK(stage_ == Stage::kPendingIconReadFromDisk);
 
   DCHECK(web_application_info_.has_value());
 
   if (IsUpdateNeededForShortcutsMenuIconsContents(
-          disk_shortcuts_menu_icons_bitmaps)) {
+          disk_shortcuts_menu_icon_bitmaps)) {
     UpdateAfterWindowsClose();
     return;
   }
@@ -318,21 +314,20 @@ void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
 }
 
 bool ManifestUpdateTask::IsUpdateNeededForShortcutsMenuIconsContents(
-    const ShortcutsMenuIconsBitmaps& disk_shortcuts_menu_icons_bitmaps) const {
+    const ShortcutsMenuIconBitmaps& disk_shortcuts_menu_icon_bitmaps) const {
   DCHECK(web_application_info_.has_value());
-  const ShortcutsMenuIconsBitmaps& downloaded_shortcuts_menu_icons_bitmaps =
-      web_application_info_->shortcuts_menu_icons_bitmaps;
-  if (downloaded_shortcuts_menu_icons_bitmaps.size() !=
-      disk_shortcuts_menu_icons_bitmaps.size()) {
+  const ShortcutsMenuIconBitmaps& downloaded_shortcuts_menu_icon_bitmaps =
+      web_application_info_->shortcuts_menu_icon_bitmaps;
+  if (downloaded_shortcuts_menu_icon_bitmaps.size() !=
+      disk_shortcuts_menu_icon_bitmaps.size()) {
     return true;
   }
 
-  for (size_t i = 0; i < downloaded_shortcuts_menu_icons_bitmaps.size(); ++i) {
-    const std::map<SquareSizePx, SkBitmap>& downloaded_icon_bitmaps =
-        downloaded_shortcuts_menu_icons_bitmaps[i];
-    const std::map<SquareSizePx, SkBitmap>& disk_icon_bitmaps =
-        disk_shortcuts_menu_icons_bitmaps[i];
-    if (HaveIconContentsChanged(disk_icon_bitmaps, downloaded_icon_bitmaps))
+  for (size_t i = 0; i < downloaded_shortcuts_menu_icon_bitmaps.size(); ++i) {
+    const IconBitmaps& downloaded_icon_bitmaps =
+        downloaded_shortcuts_menu_icon_bitmaps[i];
+    const IconBitmaps& disk_icon_bitmaps = disk_shortcuts_menu_icon_bitmaps[i];
+    if (HaveIconBitmapsChanged(disk_icon_bitmaps, downloaded_icon_bitmaps))
       return true;
   }
 

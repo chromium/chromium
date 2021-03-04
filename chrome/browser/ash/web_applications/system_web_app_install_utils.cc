@@ -17,7 +17,7 @@ void CreateIconInfoForSystemWebApp(
     web_app.icon_infos.emplace_back(app_url.Resolve(info.icon_name), info.size);
     auto image =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(info.resource_id);
-    web_app.icon_bitmaps_any[info.size] = image.AsBitmap();
+    web_app.icon_bitmaps.any[info.size] = image.AsBitmap();
   }
 }
 }  // namespace web_app

@@ -47,7 +47,7 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
                  WriteDataCallback callback);
   void WriteShortcutsMenuIconsData(
       AppId app_id,
-      ShortcutsMenuIconsBitmaps shortcuts_menu_icons,
+      ShortcutsMenuIconBitmaps shortcuts_menu_icons,
       WriteDataCallback callback);
   void DeleteData(AppId app_id, WriteDataCallback callback);
 

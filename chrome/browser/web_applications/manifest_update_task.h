@@ -110,9 +110,9 @@ class ManifestUpdateTask final
   bool IsUpdateNeededForIconContents(
       const IconBitmaps& disk_icon_bitmaps) const;
   void OnAllShortcutsMenuIconsRead(
-      ShortcutsMenuIconsBitmaps disk_shortcuts_menu_icons);
+      ShortcutsMenuIconBitmaps disk_shortcuts_menu_icons);
   bool IsUpdateNeededForShortcutsMenuIconsContents(
-      const ShortcutsMenuIconsBitmaps& disk_shortcuts_menu_icons) const;
+      const ShortcutsMenuIconBitmaps& disk_shortcuts_menu_icons) const;
   void UpdateAfterWindowsClose();
   void OnAllAppWindowsClosed();
   void OnInstallationComplete(

@@ -486,9 +486,9 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
            base::NumberToString(bitmap.height())});
     }
 
-    app_info.icon_bitmaps_any[bitmap.width()] = std::move(bitmap);
+    app_info.icon_bitmaps.any[bitmap.width()] = std::move(bitmap);
   }
-  DCHECK(!app_info.icon_bitmaps_any.empty());
+  DCHECK(!app_info.icon_bitmaps.any.empty());
 
   // theme_color_argb_hex (optional)
   const base::Value* theme_color_value =

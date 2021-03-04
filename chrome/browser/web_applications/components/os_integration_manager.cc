@@ -241,7 +241,7 @@ void OsIntegrationManager::UpdateOsHooks(
       !web_app_info.shortcuts_menu_item_infos.empty()) {
     shortcut_manager_->RegisterShortcutsMenuWithOs(
         app_id, web_app_info.shortcuts_menu_item_infos,
-        web_app_info.shortcuts_menu_icons_bitmaps);
+        web_app_info.shortcuts_menu_icon_bitmaps);
   } else {
     // Unregister shortcuts menu when feature is disabled or
     // shortcuts_menu_item_infos is empty.
@@ -370,7 +370,7 @@ void OsIntegrationManager::RegisterShortcutsMenu(
     const AppId& app_id,
     const std::vector<WebApplicationShortcutsMenuItemInfo>&
         shortcuts_menu_item_infos,
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps,
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
     base::OnceCallback<void(bool success)> callback) {
   if (!ShouldRegisterShortcutsMenuWithOs()) {
     std::move(callback).Run(true);
@@ -379,7 +379,7 @@ void OsIntegrationManager::RegisterShortcutsMenu(
 
   DCHECK(shortcut_manager_);
   shortcut_manager_->RegisterShortcutsMenuWithOs(
-      app_id, shortcuts_menu_item_infos, shortcuts_menu_icons_bitmaps);
+      app_id, shortcuts_menu_item_infos, shortcuts_menu_icon_bitmaps);
 
   // TODO(https://crbug.com/1098471): fix RegisterShortcutsMenuWithOs to
   // take callback.
@@ -543,7 +543,7 @@ void OsIntegrationManager::OnShortcutsCreated(
     if (web_app_info) {
       RegisterShortcutsMenu(
           app_id, web_app_info->shortcuts_menu_item_infos,
-          web_app_info->shortcuts_menu_icons_bitmaps,
+          web_app_info->shortcuts_menu_icon_bitmaps,
           barrier->CreateBarrierCallbackForType(OsHookType::kShortcutsMenu));
     } else {
       ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(

@@ -21,7 +21,7 @@ void RegisterShortcutsMenuWithOs(
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebApplicationShortcutsMenuItemInfo>&
         shortcuts_menu_item_infos,
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps) {
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   NOTIMPLEMENTED();
   DCHECK(ShouldRegisterShortcutsMenuWithOs());
 }

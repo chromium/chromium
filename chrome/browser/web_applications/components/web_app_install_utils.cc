@@ -313,7 +313,7 @@ std::vector<GURL> GetValidIconUrlsToDownload(
 void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
                                const IconsMap* icons_map) {
   for (auto& shortcut : web_app_info->shortcuts_menu_item_infos) {
-    SizeToBitmap shortcut_icon_bitmaps;
+    IconBitmaps shortcut_icon_bitmaps;
     for (const auto& icon : shortcut.shortcut_icon_infos) {
       auto it = icons_map->find(icon.url);
       if (it != icons_map->end()) {
@@ -323,12 +323,13 @@ void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
             ConstrainBitmapsToSizes(it->second, sizes_to_generate));
 
         // Don't overwrite as a shortcut item could have multiple icon urls.
-        shortcut_icon_bitmaps.insert(resized_bitmaps.begin(),
-                                     resized_bitmaps.end());
+        shortcut_icon_bitmaps.any.insert(resized_bitmaps.begin(),
+                                         resized_bitmaps.end());
       }
     }
-    web_app_info->shortcuts_menu_icons_bitmaps.emplace_back(
-        shortcut_icon_bitmaps);
+
+    web_app_info->shortcuts_menu_icon_bitmaps.emplace_back(
+        std::move(shortcut_icon_bitmaps));
   }
 }
 
@@ -367,12 +368,12 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
     if (square_icons_any.empty())
       AddSquareIconsFromMap(&square_icons_any, *icons_map);
   }
-  AddSquareIconsFromBitmaps(&square_icons_any, web_app_info->icon_bitmaps_any);
+  AddSquareIconsFromBitmaps(&square_icons_any, web_app_info->icon_bitmaps.any);
 
   for (SkBitmap& bitmap : square_icons_maskable) {
     // Retain any bitmaps provided as input to the installation.
-    if (web_app_info->icon_bitmaps_maskable.count(bitmap.width()) == 0)
-      web_app_info->icon_bitmaps_maskable[bitmap.width()] = std::move(bitmap);
+    if (web_app_info->icon_bitmaps.maskable.count(bitmap.width()) == 0)
+      web_app_info->icon_bitmaps.maskable[bitmap.width()] = std::move(bitmap);
   }
 
   base::char16 icon_letter =
@@ -392,8 +393,8 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
 
   for (auto& item : size_to_icons) {
     // Retain any bitmaps provided as input to the installation.
-    if (web_app_info->icon_bitmaps_any.count(item.first) == 0)
-      web_app_info->icon_bitmaps_any[item.first] = std::move(item.second);
+    if (web_app_info->icon_bitmaps.any.count(item.first) == 0)
+      web_app_info->icon_bitmaps.any[item.first] = std::move(item.second);
   }
 }
 

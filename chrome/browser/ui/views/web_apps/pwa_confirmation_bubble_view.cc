@@ -49,7 +49,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
     const WebApplicationInfo& web_app_info) {
   constexpr int kIconSize = 48;
   gfx::ImageSkia image(std::make_unique<WebAppInfoImageSource>(
-                           kIconSize, web_app_info.icon_bitmaps_any),
+                           kIconSize, web_app_info.icon_bitmaps.any),
                        gfx::Size(kIconSize, kIconSize));
 
   auto icon_image_view = std::make_unique<views::ImageView>();

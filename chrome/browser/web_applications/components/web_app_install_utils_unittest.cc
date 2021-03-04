@@ -596,8 +596,10 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   PopulateShortcutItemIcons(&web_app_info, &icons_map);
 
   // Ensure that reused shortcut icons are processed correctly.
-  EXPECT_EQ(1U, web_app_info.shortcuts_menu_icons_bitmaps[0].size());
-  EXPECT_EQ(2U, web_app_info.shortcuts_menu_icons_bitmaps[1].size());
+  EXPECT_EQ(1U, web_app_info.shortcuts_menu_icon_bitmaps[0].any.size());
+  EXPECT_EQ(0U, web_app_info.shortcuts_menu_icon_bitmaps[0].maskable.size());
+  EXPECT_EQ(2U, web_app_info.shortcuts_menu_icon_bitmaps[1].any.size());
+  EXPECT_EQ(0U, web_app_info.shortcuts_menu_icon_bitmaps[1].maskable.size());
 }
 
 // Tests that when PopulateShortcutItemIcons is called with no shortcut icon
@@ -629,7 +631,7 @@ TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissingNoWebAppIconData) {
   icons_map.emplace(IconUrl1(), bmp1);
   FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
 
-  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps_any.size());
+  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
 }
 
 // Tests that when FilterAndResizeIconsGenerateMissing is called with maskable
@@ -660,12 +662,12 @@ TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissing_MaskableIcons) {
 
   FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
 
-  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps_any.size());
+  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
   // Expect only icon at URL 1 to be used and resized as.
-  for (const auto& icon_bitmap : web_app_info.icon_bitmaps_any) {
+  for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
     EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
   }
-  EXPECT_EQ(2u, web_app_info.icon_bitmaps_maskable.size());
+  EXPECT_EQ(2u, web_app_info.icon_bitmaps.maskable.size());
 }
 
 // Tests that when FilterAndResizeIconsGenerateMissing is called with maskable
@@ -688,8 +690,8 @@ TEST(WebAppInstallUtils,
   FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
 
   // Expect to fall back to using icon from icons_map.
-  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps_any.size());
-  for (const auto& icon_bitmap : web_app_info.icon_bitmaps_any) {
+  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
+  for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
     EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
   }
 }
@@ -716,8 +718,8 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
 
   // Expect to fall back to using icon from icons_map.
-  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps_any.size());
-  for (const auto& icon_bitmap : web_app_info.icon_bitmaps_any) {
+  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
+  for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
     EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
   }
 }
@@ -755,15 +757,16 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   web_app_info.shortcuts_menu_item_infos.push_back(
       std::move(shortcuts_menu_item_info));
   // Construct shortcut_icon_bitmap to add to
-  // |web_app_info.shortcuts_menu_icons_bitmaps|.
-  std::map<SquareSizePx, SkBitmap> shortcut_icon_bitmaps;
-  shortcut_icon_bitmaps[kIconSize] = CreateSquareIcon(kIconSize, SK_ColorBLUE);
-  web_app_info.shortcuts_menu_icons_bitmaps.emplace_back(shortcut_icon_bitmaps);
+  // |web_app_info.shortcuts_menu_icon_bitmaps|.
+  IconBitmaps shortcut_icon_bitmaps;
+  shortcut_icon_bitmaps.any[kIconSize] =
+      CreateSquareIcon(kIconSize, SK_ColorBLUE);
+  web_app_info.shortcuts_menu_icon_bitmaps.emplace_back(shortcut_icon_bitmaps);
 
   FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
 
-  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps_any.size());
-  for (const auto& icon_bitmap : web_app_info.icon_bitmaps_any) {
+  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
+  for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
     EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
   }
 }

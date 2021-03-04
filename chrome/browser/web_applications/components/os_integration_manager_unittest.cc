@@ -59,7 +59,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (const AppId& app_id,
                const std::vector<WebApplicationShortcutsMenuItemInfo>&
                    shortcuts_menu_item_infos,
-               const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps,
+               const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
                base::OnceCallback<void(bool success)> callback),
               (override));
 

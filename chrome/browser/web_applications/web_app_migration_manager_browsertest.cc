@@ -331,16 +331,15 @@ class WebAppMigrationManagerBrowserTestWithShortcutsMenu
     provider().icon_manager().ReadAllShortcutsMenuIcons(
         app_id,
         base::BindLambdaForTesting(
-            [&](ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps) {
-              EXPECT_EQ(2u, shortcuts_menu_icons_bitmaps.size());
-              for (size_t i = 0; i < shortcuts_menu_icons_bitmaps.size(); ++i) {
+            [&](ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
+              EXPECT_EQ(2u, shortcuts_menu_icon_bitmaps.size());
+              for (size_t i = 0; i < shortcuts_menu_icon_bitmaps.size(); ++i) {
                 EXPECT_EQ(shortcuts_menu_icons_sizes[i].size(),
-                          shortcuts_menu_icons_bitmaps[i].size());
+                          shortcuts_menu_icon_bitmaps[i].any.size());
                 const std::vector<SquareSizePx>& icon_sizes =
                     shortcuts_menu_icons_sizes[i];
-                const std::map<SquareSizePx, SkBitmap>& icon_maps =
-                    shortcuts_menu_icons_bitmaps[i];
-                for (const auto& icon_map : icon_maps) {
+                const IconBitmaps& icon_maps = shortcuts_menu_icon_bitmaps[i];
+                for (const auto& icon_map : icon_maps.any) {
                   const SquareSizePx& size_px = icon_map.first;
                   EXPECT_TRUE(base::Contains(icon_sizes, size_px));
 
