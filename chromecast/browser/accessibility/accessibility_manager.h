@@ -80,6 +80,9 @@ class AccessibilityManager : public MultipleTapDetectorDelegate {
   void SetAccessibilitySoundPlayer(
       std::unique_ptr<AccessibilitySoundPlayer> player);
 
+  // Sets the bounds for virtual keyboard.
+  void SetVirtualKeyboardBounds(const gfx::Rect& rect);
+
  private:
   aura::WindowTreeHost* window_tree_host_;
 

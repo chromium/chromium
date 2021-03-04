@@ -184,6 +184,10 @@ class TouchExplorationController : public ui::EventRewriter,
   // |bounds| are in root window coordinates.
   void SetExcludeBounds(const gfx::Rect& bounds);
 
+  // Updates |lift_activation_bounds_|. See |lift_activation_bounds_| for more
+  // information.
+  void SetLiftActivationBounds(const gfx::Rect& bounds);
+
   // Overridden from ui::EventRewriter
   ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,

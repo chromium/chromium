@@ -94,6 +94,10 @@ void AccessibilityManager::SetTouchAccessibilityAnchorPoint(
   touch_exploration_manager_->SetTouchAccessibilityAnchorPoint(anchor_point);
 }
 
+void AccessibilityManager::SetVirtualKeyboardBounds(const gfx::Rect& rect) {
+  touch_exploration_manager_->SetVirtualKeyboardBounds(rect);
+}
+
 aura::WindowTreeHost* AccessibilityManager::window_tree_host() const {
   DCHECK(window_tree_host_);
   return window_tree_host_;
