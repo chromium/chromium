@@ -18,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "net/cert/nss_cert_database.h"
 
 namespace net {
 
@@ -77,6 +78,31 @@ void NSSCertDatabaseChromeOS::ListModules(
   });
   DVLOG(1) << "filtered " << pre_size - modules->size() << " of " << pre_size
            << " modules";
+}
+
+bool NSSCertDatabaseChromeOS::SetCertTrust(CERTCertificate* cert,
+                                           CertType type,
+                                           TrustBits trust_bits) {
+  crypto::ScopedPK11Slot public_slot = GetPublicSlot();
+
+  // Ensure that the certificate exists on the public slot so NSS puts the trust
+  // settings there (https://crbug.com/1132030).
+  if (public_slot == GetSystemSlot()) {
+    // Never attempt to store trust setting on the system slot.
+    return false;
+  }
+
+  if (!IsCertificateOnSlot(cert, public_slot.get())) {
+    // Copy the certificate to the public slot.
+    SECStatus srv =
+        PK11_ImportCert(public_slot.get(), cert, CK_INVALID_HANDLE,
+                        cert->nickname, PR_FALSE /* includeTrust (unused) */);
+    if (srv != SECSuccess) {
+      LOG(ERROR) << "Failed to import certificate onto public slot.";
+      return false;
+    }
+  }
+  return NSSCertDatabase::SetCertTrust(cert, type, trust_bits);
 }
 
 // static
