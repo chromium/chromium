@@ -323,7 +323,8 @@ void HTMLSlotElement::RecalcFlatTreeChildren() {
 }
 
 void HTMLSlotElement::DispatchSlotChangeEvent() {
-  DCHECK(!IsInUserAgentShadowRoot());
+  DCHECK(!IsInUserAgentShadowRoot() ||
+         ContainingShadowRoot()->SupportsNameBasedSlotAssignment());
   Event* event = Event::CreateBubble(event_type_names::kSlotchange);
   event->SetTarget(this);
   DispatchScopedEvent(*event);
@@ -737,11 +738,13 @@ bool HTMLSlotElement::HasSlotableChild() const {
 }
 
 void HTMLSlotElement::EnqueueSlotChangeEvent() {
-  // TODO(kochi): This suppresses slotchange event on user-agent shadows,
-  // but could be improved further by not running change detection logic
-  // in SlotAssignment::Did{Add,Remove}SlotInternal etc., although naive
-  // skipping turned out breaking fallback content handling.
-  if (IsInUserAgentShadowRoot())
+  // TODO(kochi): This suppresses slotchange event on user-agent shadows that
+  // don't support name based slot assignment, but could be improved further by
+  // not running change detection logic in
+  // SlotAssignment::Did{Add,Remove}SlotInternal etc., although naive skipping
+  // turned out breaking fallback content handling.
+  if (IsInUserAgentShadowRoot() &&
+      !ContainingShadowRoot()->SupportsNameBasedSlotAssignment())
     return;
   if (slotchange_event_enqueued_)
     return;

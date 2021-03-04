@@ -88,6 +88,11 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   bool IsOpen() const { return GetType() == ShadowRootType::kOpen; }
   bool IsUserAgent() const { return GetType() == ShadowRootType::kUserAgent; }
 
+  // TODO(crbug.com/1179356) This tracks adding name based slot assignment
+  // support for user-agent Shadow DOM.
+  void EnableNameBasedSlotAssignment();
+  bool SupportsNameBasedSlotAssignment() const;
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -193,7 +198,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
   unsigned needs_dir_auto_attribute_update_ : 1;
-  unsigned unused_ : 8;
+  unsigned supports_name_based_slot_assignment_ : 1;
+  unsigned unused_ : 7;
 };
 
 inline Element* ShadowRoot::ActiveElement() const {

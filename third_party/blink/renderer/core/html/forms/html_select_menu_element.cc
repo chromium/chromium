@@ -24,18 +24,13 @@ HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
   UseCounter::Count(document, WebFeature::kSelectMenuElement);
 
-  // TODO(crbug.com/1121840) This should really be a user-agent shadow root.
-  // But, these don't support name-based assignment (see
-  // ShouldAssignToCustomSlot). Perhaps names-based slot assignment can be added
-  // to user-agent shadows? See crbug.com/1179356.
-  AttachShadowRootInternal(ShadowRootType::kClosed);
-
-  CreateShadowSubtree();
+  EnsureUserAgentShadowRoot();
 }
 
-void HTMLSelectMenuElement::CreateShadowSubtree() {
+void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(IsShadowHost(this));
 
+  root.EnableNameBasedSlotAssignment();
   Document& document = this->GetDocument();
 
   // TODO(crbug.com/1121840) Where to put the styles for the default elements in
@@ -119,8 +114,8 @@ void HTMLSelectMenuElement::CreateShadowSubtree() {
   listbox_part_->appendChild(options_slot);
   listbox_slot->appendChild(listbox_part_);
 
-  this->GetShadowRoot()->AppendChild(button_slot);
-  this->GetShadowRoot()->AppendChild(listbox_slot);
+  root.AppendChild(button_slot);
+  root.AppendChild(listbox_slot);
 
   option_part_listener_ =
       MakeGarbageCollected<HTMLSelectMenuElement::OptionPartEventListener>(

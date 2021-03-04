@@ -266,11 +266,12 @@ void SlotAssignment::RecalcAssignment() {
     for (Member<HTMLSlotElement> slot : Slots())
       slot->WillRecalcAssignedNodes();
 
-    const bool is_user_agent = owner_->IsUserAgent();
+    const bool supports_name_based_slot_assignment =
+        owner_->SupportsNameBasedSlotAssignment();
 
     HTMLSlotElement* user_agent_default_slot = nullptr;
     HTMLSlotElement* user_agent_custom_assign_slot = nullptr;
-    if (is_user_agent) {
+    if (!supports_name_based_slot_assignment) {
       user_agent_default_slot =
           FindSlotByName(HTMLSlotElement::UserAgentDefaultSlotName());
       user_agent_custom_assign_slot =
@@ -287,7 +288,7 @@ void SlotAssignment::RecalcAssignment() {
         continue;
 
       HTMLSlotElement* slot = nullptr;
-      if (!is_user_agent) {
+      if (supports_name_based_slot_assignment) {
         if (is_manual_slot_assignment) {
           if (auto* candidate_slot = candidate_assigned_slot_map_.at(&child)) {
             if (candidate_slot->ContainingShadowRoot() == owner_) {
@@ -368,7 +369,7 @@ const HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
 HTMLSlotElement* SlotAssignment::FindSlot(const Node& node) {
   if (!node.IsSlotable())
     return nullptr;
-  if (owner_->IsUserAgent())
+  if (!owner_->SupportsNameBasedSlotAssignment())
     return FindSlotInUserAgentShadow(node);
   return owner_->IsManualSlotting()
              ? FindSlotInManualSlotting(const_cast<Node&>(node))
@@ -382,6 +383,7 @@ HTMLSlotElement* SlotAssignment::FindSlotByName(
 
 HTMLSlotElement* SlotAssignment::FindSlotInUserAgentShadow(
     const Node& node) const {
+  DCHECK(!owner_->SupportsNameBasedSlotAssignment());
   HTMLSlotElement* user_agent_custom_assign_slot =
       FindSlotByName(HTMLSlotElement::UserAgentCustomAssignSlotName());
   if (user_agent_custom_assign_slot && ShouldAssignToCustomSlot(node))

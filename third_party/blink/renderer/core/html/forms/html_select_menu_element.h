@@ -34,7 +34,7 @@ class HTMLSelectMenuElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
-  void CreateShadowSubtree();
+  void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void Open();
   void Close();
   void UpdatePartElements();
