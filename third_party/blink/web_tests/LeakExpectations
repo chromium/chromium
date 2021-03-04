@@ -202,6 +202,8 @@ crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ P
 # These tests are flaky on the Leak bots but seem reliable elsewhere
 crbug.com/1164553 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-error-a11y-test.js [ Pass Failure ]
 crbug.com/1164553 [ Linux ] http/tests/devtools/console/console-external-array.js [ Pass Failure ]
+crbug.com/1164553 [ Linux ] http/tests/devtools/profiler/heap-snapshot-summary-search-by-id.js [ Pass Failure ]
+crbug.com/1164553 [ Linux ] http/tests/devtools/runtime/runtime-es6-setSymbolPropertyValue.js [ Pass Failure ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
