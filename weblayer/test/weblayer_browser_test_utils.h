@@ -73,6 +73,11 @@ void ActivateSubresourceFilterInWebContentsForURL(
     content::WebContents* web_contents,
     const GURL& url);
 
+// Waits for the subresource filter ruleset data to be published as part of
+// WebLayer startup. Returns immediately if ruleset data has already been
+// published.
+void WaitForSubresourceFilterRulesetDataToBePublished();
+
 class OneShotNavigationObserver : public NavigationObserver {
  public:
   explicit OneShotNavigationObserver(Shell* shell);

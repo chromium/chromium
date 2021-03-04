@@ -4,11 +4,14 @@
 
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "url/gurl.h"
+#include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_controller.h"
@@ -111,6 +114,19 @@ void ActivateSubresourceFilterInWebContentsForURL(
           FromWebContents(web_contents)
               ->client());
   client_impl->set_database_manager_for_testing(std::move(database_manager));
+}
+
+void WaitForSubresourceFilterRulesetDataToBePublished() {
+  auto* ruleset_service =
+      BrowserProcess::GetInstance()->subresource_filter_ruleset_service();
+
+  if (!ruleset_service->GetMostRecentlyIndexedVersion().IsValid()) {
+    base::RunLoop run_loop;
+    ruleset_service->SetRulesetPublishedCallbackForTesting(
+        run_loop.QuitClosure());
+
+    run_loop.Run();
+  }
 }
 
 OneShotNavigationObserver::OneShotNavigationObserver(Shell* shell)

@@ -28,6 +28,14 @@ class AdsPageLoadMetricsObserverBrowserTest : public WebLayerBrowserTest {
   ~AdsPageLoadMetricsObserverBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    // Wait for the initial publishing of production data that occurs as part of
+    // startup to complete. This is crucial for tests that inject test ruleset
+    // data and wait for it to be published via TestRulesetPublisher: if the
+    // initial publishing is still in process when those tests start running,
+    // they can end up incorrectly proceeding on the publishing of the
+    // production data rather than their test data.
+    WaitForSubresourceFilterRulesetDataToBePublished();
+
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data");
 
@@ -62,9 +70,8 @@ class AdsPageLoadMetricsObserverBrowserTest : public WebLayerBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1183549): flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_ReceivedAdResources) {
+                       ReceivedAdResources) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreateAdsPageLoadMetricsTestWaiter();

@@ -112,16 +112,7 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
     // initial publishing is still in process when those tests start running,
     // they can end up incorrectly proceeding on the publishing of the
     // production data rather than their test data.
-    auto* ruleset_service =
-        BrowserProcess::GetInstance()->subresource_filter_ruleset_service();
-
-    if (!ruleset_service->GetMostRecentlyIndexedVersion().IsValid()) {
-      base::RunLoop run_loop;
-      ruleset_service->SetRulesetPublishedCallbackForTesting(
-          run_loop.QuitClosure());
-
-      run_loop.Run();
-    }
+    WaitForSubresourceFilterRulesetDataToBePublished();
 
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data");
