@@ -333,6 +333,22 @@ struct ToV8Traits<T,
       WARN_UNUSED_RESULT {
     return V8String(script_state->GetIsolate(), enumeration.AsCStr());
   }
+
+  // TODO(crbug.com/1184543): Remove this overload.
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const String& value)
+      WARN_UNUSED_RESULT {
+    DCHECK(!value.IsEmpty());
+    return V8String(script_state->GetIsolate(), value);
+  }
+
+  // TODO(crbug.com/1184543): Remove this overload.
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const AtomicString& value)
+      WARN_UNUSED_RESULT {
+    DCHECK(!value.IsEmpty());
+    return V8String(script_state->GetIsolate(), value);
+  }
 };
 
 // NotShared
