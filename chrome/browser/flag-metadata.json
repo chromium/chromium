@@ -1358,7 +1358,7 @@
   {
     "name": "enable-auto-select",
     "owners": ["croissant-eng"],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-autofill-account-wallet-storage",
@@ -2227,27 +2227,27 @@
   {
     "name": "enable-quick-answers",
     "owners": [ "croissant-eng" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-quick-answers-on-editable-text",
     "owners": [ "croissant-eng" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-quick-answers-text-annotator",
     "owners": [ "croissant-eng" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-quick-answers-translation",
     "owners": [ "croissant-eng" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-quick-answers-translation-cloud-api",
     "owners": [ "croissant-eng" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-reader-mode",
