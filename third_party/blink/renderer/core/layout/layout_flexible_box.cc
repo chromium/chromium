@@ -793,6 +793,17 @@ LayoutPoint LayoutFlexibleBox::FlowAwareLocationForChild(
                             : child.Location().TransposedPoint();
 }
 
+bool LayoutFlexibleBox::WillChildCrossSizeBeContainerCrossSize(
+    const LayoutBox& child) const {
+  const Length& cross_size_length =
+      IsHorizontalFlow() ? child.StyleRef().Height() : child.StyleRef().Width();
+  return !IsMultiline() &&
+         CrossAxisLengthIsDefinite(child, Length::Percent(100)) &&
+         FlexLayoutAlgorithm::AlignmentForChild(StyleRef(), child.StyleRef()) ==
+             ItemPosition::kStretch &&
+         cross_size_length.IsAuto() && !HasAutoMarginsInCrossAxis(child);
+}
+
 bool LayoutFlexibleBox::UseChildAspectRatio(const LayoutBox& child) const {
   NOT_DESTROYED();
   if (!HasAspectRatio(child))
@@ -802,6 +813,8 @@ bool LayoutFlexibleBox::UseChildAspectRatio(const LayoutBox& child) const {
     // We can't compute a ratio in this case.
     return false;
   }
+  if (WillChildCrossSizeBeContainerCrossSize(child))
+    return true;
   const Length& cross_size =
       IsHorizontalFlow() ? child.StyleRef().Height() : child.StyleRef().Width();
   return CrossAxisLengthIsDefinite(child, cross_size);
@@ -809,17 +822,22 @@ bool LayoutFlexibleBox::UseChildAspectRatio(const LayoutBox& child) const {
 
 LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
     const LayoutBox& child,
-    const Length& cross_size_length,
+    Length cross_size_length,
     LayoutUnit main_axis_border_and_padding,
     LayoutUnit cross_axis_border_and_padding) const {
   NOT_DESTROYED();
   DCHECK(HasAspectRatio(child));
 
+  if (cross_size_length.IsAuto() &&
+      WillChildCrossSizeBeContainerCrossSize(child))
+    cross_size_length = Length::FillAvailable();
+
   LayoutUnit cross_size;
   if (cross_size_length.IsFixed()) {
     cross_size = LayoutUnit(cross_size_length.Value());
   } else {
-    DCHECK(cross_size_length.IsPercentOrCalc());
+    DCHECK(cross_size_length.IsPercentOrCalc() ||
+           cross_size_length.IsFillAvailable());
     cross_size = MainAxisIsInlineAxis(child)
                      ? child.ComputePercentageLogicalHeight(cross_size_length)
                      : AdjustBorderBoxLogicalWidthForBoxSizing(
@@ -835,6 +853,7 @@ LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
     aspect_ratio = LayoutSize{int_ratio.Width(), int_ratio.Height()};
     if (child.StyleRef().BoxSizingForAspectRatio() == EBoxSizing::kContentBox) {
       cross_size -= cross_axis_border_and_padding;
+    } else {
       border_and_padding = main_axis_border_and_padding;
     }
   }
@@ -842,8 +861,8 @@ LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
       aspect_ratio.Width().ToFloat() / aspect_ratio.Height().ToFloat();
   // TODO(cbiesinger): box sizing?
   if (IsHorizontalFlow())
-    return LayoutUnit(cross_size * ratio) + border_and_padding;
-  return LayoutUnit(cross_size / ratio) + border_and_padding;
+    return LayoutUnit(cross_size * ratio) - border_and_padding;
+  return LayoutUnit(cross_size / ratio) - border_and_padding;
 }
 
 void LayoutFlexibleBox::SetFlowAwareLocationForChild(
@@ -1007,7 +1026,7 @@ LayoutUnit LayoutFlexibleBox::ComputeInnerFlexBaseSizeForChild(
     result = AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
         child, result, main_axis_border_and_padding,
         cross_axis_border_and_padding);
-    return result - main_axis_border_and_padding;
+    return result;
   }
 
   // The flex basis is indefinite (=auto), so we need to compute the actual
@@ -1171,6 +1190,8 @@ MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
 
   const Length& max = IsHorizontalFlow() ? child.StyleRef().MaxWidth()
                                          : child.StyleRef().MaxHeight();
+  const Length& cross_max = IsHorizontalFlow() ? child.StyleRef().MaxHeight()
+                                               : child.StyleRef().MaxWidth();
   if (!max.IsNone()) {
     sizes.max_size =
         ComputeMainAxisExtentForChild(child, kMaxSize, max, border_and_padding);
@@ -1178,9 +1199,18 @@ MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
       sizes.max_size = LayoutUnit::Max();
     DCHECK_GE(sizes.max_size, LayoutUnit());
   }
+  if (UseChildAspectRatio(child) &&
+      !MainAxisLengthIsDefinite(child, FlexBasisForChild(child)) &&
+      CrossAxisLengthIsDefinite(child, cross_max)) {
+    LayoutUnit transferred_max_size = ComputeMainSizeFromAspectRatioUsing(
+        child, cross_max, border_and_padding, cross_axis_border_and_padding);
+    sizes.max_size = std::min(sizes.max_size, transferred_max_size);
+  }
 
   const Length& min = IsHorizontalFlow() ? child.StyleRef().MinWidth()
                                          : child.StyleRef().MinHeight();
+  const Length& cross_min = IsHorizontalFlow() ? child.StyleRef().MinHeight()
+                                               : child.StyleRef().MinWidth();
   if (!min.IsAuto()) {
     sizes.min_size =
         ComputeMainAxisExtentForChild(child, kMinSize, min, border_and_padding);
@@ -1230,6 +1260,15 @@ MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
         sizes.min_size = content_size;
       }
     }
+  }
+  if (UseChildAspectRatio(child) &&
+      !MainAxisLengthIsDefinite(child, FlexBasisForChild(child)) &&
+      CrossAxisLengthIsDefinite(child, cross_min)) {
+    LayoutUnit transferred_min_size = ComputeMainSizeFromAspectRatioUsing(
+                                          child, cross_min, border_and_padding,
+                                          cross_axis_border_and_padding) -
+                                      border_and_padding;
+    sizes.min_size = std::max(sizes.min_size, transferred_min_size);
   }
   DCHECK_GE(sizes.min_size, LayoutUnit());
   return sizes;

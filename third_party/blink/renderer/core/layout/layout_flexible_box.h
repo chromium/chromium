@@ -163,10 +163,11 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   LayoutUnit CrossAxisScrollbarExtent() const;
   LayoutUnit CrossAxisScrollbarExtentForChild(const LayoutBox& child) const;
   LayoutPoint FlowAwareLocationForChild(const LayoutBox& child) const;
+  bool WillChildCrossSizeBeContainerCrossSize(const LayoutBox& child) const;
   bool UseChildAspectRatio(const LayoutBox& child) const;
   LayoutUnit ComputeMainSizeFromAspectRatioUsing(
       const LayoutBox& child,
-      const Length& cross_size_length,
+      Length cross_size_length,
       LayoutUnit main_axis_border_and_padding,
       LayoutUnit cross_axis_border_and_padding) const;
   void SetFlowAwareLocationForChild(LayoutBox& child, const LayoutPoint&);
