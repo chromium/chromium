@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_extent_3d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_2d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_3d_dict.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_fence_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
@@ -164,6 +166,10 @@ void GPUQueue::signal(GPUFence* fence, uint64_t signal_value) {
 GPUFence* GPUQueue::createFence(const GPUFenceDescriptor* descriptor) {
   DCHECK(descriptor);
 
+  device_->AddConsoleWarning(
+      "Fences have been deprecated in favor of GPUQueue.onSubmittedWorkDone "
+      "and will be removed soon.");
+
   std::string label;
   WGPUFenceDescriptor desc = {};
   desc.nextInChain = nullptr;
@@ -177,6 +183,39 @@ GPUFence* GPUQueue::createFence(const GPUFenceDescriptor* descriptor) {
       device_, GetProcs().queueCreateFence(GetHandle(), &desc));
   fence->setLabel(descriptor->label());
   return fence;
+}
+
+void GPUQueue::OnWorkDoneCallback(ScriptPromiseResolver* resolver,
+                                  WGPUQueueWorkDoneStatus status) {
+  switch (status) {
+    case WGPUQueueWorkDoneStatus_Success:
+      resolver->Resolve();
+      break;
+    case WGPUQueueWorkDoneStatus_Error:
+    case WGPUQueueWorkDoneStatus_Unknown:
+    case WGPUQueueWorkDoneStatus_DeviceLost:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError));
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+ScriptPromise GPUQueue::onSubmittedWorkDone(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  auto* callback =
+      BindDawnCallback(&GPUQueue::OnWorkDoneCallback, WrapPersistent(this),
+                       WrapPersistent(resolver));
+
+  GetProcs().queueOnSubmittedWorkDone(
+      GetHandle(), 0u, callback->UnboundCallback(), callback->AsUserdata());
+  // WebGPU guarantees that promises are resolved in finite time so we
+  // need to ensure commands are flushed.
+  EnsureFlush();
+  return promise;
 }
 
 void GPUQueue::writeBuffer(GPUBuffer* buffer,

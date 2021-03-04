@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_QUEUE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -19,6 +20,8 @@ class GPUFenceDescriptor;
 class GPUImageCopyImageBitmap;
 class GPUImageCopyTexture;
 class GPUImageDataLayout;
+class ScriptPromiseResolver;
+class ScriptState;
 class StaticBitmapImage;
 class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
 
@@ -32,6 +35,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   void submit(const HeapVector<Member<GPUCommandBuffer>>& buffers);
   void signal(GPUFence* fence, uint64_t signal_value);
   GPUFence* createFence(const GPUFenceDescriptor* descriptor);
+  ScriptPromise onSubmittedWorkDone(ScriptState* script_state);
   void writeBuffer(GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const MaybeShared<DOMArrayBufferView>& data,
@@ -73,6 +77,9 @@ class GPUQueue : public DawnObject<WGPUQueue> {
       ExceptionState& exception_state);
 
  private:
+  void OnWorkDoneCallback(ScriptPromiseResolver* resolver,
+                          WGPUQueueWorkDoneStatus status);
+
   bool CopyContentFromCPU(StaticBitmapImage* image,
                           const WGPUOrigin3D& origin,
                           const WGPUExtent3D& copy_size,
