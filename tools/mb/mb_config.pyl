@@ -563,6 +563,10 @@
       'win64-builder-perf': 'official_goma_perf',
     },
 
+    'chromium.perf.calibration': {
+      'linux-perf-calibration': 'official_goma_linux_perf',
+    },
+
     'chromium.perf.fyi': {
       'android-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt',
       'android_arm64-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt_arm64',
