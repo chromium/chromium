@@ -33,9 +33,8 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
 
     // Assert.
     assertEquals(element, moduleDescriptor.element);
-    const [id, now, delta] =
-        await testProxy.handler.whenCalled('onModuleLoaded');
     assertEquals(1, testProxy.handler.getCallCount('onModuleLoaded'));
+    const [[id, delta, now]] = testProxy.handler.getArgs('onModuleLoaded');
     assertEquals('foo', id);
     assertEquals(128, now);
     assertEquals(5000n, delta.microseconds);  // 128ms - 123ms === 5000µs.

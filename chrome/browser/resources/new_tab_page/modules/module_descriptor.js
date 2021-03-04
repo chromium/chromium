@@ -76,6 +76,6 @@ export class ModuleDescriptor {
     }
     const loadEndTime = BrowserProxy.getInstance().now();
     BrowserProxy.getInstance().handler.onModuleLoaded(
-        this.id_, loadEndTime, mojoTimeDelta(loadEndTime - loadStartTime));
+        this.id_, mojoTimeDelta(loadEndTime - loadStartTime), loadEndTime);
   }
 }
