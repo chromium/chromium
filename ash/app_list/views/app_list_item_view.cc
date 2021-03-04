@@ -450,7 +450,7 @@ void AppListItemView::SetTouchDragging(bool touch_dragging) {
 
   // EndDrag may delete |this|.
   if (!touch_dragging)
-    apps_grid_view_->EndDrag(false);
+    apps_grid_view_->EndDrag(/*cancel=*/false);
 }
 
 void AppListItemView::SetMouseDragging(bool mouse_dragging) {
