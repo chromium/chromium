@@ -99,6 +99,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/user_type.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1689,9 +1690,18 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
   Init();
 
   ParseSideVolumeButtonLocationInfo();
+
+  // Let AcceleratorHistory be a PreTargetHandler on aura::Env to ensure that it
+  // receives KeyEvents and MouseEvents. In some cases Shell PreTargetHandlers
+  // will handle Events before AcceleratorHistory gets to see them. This
+  // interferes with Accelerator processing. See https://crbug.com/1174603.
+  aura::Env::GetInstance()->AddPreTargetHandler(
+      accelerator_history_.get(), ui::EventTarget::Priority::kAccessibility);
 }
 
-AcceleratorControllerImpl::~AcceleratorControllerImpl() = default;
+AcceleratorControllerImpl::~AcceleratorControllerImpl() {
+  aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
+}
 
 void AcceleratorControllerImpl::Register(
     const std::vector<ui::Accelerator>& accelerators,

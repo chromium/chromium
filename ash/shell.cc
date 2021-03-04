@@ -1064,8 +1064,7 @@ void Shell::Init(
   AddPreTargetHandler(control_v_histogram_recorder_.get());
 
   accelerator_filter_ = std::make_unique<::wm::AcceleratorFilter>(
-      std::make_unique<PreTargetAcceleratorHandler>(),
-      accelerator_controller_->accelerator_history());
+      std::make_unique<PreTargetAcceleratorHandler>());
   AddPreTargetHandler(accelerator_filter_.get());
 
   event_transformation_handler_.reset(new EventTransformationHandler);

@@ -105,8 +105,7 @@ TEST_F(AcceleratorFilterTest, CanConsumeSystemKeys) {
   std::unique_ptr<ui::AcceleratorHistory> accelerator_history(
       new ui::AcceleratorHistory());
   ::wm::AcceleratorFilter filter(
-      std::make_unique<PreTargetAcceleratorHandler>(),
-      accelerator_history.get());
+      std::make_unique<PreTargetAcceleratorHandler>());
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
 
   // Normal keys are not consumed.

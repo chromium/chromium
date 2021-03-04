@@ -2611,8 +2611,7 @@ TEST_P(MediaSessionAcceleratorTest, MediaPlaybackAcceleratorsBehavior) {
   std::unique_ptr<ui::AcceleratorHistory> accelerator_history(
       std::make_unique<ui::AcceleratorHistory>());
   ::wm::AcceleratorFilter filter(
-      std::make_unique<PreTargetAcceleratorHandler>(),
-      accelerator_history.get());
+      std::make_unique<PreTargetAcceleratorHandler>());
 
   for (ui::KeyboardCode key : media_keys) {
     // If the media session service integration is enabled then media keys will
