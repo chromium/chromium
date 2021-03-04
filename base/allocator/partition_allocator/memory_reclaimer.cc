@@ -106,7 +106,7 @@ PartitionAllocMemoryReclaimer::~PartitionAllocMemoryReclaimer() = default;
 void PartitionAllocMemoryReclaimer::ReclaimAll() {
   constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
                          PartitionPurgeDiscardUnusedSystemPages |
-                         PartitionPurgeForceAllFreed;
+                         PartitionPurgeAggressiveReclaim;
   Reclaim(kFlags);
 }
 
@@ -131,14 +131,18 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
   // the end of the remaining active slots.
   {
     using PCScan = internal::PCScan<internal::ThreadSafe>;
-    const auto invocation_mode = flags & PartitionPurgeForceAllFreed
+    const auto invocation_mode = flags & PartitionPurgeAggressiveReclaim
                                      ? PCScan::InvocationMode::kForcedBlocking
                                      : PCScan::InvocationMode::kBlocking;
     PCScan::Instance().PerformScanIfNeeded(invocation_mode);
   }
 
 #if defined(PA_THREAD_CACHE_SUPPORTED)
-  internal::ThreadCacheRegistry::Instance().PurgeAll();
+  // Don't completely empty the thread cache outside of low memory situations,
+  // as there is periodic purge which makes sure that it doesn't take too much
+  // space.
+  if (PartitionPurgeAggressiveReclaim)
+    internal::ThreadCacheRegistry::Instance().PurgeAll();
 #endif
 
   for (auto* partition : thread_safe_partitions_)

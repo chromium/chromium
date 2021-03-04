@@ -89,8 +89,9 @@ enum PartitionPurgeFlags {
   // size. It often frees a similar amount of memory to decommitting the empty
   // slot spans, though.
   PartitionPurgeDiscardUnusedSystemPages = 1 << 1,
-  // Free calls which have not been marterialized are forced now.
-  PartitionPurgeForceAllFreed = 1 << 2,
+  // Aggressively reclaim memory. This is meant to be used in low-memory
+  // situations, not for periodic memory reclaiming.
+  PartitionPurgeAggressiveReclaim = 1 << 2,
 };
 
 // Options struct used to configure PartitionRoot and PartitionAllocator.
