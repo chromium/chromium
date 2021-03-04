@@ -88,6 +88,7 @@ MockCrashEndpoint::HandleRequest(const net::test_server::HttpRequest& request) {
 
   ++report_count_;
   last_report_ = Report(absolute_url.query(), request.content);
+  all_reports_.push_back(*last_report_);
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(response_code_);
   http_response->set_content(response_content_);
@@ -96,4 +97,10 @@ MockCrashEndpoint::HandleRequest(const net::test_server::HttpRequest& request) {
     on_report_.Run();
   }
   return http_response;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const MockCrashEndpoint::Report& report) {
+  out << "query: " << report.query << "\ncontent: " << report.content;
+  return out;
 }

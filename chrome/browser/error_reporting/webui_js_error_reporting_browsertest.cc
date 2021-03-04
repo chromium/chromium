@@ -66,6 +66,23 @@ constexpr char kJavaScriptErrorPage[] = R"(
 constexpr char kWebpageErrorMessage[] =
     "special error message for WebUIJSErrorReportingTest";
 
+std::string ReportVectorToString(
+    const std::vector<MockCrashEndpoint::Report>& reports) {
+  std::ostringstream result;
+  result << "[";
+  bool first = true;
+  for (const MockCrashEndpoint::Report& report : reports) {
+    if (first) {
+      first = false;
+    } else {
+      result << ",\n";
+    }
+    result << report;
+  }
+  result << "]";
+  return result.str();
+}
+
 // Callback for the error_page_test_server_. Tells the server to always return
 // the contents of kJavaScriptErrorPage.
 std::unique_ptr<net::test_server::HttpResponse> ReturnErrorPage(
@@ -268,8 +285,10 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
   }
 
   MockCrashEndpoint::Report report = endpoint.WaitForReport();
-  EXPECT_EQ(endpoint.report_count(), 2);
-  EXPECT_THAT(report.query, HasSubstr(kPageLoadMessage));
+  EXPECT_EQ(endpoint.report_count(), 2)
+      << ReportVectorToString(endpoint.all_reports());
+  EXPECT_THAT(report.query, HasSubstr(kPageLoadMessage))
+      << ReportVectorToString(endpoint.all_reports());
 }
 
 // Show that navigating from a WebUI page to a http page that produces

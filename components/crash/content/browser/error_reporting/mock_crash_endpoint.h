@@ -6,7 +6,9 @@
 #define COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_MOCK_CRASH_ENDPOINT_H_
 
 #include <memory>
+#include <ostream>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/optional.h"
@@ -42,11 +44,14 @@ class MockCrashEndpoint {
   const base::Optional<Report>& last_report() const { return last_report_; }
 
   // Clears last report so that WaitForReport will wait for another report.
-  // Does not clear report_count()
+  // Does not clear report_count() or all_reports().
   void clear_last_report() { last_report_.reset(); }
 
   // Get the number of reports received since this object was created.
   int report_count() const { return report_count_; }
+
+  // Retrieves all the reports received by this mock crash endpoint.
+  const std::vector<Report>& all_reports() const { return all_reports_; }
 
   // Configures whether the mock crash reporter client has user-consent for
   // submitting crash reports.
@@ -70,11 +75,15 @@ class MockCrashEndpoint {
   net::test_server::EmbeddedTestServer* test_server_;
   std::unique_ptr<Client> client_;
   base::Optional<Report> last_report_;
+  std::vector<Report> all_reports_;
   int report_count_ = 0;
   bool consented_ = true;
   base::RepeatingClosure on_report_;
   net::HttpStatusCode response_code_ = net::HTTP_OK;
   std::string response_content_ = "123";
 };
+
+std::ostream& operator<<(std::ostream& out,
+                         const MockCrashEndpoint::Report& report);
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_MOCK_CRASH_ENDPOINT_H_
