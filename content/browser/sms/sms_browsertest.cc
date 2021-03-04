@@ -418,10 +418,9 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Reload) {
     loop.Quit();
   }));
 
-  EXPECT_TRUE(ExecJs(shell(), R"(
+  ExecuteScriptAsync(shell(), R"(
     navigator.credentials.get({otp: {transport: ["sms"]}});
-  )"));
-
+  )");
   loop.Run();
 
   ASSERT_TRUE(GetSmsFetcher()->HasSubscribers());
@@ -450,10 +449,9 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Close) {
     loop.Quit();
   }));
 
-  EXPECT_TRUE(ExecJs(shell(), R"(
+  ExecuteScriptAsync(shell(), R"(
     navigator.credentials.get({otp: {transport: ["sms"]}});
-  )"));
-
+  )");
   loop.Run();
 
   ASSERT_TRUE(mock_provider_ptr->HasObservers());
@@ -640,11 +638,10 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsReceivedAfterTabIsClosed) {
     loop.Quit();
   }));
 
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      // kicks off an sms receiver call, but deliberately leaves it hanging.
-      navigator.credentials.get({otp: {transport: ["sms"]}});
-    )"));
-
+  ExecuteScriptAsync(shell(), R"(
+    // kicks off an sms receiver call, but deliberately leaves it hanging.
+    navigator.credentials.get({otp: {transport: ["sms"]}});
+  )");
   loop.Run();
 
   shell()->Close();
@@ -838,10 +835,9 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordBackendNotAvailableAsOutcome) {
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  EXPECT_TRUE(ExecJs(shell(), R"(
-       navigator.credentials.get({otp: {transport: ["sms"]}});
-     )"));
-
+  ExecuteScriptAsync(shell(), R"(
+    navigator.credentials.get({otp: {transport: ["sms"]}});
+  )");
   ukm_loop.Run();
 
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kBackendNotAvailable);
@@ -865,10 +861,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
   EXPECT_TRUE(NavigateToURL(tab1, url1));
   EXPECT_TRUE(NavigateToURL(tab2, url2));
 
-  std::string script = R"(
-     navigator.credentials.get({otp: {transport: ["sms"]}})
-  )";
-
   tab1->web_contents()->SetDelegate(&delegate_);
   tab2->web_contents()->SetDelegate(&delegate_);
 
@@ -883,8 +875,11 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
         loop.Quit();
       }));
 
-  EXPECT_TRUE(ExecJs(tab1, script));
-  EXPECT_TRUE(ExecJs(tab2, script));
+  std::string script = R"(
+     navigator.credentials.get({otp: {transport: ["sms"]}})
+  )";
+  ExecuteScriptAsync(tab1, script);
+  ExecuteScriptAsync(tab2, script);
 
   loop.Run();
 
@@ -910,20 +905,19 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordPendingOriginCount) {
   EXPECT_TRUE(NavigateToURL(tab1, url1));
   EXPECT_TRUE(NavigateToURL(tab2, url2));
 
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).Times(2);
+
+  tab1->web_contents()->SetDelegate(&delegate_);
+  tab2->web_contents()->SetDelegate(&delegate_);
+
   std::string script = R"(
     var request = navigator.credentials.get({otp: {transport: ["sms"]}})
       .then(({code}) => {
         return code;
       });
   )";
-
-  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).Times(2);
-
-  tab1->web_contents()->SetDelegate(&delegate_);
-  tab2->web_contents()->SetDelegate(&delegate_);
-
-  EXPECT_TRUE(ExecJs(tab1, script));
-  EXPECT_TRUE(ExecJs(tab2, script));
+  ExecuteScriptAsync(tab1, script);
+  ExecuteScriptAsync(tab2, script);
 
   ExpectSmsPrompt();
   mock_provider_ptr->NotifyReceive(OriginList{url::Origin::Create(url1)},
@@ -965,9 +959,9 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordSmsNotParsedMetrics) {
                                                UserConsent::kObtained);
     loop.Quit();
   }));
-  EXPECT_TRUE(ExecJs(shell(), R"(
-        navigator.credentials.get({otp: {transport: ["sms"]}});
-    )"));
+  ExecuteScriptAsync(shell(), R"(
+    navigator.credentials.get({otp: {transport: ["sms"]}});
+  )");
   loop.Run();
 
   ASSERT_TRUE(mock_provider_ptr->HasObservers());
@@ -1008,9 +1002,9 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsParsed) {
                                                UserConsent::kObtained);
     loop.Quit();
   }));
-  EXPECT_TRUE(ExecJs(shell(), R"(
-        navigator.credentials.get({otp: {transport: ["sms"]}});
-    )"));
+  ExecuteScriptAsync(shell(), R"(
+    navigator.credentials.get({otp: {transport: ["sms"]}});
+  )");
   loop.Run();
 
   ASSERT_TRUE(GetSmsFetcher()->HasSubscribers());

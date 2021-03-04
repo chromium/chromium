@@ -162,11 +162,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
               base::ASCIIToUTF16("Stub label"), std::move(icon)),
           /*consumer=*/this);
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
-
-  // ExecJs starts executing JavaScript and immediately returns, not waiting for
-  // any promise to return.
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              "getSecurePaymentConfirmationStatus()"));
+  ExecuteScriptAsync(GetActiveWebContents(),
+                     "getSecurePaymentConfirmationStatus()");
 
   WaitForObservedEvent();
   EXPECT_TRUE(database_write_responded_);
@@ -440,12 +437,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   test_controller()->SetHasAuthenticator(true);
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
 
-  // ExecJs starts executing JavaScript and immediately returns, not waiting for
-  // any promise to return.
-  EXPECT_TRUE(content::ExecJs(
+  ExecuteScriptAsync(
       GetActiveWebContents(),
       content::JsReplace("getSecurePaymentConfirmationStatus($1)",
-                         credentialIdentifier)));
+                         credentialIdentifier));
 
   WaitForObservedEvent();
   ASSERT_FALSE(test_controller()->app_descriptions().empty());

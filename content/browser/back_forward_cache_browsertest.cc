@@ -2293,11 +2293,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheSMSService) {
   RenderFrameDeletedObserver rfh_a_deleted(rfh_a);
 
   EXPECT_TRUE(ExecJs(rfh_a, R"(
-    new Promise(async resolve => {
-      await navigator.credentials.get({otp: {transport: ["sms"]}});
-      resolve();
-    });
-  )"));
+    navigator.credentials.get({otp: {transport: ["sms"]}});
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // 2) Navigate away.
   EXPECT_TRUE(NavigateToURL(
@@ -6771,9 +6769,7 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   EXPECT_TRUE(ExecJs(rfh_a, R"(
-    new Promise(resolve => {
-      window.addEventListener("deviceorientation", () => { resolve(); }, true)
-    })
+    window.addEventListener("deviceorientation", () => {});
   )"));
 
   // 2) Navigate to B.
@@ -7801,8 +7797,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebMidiNotCached) {
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
-  // - Wait until requestMIDIAccess() promise is resolved.
-  EXPECT_TRUE(ExecJs(rfh_a, "navigator.requestMIDIAccess()"));
+  // Request access to MIDI. This should prevent the page from entering the
+  // BackForwardCache.
+  EXPECT_TRUE(ExecJs(rfh_a, "navigator.requestMIDIAccess()",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // 2) Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
@@ -7868,7 +7866,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   presentation_service.SetControllerDelegateForTesting(
       &mock_presentation_service_delegate);
   EXPECT_CALL(mock_presentation_service_delegate, StartPresentation(_, _, _));
-  EXPECT_TRUE(ExecJs(rfh_a, "presentationRequest.start().then(setConnection)"));
+  EXPECT_TRUE(ExecJs(rfh_a, "presentationRequest.start().then(setConnection)",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Send a mock connection to the renderer.
   MockPresentationConnection mock_controller_connection;
@@ -7907,7 +7906,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // PresentationServiceDelegate.
   EXPECT_CALL(mock_presentation_service_delegate,
               ReconnectPresentation(_, presentation_connection_id, _, _));
-  EXPECT_TRUE(ExecJs(rfh_a, "presentationRequest.reconnect(connection.id)"));
+  EXPECT_TRUE(ExecJs(rfh_a, "presentationRequest.reconnect(connection.id);",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   base::RunLoop().RunUntilIdle();
 
   // Reset |presentation_service|'s controller delegate so that it won't try to
@@ -7991,7 +7991,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, OutstandingFetchNotCached) {
                         kOutstandingNetworkRequestFetch)));
 
   // 2) Create a fetch() request.
-  EXPECT_TRUE(ExecJs(rfh_a, "fetch('/fetch');"));
+  ExecuteScriptAsync(rfh_a, "fetch('/fetch');");
   response.WaitForRequest();
 
   // 3) Navigate to B.

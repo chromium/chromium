@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(DerivedOriginInFetchBrowserTest,
   ASSERT_TRUE(starting_file_url.SchemeIsFile());
   ASSERT_TRUE(NavigateToURL(shell(), starting_file_url));
 
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("fetch($1);", destination)));
+  ExecuteScriptAsync(shell(), JsReplace("fetch($1);", destination));
   monitor.WaitForUrls();
   base::Optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(destination);

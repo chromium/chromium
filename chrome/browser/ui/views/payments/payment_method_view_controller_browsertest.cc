@@ -176,10 +176,12 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
   SetDownloaderAndIgnorePortInOriginComparisonForTesting();
 
   ResetEventWaiterForDialogOpened();
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              "testPaymentMethods([{supportedMethods: "
-                              "'https://google.com/pay'},{supportedMethods: "
-                              "'https://kylepay.com/webpay'}])"));
+  content::ExecuteScriptAsync(GetActiveWebContents(), R"(
+    testPaymentMethods([
+      {supportedMethods: 'https://google.com/pay'},
+      {supportedMethods: 'https://kylepay.com/webpay'},
+    ]);
+  )");
   WaitForObservedEvent();
 
   // Confirm that "Add card" button is not shown since "basic-card" is not

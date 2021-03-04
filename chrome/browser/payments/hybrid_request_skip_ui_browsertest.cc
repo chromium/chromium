@@ -80,7 +80,7 @@ class HybridRequestSkipUITest
       // usable autofill instrument. Just verify that the payment.show() is
       // called and both credit card and Gpay payment methods are available.
       ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
-      EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), js_snippet));
+      content::ExecuteScriptAsync(GetActiveWebContents(), js_snippet);
       WaitForObservedEvent();
       EXPECT_EQ(2u, test_controller()->app_descriptions().size());
       return;

@@ -2695,7 +2695,8 @@ IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault,
     g_sab_size = new Promise(resolve => {
       addEventListener("message", event => resolve(event.data.byteLength));
     });
-  )"));
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   EXPECT_TRUE(ExecJs(main_document, R"(
     let sab = new SharedArrayBuffer(1234);
@@ -2789,7 +2790,8 @@ IN_PROC_BROWSER_TEST_P(
     g_sab_size = new Promise(resolve => {
       addEventListener("message", event => resolve(event.data.byteLength));
     });
-  )"));
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // TODO(https://crbug.com/1144838): Being able to share SharedArrayBuffer from
   // a document with self.crossOriginIsolated == false sounds wrong.
@@ -2924,7 +2926,8 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
     g_sab_size = new Promise(resolve => {
       addEventListener("message", event => resolve(event.data.byteLength));
     });
-  )"));
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   EXPECT_TRUE(ExecJs(main_document, R"(
     let sab = new SharedArrayBuffer(1234);

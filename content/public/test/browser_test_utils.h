@@ -480,7 +480,7 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 // with a malformed or unexpected value).
 //
 // See also:
-// - ExecJs (preferred replacement with better errror handling)
+// - ExecJs (preferred replacement with better error handling)
 // - EvalJs (if you want to retrieve a value)
 // - ExecuteScriptAsync (if you don't want to block for |script| completion)
 // - DOMMessageQueue (to manually wait for domAutomationController.send(...))
@@ -861,6 +861,9 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
 // Returns AssertionSuccess() if |script| ran successfully, and
 // AssertionFailure() if |script| contained a syntax error or threw an
 // exception.
+//
+// As with EvalJs(), if the script passed evaluates to a Promise, this waits
+// until it resolves.
 //
 // Unlike ExecuteScript(), this catches syntax errors and uncaught exceptions,
 // and gives more useful error messages when things go wrong. Prefer ExecJs to

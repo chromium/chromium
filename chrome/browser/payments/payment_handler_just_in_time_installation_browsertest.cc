@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
       content::ExecJs(GetActiveWebContents(),
                       "testPaymentMethods([ "
                       " {supportedMethods: 'https://kylepay.com/webpay'}])",
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE |
+                          content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   WaitForObservedEvent();
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "abort()"));
 
@@ -191,11 +192,12 @@ IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSingleEvent(GetParam() ? TestEvent::kPaymentCompleted
                                             : TestEvent::kAppListReady);
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(),
-                      "testPaymentMethods([ "
-                      " {supportedMethods: 'basic-card'}, "
-                      " {supportedMethods: 'https://kylepay.com/webpay'}])"));
+  content::ExecuteScriptAsync(GetActiveWebContents(), R"(
+    testPaymentMethods([
+      {supportedMethods: 'basic-card'},
+      {supportedMethods: 'https://kylepay.com/webpay'}
+    ]);
+  )");
   WaitForObservedEvent();
 
   if (GetParam()) {
@@ -225,11 +227,12 @@ IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
 
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(),
-                      "testPaymentMethods([ "
-                      " {supportedMethods: 'basic-card'}, "
-                      " {supportedMethods: 'https://kylepay.com/webpay'}])"));
+  content::ExecuteScriptAsync(GetActiveWebContents(), R"(
+    testPaymentMethods([
+      {supportedMethods: 'basic-card'},
+      {supportedMethods: 'https://kylepay.com/webpay'}
+    ]);
+  )");
   WaitForObservedEvent();
 
   // Regardless whether AlwaysJIT is disabled, beceause there is a complete

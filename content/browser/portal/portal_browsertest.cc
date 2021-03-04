@@ -1980,9 +1980,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalAccessibilityReset) {
                        TIME_IN_ORPHANED_STATE_MILLISECONDS)));
   {
     PortalActivatedObserver activated_observer(portal);
-    EXPECT_TRUE(ExecJs(main_frame,
-                       "let portal = document.querySelector('portal');"
-                       "portal.activate();"));
+    ExecuteScriptAsync(main_frame, R"(
+      let portal = document.querySelector('portal');
+      portal.activate();
+    )");
     activated_observer.WaitForActivate();
     // Forces an AXTree update to be sent while portal is orphaned.
     AccessibilityNotificationWaiter waiter(web_contents_impl,
@@ -2026,14 +2027,16 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   {
     PortalActivatedObserver activated_observer(portal);
     PortalCreatedObserver adoption_observer(main_frame);
-    EXPECT_TRUE(ExecJs(main_frame,
-                       "window.addEventListener('portalactivate',  e => {"
-                       "  document.body.appendChild(e.adoptPredecessor());"
-                       "});"
-                       "let portal = document.querySelector('portal');"
-                       "portal.activate().then(() => { "
-                       "  document.body.removeChild(portal); "
-                       "});"));
+    ExecuteScriptAsync(main_frame, R"(
+      window.addEventListener('portalactivate',  e => {
+        document.body.appendChild(e.adoptPredecessor());
+      });
+
+      let portal = document.querySelector('portal');
+      portal.activate().then(() => {
+        document.body.removeChild(portal);
+      });
+    )");
     activated_observer.WaitForActivate();
     // Forces an AXTree update to be sent while portal is orphaned.
     AccessibilityNotificationWaiter waiter(web_contents_impl,
@@ -2201,8 +2204,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RejectActivationOfCrashedPages) {
   CrashTab(portal_contents);
 
   PortalActivatedObserver activated_observer(portal);
-  EXPECT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  EXPECT_TRUE(ExecJs(main_frame, R"(
+    document.querySelector('portal').activate();
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   EXPECT_EQ(blink::mojom::PortalActivateResult::kRejectedDueToErrorInPortal,
             activated_observer.WaitForActivateResult());
 }

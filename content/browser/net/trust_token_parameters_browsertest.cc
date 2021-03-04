@@ -79,10 +79,9 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_TRUE(
-      ExecJs(shell(), JsReplace("fetch($1, {trustToken: ", trust_token_url) +
-                          expected_params_and_serialization.serialized_params +
-                          "});"));
+  ExecuteScriptAsync(
+      shell(), JsReplace("fetch($1, {trustToken: ", trust_token_url) +
+                   expected_params_and_serialization.serialized_params + "});");
 
   monitor.WaitForUrls();
   base::Optional<network::ResourceRequest> request =

@@ -2829,7 +2829,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedSrcDoc) {
   EXPECT_EQ("a=0; b=0", EvalJs(sub_document_1, "document.cookie"));
 
   // 3. Checks cookies are sent while requesting resources.
-  EXPECT_TRUE(ExecJs(sub_document_1, "fetch('/response_1');"));
+  ExecuteScriptAsync(sub_document_1, "fetch('/response_1');");
   response_1.WaitForRequest();
   EXPECT_EQ("a=0; b=0", response_1.http_request()->headers.at("Cookie"));
 
@@ -2856,7 +2856,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedSrcDoc) {
   EXPECT_EQ("d=0", EvalJs(sub_document_2, "document.cookie"));
 
   // 7. Checks cookies are sent while requesting resources.
-  EXPECT_TRUE(ExecJs(sub_document_2, "fetch('/response_2');"));
+  ExecuteScriptAsync(sub_document_2, "fetch('/response_2');");
   response_2.WaitForRequest();
   EXPECT_EQ("d=0", response_2.http_request()->headers.at("Cookie"));
 
@@ -2890,7 +2890,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedSrcDoc) {
             EvalJs(sub_document_3, "document.cookie"));
 
   // 12. Checks cookies are sent while requesting resources.
-  EXPECT_TRUE(ExecJs(sub_document_3, "fetch('/response_3');"));
+  ExecuteScriptAsync(sub_document_3, "fetch('/response_3');");
   response_3.WaitForRequest();
   EXPECT_EQ("a=0; b=0; c=0; e=0; f=0",
             response_3.http_request()->headers.at("Cookie"));
@@ -2953,7 +2953,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
 
   // 3. Checks cookies are sent while requesting resources.
   GURL url_response_1 = https_server()->GetURL("a.com", "/response_1");
-  EXPECT_TRUE(ExecJs(sub_document_1, JsReplace("fetch($1)", url_response_1)));
+  ExecuteScriptAsync(sub_document_1, JsReplace("fetch($1)", url_response_1));
   response_1.WaitForRequest();
   EXPECT_EQ("a=0; b=0", response_1.http_request()->headers.at("Cookie"));
 
@@ -2980,7 +2980,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
   EXPECT_EQ("d=0", EvalJs(sub_document_2, "document.cookie"));
 
   // 7. Checks cookies are sent while requesting resources.
-  EXPECT_TRUE(ExecJs(sub_document_2, "fetch('/response_2');"));
+  ExecuteScriptAsync(sub_document_2, "fetch('/response_2');");
   response_2.WaitForRequest();
   EXPECT_EQ("d=0", response_2.http_request()->headers.at("Cookie"));
 
@@ -3013,7 +3013,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
             EvalJs(sub_document_3, "document.cookie"));
 
   // 11. Even if document.cookie is empty, cookies are sent.
-  EXPECT_TRUE(ExecJs(sub_document_3, "fetch('/response_3');"));
+  ExecuteScriptAsync(sub_document_3, "fetch('/response_3');");
   response_3.WaitForRequest();
   EXPECT_EQ("a=0; b=0; c=0; e=0; f=0",
             response_3.http_request()->headers.at("Cookie"));
@@ -3079,7 +3079,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
   EXPECT_EQ("a=0; b=0", EvalJs(sub_document_1, "document.cookie"));
 
   // 3. Checks cookies are sent while requesting resources.
-  EXPECT_TRUE(ExecJs(sub_document_1, "fetch('/response_1');"));
+  ExecuteScriptAsync(sub_document_1, "fetch('/response_1');");
   response_1.WaitForRequest();
   EXPECT_EQ("a=0; b=0", response_1.http_request()->headers.at("Cookie"));
 
@@ -3106,7 +3106,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
   EXPECT_EQ("d=0", EvalJs(sub_document_2, "document.cookie"));
 
   // 7. Checks cookies are sent while requesting resources.
-  EXPECT_TRUE(ExecJs(sub_document_2, "fetch('/response_2');"));
+  ExecuteScriptAsync(sub_document_2, "fetch('/response_2');");
   response_2.WaitForRequest();
   EXPECT_EQ("d=0", response_2.http_request()->headers.at("Cookie"));
 
@@ -3141,7 +3141,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
             EvalJs(sub_document_3, "document.cookie"));
 
   // 11. Checks cookies are sent while requesting resources.
-  EXPECT_TRUE(ExecJs(sub_document_3, "fetch('/response_3');"));
+  ExecuteScriptAsync(sub_document_3, "fetch('/response_3');");
   response_3.WaitForRequest();
   EXPECT_EQ("a=0; b=0; c=0; e=0; f=0",
             response_3.http_request()->headers.at("Cookie"));
@@ -3200,7 +3200,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
   EXPECT_TRUE(ExecJs(main_document, "document.cookie = 'a=0;SameSite=Lax'"));
   EXPECT_TRUE(ExecJs(main_document, "document.cookie = 'b=0;SameSite=Strict'"));
   GURL url_response_1 = https_server()->GetURL("a.com", "/response_1");
-  EXPECT_TRUE(ExecJs(sub_document_1, JsReplace("fetch($1)", url_response_1)));
+  ExecuteScriptAsync(sub_document_1, JsReplace("fetch($1)", url_response_1));
   response_1.WaitForRequest();
   EXPECT_EQ(0u, response_1.http_request()->headers.count("Cookie"));
 
@@ -3239,7 +3239,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
 
   // 7. No cookies are sent when requested from the data-URL.
   GURL url_response_2 = https_server()->GetURL("a.com", "/response_2");
-  EXPECT_TRUE(ExecJs(sub_document_2, JsReplace("fetch($1)", url_response_2)));
+  ExecuteScriptAsync(sub_document_2, JsReplace("fetch($1)", url_response_2));
   response_2.WaitForRequest();
   EXPECT_EQ(0u, response_2.http_request()->headers.count("Cookie"));
 }
