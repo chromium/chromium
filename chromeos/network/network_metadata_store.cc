@@ -293,10 +293,13 @@ void NetworkMetadataStore::OnConfigurationModified(
     UpdateExternalModifications(guid, shill::kNameServersProperty);
   }
 
-  // Only clear last connected if the passphrase changes.  Other settings
-  // (autoconnect, dns, etc.) won't affect the ability to connect to a network.
   if (set_properties->HasKey(shill::kPassphraseProperty)) {
+    // Only clear last connected if the passphrase changes.  Other settings
+    // (autoconnect, dns, etc.) won't affect the ability to connect to a
+    // network.
     SetPref(guid, kLastConnectedTimestampPref, base::Value(0));
+    // Whichever user supplied the password is the "owner".
+    SetIsCreatedByUser(guid);
   }
 
   for (auto& observer : observers_) {

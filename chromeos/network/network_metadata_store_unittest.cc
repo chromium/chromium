@@ -332,6 +332,33 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
       kGuid, shill::kProxyConfigProperty));
 }
 
+TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdated_NewPassword) {
+  std::string service_path = ConfigureService(kConfigWifi1Shared);
+  metadata_store()->OnConfigurationCreated(service_path, kGuid);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(0, metadata_observer()->GetNumberOfUpdates(kGuid));
+  ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
+
+  LoginUser(secondary_user_);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
+
+  base::DictionaryValue other_properties;
+  other_properties.SetKey(shill::kPassphraseProperty, base::Value("pass2"));
+
+  network_configuration_handler()->SetShillProperties(
+      service_path, other_properties, base::DoNothing(), base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
+
+  LoginUser(primary_user_);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
+}
+
 TEST_F(NetworkMetadataStoreTest, ConfigurationRemoved) {
   std::string service_path = ConfigureService(kConfigWifi0Connectable);
   network_connection_handler()->ConnectToNetwork(
