@@ -147,7 +147,9 @@ TEST_F(CartHandlerTest, TestRemoveStatusChange) {
 }
 
 // Verifies GetMerchantCarts loads fake data with feature parameter.
-TEST_F(CartHandlerTest, TestEnableFakeData) {
+//
+// Disabled due to excessive flakiness. http://crbug.com/1175279
+TEST_F(CartHandlerTest, DISABLED_TestEnableFakeData) {
   base::RunLoop run_loop;
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
