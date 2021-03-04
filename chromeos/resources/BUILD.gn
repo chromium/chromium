@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chromeos/assistant/assistant.gni")
-import("//chromeos/components/eche_app_ui/eche_app_ui.gni")
 import("//chromeos/components/help_app_ui/help_app_ui.gni")
 import("//chromeos/components/media_app_ui/media_app_ui.gni")
 import("//tools/grit/grit_rule.gni")
@@ -24,7 +23,6 @@ grit("resources") {
   defines = [
     "enable_cros_libassistant=$enable_cros_libassistant",
     "enable_cros_media_app=$enable_cros_media_app",
-    "enable_cros_eche_app=$enable_cros_eche_app",
   ]
 
   grit_flags = [
@@ -295,14 +293,11 @@ grit("eche_app_resources") {
 
 # Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
 grit("eche_bundle_resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+
   # Obtained via an internal CIPD package in src/DEPS.
-  if (enable_cros_media_app) {
-    # Obtained via an internal CIPD package in src/DEPS.
-    source =
-        "../components/eche_app_ui/resources/prod/eche_bundle_resources.grd"
-  } else {
-    source = "../components/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd"
-  }
+  source = "../components/eche_app_ui/resources/prod/eche_bundle_resources.grd"
 
   use_brotli = true
 
