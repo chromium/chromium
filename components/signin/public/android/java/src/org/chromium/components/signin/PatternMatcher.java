@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.signin.util;
+package org.chromium.components.signin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  * Encapsulates simple wildcard pattern-matching.
  * See {@link PatternMatcher#PatternMatcher(String)} for the format description.
  */
-public class PatternMatcher {
+class PatternMatcher {
     /** Encapsulates information about illegal pattern. */
     public static class IllegalPatternException extends Exception {
         private IllegalPatternException(String message, String pattern) {
@@ -35,7 +35,7 @@ public class PatternMatcher {
      *
      * @param pattern the pattern to match strings against.
      */
-    public PatternMatcher(String pattern) throws IllegalPatternException {
+    PatternMatcher(String pattern) throws IllegalPatternException {
         // Split pattern by * wildcards and un-escape.
         boolean escape = false;
         StringBuilder currentChunk = new StringBuilder();
@@ -65,7 +65,7 @@ public class PatternMatcher {
      * @param string the string to match against the pattern.
      * @return whether the whole string matches the pattern.
      */
-    public boolean matches(String string) {
+    boolean matches(String string) {
         // No wildcards, the whole string should match the pattern.
         if (mChunks.size() == 1) {
             return string.equals(mChunks.get(0));

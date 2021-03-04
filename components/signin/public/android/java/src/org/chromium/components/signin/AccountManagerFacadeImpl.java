@@ -29,7 +29,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.components.signin.util.PatternMatcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
