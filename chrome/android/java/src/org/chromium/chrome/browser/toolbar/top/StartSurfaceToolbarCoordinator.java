@@ -259,7 +259,6 @@ public class StartSurfaceToolbarCoordinator {
             mTabSwitcherButtonCoordinator =
                     new TabSwitcherButtonCoordinator(mTabSwitcherButtonView);
             mTabSwitcherButtonCoordinator.setThemeColorProvider(mThemeColorProvider);
-            mTabSwitcherButtonView.setVisibility(View.VISIBLE);
             if (mTabCountProvider != null) {
                 mTabSwitcherButtonCoordinator.setTabCountProvider(mTabCountProvider);
                 mTabCountProvider = null;
