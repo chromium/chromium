@@ -367,7 +367,6 @@ AX_EXPORT std::wstring UiaIdentifierToString(int32_t identifier) {
       QUOTE(UIA_CustomNavigationPatternId),
       QUOTE(UIA_SelectionPattern2Id),
       // Events
-      QUOTE(UIA_ActiveTextPositionChangedEventId),
       QUOTE(UIA_ToolTipOpenedEventId),
       QUOTE(UIA_ToolTipClosedEventId),
       QUOTE(UIA_StructureChangedEventId),

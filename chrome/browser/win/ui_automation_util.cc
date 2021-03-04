@@ -190,8 +190,6 @@ const char* GetEventName(EVENTID event_id) {
       return "UIA_TextEdit_TextChangedEventId";
     case UIA_TextEdit_ConversionTargetChangedEventId:
       return "UIA_TextEdit_ConversionTargetChangedEventId";
-    case UIA_ActiveTextPositionChangedEventId:
-      return "UIA_ActiveTextPositionChangedEventId";
   }
 #endif  // DCHECK_IS_ON()
   return "";

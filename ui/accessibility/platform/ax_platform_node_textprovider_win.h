@@ -13,7 +13,7 @@
 
 namespace ui {
 
-class AX_EXPORT __declspec(uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca"))
+class __declspec(uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca"))
     AXPlatformNodeTextProviderWin
     : public CComObjectRootEx<CComMultiThreadModel>,
       public ITextEditProvider {
@@ -62,10 +62,6 @@ class AX_EXPORT __declspec(uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca"))
   static ITextRangeProvider* GetRangeFromChild(
       ui::AXPlatformNodeWin* ancestor,
       ui::AXPlatformNodeWin* descendant);
-
-  // Create a dengerate text range at the start of the specified node.
-  static ITextRangeProvider* CreateDegenerateRangeAtStart(
-      ui::AXPlatformNodeWin* node);
 
  private:
   friend class AXPlatformNodeTextProviderTest;
