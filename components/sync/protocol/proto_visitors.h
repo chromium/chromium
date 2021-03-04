@@ -1042,11 +1042,13 @@ VISIT_PROTO_FIELDS(const sync_pb::UniquePosition& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::UserConsentSpecifics& proto) {
   VISIT(locale);
+  VISIT(client_consent_time_usec);
   VISIT(account_id);
   VISIT(sync_consent);
   VISIT(arc_backup_and_restore_consent);
   VISIT(arc_location_service_consent);
   VISIT(arc_play_terms_of_service_consent);
+  VISIT(assistant_activity_control_consent);
   VISIT(account_passwords_consent);
 }
 
@@ -1067,6 +1069,12 @@ VISIT_PROTO_FIELDS(
   VISIT(play_terms_of_service_text_length);
   VISIT(play_terms_of_service_hash);
   VISIT(confirmation_grd_id);
+  VISIT_ENUM(status);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::UserConsentTypes::AssistantActivityControlConsent& proto) {
+  VISIT(ui_audit_key);
   VISIT_ENUM(status);
 }
 
