@@ -11,6 +11,9 @@ import static org.hamcrest.Matchers.not;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +23,14 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 
@@ -192,5 +198,37 @@ public class ViewUtils {
 
     public static MotionEvent createMotionEvent(float x, float y) {
         return MotionEvent.obtain(0, 0, 0, x, y, 0);
+    }
+
+    /**
+     * Creates a view matcher for the given color resource id.
+     * @param colorResId The color resource id to be tested against the view.for the search engine
+     *         icon.
+     * @return Returns the view matcher.
+     */
+    public static Matcher<View> hasBackgroundColor(final int colorResId) {
+        return new BoundedMatcher<View, View>(View.class) {
+            private Context mContext;
+
+            @Override
+            protected boolean matchesSafely(View imageView) {
+                this.mContext = imageView.getContext();
+                Drawable background = imageView.getBackground();
+                if (!(background instanceof ColorDrawable)) return false;
+                int expectedColor =
+                        ApiCompatibilityUtils.getColor(mContext.getResources(), colorResId);
+                return ((ColorDrawable) background).getColor() == expectedColor;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                String colorId = String.valueOf(colorResId);
+                if (this.mContext != null) {
+                    colorId = this.mContext.getResources().getResourceName(colorResId);
+                }
+
+                description.appendText("has background color with ID " + colorId);
+            }
+        };
     }
 }
