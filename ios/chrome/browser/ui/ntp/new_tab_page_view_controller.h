@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
@@ -20,6 +21,7 @@
 // non-incognito new tab page.
 @interface NewTabPageViewController
     : UIViewController <ContentSuggestionsCollectionControlling,
+                        ThumbStripSupporting,
                         UIScrollViewDelegate>
 
 // View controller wrapping the Discover feed.

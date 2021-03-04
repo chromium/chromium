@@ -340,6 +340,12 @@
   }
 }
 
+- (id<ThumbStripSupporting>)thumbStripSupporting {
+  return [self isNTPRefactoredAndFeedVisible]
+             ? self.ntpViewController
+             : self.contentSuggestionsCoordinator.thumbStripSupporting;
+}
+
 #pragma mark - Public Methods
 
 - (void)dismissModals {

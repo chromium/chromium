@@ -16,6 +16,7 @@ class WebState;
 @protocol NewTabPageCommands;
 @protocol NewTabPageControllerDelegate;
 @class NTPHomeMediator;
+@protocol ThumbStripSupporting;
 @class ViewRevealingVerticalPanHandler;
 
 // Coordinator to manage the Suggestions UI via a
@@ -38,6 +39,10 @@ class WebState;
 
 // The pan gesture handler for the view controller.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
+
+// Allows for the in-flight enabling/disabling of the thumb strip.
+@property(nonatomic, weak, readonly) id<ThumbStripSupporting>
+    thumbStripSupporting;
 
 // NTP Mediator used by this Coordinator.
 // TODO(crbug.com/1114792): Move all usage of this mediator to NTPCoordinator.

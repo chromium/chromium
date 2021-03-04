@@ -724,6 +724,23 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   [self dismissEntryAtIndexPath:indexPath];
 }
 
+#pragma mark - ThumbStripSupporting
+
+- (BOOL)isThumbStripEnabled {
+  return self.panGestureHandler != nil;
+}
+
+- (void)thumbStripEnabledWithPanHandler:
+    (ViewRevealingVerticalPanHandler*)panHandler {
+  DCHECK(!self.thumbStripEnabled);
+  self.panGestureHandler = panHandler;
+}
+
+- (void)thumbStripDisabled {
+  DCHECK(self.thumbStripEnabled);
+  self.panGestureHandler = nil;
+}
+
 #pragma mark - UIScrollViewDelegate Methods.
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {

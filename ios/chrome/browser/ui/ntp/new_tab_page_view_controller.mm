@@ -98,6 +98,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
   DCHECK(self.discoverFeedWrapperViewController);
 
+  // Prevent the NTP from spilling behind the toolbar and tab strip.
+  self.view.clipsToBounds = YES;
+
   UIView* discoverFeedView = self.discoverFeedWrapperViewController.view;
 
   [self.discoverFeedWrapperViewController willMoveToParentViewController:self];
@@ -396,6 +399,23 @@ const CGFloat kOffsetToPinOmnibox = 100;
          ToolbarExpandedHeight(
              [UIApplication sharedApplication].preferredContentSizeCategory) -
          self.view.safeAreaInsets.top;
+}
+
+#pragma mark - ThumbStripSupporting
+
+- (BOOL)isThumbStripEnabled {
+  return self.panGestureHandler != nil;
+}
+
+- (void)thumbStripEnabledWithPanHandler:
+    (ViewRevealingVerticalPanHandler*)panHandler {
+  DCHECK(!self.thumbStripEnabled);
+  self.panGestureHandler = panHandler;
+}
+
+- (void)thumbStripDisabled {
+  DCHECK(self.thumbStripEnabled);
+  self.panGestureHandler = nil;
 }
 
 #pragma mark - Private

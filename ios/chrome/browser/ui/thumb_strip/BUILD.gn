@@ -10,9 +10,9 @@ source_set("thumb_strip") {
     "thumb_strip_coordinator.mm",
     "thumb_strip_mediator.h",
     "thumb_strip_mediator.mm",
-    "thumb_strip_supporting.h",
   ]
   deps = [
+    ":public",
     "//base",
     "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",
@@ -24,6 +24,11 @@ source_set("thumb_strip") {
     "//ios/web/public",
     "//ios/web/public/ui",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("public") {
+  sources = [ "thumb_strip_supporting.h" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

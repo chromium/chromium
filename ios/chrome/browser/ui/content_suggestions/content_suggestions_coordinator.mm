@@ -362,6 +362,10 @@
   return self.suggestionsViewController;
 }
 
+- (id<ThumbStripSupporting>)thumbStripSupporting {
+  return self.suggestionsViewController;
+}
+
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide {
   NamedGuide* menuButtonGuide =
       [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide

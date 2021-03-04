@@ -2876,6 +2876,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   UIView* webStateView = [self viewForWebState:self.currentWebState];
   webStateView.frame = webStateViewFrame;
+
+  for (const auto& element : _ntpCoordinatorsForWebStates) {
+    [element.second.thumbStripSupporting
+        thumbStripEnabledWithPanHandler:panHandler];
+  }
 }
 
 - (void)thumbStripDisabled {
@@ -2907,6 +2912,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   UIView* webStateView = [self viewForWebState:self.currentWebState];
   webStateView.frame = webStateViewFrame;
+
+  for (const auto& element : _ntpCoordinatorsForWebStates) {
+    [element.second.thumbStripSupporting thumbStripDisabled];
+  }
 }
 
 #pragma mark - WebNavigationNTPDelegate
