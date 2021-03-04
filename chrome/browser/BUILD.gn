@@ -2401,6 +2401,8 @@ static_library("browser") {
       "//chromeos/components/connectivity_diagnostics",
       "//chromeos/components/diagnostics_ui",
       "//chromeos/components/diagnostics_ui/mojom",
+      "//chromeos/components/eche_app_ui",
+      "//chromeos/components/eche_app_ui/mojom",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/help_app_ui:mojo_bindings",
       "//chromeos/components/local_search_service",

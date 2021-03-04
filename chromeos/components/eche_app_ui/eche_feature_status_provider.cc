@@ -42,13 +42,13 @@ bool IsEligibleForFeature(
   if (!local_device)
     return false;
   if (local_device->GetSoftwareFeatureState(SoftwareFeature::kEcheClient) ==
-      SoftwareFeatureState::kNotSupported) {
+      SoftwareFeatureState::kNotSupported)
     return false;
-  }
   if (host_status.first == HostStatus::kNoEligibleHosts)
     return false;
-  if (host_status.second.has_value())
+  if (host_status.second.has_value()) {
     return IsEligibleHost(*(host_status.second));
+  }
   for (const RemoteDeviceRef& device : remote_devices) {
     if (IsEligibleHost(device))
       return true;
