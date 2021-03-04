@@ -104,44 +104,40 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedString("captionsEnableLiveCaptionSubtitle",
                                   live_caption_subtitle_message);
 
-  if (liveCaptionMultiLanguageEnabled) {
-    base::Optional<speech::SodaLanguagePackComponentConfig> englishConfig =
-        speech::GetLanguageComponentConfig(speech::LanguageCode::kEnUs);
-    html_source->AddString("sodaLanguageCodeEnglish",
-                           englishConfig->language_name);
-    html_source->AddLocalizedString("sodaLanguageDisplayNameEnglish",
-                                    englishConfig->display_name);
-    base::Optional<speech::SodaLanguagePackComponentConfig> frenchConfig =
-        speech::GetLanguageComponentConfig(speech::LanguageCode::kFrFr);
-    html_source->AddString("sodaLanguageCodeFrench",
-                           frenchConfig->language_name);
-    html_source->AddLocalizedString("sodaLanguageDisplayNameFrench",
-                                    frenchConfig->display_name);
-    base::Optional<speech::SodaLanguagePackComponentConfig> germanConfig =
-        speech::GetLanguageComponentConfig(speech::LanguageCode::kDeDe);
-    html_source->AddString("sodaLanguageCodeGerman",
-                           germanConfig->language_name);
-    html_source->AddLocalizedString("sodaLanguageDisplayNameGerman",
-                                    germanConfig->display_name);
-    base::Optional<speech::SodaLanguagePackComponentConfig> italianConfig =
-        speech::GetLanguageComponentConfig(speech::LanguageCode::kItIt);
-    html_source->AddString("sodaLanguageCodeItalian",
-                           italianConfig->language_name);
-    html_source->AddLocalizedString("sodaLanguageDisplayNameItalian",
-                                    italianConfig->display_name);
-    base::Optional<speech::SodaLanguagePackComponentConfig> japaneseConfig =
-        speech::GetLanguageComponentConfig(speech::LanguageCode::kJaJp);
-    html_source->AddString("sodaLanguageCodeJapanese",
-                           japaneseConfig->language_name);
-    html_source->AddLocalizedString("sodaLanguageDisplayNameJapanese",
-                                    japaneseConfig->display_name);
-    base::Optional<speech::SodaLanguagePackComponentConfig> spanishConfig =
-        speech::GetLanguageComponentConfig(speech::LanguageCode::kEsEs);
-    html_source->AddString("sodaLanguageCodeSpanish",
-                           spanishConfig->language_name);
-    html_source->AddLocalizedString("sodaLanguageDisplayNameSpanish",
-                                    spanishConfig->display_name);
-  }
+  base::Optional<speech::SodaLanguagePackComponentConfig> englishConfig =
+      speech::GetLanguageComponentConfig(speech::LanguageCode::kEnUs);
+  html_source->AddString("sodaLanguageCodeEnglish",
+                         englishConfig->language_name);
+  html_source->AddLocalizedString("sodaLanguageDisplayNameEnglish",
+                                  englishConfig->display_name);
+  base::Optional<speech::SodaLanguagePackComponentConfig> frenchConfig =
+      speech::GetLanguageComponentConfig(speech::LanguageCode::kFrFr);
+  html_source->AddString("sodaLanguageCodeFrench", frenchConfig->language_name);
+  html_source->AddLocalizedString("sodaLanguageDisplayNameFrench",
+                                  frenchConfig->display_name);
+  base::Optional<speech::SodaLanguagePackComponentConfig> germanConfig =
+      speech::GetLanguageComponentConfig(speech::LanguageCode::kDeDe);
+  html_source->AddString("sodaLanguageCodeGerman", germanConfig->language_name);
+  html_source->AddLocalizedString("sodaLanguageDisplayNameGerman",
+                                  germanConfig->display_name);
+  base::Optional<speech::SodaLanguagePackComponentConfig> italianConfig =
+      speech::GetLanguageComponentConfig(speech::LanguageCode::kItIt);
+  html_source->AddString("sodaLanguageCodeItalian",
+                         italianConfig->language_name);
+  html_source->AddLocalizedString("sodaLanguageDisplayNameItalian",
+                                  italianConfig->display_name);
+  base::Optional<speech::SodaLanguagePackComponentConfig> japaneseConfig =
+      speech::GetLanguageComponentConfig(speech::LanguageCode::kJaJp);
+  html_source->AddString("sodaLanguageCodeJapanese",
+                         japaneseConfig->language_name);
+  html_source->AddLocalizedString("sodaLanguageDisplayNameJapanese",
+                                  japaneseConfig->display_name);
+  base::Optional<speech::SodaLanguagePackComponentConfig> spanishConfig =
+      speech::GetLanguageComponentConfig(speech::LanguageCode::kEsEs);
+  html_source->AddString("sodaLanguageCodeSpanish",
+                         spanishConfig->language_name);
+  html_source->AddLocalizedString("sodaLanguageDisplayNameSpanish",
+                                  spanishConfig->display_name);
 
   html_source->AddBoolean("enableLiveCaption",
                           base::FeatureList::IsEnabled(media::kLiveCaption));
