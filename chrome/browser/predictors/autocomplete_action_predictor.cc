@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/predictor_database.h"
@@ -30,9 +29,6 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 
 namespace {
 
@@ -92,12 +88,18 @@ AutocompleteActionPredictor::AutocompleteActionPredictor(Profile* profile)
     table_ =
         PredictorDatabaseFactory::GetForProfile(profile_)->autocomplete_table();
 
-    // Observe all main frame loads so we can wait for the first to complete
-    // before accessing DB sequence of the AutocompleteActionPredictorTable and
-    // IO thread to build the local cache.
-    notification_registrar_.Add(this,
-                                content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-                                content::NotificationService::AllSources());
+    // Create local caches using the database as loaded. We will garbage collect
+    // rows from the caches and the database once the history service is
+    // available.
+    auto rows =
+        std::make_unique<std::vector<AutocompleteActionPredictorTable::Row>>();
+    auto* rows_ptr = rows.get();
+    table_->GetTaskRunner()->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&AutocompleteActionPredictorTable::GetAllRows, table_,
+                       rows_ptr),
+        base::BindOnce(&AutocompleteActionPredictor::CreateCaches, AsWeakPtr(),
+                       std::move(rows)));
   }
 }
 
@@ -321,32 +323,6 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
     }
   }
   tracked_urls_.clear();
-}
-
-void AutocompleteActionPredictor::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME, type);
-  CreateLocalCachesFromDatabase();
-  notification_registrar_.Remove(
-      this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
-}
-
-void AutocompleteActionPredictor::CreateLocalCachesFromDatabase() {
-  // Create local caches using the database as loaded. We will garbage collect
-  // rows from the caches and the database once the history service is
-  // available.
-  auto rows =
-      std::make_unique<std::vector<AutocompleteActionPredictorTable::Row>>();
-  auto* rows_ptr = rows.get();
-  table_->GetTaskRunner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&AutocompleteActionPredictorTable::GetAllRows, table_,
-                     rows_ptr),
-      base::BindOnce(&AutocompleteActionPredictor::CreateCaches, AsWeakPtr(),
-                     std::move(rows)));
 }
 
 void AutocompleteActionPredictor::DeleteAllRows() {

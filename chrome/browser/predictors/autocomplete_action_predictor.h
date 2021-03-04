@@ -22,8 +22,6 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "url/gurl.h"
 
 struct AutocompleteMatch;
@@ -65,7 +63,6 @@ namespace predictors {
 // triggers. This is necessary during initialization.
 class AutocompleteActionPredictor
     : public KeyedService,
-      public content::NotificationObserver,
       public history::HistoryServiceObserver,
       public base::SupportsWeakPtr<AutocompleteActionPredictor> {
  public:
@@ -165,16 +162,6 @@ class AutocompleteActionPredictor
   static const size_t kMinimumUserTextLength;
   static const size_t kMaximumStringLength;
 
-  // NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  // The first step in initializing the predictor is accessing the database and
-  // building the local cache. This should be delayed until after critical DB
-  // and IO processes have completed.
-  void CreateLocalCachesFromDatabase();
-
   // Removes all rows from the database and caches.
   void DeleteAllRows();
 
@@ -256,8 +243,6 @@ class AutocompleteActionPredictor
 
   // The backing data store.  This is nullptr for incognito-owned predictors.
   scoped_refptr<AutocompleteActionPredictorTable> table_;
-
-  content::NotificationRegistrar notification_registrar_;
 
   // This is cleared after every Omnibox navigation.
   std::vector<TransitionalMatch> transitional_matches_;
