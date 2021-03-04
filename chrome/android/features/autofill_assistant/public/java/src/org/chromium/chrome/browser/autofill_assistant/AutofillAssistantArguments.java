@@ -44,10 +44,9 @@ public class AutofillAssistantArguments {
                     } else if (key.startsWith(INTENT_EXTRA_PREFIX)) {
                         if (key.equals(INTENT_EXTRA_PREFIX + PARAMETER_EXPERIMENT_IDS)) {
                             mArguments.addExperimentIds(value.toString());
-                        } else {
-                            mArguments.mAutofillAssistantParameters.put(
-                                    key.substring(INTENT_EXTRA_PREFIX.length()), value);
                         }
+                        mArguments.mAutofillAssistantParameters.put(
+                                key.substring(INTENT_EXTRA_PREFIX.length()), value);
                     } else {
                         mArguments.mIntentExtras.put(key, value);
                     }
