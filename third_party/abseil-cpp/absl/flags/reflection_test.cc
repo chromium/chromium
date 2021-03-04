@@ -34,8 +34,6 @@ ABSL_RETIRED_FLAG(bool, bool_retired_flag, false, "bool_retired_flag help");
 
 namespace {
 
-namespace flags = absl::flags_internal;
-
 class ReflectionTest : public testing::Test {
  protected:
   void SetUp() override { flag_saver_ = absl::make_unique<absl::FlagSaver>(); }

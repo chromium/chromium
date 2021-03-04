@@ -1369,10 +1369,13 @@ TEST(Duration, SmallConversions) {
   EXPECT_THAT(ToTimeval(absl::Nanoseconds(2000)), TimevalMatcher(tv));
 }
 
-void VerifySameAsMul(double time_as_seconds, int* const misses) {
+void VerifyApproxSameAsMul(double time_as_seconds, int* const misses) {
   auto direct_seconds = absl::Seconds(time_as_seconds);
   auto mul_by_one_second = time_as_seconds * absl::Seconds(1);
-  if (direct_seconds != mul_by_one_second) {
+  // These are expected to differ by up to one tick due to fused multiply/add
+  // contraction.
+  if (absl::AbsDuration(direct_seconds - mul_by_one_second) >
+      absl::time_internal::MakeDuration(0, 1u)) {
     if (*misses > 10) return;
     ASSERT_LE(++(*misses), 10) << "Too many errors, not reporting more.";
     EXPECT_EQ(direct_seconds, mul_by_one_second)
@@ -1384,7 +1387,8 @@ void VerifySameAsMul(double time_as_seconds, int* const misses) {
 // For a variety of interesting durations, we find the exact point
 // where one double converts to that duration, and the very next double
 // converts to the next duration.  For both of those points, verify that
-// Seconds(point) returns the same duration as point * Seconds(1.0)
+// Seconds(point) returns a duration near point * Seconds(1.0). (They may
+// not be exactly equal due to fused multiply/add contraction.)
 TEST(Duration, ToDoubleSecondsCheckEdgeCases) {
   constexpr uint32_t kTicksPerSecond = absl::time_internal::kTicksPerSecond;
   constexpr auto duration_tick = absl::time_internal::MakeDuration(0, 1u);
@@ -1423,8 +1427,8 @@ TEST(Duration, ToDoubleSecondsCheckEdgeCases) {
         }
         // Now low_edge is the highest double that converts to Duration d,
         // and high_edge is the lowest double that converts to Duration after_d.
-        VerifySameAsMul(low_edge, &misses);
-        VerifySameAsMul(high_edge, &misses);
+        VerifyApproxSameAsMul(low_edge, &misses);
+        VerifyApproxSameAsMul(high_edge, &misses);
       }
     }
   }
@@ -1444,8 +1448,8 @@ TEST(Duration, ToDoubleSecondsCheckRandom) {
   int misses = 0;
   for (int i = 0; i < 1000000; ++i) {
     double d = std::exp(uniform(gen));
-    VerifySameAsMul(d, &misses);
-    VerifySameAsMul(-d, &misses);
+    VerifyApproxSameAsMul(d, &misses);
+    VerifyApproxSameAsMul(-d, &misses);
   }
 }
 

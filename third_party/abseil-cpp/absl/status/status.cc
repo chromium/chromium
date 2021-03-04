@@ -291,20 +291,26 @@ bool Status::EqualsSlow(const absl::Status& a, const absl::Status& b) {
   return true;
 }
 
-std::string Status::ToStringSlow() const {
+std::string Status::ToStringSlow(StatusToStringMode mode) const {
   std::string text;
   absl::StrAppend(&text, absl::StatusCodeToString(code()), ": ", message());
-  status_internal::StatusPayloadPrinter printer =
-      status_internal::GetStatusPayloadPrinter();
-  this->ForEachPayload([&](absl::string_view type_url,
-                           const absl::Cord& payload) {
-    absl::optional<std::string> result;
-    if (printer) result = printer(type_url, payload);
-    absl::StrAppend(
-        &text, " [", type_url, "='",
-        result.has_value() ? *result : absl::CHexEscape(std::string(payload)),
-        "']");
-  });
+
+  const bool with_payload = (mode & StatusToStringMode::kWithPayload) ==
+                      StatusToStringMode::kWithPayload;
+
+  if (with_payload) {
+    status_internal::StatusPayloadPrinter printer =
+        status_internal::GetStatusPayloadPrinter();
+    this->ForEachPayload([&](absl::string_view type_url,
+                             const absl::Cord& payload) {
+      absl::optional<std::string> result;
+      if (printer) result = printer(type_url, payload);
+      absl::StrAppend(
+          &text, " [", type_url, "='",
+          result.has_value() ? *result : absl::CHexEscape(std::string(payload)),
+          "']");
+    });
+  }
 
   return text;
 }

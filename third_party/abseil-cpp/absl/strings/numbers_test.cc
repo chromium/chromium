@@ -392,6 +392,28 @@ TEST(NumbersTest, Atod) {
   EXPECT_TRUE(std::isnan(d));
 }
 
+TEST(NumbersTest, Prefixes) {
+  double d;
+  EXPECT_FALSE(absl::SimpleAtod("++1", &d));
+  EXPECT_FALSE(absl::SimpleAtod("+-1", &d));
+  EXPECT_FALSE(absl::SimpleAtod("-+1", &d));
+  EXPECT_FALSE(absl::SimpleAtod("--1", &d));
+  EXPECT_TRUE(absl::SimpleAtod("-1", &d));
+  EXPECT_EQ(d, -1.);
+  EXPECT_TRUE(absl::SimpleAtod("+1", &d));
+  EXPECT_EQ(d, +1.);
+
+  float f;
+  EXPECT_FALSE(absl::SimpleAtof("++1", &f));
+  EXPECT_FALSE(absl::SimpleAtof("+-1", &f));
+  EXPECT_FALSE(absl::SimpleAtof("-+1", &f));
+  EXPECT_FALSE(absl::SimpleAtof("--1", &f));
+  EXPECT_TRUE(absl::SimpleAtof("-1", &f));
+  EXPECT_EQ(f, -1.f);
+  EXPECT_TRUE(absl::SimpleAtof("+1", &f));
+  EXPECT_EQ(f, +1.f);
+}
+
 TEST(NumbersTest, Atoenum) {
   enum E01 {
     E01_zero = 0,

@@ -14,15 +14,6 @@
 # limitations under the License.
 #
 
-# This is deprecated and will be removed in the future.  It also doesn't do
-# anything anyways.  Prefer to use the library associated with the API you are
-# using.
-absl_cc_library(
-  NAME
-    container
-  PUBLIC
-)
-
 absl_cc_library(
   NAME
     btree

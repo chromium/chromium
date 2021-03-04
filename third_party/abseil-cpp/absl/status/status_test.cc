@@ -280,6 +280,23 @@ TEST(Status, ToString) {
                     HasSubstr("[bar='\\xff']")));
 }
 
+TEST(Status, ToStringMode) {
+  absl::Status s(absl::StatusCode::kInternal, "fail");
+  s.SetPayload("foo", absl::Cord("bar"));
+  s.SetPayload("bar", absl::Cord("\377"));
+
+  EXPECT_EQ("INTERNAL: fail",
+            s.ToString(absl::StatusToStringMode::kWithNoExtraData));
+
+  EXPECT_THAT(s.ToString(absl::StatusToStringMode::kWithPayload),
+              AllOf(HasSubstr("INTERNAL: fail"), HasSubstr("[foo='bar']"),
+                    HasSubstr("[bar='\\xff']")));
+
+  EXPECT_THAT(s.ToString(~absl::StatusToStringMode::kWithPayload),
+              AllOf(HasSubstr("INTERNAL: fail"), Not(HasSubstr("[foo='bar']")),
+                    Not(HasSubstr("[bar='\\xff']"))));
+}
+
 absl::Status EraseAndReturn(const absl::Status& base) {
   absl::Status copy = base;
   EXPECT_TRUE(copy.ErasePayload(kUrl1));

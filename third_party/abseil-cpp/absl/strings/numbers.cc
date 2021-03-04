@@ -46,8 +46,13 @@ ABSL_NAMESPACE_BEGIN
 bool SimpleAtof(absl::string_view str, float* out) {
   *out = 0.0;
   str = StripAsciiWhitespace(str);
+  // std::from_chars doesn't accept an initial +, but SimpleAtof does, so if one
+  // is present, skip it, while avoiding accepting "+-0" as valid.
   if (!str.empty() && str[0] == '+') {
     str.remove_prefix(1);
+    if (!str.empty() && str[0] == '-') {
+      return false;
+    }
   }
   auto result = absl::from_chars(str.data(), str.data() + str.size(), *out);
   if (result.ec == std::errc::invalid_argument) {
@@ -72,8 +77,13 @@ bool SimpleAtof(absl::string_view str, float* out) {
 bool SimpleAtod(absl::string_view str, double* out) {
   *out = 0.0;
   str = StripAsciiWhitespace(str);
+  // std::from_chars doesn't accept an initial +, but SimpleAtod does, so if one
+  // is present, skip it, while avoiding accepting "+-0" as valid.
   if (!str.empty() && str[0] == '+') {
     str.remove_prefix(1);
+    if (!str.empty() && str[0] == '-') {
+      return false;
+    }
   }
   auto result = absl::from_chars(str.data(), str.data() + str.size(), *out);
   if (result.ec == std::errc::invalid_argument) {

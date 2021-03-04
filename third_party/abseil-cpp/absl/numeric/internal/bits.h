@@ -343,7 +343,7 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_CLZ inline
     typename std::enable_if<std::is_unsigned<T>::value, T>::type
     BitCeilNonPowerOf2(T x) {
   // If T is narrower than unsigned, it undergoes promotion to unsigned when we
-  // shift.  We calcualte the number of bits added by the wider type.
+  // shift.  We calculate the number of bits added by the wider type.
   return BitCeilPromotionHelper(
       static_cast<T>(std::numeric_limits<T>::digits - CountLeadingZeroes(x)),
       T{sizeof(T) >= sizeof(unsigned) ? 0
