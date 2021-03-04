@@ -1055,8 +1055,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
     dict->SetString("email", email);
     dict->SetString("gaia", gaia_id);
     update->Append(std::move(dict));
-    account_tracker_service_.Shutdown();
-    account_tracker_service_.Initialize(&pref_service_, base::FilePath());
+    account_tracker_service_.ResetForTesting();
 
     AddAuthTokenManually("AccountId-" + email, "refresh_token");
     oauth2_service_delegate_->LoadCredentials(acc_id_gaia_id);
@@ -1124,8 +1123,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     dict->SetString("email", email2);
     dict->SetString("gaia", gaia_id2);
     update->Append(std::move(dict));
-    account_tracker_service_.Shutdown();
-    account_tracker_service_.Initialize(&pref_service_, base::FilePath());
+    account_tracker_service_.ResetForTesting();
 
     AddAuthTokenManually("AccountId-" + email1, "refresh_token");
     AddAuthTokenManually("AccountId-" + email2, "refresh_token");
@@ -1454,8 +1452,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                                 Source::kDiceResponseHandler_Signout, 2);
     base::RunLoop().RunUntilIdle();
   }
-
-  token_service.Shutdown();
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {

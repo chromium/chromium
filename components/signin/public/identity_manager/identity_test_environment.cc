@@ -105,7 +105,10 @@ IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
       raw_signin_client_(signin_client_param) {
 }
 
-IdentityManagerDependenciesOwner::~IdentityManagerDependenciesOwner() = default;
+IdentityManagerDependenciesOwner::~IdentityManagerDependenciesOwner() {
+  if (owned_signin_client_)
+    owned_signin_client_->Shutdown();
+}
 
 sync_preferences::TestingPrefServiceSyncable*
 IdentityManagerDependenciesOwner::pref_service() {
@@ -343,7 +346,10 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   return std::make_unique<IdentityManager>(std::move(init_params));
 }
 
-IdentityTestEnvironment::~IdentityTestEnvironment() = default;
+IdentityTestEnvironment::~IdentityTestEnvironment() {
+  if (owned_identity_manager_)
+    owned_identity_manager_->Shutdown();
+}
 
 IdentityManager* IdentityTestEnvironment::identity_manager() {
   DCHECK(raw_identity_manager_ || owned_identity_manager_);

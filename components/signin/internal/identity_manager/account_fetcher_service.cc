@@ -48,7 +48,12 @@ AccountFetcherService::AccountFetcherService() = default;
 
 AccountFetcherService::~AccountFetcherService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(shutdown_called_);
+  token_service_->RemoveObserver(this);
+#if defined(OS_ANDROID)
+  // child_info_request_ is an invalidation handler and needs to be
+  // unregistered during the lifetime of the invalidation service.
+  child_info_request_.reset();
+#endif
 }
 
 // static
@@ -87,16 +92,6 @@ void AccountFetcherService::Initialize(
   // lines above.
   if (token_service_->AreAllCredentialsLoaded())
     OnRefreshTokensLoaded();
-}
-
-void AccountFetcherService::Shutdown() {
-  token_service_->RemoveObserver(this);
-#if defined(OS_ANDROID)
-  // child_info_request_ is an invalidation handler and needs to be
-  // unregistered during the lifetime of the invalidation service.
-  child_info_request_.reset();
-#endif
-  shutdown_called_ = true;
 }
 
 bool AccountFetcherService::IsAllUserInfoFetched() const {

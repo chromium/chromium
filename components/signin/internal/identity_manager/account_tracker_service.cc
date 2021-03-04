@@ -113,6 +113,8 @@ AccountTrackerService::AccountTrackerService() {
 
 AccountTrackerService::~AccountTrackerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_ = nullptr;
+  accounts_.clear();
 }
 
 // static
@@ -137,11 +139,6 @@ void AccountTrackerService::Initialize(PrefService* pref_service,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
     LoadAccountImagesFromDisk();
   }
-}
-
-void AccountTrackerService::Shutdown() {
-  pref_service_ = nullptr;
-  accounts_.clear();
 }
 
 std::vector<AccountInfo> AccountTrackerService::GetAccounts() const {
@@ -312,6 +309,13 @@ void AccountTrackerService::SetOnAccountRemovedCallback(
 
 void AccountTrackerService::CommitPendingAccountChanges() {
   pref_service_->CommitPendingWrite();
+}
+
+void AccountTrackerService::ResetForTesting() {
+  PrefService* prefs = pref_service_;
+  pref_service_ = nullptr;
+  accounts_.clear();
+  Initialize(prefs, base::FilePath());
 }
 
 void AccountTrackerService::MigrateToGaiaId() {

@@ -89,6 +89,8 @@ ProfileOAuth2TokenService::ProfileOAuth2TokenService(
 }
 
 ProfileOAuth2TokenService::~ProfileOAuth2TokenService() {
+  token_manager_->CancelAllRequests();
+  GetDelegate()->Shutdown();
   RemoveObserver(this);
 }
 
@@ -255,11 +257,6 @@ void ProfileOAuth2TokenService::SetRefreshTokenAvailableFromSourceCallback(
 void ProfileOAuth2TokenService::SetRefreshTokenRevokedFromSourceCallback(
     RefreshTokenRevokedFromSourceCallback callback) {
   on_refresh_token_revoked_callback_ = callback;
-}
-
-void ProfileOAuth2TokenService::Shutdown() {
-  token_manager_->CancelAllRequests();
-  GetDelegate()->Shutdown();
 }
 
 void ProfileOAuth2TokenService::LoadCredentials(

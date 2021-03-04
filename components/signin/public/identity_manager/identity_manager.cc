@@ -90,13 +90,6 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
 }
 
 IdentityManager::~IdentityManager() {
-  account_fetcher_service_->Shutdown();
-  gaia_cookie_manager_service_->Shutdown();
-  token_service_->Shutdown();
-  account_tracker_service_->Shutdown();
-
-  token_service_->RemoveAccessTokenDiagnosticsObserver(this);
-
 #if defined(OS_ANDROID)
   if (java_identity_manager_)
     Java_IdentityManager_destroy(base::android::AttachCurrentThread(),
@@ -107,6 +100,18 @@ IdentityManager::~IdentityManager() {
 void IdentityManager::Shutdown() {
   for (auto& observer : diagnostics_observation_list_)
     observer.OnIdentityManagerShutdown();
+
+  // It is no longer safe to use the SigninClient beyond this point, everything
+  // depending on it must be destroyed.
+  token_service_->RemoveAccessTokenDiagnosticsObserver(this);
+  token_service_observation_.Reset();
+  primary_account_manager_observation_.Reset();
+
+  account_fetcher_service_.reset();
+  gaia_cookie_manager_service_.reset();
+  primary_account_manager_.reset();
+  token_service_.reset();
+  account_tracker_service_.reset();
 }
 
 void IdentityManager::AddObserver(Observer* observer) {

@@ -356,15 +356,8 @@ class AccountTrackerServiceTest : public testing::Test {
   }
 
   void DeleteAccountTracker() {
-    if (account_fetcher_) {
-      account_fetcher_->Shutdown();
-      account_fetcher_.reset();
-    }
-
-    if (account_tracker_) {
-      account_tracker_->Shutdown();
-      account_tracker_.reset();
-    }
+    account_fetcher_.reset();
+    account_tracker_.reset();
     // Allow residual |account_tracker_| posted tasks to run.
     task_environment_.RunUntilIdle();
   }

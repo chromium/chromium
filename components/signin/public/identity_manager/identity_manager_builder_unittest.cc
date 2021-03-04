@@ -126,10 +126,6 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_NE(init_params.ash_account_manager, nullptr);
 #endif
-
-  // Manually shut down AccountFetcherService to avoid DCHECK failure inside its
-  // destructor.
-  init_params.account_fetcher_service->Shutdown();
 }
 
 }  // namespace signin

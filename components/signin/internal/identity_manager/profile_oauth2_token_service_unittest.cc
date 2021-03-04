@@ -102,7 +102,9 @@ class ProfileOAuth2TokenServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Makes sure that all the clean up tasks are run.
+    oauth2_service_.reset();
+    // Makes sure that all the clean up tasks are run:
+    // OAuth2AccessTokenManager::Fetcher is destroyed using DeleteSoon().
     base::RunLoop().RunUntilIdle();
   }
 

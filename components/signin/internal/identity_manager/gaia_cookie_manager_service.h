@@ -223,7 +223,6 @@ class GaiaCookieManagerService
   ~GaiaCookieManagerService() override;
 
   void InitCookieListener();
-  void Shutdown();
 
   void AddAccountToCookie(
       const CoreAccountId& account_id,

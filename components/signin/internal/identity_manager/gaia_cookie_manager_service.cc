@@ -459,6 +459,7 @@ GaiaCookieManagerService::GaiaCookieManagerService(
 }
 
 GaiaCookieManagerService::~GaiaCookieManagerService() {
+  cookie_listener_receiver_.reset();
   CancelAll();
   DCHECK(requests_.empty());
 }
@@ -485,10 +486,6 @@ void GaiaCookieManagerService::InitCookieListener() {
         &GaiaCookieManagerService::OnCookieListenerConnectionError,
         base::Unretained(this)));
   }
-}
-
-void GaiaCookieManagerService::Shutdown() {
-  cookie_listener_receiver_.reset();
 }
 
 void GaiaCookieManagerService::SetAccountsInCookie(

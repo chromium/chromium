@@ -59,8 +59,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
                   AccountTrackerService* account_tracker_service,
                   std::unique_ptr<image_fetcher::ImageDecoder> image_decoder);
 
-  void Shutdown();
-
   // Indicates if all user information has been fetched. If the result is false,
   // there are still unfininshed fetchers.
   virtual bool IsAllUserInfoFetched() const;
@@ -147,7 +145,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   bool network_fetches_enabled_ = false;
   bool network_initialized_ = false;
   bool refresh_tokens_loaded_ = false;
-  bool shutdown_called_ = false;
   bool enable_account_removal_for_test_ = false;
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 

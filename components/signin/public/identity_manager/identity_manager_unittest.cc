@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -274,13 +275,13 @@ class IdentityManagerTest : public testing::Test {
     RecreateIdentityManager(
         AccountConsistencyMethod::kDisabled,
         PrimaryAccountManagerSetup::kWithAuthenticatedAccout);
-  }
-
-  ~IdentityManagerTest() override { signin_client_.Shutdown(); }
-
-  void SetUp() override {
     primary_account_id_ =
         identity_manager_->PickAccountIdForAccount(kTestGaiaId, kTestEmail);
+  }
+
+  ~IdentityManagerTest() override {
+    identity_manager_->Shutdown();
+    signin_client_.Shutdown();
   }
 
   IdentityManager* identity_manager() { return identity_manager_.get(); }
@@ -353,6 +354,8 @@ class IdentityManagerTest : public testing::Test {
     // trigger a DCHECK because there are still living observers.
     identity_manager_observer_.reset();
     identity_manager_diagnostics_observer_.reset();
+    if (identity_manager_)
+      identity_manager_->Shutdown();
     identity_manager_.reset();
 
     ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
@@ -451,11 +454,13 @@ class IdentityManagerTest : public testing::Test {
     init_params.primary_account_manager = std::move(primary_account_manager);
     init_params.token_service = std::move(token_service);
 
-    identity_manager_.reset(new IdentityManager(std::move(init_params)));
-    identity_manager_observer_.reset(
-        new TestIdentityManagerObserver(identity_manager_.get()));
-    identity_manager_diagnostics_observer_.reset(
-        new TestIdentityManagerDiagnosticsObserver(identity_manager_.get()));
+    identity_manager_ =
+        std::make_unique<IdentityManager>(std::move(init_params));
+    identity_manager_observer_ =
+        std::make_unique<TestIdentityManagerObserver>(identity_manager_.get());
+    identity_manager_diagnostics_observer_ =
+        std::make_unique<TestIdentityManagerDiagnosticsObserver>(
+            identity_manager_.get());
   }
 
   void SimulateAdditionOfAccountToCookieSuccess(GaiaAuthConsumer* consumer,

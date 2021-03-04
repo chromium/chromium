@@ -56,13 +56,9 @@ class PrimaryAccountManagerTest : public testing::Test,
   }
 
   ~PrimaryAccountManagerTest() override {
-    if (manager_) {
+    if (manager_)
       ShutDownManager();
-    }
-    token_service_.Shutdown();
     test_signin_client_.Shutdown();
-    account_tracker_.Shutdown();
-    account_fetcher_.Shutdown();
   }
 
   TestSigninClient* signin_client() { return &test_signin_client_; }
@@ -387,8 +383,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   dict->SetString("gaia", gaia_id);
   update->Append(std::move(dict));
 
-  account_tracker()->Shutdown();
-  account_tracker()->Initialize(prefs(), base::FilePath());
+  account_tracker()->ResetForTesting();
 
   client_prefs->SetString(prefs::kGoogleServicesAccountId, email);
 
@@ -421,8 +416,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   dict->SetString("gaia", gaia_id);
   update->Append(std::move(dict));
 
-  account_tracker()->Shutdown();
-  account_tracker()->Initialize(prefs(), base::FilePath());
+  account_tracker()->ResetForTesting();
 
   client_prefs->SetString(prefs::kGoogleServicesAccountId, gaia_id);
 
@@ -456,8 +450,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration_ForceAllAccounts) {
   dict->SetString("email", email);
   update->Append(std::move(dict));
 
-  account_tracker()->Shutdown();
-  account_tracker()->Initialize(prefs(), base::FilePath());
+  account_tracker()->ResetForTesting();
 
   client_prefs->SetString(prefs::kGoogleServicesAccountId, email);
 
