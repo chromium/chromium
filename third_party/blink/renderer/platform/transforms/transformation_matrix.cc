@@ -222,15 +222,12 @@ static inline void Adjoint(const TransformationMatrix::Matrix4& matrix,
 static bool Inverse(const TransformationMatrix::Matrix4& matrix,
                     TransformationMatrix::Matrix4& result) {
   // Calculate the 4x4 determinant
-  // If the determinant is zero,
-  // then the inverse matrix is not unique.
-  double det = Determinant4x4(matrix);
-
-  if (det == 0)
+  // If 1/determinant is not finite, then the inverse matrix is not unique.
+  const double inv_det = 1 / Determinant4x4(matrix);
+  if (!std::isfinite(inv_det))
     return false;
 
 #if defined(ARCH_CPU_ARM64)
-  double rdet = 1 / det;
   const double* mat = &(matrix[0][0]);
   double* pr = &(result[0][0]);
   asm volatile(
@@ -241,7 +238,7 @@ static bool Inverse(const TransformationMatrix::Matrix4& matrix,
       // m41, m42, m43, m44
       "ld1 {v16.2d - v19.2d}, [%[mat]], 64  \n\t"
       "ld1 {v20.2d - v23.2d}, [%[mat]]      \n\t"
-      "ins v30.d[0], %[rdet]         \n\t"
+      "ins v30.d[0], %[inv_det]         \n\t"
       // Determinant: right mat2x2
       "trn1 v0.2d, v17.2d, v21.2d    \n\t"
       "trn2 v1.2d, v19.2d, v23.2d    \n\t"
@@ -339,18 +336,17 @@ static bool Inverse(const TransformationMatrix::Matrix4& matrix,
       "fmul v27.2d, v27.2d, v30.d[0] \n\t"
       "st1 {v24.2d - v27.2d}, [%[pr]] \n\t"
       : [mat] "+r"(mat), [pr] "+r"(pr)
-      : [rdet] "r"(rdet)
+      : [inv_det] "r"(inv_det)
       : "memory", "v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v16", "v17",
         "v18", "v19", "v20", "v21", "v22", "v23", "v24", "v25", "v26", "v27",
         "v28", "v29", "v30");
 #elif defined(HAVE_MIPS_MSA_INTRINSICS)
-  const double rDet = 1 / det;
   const double* mat = &(matrix[0][0]);
   v2f64 mat0, mat1, mat2, mat3, mat4, mat5, mat6, mat7;
   v2f64 rev2, rev3, rev4, rev5, rev6, rev7;
   v2f64 tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
   v2f64 det0, det1, det2, tmp8, tmp9, tmp10, tmp11;
-  const v2f64 rdet = COPY_DOUBLE_TO_VECTOR(rDet);
+  const v2f64 rdet = COPY_DOUBLE_TO_VECTOR(inv_det);
   // mat0 mat1 --> m00 m01 m02 m03
   // mat2 mat3 --> m10 m11 m12 m13
   // mat4 mat5 --> m20 m21 m22 m23
@@ -488,12 +484,10 @@ static bool Inverse(const TransformationMatrix::Matrix4& matrix,
   // Calculate the adjoint matrix
   Adjoint(matrix, result);
 
-  double rdet = 1 / det;
-
   // Scale the adjoint matrix to get the inverse
   for (int i = 0; i < 4; i++)
     for (int j = 0; j < 4; j++)
-      result[i][j] = result[i][j] * rdet;
+      result[i][j] = result[i][j] * inv_det;
 #endif
   return true;
 }
@@ -1657,7 +1651,8 @@ void TransformationMatrix::MultVecMatrix(double x,
 }
 
 bool TransformationMatrix::IsInvertible() const {
-  return IsIdentityOrTranslation() || blink::Determinant4x4(matrix_) != 0;
+  return IsIdentityOrTranslation() ||
+         std::isfinite(1 / blink::Determinant4x4(matrix_));
 }
 
 TransformationMatrix TransformationMatrix::Inverse() const {

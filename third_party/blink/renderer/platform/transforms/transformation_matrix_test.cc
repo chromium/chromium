@@ -348,6 +348,12 @@ TEST(TransformationMatrix, IsInvertible) {
   EXPECT_TRUE(TransformationMatrix().Scale(1e-8).IsInvertible());
   EXPECT_TRUE(TransformationMatrix().Scale3d(1e-8, -1e-8, 1).IsInvertible());
   EXPECT_FALSE(TransformationMatrix().Scale(0).IsInvertible());
+  EXPECT_FALSE(TransformationMatrix()
+                   .Scale(std::numeric_limits<double>::quiet_NaN())
+                   .IsInvertible());
+  EXPECT_FALSE(TransformationMatrix()
+                   .Scale(std::numeric_limits<double>::min())
+                   .IsInvertible());
 }
 
 TEST(TransformationMatrixTest, Blend2dXFlipTest) {
