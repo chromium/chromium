@@ -2953,13 +2953,6 @@
         'test_suites': {
           'gtest_tests': 'lacros_tast_tests_amd64_generic',
         },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chromium.tests.lacros',
-            },
-          ],
-        },
         'os_type': 'chromeos'
       },
       'linux-annotator-rel': {
