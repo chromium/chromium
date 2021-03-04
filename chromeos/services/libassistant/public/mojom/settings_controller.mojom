@@ -16,6 +16,9 @@ interface SettingsController {
   // Passing in an empty array will restart Libassistant in signed-out mode.
   SetAuthenticationTokens(array<AuthenticationToken> tokens);
 
+  // Enables audio input pipeline in Libassistant.
+  SetListeningEnabled(bool value);
+
   // Sets the locale used on the local ChromeOS device.
   SetLocale(string locale);
 

@@ -293,10 +293,7 @@ void AssistantManagerServiceImpl::SetUser(
 }
 
 void AssistantManagerServiceImpl::EnableListening(bool enable) {
-  if (!assistant_manager())
-    return;
-  // TODO(jeroendh): add EnableListening() to ServiceController.
-  assistant_manager()->EnableListening(enable);
+  settings_controller().SetListeningEnabled(enable);
 }
 
 void AssistantManagerServiceImpl::EnableHotword(bool enable) {

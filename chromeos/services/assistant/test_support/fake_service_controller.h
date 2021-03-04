@@ -102,6 +102,7 @@ class FakeServiceController
   void SetAuthenticationTokens(
       std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr> tokens)
       override;
+  void SetListeningEnabled(bool value) override {}
   void SetLocale(const std::string& value) override {}
   void SetSpokenFeedbackEnabled(bool value) override {}
   void SetHotwordEnabled(bool value) override {}

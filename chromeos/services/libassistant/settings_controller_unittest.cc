@@ -58,6 +58,7 @@ class AssistantManagerMock : public assistant::FakeAssistantManager {
   ~AssistantManagerMock() override = default;
 
   // assistant::FakeAssistantManager implementation:
+  MOCK_METHOD(void, EnableListening, (bool value));
   MOCK_METHOD(void, SetAuthTokens, (const AuthTokens&));
 };
 
@@ -123,6 +124,7 @@ TEST_F(AssistantSettingsControllerTest,
        ShouldNotCrashIfLibassistantIsNotCreated) {
   controller().SetAuthenticationTokens({});
   controller().SetHotwordEnabled(true);
+  controller().SetListeningEnabled(true);
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
 }
@@ -134,6 +136,7 @@ TEST_F(AssistantSettingsControllerTest,
 
   controller().SetAuthenticationTokens({});
   controller().SetHotwordEnabled(true);
+  controller().SetListeningEnabled(true);
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
 }
@@ -316,6 +319,23 @@ TEST_F(AssistantSettingsControllerTest,
   EXPECT_CALL(assistant_manager_mock(), SetAuthTokens(expected));
 
   controller().SetAuthenticationTokens({});
+}
+
+TEST_F(AssistantSettingsControllerTest, ShouldSetListeningEnabled) {
+  CreateLibassistant();
+
+  EXPECT_CALL(assistant_manager_mock(), EnableListening(true));
+
+  controller().SetListeningEnabled(true);
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       ShouldSetListeningEnabledWhenLibassistantIsCreated) {
+  controller().SetListeningEnabled(false);
+
+  EXPECT_CALL(assistant_manager_mock(), EnableListening(false));
+
+  CreateLibassistant();
 }
 
 }  // namespace libassistant

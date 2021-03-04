@@ -127,6 +127,11 @@ void SettingsController::SetLocale(const std::string& value) {
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
 
+void SettingsController::SetListeningEnabled(bool value) {
+  listening_enabled_ = value;
+  UpdateListeningEnabled(listening_enabled_);
+}
+
 void SettingsController::SetSpokenFeedbackEnabled(bool value) {
   spoken_feedback_enabled_ = value;
   UpdateInternalOptions(locale_, spoken_feedback_enabled_);
@@ -156,6 +161,16 @@ void SettingsController::UpdateSettings(const std::string& settings,
             std::move(callback).Run(result);
           },
           std::move(callback))));
+}
+
+void SettingsController::UpdateListeningEnabled(
+    base::Optional<bool> listening_enabled) {
+  if (!assistant_manager_)
+    return;
+  if (!listening_enabled.has_value())
+    return;
+
+  assistant_manager_->EnableListening(listening_enabled.value());
 }
 
 void SettingsController::UpdateAuthenticationTokens(
@@ -208,6 +223,7 @@ void SettingsController::OnAssistantManagerCreated(
   // Libassistant to be started.
   UpdateAuthenticationTokens(authentication_tokens_);
   UpdateInternalOptions(locale_, spoken_feedback_enabled_);
+  UpdateListeningEnabled(listening_enabled_);
 }
 
 void SettingsController::OnAssistantManagerStarted(

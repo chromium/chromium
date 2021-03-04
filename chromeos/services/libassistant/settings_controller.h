@@ -28,6 +28,7 @@ class SettingsController : public AssistantManagerObserver,
   // mojom::SettingsController implementation:
   void SetAuthenticationTokens(
       std::vector<mojom::AuthenticationTokenPtr> tokens) override;
+  void SetListeningEnabled(bool value) override;
   void SetLocale(const std::string& value) override;
   void SetSpokenFeedbackEnabled(bool value) override;
   void SetHotwordEnabled(bool value) override;
@@ -55,6 +56,7 @@ class SettingsController : public AssistantManagerObserver,
 
   // The settings are being passed in to clearly document when Libassistant
   // must be updated.
+  void UpdateListeningEnabled(base::Optional<bool> listening_enabled);
   void UpdateAuthenticationTokens(
       const base::Optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens);
   void UpdateInternalOptions(const base::Optional<std::string>& locale,
@@ -75,6 +77,7 @@ class SettingsController : public AssistantManagerObserver,
 
   base::Optional<bool> hotword_enabled_;
   base::Optional<bool> spoken_feedback_enabled_;
+  base::Optional<bool> listening_enabled_;
   base::Optional<std::string> locale_;
   base::Optional<std::vector<mojom::AuthenticationTokenPtr>>
       authentication_tokens_;
