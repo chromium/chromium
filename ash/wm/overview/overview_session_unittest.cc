@@ -154,6 +154,32 @@ class TweenTester : public ui::LayerAnimationObserver {
   DISALLOW_COPY_AND_ASSIGN(TweenTester);
 };
 
+// Class which tracks if a given widget has been closed.
+class TestClosedWidgetObserver : public views::WidgetObserver {
+ public:
+  explicit TestClosedWidgetObserver(views::Widget* widget) {
+    DCHECK(widget);
+    observation_.Observe(widget);
+  }
+  TestClosedWidgetObserver(const TestClosedWidgetObserver&) = delete;
+  TestClosedWidgetObserver& operator=(const TestClosedWidgetObserver&) = delete;
+  ~TestClosedWidgetObserver() override = default;
+
+  // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override {
+    DCHECK(!widget_closed_);
+    widget_closed_ = true;
+  }
+
+  bool widget_closed() const { return widget_closed_; }
+
+ private:
+  bool widget_closed_ = false;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
+
 }  // namespace
 
 class OverviewSessionTest : public AshTestBase {
@@ -3229,6 +3255,24 @@ TEST_F(OverviewSessionTest, RemoveTransientNoCrash) {
   ToggleOverview();
   wm::RemoveTransientChild(parent.get(), child.get());
   ToggleOverview();
+}
+
+// Tests that closing the overview item closes the entire transient tree.
+TEST_F(OverviewSessionTest, ClosingTransientTree) {
+  auto widget = CreateTestWidget();
+  aura::Window* window = widget->GetNativeWindow();
+  auto child_widget = CreateTestWidget();
+  ::wm::AddTransientChild(window, child_widget->GetNativeWindow());
+
+  TestClosedWidgetObserver widget_observer(widget.get());
+  TestClosedWidgetObserver child_widget_observer(child_widget.get());
+
+  ToggleOverview();
+  OverviewItem* item = GetOverviewItemForWindow(window);
+  item->CloseWindow();
+
+  EXPECT_TRUE(widget_observer.widget_closed());
+  EXPECT_TRUE(child_widget_observer.widget_closed());
 }
 
 class TabletModeOverviewSessionTest : public OverviewSessionTest {
