@@ -512,7 +512,7 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
 
   // Only check these errors cases for foreground receivers.
   if (state == ReceiveSurfaceState::kForeground) {
-    if (is_sending_files_) {
+    if (is_scanning_ || is_sending_files_) {
       UnregisterReceiveSurface(transfer_callback);
       NS_LOG(VERBOSE)
           << __func__

@@ -3173,6 +3173,22 @@ TEST_F(NearbySharingServiceImplTest, RegisterReceiveSurfaceWhileSending) {
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
 }
 
+TEST_F(NearbySharingServiceImplTest, RegisterReceiveSurfaceWhileDiscovering) {
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kOk,
+      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                    SendSurfaceState::kForeground));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+
+  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
+      &transfer_callback,
+      NearbySharingService::ReceiveSurfaceState::kForeground);
+  EXPECT_EQ(result,
+            NearbySharingService::StatusCodes::kTransferAlreadyInProgress);
+}
+
 TEST_F(NearbySharingServiceImplTest, SendAttachments_WithoutAttachments) {
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
