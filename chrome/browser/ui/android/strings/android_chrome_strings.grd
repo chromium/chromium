@@ -1234,7 +1234,7 @@ Your Google account may have other forms of browsing history like searches and a
         What languages do you read?
       </message>
       <message name="IDS_LANGUAGES_SPLIT_DOWNLOADING" desc="Text to display next to a language when it is being downloaded to use as Chrome's UI. [CHAR-LIMIT=32]">
-        Downloading <ph name="LANG">%1$s<ex>Hindi</ex></ph>…
+        Downloading…
       </message>
       <message name="IDS_LANGUAGES_SPLIT_READY" desc="Text to display when a language pack has been downloaded. The user needs to restart Chrome to use the new language as Chrome's UI.">
         Language ready, restart <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>
