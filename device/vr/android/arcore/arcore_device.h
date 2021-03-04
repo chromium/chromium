@@ -18,9 +18,14 @@
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/vr_device.h"
 #include "device/vr/vr_device_base.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
+
+namespace ui {
+class WindowAndroid;
+}  // namespace ui
 
 namespace device {
 
@@ -54,6 +59,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
 
  private:
   void OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
+                             gpu::SurfaceHandle surface_handle,
+                             ui::WindowAndroid* root_window,
                              display::Display::Rotation rotation,
                              const gfx::Size& frame_size);
   void OnDrawingSurfaceTouch(bool is_primary,
@@ -96,6 +103,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
   // Tells the GL thread to initialize a GL context and other resources,
   // using the supplied window as a drawing surface.
   void RequestArCoreGlInitialization(gfx::AcceleratedWidget window,
+                                     gpu::SurfaceHandle surface_handle,
+                                     ui::WindowAndroid* root_window,
                                      int rotation,
                                      const gfx::Size& size);
 

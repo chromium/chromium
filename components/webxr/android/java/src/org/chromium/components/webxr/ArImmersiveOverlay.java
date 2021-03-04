@@ -487,7 +487,8 @@ public class ArImmersiveOverlay
         if (DEBUG_LOGS) {
             Log.i(TAG, "surfaceChanged size=" + width + "x" + height + " rotation=" + rotation);
         }
-        mArCoreJavaUtils.onDrawingSurfaceReady(holder.getSurface(), rotation, width, height);
+        mArCoreJavaUtils.onDrawingSurfaceReady(holder.getSurface(),
+                mWebContents.getTopLevelNativeWindow(), rotation, width, height);
         mSurfaceReportedReady = true;
 
         // Show the toast with instructions how to exit fullscreen mode now if necessary.

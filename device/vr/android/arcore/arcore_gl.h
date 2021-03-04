@@ -20,6 +20,7 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/util/fps_meter.h"
 #include "device/vr/util/sliding_average.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -41,6 +42,10 @@ namespace gl {
 class GLContext;
 class GLSurface;
 }  // namespace gl
+
+namespace ui {
+class WindowAndroid;
+}  // namespace ui
 
 namespace device {
 
@@ -96,6 +101,8 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
       ArCoreSessionUtils* session_utils,
       ArCoreFactory* arcore_factory,
       gfx::AcceleratedWidget drawing_widget,
+      gpu::SurfaceHandle surface_handle,
+      ui::WindowAndroid* root_window,
       const gfx::Size& frame_size,
       display::Display::Rotation display_rotation,
       const std::unordered_set<device::mojom::XRSessionFeature>&

@@ -50,6 +50,7 @@ component("arcore") {
     "//device/vr:vr_util",
     "//device/vr/android:vr_android",
     "//mojo/public/cpp/bindings",
+    "//ui/android",
     "//ui/gfx",
     "//ui/gl/init",
   ]

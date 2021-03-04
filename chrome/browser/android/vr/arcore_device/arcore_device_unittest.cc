@@ -98,7 +98,8 @@ class StubArCoreSessionUtils : public ArCoreSessionUtils {
     // drawing surface. It's not actually a surface, hence the nullptr
     // instead of a WindowAndroid.
     std::move(ready_callback)
-        .Run(nullptr, display::Display::Rotation::ROTATE_0, {1024, 512});
+        .Run(nullptr, gpu::kNullSurfaceHandle, nullptr,
+             display::Display::Rotation::ROTATE_0, {1024, 512});
   }
   void EndSession() override {}
 

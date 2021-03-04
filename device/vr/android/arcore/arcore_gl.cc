@@ -132,6 +132,8 @@ void ArCoreGl::Initialize(
     ArCoreSessionUtils* session_utils,
     ArCoreFactory* arcore_factory,
     gfx::AcceleratedWidget drawing_widget,
+    gpu::SurfaceHandle surface_handle,
+    ui::WindowAndroid* root_window,
     const gfx::Size& frame_size,
     display::Display::Rotation display_rotation,
     const std::unordered_set<device::mojom::XRSessionFeature>&

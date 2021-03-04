@@ -1,4 +1,5 @@
 include_rules = [
   "+third_party/arcore-android-sdk/src",
   "+third_party/skia/include",
+  "+ui/android/window_android.h",
   ]

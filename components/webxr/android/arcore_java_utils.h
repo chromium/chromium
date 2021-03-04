@@ -39,6 +39,7 @@ class ArCoreJavaUtils : public device::ArCoreSessionUtils {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& surface,
+      const base::android::JavaParamRef<jobject>& root_window,
       int rotation,
       int width,
       int height);

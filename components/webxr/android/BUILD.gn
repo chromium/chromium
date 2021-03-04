@@ -52,6 +52,7 @@ source_set("android") {
     deps += [
       ":ar_jni_headers",
       "//device/vr/android/arcore:arcore",
+      "//ui/android",
     ]
   }
 

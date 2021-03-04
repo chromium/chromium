@@ -168,6 +168,8 @@ void ArCoreDevice::OnGlThreadReady(int render_process_id,
 }
 
 void ArCoreDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
+                                         gpu::SurfaceHandle surface_handle,
+                                         ui::WindowAndroid* root_window,
                                          display::Display::Rotation rotation,
                                          const gfx::Size& frame_size) {
   DVLOG(1) << __func__ << ": size=" << frame_size.width() << "x"
@@ -177,7 +179,8 @@ void ArCoreDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
   auto display_info = CreateVRDisplayInfo(frame_size);
   SetVRDisplayInfo(std::move(display_info));
 
-  RequestArCoreGlInitialization(window, rotation, frame_size);
+  RequestArCoreGlInitialization(window, surface_handle, root_window, rotation,
+                                frame_size);
 }
 
 void ArCoreDevice::OnDrawingSurfaceTouch(bool is_primary,
@@ -328,6 +331,8 @@ bool ArCoreDevice::IsOnMainThread() {
 
 void ArCoreDevice::RequestArCoreGlInitialization(
     gfx::AcceleratedWidget drawing_widget,
+    gpu::SurfaceHandle surface_handle,
+    ui::WindowAndroid* root_window,
     int drawing_rotation,
     const gfx::Size& frame_size) {
   DVLOG(1) << __func__;
@@ -349,8 +354,8 @@ void ArCoreDevice::RequestArCoreGlInitialization(
         &ArCoreGl::Initialize,
         session_state_->arcore_gl_thread_->GetArCoreGl()->GetWeakPtr(),
         arcore_session_utils_.get(), arcore_factory_.get(), drawing_widget,
-        frame_size, rotation, session_state_->required_features_,
-        session_state_->optional_features_,
+        surface_handle, root_window, frame_size, rotation,
+        session_state_->required_features_, session_state_->optional_features_,
         std::move(session_state_->tracked_images_),
         std::move(session_state_->depth_options_),
         CreateMainThreadCallback(base::BindOnce(
