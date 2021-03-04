@@ -65,22 +65,38 @@ sk_sp<SkImage> VideoFrameHandle::sk_image() {
 
 void VideoFrameHandle::Invalidate() {
   WTF::MutexLocker locker(mutex_);
-  frame_.reset();
-  sk_image_.reset();
-  close_auditor_.reset();
+  InvalidateLocked();
+}
+
+void VideoFrameHandle::SetCloseOnClone() {
+  WTF::MutexLocker locker(mutex_);
+  close_on_clone_ = true;
 }
 
 scoped_refptr<VideoFrameHandle> VideoFrameHandle::Clone() {
   WTF::MutexLocker locker(mutex_);
-  return frame_ ? base::MakeRefCounted<VideoFrameHandle>(frame_, sk_image_,
-                                                         close_auditor_)
-                : nullptr;
+  auto cloned_handle = frame_ ? base::MakeRefCounted<VideoFrameHandle>(
+                                    frame_, sk_image_, close_auditor_)
+                              : nullptr;
+
+  if (close_on_clone_)
+    InvalidateLocked();
+
+  return cloned_handle;
 }
 
 scoped_refptr<VideoFrameHandle> VideoFrameHandle::CloneForInternalUse() {
   WTF::MutexLocker locker(mutex_);
   return frame_ ? base::MakeRefCounted<VideoFrameHandle>(frame_, sk_image_)
                 : nullptr;
+}
+
+void VideoFrameHandle::InvalidateLocked() {
+  mutex_.AssertAcquired();
+
+  frame_.reset();
+  sk_image_.reset();
+  close_auditor_.reset();
 }
 
 }  // namespace blink

@@ -58,6 +58,12 @@ class MODULES_EXPORT VideoFrameHandle
   // blink::VideoFrames and blink::Planes that hold a reference to |this|.
   void Invalidate();
 
+  // Temporary workaround for crbug.com/1182497.
+  // Overrides the next call to Clone() to return |this| without adding a new
+  // reference. This prevents cloning handles when internally posting frames to
+  // a transferred stream, which cannot be cleared.
+  void SetCloseOnClone();
+
   // Clones this VideoFrameHandle into a new VideoFrameHandle object.
   scoped_refptr<VideoFrameHandle> Clone();
 
@@ -68,6 +74,13 @@ class MODULES_EXPORT VideoFrameHandle
  private:
   friend class WTF::ThreadSafeRefCounted<VideoFrameHandle>;
   ~VideoFrameHandle();
+
+  // |mutex_| must be held before calling into this.
+  void InvalidateLocked();
+
+  // Flag that prevents the creation of a new handle during the next Clone()
+  // call. Used as a temporary workaround for crbug.com/1182497.
+  bool close_on_clone_ = false;
 
   WTF::Mutex mutex_;
   sk_sp<SkImage> sk_image_;

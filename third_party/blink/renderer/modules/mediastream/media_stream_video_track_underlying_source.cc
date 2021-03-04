@@ -19,6 +19,38 @@
 
 namespace blink {
 
+// Temporary workaround for crbug.com/1182497.
+// Doesn't perform any stream optimization, but instead
+// lets MediaStreamVideoTrackUnderlyingSource know that
+// its stream endpoint has been transferred, and that it should mark its video
+// frames for closure when they are cloned().
+class StreamTransferNotifier final
+    : public ReadableStreamTransferringOptimizer {
+  USING_FAST_MALLOC(StreamTransferNotifier);
+  using OptimizerCallback = CrossThreadOnceClosure;
+
+ public:
+  StreamTransferNotifier(
+      scoped_refptr<base::SingleThreadTaskRunner> original_runner,
+      OptimizerCallback callback)
+      : original_runner_(std::move(original_runner)),
+        callback_(std::move(callback)) {}
+
+  UnderlyingSourceBase* PerformInProcessOptimization(
+      ScriptState* script_state) override {
+    // Send a message back to MediaStreamVideoTrackUnderlyingSource.
+    PostCrossThreadTask(*original_runner_, FROM_HERE, std::move(callback_));
+
+    // Return nullptr will mean that no optimization was performed, and streams
+    // will post internally.
+    return nullptr;
+  }
+
+ private:
+  scoped_refptr<base::SingleThreadTaskRunner> original_runner_;
+  OptimizerCallback callback_;
+};
+
 MediaStreamVideoTrackUnderlyingSource::MediaStreamVideoTrackUnderlyingSource(
     ScriptState* script_state,
     MediaStreamComponent* track,
@@ -94,6 +126,19 @@ void MediaStreamVideoTrackUnderlyingSource::Close() {
   queue_.clear();
 }
 
+std::unique_ptr<ReadableStreamTransferringOptimizer>
+MediaStreamVideoTrackUnderlyingSource::GetStreamTransferOptimizer() {
+  auto stream_transferred_cb = [](MediaStreamVideoTrackUnderlyingSource* self) {
+    if (self)
+      self->stream_was_transferred_ = true;
+  };
+
+  return std::make_unique<StreamTransferNotifier>(
+      main_task_runner_,
+      CrossThreadBindOnce(stream_transferred_cb,
+                          WrapCrossThreadWeakPersistent(this)));
+}
+
 void MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack(
     scoped_refptr<media::VideoFrame> media_frame,
     std::vector<scoped_refptr<media::VideoFrame>> /*scaled_media_frames*/,
@@ -143,6 +188,10 @@ void MediaStreamVideoTrackUnderlyingSource::SendFrameToStream(
 
   VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
       std::move(media_frame), GetExecutionContext());
+
+  if (stream_was_transferred_)
+    video_frame->handle()->SetCloseOnClone();
+
   Controller()->Enqueue(video_frame);
   is_pending_pull_ = false;
 }
