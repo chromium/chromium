@@ -74,4 +74,28 @@ suite('NetworkSummaryItem', function() {
     Polymer.dom.flush();
     assertTrue(doesElementExist('#deviceEnabledButton'));
   });
+
+  test('SIM info shown when locked but enabled, flag off', function() {
+    const mojom = chromeos.networkConfig.mojom;
+
+    netSummaryItem.setProperties({
+      isUpdatedCellularUiEnabled_: false,
+      deviceState: {
+        deviceState: mojom.DeviceStateType.kEnabled,
+        type: mojom.NetworkType.kCellular,
+        simAbsent: false,
+        simLockStatus: {lockType: 'sim-pin'},
+      },
+      activeNetworkState: {
+        connectionState: mojom.ConnectionStateType.kNotConnected,
+        guid: '',
+        type: mojom.NetworkType.kCellular,
+        typeState: {cellular: {networkTechnology: ''}}
+      },
+    });
+
+    Polymer.dom.flush();
+    assertTrue(doesElementExist('network-siminfo'));
+    assertFalse(doesElementExist('.subpage-arrow'));
+  });
 });

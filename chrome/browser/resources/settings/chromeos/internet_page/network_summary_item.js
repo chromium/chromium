@@ -217,12 +217,12 @@ Polymer({
   },
 
   /**
-   * @param {!OncMojo.DeviceStateProperties} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @return {boolean}
    * @private
    */
   simLockedOrAbsent_(deviceState) {
-    if (this.deviceIsEnabled_(deviceState)) {
+    if (!deviceState) {
       return false;
     }
     if (deviceState.simAbsent) {
@@ -410,22 +410,27 @@ Polymer({
     }
     const type = deviceState.type;
 
-    if (type === mojom.NetworkType.kCellular &&
-        this.isUpdatedCellularUiEnabled_) {
-      // When network type is Cellular and |updatedCellularActivationUi| is
-      // enabled, always show "Mobile data" subpage, when eSim is available
-      // or multiple pSimSlots are available
-      const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
-      if (eSimSlots > 0 || pSimSlots > 1) {
-        return true;
-      }
-    }
-
     if (type === mojom.NetworkType.kTether ||
         (type === mojom.NetworkType.kCellular && this.tetherDeviceState)) {
       // The "Mobile data" subpage should always be shown if Tether is
       // available, even if there are currently no associated networks.
       return true;
+    }
+
+    if (type === mojom.NetworkType.kCellular) {
+      if (this.isUpdatedCellularUiEnabled_) {
+        // When network type is Cellular and |updatedCellularActivationUi| is
+        // enabled, always show "Mobile data" subpage, when eSim is available
+        // or multiple pSimSlots are available
+        const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
+        if (eSimSlots > 0 || pSimSlots > 1) {
+          return true;
+        }
+      } else if (this.simLockedOrAbsent_(deviceState)) {
+        // No subpage should be shown if the SIM is locked/absent. The user
+        // should unlock their SIM before a subpage is possible.
+        return false;
+      }
     }
 
     if (type === mojom.NetworkType.kVPN) {
@@ -505,6 +510,11 @@ Polymer({
    * @private
    */
   showArrowButton_(activeNetworkState, deviceState, networkStateList) {
+    // If SIM info is shown on the right side of the item, no arrow should be
+    // shown.
+    if (this.showSimInfo_(deviceState)) {
+      return false;
+    }
     if (!this.deviceIsEnabled_(deviceState)) {
       return false;
     }
