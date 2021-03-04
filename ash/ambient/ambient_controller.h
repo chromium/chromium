@@ -221,6 +221,10 @@ class ASH_EXPORT AmbientController
   // going to suspend.
   bool is_suspend_imminent_ = false;
 
+  // Set to the off value in |ScreenIdleState| when ScreenIdleState() is
+  // called. Used to prevent Ambient mode starting after screen is off.
+  bool is_screen_off_ = false;
+
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AmbientController);
 };

@@ -720,6 +720,47 @@ TEST_F(AmbientControllerTest,
 
   // Should dismiss ambient mode screen.
   SetScreenIdleStateAndWait(/*dimmed=*/true, /*off=*/true);
+  FastForwardTiny();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  // Screen back on again, should not have ambient screen, but still has lock
+  // screen.
+  SetScreenIdleStateAndWait(/*dimmed=*/false, /*off=*/false);
+  EXPECT_TRUE(IsLocked());
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest,
+       ShouldHideAmbientScreenWhenDisplayIsOffAndNotStartWhenLockScreen) {
+  GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
+  SetPowerStateDischarging();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  // Should not lock the device and enter ambient mode when the screen is
+  // dimmed.
+  SetScreenIdleStateAndWait(/*dimmed=*/true, /*off=*/false);
+  EXPECT_FALSE(IsLocked());
+
+  FastForwardTiny();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  // Should not lock the device because the device is not charging.
+  FastForwardToBackgroundLockScreenTimeout();
+  EXPECT_FALSE(IsLocked());
+
+  // Should dismiss ambient mode screen.
+  SetScreenIdleStateAndWait(/*dimmed=*/true, /*off=*/true);
+  FastForwardTiny();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  // Lock screen will not start ambient mode.
+  LockScreen();
+  EXPECT_TRUE(IsLocked());
+
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
   EXPECT_FALSE(ambient_controller()->IsShown());

@@ -362,6 +362,8 @@ void AmbientController::ScreenIdleStateChanged(
   if (!IsAmbientModeEnabled())
     return;
 
+  is_screen_off_ = idle_state.off();
+
   if (idle_state.off()) {
     DVLOG(1) << "Screen is off, close ambient mode.";
 
@@ -469,6 +471,11 @@ void AmbientController::ShowHiddenUi() {
 
   if (is_suspend_imminent_) {
     VLOG(1) << "Do not start hidden UI when suspend imminent";
+    return;
+  }
+
+  if (is_screen_off_) {
+    VLOG(1) << "Do not start hidden UI when screen is off";
     return;
   }
 
