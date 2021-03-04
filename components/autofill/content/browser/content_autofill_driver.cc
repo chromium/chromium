@@ -495,6 +495,9 @@ void ContentAutofillDriver::ShowOfferNotificationIfApplicable(
   }
 
   AutofillOfferManager* offer_manager = autofill_manager_->offer_manager();
+  // This happens in the Incognito mode.
+  if (!offer_manager)
+    return;
 
   GURL url = autofill_manager_->client()->GetLastCommittedURL();
   if (!offer_manager->IsUrlEligible(url))
