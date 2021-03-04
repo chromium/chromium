@@ -190,6 +190,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_gtests',
+          'isolated_scripts': 'chromeos_remote_device_isolated_tests',
         },
         'swarming': {
           'dimension_sets': [
