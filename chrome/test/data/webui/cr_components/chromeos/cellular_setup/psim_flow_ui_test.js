@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/strings.m.js';
 // #import 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
 
-// #import {PSimUIState} from 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
+// #import {PSimUIState, PSimPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
 // #import {setCellularSetupRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
@@ -33,15 +33,13 @@ suite('CrComponentsPsimFlowUiTest', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  suiteSetup(function() {
+  setup(function() {
     cellularCarrierHandler =
         new cellular_setup.FakeCarrierPortalHandlerRemote();
     cellularSetupRemote =
         new cellular_setup.FakeCellularSetupRemote(cellularCarrierHandler);
     cellular_setup.setCellularSetupRemoteForTesting(cellularSetupRemote);
-  });
 
-  setup(function() {
     pSimPage = document.createElement('psim-flow-ui');
     pSimPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
     pSimPage.initSubflow();
@@ -49,30 +47,25 @@ suite('CrComponentsPsimFlowUiTest', function() {
     Polymer.dom.flush();
   });
 
-  test('Base test', function() {
-    const ironPage = pSimPage.$$('iron-pages');
-    assertTrue(!!ironPage);
-  });
+  test('Show provisioning page on activation finished', async () => {
+    cellularActivationDelegate =
+        cellularSetupRemote.getLastActivationDelegate();
 
-  test('forward navigation and finish cellular setup test', async function() {
-    pSimPage.state_ = cellularSetup.PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
-    Polymer.dom.flush();
-    pSimPage.navigateForward();
-    assertTrue(
-        pSimPage.state_ ===
-        cellularSetup.PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH);
+    let provisioningPage = pSimPage.$$('#provisioningPage');
+    assertTrue(!!provisioningPage);
+    assertFalse(
+        pSimPage.selectedPSimPageName_ ===
+        cellularSetup.PSimPageName.provisioningPage);
 
-    assertEquals(
-        cellularSetup.ButtonState.ENABLED, pSimPage.buttonState.forward);
-    assertEquals(pSimPage.forwardButtonLabel, 'Done');
-    let exitCellularSetupEventFired = false;
-    pSimPage.addEventListener('exit-cellular-setup', () => {
-      exitCellularSetupEventFired = true;
-    });
-    pSimPage.navigateForward();
+    cellularActivationDelegate.onActivationFinished(
+        chromeos.cellularSetup.mojom.ActivationResult
+            .kSuccessfullyStartedActivation);
 
     await flushAsync();
-    assertTrue(exitCellularSetupEventFired);
+
+    assertTrue(
+        pSimPage.selectedPSimPageName_ ===
+        cellularSetup.PSimPageName.PROVISIONING);
   });
 
   test('Carrier title on provisioning page', async () => {
@@ -95,5 +88,26 @@ suite('CrComponentsPsimFlowUiTest', function() {
     await flushAsync();
 
     assertTrue(pSimPage.nameOfCarrierPendingSetup === 'Verizon wireless');
+  });
+
+  test('forward navigation and finish cellular setup test', async function() {
+    pSimPage.state_ = cellularSetup.PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
+    Polymer.dom.flush();
+    pSimPage.navigateForward();
+    assertTrue(
+        pSimPage.state_ ===
+        cellularSetup.PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH);
+
+    assertEquals(
+        cellularSetup.ButtonState.ENABLED, pSimPage.buttonState.forward);
+    assertEquals(pSimPage.forwardButtonLabel, 'Done');
+    let exitCellularSetupEventFired = false;
+    pSimPage.addEventListener('exit-cellular-setup', () => {
+      exitCellularSetupEventFired = true;
+    });
+    pSimPage.navigateForward();
+
+    await flushAsync();
+    assertTrue(exitCellularSetupEventFired);
   });
 });

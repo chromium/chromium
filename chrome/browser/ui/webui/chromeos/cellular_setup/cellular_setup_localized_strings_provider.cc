@@ -52,7 +52,7 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"pSimFlowSetupMessage",
      IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_PSIM_MESSAGE},
     {"finalPageTitle", IDS_CELLULAR_SETUP_FINAL_PAGE_TITLE},
-    {"finalPageMessage", IDS_CELLULAR_SETUP_FINAL_PAGE_MESSAGE},
+    {"pSimfinalPageMessage", IDS_CELLULAR_SETUP_PSIM_FINAL_PAGE_MESSAGE},
     {"finalPageErrorTitle", IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_TITLE},
     {"finalPageErrorMessage", IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_MESSAGE},
     {"eSimFinalPageMessage", IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_MESSAGE},

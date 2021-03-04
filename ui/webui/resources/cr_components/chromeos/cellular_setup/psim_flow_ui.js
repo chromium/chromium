@@ -261,10 +261,10 @@ cr.define('cellularSetup', function() {
       const ActivationResult = chromeos.cellularSetup.mojom.ActivationResult;
       switch (result) {
         case ActivationResult.kSuccessfullyStartedActivation:
-          this.state_ = PSimUIState.ALREADY_ACTIVATED;
+          this.state_ = PSimUIState.ACTIVATION_SUCCESS;
           break;
         case ActivationResult.kAlreadyActivated:
-          this.state_ = PSimUIState.ACTIVATION_SUCCESS;
+          this.state_ = PSimUIState.ALREADY_ACTIVATED;
           break;
         case ActivationResult.kFailedToActivate:
           this.state_ = PSimUIState.ACTIVATION_FAILURE;

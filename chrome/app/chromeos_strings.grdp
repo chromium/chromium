@@ -291,8 +291,8 @@
   <message name="IDS_CELLULAR_SETUP_FINAL_PAGE_TITLE" desc="Title for the final success screen of cellular setup that tells the user that setup is completed but service is being activated">
     Mobile data being activated
   </message>
-  <message name="IDS_CELLULAR_SETUP_FINAL_PAGE_MESSAGE" desc="Message displayed under title in final success screen of cellular setup that tells user that service may take a while to activate.">
-    It might take up to 15 minutes to complete mobile data activation.
+  <message name="IDS_CELLULAR_SETUP_PSIM_FINAL_PAGE_MESSAGE" desc="Message displayed under title in final success screen of physical SIM cellular setup that tells user that service may take a while to activate.">
+    Network has been added successfully. It may take several minutes for your cellular network to become active.
   </message>
   <message name="IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_TITLE" desc="Title for the final screen of cellular setup when ChromeOS encountered an error completing activation">
     Could not activate cellular device
