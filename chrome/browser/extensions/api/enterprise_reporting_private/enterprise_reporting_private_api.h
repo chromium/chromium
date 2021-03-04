@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
-#include "chrome/browser/extensions/api/enterprise_reporting_private/context_info_fetcher.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "extensions/browser/extension_function.h"
 
@@ -156,11 +156,9 @@ class EnterpriseReportingPrivateGetContextInfoFunction
   ExtensionFunction::ResponseAction Run() override;
 
   // Callback once the context data is retrieved.
-  void OnContextInfoRetrieved(
-      api::enterprise_reporting_private::ContextInfo context_info);
+  void OnContextInfoRetrieved(enterprise_signals::ContextInfo context_info);
 
-  std::unique_ptr<enterprise_reporting::ContextInfoFetcher>
-      context_info_fetcher_;
+  std::unique_ptr<enterprise_signals::ContextInfoFetcher> context_info_fetcher_;
 };
 
 }  // namespace extensions

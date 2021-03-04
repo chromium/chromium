@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/enterprise_reporting_private/context_info_fetcher.h"
+#include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 
 #include <memory>
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 
-#include "base/callback_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -15,8 +13,11 @@
 #include "components/version_info/version_info.h"
 #include "device_management_backend.pb.h"
 
-namespace extensions {
-namespace enterprise_reporting {
+namespace enterprise_signals {
+
+ContextInfo::ContextInfo() = default;
+ContextInfo::ContextInfo(ContextInfo&&) = default;
+ContextInfo::~ContextInfo() = default;
 
 ContextInfoFetcher::ContextInfoFetcher(
     content::BrowserContext* browser_context,
@@ -39,7 +40,7 @@ std::unique_ptr<ContextInfoFetcher> ContextInfoFetcher::CreateInstance(
 }
 
 void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
-  api::enterprise_reporting_private::ContextInfo info;
+  ContextInfo info;
 
   info.browser_affiliation_ids = GetBrowserAffiliationIDs();
   info.profile_affiliation_ids = GetProfileAffiliationIDs();
@@ -91,16 +92,9 @@ std::vector<std::string> ContextInfoFetcher::GetAnalysisConnectorProviders(
   return connectors_service_->GetAnalysisServiceProviderNames(connector);
 }
 
-api::enterprise_reporting_private::RealtimeUrlCheckMode
+safe_browsing::EnterpriseRealTimeUrlCheckMode
 ContextInfoFetcher::GetRealtimeUrlCheckMode() {
-  switch (connectors_service_->GetAppliedRealTimeUrlCheck()) {
-    case safe_browsing::REAL_TIME_CHECK_DISABLED:
-      return api::enterprise_reporting_private::
-          REALTIME_URL_CHECK_MODE_DISABLED;
-    case safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED:
-      return api::enterprise_reporting_private::
-          REALTIME_URL_CHECK_MODE_ENABLED_MAIN_FRAME;
-  }
+  return connectors_service_->GetAppliedRealTimeUrlCheck();
 }
 
 std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
@@ -108,5 +102,4 @@ std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
       enterprise_connectors::ReportingConnector::SECURITY_EVENT);
 }
 
-}  // namespace enterprise_reporting
-}  // namespace extensions
+}  // namespace enterprise_signals

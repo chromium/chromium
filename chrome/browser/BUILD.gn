@@ -5270,6 +5270,8 @@ static_library("browser") {
       "enterprise/remote_commands/cbcm_remote_commands_factory.h",
       "enterprise/remote_commands/clear_browsing_data_job.cc",
       "enterprise/remote_commands/clear_browsing_data_job.h",
+      "enterprise/signals/context_info_fetcher.cc",
+      "enterprise/signals/context_info_fetcher.h",
       "first_run/upgrade_util.cc",
       "first_run/upgrade_util.h",
       "lifetime/switch_utils.cc",

@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
-#define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_SIGNALS_CONTEXT_INFO_FETCHER_H_
+#define CHROME_BROWSER_ENTERPRISE_SIGNALS_CONTEXT_INFO_FETCHER_H_
+
+#include <string>
+#include <vector>
 
 #include "base/callback_forward.h"
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace content {
 class BrowserContext;
@@ -17,16 +20,31 @@ enum AnalysisConnector : int;
 class ConnectorsService;
 }  // namespace enterprise_connectors
 
-namespace extensions {
-namespace enterprise_reporting {
+namespace enterprise_signals {
+
+struct ContextInfo {
+  ContextInfo();
+  ContextInfo(ContextInfo&&);
+  ContextInfo(const ContextInfo&) = delete;
+  ContextInfo& operator=(const ContextInfo&) = delete;
+  ~ContextInfo();
+
+  std::vector<std::string> browser_affiliation_ids;
+  std::vector<std::string> profile_affiliation_ids;
+  std::vector<std::string> on_file_attached_providers;
+  std::vector<std::string> on_file_downloaded_providers;
+  std::vector<std::string> on_bulk_data_entry_providers;
+  std::vector<std::string> on_security_event_providers;
+  safe_browsing::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
+  std::string browser_version;
+};
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
 // function that fetches context information on Chrome. Each supported platform
 // has its own subclass implementation.
 class ContextInfoFetcher {
  public:
-  using ContextInfoCallback =
-      base::OnceCallback<void(api::enterprise_reporting_private::ContextInfo)>;
+  using ContextInfoCallback = base::OnceCallback<void(ContextInfo)>;
   ContextInfoFetcher(
       content::BrowserContext* browser_context,
       enterprise_connectors::ConnectorsService* connectors_service);
@@ -58,8 +76,7 @@ class ContextInfoFetcher {
   std::vector<std::string> GetAnalysisConnectorProviders(
       enterprise_connectors::AnalysisConnector connector);
 
-  api::enterprise_reporting_private::RealtimeUrlCheckMode
-  GetRealtimeUrlCheckMode();
+  safe_browsing::EnterpriseRealTimeUrlCheckMode GetRealtimeUrlCheckMode();
 
   std::vector<std::string> GetOnSecurityEventProviders();
 
@@ -69,7 +86,6 @@ class ContextInfoFetcher {
   enterprise_connectors::ConnectorsService* connectors_service_;
 };
 
-}  // namespace enterprise_reporting
-}  // namespace extensions
+}  // namespace enterprise_signals
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_SIGNALS_CONTEXT_INFO_FETCHER_H_
