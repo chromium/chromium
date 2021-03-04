@@ -283,11 +283,25 @@ void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings) {
 }
 
 void Display::PresentationGroupTiming::OnPresent(
-    const gfx::PresentationFeedback& feedback) {
+    const gfx::PresentationFeedback& feedback,
+    DisplaySchedulerBase* scheduler) {
   for (auto& presentation_helper : presentation_helpers_) {
     presentation_helper->DidPresent(draw_start_timestamp_, swap_timings_,
                                     feedback);
   }
+
+  if (feedback.ready_timestamp.is_null())
+    return;
+
+  auto gpu_latency = feedback.ready_timestamp - swap_timings_.swap_start;
+  // TODO(crbug.com/1157620): Move this check to SanitizePresentationFeedback
+  // to handle all incorrect feedback cases.
+  if (gpu_latency < base::TimeDelta::FromSeconds(0)) {
+    DLOG(ERROR) << "Gpu latency is negative : "
+                << gpu_latency.InMillisecondsF();
+    return;
+  }
+  scheduler->SetGpuLatency(gpu_latency);
 }
 
 Display::Display(
@@ -991,7 +1005,7 @@ void Display::DidReceivePresentationFeedback(
     }
   }
 
-  presentation_group_timing.OnPresent(copy_feedback);
+  presentation_group_timing.OnPresent(copy_feedback, scheduler_.get());
   pending_presentation_group_timings_.pop_front();
 }
 

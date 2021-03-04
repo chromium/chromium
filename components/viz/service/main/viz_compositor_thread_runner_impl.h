@@ -45,10 +45,12 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
 
   // VizCompositorThreadRunner overrides.
   base::SingleThreadTaskRunner* task_runner() override;
+  base::PlatformThreadId thread_id() override;
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
                               gpu::CommandBufferTaskExecutor* task_executor,
-                              GpuServiceImpl* gpu_service) override;
+                              GpuServiceImpl* gpu_service,
+                              gfx::RenderingPipeline* gpu_pipeline) override;
 #if BUILDFLAG(USE_VIZ_DEVTOOLS)
   void CreateVizDevTools(mojom::VizDevToolsParamsPtr params) override;
 #endif
@@ -58,7 +60,8 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
       gpu::CommandBufferTaskExecutor* task_executor,
-      GpuServiceImpl* gpu_service);
+      GpuServiceImpl* gpu_service,
+      gfx::RenderingPipeline* gpu_pipeline);
 #if BUILDFLAG(USE_VIZ_DEVTOOLS)
   void CreateVizDevToolsOnCompositorThread(mojom::VizDevToolsParamsPtr params);
   void InitVizDevToolsOnCompositorThread(mojom::VizDevToolsParamsPtr params);

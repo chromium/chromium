@@ -14,6 +14,7 @@
 
 namespace features {
 
+VIZ_COMMON_EXPORT extern const base::Feature kAdpf;
 VIZ_COMMON_EXPORT extern const base::Feature kEnableOverlayPrioritization;
 VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaRenderer;
 VIZ_COMMON_EXPORT extern const base::Feature kRecordSkPicture;
@@ -38,6 +39,7 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseX11Present;
 #endif
 VIZ_COMMON_EXPORT extern const base::Feature kWebViewVulkanIntermediateBuffer;
 
+VIZ_COMMON_EXPORT bool IsAdpfEnabled();
 VIZ_COMMON_EXPORT bool IsVizHitTestingDebugEnabled();
 VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();
 #if defined(OS_ANDROID)

@@ -76,6 +76,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     bool run_all_compositor_stages_before_draw = false;
     bool log_capture_pipeline_in_webrtc = false;
     DebugRendererSettings debug_renderer_settings;
+    gfx::RenderingPipeline* gpu_pipeline = nullptr;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
   // TODO(kylechar): Cleanup tests and remove this constructor.
@@ -372,6 +373,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
 
   base::ObserverList<FrameSinkObserver>::Unchecked observer_list_;
+
+  gfx::RenderingPipeline* gpu_pipeline_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FrameSinkManagerImpl);
 };

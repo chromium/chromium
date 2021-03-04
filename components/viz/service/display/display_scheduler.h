@@ -17,6 +17,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/display_scheduler_base.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/rendering_pipeline.h"
 
 namespace viz {
 
@@ -27,7 +28,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   DisplayScheduler(BeginFrameSource* begin_frame_source,
                    base::SingleThreadTaskRunner* task_runner,
                    int max_pending_swaps,
-                   bool wait_for_all_surfaces_before_draw = false);
+                   bool wait_for_all_surfaces_before_draw = false,
+                   gfx::RenderingPipeline* gpu_pipeline = nullptr);
   ~DisplayScheduler() override;
 
   // DisplaySchedulerBase implementation.
@@ -37,6 +39,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
+  void SetGpuLatency(base::TimeDelta gpu_latency) override;
 
   // DisplayDamageTrackerObserver implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;
@@ -95,6 +98,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
   BeginFrameSource* begin_frame_source_;
   base::SingleThreadTaskRunner* task_runner_;
+  gfx::RenderingPipeline* gpu_pipeline_;
+  base::Optional<gfx::RenderingPipeline::ScopedPipelineActive>
+      gpu_pipeline_active_;
 
   BeginFrameArgs current_begin_frame_args_;
   base::RepeatingClosure begin_frame_deadline_closure_;

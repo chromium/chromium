@@ -38,7 +38,8 @@ RootCompositorFrameSinkImpl::Create(
     OutputSurfaceProvider* output_surface_provider,
     uint32_t restart_id,
     bool run_all_compositor_stages_before_draw,
-    const DebugRendererSettings* debug_settings) {
+    const DebugRendererSettings* debug_settings,
+    gfx::RenderingPipeline* gpu_pipeline) {
   // First create an output surface.
   mojo::Remote<mojom::DisplayClient> display_client(
       std::move(params->display_client));
@@ -127,7 +128,7 @@ RootCompositorFrameSinkImpl::Create(
 
   auto scheduler = std::make_unique<DisplayScheduler>(
       begin_frame_source, task_runner.get(), max_frames_pending,
-      run_all_compositor_stages_before_draw);
+      run_all_compositor_stages_before_draw, gpu_pipeline);
 
 #if !defined(OS_APPLE)
   auto* output_surface_ptr = output_surface.get();

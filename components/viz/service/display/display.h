@@ -215,7 +215,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     void OnDraw(base::TimeTicks draw_start_timestamp);
     void OnSwap(gfx::SwapTimings timings);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
-    void OnPresent(const gfx::PresentationFeedback& feedback);
+    void OnPresent(const gfx::PresentationFeedback& feedback,
+                   DisplaySchedulerBase* scheduler);
 
     base::TimeTicks draw_start_timestamp() const {
       return draw_start_timestamp_;

@@ -16,6 +16,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/ui_devtools/buildflags.h"
+#include "components/viz/common/features.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/service/gpu_init.h"
@@ -24,6 +25,7 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "ui/gfx/rendering_pipeline.h"
 
 namespace {
 
@@ -84,6 +86,15 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
   if (delegate_) {
     delegate_->PostCompositorThreadCreated(
         viz_compositor_thread_runner_->task_runner());
+  }
+
+  if (features::IsAdpfEnabled()) {
+    gpu_pipeline_ = gfx::RenderingPipeline::CreateGpu();
+    gpu_pipeline_->AddSequenceManagerThread(
+        viz_compositor_thread_runner_->thread_id(),
+        viz_compositor_thread_runner_->task_runner());
+    gpu_pipeline_->AddSequenceManagerThread(
+        base::PlatformThread::CurrentId(), base::ThreadTaskRunnerHandle::Get());
   }
 
   if (!gpu_init_->gpu_info().in_process_gpu && dependencies_.ukm_recorder) {
@@ -246,7 +257,8 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
       gpu_service_->gpu_channel_manager()->program_cache());
 
   viz_compositor_thread_runner_->CreateFrameSinkManager(
-      std::move(params), task_executor_.get(), gpu_service_.get());
+      std::move(params), task_executor_.get(), gpu_service_.get(),
+      gpu_pipeline_.get());
 }
 
 void VizMainImpl::CreateVizDevTools(mojom::VizDevToolsParamsPtr params) {

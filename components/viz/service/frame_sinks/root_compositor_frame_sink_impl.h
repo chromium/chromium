@@ -25,6 +25,10 @@
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
+namespace gfx {
+class RenderingPipeline;
+}
+
 namespace viz {
 
 class Display;
@@ -47,7 +51,8 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       OutputSurfaceProvider* output_surface_provider,
       uint32_t restart_id,
       bool run_all_compositor_stages_before_draw,
-      const DebugRendererSettings* debug_settings);
+      const DebugRendererSettings* debug_settings,
+      gfx::RenderingPipeline* gpu_pipeline);
 
   ~RootCompositorFrameSinkImpl() override;
 

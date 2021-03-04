@@ -97,6 +97,11 @@ void VizCompositorThreadRunnerWebView::PostTaskAndBlock(
 
 VizCompositorThreadRunnerWebView::~VizCompositorThreadRunnerWebView() = default;
 
+base::PlatformThreadId VizCompositorThreadRunnerWebView::thread_id() {
+  DCHECK(viz_thread_.IsRunning());
+  return viz_thread_.GetThreadId();
+}
+
 base::SingleThreadTaskRunner* VizCompositorThreadRunnerWebView::task_runner() {
   return viz_task_runner_.get();
 }
@@ -110,7 +115,8 @@ void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
 void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
     viz::mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    viz::GpuServiceImpl* gpu_service) {
+    viz::GpuServiceImpl* gpu_service,
+    gfx::RenderingPipeline* gpu_pipeline) {
   viz_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

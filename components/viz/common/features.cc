@@ -23,6 +23,9 @@
 
 namespace features {
 
+// Enables the use of CPU scheduling APIs on Android.
+const base::Feature kAdpf{"Adpf", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnableOverlayPrioritization {
   "EnableOverlayPrioritization",
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
@@ -121,6 +124,11 @@ const base::Feature kUseX11Present{"UseX11Present",
 // buffer and draw the intermediate buffer to the secondary command buffer.
 const base::Feature kWebViewVulkanIntermediateBuffer{
     "WebViewVulkanIntermediateBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAdpfEnabled() {
+  // TODO(crbug.com/1157620): Limit this to correct android version.
+  return base::FeatureList::IsEnabled(kAdpf);
+}
 
 bool IsOverlayPrioritizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);

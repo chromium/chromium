@@ -45,6 +45,10 @@ namespace ukm {
 class MojoUkmRecorder;
 }
 
+namespace gfx {
+class RenderingPipeline;
+}
+
 namespace viz {
 #if defined(OS_WIN)
 class InfoCollectionGpuServiceImpl;
@@ -192,6 +196,8 @@ class VizMainImpl : public mojom::VizMain,
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
+
+  std::unique_ptr<gfx::RenderingPipeline> gpu_pipeline_;
 
   DISALLOW_COPY_AND_ASSIGN(VizMainImpl);
 };
