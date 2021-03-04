@@ -195,22 +195,6 @@ CastRuntimeAudioChannelBroker::TimestampInfo ToGrpcTypes(
   return ts_info;
 }
 
-// Helper to convert from Chromium callback type (OnceCallback) to Chromecast's
-// TaskRunner's Task type.
-class OnceCallbackTask : public TaskRunner::Task {
- public:
-  OnceCallbackTask(base::OnceClosure callback)
-      : callback_(std::move(callback)) {}
-
-  ~OnceCallbackTask() override = default;
-
- private:
-  // TaskRunner::Task overrides:
-  void Run() override { std::move(callback_).Run(); }
-
-  base::OnceClosure callback_;
-};
-
 }  // namespace
 
 // static
@@ -313,7 +297,7 @@ void ProxyCallTranslator::HandleStateChangeResponse(
     return;
   }
 
-  auto* task = new OnceCallbackTask(
+  auto* task = new TaskRunner::CallbackTask<base::OnceClosure>(
       base::BindOnce(&ProxyCallTranslator::OnPipelineStateChangeTask,
                      weak_factory_.GetWeakPtr(), ToClientTypes(state)));
   client_task_runner_->PostTask(task, 0);
@@ -326,7 +310,7 @@ void ProxyCallTranslator::HandlePushBufferResponse(
     return;
   }
 
-  auto* task = new OnceCallbackTask(
+  auto* task = new TaskRunner::CallbackTask<base::OnceClosure>(
       base::BindOnce(&ProxyCallTranslator::OnBytesDecodedTask,
                      weak_factory_.GetWeakPtr(), decoded_bytes));
   client_task_runner_->PostTask(task, 0);
@@ -344,7 +328,7 @@ bool ProxyCallTranslator::HandleError(
     return true;
   }
 
-  auto* task = new OnceCallbackTask(base::BindOnce(
+  auto* task = new TaskRunner::CallbackTask<base::OnceClosure>(base::BindOnce(
       &ProxyCallTranslator::OnErrorTask, weak_factory_.GetWeakPtr()));
   client_task_runner_->PostTask(task, 0);
   return false;
