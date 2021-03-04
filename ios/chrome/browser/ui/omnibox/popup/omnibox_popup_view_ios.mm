@@ -140,6 +140,7 @@ void OmniboxPopupViewIOS::OnMatchSelected(
   }
 
   if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
+    LogLikelyInterestedDefaultBrowserUserActivity();
     base::RecordAction(UserMetricsAction("MobileOmniboxClipboardToURL"));
     UMA_HISTOGRAM_LONG_TIMES_100(
         "MobileOmnibox.PressedClipboardSuggestionAge",
