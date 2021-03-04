@@ -746,6 +746,9 @@
   <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_SSO_URL_MESSAGE" desc="The message shown when mounting a new SMB share fails because the URL is an invalid format when SSO authentication is used.">
     Invalid URL format. Server must be specified as a host name when SSO authentication is used.
   </message>
+  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_USERNAME_MESSAGE" desc="The message shown when mounting a new SMB share fails because the username is invalid.">
+    Invalid username
+  </message>
   <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_SUCCESS_MESSAGE" desc="The message shown when a new SMB share is successfully mounted.">
     Share mounted successfully.
   </message>

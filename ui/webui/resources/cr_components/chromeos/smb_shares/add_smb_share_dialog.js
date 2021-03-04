@@ -241,6 +241,11 @@ Polymer({
               loadTimeData.getString('smbShareAddedAuthFailedMessage'));
         }
         break;
+      case SmbMountResult.INVALID_USERNAME:
+        this.setCredentialError_(
+            loadTimeData.getString('smbShareAddedInvalidUsernameMessage'));
+        break;
+
 
       // Path Errors
       case SmbMountResult.NOT_FOUND:

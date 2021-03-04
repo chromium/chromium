@@ -29,6 +29,7 @@
   IO_ERROR: 11,
   TOO_MANY_OPENED: 12,
   INVALID_SSO_URL: 13,
+  INVALID_USERNAME: 14,
 };
 
 /** @enum {string} */

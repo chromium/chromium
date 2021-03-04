@@ -52126,6 +52126,7 @@ Called by update_use_counter_css.py.-->
   <int value="11" label="I/O error"/>
   <int value="12" label="Too many opened"/>
   <int value="13" label="Invalid URL format with SSO authentication"/>
+  <int value="14" label="Invalid username"/>
 </enum>
 
 <enum name="NatTypeCounters">

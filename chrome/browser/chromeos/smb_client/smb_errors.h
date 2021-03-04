@@ -17,21 +17,22 @@ namespace smb_client {
 // ui/webui/resources/cr_components/chromeos/smb_shares/smb_browser_proxy.js
 // and the NativeSmbFileShare_MountResult enum in enums.xml.
 enum class SmbMountResult {
-  kSuccess = 0,               // Mount succeeded.
-  kUnknownFailure = 1,        // Mount failed in an unrecognized way.
-  kAuthenticationFailed = 2,  // Authentication to the share failed.
-  kNotFound = 3,              // The specified share was not found.
-  kUnsupportedDevice = 4,     // The specified share is not supported.
-  kMountExists = 5,           // The specified share is already mounted.
-  kInvalidUrl = 6,            // The mount URL is an invalid SMB URL.
-  kInvalidOperation = 7,      // libsmbclient returned invalid operation.
-  kDbusParseFailed = 8,       // Parsing the D-Bus message or response failed.
-  kOutOfMemory = 9,           // The share is out of memory or storage.
-  kAborted = 10,              // The operation was aborted.
-  kIoError = 11,              // An I/O error occurred.
-  kTooManyOpened = 12,        // There are too many shares open.
-  kInvalidSsoUrl = 13,        // The share URL is not valid when using SSO.
-  kMaxValue = kInvalidSsoUrl  // Max enum value for use in metrics.
+  kSuccess = 0,                 // Mount succeeded.
+  kUnknownFailure = 1,          // Mount failed in an unrecognized way.
+  kAuthenticationFailed = 2,    // Authentication to the share failed.
+  kNotFound = 3,                // The specified share was not found.
+  kUnsupportedDevice = 4,       // The specified share is not supported.
+  kMountExists = 5,             // The specified share is already mounted.
+  kInvalidUrl = 6,              // The mount URL is an invalid SMB URL.
+  kInvalidOperation = 7,        // libsmbclient returned invalid operation.
+  kDbusParseFailed = 8,         // Parsing the D-Bus message or response failed.
+  kOutOfMemory = 9,             // The share is out of memory or storage.
+  kAborted = 10,                // The operation was aborted.
+  kIoError = 11,                // An I/O error occurred.
+  kTooManyOpened = 12,          // There are too many shares open.
+  kInvalidSsoUrl = 13,          // The share URL is not valid when using SSO.
+  kInvalidUsername = 14,        // The username is invalid.
+  kMaxValue = kInvalidUsername  // Max enum value for use in metrics.
 };
 
 // Translates an smbprovider::ErrorType to a base::File::Error. Since

@@ -361,7 +361,10 @@ void SmbService::Mount(const file_system_provider::MountOptions& options,
     // workgroup if necessary.
     username = username_input;
     password = password_input;
-    ParseUserName(username_input, &username, &workgroup);
+    if (!ParseUserName(username_input, &username, &workgroup)) {
+      std::move(callback).Run(SmbMountResult::kInvalidUsername);
+      return;
+    }
   }
 
   // Construct the file system ID before calling mount so that numerous
