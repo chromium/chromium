@@ -97,7 +97,7 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             {.setting = mojom::Setting::kLockScreen},
             {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING_ALT1,
              SearchConcept::kAltTagEnd}},
-           {IDS_OS_SETTINGS_TAG_LOCK_SCREEN,
+           {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_V2,
             mojom::kSecurityAndSignInSubpagePathV2,
             mojom::SearchResultIcon::kLock,
             mojom::SearchResultDefaultRank::kMedium,
@@ -287,7 +287,7 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // Security and sign-in.
   generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK,
+      IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK_V2,
       mojom::Subpage::kSecurityAndSignInV2, mojom::SearchResultIcon::kLock,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kSecurityAndSignInSubpagePathV2);

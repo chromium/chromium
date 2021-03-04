@@ -2729,6 +2729,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK" desc="Text on the people page which opens up the security and sign-in section.">
     Security and sign-in
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK_V2" desc="Text on the people page which opens up the security and sign-in section.">
+    Lock screen and sign-in
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_SCREEN_LOCK_TITLE" desc="Text on the people page which opens up the screen lock and sign-in section.">
     Screen lock and sign-in
   </message>

@@ -309,6 +309,9 @@
   <message name="IDS_OS_SETTINGS_TAG_LOCK_SCREEN" desc="Text for search result item which, when clicked, navigates the user to security and sign-in settings.">
     Security and sign-in
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_LOCK_SCREEN_V2" desc="Text for search result item which, when clicked, navigates the user to security and sign-in settings.">
+    Lock screen and sign-in
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING" desc="Text for search result item which, when clicked, navigates the user to lock screen settings. Alternate phrase for: 'Login screen'">
     Lock screen
   </message>
