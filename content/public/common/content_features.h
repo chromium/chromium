@@ -57,6 +57,8 @@ CONTENT_EXPORT extern const base::Feature kEmbeddingRequiresOptIn;
 CONTENT_EXPORT extern const base::Feature kEnableNewCanvas2DAPI;
 CONTENT_EXPORT extern const base::Feature kEnumerateDevicesHideDeviceIDs;
 CONTENT_EXPORT extern const base::Feature kExperimentalAccessibilityLabels;
+CONTENT_EXPORT extern const base::Feature
+    kExperimentalContentSecurityPolicyFeatures;
 CONTENT_EXPORT extern const base::Feature kExpensiveBackgroundTimerThrottling;
 CONTENT_EXPORT extern const base::Feature
     kExtraSafelistedRequestHeadersForOutOfBlinkCors;

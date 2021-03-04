@@ -239,6 +239,14 @@ const base::Feature kEnumerateDevicesHideDeviceIDs{
 const base::Feature kExperimentalAccessibilityLabels{
     "ExperimentalAccessibilityLabels", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Content counterpart of ExperimentalContentSecurityPolicyFeatures in
+// third_party/blink/renderer/platform/runtime_enabled_features.json5. Enables
+// experimental Content Security Policy features ('navigate-to' and
+// 'prefetch-src').
+const base::Feature kExperimentalContentSecurityPolicyFeatures{
+    "ExperimentalContentSecurityPolicyFeatures",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Throttle tasks in Blink background timer queues based on CPU budgets
 // for the background tab. Bug: https://crbug.com/639852.
 const base::Feature kExpensiveBackgroundTimerThrottling{
