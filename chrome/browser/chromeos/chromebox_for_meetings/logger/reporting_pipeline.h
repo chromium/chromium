@@ -50,7 +50,7 @@ class ReportingPipeline : public CfmLoggerService::Delegate,
 
   UpdateStatusCallback update_status_callback_;
   std::unique_ptr<reporting::ReportQueue> report_queue_;
-  std::unique_ptr<policy::DMToken> dm_token_;
+  std::string dm_token_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);

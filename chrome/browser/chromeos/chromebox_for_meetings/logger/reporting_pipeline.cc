@@ -55,7 +55,7 @@ void ReportingPipeline::Init() {
 
 void ReportingPipeline::Reset() {
   chromeos::DeviceSettingsService::Get()->RemoveObserver(this);
-  dm_token_.reset();
+  dm_token_.clear();
   update_status_callback_.Run(mojom::LoggerState::kUninitialized);
 }
 
@@ -99,24 +99,23 @@ void ReportingPipeline::DeviceSettingsUpdated() {
 void ReportingPipeline::UpdateToken(std::string request_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (dm_token_ && dm_token_->value() == request_token) {
+  if (dm_token_ == request_token) {
     VLOG(4) << "DMToken received is already being used.";
     return;
   }
 
-  dm_token_ = std::make_unique<policy::DMToken>(policy::DMToken::Status::kValid,
-                                                std::move(request_token));
+  dm_token_ = request_token;
 
   auto config_result = reporting::ReportQueueConfiguration::Create(
-      *dm_token_, kHandlerDestination,
+      dm_token_, kHandlerDestination,
       base::BindRepeating([]() { return ::reporting::Status::StatusOK(); }));
 
   if (!config_result.ok()) {
     LOG(ERROR) << "Report Client Configuration failed with error message: "
                << config_result.status().ToString();
     // Reset DMToken to allow future attempts at configuring the report queue.
-    // TODO(b/175156039): Attempt to create a new configruation again.
-    dm_token_.reset();
+    // TODO(b/175156039): Attempt to create a new configuration again.
+    dm_token_.clear();
     return;
   }
 
@@ -146,7 +145,7 @@ void ReportingPipeline::OnReportQueueUpdated(
                << report_queue_result.status().ToString();
     // Reset DMToken to allow future attempts at creating a report queue.
     // TODO(b/175156039): Attempt to create a new queue again.
-    dm_token_.reset();
+    dm_token_.clear();
     return;
   }
 

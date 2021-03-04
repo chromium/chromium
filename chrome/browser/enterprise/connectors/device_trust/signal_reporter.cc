@@ -46,8 +46,14 @@ void DeviceTrustSignalReporter::Init(
           policy_check);
   // Create ReportQueueConfiguration.
   policy::DMToken dm_token = GetDmToken();
+  if (!dm_token.is_valid()) {
+    LOG(ERROR) << "Failed to retrieve valid DM token";
+    create_queue_status_ = CreateQueueStatus::DONE;
+    std::move(done_cb).Run(false);
+    return;
+  }
   auto config_result = reporting::ReportQueueConfiguration::Create(
-      dm_token, reporting::Destination::DEVICE_TRUST_REPORTS,
+      dm_token.value(), reporting::Destination::DEVICE_TRUST_REPORTS,
       std::move(policy_cb));
 
   // Bail out if ReportQueueConfiguration creation failed.

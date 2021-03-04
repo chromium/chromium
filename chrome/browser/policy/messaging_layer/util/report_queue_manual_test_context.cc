@@ -93,7 +93,7 @@ void ReportQueueManualTestContext::BuildReportQueue() {
   ReportQueueConfiguration::PolicyCheckCallback policy_check_cb =
       base::BindRepeating([]() -> Status { return Status::StatusOK(); });
   auto config_result = reporting::ReportQueueConfiguration::Create(
-      dm_token_, destination_, std::move(policy_check_cb));
+      dm_token_.value(), destination_, std::move(policy_check_cb));
   if (!config_result.ok()) {
     Complete(config_result.status());
     return;

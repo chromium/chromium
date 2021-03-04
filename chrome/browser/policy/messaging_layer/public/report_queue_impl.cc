@@ -83,7 +83,7 @@ Record ReportQueueImpl::AugmentRecord(base::StringPiece record_data) const {
   Record record;
   record.set_data(std::string(record_data));
   record.set_destination(config_->destination());
-  record.set_dm_token(config_->dm_token().value());
+  record.set_dm_token(config_->dm_token());
   // Calculate timestamp in microseconds - to match Spanner expectations.
   const int64_t time_since_epoch_us =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();

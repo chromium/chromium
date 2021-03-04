@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
@@ -16,13 +15,11 @@
 
 namespace reporting {
 
-using policy::DMToken;
-
 ReportQueueConfiguration::ReportQueueConfiguration() = default;
 ReportQueueConfiguration::~ReportQueueConfiguration() = default;
 
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>
-ReportQueueConfiguration::Create(const policy::DMToken& dm_token,
+ReportQueueConfiguration::Create(base::StringPiece dm_token,
                                  Destination destination,
                                  PolicyCheckCallback policy_check_callback) {
   auto config = base::WrapUnique<ReportQueueConfiguration>(
@@ -49,11 +46,11 @@ Status ReportQueueConfiguration::CheckPolicy() const {
   return policy_check_callback_.Run();
 }
 
-Status ReportQueueConfiguration::SetDMToken(const DMToken& dm_token) {
-  if (!dm_token.is_valid()) {
+Status ReportQueueConfiguration::SetDMToken(base::StringPiece dm_token) {
+  if (dm_token.empty()) {
     return Status(error::INVALID_ARGUMENT, "DMToken must be valid");
   }
-  dm_token_ = dm_token;
+  dm_token_ = std::string(dm_token);
   return Status::StatusOK();
 }
 

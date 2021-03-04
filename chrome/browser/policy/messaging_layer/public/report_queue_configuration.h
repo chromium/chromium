@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -40,24 +39,24 @@ class ReportQueueConfiguration {
   // |destination| is valid when it is any value other than
   // Destination::UNDEFINED_DESTINATION.
   static StatusOr<std::unique_ptr<ReportQueueConfiguration>> Create(
-      const policy::DMToken& dm_token,
+      base::StringPiece dm_token,
       Destination destination,
       PolicyCheckCallback policy_check_callback);
 
   reporting::Destination destination() const { return destination_; }
 
-  policy::DMToken dm_token() const { return dm_token_; }
+  std::string dm_token() const { return dm_token_; }
 
   Status CheckPolicy() const;
 
  private:
   ReportQueueConfiguration();
 
-  Status SetDMToken(const policy::DMToken& dm_token);
+  Status SetDMToken(base::StringPiece dm_token);
   Status SetDestination(reporting::Destination destination);
   Status SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
 
-  policy::DMToken dm_token_;
+  std::string dm_token_;
   reporting::Destination destination_;
 
   PolicyCheckCallback policy_check_callback_;

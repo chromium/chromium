@@ -38,9 +38,16 @@ CreateReportQueueConfigGetter(Profile* profile) {
                    ::reporting::StatusOr<std::unique_ptr<
                        ::reporting::ReportQueueConfiguration>>)> complete_cb) {
               auto dm_token = GetDMToken(profile, /*only_affiliated=*/false);
+              if (!dm_token.is_valid()) {
+                std::move(complete_cb)
+                    .Run(::reporting::Status(
+                        ::reporting::error::INVALID_ARGUMENT,
+                        "DMToken must be valid"));
+                return;
+              }
               std::move(complete_cb)
                   .Run(::reporting::ReportQueueConfiguration::Create(
-                      dm_token, ::reporting::Destination::UPLOAD_EVENTS,
+                      dm_token.value(), ::reporting::Destination::UPLOAD_EVENTS,
                       base::BindRepeating(
                           []() { return ::reporting::Status::StatusOK(); })));
             },
@@ -118,8 +125,7 @@ void ExtensionInstallEventLogUploader::SetBuildReportQueueConfigurationForTests(
          ReportQueueConfigResultCallback complete_cb) {
         std::move(complete_cb)
             .Run(::reporting::ReportQueueConfiguration::Create(
-                DMToken::CreateValidTokenForTesting(dm_token),
-                ::reporting::Destination::UPLOAD_EVENTS,
+                dm_token, ::reporting::Destination::UPLOAD_EVENTS,
                 base::BindRepeating(
                     []() { return ::reporting::Status::StatusOK(); })));
       },
