@@ -1177,6 +1177,7 @@ public class InstantStartTest {
                     "/start_surface_variation/single" +
                     "/exclude_mv_tiles/true" +
                     "/thumbnail_aspect_ratio/1"})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P, message = "crbug.com/1177555")
     @DisableIf.Build(supported_abis_includes = "x86", message = "crbug.com/1177555")
     public void testSingleAsHomepage_Landscape_TabSize() throws IOException{
         // clang-format on
