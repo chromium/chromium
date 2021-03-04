@@ -377,6 +377,10 @@ vars = {
   # and whatever else without interference from each other.
   'libunwind_revision':    '8869f42e7fc234f038cd78097e19e304773cc8f0',
 
+  # If you change this, also update the libc++ revision in
+  # //buildtools/deps_revisions.gni.
+  'libcxx_revision':       '8fa87946779682841e21e2da977eccfb6cb3bded',
+
   # TODO(crbug.com/941824): The values below need to be kept in sync
   # between //DEPS and //buildtools/DEPS, so if you're updating one,
   # update the other. There is a presubmit check that checks that
@@ -388,11 +392,9 @@ vars = {
   # GN CIPD package version.
   'gn_version': 'git_revision:dfcbc6fed0a8352696f92d67ccad54048ad182b3',
 
-  # Also, if you change these, update buildtools/DEPS too. Also update the
-  # libc++ svn_revision in //buildtools/deps_revisions.gni.
+  # Also, if you change these, update buildtools/DEPS too.
   # TODO(crbug.com/1166332) rename to clang_format_revision.
   'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
-  'libcxx_revision':       '8fa87946779682841e21e2da977eccfb6cb3bded',
 
 }
 
