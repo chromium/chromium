@@ -262,7 +262,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       static_cast<id<ApplicationCommands, BrowserCommands, FindInPageCommands,
                      LoadQueryCommands, TextZoomCommands>>(
           self.browser->GetCommandDispatcher());
-  self.actionHandler.commandHandler = self.mediator;
+  self.actionHandler.delegate = self.mediator;
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   tableViewController.delegate = self.actionHandler;
