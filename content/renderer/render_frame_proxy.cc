@@ -269,10 +269,6 @@ void RenderFrameProxy::SetReplicatedState(
   }
   web_frame_->SetHadStickyUserActivationBeforeNavigation(
       state->has_received_user_gesture_before_nav);
-
-  web_frame_->ResetReplicatedContentSecurityPolicy();
-  web_frame_->AddReplicatedContentSecurityPolicies(
-      ToWebContentSecurityPolicies(std::move(state->accumulated_csps)));
 }
 
 std::string RenderFrameProxy::unique_name() const {

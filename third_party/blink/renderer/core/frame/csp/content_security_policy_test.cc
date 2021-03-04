@@ -1070,7 +1070,7 @@ TEST_F(ContentSecurityPolicyTest, TrustedTypeReportAndNonTTEnforce) {
 }
 
 TEST_F(ContentSecurityPolicyTest, RequireTrustedTypeForEnforce) {
-  execution_context->GetSecurityContext().SetRequireTrustedTypesForTesting();
+  execution_context->SetRequireTrustedTypesForTesting();
   csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
   csp->DidReceiveHeader("require-trusted-types-for ''", *secure_origin,
                         ContentSecurityPolicyType::kEnforce,
@@ -1084,7 +1084,7 @@ TEST_F(ContentSecurityPolicyTest, RequireTrustedTypeForEnforce) {
 }
 
 TEST_F(ContentSecurityPolicyTest, RequireTrustedTypeForReport) {
-  execution_context->GetSecurityContext().SetRequireTrustedTypesForTesting();
+  execution_context->SetRequireTrustedTypesForTesting();
   csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
   csp->DidReceiveHeader("require-trusted-types-for 'script'", *secure_origin,
                         ContentSecurityPolicyType::kReport,

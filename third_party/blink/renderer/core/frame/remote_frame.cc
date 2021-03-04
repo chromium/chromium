@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/child_frame_compositing_helper.h"
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -528,16 +527,6 @@ void RemoteFrame::WillEnterFullscreen(
 
   Fullscreen::RequestFullscreen(*owner_element, FullscreenOptions::Create(),
                                 request_type);
-}
-
-void RemoteFrame::AddReplicatedContentSecurityPolicies(
-    WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> csps) {
-  GetSecurityContext()->GetContentSecurityPolicy()->AddPolicies(
-      std::move(csps));
-}
-
-void RemoteFrame::ResetReplicatedContentSecurityPolicy() {
-  security_context_.ResetReplicatedContentSecurityPolicy();
 }
 
 void RemoteFrame::EnforceInsecureNavigationsSet(

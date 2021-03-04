@@ -17,9 +17,6 @@ RemoteSecurityContext::RemoteSecurityContext() : SecurityContext(nullptr) {
   // we set it using replicated origin data from the browser process.
   DCHECK(!GetSecurityOrigin());
 
-  // Start with a clean slate.
-  SetContentSecurityPolicy(MakeGarbageCollected<ContentSecurityPolicy>());
-
   // FIXME: Document::initSecurityContext has a few other things we may
   // eventually want here, such as enforcing a setting to
   // grantUniversalAccess().
@@ -29,11 +26,6 @@ void RemoteSecurityContext::SetReplicatedOrigin(
     scoped_refptr<SecurityOrigin> origin) {
   DCHECK(origin);
   SetSecurityOrigin(std::move(origin));
-}
-
-void RemoteSecurityContext::ResetReplicatedContentSecurityPolicy() {
-  DCHECK(GetSecurityOrigin());
-  SetContentSecurityPolicy(MakeGarbageCollected<ContentSecurityPolicy>());
 }
 
 void RemoteSecurityContext::ResetAndEnforceSandboxFlags(

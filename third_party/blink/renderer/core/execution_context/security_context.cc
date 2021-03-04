@@ -36,8 +36,8 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -65,7 +65,6 @@ SecurityContext::~SecurityContext() = default;
 
 void SecurityContext::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
-  visitor->Trace(content_security_policy_);
 }
 
 void SecurityContext::SetSecurityOrigin(
@@ -132,11 +131,6 @@ void SecurityContext::SetSecurityOriginForTesting(
   security_origin_ = std::move(security_origin);
 }
 
-void SecurityContext::SetContentSecurityPolicy(
-    ContentSecurityPolicy* content_security_policy) {
-  content_security_policy_ = content_security_policy;
-}
-
 bool SecurityContext::IsSandboxed(
     network::mojom::blink::WebSandboxFlags mask) const {
   return (sandbox_flags_ & mask) !=
@@ -146,20 +140,6 @@ bool SecurityContext::IsSandboxed(
 void SecurityContext::SetSandboxFlags(
     network::mojom::blink::WebSandboxFlags flags) {
   sandbox_flags_ = flags;
-}
-
-void SecurityContext::SetRequireTrustedTypes() {
-  DCHECK(require_safe_types_ ||
-         content_security_policy_->IsRequireTrustedTypes());
-  require_safe_types_ = true;
-}
-
-void SecurityContext::SetRequireTrustedTypesForTesting() {
-  require_safe_types_ = true;
-}
-
-bool SecurityContext::TrustedTypesRequiredByPolicy() const {
-  return require_safe_types_;
 }
 
 void SecurityContext::SetFeaturePolicy(

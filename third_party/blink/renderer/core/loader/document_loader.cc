@@ -1961,6 +1961,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   }
 
   frame_->DomWindow()->SetPolicyContainer(std::move(policy_container_));
+  frame_->DomWindow()->SetContentSecurityPolicy(csp);
 
   // Now that we have the final window and Agent, ensure the security origin has
   // the appropriate agent cluster id. This may derive a new security origin.
@@ -1968,8 +1969,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       frame_->DomWindow()->GetAgent()->cluster_id());
 
   SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
-  security_context.SetContentSecurityPolicy(csp);
-
   security_context.SetSandboxFlags(sandbox_flags);
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that

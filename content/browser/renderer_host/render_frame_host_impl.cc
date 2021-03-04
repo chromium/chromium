@@ -3113,9 +3113,8 @@ void RenderFrameHostImpl::DidAddContentSecurityPolicies(
                "frame_tree_node", frame_tree_node_->frame_tree_node_id());
 
   for (auto& policy : policies) {
-    AddContentSecurityPolicy(policy->Clone());
+    AddContentSecurityPolicy(std::move(policy));
   }
-  frame_tree_node()->AddContentSecurityPolicies(std::move(policies));
 }
 
 void RenderFrameHostImpl::CancelInitialHistoryLoad() {

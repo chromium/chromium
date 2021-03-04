@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
-#include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
@@ -83,7 +83,7 @@ class CORE_EXPORT InspectorCSSAgent final
     STACK_ALLOCATED();
 
    public:
-    InlineStyleOverrideScope(SecurityContext* context)
+    explicit InlineStyleOverrideScope(ExecutionContext* context)
         : content_security_policy_(context->GetContentSecurityPolicy()) {
       content_security_policy_->SetOverrideAllowInlineStyle(true);
     }

@@ -199,10 +199,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // Set the current name and notify proxies about the update.
   void SetFrameName(const std::string& name, const std::string& unique_name);
 
-  // Add CSPs to replication state, notify proxies about the update.
-  void AddContentSecurityPolicies(
-      std::vector<network::mojom::ContentSecurityPolicyPtr> csps);
-
   // Sets the current insecure request policy, and notifies proxies about the
   // update.
   void SetInsecureRequestPolicy(blink::mojom::InsecureRequestPolicy policy);

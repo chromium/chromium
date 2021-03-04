@@ -7422,7 +7422,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(root->child_at(0)->HasSameOrigin(*root));
   EXPECT_EQ(old_subframe_url, root->child_at(0)->current_url());
   const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
-      root->current_replication_state().accumulated_csps;
+      root->current_frame_host()
+          ->policy_container_host()
+          ->policies()
+          .content_security_policies;
   EXPECT_EQ(1u, root_csp.size());
   EXPECT_EQ("frame-src 'self' http://b.com:*",
             root_csp[0]->header->header_value);
@@ -7494,7 +7497,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(root->child_at(0)->HasSameOrigin(*root));
   EXPECT_EQ(old_subframe_url, root->child_at(0)->current_url());
   const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
-      root->current_replication_state().accumulated_csps;
+      root->current_frame_host()
+          ->policy_container_host()
+          ->policies()
+          .content_security_policies;
   EXPECT_EQ(1u, root_csp.size());
   EXPECT_EQ("frame-src https://a.com:*", root_csp[0]->header->header_value);
 
@@ -7556,7 +7562,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(srcdoc_frame->HasSameOrigin(*navigating_frame));
   EXPECT_EQ(old_subframe_url, navigating_frame->current_url());
   const std::vector<network::mojom::ContentSecurityPolicyPtr>& srcdoc_csp =
-      srcdoc_frame->current_replication_state().accumulated_csps;
+      srcdoc_frame->current_frame_host()
+          ->policy_container_host()
+          ->policies()
+          .content_security_policies;
   EXPECT_EQ(1u, srcdoc_csp.size());
   EXPECT_EQ("frame-src 'self' http://b.com:*",
             srcdoc_csp[0]->header->header_value);
@@ -7605,8 +7614,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       srcdoc_frame, embedded_test_server()->GetURL("a.com", "/title1.html")));
 
   // Verify that the frame's CSP got correctly reset to an empty set.
-  EXPECT_EQ(0u,
-            srcdoc_frame->current_replication_state().accumulated_csps.size());
+  EXPECT_EQ(0u, srcdoc_frame->current_frame_host()
+                    ->policy_container_host()
+                    ->policies()
+                    .content_security_policies.size());
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScreenCoordinates) {

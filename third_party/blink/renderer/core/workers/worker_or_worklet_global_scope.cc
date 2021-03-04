@@ -457,7 +457,7 @@ void WorkerOrWorkletGlobalScope::InitContentSecurityPolicyFromVector(
     auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
     csp->SetSupportsWasmEval(SchemeRegistry::SchemeSupportsWasmEvalCSP(
         GetSecurityOrigin()->Protocol()));
-    GetSecurityContext().SetContentSecurityPolicy(csp);
+    SetContentSecurityPolicy(csp);
   }
   GetContentSecurityPolicy()->AddPolicies(std::move(policies));
 }

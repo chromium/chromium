@@ -45,7 +45,6 @@
 
 namespace blink {
 
-class ContentSecurityPolicy;
 class DocumentPolicy;
 class ExecutionContext;
 class FeaturePolicy;
@@ -69,9 +68,9 @@ enum class SecureContextModeExplanation {
 // enabled.
 enum class ReportOptions { kReportOnFailure, kDoNotReport };
 
-// Defines the security properties (such as the security origin, content
-// security policy, and other restrictions) of an environment in which
-// script execution or other activity may occur.
+// Defines the security properties (such as the security origin, and other
+// restrictions) of an environment in which script execution or other activity
+// may occur.
 //
 // Mostly 1:1 with ExecutionContext, except that while remote (i.e.,
 // out-of-process) environments do not have an ExecutionContext in the local
@@ -97,11 +96,6 @@ class CORE_EXPORT SecurityContext {
   }
   SecurityOrigin* GetMutableSecurityOrigin() { return security_origin_.get(); }
 
-  ContentSecurityPolicy* GetContentSecurityPolicy() const {
-    return content_security_policy_.Get();
-  }
-  void SetContentSecurityPolicy(ContentSecurityPolicy*);
-
   // Explicitly override the security origin for this security context with
   // safety CHECKs.
   void SetSecurityOrigin(scoped_refptr<SecurityOrigin>);
@@ -114,10 +108,6 @@ class CORE_EXPORT SecurityContext {
   }
   bool IsSandboxed(network::mojom::blink::WebSandboxFlags mask) const;
   void SetSandboxFlags(network::mojom::blink::WebSandboxFlags flags);
-
-  void SetRequireTrustedTypes();
-  void SetRequireTrustedTypesForTesting();  // Skips sanity checks.
-  bool TrustedTypesRequiredByPolicy() const;
 
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#upgrade-insecure-navigations-set
   void SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
@@ -196,10 +186,8 @@ class CORE_EXPORT SecurityContext {
  private:
   // execution_context_ will be nullptr if this is a RemoteSecurityContext.
   Member<ExecutionContext> execution_context_;
-  Member<ContentSecurityPolicy> content_security_policy_;
   mojom::blink::InsecureRequestPolicy insecure_request_policy_;
   InsecureNavigationsSet insecure_navigations_to_upgrade_;
-  bool require_safe_types_ = false;
   SecureContextMode secure_context_mode_ = SecureContextMode::kInsecureContext;
   SecureContextModeExplanation secure_context_explanation_ =
       SecureContextModeExplanation::kInsecureScheme;

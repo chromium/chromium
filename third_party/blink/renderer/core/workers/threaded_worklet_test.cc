@@ -314,7 +314,7 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
                         *(GetExecutionContext()->GetSecurityOrigin()),
                         network::mojom::ContentSecurityPolicyType::kEnforce,
                         network::mojom::ContentSecurityPolicySource::kHTTP);
-  GetExecutionContext()->GetSecurityContext().SetContentSecurityPolicy(csp);
+  GetExecutionContext()->SetContentSecurityPolicy(csp);
 
   MessagingProxy()->Start();
 
@@ -332,7 +332,7 @@ TEST_F(ThreadedWorkletTest, InvalidContentSecurityPolicy) {
                         *(GetExecutionContext()->GetSecurityOrigin()),
                         network::mojom::ContentSecurityPolicyType::kEnforce,
                         network::mojom::ContentSecurityPolicySource::kHTTP);
-  GetExecutionContext()->GetSecurityContext().SetContentSecurityPolicy(csp);
+  GetExecutionContext()->SetContentSecurityPolicy(csp);
 
   MessagingProxy()->Start();
 

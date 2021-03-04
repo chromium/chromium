@@ -9380,9 +9380,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   {
     const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
         current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csps;
+            ->policy_container_host()
+            ->policies()
+            .content_security_policies;
     EXPECT_EQ(1u, root_csp.size());
     EXPECT_EQ("frame-src 'none'", root_csp[0]->header->header_value);
   }
@@ -9401,9 +9401,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   {
     const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
         current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csps;
+            ->policy_container_host()
+            ->policies()
+            .content_security_policies;
     EXPECT_EQ(1u, root_csp.size());
     EXPECT_EQ("frame-src 'none'", root_csp[0]->header->header_value);
   }
@@ -9427,9 +9427,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
   {
     const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
         current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csps;
+            ->policy_container_host()
+            ->policies()
+            .content_security_policies;
     ASSERT_EQ(1u, root_csp.size());
     ASSERT_EQ("sandbox", root_csp[0]->header->header_value);
     ASSERT_EQ(network::mojom::WebSandboxFlags::kAll,
@@ -9443,9 +9443,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
   {
     const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
         current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csps;
+            ->policy_container_host()
+            ->policies()
+            .content_security_policies;
     ASSERT_EQ(0u, root_csp.size());
     ASSERT_EQ(network::mojom::WebSandboxFlags::kNone,
               current_frame_host()->active_sandbox_flags());
@@ -9460,9 +9460,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CspSandbox) {
   {
     const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
         current_frame_host()
-            ->frame_tree_node()
-            ->current_replication_state()
-            .accumulated_csps;
+            ->policy_container_host()
+            ->policies()
+            .content_security_policies;
     ASSERT_EQ(1u, root_csp.size());
     ASSERT_EQ("sandbox", root_csp[0]->header->header_value);
     ASSERT_EQ(network::mojom::WebSandboxFlags::kAll,

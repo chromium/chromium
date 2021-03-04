@@ -26,7 +26,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/common/referrer.h"
-#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
@@ -360,13 +359,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   // |name| and the recalculated |unique_name| and replicates them into all
   // frame proxies.
   void OnDidUpdateName(const std::string& name, const std::string& unique_name);
-
-  // Sends the newly added Content Security Policies to all the proxies.
-  void OnDidAddContentSecurityPolicies(
-      std::vector<network::mojom::ContentSecurityPolicyPtr> csps);
-
-  // Resets Content Security Policy in all the proxies.
-  void OnDidResetContentSecurityPolicy();
 
   // Sends updated enforcement of insecure request policy to all frame proxies
   // when the frame changes its setting.

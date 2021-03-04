@@ -73,7 +73,7 @@ void ExecutionContextCSPDelegate::SetSandboxFlags(
 }
 
 void ExecutionContextCSPDelegate::SetRequireTrustedTypes() {
-  GetSecurityContext().SetRequireTrustedTypes();
+  execution_context_->SetRequireTrustedTypes();
 }
 
 void ExecutionContextCSPDelegate::AddInsecureRequestPolicy(

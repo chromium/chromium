@@ -355,7 +355,22 @@ SecurityOrigin* ExecutionContext::GetMutableSecurityOrigin() {
 }
 
 ContentSecurityPolicy* ExecutionContext::GetContentSecurityPolicy() const {
-  return security_context_.GetContentSecurityPolicy();
+  return content_security_policy_.Get();
+}
+
+void ExecutionContext::SetContentSecurityPolicy(
+    ContentSecurityPolicy* content_security_policy) {
+  content_security_policy_ = content_security_policy;
+}
+
+void ExecutionContext::SetRequireTrustedTypes() {
+  DCHECK(require_safe_types_ ||
+         content_security_policy_->IsRequireTrustedTypes());
+  require_safe_types_ = true;
+}
+
+void ExecutionContext::SetRequireTrustedTypesForTesting() {
+  require_safe_types_ = true;
 }
 
 network::mojom::blink::WebSandboxFlags ExecutionContext::GetSandboxFlags()
@@ -505,6 +520,7 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(csp_delegate_);
   visitor->Trace(timers_);
   visitor->Trace(origin_trial_context_);
+  visitor->Trace(content_security_policy_);
   ContextLifecycleNotifier::Trace(visitor);
   ConsoleLogger::Trace(visitor);
   Supplementable<ExecutionContext>::Trace(visitor);
@@ -592,7 +608,7 @@ bool ExecutionContext::IsFeatureEnabled(
 }
 
 bool ExecutionContext::RequireTrustedTypes() const {
-  return security_context_.TrustedTypesRequiredByPolicy() &&
+  return require_safe_types_ &&
          RuntimeEnabledFeatures::TrustedDOMTypesEnabled(this);
 }
 

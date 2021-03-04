@@ -32,7 +32,7 @@ void NullExecutionContext::SetUpSecurityContextForTesting() {
   GetSecurityContext().SetSecurityOriginForTesting(
       SecurityOrigin::Create(url_));
   policy->BindToDelegate(GetContentSecurityPolicyDelegate());
-  GetSecurityContext().SetContentSecurityPolicy(policy);
+  SetContentSecurityPolicy(policy);
 }
 
 FrameOrWorkerScheduler* NullExecutionContext::GetScheduler() {

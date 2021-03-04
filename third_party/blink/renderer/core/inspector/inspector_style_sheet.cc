@@ -2083,7 +2083,7 @@ bool InspectorStyleSheetForInlineStyle::SetText(
 
   {
     InspectorCSSAgent::InlineStyleOverrideScope override_scope(
-        &element_->GetExecutionContext()->GetSecurityContext());
+        element_->GetExecutionContext());
     element_->setAttribute("style", AtomicString(text), exception_state);
   }
   if (!exception_state.HadException())

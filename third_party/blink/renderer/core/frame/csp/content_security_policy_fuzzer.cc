@@ -72,8 +72,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Construct and initialize a policy from the string.
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
   csp->DidReceiveHeader(header, *self_origin, header_type, header_source);
-  auto& context = g_page_holder->GetFrame().DomWindow()->GetSecurityContext();
-  context.SetContentSecurityPolicy(csp);
+  auto* window = g_page_holder->GetFrame().DomWindow();
+  window->SetContentSecurityPolicy(csp);
 
   // Force a garbage collection.
   // Specify namespace explicitly. Otherwise it conflicts on Mac OS X with:

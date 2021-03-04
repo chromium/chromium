@@ -846,16 +846,6 @@ interface RemoteFrame {
   // fullscreen.
   WillEnterFullscreen(FullscreenOptions options);
 
-  // Updates replicated ContentSecurityPolicy on the remote frame's
-  // SecurityContent.
-  AddReplicatedContentSecurityPolicies(
-      array<network.mojom.ContentSecurityPolicy> csps);
-
-  // Resets the replicated ContentSecurityPolicy on the remote frame's
-  // SecurityContext. Used to reset CSP from the previous document on
-  // a cross-document navigation.
-  ResetReplicatedContentSecurityPolicy();
-
   // Update replicated set for enforcement of insecure navigations. |set|
   // is a hashed set of host/port pairs. See
   // SecurityContext::SetInsecureNavigationsSet.

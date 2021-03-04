@@ -167,6 +167,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   SecurityOrigin* GetMutableSecurityOrigin();
 
   ContentSecurityPolicy* GetContentSecurityPolicy() const;
+  void SetContentSecurityPolicy(ContentSecurityPolicy* content_security_policy);
+  void SetRequireTrustedTypes();
+  void SetRequireTrustedTypesForTesting();
 
   network::mojom::blink::WebSandboxFlags GetSandboxFlags() const;
   bool IsSandboxed(network::mojom::blink::WebSandboxFlags mask) const;
@@ -470,6 +473,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   network::mojom::blink::IPAddressSpace address_space_;
 
   Member<OriginTrialContext> origin_trial_context_;
+
+  Member<ContentSecurityPolicy> content_security_policy_;
+  bool require_safe_types_ = false;
 };
 
 }  // namespace blink

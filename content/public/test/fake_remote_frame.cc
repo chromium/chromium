@@ -21,11 +21,6 @@ void FakeRemoteFrame::Init(blink::AssociatedInterfaceProvider* provider) {
 
 void FakeRemoteFrame::WillEnterFullscreen(blink::mojom::FullscreenOptionsPtr) {}
 
-void FakeRemoteFrame::AddReplicatedContentSecurityPolicies(
-    std::vector<network::mojom::ContentSecurityPolicyPtr> csps) {}
-
-void FakeRemoteFrame::ResetReplicatedContentSecurityPolicy() {}
-
 void FakeRemoteFrame::EnforceInsecureNavigationsSet(
     const std::vector<uint32_t>& set) {}
 
