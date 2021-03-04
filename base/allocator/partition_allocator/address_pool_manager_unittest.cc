@@ -7,6 +7,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/bits.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

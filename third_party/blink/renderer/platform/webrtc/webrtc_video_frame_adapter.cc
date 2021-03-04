@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/video_util.h"
 #include "media/video/gpu_video_accelerator_factories.h"

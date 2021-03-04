@@ -12,12 +12,14 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/atomicops.h"
-#include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 namespace base {
+
+template <typename Type>
+struct LazyInstanceTraitsBase;
 
 namespace internal {
 

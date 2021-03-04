@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/threading/thread_restrictions.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"

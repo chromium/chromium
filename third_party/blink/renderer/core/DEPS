@@ -20,6 +20,7 @@ include_rules = [
     "+base/task/sequence_manager/task_time_observer.h",
     "+base/test/bind.h",
     "+base/test/simple_test_tick_clock.h",
+    "+base/threading/thread_restrictions.h",
     "+base/time",
     "+base/unguessable_token.h",
     "+build/mac",
