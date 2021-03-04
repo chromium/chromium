@@ -78,8 +78,8 @@ DEFINE_BINARY_PROTO_FUZZER(
                                   v8::NewStringType::kNormal)
               .ToLocalChecked();
 
-      v8::ScriptOrigin origin(name, 0, 0, false, -1, v8::Local<v8::Value>(),
-                              false, false, true);
+      v8::ScriptOrigin origin(isolate, name, 0, 0, false, -1,
+                              v8::Local<v8::Value>(), false, false, true);
       v8::ScriptCompiler::Source source(source_v8_string, origin);
       v8::MaybeLocal<v8::Module> module =
           v8::ScriptCompiler::CompileModule(isolate, &source);
