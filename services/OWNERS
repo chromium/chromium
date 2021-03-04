@@ -3,3 +3,6 @@ blundell@chromium.org
 jam@chromium.org
 rockot@google.com
 sky@chromium.org
+
+# For adding or removing languages.
+per-file *.grd=claudiomagni@chromium.org

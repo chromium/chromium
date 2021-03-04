@@ -52,6 +52,9 @@ per-file webxr_strings.grdp=file://components/webxr/OWNERS
 per-file .eslintrc.js=file://ui/webui/PLATFORM_OWNERS
 per-file PRESUBMIT.py=file://ui/webui/PLATFORM_OWNERS
 
+# For adding or removing languages.
+per-file *.grd=claudiomagni@chromium.org
+
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
 
