@@ -592,14 +592,8 @@ const base::Feature kSavePageAsWebBundle{"SavePageAsWebBundle",
 // actually enable the feature by default. The feature is also controlled by the
 // Blink runtime feature "SecurePaymentConfirmation". Both have to be enabled
 // for SecurePaymentConfirmation to be available.
-const base::Feature kSecurePaymentConfirmation {
-  "SecurePaymentConfirmationBrowser",
-#if defined(OS_MAC) || defined(OS_WIN)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kSecurePaymentConfirmation{
+    "SecurePaymentConfirmationBrowser", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Used to control whether to remove the restriction that PaymentCredential in
 // WebAuthn and secure payment confirmation method in PaymentRequest API must
