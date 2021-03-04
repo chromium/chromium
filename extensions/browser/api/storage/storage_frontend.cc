@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_context.h"
@@ -65,6 +66,15 @@ class DefaultObserver : public SettingsObserver {
     TRACE_EVENT2("browser", "SettingsObserver:OnSettingsChanged",
                  "extension_id", extension_id, "change_size",
                  change_json.size());
+
+    // Alias extension_id for investigation of shutdown hangs. crbug.com/1154997
+    // Extension IDs are exactly 32 characters in length.
+    constexpr size_t kExtensionsIdLength = 32;
+    char extension_id_str[kExtensionsIdLength + 1];
+    base::strlcpy(extension_id_str, extension_id.c_str(),
+                  base::size(extension_id_str));
+    base::debug::Alias(extension_id_str);
+
     std::unique_ptr<base::Value> changes =
         base::JSONReader::ReadDeprecated(change_json);
     DCHECK(changes);
