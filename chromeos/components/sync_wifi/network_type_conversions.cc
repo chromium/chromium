@@ -11,6 +11,23 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
+namespace {
+
+bool IsAutoconnectEnabled(
+    sync_pb::WifiConfigurationSpecifics::AutomaticallyConnectOption
+        auto_connect) {
+  switch (auto_connect) {
+    case sync_pb::WifiConfigurationSpecifics::AUTOMATICALLY_CONNECT_DISABLED:
+      return false;
+
+    case sync_pb::WifiConfigurationSpecifics::AUTOMATICALLY_CONNECT_ENABLED:
+    case sync_pb::WifiConfigurationSpecifics::AUTOMATICALLY_CONNECT_UNSPECIFIED:
+      return true;
+  }
+}
+
+}  // namespace
+
 namespace chromeos {
 
 namespace sync_wifi {
@@ -268,8 +285,7 @@ network_config::mojom::ConfigPropertiesPtr MojoNetworkConfigFromProto(
           std::move(wifi));
 
   config->auto_connect = network_config::mojom::AutoConnectConfig::New(
-      specifics.automatically_connect() ==
-      sync_pb::WifiConfigurationSpecifics::AUTOMATICALLY_CONNECT_ENABLED);
+      IsAutoconnectEnabled(specifics.automatically_connect()));
 
   config->priority = network_config::mojom::PriorityConfig::New(
       specifics.is_preferred() ==
