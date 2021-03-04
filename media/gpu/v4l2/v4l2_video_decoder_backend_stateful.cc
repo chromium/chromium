@@ -628,7 +628,8 @@ void V4L2StatefulVideoDecoderBackend::ClearPendingRequests(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
-  resolution_change_cb_.Reset();
+  if (resolution_change_cb_)
+    std::move(resolution_change_cb_).Run();
 
   if (flush_cb_) {
     std::move(flush_cb_).Run(status);
