@@ -5345,9 +5345,6 @@ crbug.com/1057060 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/
 crbug.com/1057060 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Pass Failure Timeout ]
 crbug.com/1045599 fast/css-grid-layout/flex-content-sized-columns-resize.html [ Pass Failure Timeout ]
 
-# Sheriff 2020-09-29
-crbug.com/1133342 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Failure Timeout ]
-
 # Transform animation reftests
 crbug.com/1133901 virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-translate-em.html [ Failure ]
 crbug.com/1133901 virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-translate-em.html [ Failure ]
