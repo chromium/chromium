@@ -136,6 +136,7 @@ void WebRtcVideoTrackSource::SendFeedback() {
   media::VideoFrameFeedback feedback;
   feedback.max_pixels = video_adapter()->GetTargetPixels();
   feedback.max_framerate_fps = video_adapter()->GetMaxFramerate();
+  feedback.Combine(adapter_resources_->GetFeedback());
   callback_.Run(feedback);
 }
 

@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_feedback.h"
 #include "media/base/video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
@@ -78,6 +79,12 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     virtual scoped_refptr<media::VideoFrame> ConstructVideoFrameFromGpu(
         scoped_refptr<media::VideoFrame> source_frame);
 
+    // Used to report feedback from an adapter upon destruction.
+    void SetFeedback(const media::VideoFrameFeedback& feedback);
+
+    // Returns the most recently stored feedback.
+    media::VideoFrameFeedback GetFeedback();
+
    protected:
     friend class base::RefCountedThreadSafe<SharedResources>;
     virtual ~SharedResources();
@@ -88,17 +95,21 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     media::VideoFramePool pool_for_mapped_frames_;
     media::VideoFramePool pool_for_tmp_frames_;
 
+    base::Lock context_provider_lock_;
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
         GUARDED_BY(context_provider_lock_);
 
     media::GpuVideoAcceleratorFactories* gpu_factories_;
 
-    mutable base::Lock context_provider_lock_;
+    base::Lock feedback_lock_;
+
+    // Contains feedback from the most recently destroyed Adapter.
+    media::VideoFrameFeedback last_feedback_ GUARDED_BY(feedback_lock_);
   };
 
   // Returns true if |frame| is adaptable to a webrtc::VideoFrameBuffer.
   static bool IsFrameAdaptable(const media::VideoFrame* frame);
-  static const base::span<const media::VideoPixelFormat>
+  static base::span<const media::VideoPixelFormat>
   AdaptableMappablePixelFormats();
 
   explicit WebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
@@ -134,6 +145,8 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   mutable scoped_refptr<SharedResources> shared_resources_;
 
   media::GpuVideoAcceleratorFactories* gpu_factories_;
+
+  mutable bool was_mapped_ = false;
 };
 
 }  // namespace blink

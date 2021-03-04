@@ -39,12 +39,35 @@ void VideoFrameFeedback::Combine(const VideoFrameFeedback& other) {
   if (other.max_framerate_fps >= 0.0 &&
       (max_framerate_fps < 0.0 || max_framerate_fps > other.max_framerate_fps))
     max_framerate_fps = other.max_framerate_fps;
+
+  // If any consumer wants mapped frames, all of them should get it.
+  require_mapped_frame |= other.require_mapped_frame;
 }
 
 bool VideoFrameFeedback::Empty() const {
   return !std::isfinite(max_framerate_fps) &&
          max_pixels == std::numeric_limits<int>::max() &&
-         (resource_utilization < 0.0);
+         (resource_utilization < 0.0) && !require_mapped_frame;
+}
+
+VideoFrameFeedback& VideoFrameFeedback::WithUtilization(float utilization) {
+  resource_utilization = utilization;
+  return *this;
+}
+
+VideoFrameFeedback& VideoFrameFeedback::WithMaxFramerate(float framerate_fps) {
+  max_framerate_fps = framerate_fps;
+  return *this;
+}
+
+VideoFrameFeedback& VideoFrameFeedback::WithMaxPixels(int pixels) {
+  max_pixels = pixels;
+  return *this;
+}
+
+VideoFrameFeedback& VideoFrameFeedback::RequireMapped(bool require) {
+  require_mapped_frame = require;
+  return *this;
 }
 
 }  // namespace media

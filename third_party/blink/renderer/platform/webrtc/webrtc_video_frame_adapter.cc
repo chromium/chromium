@@ -458,6 +458,18 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
   return media::ConvertToMemoryMappedFrame(std::move(source_frame));
 }
 
+void WebRtcVideoFrameAdapter::SharedResources::SetFeedback(
+    const media::VideoFrameFeedback& feedback) {
+  base::AutoLock auto_lock(feedback_lock_);
+  last_feedback_ = feedback;
+}
+
+media::VideoFrameFeedback
+WebRtcVideoFrameAdapter::SharedResources::GetFeedback() {
+  base::AutoLock auto_lock(feedback_lock_);
+  return last_feedback_;
+}
+
 WebRtcVideoFrameAdapter::SharedResources::SharedResources(
     media::GpuVideoAcceleratorFactories* gpu_factories)
     : gpu_factories_(gpu_factories) {}
@@ -473,7 +485,12 @@ WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
     scoped_refptr<SharedResources> shared_resources)
     : frame_(std::move(frame)), shared_resources_(shared_resources) {}
 
-WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {}
+WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
+  if (shared_resources_) {
+    shared_resources_->SetFeedback(
+        media::VideoFrameFeedback().RequireMapped(was_mapped_));
+  }
+}
 
 webrtc::VideoFrameBuffer::Type WebRtcVideoFrameAdapter::type() const {
   return Type::kNative;
@@ -499,7 +516,7 @@ bool WebRtcVideoFrameAdapter::IsFrameAdaptable(const media::VideoFrame* frame) {
 }
 
 // static
-const base::span<const media::VideoPixelFormat>
+base::span<const media::VideoPixelFormat>
 WebRtcVideoFrameAdapter::AdaptableMappablePixelFormats() {
   static constexpr const media::VideoPixelFormat
       kAdaptableMappablePixelFormats[] = {media::PIXEL_FORMAT_I420,
@@ -514,6 +531,7 @@ WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
       << "Can not create WebRTC frame adapter for frame "
       << frame_->AsHumanReadableString();
 
+  was_mapped_ = true;
   if (frame_->storage_type() ==
       media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     auto video_frame =

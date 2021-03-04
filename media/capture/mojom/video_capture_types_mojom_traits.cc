@@ -1754,6 +1754,7 @@ bool StructTraits<media::mojom::VideoFrameFeedbackDataView,
   output->max_framerate_fps = data.max_framerate_fps();
   output->max_pixels = data.max_pixels();
   output->resource_utilization = data.resource_utilization();
+  output->require_mapped_frame = data.require_mapped_frame();
   return true;
 }
 

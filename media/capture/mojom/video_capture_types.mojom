@@ -291,12 +291,16 @@ struct VideoCaptureParams {
 //
 // |max_pixels| reports requested maximum resolution (in sense of image area).
 // int::max used to signal no limit.
+//
+// |require_mapped_frame| reports that the consumer needs a cpu readable frame.
 struct VideoFrameFeedback {
   double resource_utilization;
 
   float max_framerate_fps;
 
   int32 max_pixels;
+
+  bool require_mapped_frame;
 };
 
 // Contains one stride value per image plane. Stride means the number of bytes

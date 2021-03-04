@@ -39,6 +39,11 @@ struct MEDIA_EXPORT VideoFrameFeedback {
     return !(*this == other);
   }
 
+  VideoFrameFeedback& WithUtilization(float utilization);
+  VideoFrameFeedback& WithMaxFramerate(float max_framerate_fps);
+  VideoFrameFeedback& WithMaxPixels(int max_pixels);
+  VideoFrameFeedback& RequireMapped(bool require);
+
   // Combine constraints of two different sinks resulting in constraints fitting
   // both of them.
   void Combine(const VideoFrameFeedback& other);
@@ -77,6 +82,9 @@ struct MEDIA_EXPORT VideoFrameFeedback {
   // Maximum requested resolution by a sink (given as a number of pixels).
   // Negative values should be ignored.
   int max_pixels = std::numeric_limits<int>::max();
+
+  // Indicates that a consumer wants a cpu readable frame.
+  bool require_mapped_frame = false;
 };
 
 }  // namespace media
