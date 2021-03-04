@@ -31,6 +31,8 @@ class ProfileKeyAndroid {
   // Whether this profile is off the record.
   jboolean IsOffTheRecord(JNIEnv* env);
 
+  jlong GetSimpleFactoryKeyPointer(JNIEnv* env);
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:

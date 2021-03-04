@@ -6,11 +6,12 @@ package org.chromium.chrome.browser.profiles;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 /**
  * Wrapper that allows passing a ProfileKey reference around in the Java layer.
  */
-public class ProfileKey {
+public class ProfileKey implements SimpleFactoryKeyHandle {
     /** Whether this wrapper corresponds to an off the record ProfileKey. */
     private final boolean mIsOffTheRecord;
 
@@ -42,6 +43,11 @@ public class ProfileKey {
         return mIsOffTheRecord;
     }
 
+    @Override
+    public long getNativeSimpleFactoryKeyPointer() {
+        return ProfileKeyJni.get().getSimpleFactoryKeyPointer(mNativeProfileKeyAndroid);
+    }
+
     @CalledByNative
     private static ProfileKey create(long nativeProfileKeyAndroid) {
         return new ProfileKey(nativeProfileKeyAndroid);
@@ -62,5 +68,6 @@ public class ProfileKey {
         ProfileKey getLastUsedRegularProfileKey();
         ProfileKey getOriginalKey(long nativeProfileKeyAndroid);
         boolean isOffTheRecord(long nativeProfileKeyAndroid);
+        long getSimpleFactoryKeyPointer(long nativeProfileKeyAndroid);
     }
 }

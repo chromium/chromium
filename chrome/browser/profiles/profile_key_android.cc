@@ -75,6 +75,10 @@ jboolean ProfileKeyAndroid::IsOffTheRecord(JNIEnv* env) {
   return key_->IsOffTheRecord();
 }
 
+jlong ProfileKeyAndroid::GetSimpleFactoryKeyPointer(JNIEnv* env) {
+  return reinterpret_cast<jlong>(static_cast<SimpleFactoryKey*>(key_));
+}
+
 ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(obj_);
 }

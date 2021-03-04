@@ -4,6 +4,7 @@ include_rules = [
   "+content/public/test/android",
   "+cc",
   "+components/embedder_support/android/web_contents_delegate_jni_headers",
+  "+components/keyed_service",
   "+components/url_formatter/android/java",
   "+content/public/browser",
   "+content/public/common",
