@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.download;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -51,9 +55,28 @@ public class DownloadMetrics {
         }
     }
 
-    public static void recordDownloadPageOpen(@DownloadOpenSource int source) {
+    /**
+     * Records download home open metrics.
+     * @param source The source where the user opened the download media file.
+     * @param tab The active tab when opening download manager to reach profile.
+     */
+    public static void recordDownloadPageOpen(@DownloadOpenSource int source, @Nullable Tab tab) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.DownloadPage.OpenSource", source, DownloadOpenSource.MAX_VALUE);
+
+        // Below there are metrics per profile type, so there should be a tab to get profile.
+        if (tab == null) return;
+
+        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        @BrowserProfileType
+        int type = Profile.getBrowserProfileTypeFromProfile(profile);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Download.OpenDownloads.PerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
+        if (source == DownloadOpenSource.MENU) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Download.OpenDownloadsFromMenu.PerProfileType", type,
+                    BrowserProfileType.MAX_VALUE + 1);
+        }
     }
 
     /**

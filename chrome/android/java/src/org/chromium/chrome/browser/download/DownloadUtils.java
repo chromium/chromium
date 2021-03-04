@@ -171,7 +171,7 @@ public class DownloadUtils {
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_HOME_OPENED);
         }
-        DownloadMetrics.recordDownloadPageOpen(source);
+        DownloadMetrics.recordDownloadPageOpen(source, tab);
         return true;
     }
 

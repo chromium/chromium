@@ -13,6 +13,7 @@
 #include "base/debug/profiler.h"
 #include "base/i18n/number_formatting.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -61,6 +63,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -607,6 +610,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
                                    delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_DOWNLOADS);
+      base::UmaHistogramEnumeration(
+          "Download.OpenDownloadsFromMenu.PerProfileType",
+          ProfileMetrics::GetBrowserProfileType(browser_->profile()));
       break;
     case IDC_SHOW_SIGNIN:
       if (!uma_action_recorded_) {
@@ -619,6 +625,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Settings", delta);
       LogMenuAction(MENU_ACTION_OPTIONS);
+      base::UmaHistogramEnumeration(
+          "Settings.OpenSettingsFromMenu.PerProfileType",
+          ProfileMetrics::GetBrowserProfileType(browser_->profile()));
       break;
     case IDC_ABOUT:
       if (!uma_action_recorded_)

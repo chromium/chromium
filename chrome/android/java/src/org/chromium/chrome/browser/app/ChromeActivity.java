@@ -193,6 +193,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.CombinedPolicyProvider.PolicyChangeListener;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -2164,6 +2165,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(this);
             RecordUserAction.record("MobileMenuSettings");
+            @BrowserProfileType
+            int type = Profile.getBrowserProfileTypeFromProfile(getCurrentTabModel().getProfile());
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Settings.OpenSettingsFromMenu.PerProfileType", type,
+                    BrowserProfileType.MAX_VALUE + 1);
             return true;
         }
 
