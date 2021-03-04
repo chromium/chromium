@@ -54,6 +54,7 @@ class MockDelegate : public NetworkConnect::Delegate {
   MOCK_METHOD1(ShowNetworkSettings, void(const std::string& network_id));
   MOCK_METHOD1(ShowEnrollNetwork, bool(const std::string& network_id));
   MOCK_METHOD1(ShowMobileSetupDialog, void(const std::string& network_id));
+  MOCK_METHOD1(ShowCarrierAccountDetail, void(const std::string& network_id));
   MOCK_METHOD2(ShowNetworkConnectError,
                void(const std::string& error_name,
                     const std::string& network_id));
@@ -293,6 +294,19 @@ TEST_F(NetworkConnectTest, ActivateCellular_Error) {
   base::RunLoop().RunUntilIdle();
 
   NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+}
+
+TEST_F(NetworkConnectTest, ConnectToCellularNetwork_OutOfCredits) {
+  EXPECT_CALL(*mock_delegate_, ShowCarrierAccountDetail(kCellular1Guid));
+
+  service_test_->SetServiceProperty(
+      kCellular1ServicePath, shill::kConnectableProperty, base::Value(false));
+  service_test_->SetServiceProperty(
+      kCellular1ServicePath, shill::kOutOfCreditsProperty, base::Value(true));
+  base::RunLoop().RunUntilIdle();
+
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace chromeos

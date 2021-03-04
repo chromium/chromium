@@ -44,6 +44,7 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     void SetTechnologyEnabled(const chromeos::NetworkTypePattern& technology,
                               bool enabled_state) override {}
     void ShowMobileSetup(const std::string& network_id) override {}
+    void ShowCarrierAccountDetail(const std::string& network_id) override {}
     void ConfigureNetworkIdAndConnect(
         const std::string& network_id,
         const base::DictionaryValue& shill_properties,
