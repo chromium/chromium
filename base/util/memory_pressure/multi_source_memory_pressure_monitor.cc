@@ -81,9 +81,13 @@ void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(current_pressure_level_, level);
 
-  TRACE_EVENT_INSTANT1(
+  TRACE_EVENT_INSTANT(
       "base", "MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged",
-      TRACE_EVENT_SCOPE_THREAD, "level", level);
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(base::MemoryPressureListener::LevelAsTraceEnum(level));
+      });
 
   // Records the duration of the latest pressure session, there are 4
   // transitions of interest:

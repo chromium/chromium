@@ -12,6 +12,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
@@ -349,8 +350,14 @@ void TabLoader::OnStopTracking(WebContents* web_contents,
 void TabLoader::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   ReentrancyHelper lifetime_helper(this);
-  TRACE_EVENT1("browser", "TabLoader::OnMemoryPressure", "level",
-               memory_pressure_level);
+  TRACE_EVENT_INSTANT(
+      "browser", "TabLoader::OnMemoryPressure",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(base::MemoryPressureListener::LevelAsTraceEnum(
+            memory_pressure_level));
+      });
 
   switch (memory_pressure_level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:

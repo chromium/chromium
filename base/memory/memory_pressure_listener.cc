@@ -7,6 +7,7 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/trace_event/memory_dump_manager.h"  // no-presubmit-check
 
 namespace base {
 
@@ -66,6 +67,23 @@ subtle::Atomic32 g_notifications_suppressed = 0;
 
 }  // namespace
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+// static
+perfetto::protos::pbzero::MemoryPressureLevel
+MemoryPressureListener::LevelAsTraceEnum(
+    MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  using ProtoLevel = perfetto::protos::pbzero::MemoryPressureLevel;
+  switch (memory_pressure_level) {
+    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      return ProtoLevel::MEMORY_PRESSURE_LEVEL_NONE;
+    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      return ProtoLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
+    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      return ProtoLevel::MEMORY_PRESSURE_LEVEL_CRITICAL;
+  }
+}
+#endif
+
 MemoryPressureListener::MemoryPressureListener(
     const base::Location& creation_location,
     const MemoryPressureListener::MemoryPressureCallback& callback)
@@ -88,28 +106,13 @@ MemoryPressureListener::~MemoryPressureListener() {
   GetMemoryPressureObserver()->RemoveObserver(this);
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-perfetto::protos::pbzero::MemoryPressureLevel to_proto_enum(
-    MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  using ProtoLevel = perfetto::protos::pbzero::MemoryPressureLevel;
-  switch (memory_pressure_level) {
-    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-      return ProtoLevel::MEMORY_PRESSURE_LEVEL_NONE;
-    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-      return ProtoLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
-    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      return ProtoLevel::MEMORY_PRESSURE_LEVEL_CRITICAL;
-  }
-}
-#endif
-
 void MemoryPressureListener::Notify(MemoryPressureLevel memory_pressure_level) {
   TRACE_EVENT(
       "base", "MemoryPressureListener::Notify",
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_memory_pressure_notification();
-        data->set_level(to_proto_enum(memory_pressure_level));
+        data->set_level(LevelAsTraceEnum(memory_pressure_level));
         data->set_creation_location_iid(
             base::trace_event::InternedSourceLocation::Get(
                 &ctx,
@@ -129,10 +132,14 @@ void MemoryPressureListener::SyncNotify(
 void MemoryPressureListener::NotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_NE(memory_pressure_level, MEMORY_PRESSURE_LEVEL_NONE);
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("memory-infra"),
-                       "MemoryPressureListener::NotifyMemoryPressure",
-                       TRACE_EVENT_SCOPE_THREAD, "level",
-                       memory_pressure_level);
+  TRACE_EVENT_INSTANT(
+      trace_event::MemoryDumpManager::kTraceCategory,
+      "MemoryPressureListener::NotifyMemoryPressure",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(LevelAsTraceEnum(memory_pressure_level));
+      });
   if (AreNotificationsSuppressed())
     return;
   DoNotifyMemoryPressure(memory_pressure_level);
