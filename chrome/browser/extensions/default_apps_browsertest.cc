@@ -230,6 +230,25 @@ class DefaultAppsMigrationEnabledBrowserTest
   bool ShouldEnableWebAppMigration() override { return true; }
 };
 
+class DefaultAppsMigrationEnabledThenRolledBackBrowserTest
+    : public DefaultAppsMigrationBrowserTest {
+ public:
+  bool ShouldEnableWebAppMigration() override {
+    // Simulate the switch going back and forth between states.
+    // Step 0 (pre=1): Enabled (web app is installed).
+    // Step 1 (pre=0): Disabled (extension app is re-installed).
+    switch (GetTestPreCount()) {
+      case 1:
+        return true;
+      case 0:
+        return false;
+      default:
+        NOTREACHED();
+        return false;
+    }
+  }
+};
+
 // Default apps are handled differently on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -341,7 +360,6 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
 IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
                        TestExtensionWasAlreadyUninstalled) {
   // Web app should stay uninstalled on second launch.
-  TestExtensionRegistryObserver observer(registry(), kDefaultInstalledId);
   WaitForSystemReady();
   EXPECT_FALSE(IsWebAppCurrentlyInstalled());
 
@@ -351,9 +369,8 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
 IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledBrowserTest,
                        PRE_TestAppInstalled) {
   // Migration feature enabled on first launch. Web app should be installed
-  TestExtensionRegistryObserver observer(registry(), kDefaultInstalledId);
   WaitForSystemReady();
-  EXPECT_FALSE(WasMigratedToWebApp());
+  EXPECT_TRUE(WasMigratedToWebApp());
   EXPECT_TRUE(WasWebAppInstalledInThisRun());
   EXPECT_TRUE(IsWebAppCurrentlyInstalled());
 
@@ -363,11 +380,30 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledBrowserTest,
                        TestAppInstalled) {
   // Web app should stay installed on second launch.
-  TestExtensionRegistryObserver observer(registry(), kDefaultInstalledId);
   WaitForSystemReady();
   EXPECT_TRUE(IsWebAppCurrentlyInstalled());
 
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledThenRolledBackBrowserTest,
+                       PRE_TestAppInstalled) {
+  // Migration feature enabled on first launch. Web app should be installed
+  WaitForSystemReady();
+  EXPECT_TRUE(WasMigratedToWebApp());
+  EXPECT_TRUE(WasWebAppInstalledInThisRun());
+  EXPECT_TRUE(IsWebAppCurrentlyInstalled());
+
+  EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationEnabledThenRolledBackBrowserTest,
+                       TestAppInstalled) {
+  // Extension app should be installed on second launch.
+  WaitForSystemReady();
+  EXPECT_FALSE(IsWebAppCurrentlyInstalled());
+
+  EXPECT_TRUE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
