@@ -128,7 +128,7 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
   WorkerErrorReportedCallback error_callback_;
   // Should be used on UI thread only.
   bool stop_called_ = false;
-  // Should be used on IO thread only.
+  // Should be used on UI thread only.
   bool is_stopped_ = false;
 };
 

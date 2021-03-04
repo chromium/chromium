@@ -119,7 +119,7 @@ class ServiceWorkerMainResourceLoaderTest;
 // one of them is activated. This class connects the actual script with a
 // running worker.
 //
-// Unless otherwise noted, all methods of this class run on the IO thread.
+// Unless otherwise noted, all methods of this class run on the UI thread.
 class CONTENT_EXPORT ServiceWorkerVersion
     : public blink::mojom::ServiceWorkerHost,
       public base::RefCounted<ServiceWorkerVersion>,

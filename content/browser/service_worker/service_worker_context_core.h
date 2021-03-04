@@ -49,7 +49,7 @@ class ServiceWorkerRegistration;
 class URLLoaderFactoryGetter;
 
 // This class manages data associated with service workers.
-// The class is single threaded and should only be used on the IO thread.
+// The class is single threaded and should only be used on the UI thread.
 // In chromium, there is one instance per storagepartition. This class
 // is the root of the containment hierarchy for service worker data
 // associated with a particular partition.

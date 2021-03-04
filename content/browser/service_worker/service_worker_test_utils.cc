@@ -370,8 +370,7 @@ scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
   // * Default run loop doesn't execute nested tasks. Tests will hang when
   //   default run loop is used.
   // TODO(bashi): Figure out a way to avoid using nested loop as it's
-  // problematic especially on the IO thread. This function is called on the IO
-  // thread when ServiceWorkerOnUI is disabled.
+  // problematic.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   registry->CreateNewRegistration(
       options,
