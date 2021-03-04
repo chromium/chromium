@@ -227,7 +227,7 @@ class PLATFORM_EXPORT ParkableStringImpl final
     ParkableMetadata(String string, std::unique_ptr<SecureDigest> digest);
 
     Mutex mutex_;
-    int lock_depth_ GUARDED_BY(mutex_);
+    unsigned int lock_depth_ GUARDED_BY(mutex_);
 
     // Main thread only.
     State state_;

@@ -294,6 +294,7 @@ void ParkableStringImpl::Lock() {
 
   MutexLocker locker(metadata_->mutex_);
   metadata_->lock_depth_ += 1;
+  CHECK_NE(metadata_->lock_depth_, 0u);
   // Make young as this is a strong (but not certain) indication that the string
   // will be accessed soon.
   MakeYoung();
@@ -304,8 +305,8 @@ void ParkableStringImpl::Unlock() {
     return;
 
   MutexLocker locker(metadata_->mutex_);
-  DCHECK_GT(metadata_->lock_depth_, 0);
   metadata_->lock_depth_ -= 1;
+  CHECK_NE(metadata_->lock_depth_, std::numeric_limits<unsigned int>::max());
 
 #if defined(ADDRESS_SANITIZER) && DCHECK_IS_ON()
   // There are no external references to the data, nobody should touch the data.
