@@ -347,6 +347,13 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetCellularServiceOutOfCredits() {
+    helper_.service_test()->SetServiceProperty(kTestCellularServicePath,
+                                               shill::kOutOfCreditsProperty,
+                                               base::Value(true));
+    base::RunLoop().RunUntilIdle();
+  }
+
   void AddNonConnectablePSimService() {
     AddCellularDevice();
 
@@ -904,6 +911,15 @@ TEST_F(NetworkConnectionHandlerImplTest, PSimProfile_NotConnectable) {
   AddNonConnectablePSimService();
   Connect(kTestCellularServicePath);
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, PSimProfile_OutOfCredits) {
+  AddNonConnectablePSimService();
+
+  SetCellularServiceOutOfCredits();
+  Connect(kTestCellularServicePath);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorCellularOutOfCredits,
+            GetResultAndReset());
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_AlreadyConnectable) {

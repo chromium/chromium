@@ -510,6 +510,13 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     return;
   }
 
+  bool out_of_credits =
+      properties->FindBoolKey(shill::kOutOfCreditsProperty).value_or(false);
+  if (out_of_credits && *type == shill::kTypeCellular) {
+    ErrorCallbackForPendingRequest(service_path, kErrorCellularOutOfCredits);
+    return;
+  }
+
   // Get VPN provider type and host (required for configuration) and ensure
   // that required VPN non-cert properties are set.
   const base::Value* provider_properties =

@@ -65,6 +65,8 @@ const char NetworkConnectionHandler::kErrorTetherAttemptWithNoDelegate[] =
     "tether-with-no-delegate";
 const char NetworkConnectionHandler::kErrorCellularInhibitFailure[] =
     "cellular-inhibit-failure";
+const char NetworkConnectionHandler::kErrorCellularOutOfCredits[] =
+    "cellular-out-of-credits";
 const char NetworkConnectionHandler::kErrorESimProfileIssue[] =
     "esim-profile-issue";
 

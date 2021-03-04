@@ -113,6 +113,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // operations.
   static const char kErrorCellularInhibitFailure[];
 
+  // Error occurred when trying to connect to a cellular network that is out of
+  // credits.
+  static const char kErrorCellularOutOfCredits[];
+
   // Error occurred while trying to perform an operation with an eSIM profile.
   static const char kErrorESimProfileIssue[];
 
