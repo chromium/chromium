@@ -13,6 +13,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
@@ -226,7 +227,13 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
       wl_compositor_create_region(connection_->compositor()));
 
   auto window_shape_in_dips = root_window_->GetWindowShape();
-  if (window_shape_in_dips.has_value()) {
+
+  // Only root_surface and primary_subsurface should use |window_shape_in_dips|.
+  // Do not use non empty |window_shape_in_dips| if |region_px| is empty, i.e.
+  // this surface is transluscent.
+  if (window_shape_in_dips.has_value() && !region_px.IsEmpty() &&
+      root_window_->root_surface() != this &&
+      root_window()->primary_subsurface()->wayland_surface() != this) {
     for (const auto& rect : window_shape_in_dips.value())
       wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                     rect.height());
