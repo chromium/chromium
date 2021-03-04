@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -98,6 +99,17 @@ void ContentAutofillDriver::BindPendingReceiver(
 }
 
 bool ContentAutofillDriver::IsIncognito() const {
+  // TODO(https://crbug.com/1125474): Enable Autofill for Ephemeral Guest
+  // profiles.
+  // TODO(https://crbug.com/1125474): Consider renaming this function to
+  // |IsOffTheRecord| after deprecation of off-the-record or ephemeral Guest
+  // profiles.
+  if (autofill_manager_ &&
+      autofill_manager_->client()->GetProfileType() ==
+          profile_metrics::BrowserProfileType::kEphemeralGuest) {
+    return true;
+  }
+
   return render_frame_host_->GetSiteInstance()
       ->GetBrowserContext()
       ->IsOffTheRecord();
