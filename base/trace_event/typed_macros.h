@@ -22,11 +22,12 @@
 #error "Another copy of perfetto tracing macros have been included"
 #endif
 
-// This file implements typed event macros [1] that will be provided by the
+// This file implements typed event macros [1,2] that will be provided by the
 // Perfetto client library in the future, as a stop-gap to support typed trace
 // events in Chrome until we are ready to switch to the client library's
 // implementation of trace macros.
 // [1] https://perfetto.dev/docs/instrumentation/track-events
+// [2] //third_party/perfetto/include/perfetto/tracing/track_event.h
 // TODO(crbug/1006541): Replace this file with the Perfetto client library.
 
 namespace perfetto {
@@ -41,23 +42,44 @@ class BASE_EXPORT StaticString final {
 
 }  // namespace perfetto
 
-// Begin a thread-scoped slice under |category| with the title |name|. Both
+// Typed event macros:
+//
+// These macros emit a slice under |category| with the title |name|. Both
 // strings must be static constants. The track event is only recorded if
-// |category| is enabled for a tracing session.
+// |category| is enabled for the tracing session.
 //
-// Rest of parameters can contain: a perfetto::Track object for asynchronous
-// events and a lambda used to fill typed event. Should be passed in that exact
-// order when both are used.
+// The slice is thread-scoped (i.e., written to the default track of the current
+// thread) unless overridden with a custom track object (see perfetto::Track).
 //
-// When lambda is passed as an argument, it is executed synchronously.
+// |name| must be a string with static lifetime (i.e., the same address must not
+// be used for a different event name in the future). If you want to use a
+// dynamically allocated name, do this:
 //
-// TODO(nuskos): Give a simple example once we have a typed event that doesn't
-// need interning.
-//   TRACE_EVENT_BEGIN("log", "LogMessage",
-//       [](perfetto::EventContext ctx) {
-//           auto* event = ctx.event();
-//           // Fill in some field in track_event.
-//       });
+//   TRACE_EVENT("category", nullptr, [&](perfetto::EventContext ctx) {
+//     ctx.event()->set_name(dynamic_name);
+//   });
+//
+// The varargs can include a perfetto::Track (e.g. async events), a
+// base::TimeTicks timestamp, and a trace lambda. If passed, the lambda is
+// executed synchronously.
+//
+// Examples:
+//
+//   // Sync event with typed field.
+//   TRACE_EVENT("cat", "Name", [](perfetto::EventContext ctx) {
+//       auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+//       // Fill in some field in event.
+//       event->set_my_chrome_field();
+//   });
+//
+//   // Async event.
+//   TRACE_EVENT_BEGIN("cat", "Name", perfetto::Track(1234));
+//
+//   // Async event with explicit timestamp.
+//   base::TimeTicks time_ticks;
+//   TRACE_EVENT_BEGIN("cat", "Name", perfetto::Track(1234), time_ticks);
+
+// Begin a slice under |category| with the title |name|.
 #define TRACE_EVENT_BEGIN(category, name, ...)                              \
   TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_BEGIN, category, name, \
                                    ##__VA_ARGS__)
@@ -75,13 +97,10 @@ class BASE_EXPORT StaticString final {
 // it does not work properly and should not be used.
 // TODO(b/154583431): figure out how to fix or disallow that and update the
 // comment.
-//
-// Similarly to TRACE_EVENT_BEGIN, when lambda is passed as an argument, it is
-// executed synchronously.
 #define TRACE_EVENT(category, name, ...) \
   TRACING_INTERNAL_SCOPED_ADD_TRACE_EVENT(category, name, ##__VA_ARGS__)
 
-// Emit a single event called "name" immediately, with zero duration.
+// Emit a single slice with title |name| and zero duration.
 #define TRACE_EVENT_INSTANT(category, name, ...)                              \
   TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_INSTANT, category, name, \
                                    ##__VA_ARGS__)
