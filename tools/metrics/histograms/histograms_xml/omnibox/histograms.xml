@@ -444,6 +444,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Omnibox.Lens.LensSupportStatus" enum="LensSupportStatus"
     expires_after="2021-11-18">
+  <obsolete>
+    Removed 2021-03. Switch to use Omnibox.LensSupportStatus.
+  </obsolete>
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>fgorski@chromium.org</owner>
@@ -457,6 +460,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.Lens.TimeSpentInLens" units="ms" expires_after="M94">
+  <obsolete>
+    Removed 2021-03. Switch to use Omnibox.TimeSpentBeforeDismissLens.
+  </obsolete>
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>fgorski@chromium.org</owner>
@@ -465,6 +471,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Logged the elapsed time between the time when user enters the Google Lens
     and the time when user returns to Chrome. Only logged on Android.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.LensSupportStatus" enum="LensSupportStatus"
+    expires_after="2021-11-18">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Whether the user supports the camera assisted search with Google Lens and if
+    not, the reason why. Recorded only if the feature is enabled when the
+    omnibox is loaded.
   </summary>
 </histogram>
 
@@ -1007,6 +1027,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     backspace key).
 
     This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TimeSpentBeforeDismissLens" units="ms"
+    expires_after="M94">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Logs the elapsed time between the time when user enters the Google Lens and
+    the time when user dismisses Lens and returns to Chrome. Only logged on
+    Android.
   </summary>
 </histogram>
 
