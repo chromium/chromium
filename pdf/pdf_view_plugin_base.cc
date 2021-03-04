@@ -254,6 +254,33 @@ void PdfViewPluginBase::ConsumeSaveToken(const std::string& token) {
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::SendAttachments() {
+  const std::vector<DocumentAttachmentInfo>& attachment_infos =
+      engine()->GetDocumentAttachmentInfoList();
+  if (attachment_infos.empty())
+    return;
+
+  base::Value attachments(base::Value::Type::LIST);
+  for (const DocumentAttachmentInfo& attachment_info : attachment_infos) {
+    // Send `size` as -1 to indicate that the attachment is too large to be
+    // downloaded.
+    const int size = attachment_info.size_bytes <= kMaximumSavedFileSize
+                         ? static_cast<int>(attachment_info.size_bytes)
+                         : -1;
+
+    base::Value attachment(base::Value::Type::DICTIONARY);
+    attachment.SetStringKey("name", attachment_info.name);
+    attachment.SetIntKey("size", size);
+    attachment.SetBoolKey("readable", attachment_info.is_readable);
+    attachments.Append(std::move(attachment));
+  }
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "attachments");
+  message.SetKey("attachmentsData", std::move(attachments));
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::SendBookmarks() {
   base::Value bookmarks = engine()->GetBookmarks();
   if (bookmarks.GetList().empty())

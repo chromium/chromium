@@ -36,7 +36,6 @@ class Vector2d;
 namespace pp {
 class Size;
 class TextInput_Dev;
-class VarArray;
 class VarDictionary;
 }  // namespace pp
 
@@ -184,14 +183,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   void ResetRecentlySentFindUpdate(int32_t);
 
-  // Returns a VarArray of Attachments. Each Attachment is a VarDictionary
-  // which contains the following key/values:
-  // - "name" - a string Var.
-  // - "size" - an int Var (-1 indicates the attachment file is too big to be
-  // downloaded).
-  // - "readable" a bool Var.
-  pp::VarArray GetDocumentAttachments();
-
   bool CanSaveEdits() const;
   void SaveToFile(const std::string& token);
   void SaveToBuffer(const std::string& token);
@@ -226,9 +217,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // Send a notification that the print preview has loaded.
   void SendPrintPreviewLoadedNotification();
-
-  // Send attachments.
-  void SendAttachments();
 
   // Send document metadata.
   void SendMetadata();

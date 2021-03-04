@@ -63,7 +63,6 @@
 #include "ppapi/cpp/rect.h"
 #include "ppapi/cpp/resource.h"
 #include "ppapi/cpp/size.h"
-#include "ppapi/cpp/var_array.h"
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -94,9 +93,6 @@ constexpr char kJSMessageId[] = "messageId";
 constexpr char kJSBeepType[] = "beep";
 // Document print preview loaded (Plugin -> Page)
 constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
-// Attachments (Plugin -> Page)
-constexpr char kJSAttachmentsType[] = "attachments";
-constexpr char kJSAttachmentsData[] = "attachmentsData";
 // Metadata (Plugin -> Page)
 constexpr char kJSMetadataType[] = "metadata";
 constexpr char kJSMetadataData[] = "metadataData";
@@ -991,28 +987,6 @@ void OutOfProcessInstance::InitImageData(const gfx::Size& size) {
       std::make_unique<pp::ImageData>(pepper_image_data_));
 }
 
-pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
-  const std::vector<DocumentAttachmentInfo>& list =
-      engine()->GetDocumentAttachmentInfoList();
-  pp::VarArray attachments;
-  attachments.SetLength(list.size());
-
-  for (size_t i = 0; i < list.size(); ++i) {
-    const DocumentAttachmentInfo& attachment_info = list[i];
-    pp::VarDictionary dict;
-    dict.Set(pp::Var("name"), pp::Var(base::UTF16ToUTF8(attachment_info.name)));
-    // Set |size| to -1 to indicate that the attachment is too big to be
-    // downloaded.
-    int32_t size = attachment_info.size_bytes <= kMaximumSavedFileSize
-                       ? static_cast<int32_t>(attachment_info.size_bytes)
-                       : -1;
-    dict.Set(pp::Var("size"), pp::Var(size));
-    dict.Set(pp::Var("readable"), pp::Var(attachment_info.is_readable));
-    attachments.Set(i, dict);
-  }
-  return attachments;
-}
-
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data().drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
@@ -1739,18 +1713,6 @@ void OutOfProcessInstance::SendPrintPreviewLoadedNotification() {
   pp::VarDictionary loaded_message;
   loaded_message.Set(pp::Var(kType), pp::Var(kJSPreviewLoadedType));
   PostMessage(loaded_message);
-}
-
-void OutOfProcessInstance::SendAttachments() {
-  pp::VarArray attachments = GetDocumentAttachments();
-  if (attachments.GetLength() == 0)
-    return;
-
-  pp::VarDictionary attachments_message;
-  attachments_message.Set(pp::Var(kType), pp::Var(kJSAttachmentsType));
-  attachments_message.Set(pp::Var(kJSAttachmentsData), attachments);
-
-  PostMessage(attachments_message);
 }
 
 void OutOfProcessInstance::SendMetadata() {

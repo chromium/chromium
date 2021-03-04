@@ -143,6 +143,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Consumes a token for saving the document.
   void ConsumeSaveToken(const std::string& token);
 
+  // Sends the attachments data.
+  void SendAttachments();
+
   // Sends the bookmarks data.
   void SendBookmarks();
 
