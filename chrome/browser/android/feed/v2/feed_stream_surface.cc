@@ -28,6 +28,7 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 
 namespace feed {
+namespace android {
 
 static jlong JNI_FeedStreamSurface_Init(JNIEnv* env,
                                         const JavaParamRef<jobject>& j_this) {
@@ -41,13 +42,11 @@ JNI_FeedStreamSurface_GetExperimentIds(JNIEnv* env) {
   DCHECK(variations_ids_provider != nullptr);
 
   return base::android::ToJavaIntArray(
-      env, variations_ids_provider
-               ->GetVariationsVectorForWebPropertiesKeys());
+      env, variations_ids_provider->GetVariationsVectorForWebPropertiesKeys());
 }
 
 FeedStreamSurface::FeedStreamSurface(const JavaRef<jobject>& j_this)
-    : FeedStreamApi::SurfaceInterface(kInterestStream),
-      feed_stream_api_(nullptr) {
+    : ::feed::FeedStreamSurface(kForYouStream), feed_stream_api_(nullptr) {
   java_ref_.Reset(j_this);
 
   FeedService* service = FeedServiceFactory::GetForBrowserContext(
@@ -252,4 +251,5 @@ void FeedStreamSurface::ReportOtherUserAction(JNIEnv* env,
       static_cast<FeedUserActionType>(action_type));
 }
 
+}  // namespace android
 }  // namespace feed

@@ -15,10 +15,11 @@ class StreamUpdate;
 }
 
 namespace feed {
+namespace android {
 
 // Native access to |FeedStreamSurface| in Java.
 // Created once for each NTP/start surface.
-class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
+class FeedStreamSurface : public ::feed::FeedStreamSurface {
  public:
   explicit FeedStreamSurface(const base::android::JavaRef<jobject>& j_this);
   FeedStreamSurface(const FeedStreamSurface&) = delete;
@@ -26,7 +27,7 @@ class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
 
   ~FeedStreamSurface() override;
 
-  // SurfaceInterface implementation.
+  // FeedStreamSurface implementation.
   void StreamUpdate(const feedui::StreamUpdate& update) override;
   void ReplaceDataStoreEntry(base::StringPiece key,
                              base::StringPiece data) override;
@@ -114,6 +115,7 @@ class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
   bool attached_ = false;
 };
 
+}  // namespace android
 }  // namespace feed
 
 #endif  // CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_SURFACE_H_

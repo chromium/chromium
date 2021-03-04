@@ -86,7 +86,7 @@ import java.util.Map;
  *
  * Created once for each StreamSurfaceMediator corresponding to each NTP/start surface.
  */
-@JNINamespace("feed")
+@JNINamespace("feed::android")
 public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHandler {
     private static final String TAG = "FeedStreamSurface";
 

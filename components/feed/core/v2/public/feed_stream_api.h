@@ -40,7 +40,7 @@ class StreamType {
     // stream type value.
     kUnspecified,
     // The For-You feed stream.
-    kInterest,
+    kForYou,
     // The Web Feed stream.
     kWebFeed,
   };
@@ -49,8 +49,8 @@ class StreamType {
   bool operator<(const StreamType& rhs) const { return type_ < rhs.type_; }
   bool operator==(const StreamType& rhs) const { return type_ == rhs.type_; }
   // TODO(crbug.com/1152592): When we're closer to code-complete, audit all uses
-  // of IsInterest() and IsWebFeed().
-  bool IsInterest() const { return type_ == Type::kInterest; }
+  // of IsForYou() and IsWebFeed().
+  bool IsForYou() const { return type_ == Type::kForYou; }
   bool IsWebFeed() const { return type_ == Type::kWebFeed; }
 
   // Returns a human-readable value, for debugging/DCHECK prints.
@@ -66,46 +66,47 @@ class StreamType {
   Type type_ = Type::kUnspecified;
 };
 
+// Consumes stream data for a single `StreamType` and displays it to the user.
+class FeedStreamSurface : public base::CheckedObserver {
+ public:
+  explicit FeedStreamSurface(StreamType type);
+  ~FeedStreamSurface() override;
+
+  // Returns a unique ID for the surface. The ID will not be reused until
+  // after the Chrome process is closed.
+  SurfaceId GetSurfaceId() const;
+
+  // Returns the `StreamType` this `FeedStreamSurface` requests.
+  StreamType GetStreamType() const { return stream_type_; }
+
+  // Called after registering the observer to provide the full stream state.
+  // Also called whenever the stream changes.
+  virtual void StreamUpdate(const feedui::StreamUpdate&) = 0;
+
+  // Access to the xsurface data store.
+  virtual void ReplaceDataStoreEntry(base::StringPiece key,
+                                     base::StringPiece data) = 0;
+  virtual void RemoveDataStoreEntry(base::StringPiece key) = 0;
+
+ private:
+  StreamType stream_type_;
+  SurfaceId surface_id_;
+};
+
 inline std::ostream& operator<<(std::ostream& os,
                                 const StreamType& stream_type) {
   return os << stream_type.ToString();
 }
 
 // TODO(crbug.com/1152592): When we're closer to code-complete, audit all uses
-// of kInterestStream and kWebFeedStream.
-constexpr StreamType kInterestStream(StreamType::Type::kInterest);
+// of kForYouStream and kWebFeedStream.
+constexpr StreamType kForYouStream(StreamType::Type::kForYou);
 constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
 
 // This is the public access point for interacting with the Feed contents.
 // FeedStreamApi serves multiple streams of data, one for each StreamType.
 class FeedStreamApi {
  public:
-  // Consumes stream data for a single `StreamType` and displays it to the user.
-  class SurfaceInterface : public base::CheckedObserver {
-   public:
-    explicit SurfaceInterface(StreamType type);
-    ~SurfaceInterface() override;
-
-    // Returns a unique ID for the surface. The ID will not be reused until
-    // after the Chrome process is closed.
-    SurfaceId GetSurfaceId() const;
-
-    // Returns the `StreamType` this `SurfaceInterface` requests.
-    StreamType GetStreamType() const { return stream_type_; }
-
-    // Called after registering the observer to provide the full stream state.
-    // Also called whenever the stream changes.
-    virtual void StreamUpdate(const feedui::StreamUpdate&) = 0;
-
-    // Access to the xsurface data store.
-    virtual void ReplaceDataStoreEntry(base::StringPiece key,
-                                       base::StringPiece data) = 0;
-    virtual void RemoveDataStoreEntry(base::StringPiece key) = 0;
-
-   private:
-    StreamType stream_type_;
-    SurfaceId surface_id_;
-  };
 
   FeedStreamApi();
   virtual ~FeedStreamApi();
@@ -114,8 +115,8 @@ class FeedStreamApi {
 
   // Attach/detach a surface. Surfaces should be attached when content is
   // required for display, and detached when content is no longer shown.
-  virtual void AttachSurface(SurfaceInterface*) = 0;
-  virtual void DetachSurface(SurfaceInterface*) = 0;
+  virtual void AttachSurface(FeedStreamSurface*) = 0;
+  virtual void DetachSurface(FeedStreamSurface*) = 0;
 
   virtual bool IsArticlesListVisible() = 0;
 
@@ -140,7 +141,7 @@ class FeedStreamApi {
   // Calls |callback| when complete. If no content could be added, the parameter
   // is false, and the caller should expect |LoadMore| to fail if called
   // further.
-  virtual void LoadMore(const SurfaceInterface& surface,
+  virtual void LoadMore(const FeedStreamSurface& surface,
                         base::OnceCallback<void(bool)> callback) = 0;
 
   // Request to fetch and image for use in the feed. Calls |callback|

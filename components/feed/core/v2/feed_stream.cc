@@ -197,7 +197,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   static WireResponseTranslator default_translator;
   wire_response_translator_ = &default_translator;
 
-  Stream& stream = GetStream(kInterestStream);
+  Stream& stream = GetStream(kForYouStream);
   offline_page_spy_ = std::make_unique<OfflinePageSpy>(
       stream.surface_updater.get(), offline_page_model);
 
@@ -279,7 +279,7 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
                                              result.final_status);
 
   if (result.loaded_new_content_from_network) {
-    if (result.stream_type.IsInterest())
+    if (result.stream_type.IsForYou())
       UpdateExperiments(result.experiments);
   }
   MaybeReportNewSuggestionsAvailable(result);
@@ -321,7 +321,7 @@ void FeedStream::UpdateExperiments(Experiments experiments) {
   prefs::SetExperiments(experiments, *profile_prefs_);
 }
 
-void FeedStream::AttachSurface(SurfaceInterface* surface) {
+void FeedStream::AttachSurface(FeedStreamSurface* surface) {
   metrics_reporter_->SurfaceOpened(surface->GetSurfaceId());
   Stream& stream = GetStream(surface->GetStreamType());
   // Skip normal processing when overriding stream data from the internals page.
@@ -339,7 +339,7 @@ void FeedStream::AttachSurface(SurfaceInterface* surface) {
   UpdateCanUploadActionsWithNoticeCard();
 }
 
-void FeedStream::DetachSurface(SurfaceInterface* surface) {
+void FeedStream::DetachSurface(FeedStreamSurface* surface) {
   Stream& stream = GetStream(surface->GetStreamType());
   metrics_reporter_->SurfaceClosed(surface->GetSurfaceId());
   stream.surface_updater->SurfaceRemoved(surface);
@@ -394,7 +394,7 @@ bool FeedStream::IsFeedEnabledByEnterprisePolicy() {
   return profile_prefs_->GetBoolean(prefs::kEnableSnippets);
 }
 
-void FeedStream::LoadMore(const SurfaceInterface& surface,
+void FeedStream::LoadMore(const FeedStreamSurface& surface,
                           base::OnceCallback<void(bool)> callback) {
   Stream& stream = GetStream(surface.GetStreamType());
   if (!stream.model) {
@@ -537,9 +537,9 @@ void FeedStream::ForceRefreshForDebugging() {
 }
 
 void FeedStream::ForceRefreshForDebuggingTask() {
-  UnloadModel(kInterestStream);
-  store_->ClearStreamData(kInterestStream, base::DoNothing());
-  TriggerStreamLoad(kInterestStream);
+  UnloadModel(kForYouStream);
+  store_->ClearStreamData(kForYouStream, base::DoNothing());
+  TriggerStreamLoad(kForYouStream);
 
   if (base::FeatureList::IsEnabled(kWebFeed)) {
     UnloadModel(kWebFeedStream);
@@ -549,7 +549,7 @@ void FeedStream::ForceRefreshForDebuggingTask() {
 }
 
 std::string FeedStream::DumpStateForDebugging() {
-  Stream& stream = GetStream(kInterestStream);
+  Stream& stream = GetStream(kForYouStream);
   std::stringstream ss;
   if (stream.model) {
     ss << "model loaded, " << stream.model->GetContentList().size()
@@ -701,7 +701,7 @@ LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(
 
 bool FeedStream::ShouldForceSignedOutFeedQueryRequest(
     const StreamType& stream_type) const {
-  return stream_type.IsInterest() &&
+  return stream_type.IsForYou() &&
          base::TimeTicks::Now() < signed_out_for_you_refreshes_until_;
 }
 
@@ -817,14 +817,14 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
 void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
   metrics_reporter_->OnBackgroundRefresh(result.final_status);
   if (result.loaded_new_content_from_network) {
-    if (result.stream_type.IsInterest())
+    if (result.stream_type.IsForYou())
       UpdateExperiments(result.experiments);
   }
   MaybeReportNewSuggestionsAvailable(result);
 
   // Add prefetch images to task queue without waiting to finish
   // since we treat them as best-effort.
-  if (result.stream_type.IsInterest())
+  if (result.stream_type.IsForYou())
     task_queue_.AddTask(std::make_unique<PrefetchImagesTask>(this));
 
   RefreshTaskId task_id;
@@ -836,7 +836,7 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
 void FeedStream::MaybeReportNewSuggestionsAvailable(
     const LoadStreamTask::Result& result) {
   if (result.loaded_new_content_from_network && prefetch_service_ &&
-      result.stream_type.IsInterest()) {
+      result.stream_type.IsForYou()) {
     prefetch_service_->NewSuggestionsAvailable();
   }
 }
@@ -844,7 +844,7 @@ void FeedStream::MaybeReportNewSuggestionsAvailable(
 void FeedStream::MaybeReportNewSuggestionsAvailable(
     const LoadMoreTask::Result& result) {
   if (result.loaded_new_content_from_network && prefetch_service_ &&
-      result.stream_type.IsInterest()) {
+      result.stream_type.IsForYou()) {
     prefetch_service_->NewSuggestionsAvailable();
   }
 }
@@ -904,7 +904,7 @@ void FeedStream::LoadModel(const StreamType& stream_type,
   stream.model->SetStreamType(stream_type);
   stream.model->SetStoreObserver(this);
   stream.surface_updater->SetModel(stream.model.get());
-  if (stream.type.IsInterest()) {
+  if (stream.type.IsForYou()) {
     offline_page_spy_->SetModel(stream.model.get());
   }
   ScheduleModelUnloadIfNoSurfacesAttached(stream_type);
@@ -938,7 +938,7 @@ void FeedStream::UnloadModel(const StreamType& stream_type) {
   Stream* stream = FindStream(stream_type);
   if (!stream || !stream->model)
     return;
-  if (stream_type.IsInterest()) {
+  if (stream_type.IsForYou()) {
     offline_page_spy_->SetModel(nullptr);
   }
   stream->surface_updater->SetModel(nullptr);
@@ -959,7 +959,7 @@ void FeedStream::ReportOpenAction(const StreamType& stream_type,
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenAction(index);
-  if (stream_type.IsInterest()) {
+  if (stream_type.IsForYou()) {
     notice_card_tracker_.OnOpenAction(index);
   }
 }
@@ -973,7 +973,7 @@ void FeedStream::ReportOpenInNewTabAction(const StreamType& stream_type,
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenInNewTabAction(index);
-  if (stream_type.IsInterest()) {
+  if (stream_type.IsForYou()) {
     notice_card_tracker_.OnOpenAction(index);
   }
 }
@@ -983,7 +983,7 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
   Stream& stream = GetStream(stream_type);
   int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index >= 0) {
-    if (stream_type.IsInterest()) {
+    if (stream_type.IsForYou()) {
       UpdateShownSlicesUploadCondition(index);
       notice_card_tracker_.OnSliceViewed(index);
     }
@@ -1024,7 +1024,7 @@ void FeedStream::UpdateShownSlicesUploadCondition(int viewed_slice_index) {
   constexpr int kShownSlicesThreshold = 2;
 
   // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  Stream& stream = GetStream(kInterestStream);
+  Stream& stream = GetStream(kForYouStream);
   if (!stream.model) {
     DLOG(ERROR) << "Model was unloaded while handling a viewed slice";
     return;

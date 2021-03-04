@@ -39,13 +39,13 @@ PrefetchImagesTask::PrefetchImagesTask(FeedStream* stream) : stream_(stream) {
 PrefetchImagesTask::~PrefetchImagesTask() = default;
 
 void PrefetchImagesTask::Run() {
-  if (stream_->GetModel(kInterestStream)) {
-    PrefetchImagesFromModel(*stream_->GetModel(kInterestStream));
+  if (stream_->GetModel(kForYouStream)) {
+    PrefetchImagesFromModel(*stream_->GetModel(kForYouStream));
     return;
   }
 
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, kInterestStream,
+      LoadStreamFromStoreTask::LoadType::kFullLoad, kForYouStream,
       stream_->GetStore(),
       /*missed_last_refresh=*/false,
       base::BindOnce(&PrefetchImagesTask::LoadStreamComplete,

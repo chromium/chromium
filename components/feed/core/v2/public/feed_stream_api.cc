@@ -10,7 +10,7 @@ std::string StreamType::ToString() const {
   switch (type_) {
     case Type::kUnspecified:
       return "Unspecified";
-    case Type::kInterest:
+    case Type::kForYou:
       return "ForYou";
     case Type::kWebFeed:
       return "WebFeed";
@@ -21,7 +21,7 @@ std::string StreamType::ToString() const {
 StreamType StreamType::ForTaskId(RefreshTaskId task_id) {
   switch (task_id) {
     case RefreshTaskId::kRefreshForYouFeed:
-      return kInterestStream;
+      return kForYouStream;
     case RefreshTaskId::kRefreshWebFeed:
       return kWebFeedStream;
   }
@@ -31,7 +31,7 @@ bool StreamType::GetRefreshTaskId(RefreshTaskId& out_id) const {
   switch (type_) {
     case Type::kUnspecified:
       return false;
-    case Type::kInterest:
+    case Type::kForYou:
       out_id = RefreshTaskId::kRefreshForYouFeed;
       return true;
     case Type::kWebFeed:
@@ -42,15 +42,15 @@ bool StreamType::GetRefreshTaskId(RefreshTaskId& out_id) const {
 FeedStreamApi::FeedStreamApi() = default;
 FeedStreamApi::~FeedStreamApi() = default;
 
-FeedStreamApi::SurfaceInterface::SurfaceInterface(StreamType stream_type)
+FeedStreamSurface::FeedStreamSurface(StreamType stream_type)
     : stream_type_(stream_type) {
   static SurfaceId::Generator id_generator;
   surface_id_ = id_generator.GenerateNextId();
 }
 
-FeedStreamApi::SurfaceInterface::~SurfaceInterface() = default;
+FeedStreamSurface::~FeedStreamSurface() = default;
 
-SurfaceId FeedStreamApi::SurfaceInterface::GetSurfaceId() const {
+SurfaceId FeedStreamSurface::GetSurfaceId() const {
   return surface_id_;
 }
 

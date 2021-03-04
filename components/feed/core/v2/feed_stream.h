@@ -128,8 +128,8 @@ class FeedStream : public FeedStreamApi,
 
   bool IsActivityLoggingEnabled() const override;
   std::string GetSessionId() const override;
-  void AttachSurface(SurfaceInterface*) override;
-  void DetachSurface(SurfaceInterface*) override;
+  void AttachSurface(FeedStreamSurface*) override;
+  void DetachSurface(FeedStreamSurface*) override;
   bool IsArticlesListVisible() override;
   std::string GetClientInstanceId() const override;
   void ExecuteRefreshTask(RefreshTaskId task_id) override;
@@ -138,7 +138,7 @@ class FeedStream : public FeedStreamApi,
       base::OnceCallback<void(NetworkResponse)> callback) override;
   void CancelImageFetch(ImageFetchId id) override;
   PersistentKeyValueStoreImpl* GetPersistentKeyValueStore() override;
-  void LoadMore(const SurfaceInterface& surface,
+  void LoadMore(const FeedStreamSurface& surface,
                 base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
       const StreamType& stream_type,

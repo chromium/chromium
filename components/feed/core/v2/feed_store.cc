@@ -38,7 +38,7 @@ constexpr base::StringPiece kForYouStreamId{"i"};
 constexpr base::StringPiece kFollowStreamId{"w"};
 
 base::StringPiece StreamId(const StreamType& stream_type) {
-  if (stream_type.IsInterest())
+  if (stream_type.IsForYou())
     return kForYouStreamId;
   DCHECK(stream_type.IsWebFeed());
   return kFollowStreamId;
@@ -131,7 +131,7 @@ std::string KeyForRecord(const feedstore::Record& record) {
   switch (record.data_case()) {
     case feedstore::Record::kStreamData: {
       const std::string stream_id = record.stream_data().stream_id();
-      return stream_id.empty() ? StreamDataKey(kInterestStream)
+      return stream_id.empty() ? StreamDataKey(kForYouStream)
                                : StreamDataKey(stream_id);
     }
     case feedstore::Record::kStreamStructures:
