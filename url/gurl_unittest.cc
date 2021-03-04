@@ -268,21 +268,49 @@ TEST(GURLTest, ExtraSlashesBeforeAuthority) {
   EXPECT_EQ("/", url.path());
 }
 
-// Given an invalid URL, we should still get most of the components.
+// Given invalid URLs, we should still get most of the components.
 TEST(GURLTest, ComponentGettersWorkEvenForInvalidURL) {
-  GURL url("http:google.com:foo");
-  EXPECT_FALSE(url.is_valid());
-  EXPECT_EQ("http://google.com:foo/", url.possibly_invalid_spec());
+  constexpr struct InvalidURLTestExpectations {
+    const char* url;
+    const char* spec;
+    const char* scheme;
+    const char* host;
+    const char* port;
+    const char* path;
+    // Extend as needed...
+  } expectations[] = {
+      {
+          "http:google.com:foo",
+          "http://google.com:foo/",
+          "http",
+          "google.com",
+          "foo",
+          "/",
+      },
+      {
+          "https:google.com:foo",
+          "https://google.com:foo/",
+          "https",
+          "google.com",
+          "foo",
+          "/",
+      },
+  };
 
-  EXPECT_EQ("http", url.scheme());
-  EXPECT_EQ("", url.username());
-  EXPECT_EQ("", url.password());
-  EXPECT_EQ("google.com", url.host());
-  EXPECT_EQ("foo", url.port());
-  EXPECT_EQ(PORT_INVALID, url.IntPort());
-  EXPECT_EQ("/", url.path());
-  EXPECT_EQ("", url.query());
-  EXPECT_EQ("", url.ref());
+  for (const auto& e : expectations) {
+    const GURL url(e.url);
+    EXPECT_FALSE(url.is_valid());
+    EXPECT_EQ(e.spec, url.possibly_invalid_spec());
+    EXPECT_EQ(e.scheme, url.scheme());
+    EXPECT_EQ("", url.username());
+    EXPECT_EQ("", url.password());
+    EXPECT_EQ(e.host, url.host());
+    EXPECT_EQ(e.port, url.port());
+    EXPECT_EQ(PORT_INVALID, url.IntPort());
+    EXPECT_EQ(e.path, url.path());
+    EXPECT_EQ("", url.query());
+    EXPECT_EQ("", url.ref());
+  }
 }
 
 TEST(GURLTest, Resolve) {
@@ -314,6 +342,7 @@ TEST(GURLTest, Resolve) {
       // A non-standard base can be replaced with a standard absolute URL.
       {"data:blahblah", "http://google.com/", true, "http://google.com/"},
       {"data:blahblah", "http:google.com", true, "http://google.com/"},
+      {"data:blahblah", "https:google.com", true, "https://google.com/"},
       // Filesystem URLs have different paths to test.
       {"filesystem:http://www.google.com/type/", "foo.html", true,
        "filesystem:http://www.google.com/type/foo.html"},
