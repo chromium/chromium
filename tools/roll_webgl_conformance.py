@@ -41,10 +41,6 @@ extra_trybots = [
         "mastername": "luci.chromium.try",
         "buildernames": ["win-angle-rel-32"]
     },
-    {
-        "mastername": "luci.chromium.try",
-        "buildernames": ["win-angle-chromium-x64-try"]
-    },
 ]
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
