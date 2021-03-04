@@ -746,6 +746,21 @@ struct NewStruct {
 };
 ```
 
+## Component targets
+
+If there are multiple components depending on the same mojom target within one binary,
+the target will need to be defined as `mojom_component` instead of `mojom`.
+Since `mojom` targets are generated `source_set` targets and `mojom_component` targets
+are generated `component` targets, you would use `mojom_component` in the same cases
+where you would use `component` for non-mojom files.
+*** note
+**NOTE**: by default, components for both blink and non-blink bindings are generated.
+Use the `disable_variants` target parameter to generate only non-blink bindings.
+You can also generate a `source_set` for one of the variants by defining
+[export_*](https://source.chromium.org/chromium/chromium/src/+/master:mojo/public/tools/bindings/mojom.gni;drc=739b9fbce50310c1dd2b59c279cd90a9319cb6e8;l=318)
+parameters for the `mojom_component` target.
+***
+
 ## Grammar Reference
 
 Below is the (BNF-ish) context-free grammar of the Mojom language:

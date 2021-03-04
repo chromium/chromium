@@ -40,6 +40,9 @@ style, your target should be named something simple and convenient (often
 matching your directory name). If this is non-unique, override it with the
 `output_name` variable.
 
+**Note**: for information about `mojom_component` targets, see
+[Mojo documentation](/mojo/public/tools/bindings/README.md#Component-targets).
+
 ### Dependencies between targets
 
 When a component directly or indirectly depends on a static library or source
