@@ -213,11 +213,21 @@ bool WifiSyncFeatureManagerImpl::IsWifiSyncSupported() {
     return false;
   }
 
-  return host_status_provider_->GetHostWithStatus()
-             .host_device()
-             ->GetSoftwareFeatureState(
-                 multidevice::SoftwareFeature::kWifiSyncHost) !=
-         multidevice::SoftwareFeatureState::kNotSupported;
+  if (host_status_provider_->GetHostWithStatus()
+          .host_device()
+          ->GetSoftwareFeatureState(
+              multidevice::SoftwareFeature::kWifiSyncHost) ==
+      multidevice::SoftwareFeatureState::kNotSupported) {
+    return false;
+  }
+
+  if (device_sync_client_->GetLocalDeviceMetadata()->GetSoftwareFeatureState(
+          multidevice::SoftwareFeature::kWifiSyncClient) ==
+      multidevice::SoftwareFeatureState::kNotSupported) {
+    return false;
+  }
+
+  return true;
 }
 
 void WifiSyncFeatureManagerImpl::ResetPendingWifiSyncHostNetworkRequest() {
