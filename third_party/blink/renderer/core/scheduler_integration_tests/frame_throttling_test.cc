@@ -2031,4 +2031,70 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
 }
 
+TEST_P(FrameThrottlingTest, ForceCompositingUpdateOnVisibilityChange) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest child_resource("https://example.com/child.html", "text/html");
+  SimRequest grandchild_resource("https://example.com/grandchild.html",
+                                 "text/html");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <iframe src="child.html"></iframe>
+  )HTML");
+  child_resource.Complete(R"HTML(
+    <iframe sandbox src="grandchild.html" style="margin-top: 1000px"></iframe>
+  )HTML");
+  grandchild_resource.Complete(R"HTML(
+    <div style="width:100px;height:100px;will-change:transform"></div>
+  )HTML");
+  CompositeFrame();
+
+  LocalFrame* child_frame =
+      To<LocalFrame>(MainFrame().GetFrame()->FirstChild());
+  LocalFrame* grandchild_frame = To<LocalFrame>(child_frame->FirstChild());
+  Element* composited_div =
+      grandchild_frame->GetDocument()->QuerySelector("div");
+
+  EXPECT_TRUE(grandchild_frame->View()->ShouldThrottleRenderingForTest());
+  EXPECT_TRUE(
+      child_frame->ContentLayoutObject()->Compositor()->InCompositingMode());
+  EXPECT_TRUE(grandchild_frame->ContentLayoutObject()
+                  ->Compositor()
+                  ->InCompositingMode());
+  EXPECT_TRUE(To<LayoutBoxModelObject>(composited_div->GetLayoutObject())
+                  ->Layer()
+                  ->HasCompositedLayerMapping());
+
+  // Remove the compositing trigger. Because the grandchild is throttled, it
+  // will not update its compositing state.
+  composited_div->RemoveInlineStyleProperty(CSSPropertyID::kWillChange);
+  MainFrame().GetFrame()->View()->ScheduleAnimation();
+  CompositeFrame();
+  EXPECT_TRUE(grandchild_frame->View()->ShouldThrottleRenderingForTest());
+  EXPECT_TRUE(
+      child_frame->ContentLayoutObject()->Compositor()->InCompositingMode());
+  EXPECT_TRUE(grandchild_frame->ContentLayoutObject()
+                  ->Compositor()
+                  ->InCompositingMode());
+  EXPECT_TRUE(To<LayoutBoxModelObject>(composited_div->GetLayoutObject())
+                  ->Layer()
+                  ->HasCompositedLayerMapping());
+
+  // Hide the child frame. This will force a compositing update of the throttled
+  // grandchild on the next lifecycle update, which should decomposite the div.
+  child_frame->DeprecatedLocalOwner()->SetInlineStyleProperty(
+      CSSPropertyID::kVisibility, CSSValueID::kHidden);
+  CompositeFrame();
+  EXPECT_TRUE(grandchild_frame->View()->ShouldThrottleRenderingForTest());
+  EXPECT_FALSE(
+      child_frame->ContentLayoutObject()->Compositor()->InCompositingMode());
+  EXPECT_FALSE(grandchild_frame->ContentLayoutObject()
+                   ->Compositor()
+                   ->InCompositingMode());
+  EXPECT_FALSE(composited_div->GetLayoutObject()->HasLayer());
+}
+
 }  // namespace blink
