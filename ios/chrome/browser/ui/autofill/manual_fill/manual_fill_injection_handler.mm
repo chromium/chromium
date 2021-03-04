@@ -165,7 +165,7 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
       } else {
         UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
                                 ReauthenticationEvent::kMissingPasscode);
-        [self.securityAlertHandler showSetPasscodeDialog];
+        [self fillLastSelectedFieldWithString:content];
       }
     }
   }
