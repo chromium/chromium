@@ -61,6 +61,7 @@ void UnmarshalPersistentError(
     // best-effort (there's no way to know that the token was revoked on the
     // server).
     std::move(callback).Run(GoogleServiceAuthError::AuthErrorNone());
+    return;
   }
   std::move(callback).Run(maybe_error.value());
 }
