@@ -65,7 +65,7 @@ class ASH_EXPORT CaptureModeController
   bool is_recording_in_progress() const { return is_recording_in_progress_; }
 
   // Returns true if a capture mode session is currently active.
-  bool IsActive() const { return !!capture_mode_session_; }
+  bool IsActive() const;
 
   // Sets the capture source/type, which will be applied to an ongoing capture
   // session (if any), or to a future capture session when Start() is called.

@@ -314,6 +314,10 @@ int GetMessageIdForCaptureSource(CaptureModeSource source,
   }
 }
 
+void UpdateAutoclickMenuBoundsIfNeeded() {
+  Shell::Get()->accessibility_controller()->UpdateAutoclickMenuBoundsIfNeeded();
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -492,7 +496,11 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
       current_root_(GetPreferredRootWindow()),
       magnifier_glass_(kMagnifierParams),
       cursor_setter_(std::make_unique<CursorSetter>()),
-      focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)) {
+      focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)) {}
+
+CaptureModeSession::~CaptureModeSession() = default;
+
+void CaptureModeSession::Initialize() {
   // A context menu may have input capture when entering a session. Remove
   // capture from it, otherwise subsequent mouse events will cause it to close,
   // and then we won't be able to take a screenshot of the menu. Store it so we
@@ -563,9 +571,12 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
           controller_->type() == CaptureModeType::kImage
               ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
               : IDS_ASH_SCREEN_CAPTURE_TYPE_SCREEN_RECORDING)));
+  UpdateAutoclickMenuBoundsIfNeeded();
 }
 
-CaptureModeSession::~CaptureModeSession() {
+void CaptureModeSession::Shutdown() {
+  is_shutting_down_ = true;
+
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
   display::Screen::GetScreen()->RemoveObserver(this);
   current_root_->RemoveObserver(this);
@@ -595,6 +606,7 @@ CaptureModeSession::~CaptureModeSession() {
     capture_mode_util::TriggerAccessibilityAlert(
         IDS_ASH_SCREEN_CAPTURE_ALERT_CLOSE);
   }
+  UpdateAutoclickMenuBoundsIfNeeded();
 }
 
 aura::Window* CaptureModeSession::GetSelectedWindow() const {

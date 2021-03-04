@@ -694,6 +694,7 @@ void RootWindowController::CloseChildWindows() {
   shelf_->ShutdownShelfWidget();
 
   ClearWorkspaceControllers(root);
+  always_on_top_controller_->ClearLayoutManagers();
 
   // Explicitly destroy top level windows. We do this because such windows may
   // query the RootWindow for state.
