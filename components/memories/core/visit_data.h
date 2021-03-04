@@ -41,6 +41,14 @@ struct VisitContextSignals {
   // does not have NTP custom links.
   bool is_ntp_custom_link = false;
 
+  // The duration since the last visit to this URL in seconds, if the user has
+  // visited the URL before. Recorded as -1 if the user has not visited the URL
+  // before, or if the History service is unavailable or slow to respond. Any
+  // duration that exceeds 30 days will be recorded as 30 days, so in practice,
+  // if this duration indicates 30 days, it can be anything from 30 to the
+  // maximum duration that local history is stored.
+  int64_t duration_since_last_visit_seconds = -1;
+
   // ---------------------------------------------------------------------------
   // The below metrics are all already recorded by UKM for non-memories reasons.
   // We are duplicating them below to persist on-device and send to an offline

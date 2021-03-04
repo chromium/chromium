@@ -19,6 +19,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -27,6 +28,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/memories/content/memories_service_factory.h"
 #include "components/memories/core/memories_service.h"
 #include "components/metrics/net/network_metrics_provider.h"
@@ -200,6 +203,8 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
+  navigation_start_for_history_ = base::Time::Now();
+
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   is_portal_ = web_contents->IsPortal();
 
@@ -300,6 +305,29 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
   memories_signals_.is_existing_bookmark =
       IsPageBookmarked(web_contents, committed_url_);
 
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfileIfExists(
+          profile, ServiceAccessType::IMPLICIT_ACCESS);
+  if (history_service) {
+    // Set the |end_time| parameter to |navigation_start_for_history_|, because
+    // we want to get the timestamp of the previous visit, and never
+    // accidentally get the timestamp of the current visit.
+    // |navigation_start_for_history_| is before the commit time of the current
+    // visit, so it should exclude the current visit.
+    //
+    // Moreover, there's a race in which this object can be destroyed before
+    // HistoryService returns, in which case we should record -1 for this UKM.
+    //
+    // PrefetchProxyPageLoadMetricsObserver has the same approach in both cases.
+    history_service->GetLastVisitToURL(
+        committed_url_, navigation_start_for_history_ /* end_time */,
+        base::BindOnce(&UkmPageLoadMetricsObserver::OnURLLastVisitResult,
+                       weak_factory_.GetWeakPtr()),
+        &task_tracker_);
+  }
+
   return CONTINUE_OBSERVING;
 }
 
@@ -388,6 +416,8 @@ void UkmPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (is_portal_)
     return;
+
+  task_tracker_.TryCancelAll();
 
   base::TimeTicks current_time = base::TimeTicks::Now();
   if (!was_hidden_) {
@@ -1094,6 +1124,8 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
   builder.SetIsExistingBookmark(memories_signals_.is_existing_bookmark);
   builder.SetIsNewBookmark(memories_signals_.is_new_bookmark);
   builder.SetIsNTPCustomLink(memories_signals_.is_ntp_custom_link);
+  builder.SetDurationSinceLastVisitSeconds(
+      memories_signals_.duration_since_last_visit_seconds);
 
   // Forward the finished structure to the MemoriesService for local recording.
   memories::MemoriesService* service =
@@ -1431,4 +1463,22 @@ void UkmPageLoadMetricsObserver::OnLoadingBehaviorObserved(
                           kLoadingBehaviorCompetingLowPriorityRequestsDelayed) {
     delay_competing_low_priority_requests_seen_ = true;
   }
+}
+
+void UkmPageLoadMetricsObserver::OnURLLastVisitResult(
+    history::HistoryLastVisitResult result) {
+  if (!result.success || result.last_visit.is_null())
+    return;
+
+  base::TimeDelta since_last_visit =
+      committed_history_timestamp_ - result.last_visit;
+
+  // Clamp to 30 days maximum to match the UKM retention period.
+  const base::TimeDelta kMaxDurationClamp = base::TimeDelta::FromDays(30);
+  if (since_last_visit > kMaxDurationClamp) {
+    since_last_visit = kMaxDurationClamp;
+  }
+
+  memories_signals_.duration_since_last_visit_seconds =
+      since_last_visit.InSeconds();
 }

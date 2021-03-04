@@ -10216,6 +10216,16 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="DurationSinceLastVisitSeconds">
+    <summary>
+      The duration since the last visit to this URL in seconds, if the user has
+      visited the URL before. Recorded as -1 if the user has not visited the URL
+      before, or if the History service is unavailable or slow to respond. Any
+      duration that exceeds 30 days will be recorded as 30 days, so in practice,
+      if this duration indicates 30 days, it can be anything from 30 to the
+      maximum duration that local history is stored.
+    </summary>
+  </metric>
   <metric name="Experimental.InputToNavigationStart">
     <summary>
       Measures the time in milliseconds from when the OS level input event

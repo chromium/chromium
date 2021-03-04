@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/memories/core/visit_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -120,6 +123,9 @@ class UkmPageLoadMetricsObserver
   virtual bool IsOfflinePreview(content::WebContents* web_contents) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UkmPageLoadMetricsObserverTest,
+                           DurationSinceLastVisitSeconds);
+
   void RecordNavigationTimingMetrics();
 
   // Records page load timing related metrics available in PageLoadTiming, such
@@ -193,6 +199,9 @@ class UkmPageLoadMetricsObserver
   // Records a score from the SiteEngagementService. Called when the page
   // becomes hidden, or at the end of the session if the page is never hidden.
   void RecordSiteEngagement() const;
+
+  // Callback for HistoryService::GetLastVisitToURL.
+  void OnURLLastVisitResult(history::HistoryLastVisitResult result);
 
   // Guaranteed to be non-null during the lifetime of |this|.
   network::NetworkQualityTracker* network_quality_tracker_;
@@ -290,12 +299,21 @@ class UkmPageLoadMetricsObserver
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 
+  // The time that the navigation started. Used to ensure we fetch the previous
+  // last visit time, and not this one.
+  base::Time navigation_start_for_history_;
   // Collected by this observer during the page lifetime. Shipped to UKM and
   // History. Also save the URL and commit timestamp to align with History.
   GURL committed_url_;
   // Meant to correspond with the timestamp recorded in HistoryService.
   base::Time committed_history_timestamp_;
   memories::VisitContextSignals memories_signals_;
+
+  // Task tracker for calls for the history service.
+  base::CancelableTaskTracker task_tracker_;
+
+  // Used to discard callbacks that come back after the page lifetime is over.
+  base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };

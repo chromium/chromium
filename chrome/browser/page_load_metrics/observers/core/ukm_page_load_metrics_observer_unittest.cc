@@ -25,6 +25,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/ntp_tiles/custom_links_store.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -80,8 +81,11 @@ class UkmPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  protected:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
-    tracker->AddObserver(std::make_unique<UkmPageLoadMetricsObserver>(
-        &mock_network_quality_provider_));
+    std::unique_ptr<UkmPageLoadMetricsObserver> observer =
+        std::make_unique<UkmPageLoadMetricsObserver>(
+            &mock_network_quality_provider_);
+    observer_ = observer.get();
+    tracker->AddObserver(std::move(observer));
   }
 
   void SetUp() override {
@@ -228,7 +232,11 @@ class UkmPageLoadMetricsObserverTest
         static_cast<int>(state));
   }
 
+  UkmPageLoadMetricsObserver* observer() const { return observer_; }
+
  private:
+  UkmPageLoadMetricsObserver* observer_;  // Non-owning raw pointer.
+
   MockNetworkQualityProvider mock_network_quality_provider_;
 };
 
@@ -1969,6 +1977,53 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
       entry, PageLoad::kIsNTPCustomLinkName, 1);
 }
 #endif  // !defined(OS_ANDROID)
+
+TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
+  GURL url(kTestUrl1);
+
+  NavigateAndCommit(url);
+
+  // Fake that we visited this site 45 days ago.
+  base::TimeDelta timestamp =
+      observer()->committed_history_timestamp_.ToDeltaSinceWindowsEpoch();
+  base::Time fake_last_visit_time = base::Time::FromDeltaSinceWindowsEpoch(
+      timestamp - base::TimeDelta::FromDays(45));
+
+  // Fake a HistoryService response.
+  observer()->OnURLLastVisitResult({true, fake_last_visit_time});
+
+  DeleteContents();
+
+  // Verify UKM records that we visited the page clamped to 30 days ago to
+  // respect the UKM retention period.
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kDurationSinceLastVisitSecondsName,
+      base::TimeDelta::FromDays(30).InSeconds());
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       DurationSinceLastVisitSecondsHistoryServiceLosesRace) {
+  GURL url(kTestUrl1);
+
+  // Simulate that we navigated, but HistoryService doesn't respond back to the
+  // UKM observer before it's destroyed.
+  NavigateAndCommit(url);
+  DeleteContents();
+
+  // Verify UKM records -1 in this case.
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kDurationSinceLastVisitSecondsName, -1);
+}
 
 class TestOfflinePreviewsUkmPageLoadMetricsObserver
     : public UkmPageLoadMetricsObserver {
