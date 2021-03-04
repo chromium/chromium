@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/arc/enterprise/arc_data_snapshotd_delegate.h"
+
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_prefs.h"

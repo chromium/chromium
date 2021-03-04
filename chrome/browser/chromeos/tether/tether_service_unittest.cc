@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
 #include "chrome/common/pref_names.h"

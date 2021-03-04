@@ -6,9 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"

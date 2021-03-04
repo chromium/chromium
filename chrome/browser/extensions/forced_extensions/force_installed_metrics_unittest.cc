@@ -37,8 +37,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "components/arc/arc_prefs.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"

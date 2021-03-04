@@ -39,7 +39,6 @@
 #include "chrome/browser/chromeos/arc/arc_support_host.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

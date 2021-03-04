@@ -15,7 +15,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/prefs/testing_pref_service.h"

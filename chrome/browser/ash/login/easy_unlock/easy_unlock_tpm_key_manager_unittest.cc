@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager_factory.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"

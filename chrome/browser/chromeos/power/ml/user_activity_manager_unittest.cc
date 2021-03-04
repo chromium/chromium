@@ -17,7 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/power/ml/idle_event_notifier.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_event.pb.h"

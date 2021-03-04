@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/grit/generated_resources.h"

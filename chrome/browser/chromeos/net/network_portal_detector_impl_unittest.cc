@@ -19,7 +19,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/net/network_portal_detector_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

@@ -27,7 +27,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

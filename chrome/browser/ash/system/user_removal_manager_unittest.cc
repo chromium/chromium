@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/account_id/account_id.h"

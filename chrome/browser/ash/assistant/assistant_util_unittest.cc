@@ -9,7 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

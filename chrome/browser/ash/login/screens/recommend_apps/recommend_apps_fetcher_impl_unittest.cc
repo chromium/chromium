@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/fake_recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/arc/arc_features_parser.h"

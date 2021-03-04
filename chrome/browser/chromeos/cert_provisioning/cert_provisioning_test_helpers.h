@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_CERT_PROVISIONING_CERT_PROVISIONING_TEST_HELPERS_H_
 
 #include "base/optional.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/test/base/testing_profile_manager.h"

@@ -66,7 +66,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"

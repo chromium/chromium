@@ -198,7 +198,6 @@
 
 #if defined(USE_NSS_CERTS)
 #include "chrome/browser/certificate_manager_model.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/net/nss_context.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"

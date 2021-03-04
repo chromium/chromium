@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "chrome/browser/web_applications/test/test_install_finalizer.h"

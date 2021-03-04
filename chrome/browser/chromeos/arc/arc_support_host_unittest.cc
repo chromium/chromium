@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/arc/extensions/fake_arc_support.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"

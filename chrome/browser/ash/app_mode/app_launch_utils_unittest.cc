@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"

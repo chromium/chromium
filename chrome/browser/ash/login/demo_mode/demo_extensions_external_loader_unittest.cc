@@ -26,7 +26,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"

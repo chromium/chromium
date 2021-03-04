@@ -44,8 +44,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"

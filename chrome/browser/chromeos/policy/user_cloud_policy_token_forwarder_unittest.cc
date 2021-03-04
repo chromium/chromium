@@ -19,7 +19,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"

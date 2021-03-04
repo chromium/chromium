@@ -11,7 +11,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/power/ml/adaptive_screen_brightness_ukm_logger.h"
 #include "chrome/browser/chromeos/power/ml/screen_brightness_event.pb.h"
 #include "chrome/browser/profiles/profile.h"

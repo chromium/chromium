@@ -22,7 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"

@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"

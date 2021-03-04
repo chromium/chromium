@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/policy/extension_install_event_logger.h"
 
 #include "base/files/file_path.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"

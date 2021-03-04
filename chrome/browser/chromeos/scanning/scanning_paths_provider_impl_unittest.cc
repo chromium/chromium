@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/drive/drivefs_test_support.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

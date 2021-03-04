@@ -7,7 +7,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"

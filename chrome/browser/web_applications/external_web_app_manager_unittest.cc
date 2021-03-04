@@ -34,7 +34,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif

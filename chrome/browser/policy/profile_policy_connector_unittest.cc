@@ -31,7 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

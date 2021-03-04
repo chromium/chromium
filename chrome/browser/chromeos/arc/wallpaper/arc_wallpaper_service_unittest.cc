@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"

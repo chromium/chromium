@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"

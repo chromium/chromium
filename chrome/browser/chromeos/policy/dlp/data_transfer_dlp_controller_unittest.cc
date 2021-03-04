@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 
 #include "base/optional.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"

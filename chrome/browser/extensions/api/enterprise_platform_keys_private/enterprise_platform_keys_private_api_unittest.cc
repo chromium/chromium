@@ -8,8 +8,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/attestation/mock_tpm_challenge_key.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"

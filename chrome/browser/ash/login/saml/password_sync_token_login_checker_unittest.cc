@@ -7,7 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"

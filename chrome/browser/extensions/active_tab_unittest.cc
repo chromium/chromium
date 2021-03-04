@@ -54,7 +54,6 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/active_tab_permission_granter_delegate_chromeos.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

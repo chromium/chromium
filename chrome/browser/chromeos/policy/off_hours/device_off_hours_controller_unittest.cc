@@ -16,7 +16,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
