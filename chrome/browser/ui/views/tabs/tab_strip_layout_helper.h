@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_animation_state.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
 #include "ui/gfx/geometry/rect.h"
@@ -41,7 +42,11 @@ class TabStripLayoutHelper {
 
   // Returns a vector of all tabs in the strip, including both closing tabs
   // and tabs still in the model.
-  std::vector<Tab*> GetTabs();
+  std::vector<Tab*> GetTabs() const;
+
+  // Get all tab slot views in visual order, including all tabs from
+  // GetTabs() and all tab group headers.
+  std::vector<TabSlotView*> GetTabSlotViews() const;
 
   int active_tab_width() { return active_tab_width_; }
   int inactive_tab_width() { return inactive_tab_width_; }

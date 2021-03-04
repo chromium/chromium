@@ -80,7 +80,7 @@ TabStripLayoutHelper::TabStripLayoutHelper(const TabStripController* controller,
 
 TabStripLayoutHelper::~TabStripLayoutHelper() = default;
 
-std::vector<Tab*> TabStripLayoutHelper::GetTabs() {
+std::vector<Tab*> TabStripLayoutHelper::GetTabs() const {
   std::vector<Tab*> tabs;
   for (const TabSlot& slot : slots_) {
     if (slot.type == ViewType::kTab)
@@ -88,6 +88,13 @@ std::vector<Tab*> TabStripLayoutHelper::GetTabs() {
   }
 
   return tabs;
+}
+
+std::vector<TabSlotView*> TabStripLayoutHelper::GetTabSlotViews() const {
+  std::vector<TabSlotView*> views;
+  for (const TabSlot& slot : slots_)
+    views.push_back(slot.view);
+  return views;
 }
 
 int TabStripLayoutHelper::GetPinnedTabCount() const {

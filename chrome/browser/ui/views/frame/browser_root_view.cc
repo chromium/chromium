@@ -237,17 +237,21 @@ DragOperation BrowserRootView::OnPerformDrop(const ui::DropTargetEvent& event) {
       url.SchemeIs(url::kJavaScriptScheme))
     return DragOperation::kNone;
 
+  Browser* const browser = browser_view_->browser();
+  TabStripModel* const model = browser->tab_strip_model();
+
   NavigateParams params(browser_view_->browser(), url,
                         ui::PAGE_TRANSITION_LINK);
   params.tabstrip_index = drop_info->index->value;
   if (drop_info->index->drop_before) {
     base::RecordAction(UserMetricsAction("Tab_DropURLBetweenTabs"));
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    if (drop_info->index->drop_in_group &&
+        drop_info->index->value < model->count())
+      params.group = model->GetTabGroupForTab(drop_info->index->value);
   } else {
     base::RecordAction(UserMetricsAction("Tab_DropURLOnTab"));
     params.disposition = WindowOpenDisposition::CURRENT_TAB;
-    Browser* browser = browser_view_->browser();
-    TabStripModel* model = browser->tab_strip_model();
     params.source_contents = model->GetWebContentsAt(drop_info->index->value);
   }
 

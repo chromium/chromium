@@ -537,7 +537,10 @@ class TabStrip : public views::View,
   // Returns the bounds to render the drop at, in screen coordinates. Sets
   // |is_beneath| to indicate whether the arrow is beneath the tab, or above
   // it.
-  gfx::Rect GetDropBounds(int drop_index, bool drop_before, bool* is_beneath);
+  gfx::Rect GetDropBounds(int drop_index,
+                          bool drop_before,
+                          bool drop_in_group,
+                          bool* is_beneath);
 
   // Show drop arrow with passed |tab_data_index| and |drop_before|.
   // If |tab_data_index| is negative, the arrow will disappear.

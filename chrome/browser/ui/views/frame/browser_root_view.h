@@ -35,8 +35,14 @@ class BrowserRootView : public views::internal::RootView {
     // If false, the dropped item should replace the tab at |tab_index|.
     bool drop_before = false;
 
+    // If |drop_before| is true, and |value| is the first tab in a tab
+    // group, determines whether to drop in the group or just before it.
+    // This disambiguates a drop before or after a group header.
+    bool drop_in_group = false;
+
     bool operator==(const DropIndex& other) const {
-      return value == other.value && drop_before == other.drop_before;
+      return value == other.value && drop_before == other.drop_before &&
+             drop_in_group == other.drop_in_group;
     }
   };
 
