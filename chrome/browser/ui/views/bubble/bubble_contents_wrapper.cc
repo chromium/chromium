@@ -84,6 +84,13 @@ bool BubbleContentsWrapper::HandleKeyboardEvent(
   return host_ ? host_->HandleKeyboardEvent(source, event) : false;
 }
 
+bool BubbleContentsWrapper::HandleContextMenu(
+    content::RenderFrameHost* render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Ignores context menu.
+  return true;
+}
+
 void BubbleContentsWrapper::RenderViewHostChanged(
     content::RenderViewHost* old_host,
     content::RenderViewHost* new_host) {
