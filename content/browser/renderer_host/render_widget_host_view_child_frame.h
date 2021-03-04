@@ -35,10 +35,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_MAC)
-#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
-#endif  // defined(OS_MAC)
-
 namespace content {
 class CrossProcessFrameConnector;
 class RenderWidgetHost;
@@ -151,12 +147,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void ShowDefinitionForSelection() override;
   void SpeakSelection() override;
   void SetWindowFrameInScreen(const gfx::Rect& rect) override;
-  void ShowSharePicker(
-      const std::string& title,
-      const std::string& text,
-      const std::string& url,
-      const std::vector<std::string>& file_paths,
-      blink::mojom::ShareService::ShareCallback callback) override;
 #endif  // defined(OS_MAC)
 
   blink::mojom::InputEventResultState FilterInputEvent(

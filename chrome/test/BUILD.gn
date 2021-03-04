@@ -1860,11 +1860,6 @@ if (!is_android) {
       sources += [ "../browser/webshare/share_service_browsertest.cc" ]
     }
 
-    if (is_mac) {
-      sources +=
-          [ "../browser/webshare/mac/sharing_service_operation_browsertest.cc" ]
-    }
-
     if (enable_dice_support) {
       sources += [
         "../browser/policy/cloud/user_policy_signin_service_browsertest.cc",

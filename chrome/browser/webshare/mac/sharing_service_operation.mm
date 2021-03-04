@@ -6,20 +6,16 @@
 
 #include <AppKit/AppKit.h>
 
-#include <utility>
-
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/browser/webshare/prepare_subdirectory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/store_files_task.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
@@ -64,7 +60,7 @@ void SharingServiceOperation::Share(
 
   if (shared_files_.size() == 0) {
     GetSharePickerCallback().Run(
-        web_contents(), file_paths_, text_, title_, url_,
+        web_contents(), file_paths_, text_, title_,
         base::BindOnce(&SharingServiceOperation::OnShowSharePicker,
                        weak_factory_.GetWeakPtr()));
     return;
@@ -98,8 +94,6 @@ void SharingServiceOperation::OnPrepareDirectory(
 
   for (const auto& file : shared_files_) {
     std::string file_name = file->name;
-    // Protecting against including paths in a file name.
-    base::ReplaceSubstringsAfterOffset(&file_name, 0, "/", "_");
     base::i18n::ReplaceIllegalCharactersInPath(&file_name, '_');
     file_paths_.push_back(
         GenerateUniqueSubDirectory(directory_).Append(file_name));
@@ -136,7 +130,7 @@ void SharingServiceOperation::OnStoreFiles(blink::mojom::ShareError error) {
   }
 
   GetSharePickerCallback().Run(
-      web_contents(), file_paths_, text_, title_, url_,
+      web_contents(), file_paths_, text_, title_,
       base::BindOnce(&SharingServiceOperation::OnShowSharePicker,
                      weak_factory_.GetWeakPtr()));
 }
@@ -144,10 +138,6 @@ void SharingServiceOperation::OnStoreFiles(blink::mojom::ShareError error) {
 void SharingServiceOperation::OnShowSharePicker(
     blink::mojom::ShareError error) {
   std::move(callback_).Run(error);
-  if (file_paths_.size() > 0) {
-    PrepareDirectoryTask::ScheduleSharedFileDeletion(
-        std::move(file_paths_), base::TimeDelta::FromMinutes(0));
-  }
 }
 
 // static
@@ -156,15 +146,15 @@ void SharingServiceOperation::ShowSharePicker(
     const std::vector<base::FilePath>& file_paths,
     const std::string& text,
     const std::string& title,
-    const GURL& url,
     blink::mojom::ShareService::ShareCallback callback) {
   std::vector<std::string> file_paths_as_utf8;
   for (const auto& file_path : file_paths) {
     file_paths_as_utf8.emplace_back(file_path.AsUTF8Unsafe());
   }
 
-  web_contents->GetRenderWidgetHostView()->ShowSharePicker(
-      title, text, url.spec(), file_paths_as_utf8, std::move(callback));
+  // TODO(crbug.com/1144920): Add & invoke NSSharingServicePicker in
+  // remote_cocoa
+  std::move(callback).Run(blink::mojom::ShareError::INTERNAL_ERROR);
 }
 
 // static

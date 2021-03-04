@@ -10,7 +10,6 @@
 #import "base/mac/scoped_nsobject.h"
 #import "content/app_shim_remote_cocoa/popup_window_mac.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
-#include "content/app_shim_remote_cocoa/sharing_service_picker.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "content/public/common/widget_type.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -69,12 +68,6 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   void LockKeyboard(
       const base::Optional<std::vector<uint32_t>>& uint_dom_codes) override;
   void UnlockKeyboard() override;
-  void ShowSharingServicePicker(
-      const std::string& title,
-      const std::string& text,
-      const std::string& url,
-      const std::vector<std::string>& file_paths,
-      ShowSharingServicePickerCallback callback) override;
 
  private:
   bool IsPopup() const { return !!popup_window_; }

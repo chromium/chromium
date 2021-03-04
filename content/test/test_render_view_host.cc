@@ -160,13 +160,6 @@ void TestRenderWidgetHostView::SpeakSelection() {
 }
 
 void TestRenderWidgetHostView::SetWindowFrameInScreen(const gfx::Rect& rect) {}
-
-void TestRenderWidgetHostView::ShowSharePicker(
-    const std::string& title,
-    const std::string& text,
-    const std::string& url,
-    const std::vector<std::string>& file_paths,
-    blink::mojom::ShareService::ShareCallback callback) {}
 #endif
 
 gfx::Rect TestRenderWidgetHostView::GetBoundsInRootWindow() {

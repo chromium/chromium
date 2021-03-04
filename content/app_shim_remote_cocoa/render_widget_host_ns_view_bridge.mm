@@ -271,14 +271,4 @@ void RenderWidgetHostNSViewBridge::UnlockKeyboard() {
   [cocoa_view_ unlockKeyboard];
 }
 
-void RenderWidgetHostNSViewBridge::ShowSharingServicePicker(
-    const std::string& title,
-    const std::string& text,
-    const std::string& url,
-    const std::vector<std::string>& file_paths,
-    ShowSharingServicePickerCallback callback) {
-  ShowSharingServicePickerForView(cocoa_view_, title, text, url, file_paths,
-                                  std::move(callback));
-}
-
 }  // namespace remote_cocoa

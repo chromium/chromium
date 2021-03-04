@@ -24,7 +24,6 @@
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 #include "ui/base/cocoa/remote_layer_api.h"
@@ -479,13 +478,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   }
 
   MouseWheelPhaseHandler* GetMouseWheelPhaseHandler() override;
-
-  void ShowSharePicker(
-      const std::string& title,
-      const std::string& text,
-      const std::string& url,
-      const std::vector<std::string>& file_paths,
-      blink::mojom::ShareService::ShareCallback callback) override;
 
  protected:
   // This class is to be deleted through the Destroy method.
