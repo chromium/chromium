@@ -1193,6 +1193,17 @@ def run_command_with_group(command, group):
   return result
 
 
+def run_command_as_root(command):
+  if os.getenv("DISPLAY"):
+    # TODO(rickyz): Add a Polkit policy that includes a more friendly
+    # message about what this command does.
+    command = ["/usr/bin/pkexec"] + command
+  else:
+    command = ["/usr/bin/sudo", "-k", "--"] + command
+
+  return subprocess.call(command)
+
+
 def exec_self_via_login_shell():
   """Attempt to run the user's login shell and run this script under it. This
   will allow the user's ~/.profile or similar to be processed, which may set
@@ -1577,10 +1588,14 @@ Web Store: https://chrome.google.com/remotedesktop"""
     user = getpass.getuser()
 
     if os.path.isdir("/run/systemd/system"):
-      # systemctl integrates with policy kit, and will automatically request an
-      # admin password if necessary.
-      return subprocess.call(["systemctl", "enable", "--now",
-                              "chrome-remote-desktop@" + user])
+      # While systemd will generally prompt for a password via polkit if run by
+      # a normal user, it won't properly fall back to prompting on the TTY if
+      # stdin is redirected, such as is done by the start-host binary.
+      # Additionally, some configurations can result in systemctl prompting the
+      # user for their password multiple times, which can be confusing and
+      # annoying. Running it as root avoids both issues.
+      return run_command_as_root(["systemctl", "enable", "--now",
+                                  "chrome-remote-desktop@" + user])
     else:
       try:
         if user in grp.getgrnam(CHROME_REMOTING_GROUP_NAME).gr_mem:
@@ -1590,15 +1605,7 @@ Web Store: https://chrome.google.com/remotedesktop"""
       except KeyError:
         logging.info("Group '%s' not found." % CHROME_REMOTING_GROUP_NAME)
 
-      command = [SCRIPT_PATH, '--add-user-as-root', user]
-      if os.getenv("DISPLAY"):
-        # TODO(rickyz): Add a Polkit policy that includes a more friendly
-        # message about what this command does.
-        command = ["/usr/bin/pkexec"] + command
-      else:
-        command = ["/usr/bin/sudo", "-k", "--"] + command
-
-      if subprocess.call(command) != 0:
+      if run_command_as_root([SCRIPT_PATH, '--add-user-as-root', user]) != 0:
         logging.error("Failed to add user to group")
         return 1
 
@@ -1665,10 +1672,8 @@ Web Store: https://chrome.google.com/remotedesktop"""
 
   if not options.child_process:
     if os.path.isdir("/run/systemd/system"):
-      # systemctl integrates with policy kit, and will automatically request an
-      # admin password if necessary.
-      return subprocess.call(["systemctl", "start",
-                              "chrome-remote-desktop@" + getpass.getuser()])
+      return run_command_as_root(["systemctl", "start",
+                                  "chrome-remote-desktop@" + getpass.getuser()])
     else:
       return start_via_user_session(options.foreground)
 
