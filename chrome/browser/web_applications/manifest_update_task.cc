@@ -54,6 +54,7 @@ bool HaveIconContentsChanged(
 
 bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
                             const IconBitmaps& downloaded_icon_bitmaps) {
+  // TODO (crbug.com/1114638): Check Monochrome icons if supported.
   return HaveIconContentsChanged(disk_icon_bitmaps.any,
                                  downloaded_icon_bitmaps.any) ||
          HaveIconContentsChanged(disk_icon_bitmaps.maskable,

@@ -573,7 +573,7 @@ TEST_F(WebAppIconManagerTest, ReadShortcutsMenuIconsFailed) {
       ReadAllShortcutsMenuIcons(app_id);
   EXPECT_EQ(sizes_px.size(), shortcuts_menu_icons_map.size());
   for (const auto& icon_map : shortcuts_menu_icons_map) {
-    EXPECT_EQ(0u, icon_map.any.size());
+    EXPECT_TRUE(icon_map.empty());
   }
 }
 
