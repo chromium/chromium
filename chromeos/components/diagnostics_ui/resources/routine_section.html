@@ -60,17 +60,16 @@
     margin-right: 8px;
   }
 </style>
-
 <div class="routine-section-container">
   <div id="routineSection" class="routine-container">
     <div class="routine-status-container">
       <text-badge id="testStatusBadge"
           badge-type="[[badgeType_]]"
-          hidden="[[isStatusHidden_(executionStatus_, additionalMessage)]]"
+          hidden="[[isStatusHidden_(executionStatus_)]]"
           value="[[badgeText_]]">
       </text-badge>
       <span id="testStatusText"
-          hidden$="[[isStatusHidden_(executionStatus_, additionalMessage)]]">
+          hidden$="[[isStatusHidden_(executionStatus_)]]">
         [[statusText_]]
         <span id="learnMoreText"
             hidden$="[[isLearnMoreHidden_(executionStatus_)]]"
@@ -78,14 +77,14 @@
           [[i18n('learnMoreShort')]]
         </span>
       </span>
-      <div hidden$=[[isAdditionalMessageHidden_(additionalMessage)]]>
-        <iron-icon id="messageIcon" icon="diagnostics:warning"></iron-icon>
-        <span id="additionalMessage">
-          [[additionalMessage]]
-        </span>
-      </div>
     </div>
     <div class="button-container">
+        <iron-icon id="messageIcon" icon="cr:info-outline"
+            hidden$="[[isAdditionalMessageHidden_(additionalMessage)]]">
+        </iron-icon>
+        <paper-tooltip for="messageIcon" aria-hidden="true" id="additionalMessage">
+          [[additionalMessage]]
+        </paper-tooltip>
       <cr-button id="toggleReportButton" on-click="onToggleReportClicked_"
           hidden="[[isResultButtonHidden_(executionStatus_, routines.*)]]">
         [[getReportToggleButtonText_(opened)]]

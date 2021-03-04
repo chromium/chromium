@@ -210,8 +210,8 @@ export function batteryStatusCardTestSuite() {
               routineSectionElement.additionalMessage,
               loadTimeData.getString('batteryChargeTestFullMessage'));
           assertTrue(isRunTestsButtonDisabled());
-          assertFalse(isVisible(getStatusBadge()));
-          assertFalse(isVisible(getStatusTextElement()));
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (
+              routineSectionElement.$$('#messageIcon'))));
         });
   });
 
