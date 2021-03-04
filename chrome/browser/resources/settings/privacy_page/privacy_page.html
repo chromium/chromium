@@ -1139,17 +1139,38 @@
         <settings-subpage page-title="$i18n{siteSettingsIdleDetection}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsIdleDetectionBlock}"
-              toggle-on-label="$i18n{siteSettingsIdleDetectionAsk}"
-              category="[[ContentSettingsTypes.IDLE_DETECTION]]">
-          </category-default-setting>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.IDLE_DETECTION]]"
-              block-header="$i18n{siteSettingsBlock}"
-              allow-header="$i18n{siteSettingsAllow}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <!-- TODO(1113642): Apply actual strings and new off icon. -->
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div class="content-settings-header">
+              <h2>$i18n{siteSettingsArDescription}</h2>
+            </div>
+            <settings-category-default-radio-group
+                category="[[ContentSettingsTypes.IDLE_DETECTION]]"
+                allow-option-label="$i18n{siteSettingsIdleDetectionAsk}"
+                allow-option-icon="settings:devices"
+                block-option-label="$i18n{siteSettingsIdleDetectionBlock}"
+                block-option-icon="settings:devices">
+            </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.IDLE_DETECTION]]"
+                allow-header="$i18n{siteSettingsAllow}"
+                block-header="$i18n{siteSettingsBlock}"
+                search-filter="[[searchFilter_IDLE_DETECTION]]">
+            </category-setting-exceptions>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-default-setting
+                toggle-off-label="$i18n{siteSettingsIdleDetectionBlock}"
+                toggle-on-label="$i18n{siteSettingsIdleDetectionAsk}"
+                category="[[ContentSettingsTypes.IDLE_DETECTION]]">
+            </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.IDLE_DETECTION]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
+          </template>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
@@ -1177,17 +1198,38 @@
           <settings-subpage page-title="$i18n{fonts}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsFontAccessBlock}"
-                toggle-on-label="$i18n{siteSettingsFontAccessAsk}"
-                category="[[ContentSettingsTypes.FONT_ACCESS]]">
-            </category-default-setting>
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.FONT_ACCESS]]"
-                block-header="$i18n{siteSettingsBlock}"
-                allow-header="$i18n{siteSettingsAllow}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+              <!-- TODO(1113642): Apply actual strings and new off icon. -->
+              <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+                <div class="content-settings-header">
+                  <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+                </div>
+                <settings-category-default-radio-group
+                    category="[[ContentSettingsTypes.FONT_ACCESS]]"
+                    allow-option-label="$i18n{siteSettingsFontAccessAsk}"
+                    allow-option-icon="settings:font-access"
+                    block-option-label="$i18n{siteSettingsFontAccessBlock}"
+                    block-option-icon="settings:font-access">
+                </settings-category-default-radio-group>
+                <category-setting-exceptions
+                    category="[[ContentSettingsTypes.FONT_ACCESS]]"
+                    block-header="$i18n{siteSettingsBlock}"
+                    allow-header="$i18n{siteSettingsAllow}"
+                    search-filter="[[searchFilter_]]">
+                </category-setting-exceptions>
+              </template>
+              <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+                <category-default-setting
+                    toggle-off-label="$i18n{siteSettingsFontAccessBlock}"
+                    toggle-on-label="$i18n{siteSettingsFontAccessAsk}"
+                    category="[[ContentSettingsTypes.FONT_ACCESS]]">
+                </category-default-setting>
+                <category-setting-exceptions
+                    category="[[ContentSettingsTypes.FONT_ACCESS]]"
+                    block-header="$i18n{siteSettingsBlock}"
+                    allow-header="$i18n{siteSettingsAllow}"
+                    search-filter="[[searchFilter_]]">
+                </category-setting-exceptions>
+              </template>
           </settings-subpage>
         </template>
       </template>
