@@ -14,7 +14,7 @@
     <includes>
       <if expr="is_official_build == false">
         <!-- Privileged app host contents. -->
-        <include name="IDR_FILE_MANAGER_SWA_MOJO_LITE_JS" file="$root_gen_dir/chromeos/components/file_manager/mojom/file_manager.mojom-lite.js" resource_path="file_manager.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_MOJO_JS" file="$root_gen_dir/mojom-webui/chromeos/components/file_manager/mojom/file_manager.mojom-webui.js" resource_path="file_manager.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_BROWSER_PROXY_JS" file="browser_proxy.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_SCRIPT_LOADER_JS" file="script_loader.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_MAIN_HTML" file="${root_gen_dir}/chromeos/components/file_manager/resources/main.html" resource_path="main.html" use_base_dir="false" type="BINDATA" />

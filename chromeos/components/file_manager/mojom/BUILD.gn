@@ -9,4 +9,5 @@ assert(!is_official_build, "File Manager is only built for unofficial builds")
 
 mojom("mojom") {
   sources = [ "file_manager.mojom" ]
+  webui_module_path = "/"
 }
