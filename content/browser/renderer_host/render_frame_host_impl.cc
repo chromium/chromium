@@ -715,7 +715,7 @@ DetermineWhetherToForbidTrustTokenRedemption(
     return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
 
   const blink::PermissionsPolicy* parent_policy = parent->feature_policy();
-  blink::ParsedFeaturePolicy container_policy =
+  blink::ParsedPermissionsPolicy container_policy =
       commit_params.frame_policy.container_policy;
 
   auto subframe_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
@@ -7824,7 +7824,7 @@ void RenderFrameHostImpl::ResetFeaturePolicy() {
   RenderFrameHostImpl* parent_frame_host = GetParent();
   const blink::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->feature_policy() : nullptr;
-  blink::ParsedFeaturePolicy container_policy =
+  blink::ParsedPermissionsPolicy container_policy =
       frame_tree_node()->effective_frame_policy().container_policy;
   feature_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, container_policy, last_committed_origin_);

@@ -97,7 +97,7 @@ class CORE_EXPORT HTMLPlugInElement
 
   bool ShouldAccelerate() const;
 
-  ParsedFeaturePolicy ConstructContainerPolicy() const override;
+  ParsedPermissionsPolicy ConstructContainerPolicy() const override;
 
   bool IsImageType() const;
   HTMLImageLoader* ImageLoader() const { return image_loader_.Get(); }

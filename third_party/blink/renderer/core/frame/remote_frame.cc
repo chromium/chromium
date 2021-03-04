@@ -472,7 +472,7 @@ void RemoteFrame::DidChangeVisibleToHitTesting() {
 }
 
 void RemoteFrame::SetReplicatedFeaturePolicyHeader(
-    const ParsedFeaturePolicy& parsed_header) {
+    const ParsedPermissionsPolicy& parsed_header) {
   feature_policy_header_ = parsed_header;
   ApplyReplicatedFeaturePolicyHeader();
 }
@@ -734,15 +734,17 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
 // proxy ever parents a local frame.
 void RemoteFrame::DidSetFramePolicyHeaders(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
-    const WTF::Vector<ParsedFeaturePolicyDeclaration>& parsed_feature_policy) {
+    const WTF::Vector<ParsedPermissionsPolicyDeclaration>&
+        parsed_feature_policy) {
   SetReplicatedSandboxFlags(sandbox_flags);
-  // Convert from WTF::Vector<ParsedFeaturePolicyDeclaration>
-  // to std::vector<ParsedFeaturePolicyDeclaration>, since ParsedFeaturePolicy
-  // is an alias for the later.
+  // Convert from WTF::Vector<ParsedPermissionsPolicyDeclaration>
+  // to std::vector<ParsedPermissionsPolicyDeclaration>, since
+  // ParsedPermissionsPolicy is an alias for the later.
   //
   // TODO(crbug.com/1047273): Remove this conversion by switching
-  // ParsedFeaturePolicy to operate over Vector
-  ParsedFeaturePolicy parsed_feature_policy_copy(parsed_feature_policy.size());
+  // ParsedPermissionsPolicy to operate over Vector
+  ParsedPermissionsPolicy parsed_feature_policy_copy(
+      parsed_feature_policy.size());
   for (size_t i = 0; i < parsed_feature_policy.size(); ++i)
     parsed_feature_policy_copy[i] = parsed_feature_policy[i];
   SetReplicatedFeaturePolicyHeader(parsed_feature_policy_copy);
@@ -897,7 +899,7 @@ void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
     parent_feature_policy =
         parent_frame->GetSecurityContext()->GetFeaturePolicy();
   }
-  ParsedFeaturePolicy container_policy;
+  ParsedPermissionsPolicy container_policy;
   if (Owner())
     container_policy = Owner()->GetFramePolicy().container_policy;
   security_context_.InitializeFeaturePolicy(

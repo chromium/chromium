@@ -133,7 +133,7 @@ struct DidCommitProvisionalLoadParams {
 
   // The 'Feature-Policy' headers applied to the document.
   // https://w3c.github.io/webappsec-permissions-policy/#feature-policy-http-header-field
-  array<blink.mojom.ParsedFeaturePolicyDeclaration> feature_policy_header;
+  array<blink.mojom.ParsedPermissionsPolicyDeclaration> feature_policy_header;
 
   // The 'Document-Policy' headers applied to the document.
   // https://w3c.github.io/webappsec-permissions-policy/document-policy.html

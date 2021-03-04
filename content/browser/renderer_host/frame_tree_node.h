@@ -384,7 +384,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // or feature policy.
   bool UpdateFramePolicyHeaders(
       network::mojom::WebSandboxFlags sandbox_flags,
-      const blink::ParsedFeaturePolicy& parsed_header);
+      const blink::ParsedPermissionsPolicy& parsed_header);
 
   // Returns whether the frame received a user gesture on a previous navigation
   // on the same eTLD+1.

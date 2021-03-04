@@ -533,11 +533,12 @@ bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
 // (Equivalent to the declared policy "feature origin1 origin2 ...".)
 // If the origins list is empty, it's treated as matches all origins
 // (Equivalent to the declared policy "feature *")
-blink::ParsedFeaturePolicyDeclaration CreateParsedFeaturePolicyDeclaration(
+blink::ParsedPermissionsPolicyDeclaration
+CreateParsedPermissionsPolicyDeclaration(
     blink::mojom::PermissionsPolicyFeature feature,
     const std::vector<GURL>& origins,
     bool match_all_origins = false) {
-  blink::ParsedFeaturePolicyDeclaration declaration;
+  blink::ParsedPermissionsPolicyDeclaration declaration;
 
   declaration.feature = feature;
   declaration.matches_all_origins = match_all_origins;
@@ -552,26 +553,26 @@ blink::ParsedFeaturePolicyDeclaration CreateParsedFeaturePolicyDeclaration(
   return declaration;
 }
 
-blink::ParsedFeaturePolicy CreateParsedFeaturePolicy(
+blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicy(
     const std::vector<blink::mojom::PermissionsPolicyFeature>& features,
     const std::vector<GURL>& origins,
     bool match_all_origins = false) {
-  blink::ParsedFeaturePolicy result;
+  blink::ParsedPermissionsPolicy result;
   result.reserve(features.size());
   for (const auto& feature : features)
-    result.push_back(CreateParsedFeaturePolicyDeclaration(feature, origins,
-                                                          match_all_origins));
+    result.push_back(CreateParsedPermissionsPolicyDeclaration(
+        feature, origins, match_all_origins));
   return result;
 }
 
-blink::ParsedFeaturePolicy CreateParsedFeaturePolicyMatchesAll(
+blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesAll(
     const std::vector<blink::mojom::PermissionsPolicyFeature>& features) {
-  return CreateParsedFeaturePolicy(features, {}, true);
+  return CreateParsedPermissionsPolicy(features, {}, true);
 }
 
-blink::ParsedFeaturePolicy CreateParsedFeaturePolicyMatchesNone(
+blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesNone(
     const std::vector<blink::mojom::PermissionsPolicyFeature>& features) {
-  return CreateParsedFeaturePolicy(features, {});
+  return CreateParsedPermissionsPolicy(features, {});
 }
 
 // Check frame depth on node, widget, and process all match expected depth.
@@ -9131,7 +9132,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  EXPECT_EQ(CreateParsedFeaturePolicy(
+  EXPECT_EQ(CreateParsedPermissionsPolicy(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation},
                 {url.GetOrigin()}),
             root->current_replication_state().feature_policy_header);
@@ -9148,7 +9149,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  EXPECT_EQ(CreateParsedFeaturePolicy(
+  EXPECT_EQ(CreateParsedPermissionsPolicy(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
                 {start_url.GetOrigin()}),
@@ -9157,7 +9158,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // When the main frame navigates to a page with a new policy, it should
   // overwrite the old one.
   EXPECT_TRUE(NavigateToURL(shell(), first_nav_url));
-  EXPECT_EQ(CreateParsedFeaturePolicyMatchesAll(
+  EXPECT_EQ(CreateParsedPermissionsPolicyMatchesAll(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment}),
             root->current_replication_state().feature_policy_header);
@@ -9179,7 +9180,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  EXPECT_EQ(CreateParsedFeaturePolicy(
+  EXPECT_EQ(CreateParsedPermissionsPolicy(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
                 {start_url.GetOrigin()}),
@@ -9188,7 +9189,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // When the main frame navigates to a page with a new policy, it should
   // overwrite the old one.
   EXPECT_TRUE(NavigateToURL(shell(), first_nav_url));
-  EXPECT_EQ(CreateParsedFeaturePolicyMatchesAll(
+  EXPECT_EQ(CreateParsedPermissionsPolicyMatchesAll(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment}),
             root->current_replication_state().feature_policy_header);
@@ -9212,14 +9213,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  EXPECT_EQ(CreateParsedFeaturePolicy(
+  EXPECT_EQ(CreateParsedPermissionsPolicy(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
                 {main_url.GetOrigin(), GURL("http://example.com/")}),
             root->current_replication_state().feature_policy_header);
   EXPECT_EQ(1UL, root->child_count());
   EXPECT_EQ(
-      CreateParsedFeaturePolicy(
+      CreateParsedPermissionsPolicy(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment},
           {main_url.GetOrigin()}),
@@ -9228,7 +9229,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Navigate the iframe cross-site.
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), first_nav_url));
   EXPECT_EQ(
-      CreateParsedFeaturePolicyMatchesAll(
+      CreateParsedPermissionsPolicyMatchesAll(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment}),
       root->child_at(0)->current_replication_state().feature_policy_header);
@@ -9242,7 +9243,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Navigate the iframe back to a page with a policy
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), first_nav_url));
   EXPECT_EQ(
-      CreateParsedFeaturePolicyMatchesAll(
+      CreateParsedPermissionsPolicyMatchesAll(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment}),
       root->child_at(0)->current_replication_state().feature_policy_header);
@@ -9273,7 +9274,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // exists.)
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), first_nav_url));
   EXPECT_EQ(
-      CreateParsedFeaturePolicyMatchesNone(
+      CreateParsedPermissionsPolicyMatchesNone(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment}),
       root->child_at(1)->current_replication_state().feature_policy_header);
@@ -9636,7 +9637,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Validate that the effective container policy contains a single non-unique
   // origin.
-  const blink::ParsedFeaturePolicy initial_effective_policy =
+  const blink::ParsedPermissionsPolicy initial_effective_policy =
       root->child_at(2)->effective_frame_policy().container_policy;
   EXPECT_EQ(1UL, initial_effective_policy[0].allowed_origins.size());
   EXPECT_FALSE(initial_effective_policy[0].allowed_origins.begin()->opaque());
@@ -9647,9 +9648,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // origin yet) but the effective policy should remain unchanged.
   EXPECT_TRUE(ExecuteScript(
       root, "document.getElementById('child-2').setAttribute('sandbox','')"));
-  const blink::ParsedFeaturePolicy updated_effective_policy =
+  const blink::ParsedPermissionsPolicy updated_effective_policy =
       root->child_at(2)->effective_frame_policy().container_policy;
-  const blink::ParsedFeaturePolicy updated_pending_policy =
+  const blink::ParsedPermissionsPolicy updated_pending_policy =
       root->child_at(2)->pending_frame_policy().container_policy;
   EXPECT_EQ(1UL, updated_effective_policy[0].allowed_origins.size());
   EXPECT_FALSE(updated_effective_policy[0].allowed_origins.begin()->opaque());
@@ -9658,7 +9659,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Navigate the frame; pending policy should now be committed.
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(2), nav_url));
-  const blink::ParsedFeaturePolicy final_effective_policy =
+  const blink::ParsedPermissionsPolicy final_effective_policy =
       root->child_at(2)->effective_frame_policy().container_policy;
   EXPECT_TRUE(final_effective_policy[0].matches_opaque_src);
   EXPECT_EQ(0UL, final_effective_policy[0].allowed_origins.size());

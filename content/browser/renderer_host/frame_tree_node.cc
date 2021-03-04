@@ -129,7 +129,7 @@ FrameTreeNode::FrameTreeNode(
           url::Origin(),
           name,
           unique_name,
-          blink::ParsedFeaturePolicy(),
+          blink::ParsedPermissionsPolicy(),
           network::mojom::WebSandboxFlags::kNone,
           blink::FramePolicy(),
           scope,
@@ -731,7 +731,7 @@ FrameTreeNode* FrameTreeNode::GetSibling(int relative_offset) const {
 
 bool FrameTreeNode::UpdateFramePolicyHeaders(
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedFeaturePolicy& parsed_header) {
+    const blink::ParsedPermissionsPolicy& parsed_header) {
   bool changed = false;
   if (replication_state_->feature_policy_header != parsed_header) {
     replication_state_->feature_policy_header = parsed_header;

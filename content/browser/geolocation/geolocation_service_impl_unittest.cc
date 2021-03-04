@@ -95,7 +95,7 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
 
   void CreateEmbeddedFrameAndGeolocationService(bool allow_via_feature_policy) {
     const GURL kEmbeddedUrl("https://embeddables.com/someframe");
-    blink::ParsedFeaturePolicy frame_policy = {};
+    blink::ParsedPermissionsPolicy frame_policy = {};
     if (allow_via_feature_policy) {
       frame_policy.push_back(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,

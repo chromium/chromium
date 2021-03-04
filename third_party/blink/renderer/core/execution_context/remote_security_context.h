@@ -31,8 +31,8 @@ class CORE_EXPORT RemoteSecurityContext final : public SecurityContext {
   //     in a parent browsing context (frame).
   // Note that |parent_feature_policy| is null, and |container_policy| is empty
   // for a top-level security context.
-  void InitializeFeaturePolicy(const ParsedFeaturePolicy& parsed_header,
-                               const ParsedFeaturePolicy& container_policy,
+  void InitializeFeaturePolicy(const ParsedPermissionsPolicy& parsed_header,
+                               const ParsedPermissionsPolicy& container_policy,
                                const PermissionsPolicy* parent_feature_policy);
 };
 

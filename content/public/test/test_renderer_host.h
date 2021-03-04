@@ -110,7 +110,7 @@ class RenderFrameHostTester {
   // used as the container policy.
   virtual RenderFrameHost* AppendChildWithPolicy(
       const std::string& frame_name,
-      const blink::ParsedFeaturePolicy& allow) = 0;
+      const blink::ParsedPermissionsPolicy& allow) = 0;
 
   // Gives tests access to RenderFrameHostImpl::OnDetach. Destroys |this|.
   virtual void Detach() = 0;

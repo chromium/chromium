@@ -102,7 +102,7 @@ class FeaturePolicyParserTest : public ::testing::Test {
       {"geolocation",
        blink::mojom::blink::PermissionsPolicyFeature::kGeolocation}};
 
-  ParsedFeaturePolicy ParseFeaturePolicyHeader(
+  ParsedPermissionsPolicy ParseFeaturePolicyHeader(
       const String& feature_policy_header,
       scoped_refptr<const SecurityOrigin> origin,
       PolicyParserMessageBuffer& logger,
@@ -150,18 +150,19 @@ class FeaturePolicyParserParsingTest
   }
 
  protected:
-  ParsedFeaturePolicy ParseFeaturePolicy(const char* policy_string,
-                                         const char* self_origin_string,
-                                         const char* src_origin_string,
-                                         PolicyParserMessageBuffer& logger,
-                                         const FeatureNameMap& feature_names,
-                                         ExecutionContext* context = nullptr) {
+  ParsedPermissionsPolicy ParseFeaturePolicy(
+      const char* policy_string,
+      const char* self_origin_string,
+      const char* src_origin_string,
+      PolicyParserMessageBuffer& logger,
+      const FeatureNameMap& feature_names,
+      ExecutionContext* context = nullptr) {
     return FeaturePolicyParser::ParseFeaturePolicyForTest(
         policy_string, SecurityOrigin::CreateFromString(self_origin_string),
         GetSrcOrigin(src_origin_string), logger, feature_names, context);
   }
 
-  ParsedFeaturePolicy ParsePermissionsPolicy(
+  ParsedPermissionsPolicy ParsePermissionsPolicy(
       const char* policy_string,
       const char* self_origin_string,
       const char* src_origin_string,
@@ -173,7 +174,7 @@ class FeaturePolicyParserParsingTest
         GetSrcOrigin(src_origin_string), logger, feature_names, context);
   }
 
-  void CheckParsedPolicy(const ParsedFeaturePolicy& actual,
+  void CheckParsedPolicy(const ParsedPermissionsPolicy& actual,
                          const ParsedPolicyForTest& expected) {
     ASSERT_EQ(actual.size(), expected.size());
     for (size_t i = 0; i < actual.size(); ++i) {
@@ -1100,7 +1101,7 @@ class FeaturePolicyMutationTest : public testing::Test {
   // allows it in all origins.
   bool IsFeatureAllowedEverywhere(
       mojom::blink::PermissionsPolicyFeature feature,
-      const ParsedFeaturePolicy& policy) {
+      const ParsedPermissionsPolicy& policy) {
     const auto& result = std::find_if(policy.begin(), policy.end(),
                                       [feature](const auto& declaration) {
                                         return declaration.feature == feature;
@@ -1116,7 +1117,7 @@ class FeaturePolicyMutationTest : public testing::Test {
   // disallows it in all origins.
   bool IsFeatureDisallowedEverywhere(
       mojom::blink::PermissionsPolicyFeature feature,
-      const ParsedFeaturePolicy& policy) {
+      const ParsedPermissionsPolicy& policy) {
     const auto& result = std::find_if(policy.begin(), policy.end(),
                                       [feature](const auto& declaration) {
                                         return declaration.feature == feature;
@@ -1128,13 +1129,13 @@ class FeaturePolicyMutationTest : public testing::Test {
            !result->matches_opaque_src && result->allowed_origins.empty();
   }
 
-  ParsedFeaturePolicy test_policy = {
+  ParsedPermissionsPolicy test_policy = {
       {mojom::blink::PermissionsPolicyFeature::kFullscreen,
        /* allowed_origins */ {url_origin_a_, url_origin_b_}, false, false},
       {mojom::blink::PermissionsPolicyFeature::kGeolocation,
        /* allowed_origins */ {url_origin_a_}, false, false}};
 
-  ParsedFeaturePolicy empty_policy = {};
+  ParsedPermissionsPolicy empty_policy = {};
 };
 
 TEST_F(FeaturePolicyMutationTest, TestIsFeatureDeclared) {
@@ -1223,7 +1224,7 @@ TEST_F(FeaturePolicyMutationTest, TestRemoveAllFeatures) {
 }
 
 TEST_F(FeaturePolicyMutationTest, TestDisallowIfNotPresent) {
-  ParsedFeaturePolicy copy = test_policy;
+  ParsedPermissionsPolicy copy = test_policy;
   // Try to disallow a feature which already exists
   EXPECT_FALSE(DisallowFeatureIfNotPresent(
       mojom::blink::PermissionsPolicyFeature::kFullscreen, copy));
@@ -1239,7 +1240,7 @@ TEST_F(FeaturePolicyMutationTest, TestDisallowIfNotPresent) {
 }
 
 TEST_F(FeaturePolicyMutationTest, TestAllowEverywhereIfNotPresent) {
-  ParsedFeaturePolicy copy = test_policy;
+  ParsedPermissionsPolicy copy = test_policy;
   // Try to allow a feature which already exists
   EXPECT_FALSE(AllowFeatureEverywhereIfNotPresent(
       mojom::blink::PermissionsPolicyFeature::kFullscreen, copy));

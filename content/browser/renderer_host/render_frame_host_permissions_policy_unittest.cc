@@ -80,10 +80,10 @@ class RenderFrameHostFeaturePolicyTest
   }
 
  private:
-  blink::ParsedFeaturePolicy CreateFPHeader(
+  blink::ParsedPermissionsPolicy CreateFPHeader(
       blink::mojom::PermissionsPolicyFeature feature,
       const std::vector<std::string>& origins) {
-    blink::ParsedFeaturePolicy result(1);
+    blink::ParsedPermissionsPolicy result(1);
     result[0].feature = feature;
     for (auto const& origin : origins)
       result[0].allowed_origins.push_back(url::Origin::Create(GURL(origin)));

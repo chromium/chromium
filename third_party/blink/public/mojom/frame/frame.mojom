@@ -951,7 +951,7 @@ interface RemoteFrame {
   // Used to replicate the updated sandbox flags and feature policy headers to
   // all corresponding remote frames of a local frame when a navigation commits.
   DidSetFramePolicyHeaders(network.mojom.WebSandboxFlags sandbox_flags,
-      array<blink.mojom.ParsedFeaturePolicyDeclaration> parsed_permissions_policy);
+      array<blink.mojom.ParsedPermissionsPolicyDeclaration> parsed_permissions_policy);
 
   // Notifies the frame that its parent has changed the frame's sandbox flags or
   // container policy.

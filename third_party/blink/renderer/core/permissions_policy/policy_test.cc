@@ -30,7 +30,7 @@ class PolicyTest : public testing::Test {
     auto origin = SecurityOrigin::CreateFromString(kSelfOrigin);
 
     auto feature_policy = PermissionsPolicy::CreateFromParentPolicy(
-        nullptr, ParsedFeaturePolicy(), origin->ToUrlOrigin());
+        nullptr, ParsedPermissionsPolicy(), origin->ToUrlOrigin());
     auto header = FeaturePolicyParser::ParseHeader(
         "fullscreen *; payment 'self'; midi 'none'; camera 'self' "
         "https://example.com https://example.net",
@@ -68,7 +68,7 @@ class IFramePolicyTest : public PolicyTest {
   void SetUp() override {
     PolicyTest::SetUp();
     policy_ = MakeGarbageCollected<IFramePolicy>(
-        page_holder_->GetFrame().DomWindow(), ParsedFeaturePolicy(),
+        page_holder_->GetFrame().DomWindow(), ParsedPermissionsPolicy(),
         SecurityOrigin::CreateFromString(kSelfOrigin));
   }
 };
@@ -176,7 +176,7 @@ TEST_F(IFramePolicyTest, TestSameOriginAllowedFeatures) {
 TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
   // Update the iframe's policy, given a new origin.
   GetPolicy()->UpdateContainerPolicy(
-      ParsedFeaturePolicy(), SecurityOrigin::CreateFromString(kOriginA));
+      ParsedPermissionsPolicy(), SecurityOrigin::CreateFromString(kOriginA));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   // None of these features should be allowed in a cross-origin context.
   EXPECT_FALSE(allowed_features.Contains("fullscreen"));
@@ -191,10 +191,11 @@ TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
 }
 
 TEST_F(IFramePolicyTest, TestCombinedPolicy) {
-  ParsedFeaturePolicy container_policy = FeaturePolicyParser::ParseAttribute(
-      "geolocation 'src'; payment 'none'; midi; camera 'src'",
-      SecurityOrigin::CreateFromString(kSelfOrigin),
-      SecurityOrigin::CreateFromString(kOriginA), dummy_logger_);
+  ParsedPermissionsPolicy container_policy =
+      FeaturePolicyParser::ParseAttribute(
+          "geolocation 'src'; payment 'none'; midi; camera 'src'",
+          SecurityOrigin::CreateFromString(kSelfOrigin),
+          SecurityOrigin::CreateFromString(kOriginA), dummy_logger_);
   GetPolicy()->UpdateContainerPolicy(
       container_policy, SecurityOrigin::CreateFromString(kOriginA));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);

@@ -22,22 +22,22 @@
 namespace content {
 namespace {
 
-blink::ParsedFeaturePolicy CreatePolicyToAllowWebAuthn() {
-  return {blink::ParsedFeaturePolicyDeclaration(
+blink::ParsedPermissionsPolicy CreatePolicyToAllowWebAuthn() {
+  return {blink::ParsedPermissionsPolicyDeclaration(
       blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
       /*values=*/{}, /*matches_all_origins=*/true,
       /*matches_opaque_src=*/false)};
 }
 
-blink::ParsedFeaturePolicy CreatePolicyToAllowWebPayments() {
-  return {blink::ParsedFeaturePolicyDeclaration(
+blink::ParsedPermissionsPolicy CreatePolicyToAllowWebPayments() {
+  return {blink::ParsedPermissionsPolicyDeclaration(
       blink::mojom::PermissionsPolicyFeature::kPayment, /*values=*/{},
       /*matches_all_origins=*/true, /*matches_opaque_src=*/false)};
 }
 
 struct TestCase {
   TestCase(const base::StringPiece& url,
-           const blink::ParsedFeaturePolicy& policy,
+           const blink::ParsedPermissionsPolicy& policy,
            WebAuthRequestSecurityChecker::RequestType request_type,
            bool expected_is_cross_origin,
            blink::mojom::AuthenticatorStatus expected_status)
@@ -50,7 +50,7 @@ struct TestCase {
   ~TestCase() = default;
 
   const base::StringPiece url;
-  const blink::ParsedFeaturePolicy policy;
+  const blink::ParsedPermissionsPolicy policy;
   const WebAuthRequestSecurityChecker::RequestType request_type;
   const bool expected_is_cross_origin;
   const blink::mojom::AuthenticatorStatus expected_status;
@@ -125,34 +125,34 @@ INSTANTIATE_TEST_SUITE_P(
     WebAuthRequestSecurityCheckerTest,
     testing::Values(
         TestCase("https://same-origin.com",
-                 blink::ParsedFeaturePolicy(),
+                 blink::ParsedPermissionsPolicy(),
                  WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
                  /*expected_is_cross_origin=*/false,
                  blink::mojom::AuthenticatorStatus::SUCCESS),
         TestCase("https://cross-origin.com",
-                 blink::ParsedFeaturePolicy(),
+                 blink::ParsedPermissionsPolicy(),
                  WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
                  /*expected_is_cross_origin=*/true,
                  blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR),
         TestCase("https://same-origin.com",
-                 blink::ParsedFeaturePolicy(),
+                 blink::ParsedPermissionsPolicy(),
                  WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
                  /*expected_is_cross_origin=*/false,
                  blink::mojom::AuthenticatorStatus::SUCCESS),
         TestCase("https://cross-origin.com",
-                 blink::ParsedFeaturePolicy(),
+                 blink::ParsedPermissionsPolicy(),
                  WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
                  /*expected_is_cross_origin=*/true,
                  blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR),
         TestCase(
             "https://same-origin.com",
-            blink::ParsedFeaturePolicy(),
+            blink::ParsedPermissionsPolicy(),
             WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential,
             /*expected_is_cross_origin=*/false,
             blink::mojom::AuthenticatorStatus::SUCCESS),
         TestCase(
             "https://cross-origin.com",
-            blink::ParsedFeaturePolicy(),
+            blink::ParsedPermissionsPolicy(),
             WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential,
             /*expected_is_cross_origin=*/true,
             blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR)));

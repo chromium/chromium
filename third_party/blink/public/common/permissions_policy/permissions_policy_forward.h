@@ -7,7 +7,7 @@
 
 namespace blink {
 
-struct ParsedFeaturePolicyDeclaration;
+struct ParsedPermissionsPolicyDeclaration;
 
 }  // namespace blink
 

@@ -8,10 +8,10 @@
 
 namespace mojo {
 
-bool StructTraits<blink::mojom::ParsedFeaturePolicyDeclarationDataView,
-                  blink::ParsedFeaturePolicyDeclaration>::
-    Read(blink::mojom::ParsedFeaturePolicyDeclarationDataView in,
-         blink::ParsedFeaturePolicyDeclaration* out) {
+bool StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
+                  blink::ParsedPermissionsPolicyDeclaration>::
+    Read(blink::mojom::ParsedPermissionsPolicyDeclarationDataView in,
+         blink::ParsedPermissionsPolicyDeclaration* out) {
   out->matches_all_origins = in.matches_all_origins();
   out->matches_opaque_src = in.matches_opaque_src();
   return in.ReadFeature(&out->feature) &&

@@ -51,13 +51,13 @@ class CORE_EXPORT SecurityContextInit {
       DocumentPolicy::ParsedDocumentPolicy& document_policy,
       const String& report_only_document_policy_header);
 
-  const ParsedFeaturePolicy& FeaturePolicyHeader() const {
+  const ParsedPermissionsPolicy& FeaturePolicyHeader() const {
     return feature_policy_header_;
   }
 
  private:
   ExecutionContext* execution_context_ = nullptr;
-  ParsedFeaturePolicy feature_policy_header_;
+  ParsedPermissionsPolicy feature_policy_header_;
 };
 
 }  // namespace blink

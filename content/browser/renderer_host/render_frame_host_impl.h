@@ -3193,7 +3193,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Parsed feature policy header. It is parsed from blink, received during
   // DidCommitProvisionalLoad. This is constant during the whole lifetime of
   // this document.
-  blink::ParsedFeaturePolicy feature_policy_header_;
+  blink::ParsedPermissionsPolicy feature_policy_header_;
 
   // Tracks the feature policy which has been set on this frame.
   std::unique_ptr<blink::PermissionsPolicy> feature_policy_;

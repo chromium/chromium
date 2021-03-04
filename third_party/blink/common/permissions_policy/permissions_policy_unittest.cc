@@ -44,14 +44,14 @@ class FeaturePolicyTest : public testing::Test {
   std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent,
       const url::Origin& origin) {
-    ParsedFeaturePolicy empty_container_policy;
+    ParsedPermissionsPolicy empty_container_policy;
     return PermissionsPolicy::CreateFromParentPolicy(
         parent, empty_container_policy, origin, feature_list_);
   }
 
   std::unique_ptr<PermissionsPolicy> CreateFromParentWithFramePolicy(
       const PermissionsPolicy* parent,
-      const ParsedFeaturePolicy& frame_policy,
+      const ParsedPermissionsPolicy& frame_policy,
       const url::Origin& origin) {
     return PermissionsPolicy::CreateFromParentPolicy(parent, frame_policy,
                                                      origin, feature_list_);
@@ -263,7 +263,7 @@ TEST_F(FeaturePolicyTest, TestSelectiveFrameInheritance2) {
   policy1->SetHeaderPolicy(
       {{{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false,
          false}}});
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
@@ -419,7 +419,7 @@ TEST_F(FeaturePolicyTest, TestEnableForAllOriginsAndDelegate) {
       CreateFromParentPolicy(nullptr, origin_a_);
   policy1->SetHeaderPolicy(
       {{{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}});
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
@@ -542,7 +542,7 @@ TEST_F(FeaturePolicyTest, TestDefaultSelfRespectsSameOriginEmbedding) {
   policy1->SetHeaderPolicy(
       {{{kDefaultSelfFeature, /* allowed_origins */ {origin_a_, origin_b_},
          false, false}}});
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
@@ -576,7 +576,7 @@ TEST_F(FeaturePolicyTest, TestDelegationRequiredAtAllLevels) {
       CreateFromParentPolicy(nullptr, origin_a_);
   policy1->SetHeaderPolicy(
       {{{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}});
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, true}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
@@ -638,11 +638,11 @@ TEST_F(FeaturePolicyTest, TestEnabledFrameCanDelegate) {
   // Feature should be enabled in all frames.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
-  ParsedFeaturePolicy frame_policy2 = {
+  ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, {origin_c_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy3 =
       CreateFromParentWithFramePolicy(policy2.get(), frame_policy2, origin_c_);
@@ -740,13 +740,13 @@ TEST_F(FeaturePolicyTest, TestFeaturesAreIndependent) {
       {{{kDefaultSelfFeature, /* allowed_origins */ {origin_a_, origin_b_},
          false, false},
         {kDefaultOnFeature, /* allowed_origins */ {origin_a_}, false, false}}});
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_a_, origin_b_},
         false, false},
        {kDefaultOnFeature, /* allowed_origins */ {origin_a_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
-  ParsedFeaturePolicy frame_policy2 = {
+  ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_, origin_c_},
         false, false},
        {kDefaultOnFeature, /* allowed_origins */ {origin_b_}, false, false}}};
@@ -779,7 +779,7 @@ TEST_F(FeaturePolicyTest, TestSimpleFramePolicy) {
   // <iframe allow="default-self">
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
@@ -806,7 +806,7 @@ TEST_F(FeaturePolicyTest, TestAllOriginFramePolicy) {
   // <iframe allowfullscreen>
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
@@ -844,12 +844,12 @@ TEST_F(FeaturePolicyTest, TestFramePolicyCanBeFurtherDelegated) {
   // delegated through frame policy.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  ParsedFeaturePolicy frame_policy1 = {{
+  ParsedPermissionsPolicy frame_policy1 = {{
       {kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false},
   }};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy1, origin_b_);
-  ParsedFeaturePolicy frame_policy2 = {{
+  ParsedPermissionsPolicy frame_policy2 = {{
       {kDefaultSelfFeature, /* allowed_origins */ {origin_c_}, false, false},
   }};
   std::unique_ptr<PermissionsPolicy> policy3 =
@@ -887,11 +887,11 @@ TEST_F(FeaturePolicyTest, TestDefaultOnCanBeDisabledByFramePolicy) {
   // child frames because permission was removed through frame policy.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  ParsedFeaturePolicy frame_policy1 = {
+  ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultOnFeature, /* allowed_origins */ {}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy1, origin_a_);
-  ParsedFeaturePolicy frame_policy2 = {
+  ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultOnFeature, /* allowed_origins */ {}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy3 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy2, origin_b_);
@@ -939,11 +939,11 @@ TEST_F(FeaturePolicyTest, TestFramePolicyModifiesHeaderPolicy) {
       {kDefaultSelfFeature, /* allowed_origins */ {origin_a_, origin_b_}, false,
        false},
   }});
-  ParsedFeaturePolicy frame_policy1 = {
+  ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy1, origin_b_);
-  ParsedFeaturePolicy frame_policy2 = {{
+  ParsedPermissionsPolicy frame_policy2 = {{
       {kDefaultSelfFeature, /* allowed_origins */ {}, false, false},
   }};
   std::unique_ptr<PermissionsPolicy> policy3 =
@@ -984,13 +984,13 @@ TEST_F(FeaturePolicyTest, TestCombineFrameAndHeaderPolicies) {
   // 4. Feature should be disabled in frame 3 by frame policy.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  ParsedFeaturePolicy frame_policy1 = {
+  ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy1, origin_b_);
   policy2->SetHeaderPolicy(
       {{{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}});
-  ParsedFeaturePolicy frame_policy2 = {
+  ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy3 =
       CreateFromParentWithFramePolicy(policy2.get(), frame_policy2, origin_c_);
@@ -1027,12 +1027,12 @@ TEST_F(FeaturePolicyTest, TestFeatureDeclinedAtTopLevel) {
   policy1->SetHeaderPolicy({{
       {kDefaultSelfFeature, /* allowed_origins */ {}, false, false},
   }});
-  ParsedFeaturePolicy frame_policy1 = {{
+  ParsedPermissionsPolicy frame_policy1 = {{
       {kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false},
   }};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy1, origin_b_);
-  ParsedFeaturePolicy frame_policy2 = {
+  ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy3 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy2, origin_a_);
@@ -1074,15 +1074,15 @@ TEST_F(FeaturePolicyTest, TestFeatureDelegatedAndAllowed) {
   policy1->SetHeaderPolicy(
       {{{kDefaultSelfFeature, /* allowed_origins */ {origin_a_, origin_b_},
          false, false}}});
-  ParsedFeaturePolicy frame_policy1 = {
+  ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_a_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy1, origin_b_);
-  ParsedFeaturePolicy frame_policy2 = {
+  ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy3 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy2, origin_b_);
-  ParsedFeaturePolicy frame_policy3 = {
+  ParsedPermissionsPolicy frame_policy3 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy4 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy3, origin_b_);
@@ -1144,7 +1144,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedFramePolicyForAllOrigins) {
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
   url::Origin sandboxed_origin = url::Origin();
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, true}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), frame_policy, sandboxed_origin);
@@ -1173,7 +1173,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedFramePolicyForOpaqueSrcOrigin) {
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
   url::Origin sandboxed_origin = url::Origin();
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, false, true}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), frame_policy, sandboxed_origin);
@@ -1203,7 +1203,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedFrameFromHeaderPolicy) {
   policy1->SetHeaderPolicy(
       {{{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}});
   url::Origin sandboxed_origin = url::Origin();
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, false, true}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), frame_policy, sandboxed_origin);
@@ -1234,7 +1234,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedPolicyIsNotInherited) {
       CreateFromParentPolicy(nullptr, origin_a_);
   url::Origin sandboxed_origin_1 = url::Origin();
   url::Origin sandboxed_origin_2 = url::Origin();
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), frame_policy, sandboxed_origin_1);
@@ -1278,11 +1278,11 @@ TEST_F(FeaturePolicyTest, TestSandboxedPolicyCanBePropagated) {
       CreateFromParentPolicy(nullptr, origin_a_);
   url::Origin sandboxed_origin_1 = origin_a_.DeriveNewOpaqueOrigin();
   url::Origin sandboxed_origin_2 = sandboxed_origin_1.DeriveNewOpaqueOrigin();
-  ParsedFeaturePolicy frame_policy_1 = {
+  ParsedPermissionsPolicy frame_policy_1 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, true}}};
   std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
       policy1.get(), frame_policy_1, sandboxed_origin_1);
-  ParsedFeaturePolicy frame_policy_2 = {
+  ParsedPermissionsPolicy frame_policy_2 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, true}}};
   std::unique_ptr<PermissionsPolicy> policy3 = CreateFromParentWithFramePolicy(
       policy2.get(), frame_policy_2, sandboxed_origin_2);
@@ -1309,7 +1309,7 @@ TEST_F(FeaturePolicyTest, TestUndefinedFeaturesInFramePolicy) {
   // present in a container policy.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  ParsedFeaturePolicy frame_policy = {
+  ParsedPermissionsPolicy frame_policy = {
       {{mojom::PermissionsPolicyFeature::kNotFound, /* allowed_origins */ {},
         false, true},
        {kUnavailableFeature, /* allowed_origins */ {}, false, true}}};
@@ -1402,19 +1402,19 @@ TEST_F(FeaturePolicyTest, ProposedTestCompletelyBlockedPolicy) {
       CreateFromParentPolicy(policy1.get(), origin_b_);
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy4 = {
+  ParsedPermissionsPolicy frame_policy4 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy4 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy4, origin_b_);
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy5 = {
+  ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy5 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy5, origin_b_);
   EXPECT_FALSE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy6 = {
+  ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_c_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy6 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy6, origin_b_);
@@ -1464,20 +1464,20 @@ TEST_F(FeaturePolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 
   // This is a critical change from the existing semantics.
-  ParsedFeaturePolicy frame_policy4 = {
+  ParsedPermissionsPolicy frame_policy4 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy4 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy4, origin_b_);
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 
   // This is a critical change from the existing semantics.
-  ParsedFeaturePolicy frame_policy5 = {
+  ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy5 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy5, origin_b_);
   EXPECT_FALSE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy6 = {
+  ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_c_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy6 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy6, origin_b_);
@@ -1528,19 +1528,19 @@ TEST_F(FeaturePolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
       CreateFromParentPolicy(policy1.get(), origin_b_);
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy4 = {
+  ParsedPermissionsPolicy frame_policy4 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy4 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy4, origin_b_);
   EXPECT_TRUE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy5 = {
+  ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy5 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy5, origin_b_);
   EXPECT_TRUE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy6 = {
+  ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_c_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy6 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy6, origin_b_);
@@ -1590,19 +1590,19 @@ TEST_F(FeaturePolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
       CreateFromParentPolicy(policy1.get(), origin_b_);
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy4 = {
+  ParsedPermissionsPolicy frame_policy4 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy4 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy4, origin_b_);
   EXPECT_TRUE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy5 = {
+  ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_b_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy5 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy5, origin_b_);
   EXPECT_TRUE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 
-  ParsedFeaturePolicy frame_policy6 = {
+  ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {origin_c_}, false, false}}};
   std::unique_ptr<PermissionsPolicy> policy6 =
       CreateFromParentWithFramePolicy(policy1.get(), frame_policy6, origin_b_);
@@ -1638,7 +1638,7 @@ TEST_F(FeaturePolicyTest, ProposedTestNestedPolicyPropagates) {
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
 
   // The proposed value in frame 2 should affect the proposed value in frame 3.
-  ParsedFeaturePolicy frame_policy3 = {
+  ParsedPermissionsPolicy frame_policy3 = {
       {{kDefaultSelfFeature, /* allowed_origins */ {}, true, false}}};
   std::unique_ptr<PermissionsPolicy> policy3 =
       CreateFromParentWithFramePolicy(policy2.get(), frame_policy3, origin_b_);

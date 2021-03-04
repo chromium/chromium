@@ -16,7 +16,7 @@ import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 // navigation_params.mojom.
 struct FramePolicy {
   network.mojom.WebSandboxFlags sandbox_flags;
-  array<blink.mojom.ParsedFeaturePolicyDeclaration> container_policy;
+  array<blink.mojom.ParsedPermissionsPolicyDeclaration> container_policy;
   map<blink.mojom.DocumentPolicyFeature, blink.mojom.PolicyValue> required_document_policy;
   bool disallow_document_access = false;
 };

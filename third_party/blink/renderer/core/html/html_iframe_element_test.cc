@@ -144,7 +144,7 @@ TEST_F(HTMLIFrameElementTest, DefaultContainerPolicy) {
   frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
   frame_element_->UpdateContainerPolicyForTests();
 
-  const ParsedFeaturePolicy& container_policy =
+  const ParsedPermissionsPolicy& container_policy =
       frame_element_->GetFramePolicy().container_policy;
   EXPECT_EQ(0UL, container_policy.size());
 }
@@ -156,7 +156,7 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
   frame_element_->setAttribute(html_names::kAllowAttr, "fullscreen");
   frame_element_->UpdateContainerPolicyForTests();
 
-  const ParsedFeaturePolicy& container_policy1 =
+  const ParsedPermissionsPolicy& container_policy1 =
       frame_element_->GetFramePolicy().container_policy;
 
   EXPECT_EQ(1UL, container_policy1.size());
@@ -170,7 +170,7 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
   frame_element_->setAttribute(html_names::kAllowAttr, "payment; fullscreen");
   frame_element_->UpdateContainerPolicyForTests();
 
-  const ParsedFeaturePolicy& container_policy2 =
+  const ParsedPermissionsPolicy& container_policy2 =
       frame_element_->GetFramePolicy().container_policy;
   EXPECT_EQ(2UL, container_policy2.size());
   EXPECT_TRUE(container_policy2[0].feature ==
@@ -193,7 +193,7 @@ TEST_F(HTMLIFrameElementTest, AllowAttributeContainerPolicy) {
 // Test the ConstructContainerPolicy method when no attributes are set on the
 // iframe element.
 TEST_F(HTMLIFrameElementTest, ConstructEmptyContainerPolicy) {
-  ParsedFeaturePolicy container_policy =
+  ParsedPermissionsPolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(0UL, container_policy.size());
 }
@@ -202,7 +202,7 @@ TEST_F(HTMLIFrameElementTest, ConstructEmptyContainerPolicy) {
 // to enable features in the frame.
 TEST_F(HTMLIFrameElementTest, ConstructContainerPolicy) {
   frame_element_->setAttribute(html_names::kAllowAttr, "payment; usb");
-  ParsedFeaturePolicy container_policy =
+  ParsedPermissionsPolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(2UL, container_policy.size());
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kPayment,
@@ -223,7 +223,7 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicy) {
 TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowFullscreen) {
   frame_element_->SetBooleanAttribute(html_names::kAllowfullscreenAttr, true);
 
-  ParsedFeaturePolicy container_policy =
+  ParsedPermissionsPolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(1UL, container_policy.size());
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
@@ -238,7 +238,7 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowPaymentRequest) {
   frame_element_->SetBooleanAttribute(html_names::kAllowpaymentrequestAttr,
                                       true);
 
-  ParsedFeaturePolicy container_policy =
+  ParsedPermissionsPolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(2UL, container_policy.size());
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kUsb,
@@ -263,7 +263,7 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowAttributes) {
   frame_element_->SetBooleanAttribute(html_names::kAllowpaymentrequestAttr,
                                       true);
 
-  ParsedFeaturePolicy container_policy =
+  ParsedPermissionsPolicy container_policy =
       frame_element_->ConstructContainerPolicy();
   EXPECT_EQ(3UL, container_policy.size());
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kPayment,

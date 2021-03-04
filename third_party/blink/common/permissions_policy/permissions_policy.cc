@@ -15,9 +15,9 @@
 namespace blink {
 namespace {
 
-// Extracts an Allowlist from a ParsedFeaturePolicyDeclaration.
+// Extracts an Allowlist from a ParsedPermissionsPolicyDeclaration.
 PermissionsPolicy::Allowlist AllowlistFromDeclaration(
-    const ParsedFeaturePolicyDeclaration& parsed_declaration,
+    const ParsedPermissionsPolicyDeclaration& parsed_declaration,
     const PermissionsPolicyFeatureList& feature_list) {
   auto result = PermissionsPolicy::Allowlist();
   if (parsed_declaration.matches_all_origins)
@@ -32,13 +32,14 @@ PermissionsPolicy::Allowlist AllowlistFromDeclaration(
 
 }  // namespace
 
-ParsedFeaturePolicyDeclaration::ParsedFeaturePolicyDeclaration() = default;
+ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration() =
+    default;
 
-ParsedFeaturePolicyDeclaration::ParsedFeaturePolicyDeclaration(
+ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
     mojom::PermissionsPolicyFeature feature)
     : feature(feature) {}
 
-ParsedFeaturePolicyDeclaration::ParsedFeaturePolicyDeclaration(
+ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
     mojom::PermissionsPolicyFeature feature,
     const std::vector<url::Origin>& allowed_origins,
     bool matches_all_origins,
@@ -48,16 +49,18 @@ ParsedFeaturePolicyDeclaration::ParsedFeaturePolicyDeclaration(
       matches_all_origins(matches_all_origins),
       matches_opaque_src(matches_opaque_src) {}
 
-ParsedFeaturePolicyDeclaration::ParsedFeaturePolicyDeclaration(
-    const ParsedFeaturePolicyDeclaration& rhs) = default;
+ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
+    const ParsedPermissionsPolicyDeclaration& rhs) = default;
 
-ParsedFeaturePolicyDeclaration& ParsedFeaturePolicyDeclaration::operator=(
-    const ParsedFeaturePolicyDeclaration& rhs) = default;
+ParsedPermissionsPolicyDeclaration&
+ParsedPermissionsPolicyDeclaration::operator=(
+    const ParsedPermissionsPolicyDeclaration& rhs) = default;
 
-ParsedFeaturePolicyDeclaration::~ParsedFeaturePolicyDeclaration() = default;
+ParsedPermissionsPolicyDeclaration::~ParsedPermissionsPolicyDeclaration() =
+    default;
 
-bool operator==(const ParsedFeaturePolicyDeclaration& lhs,
-                const ParsedFeaturePolicyDeclaration& rhs) {
+bool operator==(const ParsedPermissionsPolicyDeclaration& lhs,
+                const ParsedPermissionsPolicyDeclaration& rhs) {
   return std::tie(lhs.feature, lhs.matches_all_origins, lhs.matches_opaque_src,
                   lhs.allowed_origins) ==
          std::tie(rhs.feature, rhs.matches_all_origins, rhs.matches_opaque_src,
@@ -103,7 +106,7 @@ bool PermissionsPolicy::Allowlist::MatchesOpaqueSrc() const {
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const PermissionsPolicy* parent_policy,
-    const ParsedFeaturePolicy& container_policy,
+    const ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin) {
   return CreateFromParentPolicy(parent_policy, container_policy, origin,
                                 GetPermissionsPolicyFeatureList());
@@ -222,9 +225,9 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
 }
 
 void PermissionsPolicy::SetHeaderPolicy(
-    const ParsedFeaturePolicy& parsed_header) {
+    const ParsedPermissionsPolicy& parsed_header) {
   DCHECK(allowlists_.empty());
-  for (const ParsedFeaturePolicyDeclaration& parsed_declaration :
+  for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
@@ -250,7 +253,7 @@ PermissionsPolicy::~PermissionsPolicy() = default;
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const PermissionsPolicy* parent_policy,
-    const ParsedFeaturePolicy& container_policy,
+    const ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features) {
   // If there is a non-empty container policy, then there must also be a parent
@@ -274,7 +277,7 @@ bool PermissionsPolicy::InheritedValueForFeature(
     const PermissionsPolicy* parent_policy,
     std::pair<mojom::PermissionsPolicyFeature, PermissionsPolicyFeatureDefault>
         feature,
-    const ParsedFeaturePolicy& container_policy) const {
+    const ParsedPermissionsPolicy& container_policy) const {
   // 9.7 2: Otherwise [If context is not a nested browsing context,] return
   // "Enabled".
   if (!parent_policy)

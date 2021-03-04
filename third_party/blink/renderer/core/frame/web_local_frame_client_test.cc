@@ -35,7 +35,7 @@ class CallTrackingTestWebLocalFrameClient
       WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
       network::mojom::WebSandboxFlags sandbox_flags,
-      const ParsedFeaturePolicy& feature_policy_header,
+      const ParsedPermissionsPolicy& feature_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) override {
     calls_.push_back("DidCommitNavigation");
     TestWebFrameClient::DidCommitNavigation(

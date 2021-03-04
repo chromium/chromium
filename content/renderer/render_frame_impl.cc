@@ -3981,7 +3981,7 @@ void RenderFrameImpl::DidCommitNavigation(
     blink::WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedFeaturePolicy& feature_policy_header,
+    const blink::ParsedPermissionsPolicy& feature_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   CHECK_EQ(NavigationCommitState::kWillCommit, navigation_commit_state_);
   navigation_commit_state_ = NavigationCommitState::kDidCommit;
@@ -4254,7 +4254,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   same_document_params->is_history_api_navigation = is_history_api_navigation;
   DidCommitNavigationInternal(
       commit_type, transition, network::mojom::WebSandboxFlags(),
-      blink::ParsedFeaturePolicy(),         // feature_policy_header
+      blink::ParsedPermissionsPolicy(),     // feature_policy_header
       blink::DocumentPolicyFeatureState(),  // document_policy_header
       nullptr,                              // interface_params
       std::move(same_document_params),
@@ -4722,7 +4722,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedFeaturePolicy& feature_policy_header,
+    const blink::ParsedPermissionsPolicy& feature_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     const base::Optional<base::UnguessableToken>& embedding_token) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
@@ -4997,7 +4997,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedFeaturePolicy& feature_policy_header,
+    const blink::ParsedPermissionsPolicy& feature_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,

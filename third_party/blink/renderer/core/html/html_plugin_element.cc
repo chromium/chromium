@@ -282,14 +282,14 @@ bool HTMLPlugInElement::ShouldAccelerate() const {
   return plugin && plugin->CcLayer();
 }
 
-ParsedFeaturePolicy HTMLPlugInElement::ConstructContainerPolicy() const {
+ParsedPermissionsPolicy HTMLPlugInElement::ConstructContainerPolicy() const {
   // Plugin elements (<object> and <embed>) are not allowed to enable the
   // fullscreen feature. Add an empty allowlist for the fullscreen feature so
   // that the nested browsing context is unable to use the API, regardless of
   // origin.
   // https://fullscreen.spec.whatwg.org/#model
-  ParsedFeaturePolicy container_policy;
-  ParsedFeaturePolicyDeclaration allowlist(
+  ParsedPermissionsPolicy container_policy;
+  ParsedPermissionsPolicyDeclaration allowlist(
       mojom::blink::PermissionsPolicyFeature::kFullscreen);
   container_policy.push_back(allowlist);
   return container_policy;

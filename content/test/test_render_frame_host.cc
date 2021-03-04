@@ -150,7 +150,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChild(
 
 TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
     const std::string& frame_name,
-    const blink::ParsedFeaturePolicy& allow) {
+    const blink::ParsedPermissionsPolicy& allow) {
   std::string frame_unique_name = base::GenerateGUID();
   OnCreateChildFrame(
       GetProcess()->GetNextRoutingID(), CreateStubFrameRemote(),

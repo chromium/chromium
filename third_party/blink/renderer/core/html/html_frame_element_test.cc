@@ -27,7 +27,7 @@ TEST_F(HTMLFrameElementTest, DefaultContainerPolicy) {
   frame_element->setAttribute(html_names::kSrcAttr, "http://example.net/");
   frame_element->UpdateContainerPolicyForTests();
 
-  const ParsedFeaturePolicy& container_policy =
+  const ParsedPermissionsPolicy& container_policy =
       frame_element->GetFramePolicy().container_policy;
   EXPECT_EQ(1UL, container_policy.size());
   // Fullscreen should be disabled in this frame

@@ -19,28 +19,28 @@ namespace mojo {
 
 template <>
 class BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::ParsedFeaturePolicyDeclarationDataView,
-                 blink::ParsedFeaturePolicyDeclaration> {
+    StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
+                 blink::ParsedPermissionsPolicyDeclaration> {
  public:
   static blink::mojom::PermissionsPolicyFeature feature(
-      const blink::ParsedFeaturePolicyDeclaration& policy) {
+      const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.feature;
   }
   static const std::vector<url::Origin>& allowed_origins(
-      const blink::ParsedFeaturePolicyDeclaration& policy) {
+      const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.allowed_origins;
   }
   static bool matches_all_origins(
-      const blink::ParsedFeaturePolicyDeclaration& policy) {
+      const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.matches_all_origins;
   }
   static bool matches_opaque_src(
-      const blink::ParsedFeaturePolicyDeclaration& policy) {
+      const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.matches_opaque_src;
   }
 
-  static bool Read(blink::mojom::ParsedFeaturePolicyDeclarationDataView in,
-                   blink::ParsedFeaturePolicyDeclaration* out);
+  static bool Read(blink::mojom::ParsedPermissionsPolicyDeclarationDataView in,
+                   blink::ParsedPermissionsPolicyDeclaration* out);
 };
 
 }  // namespace mojo

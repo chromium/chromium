@@ -365,7 +365,7 @@ class BLINK_EXPORT WebLocalFrameClient {
       WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
       network::mojom::WebSandboxFlags sandbox_flags,
-      const ParsedFeaturePolicy& feature_policy_header,
+      const ParsedPermissionsPolicy& feature_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) {}
 
   // A new document has just been committed as a result of evaluating

@@ -128,7 +128,7 @@ IPC_STRUCT_TRAITS_BEGIN(blink::ScreenInfo)
   IPC_STRUCT_TRAITS_MEMBER(orientation_angle)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(blink::ParsedFeaturePolicyDeclaration)
+IPC_STRUCT_TRAITS_BEGIN(blink::ParsedPermissionsPolicyDeclaration)
   IPC_STRUCT_TRAITS_MEMBER(feature)
   IPC_STRUCT_TRAITS_MEMBER(allowed_origins)
   IPC_STRUCT_TRAITS_MEMBER(matches_all_origins)

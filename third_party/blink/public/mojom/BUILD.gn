@@ -323,8 +323,8 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.ParsedFeaturePolicyDeclaration"
-          cpp = "::blink::ParsedFeaturePolicyDeclaration"
+          mojom = "blink.mojom.ParsedPermissionsPolicyDeclaration"
+          cpp = "::blink::ParsedPermissionsPolicyDeclaration"
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/permissions_policy/permissions_policy_forward.h" ]

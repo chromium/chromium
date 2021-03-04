@@ -74,7 +74,7 @@ class SubresourceFilteringWebFrameClient
       WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
       network::mojom::WebSandboxFlags sandbox_flags,
-      const ParsedFeaturePolicy& feature_policy_header,
+      const ParsedPermissionsPolicy& feature_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) override {
     subresource_filter_ =
         new TestDocumentSubresourceFilter(load_policy_for_next_load_);

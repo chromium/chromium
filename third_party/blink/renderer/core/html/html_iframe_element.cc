@@ -309,9 +309,9 @@ DocumentPolicyFeatureState HTMLIFrameElement::ConstructRequiredPolicy() const {
   return new_required_policy.feature_state;
 }
 
-ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy() const {
+ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   if (!GetExecutionContext())
-    return ParsedFeaturePolicy();
+    return ParsedPermissionsPolicy();
 
   scoped_refptr<const SecurityOrigin> src_origin = GetOriginForFeaturePolicy();
   scoped_refptr<const SecurityOrigin> self_origin =
@@ -320,8 +320,9 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   PolicyParserMessageBuffer logger;
 
   // Start with the allow attribute
-  ParsedFeaturePolicy container_policy = FeaturePolicyParser::ParseAttribute(
-      allow_, self_origin, src_origin, logger, GetExecutionContext());
+  ParsedPermissionsPolicy container_policy =
+      FeaturePolicyParser::ParseAttribute(allow_, self_origin, src_origin,
+                                          logger, GetExecutionContext());
 
   // Process the allow* attributes. These only take effect if the corresponding
   // feature is not present in the allow attribute's value.

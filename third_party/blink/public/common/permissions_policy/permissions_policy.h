@@ -90,20 +90,21 @@ namespace blink {
 
 // This struct holds feature policy allowlist data that needs to be replicated
 // between a RenderFrame and any of its associated RenderFrameProxies. A list of
-// these form a ParsedFeaturePolicy.
+// these form a ParsedPermissionsPolicy.
 // NOTE: These types are used for replication frame state between processes.
-struct BLINK_COMMON_EXPORT ParsedFeaturePolicyDeclaration {
-  ParsedFeaturePolicyDeclaration();
-  explicit ParsedFeaturePolicyDeclaration(
+struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
+  ParsedPermissionsPolicyDeclaration();
+  explicit ParsedPermissionsPolicyDeclaration(
       mojom::PermissionsPolicyFeature feature);
-  ParsedFeaturePolicyDeclaration(mojom::PermissionsPolicyFeature feature,
-                                 const std::vector<url::Origin>& values,
-                                 bool matches_all_origins,
-                                 bool matches_opaque_src);
-  ParsedFeaturePolicyDeclaration(const ParsedFeaturePolicyDeclaration& rhs);
-  ParsedFeaturePolicyDeclaration& operator=(
-      const ParsedFeaturePolicyDeclaration& rhs);
-  ~ParsedFeaturePolicyDeclaration();
+  ParsedPermissionsPolicyDeclaration(mojom::PermissionsPolicyFeature feature,
+                                     const std::vector<url::Origin>& values,
+                                     bool matches_all_origins,
+                                     bool matches_opaque_src);
+  ParsedPermissionsPolicyDeclaration(
+      const ParsedPermissionsPolicyDeclaration& rhs);
+  ParsedPermissionsPolicyDeclaration& operator=(
+      const ParsedPermissionsPolicyDeclaration& rhs);
+  ~ParsedPermissionsPolicyDeclaration();
 
   mojom::PermissionsPolicyFeature feature;
 
@@ -119,10 +120,11 @@ struct BLINK_COMMON_EXPORT ParsedFeaturePolicyDeclaration {
   bool matches_opaque_src{false};
 };
 
-using ParsedFeaturePolicy = std::vector<ParsedFeaturePolicyDeclaration>;
+using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;
 
-bool BLINK_COMMON_EXPORT operator==(const ParsedFeaturePolicyDeclaration& lhs,
-                                    const ParsedFeaturePolicyDeclaration& rhs);
+bool BLINK_COMMON_EXPORT
+operator==(const ParsedPermissionsPolicyDeclaration& lhs,
+           const ParsedPermissionsPolicyDeclaration& rhs);
 
 class BLINK_COMMON_EXPORT PermissionsPolicy {
  public:
@@ -170,7 +172,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
-      const ParsedFeaturePolicy& container_policy,
+      const ParsedPermissionsPolicy& container_policy,
       const url::Origin& origin);
 
   static std::unique_ptr<PermissionsPolicy> CopyStateFrom(
@@ -195,7 +197,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   // Sets the declared policy from the parsed Feature-Policy HTTP header.
   // Unrecognized features will be ignored.
-  void SetHeaderPolicy(const ParsedFeaturePolicy& parsed_header);
+  void SetHeaderPolicy(const ParsedPermissionsPolicy& parsed_header);
 
   // Returns the current state of feature policies for |origin_|. This includes
   // the |inherited_policies_| as well as the header policies.
@@ -216,7 +218,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
                     const PermissionsPolicyFeatureList& feature_list);
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
-      const ParsedFeaturePolicy& container_policy,
+      const ParsedPermissionsPolicy& container_policy,
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 
@@ -224,7 +226,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const PermissionsPolicy* parent_policy,
       std::pair<mojom::PermissionsPolicyFeature,
                 PermissionsPolicyFeatureDefault> feature,
-      const ParsedFeaturePolicy& container_policy) const;
+      const ParsedPermissionsPolicy& container_policy) const;
 
   // Returns the value of the given feature on the given origin.
   bool GetFeatureValueForOrigin(mojom::PermissionsPolicyFeature feature,

@@ -41,7 +41,7 @@ class CORE_EXPORT HTMLFrameElement final : public HTMLFrameElementBase {
 
   bool NoResize() const;
 
-  ParsedFeaturePolicy ConstructContainerPolicy() const override;
+  ParsedPermissionsPolicy ConstructContainerPolicy() const override;
 
   mojom::blink::FrameOwnerElementType OwnerType() const final {
     return mojom::blink::FrameOwnerElementType::kFrame;

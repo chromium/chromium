@@ -9,9 +9,9 @@ import "third_party/blink/public/mojom/permissions_policy/permissions_policy_fea
 
 // This struct holds feature policy allowlist data that needs to be replicated
 // between a RenderFrame and any of its associated RenderFrameProxies. A list of
-// these form a ParsedFeaturePolicy.
+// these form a ParsedPermissionsPolicy.
 // NOTE: These types are used for replication frame state between processes.
-struct ParsedFeaturePolicyDeclaration {
+struct ParsedPermissionsPolicyDeclaration {
   PermissionsPolicyFeature feature;
   array<url.mojom.Origin> allowed_origins;
   bool matches_all_origins;

@@ -58,7 +58,7 @@ class PermissionContextBaseFeaturePolicyTest
       const char* origin,
       blink::mojom::PermissionsPolicyFeature feature =
           blink::mojom::PermissionsPolicyFeature::kNotFound) {
-    blink::ParsedFeaturePolicy frame_policy = {};
+    blink::ParsedPermissionsPolicy frame_policy = {};
     if (feature != blink::mojom::PermissionsPolicyFeature::kNotFound) {
       frame_policy.push_back(
           {feature, std::vector<url::Origin>{url::Origin::Create(GURL(origin))},

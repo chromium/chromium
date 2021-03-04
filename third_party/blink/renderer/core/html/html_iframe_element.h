@@ -54,7 +54,7 @@ class CORE_EXPORT HTMLIFrameElement final
   // Returns attributes that should be checked against Trusted Types
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
-  ParsedFeaturePolicy ConstructContainerPolicy() const override;
+  ParsedPermissionsPolicy ConstructContainerPolicy() const override;
   DocumentPolicyFeatureState ConstructRequiredPolicy() const override;
 
   mojom::blink::FrameOwnerElementType OwnerType() const final {

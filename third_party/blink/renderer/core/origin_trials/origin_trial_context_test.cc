@@ -429,7 +429,7 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
       SecurityOrigin::CreateFromString(kFrobulateEnabledOrigin);
 
   PolicyParserMessageBuffer logger;
-  ParsedFeaturePolicy result;
+  ParsedPermissionsPolicy result;
   result = FeaturePolicyParser::ParseFeaturePolicyForTest(
       "frobulate", security_origin, nullptr, logger, feature_map, window);
   EXPECT_TRUE(logger.GetMessages().IsEmpty());

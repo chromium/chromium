@@ -39,8 +39,8 @@ void RemoteSecurityContext::ResetAndEnforceSandboxFlags(
 }
 
 void RemoteSecurityContext::InitializeFeaturePolicy(
-    const ParsedFeaturePolicy& parsed_header,
-    const ParsedFeaturePolicy& container_policy,
+    const ParsedPermissionsPolicy& parsed_header,
+    const ParsedPermissionsPolicy& container_policy,
     const PermissionsPolicy* parent_feature_policy) {
   report_only_feature_policy_ = nullptr;
   feature_policy_ = PermissionsPolicy::CreateFromParentPolicy(

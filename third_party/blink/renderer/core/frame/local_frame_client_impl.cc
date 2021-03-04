@@ -405,7 +405,7 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
     WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedFeaturePolicy& feature_policy_header,
+    const blink::ParsedPermissionsPolicy& feature_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   if (!web_frame_->Parent()) {
     web_frame_->ViewImpl()->DidCommitLoad(commit_type == kWebStandardCommit,

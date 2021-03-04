@@ -327,7 +327,7 @@ void WebRemoteFrameImpl::SetReplicatedName(const WebString& name,
 }
 
 void WebRemoteFrameImpl::SetReplicatedFeaturePolicyHeader(
-    const ParsedFeaturePolicy& parsed_header) {
+    const ParsedPermissionsPolicy& parsed_header) {
   DCHECK(GetFrame());
   GetFrame()->SetReplicatedFeaturePolicyHeader(parsed_header);
 }

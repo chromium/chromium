@@ -82,7 +82,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   TestRenderFrameHost* AppendChild(const std::string& frame_name) override;
   TestRenderFrameHost* AppendChildWithPolicy(
       const std::string& frame_name,
-      const blink::ParsedFeaturePolicy& allow) override;
+      const blink::ParsedPermissionsPolicy& allow) override;
   void Detach() override;
   void SendNavigateWithTransition(int nav_entry_id,
                                   bool did_create_new_entry,

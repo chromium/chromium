@@ -106,7 +106,7 @@ class WebRemoteFrame : public WebFrame {
 
   // Sets the Feature Policy header for the main frame.
   virtual void SetReplicatedFeaturePolicyHeader(
-      const ParsedFeaturePolicy& parsed_header) = 0;
+      const ParsedPermissionsPolicy& parsed_header) = 0;
 
   // Set frame enforcement of insecure request policy replicated from another
   // process.

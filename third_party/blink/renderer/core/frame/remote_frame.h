@@ -112,7 +112,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void DidChangeVisibleToHitTesting() override;
 
   void SetReplicatedFeaturePolicyHeader(
-      const ParsedFeaturePolicy& parsed_header);
+      const ParsedPermissionsPolicy& parsed_header);
 
   void SetReplicatedSandboxFlags(network::mojom::blink::WebSandboxFlags);
   void SetInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy);
@@ -184,7 +184,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       mojom::blink::IntrinsicSizingInfoPtr sizing_info) override;
   void DidSetFramePolicyHeaders(
       network::mojom::blink::WebSandboxFlags,
-      const WTF::Vector<ParsedFeaturePolicyDeclaration>&) override;
+      const WTF::Vector<ParsedPermissionsPolicyDeclaration>&) override;
   // Updates the snapshotted policy attributes (sandbox flags and feature policy
   // container policy) in the frame's FrameOwner. This is used when this frame's
   // parent is in another process and it dynamically updates this frame's
@@ -258,7 +258,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   blink::FrameVisualProperties pending_visual_properties_;
   scoped_refptr<cc::Layer> cc_layer_;
   bool is_surface_layer_ = false;
-  ParsedFeaturePolicy feature_policy_header_;
+  ParsedPermissionsPolicy feature_policy_header_;
   String unique_name_;
 
   viz::FrameSinkId frame_sink_id_;

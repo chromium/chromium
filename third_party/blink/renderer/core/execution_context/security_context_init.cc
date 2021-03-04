@@ -167,7 +167,7 @@ void SecurityContextInit::ApplyFeaturePolicy(
       execution_context_->GetSecurityOrigin(), feature_policy_logger,
       permissions_policy_logger, execution_context_);
 
-  ParsedFeaturePolicy report_only_feature_policy_header =
+  ParsedPermissionsPolicy report_only_feature_policy_header =
       FeaturePolicyParser::ParseHeader(
           response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
           report_only_permissions_policy_header,
@@ -193,7 +193,7 @@ void SecurityContextInit::ApplyFeaturePolicy(
         message.content));
   }
 
-  ParsedFeaturePolicy container_policy;
+  ParsedPermissionsPolicy container_policy;
   if (frame && frame->Owner())
     container_policy = frame_policy.container_policy;
 

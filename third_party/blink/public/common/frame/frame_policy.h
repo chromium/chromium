@@ -26,14 +26,14 @@ namespace blink {
 struct BLINK_COMMON_EXPORT FramePolicy {
   FramePolicy();
   FramePolicy(network::mojom::WebSandboxFlags sandbox_flags,
-              const ParsedFeaturePolicy& container_policy,
+              const ParsedPermissionsPolicy& container_policy,
               const DocumentPolicyFeatureState& required_document_policy,
               bool disallow_document_access = false);
   FramePolicy(const FramePolicy& lhs);
   ~FramePolicy();
 
   network::mojom::WebSandboxFlags sandbox_flags;
-  ParsedFeaturePolicy container_policy;
+  ParsedPermissionsPolicy container_policy;
   // |required_document_policy| is the combination of the following:
   // - iframe 'policy' attribute
   // - 'Require-Document-Policy' http header

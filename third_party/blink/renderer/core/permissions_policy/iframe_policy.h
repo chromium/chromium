@@ -23,7 +23,7 @@ class IFramePolicy final : public DOMFeaturePolicy {
   // Create a new IFramePolicy, which is synthetic for a frame contained within
   // a document.
   IFramePolicy(ExecutionContext* parent_context,
-               const ParsedFeaturePolicy& container_policy,
+               const ParsedPermissionsPolicy& container_policy,
                scoped_refptr<const SecurityOrigin> src_origin)
       : DOMFeaturePolicy(parent_context) {
     DCHECK(src_origin);
@@ -31,7 +31,7 @@ class IFramePolicy final : public DOMFeaturePolicy {
   }
 
   void UpdateContainerPolicy(
-      const ParsedFeaturePolicy& container_policy,
+      const ParsedPermissionsPolicy& container_policy,
       scoped_refptr<const SecurityOrigin> src_origin) override {
     policy_ = PermissionsPolicy::CreateFromParentPolicy(
         context_->GetSecurityContext().GetFeaturePolicy(), container_policy,
