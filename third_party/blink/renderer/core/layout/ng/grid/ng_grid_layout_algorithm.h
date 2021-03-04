@@ -185,6 +185,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Typically we pass around both the column, and row geometry together.
   struct GridGeometry {
+    const SetGeometry& Geometry(GridTrackSizingDirection track_direction) const;
+
     SetGeometry column_geometry;
     SetGeometry row_geometry;
   };
@@ -271,6 +273,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void StretchAutoTracks(
       SizingConstraint sizing_constraint,
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
+
+  void ExpandFlexibleTracks(
+      SizingConstraint sizing_constraint,
+      const GridGeometry& grid_geometry,
+      NGGridLayoutAlgorithmTrackCollection* track_collection,
+      GridItems* grid_items) const;
 
   SetGeometry ComputeSetGeometry(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,

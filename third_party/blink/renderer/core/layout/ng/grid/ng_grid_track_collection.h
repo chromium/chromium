@@ -204,6 +204,7 @@ class CORE_EXPORT NGGridSet {
   wtf_size_t TrackCount() const { return track_count_; }
   const GridTrackSize& TrackSize() const { return track_size_; }
 
+  double FlexFactor() const;
   LayoutUnit BaseSize() const;
   LayoutUnit GrowthLimit() const;
   LayoutUnit PlannedIncrease() const { return planned_increase_; }

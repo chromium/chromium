@@ -484,6 +484,11 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
          track_size_.GetType() == kMinMaxTrackSizing);
 }
 
+double NGGridSet::FlexFactor() const {
+  DCHECK(track_size_.HasFlexMaxTrackBreadth());
+  return track_size_.MaxTrackBreadth().Flex() * TrackCount();
+}
+
 bool NGGridSet::IsGrowthLimitLessThanBaseSize() const {
   return growth_limit_ != kIndefiniteSize && growth_limit_ < base_size_;
 }
