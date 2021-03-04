@@ -176,6 +176,12 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_LiveCaption) {
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest,
+                       InvokeUi_IPH_ReadingListDiscovery) {
+  set_baseline("2723691");
+  ShowAndVerifyUi();
+}
+
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ReopenTab) {
   set_baseline("2473537");
   ShowAndVerifyUi();
