@@ -1031,13 +1031,13 @@ if (!is_ios) {
         data_deps += [ "//build/win:copy_cdb_to_output" ]
       }
     }
-    group("wpt_tests_isolate") {
-      testonly = true
+    script_test("wpt_tests_isolate") {
+      script = "//testing/scripts/run_wpt_tests.py"
       data_deps = [
         "//chrome:chrome",
         "//chrome/test/chromedriver",
+        "//third_party/blink/tools:wpt_tests_isolate",
       ]
-      deps = [ "//third_party/blink/tools:wpt_tests_isolate" ]
     }
   }
 

@@ -560,8 +560,7 @@
   },
   "wpt_tests_isolate": {
     "label": "//:wpt_tests_isolate",
-    "type": "script",
-    "script": "//testing/scripts/run_wpt_tests.py",
+    "type": "generated_script",
   },
   "chrome/browser/media/router": {
     "label": "//chrome/browser/media/router:router",
