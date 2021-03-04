@@ -415,6 +415,9 @@ static std::string GetMimeType(const std::string& filename) {
   } else if (base::EndsWith(filename, ".svg",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/svg+xml";
+  } else if (base::EndsWith(filename, ".avif",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return "image/avif";
   }
   LOG(ERROR) << "GetMimeType doesn't know mime type for: "
              << filename
