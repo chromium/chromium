@@ -1491,17 +1491,25 @@ bool VaapiVideoEncodeAccelerator::VP9Accelerator::SubmitFrameParameters(
   if (frame_header->IsKeyframe()) {
     pic_param.ref_flags.bits.force_kf = true;
   } else {
+    // Non-key frame mode, the frame has at least 1 reference frames.
+    size_t first_used_ref_frame = 3;
     for (size_t i = 0; i < kVp9NumRefsPerFrame; i++) {
-      if (ref_frames_used[i])
+      if (ref_frames_used[i]) {
+        first_used_ref_frame = std::min(first_used_ref_frame, i);
         pic_param.ref_flags.bits.ref_frame_ctrl_l0 |= (1 << i);
+      }
     }
+    CHECK_LT(first_used_ref_frame, 3u);
 
-    if (ref_frames_used[0])
-      pic_param.ref_flags.bits.ref_last_idx = frame_header->ref_frame_idx[0];
-    if (ref_frames_used[1])
-      pic_param.ref_flags.bits.ref_gf_idx = frame_header->ref_frame_idx[1];
-    if (ref_frames_used[2])
-      pic_param.ref_flags.bits.ref_arf_idx = frame_header->ref_frame_idx[2];
+    pic_param.ref_flags.bits.ref_last_idx =
+        ref_frames_used[0] ? frame_header->ref_frame_idx[0]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
+    pic_param.ref_flags.bits.ref_gf_idx =
+        ref_frames_used[1] ? frame_header->ref_frame_idx[1]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
+    pic_param.ref_flags.bits.ref_arf_idx =
+        ref_frames_used[2] ? frame_header->ref_frame_idx[2]
+                           : frame_header->ref_frame_idx[first_used_ref_frame];
   }
 
   pic_param.pic_flags.bits.frame_type = frame_header->frame_type;
