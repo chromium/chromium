@@ -2447,6 +2447,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.UseCounter.FeaturePolicy.PotentialViolation"
     enum="FeaturePolicyFeature" expires_after="2021-01-03">
+  <obsolete>
+    Remoted in M91.
+  </obsolete>
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>

@@ -1309,32 +1309,4 @@ class PermissionsPolicyViolationHistogramTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(PermissionsPolicyViolationHistogramTest);
 };
 
-TEST_F(PermissionsPolicyViolationHistogramTest, PotentialViolation) {
-  HistogramTester tester;
-  const char* histogram_name =
-      "Blink.UseCounter.FeaturePolicy.PotentialViolation";
-  auto dummy_page_holder_ = std::make_unique<DummyPageHolder>();
-  // Probing feature state should not count.
-  dummy_page_holder_->GetFrame().DomWindow()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kPayment);
-  tester.ExpectTotalCount(histogram_name, 0);
-  // Checking the feature state with reporting intent should record a potential
-  // violation.
-  dummy_page_holder_->GetFrame().DomWindow()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kPayment,
-      ReportOptions::kReportOnFailure);
-  tester.ExpectTotalCount(histogram_name, 1);
-  // The potential violation for an already recorded violation does not count
-  // again.
-  dummy_page_holder_->GetFrame().DomWindow()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kPayment,
-      ReportOptions::kReportOnFailure);
-  tester.ExpectTotalCount(histogram_name, 1);
-  // Sanity check: check some other feature to increase the count.
-  dummy_page_holder_->GetFrame().DomWindow()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kFullscreen,
-      ReportOptions::kReportOnFailure);
-  tester.ExpectTotalCount(histogram_name, 2);
-}
-
 }  // namespace blink

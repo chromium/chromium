@@ -5949,47 +5949,6 @@ TEST_F(WebViewTest, RootLayerAttachment) {
   EXPECT_TRUE(layer_tree_host->root_layer());
 }
 
-// Verifies that we emit Blink.UseCounter.FeaturePolicy.PotentialAnimation for
-// CSS and JS animations in a document.
-// TODO(crbug.com/1066620): enable this test after metrics for document policy
-// are added. Needs to update histogram name to document policy equivalent
-// when re-enabled.
-TEST_F(WebViewTest, DISABLED_PotentialViolationReportsForLayoutAnimations) {
-  const char* kHistogramName =
-      "Blink.UseCounter.FeaturePolicy.PotentialViolation";
-  WebViewImpl* web_view = web_view_helper_.Initialize();
-  // A page with non-violating animation does not generate report.
-  WebURL base_url_no_violation =
-      url_test_helpers::ToKURL("http://good-css.example.com/");
-  frame_test_helpers::LoadHTMLString(
-      web_view->MainFrameImpl(),
-      "<html><head><style>@keyframes foo {from "
-      "{color: blue;} to {color: red}}</style></head></html>",
-      base_url_no_violation);
-  HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kHistogramName, 0);
-  // Page with 2 potential (CSS) layout-animation violations.
-  WebURL base_url_css_violations =
-      url_test_helpers::ToKURL("http://bad-css.example.com/");
-  frame_test_helpers::LoadHTMLString(
-      web_view->MainFrameImpl(),
-      "<html><head><style>@keyframes bar {"
-      "from{height: 100px;} to {height: 200px;}}"
-      "@keyframes baz {from{top: 100px;} to {top: 200px;}}"
-      "</style></head></html>",
-      base_url_css_violations);
-  histogram_tester.ExpectTotalCount(kHistogramName, 1);
-  // Page with a JS layout-animations violation.
-  WebURL base_url_js_violations =
-      url_test_helpers::ToKURL("http://js.example.com/");
-  frame_test_helpers::LoadHTMLString(
-      web_view->MainFrameImpl(),
-      "<html><body><div></div><script>document.body.firstChild.animate("
-      "{top: '100px'});</script></body></html>",
-      base_url_js_violations);
-  histogram_tester.ExpectTotalCount(kHistogramName, 2);
-}
-
 TEST_F(WebViewTest, ForceDarkModeInvalidatesPaint) {
   WebViewImpl* web_view = web_view_helper_.Initialize();
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 500));

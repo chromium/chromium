@@ -448,22 +448,6 @@ scoped_refptr<base::SingleThreadTaskRunner> LocalDOMWindow::GetTaskRunner(
   return Thread::Current()->GetTaskRunner();
 }
 
-void LocalDOMWindow::CountPotentialPermissionsPolicyViolation(
-    mojom::blink::PermissionsPolicyFeature feature) const {
-  wtf_size_t index = static_cast<wtf_size_t>(feature);
-  if (potentially_violated_features_.size() == 0) {
-    potentially_violated_features_.resize(
-        static_cast<wtf_size_t>(
-            mojom::blink::PermissionsPolicyFeature::kMaxValue) +
-        1);
-  } else if (potentially_violated_features_[index]) {
-    return;
-  }
-  potentially_violated_features_[index] = true;
-  UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.FeaturePolicy.PotentialViolation",
-                            feature);
-}
-
 void LocalDOMWindow::ReportPermissionsPolicyViolation(
     mojom::blink::PermissionsPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,

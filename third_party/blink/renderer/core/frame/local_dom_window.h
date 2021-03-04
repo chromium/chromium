@@ -166,8 +166,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     return GetTrustedTypesForWorld(*GetCurrentWorld());
   }
   ScriptWrappable* ToScriptWrappable() final { return this; }
-  void CountPotentialPermissionsPolicyViolation(
-      mojom::blink::PermissionsPolicyFeature) const final;
   void ReportPermissionsPolicyViolation(
       mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
