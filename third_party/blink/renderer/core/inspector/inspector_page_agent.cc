@@ -1528,8 +1528,6 @@ void InspectorPageAgent::DidProduceCompilationCache(
       return;
     requested_compilation_cache_.erase(requested);
   }
-  if (source.Streamer())
-    return;
   if (source.SourceLocationType() != ScriptSourceLocationType::kExternalFile)
     return;
   // TODO(caseq): should we rather issue updates if compiled code differs?

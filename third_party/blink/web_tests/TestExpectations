@@ -5702,10 +5702,6 @@ crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-
 crbug.com/1182689 [ Mac10.14 ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
 crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Pass Failure Timeout ]
 
-# Test doesn't support small script streaming yet.
-crbug.com/1011762 http/tests/inspector-protocol/page/page-produceCompilationCache.js [ Pass Failure Timeout ]
-crbug.com/1011762 http/tests/inspector-protocol/page/page-setProduceCompilationCache.js [ Pass Failure Timeout ]
-
 # Temporarily disabled to allow a WebRTC roll fixing the test.
 crbug.com/614958 external/wpt/webrtc/RTCPeerConnection-addIceCandidate.html [ Pass Failure ]
 crbug.com/614958 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-addIceCandidate.html [ Pass Failure ]
