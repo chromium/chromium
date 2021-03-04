@@ -6933,6 +6933,9 @@ void Document::BeginLifecycleUpdatesIfRenderingReady() {
   // Speculative fix for https://crbug.com/1171891
   if (auto* view = View()) {
     view->BeginLifecycleUpdates();
+  } else {
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
   }
 }
 
