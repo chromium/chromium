@@ -45,3 +45,5 @@ per-file appcache_interfaces.h=pwnall@chromium.org
 per-file appcache_interfaces.cc=enne@chromium.org
 per-file appcache_interfaces.cc=mek@chromium.org
 per-file appcache_interfaces.cc=pwnall@chromium.org
+
+per-file partition_alloc_support.*=file://base/allocator/partition_allocator/OWNERS

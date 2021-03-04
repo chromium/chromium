@@ -27,6 +27,7 @@
 #include "components/viz/service/main/viz_main_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/partition_alloc_support.h"
 #include "content/common/skia_utils.h"
 #include "content/gpu/gpu_child_thread.h"
 #include "content/gpu/gpu_process.h"
@@ -60,8 +61,8 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
 #include <dwmapi.h>
+#include <windows.h>
 #endif
 
 #if defined(OS_ANDROID)
@@ -241,10 +242,8 @@ int GpuMain(const MainFunctionParams& parameters) {
 
   // Prevent Windows from displaying a modal dialog on failures like not being
   // able to load a DLL.
-  SetErrorMode(
-      SEM_FAILCRITICALERRORS |
-      SEM_NOGPFAULTERRORBOX |
-      SEM_NOOPENFILEERRORBOX);
+  SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX |
+               SEM_NOOPENFILEERRORBOX);
 
   // COM is used by some Windows Media Foundation calls made on this thread and
   // must be MTA so we don't have to worry about pumping messages to handle
@@ -445,6 +444,9 @@ int GpuMain(const MainFunctionParams& parameters) {
       tracing::GraphicsMemoryDumpProvider::GetInstance(), "AndroidGraphics",
       nullptr);
 #endif
+
+  internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+      switches::kGpuProcess);
 
   base::HighResolutionTimerManager hi_res_timer_manager;
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_APP_PARTITION_ALLOC_SUPPORT_H_
-#define CONTENT_APP_PARTITION_ALLOC_SUPPORT_H_
+#ifndef CONTENT_COMMON_PARTITION_ALLOC_SUPPORT_H_
+#define CONTENT_COMMON_PARTITION_ALLOC_SUPPORT_H_
 
 #include <string>
 
@@ -29,7 +29,7 @@ class PartitionAllocSupport {
   // *AfterFeatureListInit() is called in addition to the above, once
   // FeatureList has been initialized and ready to use. It is guaranteed to be
   // called on non-zygote processes or after the zygote has been forked.
-  // *AfterThreadPoolInit() is called once it is possible to post tasks, and
+  // *AfterTaskRunnerInit() is called once it is possible to post tasks, and
   // after the previous steps.
   //
   // *Earlyish() must be called exactly once. *AfterZygoteFork() must be called
@@ -38,11 +38,11 @@ class PartitionAllocSupport {
   // *AfterFeatureListInit() may be called more than once, but will perform its
   // re-configuration steps exactly once.
   //
-  // *AfterThreadPoolInit() may be called more than once.
+  // *AfterTaskRunnerInit() may be called more than once.
   void ReconfigureEarlyish(const std::string& process_type);
   void ReconfigureAfterZygoteFork(const std::string& process_type);
   void ReconfigureAfterFeatureListInit(const std::string& process_type);
-  void ReconfigureAfterThreadPoolInit(const std::string& process_type);
+  void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
   static PartitionAllocSupport* Get() {
     static auto* singleton = new PartitionAllocSupport();
@@ -63,4 +63,4 @@ class PartitionAllocSupport {
 }  // namespace internal
 }  // namespace content
 
-#endif  // CONTENT_APP_PARTITION_ALLOC_SUPPORT_H_
+#endif  // CONTENT_COMMON_PARTITION_ALLOC_SUPPORT_H_

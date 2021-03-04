@@ -67,8 +67,6 @@ source_set("content_main_runner_app") {
   sources = [
     "content_main_runner_impl.cc",
     "content_main_runner_impl.h",
-    "partition_alloc_support.cc",
-    "partition_alloc_support.h",
   ]
 
   configs += extra_configs

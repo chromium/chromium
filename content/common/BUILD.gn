@@ -123,6 +123,8 @@ source_set("common") {
     "navigation_params_mojom_traits.h",
     "navigation_params_utils.h",
     "origin_util.cc",
+    "partition_alloc_support.cc",
+    "partition_alloc_support.h",
     "pepper_file_util.cc",
     "pepper_file_util.h",
     "pepper_plugin_list.cc",
@@ -178,6 +180,7 @@ source_set("common") {
   deps = [
     ":buildflags",
     "//base",
+    "//base/allocator:buildflags",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",

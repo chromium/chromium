@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/partition_alloc_support.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -192,6 +193,9 @@ int UtilityMain(const MainFunctionParams& parameters) {
     g_utility_target_services->LowerToken();
   }
 #endif
+
+  internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+      switches::kUtilityProcess);
 
   run_loop.Run();
 

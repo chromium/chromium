@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/app/partition_alloc_support.h"
+#include "content/common/partition_alloc_support.h"
 
 #include <string>
 
@@ -202,7 +202,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   SetProcessNameForPCScan(process_type);
 }
 
-void PartitionAllocSupport::ReconfigureAfterThreadPoolInit(
+void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     const std::string& process_type) {
   {
     base::AutoLock scoped_lock(lock_);
@@ -219,13 +219,13 @@ void PartitionAllocSupport::ReconfigureAfterThreadPoolInit(
     called_after_thread_pool_init_ = true;
   }
 
-  // TODO(lizeb): This is only called from the browser process for now, extend
-  // it to other processes as well.
-  DCHECK(process_type.empty());
 #if defined(PA_THREAD_CACHE_SUPPORTED) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  if (process_type != switches::kZygoteProcess &&
-      base::FeatureList::IsEnabled(
+  // This should be called in specific processes, as the main thread is
+  // initialized later.
+  DCHECK(process_type != switches::kZygoteProcess);
+
+  if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocThreadCachePeriodicPurge)) {
     base::internal::ThreadCacheRegistry::Instance().StartPeriodicPurge();
   }
