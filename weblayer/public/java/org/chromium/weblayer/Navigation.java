@@ -72,7 +72,7 @@ public class Navigation extends IClientNavigation.Stub {
     }
 
     /**
-     * Returns the status code of the navigation. Returns 0 if the navigation  hasn't completed yet
+     * Returns the status code of the navigation. Returns 0 if the navigation hasn't completed yet
      * or if a response wasn't received.
      */
     public int getHttpStatusCode() {
@@ -354,6 +354,45 @@ public class Navigation extends IClientNavigation.Stub {
         }
         try {
             return mNavigationImpl.isServedFromBackForwardCache();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Returns true if this navigation was initiated by a form submission.
+     *
+     * @since 89
+     */
+    public boolean isFormSubmission() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89 ||
+            WebLayer.getVersion().equals("89.0.4389.69") ||
+            WebLayer.getVersion().equals("89.0.4389.72")) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mNavigationImpl.isFormSubmission();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Returns the referrer for this request.
+     *
+     * @since 89
+     */
+    @NonNull
+    public Uri getReferrer() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89 ||
+            WebLayer.getVersion().equals("89.0.4389.69") ||
+            WebLayer.getVersion().equals("89.0.4389.72")) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return Uri.parse(mNavigationImpl.getReferrer());
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

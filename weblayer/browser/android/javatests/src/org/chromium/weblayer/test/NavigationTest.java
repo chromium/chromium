@@ -102,6 +102,8 @@ public class NavigationTest {
             private boolean mIsKnownProtocol;
             private boolean mIsPageInitiatedNavigation;
             private boolean mIsServedFromBackForwardCache;
+            private boolean mIsFormSubmission;
+            private Uri mReferrer;
 
             public void notifyCalled(Navigation navigation) {
                 mUri = navigation.getUri();
@@ -112,13 +114,15 @@ public class NavigationTest {
                 mNavigationState = navigation.getState();
                 mIsPageInitiatedNavigation = navigation.isPageInitiated();
                 mIsServedFromBackForwardCache = navigation.isServedFromBackForwardCache();
-                notifyCalled();
 
                 int majorVersion = TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> WebLayer.getSupportedMajorVersion(mActivityTestRule.getActivity()));
                 if (majorVersion >= 89) {
                     mIsKnownProtocol = navigation.isKnownProtocol();
+                    mIsFormSubmission = navigation.isFormSubmission();
+                    mReferrer = navigation.getReferrer();
                 }
+                notifyCalled();
             }
 
             public void assertCalledWith(int currentCallCount, String uri) throws TimeoutException {
@@ -165,6 +169,14 @@ public class NavigationTest {
 
             public boolean isPageInitiated() {
                 return mIsPageInitiatedNavigation;
+            }
+
+            public boolean isFormSubmission() {
+                return mIsFormSubmission;
+            }
+
+            public Uri getReferrer() {
+                return mReferrer;
             }
         }
 
@@ -1323,5 +1335,47 @@ public class NavigationTest {
         navigateAndWaitForCompletion(
                 url, () -> { activity.getTab().getNavigationController().goBack(); });
         Assert.assertTrue(mCallback.onStartedCallback.isServedFromBackForwardCache());
+    }
+
+    @MinWebLayerVersion(89)
+    @Test
+    @SmallTest
+    public void testIsFormSubmission() throws Exception {
+        InstrumentationActivity activity =
+                mActivityTestRule.launchShellWithUrl(mActivityTestRule.getTestDataURL("form.html"));
+        setNavigationCallback(activity);
+
+        // Touch the page; this should submit the form.
+        int currentCallCount = mCallback.onStartedCallback.getCallCount();
+        EventUtils.simulateTouchCenterOfView(activity.getWindow().getDecorView());
+
+        mCallback.onStartedCallback.waitForCallback(currentCallCount);
+        assertEquals(true, mCallback.onStartedCallback.isFormSubmission());
+    }
+
+    @MinWebLayerVersion(89)
+    @Test
+    @SmallTest
+    public void testGetReferrer() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        setNavigationCallback(activity);
+        String referrer = "http://foo.com/";
+        NavigationCallback navigationCallback = new NavigationCallback() {
+            @Override
+            public void onNavigationStarted(Navigation navigation) {
+                try {
+                    navigation.setRequestHeader("Referer", referrer);
+                } catch (IllegalStateException e) {
+                }
+            }
+        };
+
+        registerNavigationCallback(navigationCallback);
+        int currentCallCount = mCallback.onCompletedCallback.getCallCount();
+        String url = testServer.setResponse("/ok.html", "<html>ok</html>", null);
+        mActivityTestRule.navigateAndWait(url);
+        mCallback.onCompletedCallback.waitForCallback(currentCallCount);
+        assertEquals(referrer, mCallback.onCompletedCallback.getReferrer().toString());
     }
 }

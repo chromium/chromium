@@ -93,6 +93,8 @@ class NavigationImpl : public Navigation {
   }
   jboolean DisableNetworkErrorAutoReload(JNIEnv* env);
   jboolean AreIntentLaunchesAllowedInBackground(JNIEnv* env);
+  jboolean IsFormSubmission(JNIEnv* env) { return IsFormSubmission(); }
+  base::android::ScopedJavaLocalRef<jstring> GetReferrer(JNIEnv* env);
 
   void SetResponse(
       std::unique_ptr<embedder_support::WebResourceResponse> response);
@@ -121,6 +123,8 @@ class NavigationImpl : public Navigation {
   bool IsPageInitiated() override;
   bool IsReload() override;
   bool IsServedFromBackForwardCache() override;
+  bool IsFormSubmission() override;
+  GURL GetReferrer() override;
 
  private:
   content::NavigationHandle* navigation_handle_;
