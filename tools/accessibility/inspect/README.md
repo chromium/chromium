@@ -75,15 +75,3 @@ You can also specify application by its title:
 
 Or by application PID:
 `--pid=process_id`
-
-
-## Convenience PowerShell scripts
-
-Note: Windows only.
-
-Run these scripts to avoid the difficulty of looking up the process id or window handle you want to inspect.
-Sometimes there may be several windows open for the given app, and disambuation. In this case, after you run the script, it will list top level windows/processes and ask you to re-run with an argument that includes a substring from the window title you want to inspect the tree/events for. For example, `chrome-tree live` will inspect a tab with the name "Live region tests" (the title matcher is case insensitive).
-
-* chrome-tree and chrome-events for official Google Chrome (has 'Google Chrome' in the window title)
-* chromium-tree and chromium-events for Chrome you built yourself (has 'Chromium' in the window title)
-* ff-tree and ff-events for Firefox
