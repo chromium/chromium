@@ -17,7 +17,8 @@
 
 namespace ash {
 
-class UnifiedSystemInfoViewTest : public AshTestBase {
+class UnifiedSystemInfoViewTest : public AshTestBase,
+                                  public testing::WithParamInterface<bool> {
  public:
   UnifiedSystemInfoViewTest() = default;
   ~UnifiedSystemInfoViewTest() override = default;
@@ -26,13 +27,15 @@ class UnifiedSystemInfoViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndDisableFeature(
-        features::kManagedDeviceUIRedesign);
+    scoped_feature_list_->InitWithFeatureState(
+        features::kManagedDeviceUIRedesign, IsManagedDeviceUIRedesignEnabled());
 
     model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
     info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
   }
+
+  bool IsManagedDeviceUIRedesignEnabled() const { return GetParam(); }
 
   void TearDown() override {
     info_view_.reset();
@@ -53,7 +56,12 @@ class UnifiedSystemInfoViewTest : public AshTestBase {
   DISALLOW_COPY_AND_ASSIGN(UnifiedSystemInfoViewTest);
 };
 
-TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UnifiedSystemInfoViewTest,
+    testing::Bool() /* IsManagedDeviceUIRedesignEnabled() */);
+
+TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
   // By default, EnterpriseManagedView is not shown.
   EXPECT_FALSE(info_view()->enterprise_managed_->GetVisible());
 
@@ -68,7 +76,7 @@ TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
   EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());
 }
 
-TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
+TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
   // Active directory information becoming available.
   const std::string empty_domain;
   const bool active_directory = true;
@@ -79,6 +87,21 @@ TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
 
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());
+}
+
+TEST_P(UnifiedSystemInfoViewTest, EnterpriseUserManagedVisible) {
+  // By default, EnterpriseManagedView is not shown.
+  EXPECT_FALSE(info_view()->enterprise_managed_->GetVisible());
+
+  // Simulate enterprise information becoming available.
+  Shell::Get()
+      ->system_tray_model()
+      ->enterprise_domain()
+      ->SetEnterpriseAccountDomainInfo("example.com");
+
+  // EnterpriseManagedView should be shown if the feature is enabled.
+  EXPECT_EQ(IsManagedDeviceUIRedesignEnabled(),
+            info_view()->enterprise_managed_->GetVisible());
 }
 
 using UnifiedSystemInfoViewNoSessionTest = NoSessionAshTestBase;
