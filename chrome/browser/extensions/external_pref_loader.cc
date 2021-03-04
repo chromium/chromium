@@ -199,6 +199,10 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
       Finish();
   }
 
+  void OnSyncShutdown(syncer::SyncService* sync) override {
+    sync_service_observer_.Remove(sync);
+  }
+
   bool IsPrioritySyncing() {
     sync_preferences::PrefServiceSyncable* prefs =
         PrefServiceSyncableFromProfile(profile_);
