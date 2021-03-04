@@ -33,6 +33,17 @@ bool FieldIsInBlocklist(const char* current_value, std::string blocklist_str) {
   }
   return false;
 }
+
+bool IsDeviceBlocked(const char* field, const std::string& block_list) {
+  auto disable_patterns = base::SplitString(
+      block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& disable_pattern : disable_patterns) {
+    if (base::MatchPattern(field, disable_pattern))
+      return true;
+  }
+  return false;
+}
+
 #endif
 
 }  // namespace
@@ -171,6 +182,31 @@ const base::Feature kVulkan {
 #endif
 };
 
+#if defined(OS_ANDROID)
+
+const base::FeatureParam<std::string> kVulkanBlockListByBrand{
+    &kVulkan, "BlockListByBrand", ""};
+
+const base::FeatureParam<std::string> kVulkanBlockListByDevice{
+    &kVulkan, "BlockListByDevice", "OP4863|OP4883"};
+
+const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildId{
+    &kVulkan, "BlockListByAndroidBuildId", ""};
+
+const base::FeatureParam<std::string> kVulkanBlockListByManufacturer{
+    &kVulkan, "BlockListByManufacturer", ""};
+
+const base::FeatureParam<std::string> kVulkanBlockListByModel{
+    &kVulkan, "BlockListByModel", ""};
+
+const base::FeatureParam<std::string> kVulkanBlockListByBoard{
+    &kVulkan, "BlockListByBoard", ""};
+
+const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
+    &kVulkan, "BlockListByAndroidBuildFP", ""};
+
+#endif
+
 // Enable SkiaRenderer Dawn graphics backend. On Windows this will use D3D12,
 // and on Linux this will use Vulkan.
 const base::Feature kSkiaDawn{"SkiaDawn", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -211,7 +247,31 @@ bool IsUsingVulkan() {
       base::android::SDK_VERSION_Q)
     return false;
 
-  return base::FeatureList::IsEnabled(kVulkan);
+  if (!base::FeatureList::IsEnabled(kVulkan))
+    return false;
+
+  // Check block list against build info.
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  if (IsDeviceBlocked(build_info->brand(), kVulkanBlockListByBrand.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->device(), kVulkanBlockListByDevice.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->android_build_id(),
+                      kVulkanBlockListByAndroidBuildId.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->manufacturer(),
+                      kVulkanBlockListByManufacturer.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->model(), kVulkanBlockListByModel.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->board(), kVulkanBlockListByBoard.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->android_build_fp(),
+                      kVulkanBlockListByAndroidBuildFP.Get()))
+    return false;
+
+  return true;
+
 #else
   return base::FeatureList::IsEnabled(kVulkan);
 #endif
@@ -225,12 +285,9 @@ bool IsAImageReaderEnabled() {
 
 bool IsAndroidSurfaceControlEnabled() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
-  auto disable_patterns =
-      base::SplitString(kAndroidSurfaceControlBlocklist.Get(), "|",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const auto& disable_pattern : disable_patterns) {
-    if (base::MatchPattern(build_info->device(), disable_pattern))
-      return false;
+  if (IsDeviceBlocked(build_info->device(),
+                      kAndroidSurfaceControlBlocklist.Get())) {
+    return false;
   }
 
   if (!gfx::SurfaceControl::IsSupported())
