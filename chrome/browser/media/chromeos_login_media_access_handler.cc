@@ -8,8 +8,8 @@
 
 #include "base/logging.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/webui_login_view.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/settings/cros_settings_names.h"

@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
 
 namespace gfx {

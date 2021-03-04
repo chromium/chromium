@@ -19,7 +19,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace pdf_extension_util {

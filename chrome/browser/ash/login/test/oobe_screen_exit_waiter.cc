@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

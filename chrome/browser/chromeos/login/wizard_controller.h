@@ -58,7 +58,7 @@
 #include "chrome/browser/chromeos/login/screen_manager.h"
 // TODO(https://crbug.com/1164001): move LoginDisplayHost to forward
 // declaration when moved to chrome/browser/ash/.
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "components/account_id/account_id.h"
 

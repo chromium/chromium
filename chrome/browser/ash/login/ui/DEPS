@@ -1,0 +1,21 @@
+include_rules = [
+  # TODO(tfarina): Remove all these. crbug.com/125846.
+  # DO NOT ADD ANY MORE ITEMS TO THE LIST BELOW!
+  "!chrome/browser/ui/views/location_bar/location_bar_view.h",
+  "!chrome/browser/ui/views/toolbar/reload_button.h",
+  # DO NOT ADD ANY MORE ITEMS TO THE ABOVE LIST!
+]
+
+specific_include_rules = {
+  "input_events_blocker\.cc": [
+    "+ash/shell.h",
+  ],
+  # TODO(jdufault): Deprecate. https://crbug.com/792654
+  "login_display_host_webui\.cc": [
+    "+ash/accessibility/focus_ring_controller.h",
+    "+ash/shell.h",
+  ],
+  "login_display_host_mojo\.cc": [
+    "+ash/shell.h",
+  ],
+}

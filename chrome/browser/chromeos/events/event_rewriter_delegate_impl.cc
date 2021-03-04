@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"

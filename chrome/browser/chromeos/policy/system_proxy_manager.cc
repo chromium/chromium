@@ -11,7 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/ui/request_system_proxy_credentials_view.h"
 #include "chrome/browser/chromeos/ui/system_proxy_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"

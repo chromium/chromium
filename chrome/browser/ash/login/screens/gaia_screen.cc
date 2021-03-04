@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "components/account_id/account_id.h"
