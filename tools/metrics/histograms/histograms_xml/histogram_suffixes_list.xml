@@ -8599,7 +8599,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Recorded with between 5 and 7 live tabs open in the browser."/>
   <suffix name="ByLiveTabCount.8To19Tabs"
       label="Recorded with between 8 and 19 live tabs open in the browser."/>
-  <suffix name="ByLiveTabCount.8To19Tabs"
+  <suffix name="ByLiveTabCount.20To39Tabs"
       label="Recorded with between 20 and 39 live tabs open in the browser."/>
   <suffix name="ByLiveTabCount.40OrMoreTabs"
       label="Recorded with 40 or more live tabs open in the browser."/>
