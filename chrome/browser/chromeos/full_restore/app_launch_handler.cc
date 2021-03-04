@@ -95,11 +95,6 @@ void AppLaunchHandler::OnGetRestoreData(
     std::unique_ptr<::full_restore::RestoreData> restore_data) {
   restore_data_ = std::move(restore_data);
 
-  // After reading the restore data, the restore data can be cleared from the
-  // restore file to save the new restore data.
-  ::full_restore::FullRestoreSaveHandler::GetInstance()->Flush(
-      profile_->GetPath());
-
   if (ProfileHelper::Get()->GetUserByProfile(profile_) ==
       user_manager::UserManager::Get()->GetPrimaryUser()) {
     ::full_restore::FullRestoreSaveHandler::GetInstance()
