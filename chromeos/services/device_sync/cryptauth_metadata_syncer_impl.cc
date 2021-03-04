@@ -101,7 +101,7 @@ void RecordFirstSyncMetadataMetrics(const base::TimeDelta& execution_time,
       "CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.FirstSyncMetadata",
       execution_time);
   LogCryptAuthApiCallSuccessMetric(
-      "CryptAuth.DeviceSyncV2.MetdataSyncer.ApiCallResult.FirstSyncMetadata",
+      "CryptAuth.DeviceSyncV2.MetadataSyncer.ApiCallResult.FirstSyncMetadata",
       result);
 }
 
@@ -111,7 +111,7 @@ void RecordSecondSyncMetadataMetrics(const base::TimeDelta& execution_time,
       "CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.SecondSyncMetadata",
       execution_time);
   LogCryptAuthApiCallSuccessMetric(
-      "CryptAuth.DeviceSyncV2.MetdataSyncer.ApiCallResult.SecondSyncMetadata",
+      "CryptAuth.DeviceSyncV2.MetadataSyncer.ApiCallResult.SecondSyncMetadata",
       result);
 }
 
