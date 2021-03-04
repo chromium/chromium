@@ -31,6 +31,7 @@
 
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -124,7 +125,9 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 #ifndef LOG_MEDIA_EVENTS
 // Default to not logging events because so many are generated they can
@@ -179,6 +182,20 @@ enum class PlayPromiseRejectReason {
 
 static const base::TimeDelta kStalledNotificationInterval =
     base::TimeDelta::FromSeconds(3);
+
+// Collect debug information to help explain the numbers of attempts at
+// player ID reuse that we're seeing.
+// TODO(https://crbug.com/1172882): Remove once enough data has been collected.
+void DumpOnDelegateIdDuplication(const LocalFrame* frame, int delegate_id) {
+  using PlayerId = std::pair<const LocalFrame*, int>;
+  DEFINE_STATIC_LOCAL(HashSet<PlayerId>, seen_delegate_ids, ());
+  const auto result =
+      seen_delegate_ids.insert(std::make_pair(frame, delegate_id));
+  if (!result.is_new_entry) {
+    SCOPED_CRASH_KEY_NUMBER("bug1172882", "duplicate_delegate_id", delegate_id);
+    base::debug::DumpWithoutCrashing();
+  }
+}
 
 void ReportContentTypeResultToUMA(String content_type,
                                   MIMETypeRegistry::SupportsType result) {
@@ -1336,6 +1353,7 @@ void HTMLMediaElement::StartPlayerLoad() {
   BindMediaPlayerReceiver(
       media_player_remote.InitWithNewEndpointAndPassReceiver());
 
+  DumpOnDelegateIdDuplication(frame, web_media_player_->GetDelegateId());
   GetMediaPlayerHostRemote().OnMediaPlayerAdded(
       std::move(media_player_remote), web_media_player_->GetDelegateId());
 
