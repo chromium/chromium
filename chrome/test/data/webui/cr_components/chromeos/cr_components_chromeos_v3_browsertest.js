@@ -31,6 +31,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ['NetworkProxy', 'network/network_proxy_test.m.js'],
  ['NetworkSelect', 'network/network_select_test.m.js'],
  ['NetworkSiminfo', 'network/network_siminfo_test.m.js'],
+ ['SimLockDialogs', 'network/sim_lock_dialogs_test.m.js'],
 ].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
 
 [['RoutineGroup', 'network_health/routine_group_test.m.js'],

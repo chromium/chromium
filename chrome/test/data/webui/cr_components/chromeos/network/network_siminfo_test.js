@@ -19,6 +19,32 @@ suite('NetworkSiminfoTest', function() {
     Polymer.dom.flush();
   });
 
+  async function flushAsync() {
+    Polymer.dom.flush();
+    // Use setTimeout to wait for the next macrotask.
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
+  /**
+   * Utility function used to check if a dialog with name |dialogName|
+   * can be opened by setting the device state to |deviceState|
+   * @param {string} dialogName
+   * @param {OncMojo.DeviceStateProperties} deviceState
+   */
+  async function verifyDialogShown(deviceState, buttonName) {
+    simInfo.deviceState = deviceState;
+    let btn = simInfo.$$(`#${buttonName}`);
+    assertTrue(!!btn);
+
+    let simLockDialogs = simInfo.$$('sim-lock-dialogs');
+    assertFalse(!!simLockDialogs);
+    btn.click();
+    await flushAsync();
+
+    simLockDialogs = simInfo.$$('sim-lock-dialogs');
+    assertTrue(!!simLockDialogs);
+  }
+
   test('Show SIM missing', function() {
     // SIM missing UI is dependent on the device state being set.
     let simMissingGroup = simInfo.$$('#simMissing');
@@ -38,34 +64,19 @@ suite('NetworkSiminfoTest', function() {
     assertTrue(simMissingGroup.hidden);
   });
 
-  test('Show invalid unlock PIN error message properly', function() {
-    // Set sim to PIN locked state with multiple retries left.
-    simInfo.deviceState = {
-      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3}
+  test('Show sim lock dialog when toggle is clicked', async function() {
+    const deviceState = {
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
     };
-    Polymer.dom.flush();
-    assertFalse(simInfo.$$('#simLocked').hidden);
-    simInfo.$$('#unlockPinButton').click();
-    Polymer.dom.flush();
-    assertTrue(simInfo.$$('#unlockPinDialog').open);
 
-    // Invalid PIN should show error message with correct retries count.
-    simInfo.$$('#unlockPin').value = 'invalid_pin';
-    simInfo.$$('#unlockPinDialog .action-button').click();
-    Polymer.dom.flush();
-    assertEquals(
-        simInfo.i18n('networkSimErrorInvalidPinPlural', 3),
-        simInfo.$$('#unlockPinDialog .dialog-error').textContent.trim());
+    verifyDialogShown(deviceState, 'simLockButton');
+  });
 
-    // Set SIM to PIN locked state with single retry left.
-    simInfo.deviceState = {
-      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 1}
+  test('Show sim lock dialog when change button is clicked', async function() {
+    const deviceState = {
+      simLockStatus: {lockEnabled: true, lockType: '', retriesLeft: 3}
     };
-    simInfo.$$('#unlockPin').value = 'invalid_pin2';
-    simInfo.$$('#unlockPinDialog .action-button').click();
-    Polymer.dom.flush();
-    assertEquals(
-        simInfo.i18n('networkSimErrorInvalidPin', 1),
-        simInfo.$$('#unlockPinDialog .dialog-error').textContent.trim());
+
+    verifyDialogShown(deviceState, 'changePinButton');
   });
 });

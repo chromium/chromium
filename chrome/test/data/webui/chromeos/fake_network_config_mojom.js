@@ -12,6 +12,9 @@
  // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
  // clang-format on
 
+// Default cellular pin, used when locking/unlocking cellular profiles.
+/* #export */ const DEFAULT_CELLULAR_PIN = '1111';
+
 // TODO(stevenjb): Include cros_network_config.mojom.js and extend
 // CrosNetworkConfigInterface
 /* #export */ class FakeNetworkConfig {
@@ -44,6 +47,14 @@
      * @type {!Array<!chromeos.networkConfig.mojom.CrosNetworkConfigObserver>
      */
     this.observers_ = [];
+
+    /**
+     * When updating or changing cellular pin, |testPin| is used to store
+     * the updated pin, if not set DEFAULT_CELLULAR_PIN is used to check pin
+     * value in |setCellularSimState()|
+     * @type {string}
+     */
+    this.testPin = '';
 
     this.resetForTest();
   }
@@ -92,7 +103,7 @@
     ['getNetworkState', 'getNetworkStateList', 'getDeviceStateList',
      'getManagedProperties', 'setNetworkTypeEnabledState', 'requestNetworkScan',
      'getGlobalPolicy', 'getVpnProviders', 'getNetworkCertificates',
-     'setProperties']
+     'setProperties', 'setCellularSimState']
         .forEach((methodName) => {
           this.resolverMap_.set(methodName, new PromiseResolver());
         });
@@ -323,6 +334,59 @@
       }
       this.methodCalled('getManagedProperties');
       resolve({result: result || null});
+    });
+  }
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.CellularSimState} cellularSimState
+   * @return {!Promise<{success: boolean}>}
+   */
+  setCellularSimState(cellularSimState) {
+    return new Promise(resolve => {
+      const completeSetCellularSimState = (success) => {
+        this.methodCalled('setCellularSimState');
+        this.onDeviceStateListChanged();
+        resolve({success: success});
+      };
+
+      // This is only called by cellular networks.
+      const type = chromeos.networkConfig.mojom.NetworkType.kCellular;
+      let deviceState = this.deviceStates_.get(type);
+      let simLockStatus = deviceState.simLockStatus;
+      const pin = this.testPin ? this.testPin : DEFAULT_CELLULAR_PIN;
+
+      // If the correct pin is entered.
+      if (cellularSimState.currentPinOrPuk === pin) {
+        if (cellularSimState.newPin) {
+          // Set new pin.
+          this.testPin = cellularSimState.newPin;
+          completeSetCellularSimState(/*success*/ true);
+          return;
+        }
+
+        // toggling lock status.
+        simLockStatus.lockEnabled = !simLockStatus.lockEnabled;
+        deviceState.simLockStatus = simLockStatus;
+        this.deviceStates_.set(type, deviceState);
+        completeSetCellularSimState(/*success*/ true);
+        return;
+      }
+
+      // Wrong pin entered.
+      if (simLockStatus.retriesLeft > 1) {
+        // If there is more than one retries left.
+        simLockStatus.retriesLeft--;
+        deviceState.simLockStatus = simLockStatus;
+        this.deviceStates_.set(type, deviceState);
+        completeSetCellularSimState(/*success*/ false);
+        return;
+      }
+
+      // No retried left.
+      simLockStatus = {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 0};
+      deviceState.simLockStatus = simLockStatus;
+      this.deviceStates_.set(type, deviceState);
+      completeSetCellularSimState(/*success*/ false);
     });
   }
 

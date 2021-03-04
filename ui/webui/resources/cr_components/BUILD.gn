@@ -207,6 +207,7 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/network/network_shared_css.m.js",
       "chromeos/network/network_siminfo.m.js",
       "chromeos/network/onc_mojo.m.js",
+      "chromeos/network/sim_lock_dialogs.m.js",
       "chromeos/quick_unlock/lock_screen_constants.m.js",
       "chromeos/quick_unlock/pin_keyboard_icon.m.js",
       "chromeos/quick_unlock/pin_keyboard.m.js",
@@ -261,6 +262,8 @@ preprocess_if_expr("preprocess_polymer2") {
         "chromeos/network/network_siminfo.html",
         "chromeos/network/network_siminfo.js",
         "chromeos/network/network_shared_css.html",
+        "chromeos/network/sim_lock_dialogs.html",
+        "chromeos/network/sim_lock_dialogs.js",
       ]
     }
     in_files += [
