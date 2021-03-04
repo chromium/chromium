@@ -856,6 +856,7 @@ void DirectCompositionSurfaceWin::OnDisplayAdded() {
   InvalidateOverlayCaps();
   UpdateOverlaySupport();
   UpdateMonitorInfo();
+  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata(d3d11_device_);
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 
@@ -863,6 +864,7 @@ void DirectCompositionSurfaceWin::OnDisplayRemoved() {
   InvalidateOverlayCaps();
   UpdateOverlaySupport();
   UpdateMonitorInfo();
+  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata(d3d11_device_);
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 

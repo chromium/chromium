@@ -17,7 +17,7 @@ namespace gl {
 
 HDRMetadataHelperWin::HDRMetadataHelperWin(
     const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
-  CacheDisplayMetadata(d3d11_device);
+  UpdateDisplayMetadata(d3d11_device);
 }
 
 HDRMetadataHelperWin::~HDRMetadataHelperWin() = default;
@@ -27,7 +27,7 @@ HDRMetadataHelperWin::GetDisplayMetadata() {
   return hdr_metadata_;
 }
 
-void HDRMetadataHelperWin::CacheDisplayMetadata(
+void HDRMetadataHelperWin::UpdateDisplayMetadata(
     const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
   hdr_metadata_.reset();
 
