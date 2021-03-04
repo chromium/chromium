@@ -122,10 +122,6 @@ bool ProxyOverriddenBubbleDelegate::ShouldCloseOnDeactivate() const {
   return false;
 }
 
-bool ProxyOverriddenBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
-  return false;
-}
-
 bool ProxyOverriddenBubbleDelegate::ShouldShow(
     const ExtensionIdList& extensions) const {
   DCHECK_EQ(1u, extensions.size());

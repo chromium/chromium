@@ -86,10 +86,6 @@ bool DevModeBubbleDelegate::ShouldCloseOnDeactivate() const {
   return false;
 }
 
-bool DevModeBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
-  return false;
-}
-
 bool DevModeBubbleDelegate::ShouldShow(
     const ExtensionIdList& extensions) const {
   DCHECK_LE(1u, extensions.size());

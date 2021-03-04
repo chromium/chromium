@@ -29,6 +29,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

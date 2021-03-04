@@ -356,8 +356,7 @@ void ExtensionMessageBubbleController::OnClose() {
   // If the bubble was closed due to deactivation, don't treat it as
   // acknowledgment so that the user will see the bubble again (until they
   // explicitly take an action).
-  if (user_action_ != ACTION_DISMISS_DEACTIVATION ||
-      delegate_->ShouldAcknowledgeOnDeactivate()) {
+  if (user_action_ != ACTION_DISMISS_DEACTIVATION) {
     AcknowledgeExtensions();
     delegate_->OnAction();
   }

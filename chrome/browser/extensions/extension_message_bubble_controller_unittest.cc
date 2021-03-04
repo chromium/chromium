@@ -425,27 +425,11 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleTest);
 };
 
-class ExtensionMessageBubbleTestWithParam
-    : public ExtensionMessageBubbleTest,
-      public ::testing::WithParamInterface<bool> {};
-
 // Test that the bubble correctly treats dismissal due to deactivation.
-// Currently, the NTP bubble is the only one that has flexible behavior (toggled
-// by a feature).
 // TODO(https://crbug.com/1177315): This test is flaky. When the flake is fixed,
 // re-enable this test.
-TEST_P(ExtensionMessageBubbleTestWithParam,
+TEST_F(ExtensionMessageBubbleTest,
        DISABLED_BubbleCorrectlyReshowsOnDeactivationDismissal) {
-  const bool kAcknowledgeOnDeactivate = GetParam();
-  base::test::ScopedFeatureList feature_list;
-  if (kAcknowledgeOnDeactivate) {
-    feature_list.InitAndEnableFeature(
-        features::kAcknowledgeNtpOverrideOnDeactivate);
-  } else {
-    feature_list.InitAndDisableFeature(
-        features::kAcknowledgeNtpOverrideOnDeactivate);
-  }
-
   Init();
 
   ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::INTERNAL));
@@ -479,37 +463,27 @@ TEST_P(ExtensionMessageBubbleTestWithParam,
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2));
 
-  if (kAcknowledgeOnDeactivate) {
-    EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
+  // Since the bubble was dismissed due to deactivation, the extension should
+  // not have been acknowledged.
+  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
 
-    controller.reset(new TestExtensionMessageBubbleController(
-        new ProxyOverriddenBubbleDelegate(browser()->profile()), browser()));
-    controller->delegate()->ClearProfileSetForTesting();
-    controller->SetIsActiveBubble();
-    EXPECT_FALSE(controller->ShouldShow());
-  } else {
-    // Since the bubble was dismissed due to deactivation, the extension should
-    // not have been acknowledged.
-    EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-
-    bubble.set_action_on_show(
-        FakeExtensionMessageBubble::BUBBLE_ACTION_DISMISS_DEACTIVATION);
-    controller.reset(new TestExtensionMessageBubbleController(
-        new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
-    controller->SetIsActiveBubble();
-    // The bubble shouldn't show again for the same profile (we don't want to
-    // be annoying).
-    EXPECT_FALSE(controller->ShouldShow());
-    controller->delegate()->ClearProfileSetForTesting();
-    EXPECT_TRUE(controller->ShouldShow());
-    // Explicitly click the dismiss button. The extension should be
-    // acknowledged.
-    bubble.set_controller(controller.get());
-    bubble.set_action_on_show(
-        FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_DISMISS_BUTTON);
-    bubble.Show();
-    EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  }
+  bubble.set_action_on_show(
+      FakeExtensionMessageBubble::BUBBLE_ACTION_DISMISS_DEACTIVATION);
+  controller.reset(new TestExtensionMessageBubbleController(
+      new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
+  controller->SetIsActiveBubble();
+  // The bubble shouldn't show again for the same profile (we don't want to
+  // be annoying).
+  EXPECT_FALSE(controller->ShouldShow());
+  controller->delegate()->ClearProfileSetForTesting();
+  EXPECT_TRUE(controller->ShouldShow());
+  // Explicitly click the dismiss button. The extension should be
+  // acknowledged.
+  bubble.set_controller(controller.get());
+  bubble.set_action_on_show(
+      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_DISMISS_BUTTON);
+  bubble.Show();
+  EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
 
   // Uninstall the current ntp-controlling extension, allowing the other to
   // take control.
@@ -521,10 +495,6 @@ TEST_P(ExtensionMessageBubbleTestWithParam,
       new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
   EXPECT_TRUE(controller->ShouldShow());
 }
-
-INSTANTIATE_TEST_SUITE_P(ExtensionMessageBubbleTest,
-                         ExtensionMessageBubbleTestWithParam,
-                         testing::Bool());
 
 // The feature this is meant to test is only enacted on Windows, but it should
 // pass on all platforms.

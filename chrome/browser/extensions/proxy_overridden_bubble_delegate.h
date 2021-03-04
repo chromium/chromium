@@ -35,7 +35,6 @@ class ProxyOverriddenBubbleDelegate
   base::string16 GetActionButtonLabel() const override;
   base::string16 GetDismissButtonLabel() const override;
   bool ShouldCloseOnDeactivate() const override;
-  bool ShouldAcknowledgeOnDeactivate() const override;
   bool ShouldShow(const ExtensionIdList& extensions) const override;
   void OnShown(const ExtensionIdList& extensions) override;
   void OnAction() override;

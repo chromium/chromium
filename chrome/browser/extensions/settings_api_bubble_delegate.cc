@@ -203,10 +203,6 @@ bool SettingsApiBubbleDelegate::ShouldCloseOnDeactivate() const {
   return type_ != BUBBLE_TYPE_STARTUP_PAGES;
 }
 
-bool SettingsApiBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
-  return false;
-}
-
 bool SettingsApiBubbleDelegate::ShouldShow(
     const ExtensionIdList& extensions) const {
   DCHECK_EQ(1u, extensions.size());

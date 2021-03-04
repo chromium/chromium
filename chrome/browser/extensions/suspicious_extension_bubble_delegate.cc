@@ -111,10 +111,6 @@ bool SuspiciousExtensionBubbleDelegate::ShouldCloseOnDeactivate() const {
   return false;
 }
 
-bool SuspiciousExtensionBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
-  return false;
-}
-
 bool SuspiciousExtensionBubbleDelegate::ShouldShow(
     const ExtensionIdList& extensions) const {
   DCHECK_LE(1u, extensions.size());

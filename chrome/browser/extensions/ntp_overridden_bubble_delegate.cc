@@ -6,14 +6,12 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry.h"
@@ -156,11 +154,6 @@ base::string16 NtpOverriddenBubbleDelegate::GetDismissButtonLabel() const {
 
 bool NtpOverriddenBubbleDelegate::ShouldCloseOnDeactivate() const {
   return true;
-}
-
-bool NtpOverriddenBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
-  return base::FeatureList::IsEnabled(
-      ::features::kAcknowledgeNtpOverrideOnDeactivate);
 }
 
 bool NtpOverriddenBubbleDelegate::ShouldShowExtensionList() const {
