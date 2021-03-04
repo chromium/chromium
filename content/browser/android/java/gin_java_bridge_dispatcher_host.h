@@ -49,8 +49,7 @@ class GinJavaBridgeDispatcherHost
 
   // WebContentsObserver
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override;
+  void DocumentAvailableInMainFrame() override;
   void WebContentsDestroyed() override;
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;

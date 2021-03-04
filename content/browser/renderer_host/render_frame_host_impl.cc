@@ -4250,7 +4250,7 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
         GetProcess(), bad_message::RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME);
     return;
   }
-  delegate_->DocumentAvailableInMainFrame(this);
+  delegate_->DocumentAvailableInMainFrame();
 
   if (!uses_temporary_zoom_level)
     return;

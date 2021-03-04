@@ -357,7 +357,7 @@ void GeolocationPermissionContextTests::RequestManagerDocumentLoadCompleted() {
 void GeolocationPermissionContextTests::RequestManagerDocumentLoadCompleted(
     content::WebContents* web_contents) {
   PermissionRequestManager::FromWebContents(web_contents)
-      ->DocumentOnLoadCompletedInMainFrame(main_rfh());
+      ->DocumentOnLoadCompletedInMainFrame();
 }
 
 ContentSetting GeolocationPermissionContextTests::GetGeolocationContentSetting(

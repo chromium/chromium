@@ -58,8 +58,7 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
 
   // content::WebContentsObserver implementation.
   void TitleWasSet(content::NavigationEntry*) final;
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) final;
+  void DocumentAvailableInMainFrame() final;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) final;
   void RenderProcessGone(base::TerminationStatus status) final;

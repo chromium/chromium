@@ -241,16 +241,14 @@ void BackgroundLoaderOffliner::MarkLoadStartTime() {
   load_start_time_ = base::TimeTicks::Now();
 }
 
-void BackgroundLoaderOffliner::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void BackgroundLoaderOffliner::DocumentAvailableInMainFrame() {
   is_low_bar_met_ = true;
 
   // Add this signal to signal_data_.
   AddLoadingSignal("DocumentAvailableInMainFrame");
 }
 
-void BackgroundLoaderOffliner::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void BackgroundLoaderOffliner::DocumentOnLoadCompletedInMainFrame() {
   if (!pending_request_.get()) {
     DVLOG(1) << "DidStopLoading called even though no pending request.";
     return;

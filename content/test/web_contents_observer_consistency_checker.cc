@@ -251,13 +251,12 @@ void WebContentsObserverConsistencyChecker::DidFinishNavigation(
   ongoing_navigations_.erase(navigation_handle);
 }
 
-void WebContentsObserverConsistencyChecker::DocumentAvailableInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void WebContentsObserverConsistencyChecker::DocumentAvailableInMainFrame() {
   AssertMainFrameExists();
 }
 
-void WebContentsObserverConsistencyChecker::DocumentOnLoadCompletedInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void WebContentsObserverConsistencyChecker::
+    DocumentOnLoadCompletedInMainFrame() {
   CHECK(web_contents()->IsDocumentOnLoadCompletedInMainFrame());
   AssertMainFrameExists();
 }

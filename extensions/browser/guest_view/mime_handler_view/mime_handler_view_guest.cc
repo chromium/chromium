@@ -424,8 +424,7 @@ bool MimeHandlerViewGuest::SetFullscreenState(bool is_fullscreen) {
   return true;
 }
 
-void MimeHandlerViewGuest::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void MimeHandlerViewGuest::DocumentOnLoadCompletedInMainFrame() {
   // Assume the embedder WebContents is valid here.
   DCHECK(embedder_web_contents());
 

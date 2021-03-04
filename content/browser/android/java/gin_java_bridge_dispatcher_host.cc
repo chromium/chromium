@@ -298,8 +298,7 @@ void GinJavaBridgeDispatcherHost::SetAllowObjectContentsInspection(bool allow) {
   allow_object_contents_inspection_ = allow;
 }
 
-void GinJavaBridgeDispatcherHost::DocumentAvailableInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void GinJavaBridgeDispatcherHost::DocumentAvailableInMainFrame() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Called when the window object has been cleared in the main frame.
   // That means, all sub-frames have also been cleared, so only named

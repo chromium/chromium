@@ -26,8 +26,7 @@ class RendererUptimeWebContentsObserver
       content::WebContents* web_contents);
 
   // content::WebContentsObserver:
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentAvailableInMainFrame() override;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -3974,13 +3974,11 @@ class LoadingObserver : public WebContentsObserver {
     run_loop_.Quit();
   }
 
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override {
+  void DocumentAvailableInMainFrame() override {
     events_.push_back("DocumentAvailableInMainFrame");
   }
 
-  void DocumentOnLoadCompletedInMainFrame(
-      RenderFrameHost* render_frame_host) override {
+  void DocumentOnLoadCompletedInMainFrame() override {
     events_.push_back("DocumentOnLoadCompletedInMainFrame");
   }
 

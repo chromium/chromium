@@ -234,19 +234,14 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void LoadProgressChanged(double progress) {}
 
   // This method is invoked once the window.document object of the main frame
-  // was created. Since the WebContents could be hosting more than one main
-  // frame (e.g. prerendered page), the |render_frame_host| represents the frame
-  // where the event happened.
-  virtual void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) {}
+  // was created.
+  virtual void DocumentAvailableInMainFrame() {}
 
   // This method is invoked once the onload handler of the main frame has
-  // completed. Since the WebContents could be hosting more than one main frame,
-  // the |render_frame_host| represents the frame where the event happened.
+  // completed.
   // Prefer using WebContents::IsDocumentOnLoadCompletedInMainFrame instead
   // of saving this state in your component.
-  virtual void DocumentOnLoadCompletedInMainFrame(
-      RenderFrameHost* render_frame_host) {}
+  virtual void DocumentOnLoadCompletedInMainFrame() {}
 
   // This method is invoked when the document in the given frame finished
   // loading. At this point, scripts marked as defer were executed, and

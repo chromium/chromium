@@ -80,7 +80,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   permissions::MockPermissionPromptFactory mock_prompt_factory(manager);
   NavigateAndCommit(requesting_frame);
-  manager->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  manager->DocumentOnLoadCompletedInMainFrame();
 
   base::RunLoop run_loop;
   PermissionManagerFactory::GetForProfile(profile())->RequestPermission(

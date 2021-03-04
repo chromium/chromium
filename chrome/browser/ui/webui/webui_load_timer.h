@@ -32,8 +32,7 @@ class WebuiLoadTimer : public content::WebContentsObserver {
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInMainFrame() override;
 
  private:
   std::string document_initial_load_uma_id_;

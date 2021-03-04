@@ -44,8 +44,7 @@ class WebTestDevToolsBindings::SecondaryObserver : public WebContentsObserver {
         bindings_(bindings) {}
 
   // WebContentsObserver implementation.
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override {
+  void DocumentAvailableInMainFrame() override {
     if (bindings_)
       bindings_->NavigateDevToolsFrontend();
     bindings_ = nullptr;
@@ -111,8 +110,7 @@ WebTestDevToolsBindings::WebTestDevToolsBindings(
 
 WebTestDevToolsBindings::~WebTestDevToolsBindings() {}
 
-void WebTestDevToolsBindings::DocumentAvailableInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void WebTestDevToolsBindings::DocumentAvailableInMainFrame() {
   ShellDevToolsBindings::Attach();
 }
 

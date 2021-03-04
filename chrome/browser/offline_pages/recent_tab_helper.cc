@@ -271,14 +271,12 @@ void RecentTabHelper::DidFinishNavigation(
       << " - Page can not be saved by last_n";
 }
 
-void RecentTabHelper::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void RecentTabHelper::DocumentAvailableInMainFrame() {
   EnsureInitialized();
   snapshot_controller_->DocumentAvailableInMainFrame();
 }
 
-void RecentTabHelper::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void RecentTabHelper::DocumentOnLoadCompletedInMainFrame() {
   EnsureInitialized();
   snapshot_controller_->DocumentOnLoadCompletedInMainFrame();
 }

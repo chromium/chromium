@@ -76,8 +76,7 @@ void ReaderModeIconView::ReadyToCommitNavigation(
                                       GetPageType(web_contents));
 }
 
-void ReaderModeIconView::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void ReaderModeIconView::DocumentAvailableInMainFrame() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return;

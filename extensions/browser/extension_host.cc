@@ -262,8 +262,7 @@ void ExtensionHost::OnDidStopFirstLoad() {
   // Nothing to do for background pages.
 }
 
-void ExtensionHost::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void ExtensionHost::DocumentAvailableInMainFrame() {
   // If the document has already been marked as available for this host, then
   // bail. No need for the redundant setup. http://crbug.com/31170
   if (document_element_available_)

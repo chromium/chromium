@@ -40,8 +40,7 @@ class ReaderModeIconView : public PageActionIconView,
       content::NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentAvailableInMainFrame() override;
 
   // PageActionIconView overrides:
   void UpdateImpl() override;

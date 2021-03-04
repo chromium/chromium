@@ -172,8 +172,7 @@ void OomInterventionTabHelper::OnVisibilityChanged(
   }
 }
 
-void OomInterventionTabHelper::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void OomInterventionTabHelper::DocumentOnLoadCompletedInMainFrame() {
   load_finished_ = true;
   if (IsLastVisibleWebContents(web_contents()))
     StartMonitoringIfNeeded();

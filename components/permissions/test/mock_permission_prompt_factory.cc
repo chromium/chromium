@@ -60,9 +60,8 @@ void MockPermissionPromptFactory::ResetCounts() {
   request_origins_seen_.clear();
 }
 
-void MockPermissionPromptFactory::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
-  manager_->DocumentOnLoadCompletedInMainFrame(render_frame_host);
+void MockPermissionPromptFactory::DocumentOnLoadCompletedInMainFrame() {
+  manager_->DocumentOnLoadCompletedInMainFrame();
 }
 
 bool MockPermissionPromptFactory::is_visible() {

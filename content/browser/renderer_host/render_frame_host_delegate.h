@@ -419,8 +419,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // The main frame document element is ready. This happens when the document
   // has finished parsing.
-  virtual void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) {}
+  virtual void DocumentAvailableInMainFrame() {}
 
   // Reports that passive mixed content was found at the specified url.
   virtual void PassiveInsecureContentFound(const GURL& resource_url) {}

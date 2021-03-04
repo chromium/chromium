@@ -129,8 +129,7 @@ void FileSystemAccessPermissionRequestManager::DequeueAndShowRequest() {
 }
 
 void FileSystemAccessPermissionRequestManager::
-    DocumentOnLoadCompletedInMainFrame(
-        content::RenderFrameHost* render_frame_host) {
+    DocumentOnLoadCompletedInMainFrame() {
   main_frame_has_fully_loaded_ = true;
   // This is scheduled because while all calls to the browser have been
   // issued at DOMContentLoaded, they may be bouncing around in scheduled

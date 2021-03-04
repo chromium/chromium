@@ -4558,10 +4558,7 @@ class DocumentOnLoadObserver : public WebContentsObserver {
 
  protected:
   // WebContentsObserver:
-  void DocumentOnLoadCompletedInMainFrame(
-      RenderFrameHost* render_frame_host) override {
-    callback_.Run();
-  }
+  void DocumentOnLoadCompletedInMainFrame() override { callback_.Run(); }
 
  private:
   base::RepeatingClosure callback_;

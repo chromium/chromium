@@ -296,8 +296,7 @@ void PermissionRequestManager::DidFinishNavigation(
   CleanUpRequests();
 }
 
-void PermissionRequestManager::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void PermissionRequestManager::DocumentOnLoadCompletedInMainFrame() {
   // This is scheduled because while all calls to the browser have been
   // issued at DOMContentLoaded, they may be bouncing around in scheduled
   // callbacks finding the UI thread still. This makes sure we allow those
