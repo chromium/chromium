@@ -3577,9 +3577,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.webkitApiCountPerSession" enum="RTCAPIName"
-    expires_after="2021-03-07">
+    expires_after="2022-03-07">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>hbos@chromium.org</owner>
   <summary>
     Counts the number of calls to WebRTC APIs from JavaScript once per session.
     A session is a crude estimate since its implemented as the lifetime of the

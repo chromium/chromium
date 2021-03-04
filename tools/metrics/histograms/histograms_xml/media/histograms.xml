@@ -177,7 +177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.HighLatencyCallbackError"
-    enum="BooleanError" expires_after="2021-04-05">
+    enum="BooleanError" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -187,7 +187,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.InputStreamDuration" units="ms"
-    expires_after="2021-04-05">
+    expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -367,9 +367,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.CoreAudioDispatchOverrideInitResult"
-    enum="CoreAudioDispatchOverrideInitResult" expires_after="2021-04-01">
+    enum="CoreAudioDispatchOverrideInitResult" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     Tracks support and initialization success/failure of the CoreAudio dispatch
     override hotfix. Logged during initialization of AudioManagerMac. The fix is
@@ -378,9 +378,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.CoreAudioDispatchOverrideLookupEvent"
-    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2021-04-01">
+    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     Logged whenever the CoreAudio dispatch override hotfix needs to look up the
     calling function using dladdr(). Once ResumeIO and PauseIO have been
@@ -452,9 +452,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.CaptureDelayMs" units="ms"
-    expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The time, in milliseconds, between when a block of audio is read from the
     soundcard and when it's presented to the audio processor. Used in
@@ -463,9 +463,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.CaptureDelayVarianceMs"
-    units="ms squared" expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    units="ms squared" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The variance of the capture delay in milliseconds (see
     Media.Audio.Processing.CaptureDelayMs). Logged once every second and
@@ -474,9 +474,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.RenderDelayMs" units="ms"
-    expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The time, in milliseconds, between when a block of audio is presented to the
     audio processor and the time it's played out on the soundcard. Used in
@@ -485,9 +485,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.RenderDelayVarianceMs"
-    units="ms squared" expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    units="ms squared" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The variance of the render delay in milliseconds (see
     Media.Audio.Processing.RenderDelayMs). Logged once every second and
@@ -506,9 +506,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.TotalDelayVarianceMs"
-    units="ms squared" expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    units="ms squared" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The variance of the total delay in milliseconds (see
     Media.Audio.Processing.TotalDelayMs). Logged once every second and
@@ -546,7 +546,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Media.Audio.Render.GetSourceDataTime.WebRTC"
     units="microseconds" expires_after="2021-08-08">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The time spent to get audio data from the source. For WebRTC, it's the time
     spent in WebRtcAudioRenderer::SourceCallback. Logged every function call,
@@ -563,7 +563,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Media.Audio.Render.GetSourceDataTimeMax.WebRTC"
     units="microseconds" expires_after="2021-08-08">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The maximum time spent to get audio data from the source during a session.
     For WebRTC, it's the time spent in WebRtcAudioRenderer::SourceCallback. A
@@ -637,7 +637,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Audio.Render.OutputDeviceStatus"
     enum="OutputDeviceStatus" expires_after="2021-08-08">
-  <owner>armax@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -668,7 +667,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.SinkCache.InfoSinkReusedForOutput"
-    enum="BooleanReused" expires_after="2021-04-05">
+    enum="BooleanReused" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -893,7 +892,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioOutputController.ProxyStreamCreationResult"
-    enum="AudioOutputStreamCreationResult" expires_after="2021-04-05">
+    enum="AudioOutputStreamCreationResult" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -907,7 +906,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.AudioOutputController.ProxyStreamCreationResultForDeviceChange"
-    enum="AudioOutputStreamCreationResult" expires_after="2021-04-05">
+    enum="AudioOutputStreamCreationResult" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1069,8 +1068,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioService.AudioManagerStartupTime" units="ms"
-    expires_after="2021-04-05">
-  <owner>armax@chromium.org</owner>
+    expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
