@@ -87,6 +87,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     base::Optional<base::TimeTicks> last_connect_start_time;
   };
 
+  // Cellular network SIM types.
+  enum class SimType {
+    kPSim,
+    kESim,
+  };
+
   // Usage type for cellular network. These values are persisted to logs.
   // Entries should not be renumbered and numberic values should never
   // be reused.
@@ -152,6 +158,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // Tracks the last cellular network usage state.
   base::Optional<CellularUsage> last_cellular_usage_;
+
+  // Tracks the last PSim cellular network usage state.
+  base::Optional<CellularUsage> last_psim_cellular_usage_;
+
+  // Tracks the last ESim cellular network usage state.
+  base::Optional<CellularUsage> last_esim_cellular_usage_;
 
   // Tracks whether cellular device is available or not.
   bool is_cellular_available_ = false;
