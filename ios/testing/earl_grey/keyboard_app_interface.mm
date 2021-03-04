@@ -96,7 +96,7 @@ BOOL IsKeyboardDockedForLayout() {
   }
 }
 
-+ (BOOL)isKeyboardDocked {
++ (BOOL)isKeyboadDocked {
   return IsKeyboardDockedForLayout();
 }
 
