@@ -115,6 +115,7 @@ void DeskDragProxy::SnapBackToDragView() {
                                                  scaled_proxy_bounds));
   ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
   settings.SetTransitionDuration(kDragProxySnapBackDuration);
+  settings.SetTweenType(gfx::Tween::ACCEL_LIN_DECEL_60);
   settings.AddObserver(this);
   layer->SetTransform(gfx::Transform());
 }
