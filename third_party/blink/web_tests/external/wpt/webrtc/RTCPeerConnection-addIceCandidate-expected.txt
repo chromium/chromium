@@ -28,7 +28,7 @@ PASS Add candidate with only valid candidate string should reject with TypeError
 PASS Add candidate with invalid candidate string and both sdpMid and sdpMLineIndex null should reject with TypeError
 PASS Add candidate with invalid sdpMid should reject with OperationError
 PASS Add candidate with invalid sdpMLineIndex should reject with OperationError
-FAIL Invalid sdpMLineIndex should be ignored if valid sdpMid is provided promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'addIceCandidate' on 'RTCPeerConnection': Error processing ICE candidate"
+PASS Invalid sdpMLineIndex should be ignored if valid sdpMid is provided
 PASS Add candidate for media stream 2 with null usernameFragment should succeed
 FAIL Add candidate with invalid usernameFragment should reject with OperationError assert_unreached: Should have rejected: undefined Reached unreachable code
 PASS Add candidate with invalid candidate string should reject with OperationError
