@@ -313,6 +313,9 @@
         'args': [
           '--additional-driver-flag=--enable-blink-features=CompositeAfterPaint',
         ],
+        'swarming': {
+          'shards': 20,
+        },
       },
       'WebKit Linux layout_ng_disabled Builder': {
         'args': [
