@@ -1279,17 +1279,17 @@ TEST_F(FeaturePolicyMutationTest, TestAllowNewFeatureUnconditionally) {
       mojom::blink::FeaturePolicyFeature::kPayment, test_policy));
 }
 
-class FeaturePolicyViolationHistogramTest : public testing::Test {
+class PermissionsPolicyViolationHistogramTest : public testing::Test {
  protected:
-  FeaturePolicyViolationHistogramTest() = default;
+  PermissionsPolicyViolationHistogramTest() = default;
 
-  ~FeaturePolicyViolationHistogramTest() override = default;
+  ~PermissionsPolicyViolationHistogramTest() override = default;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(FeaturePolicyViolationHistogramTest);
+  DISALLOW_COPY_AND_ASSIGN(PermissionsPolicyViolationHistogramTest);
 };
 
-TEST_F(FeaturePolicyViolationHistogramTest, PotentialViolation) {
+TEST_F(PermissionsPolicyViolationHistogramTest, PotentialViolation) {
   HistogramTester tester;
   const char* histogram_name =
       "Blink.UseCounter.FeaturePolicy.PotentialViolation";

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FEATURE_POLICY_VIOLATION_REPORT_BODY_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FEATURE_POLICY_VIOLATION_REPORT_BODY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERMISSIONS_POLICY_VIOLATION_REPORT_BODY_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERMISSIONS_POLICY_VIOLATION_REPORT_BODY_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -11,13 +11,14 @@
 
 namespace blink {
 
-class CORE_EXPORT FeaturePolicyViolationReportBody : public LocationReportBody {
+class CORE_EXPORT PermissionsPolicyViolationReportBody
+    : public LocationReportBody {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  FeaturePolicyViolationReportBody(const String& feature_id,
-                                   const String& message,
-                                   const String& disposition)
+  PermissionsPolicyViolationReportBody(const String& feature_id,
+                                       const String& message,
+                                       const String& disposition)
       : feature_id_(feature_id),
         message_("Permissions policy violation: " +
                  (message.IsEmpty()
@@ -31,7 +32,7 @@ class CORE_EXPORT FeaturePolicyViolationReportBody : public LocationReportBody {
 
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
-  ~FeaturePolicyViolationReportBody() override = default;
+  ~PermissionsPolicyViolationReportBody() override = default;
 
  private:
   const String feature_id_;
@@ -41,4 +42,4 @@ class CORE_EXPORT FeaturePolicyViolationReportBody : public LocationReportBody {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FEATURE_POLICY_VIOLATION_REPORT_BODY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERMISSIONS_POLICY_VIOLATION_REPORT_BODY_H_

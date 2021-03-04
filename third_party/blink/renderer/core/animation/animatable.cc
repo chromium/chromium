@@ -29,7 +29,7 @@ namespace {
 // A helper method which is used to trigger a violation report for cases where
 // the |element.animate| API is used to animate a CSS property which is blocked
 // by the feature policy 'layout-animations'.
-void ReportFeaturePolicyViolationsIfNecessary(
+void ReportPermissionsPolicyViolationsIfNecessary(
     const ExecutionContext& context,
     const KeyframeEffectModelBase& effect) {
   for (const auto& property_handle : effect.Properties()) {
@@ -78,8 +78,8 @@ Animation* Animatable::animate(
   if (!element->GetExecutionContext())
     return nullptr;
 
-  ReportFeaturePolicyViolationsIfNecessary(*element->GetExecutionContext(),
-                                           *effect->Model());
+  ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
+                                               *effect->Model());
   if (!options.IsKeyframeAnimationOptions())
     return element->GetDocument().Timeline().Play(effect);
 
@@ -115,8 +115,8 @@ Animation* Animatable::animate(ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
 
-  ReportFeaturePolicyViolationsIfNecessary(*element->GetExecutionContext(),
-                                           *effect->Model());
+  ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
+                                               *effect->Model());
   return element->GetDocument().Timeline().Play(effect);
 }
 

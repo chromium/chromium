@@ -25,7 +25,7 @@ namespace {
 
 // The renderer performs its own feature policy checks so a request that gets
 // to the browser process indicates malicious code.
-const char kFeaturePolicyViolation[] =
+const char kPermissionsPolicyViolation[] =
     "Permissions policy blocks access to WebUSB.";
 
 }  // namespace
@@ -53,7 +53,7 @@ void FrameUsbServices::InitializeWebUsbChooser() {
 void FrameUsbServices::InitializeWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
   if (!AllowedByFeaturePolicy()) {
-    mojo::ReportBadMessage(kFeaturePolicyViolation);
+    mojo::ReportBadMessage(kPermissionsPolicyViolation);
     return;
   }
 

@@ -321,8 +321,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   // Tests whether the policy-controlled feature is enabled in this frame.
   // Optionally sends a report to any registered reporting observers or
-  // Report-To endpoints, via ReportFeaturePolicyViolation(), if the feature is
-  // disabled. The optional ConsoleMessage will be sent to the console if
+  // Report-To endpoints, via ReportPermissionsPolicyViolation(), if the feature
+  // is disabled. The optional ConsoleMessage will be sent to the console if
   // present, or else a default message will be used instead.
   bool IsFeatureEnabled(
       mojom::blink::FeaturePolicyFeature,
@@ -340,13 +340,13 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string) const;
 
-  virtual void CountPotentialFeaturePolicyViolation(
+  virtual void CountPotentialPermissionsPolicyViolation(
       mojom::blink::FeaturePolicyFeature) const {}
 
   // Report policy violations is delegated to Document because in order
   // to both remain const qualified and output console message, needs
   // to call |frame_->Console().AddMessage()| directly.
-  virtual void ReportFeaturePolicyViolation(
+  virtual void ReportPermissionsPolicyViolation(
       mojom::blink::FeaturePolicyFeature,
       mojom::blink::PolicyDisposition,
       const String& message = g_empty_string) const {}

@@ -6,7 +6,7 @@
 
 [
     LegacyNoInterfaceObject
-] interface FeaturePolicyViolationReportBody : ReportBody {
+] interface PermissionsPolicyViolationReportBody : ReportBody {
   readonly attribute DOMString featureId;
   readonly attribute DOMString? sourceFile;
   readonly attribute unsigned long? lineNumber;

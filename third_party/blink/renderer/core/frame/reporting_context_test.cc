@@ -8,8 +8,8 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/deprecation_report_body.h"
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
-#include "third_party/blink/renderer/core/frame/feature_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
@@ -95,13 +95,13 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
       std::move(reached_callback_).Run();
   }
 
-  void QueueFeaturePolicyViolationReport(const KURL& url,
-                                         const String& policy_id,
-                                         const String& disposition,
-                                         const String& message,
-                                         const String& source_file,
-                                         int32_t line_number,
-                                         int32_t column_number) override {
+  void QueuePermissionsPolicyViolationReport(const KURL& url,
+                                             const String& policy_id,
+                                             const String& disposition,
+                                             const String& message,
+                                             const String& source_file,
+                                             int32_t line_number,
+                                             int32_t column_number) override {
     last_message_ = message;
     if (reached_callback_)
       std::move(reached_callback_).Run();
@@ -179,7 +179,7 @@ TEST_F(ReportingContextTest, PermissionsPolicyViolationReportMessage) {
   base::RunLoop run_loop;
   MockReportingServiceProxy reporting_service(win->GetBrowserInterfaceBroker(),
                                               run_loop.QuitClosure());
-  auto* body = MakeGarbageCollected<FeaturePolicyViolationReportBody>(
+  auto* body = MakeGarbageCollected<PermissionsPolicyViolationReportBody>(
       "FeatureId", "TestMessage1", "enforce");
   auto* report = MakeGarbageCollected<Report>(
       "permissions-policy-violation", win->document()->Url().GetString(), body);

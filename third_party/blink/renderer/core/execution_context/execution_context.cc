@@ -554,7 +554,7 @@ bool ExecutionContext::IsFeatureEnabled(
     // We are expecting a violation report in case the feature is disabled in
     // the context. Therefore, this qualifies as a potential violation (i.e.,
     // if the feature was disabled it would generate a report).
-    CountPotentialFeaturePolicyViolation(feature);
+    CountPotentialPermissionsPolicyViolation(feature);
   }
 
   bool should_report;
@@ -564,7 +564,7 @@ bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::PolicyDisposition disposition =
         enabled ? mojom::blink::PolicyDisposition::kReport
                 : mojom::blink::PolicyDisposition::kEnforce;
-    ReportFeaturePolicyViolation(feature, disposition, message);
+    ReportPermissionsPolicyViolation(feature, disposition, message);
   }
   return enabled;
 }

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/feature_policy_violation_report_body.h"
+#include "third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h"
 
 namespace blink {
 
-void FeaturePolicyViolationReportBody::BuildJSONValue(
+void PermissionsPolicyViolationReportBody::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   LocationReportBody::BuildJSONValue(builder);
   builder.AddString("featureId", featureId());
