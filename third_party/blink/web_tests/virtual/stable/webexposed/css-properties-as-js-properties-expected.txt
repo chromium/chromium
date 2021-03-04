@@ -1,6 +1,7 @@
 This test (crudely) documents Blink's web-exposed CSS properties.  All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
 
 
+additiveSymbols
 alignContent
 alignItems
 alignSelf
@@ -143,6 +144,7 @@ direction
 display
 dominantBaseline
 emptyCells
+fallback
 fill
 fillOpacity
 fillRule
@@ -253,6 +255,7 @@ minInlineSize
 minWidth
 minZoom
 mixBlendMode
+negative
 objectFit
 objectPosition
 offset
@@ -279,6 +282,7 @@ overscrollBehaviorBlock
 overscrollBehaviorInline
 overscrollBehaviorX
 overscrollBehaviorY
+pad
 padding
 paddingBlock
 paddingBlockEnd
@@ -304,8 +308,10 @@ placeItems
 placeSelf
 pointerEvents
 position
+prefix
 quotes
 r
+range
 removeProperty
 resize
 right
@@ -346,6 +352,7 @@ shapeOutside
 shapeRendering
 size
 speak
+speakAs
 src
 stopColor
 stopOpacity
@@ -357,7 +364,10 @@ strokeLinejoin
 strokeMiterlimit
 strokeOpacity
 strokeWidth
+suffix
+symbols
 syntax
+system
 tabSize
 tableLayout
 textAlign

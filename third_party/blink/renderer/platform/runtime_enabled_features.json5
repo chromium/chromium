@@ -465,7 +465,7 @@
     {
       // https://drafts.csswg.org/css-counter-styles-3
       name: "CSSAtRuleCounterStyle",
-      status: "test",
+      status: "stable",
     },
     {
       // Whether <image> values are allowed as counter style <symbol>
