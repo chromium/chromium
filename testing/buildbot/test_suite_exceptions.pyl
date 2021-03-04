@@ -758,7 +758,7 @@
   },
   'chrome_public_smoke_test': {
     'remove_from': [
-      'android-code-coverage-native', # https://crbug.com/1018780
+      'android-code-coverage-native', # Does not generate profraw data.
       # Runs on android-marshmallow-x86-rel already (crbug.com/1127110#c21)
       'android-marshmallow-arm64-rel',
     ],
@@ -766,7 +766,7 @@
   'chrome_public_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
-      'android-code-coverage-native', # https://crbug.com/1018780
+      'android-code-coverage-native', # Does not generate profraw data.
       'android-lollipop-arm-rel', # https://crbug.com/1060245
 
       # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
@@ -870,7 +870,7 @@
       'ToTAndroid',
       'ToTAndroidCFI',
       'android-asan',  # https://crbug.com/964562
-      'android-code-coverage-native', # https://crbug.com/1018780
+      'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
       # Use "--remove-system-package" according to crbug.com/931947#c1
@@ -1174,6 +1174,7 @@
   'content_shell_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
+      'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
       'android-marshmallow-x86-rel-non-cq': {
@@ -1754,6 +1755,11 @@
         },
       },
     },
+  },
+  'mojo_test_apk': {
+    'remove_from': [
+      'android-code-coverage-native', # Does not generate profraw data.
+    ],
   },
   'mojo_unittests': {
     'modifications': {
@@ -3016,6 +3022,8 @@
       # matching android builders, the test fails on these.
       'ToTAndroid',
       'android-asan',  # https://crbug.com/964562
+      'android-code-coverage-native', # Does not generate profraw data.
+
       # On chromium.swarm, this should possibly be being run (or removed
       # from android-marshmallow-arm64-rel-swarming).
       'android-lollipop-arm-rel-swarming',
