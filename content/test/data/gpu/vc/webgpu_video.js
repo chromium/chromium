@@ -233,13 +233,13 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
               // position
               shaderLocation: 0,
               offset: 0,
-              format: 'float2',
+              format: 'float32x2',
             },
             {
               // uv
               shaderLocation: 1,
               offset: 8,
-              format: 'float2',
+              format: 'float32x2',
             },
           ],
         },
@@ -324,7 +324,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
               // position
               shaderLocation: 0,
               offset: 0,
-              format: 'float2',
+              format: 'float32x2',
             },
           ],
         },
@@ -424,11 +424,14 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     // for how the videos with different fps are arranged.
     const numVideosToCopy = GetNumOfVideosToCopyForCurrentFrame(frameId);
 
+    // Destroy the textures after submit to promptly recycle resources.
+    // The textures not being imported here this time are not to be destroyed.
+    // We still need to render those textures for this frame.
     for (let i = 0; i < numVideosToCopy; ++i) {
-      // Destroy the textures after submit to promptly recycle resources.
-      // The textures not being imported here this time are not to be destroyed.
-      // We still need to render those textures for this frame.
       videoTextures[i].destroy();
+    }
+
+    for (let i = 0; i < numVideosToCopy; ++i) {
       videoTextures[i] = device.experimentalImportTexture(
         videos[i], GPUTextureUsage.SAMPLED);
     }
