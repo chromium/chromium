@@ -56,6 +56,12 @@ void MediaRouterDesktop::OnUserGesture() {
   UpdateMediaSinks(MediaSource::ForUnchosenDesktop().id());
 
   media_sink_service_->OnUserGesture();
+  if (!media_sink_service_subscription_) {
+    media_sink_service_subscription_ =
+        media_sink_service_->AddSinksDiscoveredCallback(
+            base::BindRepeating(&MediaSinkServiceStatus::UpdateDiscoveredSinks,
+                                media_sink_service_status_.GetWeakPtr()));
+  }
 
 #if defined(OS_WIN)
   if (!media_sink_service_->MdnsDiscoveryStarted()) {
