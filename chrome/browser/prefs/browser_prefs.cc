@@ -839,7 +839,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  web_app::UrlHandlerPrefs::RegisterLocalStatePrefs(registry);
+  web_app::url_handler_prefs::RegisterLocalStatePrefs(registry);
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

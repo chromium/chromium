@@ -53,7 +53,6 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
   // Looks for a URL in |command_line|. If one is found, find registered URL
   // handlers that match that URL.
   static std::vector<UrlHandlerLaunchParams> GetUrlHandlerMatches(
-      PrefService* local_state,
       const base::CommandLine& command_line);
 
   // Returns false if blink::features::kWebAppEnableUrlHandlers is disabled.
@@ -67,8 +66,6 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
   // blink::features::kWebAppEnableUrlHandlers is disabled.
   bool UpdateUrlHandlers(const AppId& app_id) override;
 
-  void SetLocalStateForTesting(PrefService* local_state);
-
   void SetAssociationManagerForTesting(
       std::unique_ptr<WebAppOriginAssociationManager> manager);
 
@@ -77,12 +74,9 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback,
       apps::UrlHandlers url_handlers);
-  // Returns the local state pref service of the browser process.
-  // Returns override_pref_service_ instead if not null.
-  PrefService* GetLocalState();
 
-  // PrefService can be overridden for testing.
-  PrefService* override_pref_service_ = nullptr;
+  // Returns the local state pref service of the browser process.
+  PrefService* GetLocalState();
 
   std::unique_ptr<WebAppOriginAssociationManager> association_manager_;
 

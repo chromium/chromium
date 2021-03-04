@@ -33,7 +33,6 @@ UrlHandlerManagerImpl::~UrlHandlerManagerImpl() = default;
 // static
 std::vector<web_app::UrlHandlerLaunchParams>
 UrlHandlerManagerImpl::GetUrlHandlerMatches(
-    PrefService* local_state,
     const base::CommandLine& command_line) {
   std::vector<web_app::UrlHandlerLaunchParams> results;
 
@@ -65,11 +64,12 @@ UrlHandlerManagerImpl::GetUrlHandlerMatches(
   if (!urls.front().SchemeIs(url::kHttpsScheme))
     return results;
 
-  // TODO(crbug/1072058): Refactor UrlHandlerPrefs to provide functions instead
-  // of being a class that can be instantiated.
-  UrlHandlerPrefs url_handler_prefs(local_state);
-  base::Optional<std::vector<UrlHandlerPrefs::Match>> prefs_matches =
-      url_handler_prefs.FindMatchingUrlHandlers(urls.front());
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state)
+    return results;
+
+  base::Optional<std::vector<url_handler_prefs::Match>> prefs_matches =
+      url_handler_prefs::FindMatchingUrlHandlers(local_state, urls.front());
   if (!prefs_matches || prefs_matches->empty())
     return results;
 
@@ -112,35 +112,31 @@ void UrlHandlerManagerImpl::OnDidGetAssociationsAtInstall(
     base::OnceCallback<void(bool success)> callback,
     apps::UrlHandlers url_handlers) {
   if (!url_handlers.empty()) {
-    UrlHandlerPrefs url_handler_prefs(GetLocalState());
-    url_handler_prefs.AddWebApp(app_id, profile()->GetPath(),
-                                std::move(url_handlers));
+    url_handler_prefs::AddWebApp(GetLocalState(), app_id, profile()->GetPath(),
+                                 std::move(url_handlers));
   }
   std::move(callback).Run(true);
 }
 
 bool UrlHandlerManagerImpl::UnregisterUrlHandlers(const AppId& app_id) {
-  UrlHandlerPrefs url_handler_prefs(GetLocalState());
-  url_handler_prefs.RemoveWebApp(app_id, profile()->GetPath());
+  url_handler_prefs::RemoveWebApp(GetLocalState(), app_id,
+                                  profile()->GetPath());
   return true;
 }
 
 bool UrlHandlerManagerImpl::UpdateUrlHandlers(const AppId& app_id) {
   auto url_handlers = registrar()->GetAppUrlHandlers(app_id);
-  UrlHandlerPrefs url_handler_prefs(GetLocalState());
 
   if (!base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableUrlHandlers)) {
-    url_handler_prefs.RemoveWebApp(app_id, profile()->GetPath());
+    url_handler_prefs::RemoveWebApp(GetLocalState(), app_id,
+                                    profile()->GetPath());
     return false;
   } else {
-    url_handler_prefs.UpdateWebApp(app_id, profile()->GetPath(), url_handlers);
+    url_handler_prefs::UpdateWebApp(GetLocalState(), app_id,
+                                    profile()->GetPath(), url_handlers);
     return true;
   }
-}
-
-void UrlHandlerManagerImpl::SetLocalStateForTesting(PrefService* local_state) {
-  override_pref_service_ = local_state;
 }
 
 void UrlHandlerManagerImpl::SetAssociationManagerForTesting(
@@ -149,9 +145,6 @@ void UrlHandlerManagerImpl::SetAssociationManagerForTesting(
 }
 
 PrefService* UrlHandlerManagerImpl::GetLocalState() {
-  if (override_pref_service_)
-    return override_pref_service_;
-
   return g_browser_process->local_state();
 }
 
