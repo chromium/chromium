@@ -668,10 +668,15 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     return;
   }
 
-  if (*type != shill::kTypeVPN && check_error_state) {
-    // For non VPNs, 'Connectable' must be false here, so fail immediately if
-    // |check_error_state| is true. (For VPNs 'Connectable' is not reliable).
-    NET_LOG(ERROR) << "Non VPN is unconfigured: "
+  // Cellular networks are not "connectable" if they are not on the active SIM
+  // slot. For VPNs, "connectable" is not reliable. In either case, we can still
+  // issue Shill a connection request despite the "connectable" property being
+  // false.
+  bool can_connect_without_connectable =
+      *type == shill::kTypeCellular || *type == shill::kTypeVPN;
+
+  if (!can_connect_without_connectable && check_error_state) {
+    NET_LOG(ERROR) << "Non-connectable network is unconfigured: "
                    << NetworkPathId(service_path);
     ErrorCallbackForPendingRequest(service_path, kErrorConfigurationRequired);
     return;
