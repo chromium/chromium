@@ -160,7 +160,8 @@ TEST_F(V8WorkerMemoryReporterTest, OnTimeoutNoop) {
 
 TEST_F(V8WorkerMemoryReporterTestWithDedicatedWorker, GetMemoryUsage) {
   const String source_code = "globalThis.array = new Array(1000000).fill(0);";
-  StartWorker(source_code);
+  StartWorker();
+  EvaluateClassicScript(source_code);
   WaitUntilWorkerIsRunning();
   constexpr size_t kBytesPerArrayElement = 4;
   constexpr size_t kArrayLength = 1000000;
@@ -175,7 +176,8 @@ TEST_F(V8WorkerMemoryReporterTestWithDedicatedWorker, GetMemoryUsage) {
 
 TEST_F(V8WorkerMemoryReporterTestWithMockPlatform, GetMemoryUsageTimeout) {
   const String source_code = "while(true);";
-  StartWorker(source_code);
+  StartWorker();
+  EvaluateClassicScript(source_code);
   // Since the worker is in infinite loop and does not process tasks,
   // we cannot call WaitUntilWorkerIsRunning here as that would block.
   MemoryUsageChecker checker(0, 0, MemoryUsageChecker::CallbackAction::kNone);

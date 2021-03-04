@@ -9,6 +9,8 @@
 #include "base/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -92,6 +94,16 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
+
+  void InitializeGlobalScope(KURL script_url) {
+    EXPECT_TRUE(IsCurrentThread());
+    To<DedicatedWorkerGlobalScope>(GlobalScope())
+        ->Initialize(script_url, network::mojom::ReferrerPolicy::kDefault,
+                     network::mojom::IPAddressSpace::kLocal,
+                     Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                     nullptr /* response_origin_trial_tokens */,
+                     mojom::blink::kAppCacheNoCacheId);
+  }
 };
 
 class DedicatedWorkerObjectProxyForTest final
@@ -127,23 +139,24 @@ class DedicatedWorkerMessagingProxyForTest
     DCHECK(!worker_object_proxy_);
     worker_object_proxy_ = std::make_unique<DedicatedWorkerObjectProxyForTest>(
         this, GetParentExecutionContextTaskRunners());
+    script_url_ = KURL("http://fake.url/");
   }
 
   ~DedicatedWorkerMessagingProxyForTest() override = default;
 
-  void StartWithSourceCode(const String& source) {
-    KURL script_url("http://fake.url/");
-    security_origin_ = SecurityOrigin::Create(script_url);
+  void StartWorker() {
+    scoped_refptr<const SecurityOrigin> security_origin =
+        SecurityOrigin::Create(script_url_);
     auto worker_settings = std::make_unique<WorkerSettings>(
         To<LocalDOMWindow>(GetExecutionContext())->GetFrame()->GetSettings());
     auto params = std::make_unique<GlobalScopeCreationParams>(
-        script_url, mojom::blink::ScriptType::kClassic,
+        script_url_, mojom::blink::ScriptType::kClassic,
         "fake global scope name", "fake user agent", UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-        network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
+        network::mojom::ReferrerPolicy::kDefault, security_origin.get(),
         false /* starter_secure_context */,
-        CalculateHttpsState(security_origin_.get()),
+        CalculateHttpsState(security_origin.get()),
         nullptr /* worker_clients */, nullptr /* content_settings_client */,
         network::mojom::IPAddressSpace::kLocal,
         nullptr /* origin_trial_tokens */, base::UnguessableToken::Create(),
@@ -157,7 +170,19 @@ class DedicatedWorkerMessagingProxyForTest
             WorkerBackingThreadStartupData::HeapLimitMode::kDefault,
             WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow),
         worker_object_proxy_->token());
-    GetWorkerThread()->EvaluateClassicScript(script_url, source,
+
+    if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
+      PostCrossThreadTask(
+          *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
+          FROM_HERE,
+          CrossThreadBindOnce(
+              &DedicatedWorkerThreadForTest::InitializeGlobalScope,
+              CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
+    }
+  }
+
+  void EvaluateClassicScript(const String& source) {
+    GetWorkerThread()->EvaluateClassicScript(script_url_, source,
                                              nullptr /* cached_meta_data */,
                                              v8_inspector::V8StackTraceId());
   }
@@ -176,7 +201,7 @@ class DedicatedWorkerMessagingProxyForTest
                                                           WorkerObjectProxy());
   }
 
-  scoped_refptr<const SecurityOrigin> security_origin_;
+  KURL script_url_;
 };
 
 void DedicatedWorkerTest::SetUp() {
@@ -205,8 +230,12 @@ DedicatedWorkerThreadForTest* DedicatedWorkerTest::GetWorkerThread() {
   return worker_messaging_proxy_->GetDedicatedWorkerThread();
 }
 
-void DedicatedWorkerTest::StartWorker(const String& source_code) {
-  WorkerMessagingProxy()->StartWithSourceCode(source_code);
+void DedicatedWorkerTest::StartWorker() {
+  WorkerMessagingProxy()->StartWorker();
+}
+
+void DedicatedWorkerTest::EvaluateClassicScript(const String& source_code) {
+  WorkerMessagingProxy()->EvaluateClassicScript(source_code);
 }
 
 namespace {
@@ -228,8 +257,7 @@ void DedicatedWorkerTest::WaitUntilWorkerIsRunning() {
 }
 
 TEST_F(DedicatedWorkerTest, PendingActivity_NoActivityAfterContextDestroyed) {
-  const String source_code = "// Do nothing";
-  StartWorker(source_code);
+  StartWorker();
 
   EXPECT_TRUE(WorkerMessagingProxy()->HasPendingActivity());
 
@@ -241,7 +269,8 @@ TEST_F(DedicatedWorkerTest, PendingActivity_NoActivityAfterContextDestroyed) {
 TEST_F(DedicatedWorkerTest, UseCounter) {
   Page::InsertOrdinaryPageForTesting(&GetPage());
   const String source_code = "// Do nothing";
-  StartWorker(source_code);
+  StartWorker();
+  EvaluateClassicScript(source_code);
 
   // This feature is randomly selected.
   const WebFeature kFeature1 = WebFeature::kRequestFileSystem;
@@ -287,8 +316,7 @@ TEST_F(DedicatedWorkerTest, UseCounter) {
 }
 
 TEST_F(DedicatedWorkerTest, TaskRunner) {
-  const String source_code = "// Do nothing";
-  StartWorker(source_code);
+  StartWorker();
 
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
