@@ -223,10 +223,6 @@ std::string PdfViewWebPlugin::Prompt(const std::string& question,
   return "";
 }
 
-std::string PdfViewWebPlugin::GetURL() {
-  return "";
-}
-
 void PdfViewWebPlugin::Email(const std::string& to,
                              const std::string& cc,
                              const std::string& bcc,

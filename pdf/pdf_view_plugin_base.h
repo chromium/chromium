@@ -65,6 +65,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void NotifyTouchSelectionOccurred() override;
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
+  std::string GetURL() override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
 
@@ -224,6 +225,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return size > 0 && size <= kMaximumSavedFileSize;
   }
 
+  void set_url(const std::string& url) { url_ = url; }
+
   const SkBitmap& image_data() const { return image_data_; }
   SkBitmap& mutable_image_data() { return image_data_; }
 
@@ -290,6 +293,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
+
+  // The URL of the PDF document.
+  std::string url_;
 
   // Image data buffer for painting.
   SkBitmap image_data_;

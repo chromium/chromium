@@ -663,7 +663,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
     return true;
 
   LoadUrl(stream_url, /*is_print_preview=*/false);
-  url_ = original_url;
+  set_url(original_url);
 
   // Not all edits go through the PDF plugin's form filler. The plugin instance
   // can be restarted by exiting annotation mode on ChromeOS, which can set the
@@ -1055,7 +1055,7 @@ void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
   pp::VarDictionary message;
   message.Set(kType, kJSSaveDataType);
   message.Set(kJSToken, pp::Var(token));
-  message.Set(kJSFileName, pp::Var(GetFileNameFromUrl(url_)));
+  message.Set(kJSFileName, pp::Var(GetFileNameFromUrl(GetURL())));
   // This will be overwritten if the save is successful.
   message.Set(kJSDataToSave, pp::Var(pp::Var::Null()));
 
@@ -1109,10 +1109,6 @@ std::string OutOfProcessInstance::Prompt(const std::string& question,
   pp::Var result =
       pp::PDF::ShowPromptDialog(this, question.c_str(), default_answer.c_str());
   return result.is_string() ? result.AsString() : std::string();
-}
-
-std::string OutOfProcessInstance::GetURL() {
-  return url_;
 }
 
 void OutOfProcessInstance::Email(const std::string& to,
@@ -1343,15 +1339,15 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
 
   print_preview_page_count_ = print_preview_page_count;
   print_preview_loaded_page_count_ = 0;
-  url_ = url;
+  set_url(url);
   preview_pages_info_ = base::queue<PreviewPageInfo>();
   preview_document_load_state_ = DocumentLoadState::kComplete;
   set_document_load_state(DocumentLoadState::kLoading);
-  LoadUrl(url_, /*is_print_preview=*/false);
+  LoadUrl(GetURL(), /*is_print_preview=*/false);
   preview_engine_.reset();
   InitializeEngine(PDFiumFormFiller::ScriptOption::kNoJavaScript);
   engine()->SetGrayscale(dict.Get(pp::Var(kJSPrintPreviewGrayscale)).AsBool());
-  engine()->New(url_.c_str(), /*headers=*/nullptr);
+  engine()->New(GetURL().c_str(), /*headers=*/nullptr);
 
   paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
 }

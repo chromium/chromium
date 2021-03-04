@@ -107,7 +107,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
-  std::string GetURL() override;
   void Email(const std::string& to,
              const std::string& cc,
              const std::string& bcc,
@@ -297,8 +296,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // used only in print preview mode. This will use |PreviewModeClient|
   // interface which has very limited access to the pp::Instance.
   std::unique_ptr<PDFiumEngine> preview_engine_;
-
-  std::string url_;
 
   // Used for submitting forms.
   std::unique_ptr<UrlLoader> form_loader_;

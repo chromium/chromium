@@ -203,6 +203,10 @@ void PdfViewPluginBase::GetDocumentPassword(
   SendMessage(std::move(message));
 }
 
+std::string PdfViewPluginBase::GetURL() {
+  return url_;
+}
+
 SkColor PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
 }
