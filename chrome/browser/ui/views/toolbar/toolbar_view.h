@@ -52,6 +52,7 @@ class MediaToolbarButtonView;
 class ReloadButton;
 class ToolbarButton;
 class ToolbarAccountIconContainerView;
+class AvatarToolbarButtonBrowserTest;
 
 namespace bookmarks {
 class BookmarkBubbleObserver;
@@ -194,6 +195,8 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnThemeChanged() override;
   bool AcceleratorPressed(const ui::Accelerator& acc) override;
   void ChildPreferredSizeChanged(views::View* child) override;
+
+  friend class AvatarToolbarButtonBrowserTest;
 
  protected:
   // This controls Toolbar, LocationBar and CustomTabBar visibility.

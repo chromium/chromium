@@ -151,7 +151,15 @@ void AvatarToolbarButton::UpdateText() {
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
       break;
     case State::kGuestSession: {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // On ChromeOS all windows are either Guest or not Guest and the Guest
+      // avatar button is not actionable. Showing the number of open windows is
+      // not as helpful as on other desktop platforms. Please see
+      // crbug.com/1178520.
+      const int guest_window_count = 1;
+#else
       const int guest_window_count = delegate_->GetWindowCount();
+#endif
       SetAccessibleName(l10n_util::GetPluralStringFUTF16(
           IDS_GUEST_BUBBLE_ACCESSIBLE_TITLE, guest_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,
