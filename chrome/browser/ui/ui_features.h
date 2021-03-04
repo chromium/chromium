@@ -100,6 +100,10 @@ extern const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio;
 // Whether to move the active tab to the bottom of the list.
 extern const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom;
 
+// Determines how screenshots of the toolbar uses Software or Hardware drawing.
+// Works on Android 10+.
+extern const base::Feature kToolbarUseHardwareBitmapDraw;
+
 extern const base::Feature kWebFooterExperiment;
 
 extern const base::Feature kWebUIBubblePerProfilePersistence;

@@ -83,6 +83,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS,
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP,
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR,
+                ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW,
                 ChromeFeatureList.USE_CHIME_ANDROID_SDK,
                 ChromeFeatureList.READ_LATER,
                 ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK);

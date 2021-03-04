@@ -28,6 +28,11 @@ public abstract class DynamicResource implements Resource {
         return null;
     }
 
+    @Override
+    public boolean shouldRemoveResourceOnNullBitmap() {
+        return false;
+    }
+
     /**
      * Note that this is called for every access to the resource during a frame.  If a resource is
      * dirty, it should not be dirty again during the same looper call.

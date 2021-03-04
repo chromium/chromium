@@ -149,6 +149,9 @@ const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio{
 const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
     &kTabSearch, "TabSearchMoveActiveTabToBottom", true};
 
+const base::Feature kToolbarUseHardwareBitmapDraw{
+    "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a web-based separator that's only used for performance testing. See
 // https://crbug.com/993502.
 const base::Feature kWebFooterExperiment{"WebFooterExperiment",

@@ -69,6 +69,7 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, false);
             put(ChromeFeatureList.TAB_GROUPS_ANDROID, false);
             put(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, false);
+            put(ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW, false);
             put(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, false);
             put(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, false);
             put(ChromeFeatureList.INSTANT_START, false);

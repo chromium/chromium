@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +18,8 @@ import android.view.ViewStub;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.resources.ResourceFactory;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -153,7 +156,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
         @Override
         protected ViewResourceAdapter createResourceAdapter() {
-            return new ToolbarViewResourceAdapter(this);
+            boolean useHardwareBitmapDraw = false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                useHardwareBitmapDraw = CachedFeatureFlags.isEnabled(
+                        ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW);
+            }
+            return new ToolbarViewResourceAdapter(this, useHardwareBitmapDraw);
         }
 
         public void setToolbar(Toolbar toolbar) {
@@ -176,8 +184,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         private int mTabStripHeightPx;
 
         /** Builds the resource adapter for the toolbar. */
-        public ToolbarViewResourceAdapter(View toolbarContainer) {
-            super(toolbarContainer);
+        public ToolbarViewResourceAdapter(View toolbarContainer, boolean useHardwareBitmapDraw) {
+            super(toolbarContainer, useHardwareBitmapDraw);
             mToolbarContainer = toolbarContainer;
         }
 

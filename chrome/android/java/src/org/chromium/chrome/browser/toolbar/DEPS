@@ -26,5 +26,8 @@ specific_include_rules = {
   ],
   'LocationBarModel.java': [
     "+chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
+  ],
+  'ToolbarControlContainer.java': [
+    "+chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags",
   ]
 }
