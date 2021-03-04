@@ -38,7 +38,7 @@ namespace ash {
 namespace {
 
 // Padding for tray icon (dp; the button that shows the phone_hub menu).
-constexpr int kTrayIconMainAxisInset = 8;
+constexpr int kTrayIconMainAxisInset = 6;
 constexpr int kTrayIconCrossAxisInset = 0;
 
 constexpr gfx::Insets kBubblePadding(0, 0, kBubbleBottomPaddingDip, 0);
