@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_USERS_CHROME_USER_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_USERS_CHROME_USER_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_
+#define CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
-#include "chrome/browser/chromeos/login/users/affiliation.h"
+#include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/chromeos/login/users/user_manager_interface.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -71,4 +71,4 @@ class ChromeUserManager : public user_manager::UserManagerBase,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_USERS_CHROME_USER_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_

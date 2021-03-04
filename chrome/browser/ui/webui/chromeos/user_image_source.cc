@@ -7,7 +7,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "chrome/browser/chromeos/login/users/default_user_image/default_user_images.h"
+#include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/common/url_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"

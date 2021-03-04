@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/users/default_user_image/default_user_images.h"
+#include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
 #include "base/command_line.h"
 #include "base/logging.h"
