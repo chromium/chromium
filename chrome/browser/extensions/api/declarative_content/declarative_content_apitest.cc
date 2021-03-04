@@ -995,10 +995,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
 }
 
 // https://crbug.com/517492
-// Fails on XP: http://crbug.com/515717
-// Fails on other platfomrs: http://crbug.com/1013457
 IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
-                       DISABLED_RemoveAllRulesAfterExtensionUninstall) {
+                       RemoveAllRulesAfterExtensionUninstall) {
   ext_dir_.WriteManifest(kDeclarativeContentManifest);
   ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundHelpers);
 
@@ -1014,6 +1012,10 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
       "}], 'add_rule');\n";
   EXPECT_EQ("add_rule",
             ExecuteScriptInBackgroundPage(extension->id(), kAddTestRule));
+
+  // Wait for declarative rules to be added.
+  content::BrowserContext::GetDefaultStoragePartition(profile())
+      ->FlushNetworkInterfaceForTesting();
 
   ExtensionService* extension_service = extensions::ExtensionSystem::Get(
       browser()->profile())->extension_service();
