@@ -5,8 +5,9 @@
 #ifndef PDF_UI_FORMAT_PAGE_SIZE_H_
 #define PDF_UI_FORMAT_PAGE_SIZE_H_
 
+#include <string>
+
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace gfx {
 class Size;
@@ -22,7 +23,7 @@ namespace chrome_pdf {
 // ->  11.00 x 8.50 in (landscape)
 //
 // Returns the string "Varies" if `size_points` is `base::nullopt`.
-base::string16 FormatPageSize(const base::Optional<gfx::Size>& size_points);
+std::u16string FormatPageSize(const base::Optional<gfx::Size>& size_points);
 
 }  // namespace chrome_pdf
 

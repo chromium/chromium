@@ -9,7 +9,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/optional.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,35 +23,35 @@ namespace chrome_pdf {
 
 namespace {
 
-bool GetPageSizeString(int message_id, base::string16* value) {
-  std::string utf8;
+bool GetPageSizeString(int message_id, std::u16string* value) {
   switch (message_id) {
     case IDS_PDF_PROPERTIES_PAGE_SIZE_VALUE_INCH:
-      utf8 = "$1 × $2 in ($3)";
+      *value = u"$1 × $2 in ($3)";
       break;
     case IDS_PDF_PROPERTIES_PAGE_SIZE_VALUE_MM:
-      utf8 = "$1 × $2 mm ($3)";
+      *value = u"$1 × $2 mm ($3)";
       break;
     case IDS_PDF_PROPERTIES_PAGE_SIZE_PORTRAIT:
-      utf8 = "portrait";
+      *value = u"portrait";
       break;
     case IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE:
-      utf8 = "landscape";
+      *value = u"landscape";
       break;
     case IDS_PDF_PROPERTIES_PAGE_SIZE_VARIABLE:
-      utf8 = "Varies";
+      *value = u"Varies";
       break;
     default:
       return false;
   }
 
-  *value = base::UTF8ToUTF16(utf8);
   return true;
 }
 
 class FormatPageSizeTest : public testing::Test {
  protected:
   void SetUp() override {
+    // TODO(crbug.com/1184524): Consider initializing a resource bundle instance
+    // for all tests in `pdf_unittests`.
     // `pdf_unittests` does not have a resource bundle that needs to be restored
     // at the end of the test.
     ASSERT_FALSE(ui::ResourceBundle::HasSharedInstance());
@@ -85,14 +84,10 @@ class FormatPageSizeTest : public testing::Test {
   NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
 };
 
-std::string FormatPageSizeUtf8(const base::Optional<gfx::Size>& size_points) {
-  return base::UTF16ToUTF8(FormatPageSize(size_points));
-}
-
 }  // namespace
 
 TEST_F(FormatPageSizeTest, NoUniformSize) {
-  EXPECT_EQ(FormatPageSizeUtf8(base::nullopt), "Varies");
+  EXPECT_EQ(FormatPageSize(base::nullopt), u"Varies");
 }
 
 class FormatPageSizeMillimetersTest : public FormatPageSizeTest {
@@ -101,24 +96,24 @@ class FormatPageSizeMillimetersTest : public FormatPageSizeTest {
 };
 
 TEST_F(FormatPageSizeMillimetersTest, EmptySize) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size()), "0 × 0 mm (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size()), u"0 × 0 mm (portrait)");
 }
 
 TEST_F(FormatPageSizeMillimetersTest, Portrait) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(100, 200)), "35 × 71 mm (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(100, 200)), u"35 × 71 mm (portrait)");
 }
 
 TEST_F(FormatPageSizeMillimetersTest, Landscape) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(200, 100)), "71 × 35 mm (landscape)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(200, 100)), u"71 × 35 mm (landscape)");
 }
 
 TEST_F(FormatPageSizeMillimetersTest, Square) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(100, 100)), "35 × 35 mm (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(100, 100)), u"35 × 35 mm (portrait)");
 }
 
 TEST_F(FormatPageSizeMillimetersTest, Large) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(72000, 72000)),
-            "25,400 × 25,400 mm (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(72000, 72000)),
+            u"25,400 × 25,400 mm (portrait)");
 }
 
 class FormatPageSizeMillimetersPeriodSeparatorTest : public FormatPageSizeTest {
@@ -127,8 +122,8 @@ class FormatPageSizeMillimetersPeriodSeparatorTest : public FormatPageSizeTest {
 };
 
 TEST_F(FormatPageSizeMillimetersPeriodSeparatorTest, Large) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(72000, 72000)),
-            "25.400 × 25.400 mm (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(72000, 72000)),
+            u"25.400 × 25.400 mm (portrait)");
 }
 
 class FormatPageSizeInchesTest : public FormatPageSizeTest {
@@ -137,27 +132,24 @@ class FormatPageSizeInchesTest : public FormatPageSizeTest {
 };
 
 TEST_F(FormatPageSizeInchesTest, EmptySize) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size()), "0.00 × 0.00 in (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size()), u"0.00 × 0.00 in (portrait)");
 }
 
 TEST_F(FormatPageSizeInchesTest, Portrait) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(100, 200)),
-            "1.39 × 2.78 in (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(100, 200)), u"1.39 × 2.78 in (portrait)");
 }
 
 TEST_F(FormatPageSizeInchesTest, Landscape) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(200, 100)),
-            "2.78 × 1.39 in (landscape)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(200, 100)), u"2.78 × 1.39 in (landscape)");
 }
 
 TEST_F(FormatPageSizeInchesTest, Square) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(100, 100)),
-            "1.39 × 1.39 in (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(100, 100)), u"1.39 × 1.39 in (portrait)");
 }
 
 TEST_F(FormatPageSizeInchesTest, Large) {
-  EXPECT_EQ(FormatPageSizeUtf8(gfx::Size(72000, 72000)),
-            "1,000.00 × 1,000.00 in (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(72000, 72000)),
+            u"1,000.00 × 1,000.00 in (portrait)");
 }
 
 }  // namespace chrome_pdf

@@ -9,7 +9,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/strings/grit/components_strings.h"
 #include "printing/units.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
@@ -38,20 +37,20 @@ constexpr float ConvertPointsToMillimeters(int length_points) {
 
 // Formats a length given in points. The formatted length is in inches and
 // contains two fractional digits.
-base::string16 FormatLengthInInches(int length_points) {
+std::u16string FormatLengthInInches(int length_points) {
   return base::FormatDouble(ConvertPointsToInches(length_points),
                             /*fractional_digits=*/2);
 }
 
 // Formats a length given in points. The formatted length is in millimeters and
 // contains no fractional digits.
-base::string16 FormatLengthInMillimeters(int length_points) {
+std::u16string FormatLengthInMillimeters(int length_points) {
   return base::FormatDouble(ConvertPointsToMillimeters(length_points),
                             /*fractional_digits=*/0);
 }
 
 // Returns the localized string for the orientation.
-base::string16 GetOrientation(const gfx::Size& size) {
+std::u16string GetOrientation(const gfx::Size& size) {
   // TODO(crbug.com/1184345): Add a string for square sizes such that they are
   // not displayed as "portrait".
   return l10n_util::GetStringUTF16(
@@ -70,7 +69,7 @@ bool ShowInches() {
 
 }  // namespace
 
-base::string16 FormatPageSize(const base::Optional<gfx::Size>& size_points) {
+std::u16string FormatPageSize(const base::Optional<gfx::Size>& size_points) {
   if (!size_points.has_value())
     return l10n_util::GetStringUTF16(IDS_PDF_PROPERTIES_PAGE_SIZE_VARIABLE);
 
