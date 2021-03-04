@@ -191,6 +191,8 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan,
           WebFeature::kWebPImage,
           WebFeature::kAVIFImage,
+          WebFeature::kGetDisplayMedia,
+          WebFeature::kGetCurrentBrowsingContextMedia,
       }));
   return *opt_in_features;
 }
