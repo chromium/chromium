@@ -5705,8 +5705,5 @@ crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.h
 # Sheriff 2021-03-01
 crbug.com/1183243 [ Linux ] http/tests/devtools/console/console-external-array.js [ Pass Failure ]
 
-# Temporarily disabled for https://crrev.com/c/2713104
-crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass Failure ]
-
 # Sheriff 2021-03-03
 crbug.com/1181007 [ Linux ] http/tests/serviceworker/window-close-during-registration.html [ Pass Failure ]
