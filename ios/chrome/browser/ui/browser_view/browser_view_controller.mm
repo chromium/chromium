@@ -718,6 +718,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 @implementation BrowserViewController
 
+@synthesize thumbStripEnabled = _thumbStripEnabled;
+
 #pragma mark - Object lifecycle
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -841,6 +843,27 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - Private Properties
+
+- (void)ensureBrowserViewHiderCoordinatorStarted {
+  if (self.browserViewHiderCoordinator) {
+    return;
+  }
+
+  DCHECK(self.locationBarModel);
+  DCHECK(self.isThumbStripEnabled);
+  DCHECK(self.thumbStripPanHandler);
+
+  ViewRevealingVerticalPanHandler* panHandler = self.thumbStripPanHandler;
+  BrowserViewHiderCoordinator* browserViewHiderCoordinator =
+      [[BrowserViewHiderCoordinator alloc]
+          initWithBaseViewController:self
+                             browser:self.browser];
+  browserViewHiderCoordinator.locationBarModel = self.locationBarModel;
+  [browserViewHiderCoordinator start];
+  [panHandler addAnimatee:browserViewHiderCoordinator.animatee];
+  browserViewHiderCoordinator.panGestureHandler = panHandler;
+  self.browserViewHiderCoordinator = browserViewHiderCoordinator;
+}
 
 - (SideSwipeController*)sideSwipeController {
   if (!_sideSwipeController) {
@@ -1456,6 +1479,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [tapRecognizer setDelegate:self];
   [tapRecognizer setCancelsTouchesInView:NO];
   [self.contentArea addGestureRecognizer:tapRecognizer];
+
+  if (self.isThumbStripEnabled) {
+    [self ensureBrowserViewHiderCoordinatorStarted];
+  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -2831,14 +2858,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - ThumbStripSupporting
 
-- (BOOL)isThumbStripEnabled {
-  return self.browserViewHiderCoordinator != nil;
-}
-
 - (void)thumbStripEnabledWithPanHandler:
     (ViewRevealingVerticalPanHandler*)panHandler {
   DCHECK(![self isThumbStripEnabled]);
   DCHECK(panHandler);
+  _thumbStripEnabled = YES;
+
   self.thumbStripPanHandler = panHandler;
 
   // Add self as animatee first to make sure that the BVC's view is loaded for
@@ -2846,17 +2871,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [panHandler addAnimatee:self];
 
   DCHECK([self isViewLoaded]);
-  DCHECK(self.locationBarModel);
   DCHECK(self.primaryToolbarCoordinator.animatee);
 
-  BrowserViewHiderCoordinator* browserViewHiderCoordinator =
-      [[BrowserViewHiderCoordinator alloc]
-          initWithBaseViewController:self
-                             browser:self.browser];
-  browserViewHiderCoordinator.locationBarModel = self.locationBarModel;
-  [browserViewHiderCoordinator start];
-  [panHandler addAnimatee:browserViewHiderCoordinator.animatee];
-  self.browserViewHiderCoordinator = browserViewHiderCoordinator;
+  [self ensureBrowserViewHiderCoordinatorStarted];
 
   [panHandler addAnimatee:self.primaryToolbarCoordinator.animatee];
 
@@ -2864,7 +2881,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
     self.legacyTabStripCoordinator.panGestureHandler = panHandler;
   }
-  self.browserViewHiderCoordinator.panGestureHandler = panHandler;
 
   self.view.backgroundColor = UIColor.clearColor;
 
@@ -2916,6 +2932,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   for (const auto& element : _ntpCoordinatorsForWebStates) {
     [element.second.thumbStripSupporting thumbStripDisabled];
   }
+
+  _thumbStripEnabled = NO;
 }
 
 #pragma mark - WebNavigationNTPDelegate
