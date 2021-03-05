@@ -918,6 +918,11 @@ extern const char kBrowserProfilePickerShown[];
 extern const char kBrowserShowProfilePickerOnStartup[];
 extern const char kSigninAllowedOnNextStartup[];
 extern const char kSigninInterceptionEnabled[];
+// TODO(crbug.com/1179280): Remove OS_LINUX once https://crbug.com/1169547 is
+// done.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+extern const char kLacrosSecondaryProfilesAllowed[];
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 extern const char kCryptAuthDeviceId[];
 extern const char kCryptAuthInstanceId[];

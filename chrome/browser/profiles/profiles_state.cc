@@ -46,8 +46,51 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1179280): Remove this method and replace its calls with
+// direct check of pref::kLacrosSecondaryProfilesAllowed once
+// https://crbug.com/1169547 is done and default_for_enterprise_users in
+// policy_templates.json works in Lacros.
+bool AreSecondaryProfilesAllowed() {
+  const PrefService* const pref_service = g_browser_process->local_state();
+  DCHECK(pref_service);
+  const PrefService::Preference* lacros_secondary_profiles_preference =
+      pref_service->FindPreference(prefs::kLacrosSecondaryProfilesAllowed);
+  DCHECK(lacros_secondary_profiles_preference);
+
+  if (!lacros_secondary_profiles_preference->IsDefaultValue() ||
+      lacros_secondary_profiles_preference->IsManaged()) {
+    // Lacros pref is set by policy. Return state according to prefs.
+    return pref_service->GetBoolean(prefs::kLacrosSecondaryProfilesAllowed);
+  }
+
+  // Lacros pref is not set by its policy and has default true value. Secondary
+  // profiles shall be disabled for managed Lacros browser.
+  // Note: this is a temporary hack to make
+  // prefs::kLacrosSecondaryProfilesAllowed behave as if it's managed by a
+  // device policy with "default_for_enterprise_users: False". Once this tag in
+  // policy_templates.json works in Lacros (currently Ash only), this check will
+  // be removed and the perf will be checked directly.
+  DCHECK(pref_service->GetBoolean(prefs::kLacrosSecondaryProfilesAllowed));
+
+  if (!g_browser_process->browser_policy_connector()
+           ->HasMachineLevelPolicies()) {
+    // Lacros browser is not managed. Return true by default.
+    return true;
+  }
+
+  // Lacros browser is managed. Return false by default.
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 namespace profiles {
 
@@ -84,6 +127,11 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kBrowserProfilePickerAvailabilityOnStartup,
       static_cast<int>(ProfilePicker::AvailabilityOnStartup::kEnabled));
   registry->RegisterBooleanPref(prefs::kBrowserProfilePickerShown, false);
+// TODO(crbug.com/1179280): Remove OS_LINUX once https://crbug.com/1169547 is
+// done.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  registry->RegisterBooleanPref(prefs::kLacrosSecondaryProfilesAllowed, true);
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 
 void SetLastUsedProfile(const std::string& profile_dir) {
@@ -198,6 +246,28 @@ bool IsGuestModeRequested(const base::CommandLine& command_line,
   return false;
 }
 
+bool IsProfileCreationAllowed() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!AreSecondaryProfilesAllowed())
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  const PrefService* const pref_service = g_browser_process->local_state();
+  DCHECK(pref_service);
+  return pref_service->GetBoolean(prefs::kBrowserAddPersonEnabled);
+}
+
+bool IsGuestModeEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!AreSecondaryProfilesAllowed())
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  const PrefService* const pref_service = g_browser_process->local_state();
+  DCHECK(pref_service);
+  return pref_service->GetBoolean(prefs::kBrowserGuestModeEnabled);
+}
+
 bool IsProfileLocked(const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -252,8 +322,8 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   if (!g_browser_process->safe_browsing_service())
     return;
 
-  Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
-      profile_path);
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
   if (!profile)
     return;
 
@@ -269,8 +339,9 @@ bool AreAllNonChildNonSupervisedProfilesLocked() {
   bool at_least_one_regular_profile_present = false;
 
   std::vector<ProfileAttributesEntry*> entries =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetAllProfilesAttributes();
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetAllProfilesAttributes();
   for (const ProfileAttributesEntry* entry : entries) {
     if (entry->IsOmitted())
       continue;

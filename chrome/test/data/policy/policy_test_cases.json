@@ -8624,5 +8624,23 @@
         "prefs": { "suppress_different_origin_subframe_js_dialogs": {} }
       }
     ]
+  },
+  "LacrosSecondaryProfilesAllowed": {
+    "os": ["linux", "chromeos"],
+    "note": "TODO(crbug.com/1179280): Remove linux support and testcase for unset policy  once https://crbug.com/1169547 is done.",
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "LacrosSecondaryProfilesAllowed": false },
+        "prefs": {
+          "lacros_secondary_profiles_allowed": { "location": "local_state", "value": false }
+        }
+      },
+      {
+        "policies": { "LacrosSecondaryProfilesAllowed": true },
+        "prefs": {
+          "lacros_secondary_profiles_allowed": { "location": "local_state", "value": true }
+        }
+      }
+    ]
   }
 }

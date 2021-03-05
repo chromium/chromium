@@ -23811,6 +23811,7 @@ Called by update_document_policy_enum.py.-->
   <int value="829" label="SuppressDifferentOriginSubframeJSDialogs"/>
   <int value="830" label="DeviceBorealisAllowed"/>
   <int value="831" label="UserBorealisAllowed"/>
+  <int value="832" label="LacrosSecondaryProfilesAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

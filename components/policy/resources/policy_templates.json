@@ -24360,6 +24360,42 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       If this policy is set to Enabled, the user can use the <ph name="LACROS_NAME">Lacros</ph> browser.''',
     },
     {
+      'name': 'LacrosSecondaryProfilesAllowed',
+      'owners': ['asumaneev@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      # TODO(crbug.com/1179280): remove chrome.linux support once
+      # https://crbug.com/1169547 is finished.
+      'supported_on': ['chrome.linux:91-', 'chrome_os:91-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to create secondary profiles and use guest mode in the <ph name="LACROS_NAME">Lacros</ph> browser',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from creating secondary profiles and from using guest mode in the <ph name="LACROS_NAME">Lacros</ph> browser',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'default_for_enterprise_users': False,
+      'id': 832,
+      'caption': '''Allow users to create secondary profiles and use guest mode in the <ph name="LACROS_NAME">Lacros</ph> browser''',
+      'tags': [],
+      'desc': '''This setting allows users to create secondary profiles and use guest mode in the <ph name="LACROS_NAME">Lacros</ph> browser.
+
+      Similar to both BrowserAddPersonEnabled and BrowserGuestModeEnabled, if this policy is set to false or unset, the user cannot create secondary profiles and use guest mode.
+
+      If this policy is set to true, the user can create secondary profiles and use guest mode.
+
+      Note, that if this policy is set to true but BrowserAddPersonEnabled is set to false, the user cannot create secondary profiles. The same for BrowserGuestModeEnabled and guest mode.''',
+    },
+    {
       'name': 'IntegratedWebAuthenticationAllowed',
       'owners': ['acostinas@chromium.org', 'pmarko@chromium.org'],
       'type': 'main',
@@ -25812,6 +25848,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 831,
+  'highest_id_currently_used': 832,
   'highest_atomic_group_id_currently_used': 40
 }

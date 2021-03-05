@@ -58,12 +58,6 @@ void RecordSigninInterceptionHeuristicOutcome(
   base::UmaHistogramEnumeration("Signin.Intercept.HeuristicOutcome", outcome);
 }
 
-bool IsProfileCreationAllowed() {
-  PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
-  return service->GetBoolean(prefs::kBrowserAddPersonEnabled);
-}
-
 // Helper function to return the primary account info. The returned info is
 // empty if there is no primary account, and non-empty otherwise. Extended
 // fields may be missing if they are not available.
@@ -110,8 +104,7 @@ SigninInterceptGuestAvailability GetGuestOptionAvailablity() {
   if (BrowserList::GetGuestBrowserCount())
     return SigninInterceptGuestAvailability::kGuestAlreadyOpen;
 
-  if (!g_browser_process->local_state()->GetBoolean(
-          prefs::kBrowserGuestModeEnabled)) {
+  if (!profiles::IsGuestModeEnabled()) {
     return SigninInterceptGuestAvailability::kGuestBlocked;
   }
   return SigninInterceptGuestAvailability::kAvailable;
@@ -192,7 +185,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
 
   // From this point the remaining possible interceptions involve creating a new
   // profile.
-  if (!IsProfileCreationAllowed()) {
+  if (!profiles::IsProfileCreationAllowed()) {
     return SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed;
   }
 

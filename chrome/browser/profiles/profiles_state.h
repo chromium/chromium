@@ -85,6 +85,12 @@ bool IsGuestModeRequested(const base::CommandLine& command_line,
                           PrefService* local_state,
                           bool show_warning);
 
+// Returns true if profile creation is allowed by prefs.
+bool IsProfileCreationAllowed();
+
+// Returns true if guest mode is allowed by prefs.
+bool IsGuestModeEnabled();
+
 // Returns true if sign in is required to browse as this profile.  Call with
 // profile->GetPath() if you have a profile pointer.
 // TODO(mlerman): Refactor appropriate calls to

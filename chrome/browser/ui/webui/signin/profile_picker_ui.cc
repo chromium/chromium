@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -40,18 +41,6 @@ namespace {
 
 // Miniumum size for the picker UI.
 constexpr int kMinimumPickerSizePx = 620;
-
-bool IsProfileCreationAllowed() {
-  PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
-  return service->GetBoolean(prefs::kBrowserAddPersonEnabled);
-}
-
-bool IsGuestModeEnabled() {
-  PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
-  return service->GetBoolean(prefs::kBrowserGuestModeEnabled);
-}
 
 bool IsBrowserSigninAllowed() {
   policy::PolicyService* policy_service = g_browser_process->policy_service();
@@ -172,9 +161,9 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isBrowserSigninAllowed", IsBrowserSigninAllowed());
   html_source->AddBoolean("isForceSigninEnabled",
                           signin_util::IsForceSigninEnabled());
-  html_source->AddBoolean("isGuestModeEnabled", IsGuestModeEnabled());
+  html_source->AddBoolean("isGuestModeEnabled", profiles::IsGuestModeEnabled());
   html_source->AddBoolean("isProfileCreationAllowed",
-                          IsProfileCreationAllowed());
+                          profiles::IsProfileCreationAllowed());
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
 }

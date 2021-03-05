@@ -1240,6 +1240,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
+// TODO(crbug.com/1179280): Remove OS_LINUX once https://crbug.com/1169547 is
+// done.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  { key::kLacrosSecondaryProfilesAllowed,
+    prefs::kLacrosSecondaryProfilesAllowed,
+    base::Value::Type::BOOLEAN },
+#endif // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
 #if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kBackgroundModeEnabled,
     prefs::kBackgroundModeEnabled,

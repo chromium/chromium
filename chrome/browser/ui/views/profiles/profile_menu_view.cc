@@ -318,9 +318,7 @@ void ProfileMenuView::OnGuestProfileButtonClicked() {
   RecordClick(ActionableItem::kGuestProfileButton);
   if (!perform_menu_actions())
     return;
-  PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
-  DCHECK(service->GetBoolean(prefs::kBrowserGuestModeEnabled));
+  DCHECK(profiles::IsGuestModeEnabled());
   profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
 }
 
@@ -716,10 +714,7 @@ void ProfileMenuView::BuildSelectableProfiles() {
   UMA_HISTOGRAM_BOOLEAN("ProfileChooser.HasProfilesShown",
                         profile_entries.size() > 1);
 
-  PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
-  if (!IsGuest(browser()->profile()) &&
-      service->GetBoolean(prefs::kBrowserGuestModeEnabled)) {
+  if (!IsGuest(browser()->profile()) && profiles::IsGuestModeEnabled()) {
     AddSelectableProfile(
         profiles::GetGuestAvatar(),
         l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME),
@@ -739,9 +734,7 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
       base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
                           base::Unretained(this)));
 
-  PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
-  if (service->GetBoolean(prefs::kBrowserAddPersonEnabled)) {
+  if (profiles::IsProfileCreationAllowed()) {
     AddProfileManagementFeatureButton(
         kAddIcon, l10n_util::GetStringUTF16(IDS_ADD),
         base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
