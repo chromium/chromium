@@ -130,6 +130,14 @@ bool IsSuggestedContentEnabled() {
   return prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled);
 }
 
+int GetOffset(int offset, bool from_touchpad) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (from_touchpad)
+    return prefs->GetBoolean(prefs::kNaturalScroll) ? -offset : offset;
+  return prefs->GetBoolean(prefs::kMouseReverseScroll) ? -offset : offset;
+}
+
 // Gets the MRU window shown over the applist when in tablet mode.
 // Returns nullptr if no windows are shown over the applist.
 aura::Window* GetTopVisibleWindow() {
@@ -627,8 +635,11 @@ void AppListControllerImpl::EndDragFromShelf(AppListViewState app_list_state) {
 }
 
 void AppListControllerImpl::ProcessMouseWheelEvent(
-    const ui::MouseWheelEvent& event) {
-  presenter_.ProcessMouseWheelOffset(event.location(), event.offset());
+    const ui::MouseWheelEvent& event,
+    bool from_touchpad) {
+  gfx::Vector2d offset(event.offset().x(),
+                       GetOffset(event.offset().y(), from_touchpad));
+  presenter_.ProcessMouseWheelOffset(event.location(), offset);
 }
 
 ShelfAction AppListControllerImpl::ToggleAppList(

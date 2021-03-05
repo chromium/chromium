@@ -150,7 +150,8 @@ class ASH_EXPORT AppListControllerImpl
   void UpdateYPositionAndOpacity(int y_position_in_screen,
                                  float background_opacity);
   void EndDragFromShelf(AppListViewState app_list_state);
-  void ProcessMouseWheelEvent(const ui::MouseWheelEvent& event);
+  void ProcessMouseWheelEvent(const ui::MouseWheelEvent& event,
+                              bool from_touchpad = false);
   // Toggles app list visibility. In tablet mode, this can only show the app
   // list (by hiding any windows that might be shown over the homde launcher).
   // |display_id| is the id of display where app list should toggle.

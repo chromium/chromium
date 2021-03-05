@@ -582,7 +582,7 @@ void Shelf::ProcessMouseWheelEvent(ui::MouseWheelEvent* event,
   // If the App List is not visible, send MouseWheel events to the
   // |shelf_layout_manager_| because these events are used to show the App List.
   if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id())) {
-    app_list_controller->ProcessMouseWheelEvent(*event);
+    app_list_controller->ProcessMouseWheelEvent(*event, from_touchpad);
   } else {
     shelf_layout_manager_->ProcessMouseWheelEventFromShelf(event,
                                                            from_touchpad);
