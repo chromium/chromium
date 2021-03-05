@@ -2793,6 +2793,7 @@
   },
   'vr_android_unittests': {
     'remove_from': [
+      'android-lollipop-arm-rel',
       'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
     ],
