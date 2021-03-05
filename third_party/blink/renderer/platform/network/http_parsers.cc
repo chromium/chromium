@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -194,6 +195,24 @@ WTF::Vector<network::mojom::blink::WebClientHintsType> ConvertToBlink(
   return blink_accept_ch;
 }
 
+WTF::Vector<blink::LinkHeaderPtr> ConvertToBlink(
+    const std::vector<LinkHeaderPtr>& link_headers) {
+  WTF::Vector<blink::LinkHeaderPtr> converted_headers;
+
+  for (auto& header : link_headers) {
+    converted_headers.push_back(blink::LinkHeader::New(
+        ::blink::KURL(header->href),
+        static_cast<blink::LinkRelAttribute>(header->rel),
+        static_cast<blink::LinkAsAttribute>(header->as),
+        static_cast<blink::CrossOriginAttribute>(header->cross_origin),
+        header->mime_type.has_value()
+            ? String::FromUTF8(header->mime_type.value())
+            : String()));
+  }
+
+  return converted_headers;
+}
+
 blink::ParsedHeadersPtr ConvertToBlink(ParsedHeadersPtr parsed_headers) {
   return blink::ParsedHeaders::New(
       ConvertToBlink(std::move(parsed_headers->content_security_policy)),
@@ -210,7 +229,7 @@ blink::ParsedHeadersPtr ConvertToBlink(ParsedHeadersPtr parsed_headers) {
           ? base::make_optional(
                 ConvertToBlink(parsed_headers->critical_ch.value()))
           : base::nullopt,
-      parsed_headers->xfo);
+      parsed_headers->xfo, ConvertToBlink(parsed_headers->link_headers));
 }
 
 }  // namespace mojom

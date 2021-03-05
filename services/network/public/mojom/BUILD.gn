@@ -171,6 +171,7 @@ mojom("url_loader_base") {
     "http_request_headers.mojom",
     "ip_address_space.mojom",
     "isolation_info.mojom",
+    "link_header.mojom",
     "load_timing_info.mojom",
     "mutable_network_traffic_annotation_tag.mojom",
     "mutable_partial_network_traffic_annotation_tag.mojom",

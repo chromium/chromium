@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
+import "services/network/public/mojom/link_header.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/x_frame_options.mojom";
 
@@ -66,4 +67,7 @@ struct ParsedHeaders {
 
   // The parsed value of the X-Frame-Options header.
   XFrameOptionsValue xfo = XFrameOptionsValue.kNone;
+
+  // The parsed Link headers.
+  array<LinkHeader> link_headers;
 };
