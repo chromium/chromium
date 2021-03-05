@@ -18,13 +18,11 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Hosts common code for search engine choice metrics reporting. */
 public class SearchEngineChoiceMetrics {
-
     /**
      * AndroidSearchEngineChoiceEvents defined in tools/metrics/histograms/enums.xml. These values
      * are persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
-
     @IntDef({Events.SNACKBAR_SHOWN, Events.PROMPT_FOLLOWED, Events.SEARCH_ENGINE_CHANGED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Events {

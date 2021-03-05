@@ -22,6 +22,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -29,10 +31,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
@@ -106,6 +106,12 @@ public class SearchEngineAdapter extends BaseAdapter
     private boolean mHasLoadObserver;
 
     private boolean mIsLocationPermissionChanged;
+
+    @Nullable
+    private Runnable mDisableAutoSwitchRunnable;
+
+    @Nullable
+    private SettingsLauncher mSettingsLauncher;
 
     /**
      * Construct a SearchEngineAdapter.
@@ -455,7 +461,7 @@ public class SearchEngineAdapter extends BaseAdapter
         boolean manualSwitch = mSelectedSearchEnginePosition != mInitialEnginePosition;
         if (manualSwitch) {
             RecordUserAction.record("SearchEngine_ManualChange");
-            LocaleManager.getInstance().setSearchEngineAutoSwitch(false);
+            mDisableAutoSwitchRunnable.run();
         }
         notifyDataSetChanged();
         return keyword;
@@ -472,8 +478,10 @@ public class SearchEngineAdapter extends BaseAdapter
         if (linkBeingShown == R.string.search_engine_system_location_disabled) {
             mContext.startActivity(LocationUtils.getInstance().getSystemLocationSettingsIntent());
         } else {
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(mContext, SingleWebsiteSettings.class,
+            // |mSettingsLauncher| should be set in advance, right after this adapter gets
+            // attached to SettingsActivity.
+            assert mSettingsLauncher != null;
+            mSettingsLauncher.launchSettingsActivity(mContext, SingleWebsiteSettings.class,
                     SingleWebsiteSettings.createFragmentArgsForSite(url));
         }
     }
@@ -577,5 +585,13 @@ public class SearchEngineAdapter extends BaseAdapter
             return mPrepopulatedSearchEngines.size() + 1;
         }
         return mPrepopulatedSearchEngines.size();
+    }
+
+    void setDisableAutoSwitchRunnable(@NonNull Runnable runnable) {
+        mDisableAutoSwitchRunnable = runnable;
+    }
+
+    void setSettingsLauncher(@NonNull SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
     }
 }

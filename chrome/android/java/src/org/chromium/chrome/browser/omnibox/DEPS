@@ -2,9 +2,9 @@ noparent = True
 
 include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser",
-
   "+base/android/java/src/org/chromium/base",
   "+chrome/browser/ui/android",
+  "+chrome/browser/search_engines/android/java",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/TabWindowManagerSingleton.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantPreferenceFragment.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
@@ -27,7 +27,6 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/page_info/ChromePermissionParamsListBuilderDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsLauncherImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/share/ShareDelegateImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/tab/SadTab.java",
@@ -38,6 +37,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/WindowDelegate.java",
   "+chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/Tab.java",
   "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
+  "+components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/SettingsLauncher.java",
   "+components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/tile/TileView.java",
   "+components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/tile/TileViewBinder.java",
   "+components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/tile/TileViewProperties.java",

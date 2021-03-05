@@ -60,6 +60,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -99,6 +100,8 @@ public class VoiceRecognitionHandlerTest {
     Tab mTab;
     @Mock
     VoiceRecognitionHandler.Observer mObserver;
+    @Mock
+    SettingsLauncher mSettingsLauncher;
 
     private TestDataProvider mDataProvider;
     private TestDelegate mDelegate;
@@ -141,7 +144,7 @@ public class VoiceRecognitionHandlerTest {
         private Float mVoiceConfidenceValue;
 
         public TestVoiceRecognitionHandler(Delegate delegate) {
-            super(delegate, () -> mAssistantVoiceSearchService);
+            super(delegate, () -> mAssistantVoiceSearchService, mSettingsLauncher);
         }
 
         @Override
