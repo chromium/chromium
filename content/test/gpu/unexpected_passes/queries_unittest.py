@@ -330,6 +330,35 @@ class GetTestFilterClauseForBuilderUnittest(unittest.TestCase):
                        'AND test_id IN UNNEST(["foo_test", "bar_test"])')
 
 
+class GetSuiteFilterClauseUnittest(unittest.TestCase):
+  def testNonWebGl(self):
+    """Tests that no filter is returned for non-WebGL suites."""
+    for suite in [
+        'context_lost',
+        'depth_capture',
+        'hardware_accelerated_feature',
+        'gpu_process',
+        'info_collection',
+        'maps',
+        'pixel',
+        'power',
+        'screenshot_sync',
+        'trace_test',
+    ]:
+      querier = unittest_utils.CreateGenericQuerier(suite=suite)
+      self.assertEqual(querier._GetSuiteFilterClause(), '')
+
+  def testWebGl(self):
+    """Tests that filters are returned for WebGL suites."""
+    querier = unittest_utils.CreateGenericQuerier(suite='webgl_conformance1')
+    expected_filter = 'AND "webgl-version-1" IN UNNEST(typ_tags)'
+    self.assertEqual(querier._GetSuiteFilterClause(), expected_filter)
+
+    querier = unittest_utils.CreateGenericQuerier(suite='webgl_conformance2')
+    expected_filter = 'AND "webgl-version-2" IN UNNEST(typ_tags)'
+    self.assertEqual(querier._GetSuiteFilterClause(), expected_filter)
+
+
 class RunBigQueryCommandForJsonOutputUnittest(unittest.TestCase):
   def setUp(self):
     self._popen_patcher = mock.patch.object(subprocess, 'Popen')

@@ -87,6 +87,10 @@ WITH
           ARRAY(
             SELECT value
             FROM tr.tags
+            WHERE key = "typ_tag") as typ_tags,
+          ARRAY(
+            SELECT value
+            FROM tr.tags
             WHERE key = "raw_typ_expectation") as typ_expectations
       )) as test_results,
       FROM `luci-resultdb.chromium.gpu_{builder_type}_test_results` tr
@@ -106,6 +110,7 @@ WITH
       WHERE
         "RetryOnFailure" IN UNNEST(typ_expectations)
         OR "Failure" IN UNNEST(typ_expectations)
+        {suite_filter_clause}
       GROUP BY test_id, step_name
     )
 SELECT DISTINCT tr.test_id
@@ -144,6 +149,7 @@ class BigQueryQuerier(object):
     self._num_samples = num_samples or DEFAULT_NUM_SAMPLES
     self._large_query_mode = large_query_mode
     self._check_webgl_version = None
+    self._webgl_version_tag = None
 
     assert self._num_samples > 0
 
@@ -157,8 +163,9 @@ class BigQueryQuerier(object):
     if 'webgl_conformance' in self._suite:
       webgl_version = self._suite[-1]
       self._suite = 'webgl_conformance'
+      self._webgl_version_tag = 'webgl-version-%s' % webgl_version
       self._check_webgl_version =\
-          lambda tags: 'webgl-version-%s' % webgl_version in tags
+          lambda tags: self._webgl_version_tag in tags
     else:
       self._check_webgl_version = lambda tags: True
 
@@ -373,8 +380,10 @@ class BigQueryQuerier(object):
           test_id,
           r"gpu_tests\.%s\.")""" % self._suite
 
-    query = TEST_FILTER_QUERY_TEMPLATE.format(builder_type=builder_type,
-                                              suite=self._suite)
+    query = TEST_FILTER_QUERY_TEMPLATE.format(
+        builder_type=builder_type,
+        suite=self._suite,
+        suite_filter_clause=self._GetSuiteFilterClause())
     query_results = self._RunBigQueryCommandForJsonOutput(
         query, {'': {
             'builder_name': builder
@@ -386,6 +395,21 @@ class BigQueryQuerier(object):
     # expectations in the above query.
     test_filter_clause = 'AND test_id IN UNNEST([%s])' % ', '.join(test_ids)
     return test_filter_clause
+
+  def _GetSuiteFilterClause(self):
+    """Returns a SQL clause to only include relevant suites.
+
+    Meant for cases where suites are differentiated by typ tag rather than
+    reported suite name, e.g. WebGL 1 vs. 2 conformance.
+
+    Returns:
+      A string containing a valid SQL clause. Will be an empty string if no
+      filtering is possible/necessary.
+    """
+    if not self._webgl_version_tag:
+      return ''
+
+    return 'AND "%s" IN UNNEST(typ_tags)' % self._webgl_version_tag
 
   def _RunBigQueryCommandForJsonOutput(self, query, parameters):
     """Runs the given BigQuery query and returns its output as JSON.
