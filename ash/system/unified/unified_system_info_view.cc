@@ -338,7 +338,9 @@ void EnterpriseManagedView::OnEnterpriseDomainChanged() {
   Update();
 }
 
-void EnterpriseManagedView::OnEnterpriseAccountDomainChanged() {}
+void EnterpriseManagedView::OnEnterpriseAccountDomainChanged() {
+  Update();
+}
 
 void EnterpriseManagedView::OnLoginStatusChanged(LoginStatus status) {
   Update();
@@ -349,18 +351,54 @@ void EnterpriseManagedView::Update() {
       Shell::Get()->system_tray_model()->enterprise_domain();
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
-  SetVisible(session_controller->ShouldDisplayManagedUI() ||
-             model->active_directory_managed() ||
-             !model->enterprise_domain_manager().empty());
+  std::string enterprise_domain_manager = model->enterprise_domain_manager();
+  std::string account_domain_manager =
+      features::IsManagedDeviceUIRedesignEnabled()
+          ? model->account_domain_manager()
+          : std::string();
 
-  if (model->active_directory_managed()) {
-    SetTooltipText(l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED,
-                                              ui::GetChromeOSDeviceName()));
-  } else if (!model->enterprise_domain_manager().empty()) {
-    SetTooltipText(l10n_util::GetStringFUTF16(
-        IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
-        base::UTF8ToUTF16(model->enterprise_domain_manager())));
+  bool visible = session_controller->ShouldDisplayManagedUI() ||
+                 model->active_directory_managed() ||
+                 !enterprise_domain_manager.empty() ||
+                 !account_domain_manager.empty();
+  SetVisible(visible);
+
+  if (!visible)
+    return;
+
+  if (!features::IsManagedDeviceUIRedesignEnabled()) {
+    if (model->active_directory_managed()) {
+      SetTooltipText(l10n_util::GetStringFUTF16(
+          IDS_ASH_ENTERPRISE_DEVICE_MANAGED, ui::GetChromeOSDeviceName()));
+    } else if (!model->enterprise_domain_manager().empty()) {
+      SetTooltipText(l10n_util::GetStringFUTF16(
+          IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
+          base::UTF8ToUTF16(model->enterprise_domain_manager())));
+    }
+    return;
   }
+
+  // Display both device and user management if the feature is enabled.
+  base::string16 managed_string;
+  if (enterprise_domain_manager.empty() && account_domain_manager.empty()) {
+    managed_string = l10n_util::GetStringFUTF16(
+        IDS_ASH_ENTERPRISE_DEVICE_MANAGED, ui::GetChromeOSDeviceName());
+  } else if (!enterprise_domain_manager.empty() &&
+             !account_domain_manager.empty() &&
+             enterprise_domain_manager != account_domain_manager) {
+    managed_string =
+        l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY_MULTIPLE,
+                                   base::UTF8ToUTF16(enterprise_domain_manager),
+                                   base::UTF8ToUTF16(account_domain_manager));
+  } else {
+    base::string16 display_domain_manager =
+        enterprise_domain_manager.empty()
+            ? base::UTF8ToUTF16(account_domain_manager)
+            : base::UTF8ToUTF16(enterprise_domain_manager);
+    managed_string = l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
+                                                display_domain_manager);
+  }
+  SetTooltipText(managed_string);
 }
 
 // A view that shows whether the user is supervised or a child.
@@ -413,12 +451,9 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
   auto* spacing = AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(spacing, 1);
 
-  if (!features::IsManagedDeviceUIRedesignEnabled()) {
-    // UnifiedManagedDeviceView is shown instead.
-    enterprise_managed_ =
-        AddChildView(std::make_unique<EnterpriseManagedView>(controller));
-    supervised_ = AddChildView(std::make_unique<SupervisedUserView>());
-  }
+  enterprise_managed_ =
+      AddChildView(std::make_unique<EnterpriseManagedView>(controller));
+  supervised_ = AddChildView(std::make_unique<SupervisedUserView>());
 }
 
 UnifiedSystemInfoView::~UnifiedSystemInfoView() = default;
