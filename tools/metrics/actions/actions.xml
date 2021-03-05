@@ -21096,6 +21096,78 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SearchPlusDigitRewrite_F1">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+1 to produce the F1 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F10">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+0 to produce the F10 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F11">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+Minus to produce the F11 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F12">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+Equals to produce the F12 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F2">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+2 to produce the F2 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F3">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+3 to produce the F3 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F4">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+4 to produce the F4 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F5">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+5 to produce the F5 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F6">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+6 to produce the F6 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F7">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+7 to produce the F7 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F8">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+8 to produce the F8 key.</description>
+</action>
+
+<action name="SearchPlusDigitRewrite_F9">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Search+9 to produce the F9 key.</description>
+</action>
+
 <action name="SearchWidget.SearchMade">
   <owner>yusufo@chromium.org</owner>
   <description>
