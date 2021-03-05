@@ -4828,7 +4828,7 @@
           '--xvfb',
         ],
         'swarming': {
-          'shards': 3,
+          'shards': 10,
         },
         'use_isolated_scripts_api': True,
       },
