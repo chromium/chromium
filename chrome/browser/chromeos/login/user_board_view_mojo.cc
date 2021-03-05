@@ -9,7 +9,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
-#include "chrome/browser/chromeos/login/lock_screen_utils.h"
+#include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 
 namespace chromeos {

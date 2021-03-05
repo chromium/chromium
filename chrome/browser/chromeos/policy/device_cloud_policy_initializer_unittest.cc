@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/login_pref_names.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "chrome/browser/chromeos/policy/server_backed_device_state.h"
 #include "chrome/browser/prefs/browser_prefs.h"

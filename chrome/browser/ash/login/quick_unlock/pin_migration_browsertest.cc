@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"

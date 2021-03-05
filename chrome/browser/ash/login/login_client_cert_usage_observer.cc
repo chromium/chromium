@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/login_client_cert_usage_observer.h"
+#include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 
 #include <cstdint>
 #include <string>

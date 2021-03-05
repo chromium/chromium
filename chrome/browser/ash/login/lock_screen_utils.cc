@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/lock_screen_utils.h"
+#include "chrome/browser/ash/login/lock_screen_utils.h"
 
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ime_controller_client.h"
 #include "chrome/common/pref_names.h"

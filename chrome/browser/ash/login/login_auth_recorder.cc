@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/login_auth_recorder.h"
+#include "chrome/browser/ash/login/login_auth_recorder.h"
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/metrics/histogram_functions.h"
