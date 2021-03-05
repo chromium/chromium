@@ -176,9 +176,14 @@ void AccessibilityBridge::OnAccessibilityActionRequested(
     action_data.scroll_behavior = ax::mojom::ScrollBehavior::kScrollIfVisible;
   }
 
-  web_contents_->GetMainFrame()
-      ->FromAXTreeID(ax_id->first)
-      ->AccessibilityPerformAction(action_data);
+  auto* frame = web_contents_->GetMainFrame()->FromAXTreeID(ax_id->first);
+  if (!frame) {
+    // Fuchsia targeted a tree that does not exist.
+    callback(false);
+    return;
+  }
+
+  frame->AccessibilityPerformAction(action_data);
   callback(true);
 
   if (event_received_callback_for_test_) {
