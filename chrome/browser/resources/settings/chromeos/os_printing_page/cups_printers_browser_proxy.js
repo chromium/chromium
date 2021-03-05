@@ -18,8 +18,6 @@
  *   printerAddress: string,
  *   printerDescription: string,
  *   printerId: string,
- *   printerManufacturer: string,
- *   printerModel: string,
  *   printerMakeAndModel: string,
  *   printerName: string,
  *   printerPPDPath: string,
@@ -65,8 +63,6 @@
 
 /**
  * @typedef {{
- *   manufacturer: string,
- *   model: string,
  *   makeAndModel: string,
  *   autoconf: boolean,
  *   ppdRefUserSuppliedPpdUrl: string,

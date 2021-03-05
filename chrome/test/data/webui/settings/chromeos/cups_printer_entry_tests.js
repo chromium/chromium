@@ -93,8 +93,6 @@ function createPrinterEntry(printerType) {
       printerAddress: 'test:123',
       printerDescription: '',
       printerId: 'id_123',
-      printerManufacturer: '',
-      printerModel: '',
       printerMakeAndModel: '',
       printerName: 'Test name',
       printerPPDPath: '',

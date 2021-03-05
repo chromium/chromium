@@ -126,8 +126,6 @@ std::unique_ptr<chromeos::Printer> DictToPrinter(
   std::string printer_id;
   std::string printer_name;
   std::string printer_description;
-  std::string printer_manufacturer;
-  std::string printer_model;
   std::string printer_make_and_model;
   std::string printer_address;
   std::string printer_protocol;
@@ -136,8 +134,6 @@ std::unique_ptr<chromeos::Printer> DictToPrinter(
   if (!printer_dict.GetString("printerId", &printer_id) ||
       !printer_dict.GetString("printerName", &printer_name) ||
       !printer_dict.GetString("printerDescription", &printer_description) ||
-      !printer_dict.GetString("printerManufacturer", &printer_manufacturer) ||
-      !printer_dict.GetString("printerModel", &printer_model) ||
       !printer_dict.GetString("printerMakeAndModel", &printer_make_and_model) ||
       !printer_dict.GetString("printerAddress", &printer_address) ||
       !printer_dict.GetString("printerProtocol", &printer_protocol) ||
@@ -157,8 +153,6 @@ std::unique_ptr<chromeos::Printer> DictToPrinter(
   auto printer = std::make_unique<chromeos::Printer>(printer_id);
   printer->set_display_name(printer_name);
   printer->set_description(printer_description);
-  printer->set_manufacturer(printer_manufacturer);
-  printer->set_model(printer_model);
   printer->set_make_and_model(printer_make_and_model);
   printer->set_print_server_uri(print_server_uri);
 
@@ -485,7 +479,7 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::ListValue* args) {
       !IsValidPrinterUri(uri)) {
     // Run the failure callback.
     OnAutoconfQueried(callback_id, PrinterQueryResult::kUnknownFailure,
-                      printing::PrinterStatus(), "", "", "", {}, false);
+                      printing::PrinterStatus(), "", {}, false);
     return;
   }
 
@@ -499,8 +493,6 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
     Printer printer,
     PrinterQueryResult result,
     const printing::PrinterStatus& printer_status,
-    const std::string& make,
-    const std::string& model,
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool ipp_everywhere) {
@@ -512,11 +504,6 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
     // guaranteed to have it.  However, don't overwrite it if the printer
     // advertises an empty value through printer-make-and-model.
     if (!make_and_model.empty()) {
-      // manufacturer and model are set with make_and_model because they are
-      // derived from make_and_model for compatability and are slated for
-      // removal.
-      printer.set_manufacturer(make);
-      printer.set_model(model);
       printer.set_make_and_model(make_and_model);
       PRINTER_LOG(DEBUG) << "Printer queried for make and model "
                          << make_and_model;
@@ -546,8 +533,6 @@ void CupsPrintersHandler::OnAutoconfQueried(
     const std::string& callback_id,
     PrinterQueryResult result,
     const printing::PrinterStatus& printer_status,
-    const std::string& make,
-    const std::string& model,
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool ipp_everywhere) {
@@ -577,8 +562,6 @@ void CupsPrintersHandler::OnAutoconfQueried(
 
   // Bundle printer metadata
   base::Value info(base::Value::Type::DICTIONARY);
-  info.SetKey("manufacturer", base::Value(make));
-  info.SetKey("model", base::Value(model));
   info.SetKey("makeAndModel", base::Value(make_and_model));
   info.SetKey("autoconf", base::Value(ipp_everywhere));
 
@@ -715,10 +698,6 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(const base::ListValue* args,
     }
 
     if (printer->make_and_model().empty()) {
-      // In lieu of more accurate information, populate the make and model
-      // fields with the PPD information.
-      printer->set_manufacturer(ppd_manufacturer);
-      printer->set_model(ppd_model);
       // PPD Model names are actually make and model.
       printer->set_make_and_model(ppd_model);
     }

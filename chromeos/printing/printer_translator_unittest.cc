@@ -43,8 +43,6 @@ Printer CreateGenericPrinter() {
   ret.set_id(kHash);
   ret.set_display_name(kName);
   ret.set_description(kDescription);
-  ret.set_manufacturer(kMake);
-  ret.set_model(kModel);
   ret.set_make_and_model(kMakeAndModel);
   return ret;
 }
@@ -62,9 +60,6 @@ void CheckGenericPrinterInfo(const Printer& printer,
   ExpectDictStringValue(printer.display_name(), printer_info, "printerName");
   ExpectDictStringValue(printer.description(), printer_info,
                         "printerDescription");
-  ExpectDictStringValue(printer.manufacturer(), printer_info,
-                        "printerManufacturer");
-  ExpectDictStringValue(printer.model(), printer_info, "printerModel");
   ExpectDictStringValue(printer.make_and_model(), printer_info,
                         "printerMakeAndModel");
 }
@@ -194,8 +189,6 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinter) {
   EXPECT_EQ(kHash, printer->id());
   EXPECT_EQ(kName, printer->display_name());
   EXPECT_EQ(kDescription, printer->description());
-  EXPECT_EQ(kMake, printer->manufacturer());
-  EXPECT_EQ(kModel, printer->model());
   EXPECT_EQ(kMakeAndModel, printer->make_and_model());
   EXPECT_EQ(kUri, printer->uri().GetNormalized());
   EXPECT_EQ(kUUID, printer->uuid());
@@ -234,7 +227,6 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterBlankManufacturer) {
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_TRUE(printer);
 
-  EXPECT_EQ(kModel, printer->model());
   EXPECT_EQ(kModel, printer->make_and_model());
 }
 
@@ -249,7 +241,6 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterBlankModel) {
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_TRUE(printer);
 
-  EXPECT_EQ(kMake, printer->manufacturer());
   EXPECT_EQ(kMake, printer->make_and_model());
 }
 

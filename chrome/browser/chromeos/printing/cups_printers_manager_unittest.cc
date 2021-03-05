@@ -743,8 +743,9 @@ TEST_F(CupsPrintersManagerTest, SetUsbManufacturer) {
 
   ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
 
-  EXPECT_EQ(expected_manufacturer,
-            manager_->GetPrinter("DiscoveredPrinter")->manufacturer());
+  EXPECT_EQ(
+      expected_manufacturer,
+      manager_->GetPrinter("DiscoveredPrinter")->usb_printer_manufacturer());
 }
 
 TEST_F(CupsPrintersManagerTest, EmptyUsbManufacturer) {
@@ -753,8 +754,9 @@ TEST_F(CupsPrintersManagerTest, EmptyUsbManufacturer) {
 
   ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
 
-  EXPECT_TRUE(
-      manager_->GetPrinter("DiscoveredPrinter")->manufacturer().empty());
+  EXPECT_TRUE(manager_->GetPrinter("DiscoveredPrinter")
+                  ->usb_printer_manufacturer()
+                  .empty());
 }
 
 TEST_F(CupsPrintersManagerTest, PrinterNotInstalled) {

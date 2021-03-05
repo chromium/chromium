@@ -254,48 +254,51 @@ bool UsbDeviceIsPrinter(const UsbDeviceInfo& device_info) {
 // Attempt to gather all the information we need to work with this printer by
 // querying the USB device.  This should only be called using devices we believe
 // are printers, not arbitrary USB devices, as we may get weird partial results
-// from arbitrary devices.
-std::unique_ptr<Printer> UsbDeviceToPrinter(const UsbDeviceInfo& device_info) {
+// from arbitrary devices. The results are saved in the second parameter.
+bool UsbDeviceToPrinter(const UsbDeviceInfo& device_info,
+                        PrinterDetector::DetectedPrinter* entry) {
+  DCHECK(entry);
+
   // Preflight all required fields and log errors if we find something wrong.
   if (device_info.vendor_id == 0 || device_info.product_id == 0) {
     LOG(ERROR) << "Failed to convert USB device to printer.  Fields were:\n"
                << UsbPrinterDeviceDetailsAsString(device_info);
-    return nullptr;
+    return false;
   }
 
-  auto printer = std::make_unique<Printer>();
-  printer->set_manufacturer(
-      base::UTF16ToUTF8(GetManufacturerName(device_info)));
-  printer->set_model(base::UTF16ToUTF8(GetProductName(device_info)));
+  entry->ppd_search_data.usb_manufacturer =
+      base::UTF16ToUTF8(GetManufacturerName(device_info));
+  entry->ppd_search_data.usb_model =
+      base::UTF16ToUTF8(GetProductName(device_info));
+
+  const std::string& make = entry->ppd_search_data.usb_manufacturer;
+  const std::string& model = entry->ppd_search_data.usb_model;
+
   // Synthesize make-and-model string for printer identification.
-  printer->set_make_and_model(
-      base::JoinString({printer->manufacturer(), printer->model()}, " "));
+  entry->printer.set_make_and_model(base::JoinString({make, model}, " "));
 
   // Construct the display name by however much of the manufacturer/model
   // information that we have available.
-  if (printer->manufacturer().empty() && printer->model().empty()) {
-    printer->set_display_name(
+  if (make.empty() && model.empty()) {
+    entry->printer.set_display_name(
         l10n_util::GetStringUTF8(IDS_USB_PRINTER_UNKNOWN_DISPLAY_NAME));
-  } else if (!printer->manufacturer().empty() && !printer->model().empty()) {
-    printer->set_display_name(
-        l10n_util::GetStringFUTF8(IDS_USB_PRINTER_DISPLAY_NAME,
-                                  base::UTF8ToUTF16(printer->manufacturer()),
-                                  base::UTF8ToUTF16(printer->model())));
+  } else if (!make.empty() && !model.empty()) {
+    entry->printer.set_display_name(l10n_util::GetStringFUTF8(
+        IDS_USB_PRINTER_DISPLAY_NAME, base::UTF8ToUTF16(make),
+        base::UTF8ToUTF16(model)));
   } else {
     // Exactly one string is present.
-    std::string non_empty = !printer->manufacturer().empty()
-                                ? printer->manufacturer()
-                                : printer->model();
-    printer->set_display_name(
+    DCHECK_NE(make.empty(), model.empty());
+    entry->printer.set_display_name(
         l10n_util::GetStringFUTF8(IDS_USB_PRINTER_DISPLAY_NAME_MAKE_OR_MODEL,
-                                  base::UTF8ToUTF16(non_empty)));
+                                  base::UTF8ToUTF16(make + model)));
   }
 
-  printer->set_description(printer->display_name());
-  printer->SetUri(UsbPrinterUri(device_info));
-  printer->set_id(CreateUsbPrinterId(device_info));
-  printer->set_supports_ippusb(UsbDeviceSupportsIppusb(device_info));
-  return printer;
+  entry->printer.set_description(entry->printer.display_name());
+  entry->printer.SetUri(UsbPrinterUri(device_info));
+  entry->printer.set_id(CreateUsbPrinterId(device_info));
+  entry->printer.set_supports_ippusb(UsbDeviceSupportsIppusb(device_info));
+  return true;
 }
 
 void GetDeviceId(mojo::Remote<device::mojom::UsbDevice> device,

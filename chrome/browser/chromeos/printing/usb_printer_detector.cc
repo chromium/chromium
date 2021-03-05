@@ -112,16 +112,15 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
       return;
     }
 
-    std::unique_ptr<Printer> converted = UsbDeviceToPrinter(device_info);
-    if (!converted.get()) {
+    DetectedPrinter entry;
+    if (!UsbDeviceToPrinter(device_info, &entry)) {
       // An error will already have been logged if we failed to convert.
       PRINTER_LOG(EVENT) << "USB printer was detected but not recognized";
       return;
     }
     std::string make_and_model = GuessEffectiveMakeAndModel(device_info);
     PRINTER_LOG(EVENT) << "USB printer was detected: " << make_and_model;
-    DetectedPrinter entry;
-    entry.printer = *converted;
+
     entry.ppd_search_data.usb_vendor_id = device_info.vendor_id;
     entry.ppd_search_data.usb_product_id = device_info.product_id;
     entry.ppd_search_data.make_and_model.push_back(std::move(make_and_model));

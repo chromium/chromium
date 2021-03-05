@@ -41,12 +41,9 @@ void SetUsbInfo(metrics::PrinterEventProto* event,
                 const PrinterDetector::DetectedPrinter& detected) {
   event->set_usb_vendor_id(detected.ppd_search_data.usb_vendor_id);
   event->set_usb_model_id(detected.ppd_search_data.usb_product_id);
-
-  // TODO(skau) - Pull USB-specific manufacturer/model strings directly into
-  // DetectedPrinter and supply those here instead of the deprecated Printer
-  // fields.
-  event->set_usb_printer_manufacturer(detected.printer.manufacturer());
-  event->set_usb_printer_model(detected.printer.model());
+  event->set_usb_printer_manufacturer(
+      detected.ppd_search_data.usb_manufacturer);
+  event->set_usb_printer_model(detected.ppd_search_data.usb_model);
 }
 
 // Add information to the |event| that only network printers have.

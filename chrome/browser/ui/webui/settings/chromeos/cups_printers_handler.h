@@ -82,17 +82,13 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // Handles the callback for HandleGetPrinterInfo. |callback_id| is the
   // identifier to resolve the correct Promise. |result| indicates if the query
   // was successful. |printer_status| contains the current status of the
-  // printer. |make| is the detected printer manufacturer. |model| is the
-  // detected model. |make_and_model| is the unparsed printer-make-and-model
-  // string. |ipp_everywhere| indicates if configuration using the CUPS IPP
-  // Everywhere driver should be attempted. If |result| is not SUCCESS, the
-  // values of |printer_status|, |make|, |model|, |make_and_model|, and
-  // |ipp_everywhere| are not specified.
+  // printer. |make_and_model| is the unparsed printer-make-and-model string.
+  // |ipp_everywhere| indicates if configuration using the CUPS IPP Everywhere
+  // driver should be attempted. If |result| is not SUCCESS, the values of
+  // |printer_status|, |make_and_model|, and |ipp_everywhere| are not specified.
   void OnAutoconfQueried(const std::string& callback_id,
                          printing::PrinterQueryResult result,
                          const printing::PrinterStatus& printer_status,
-                         const std::string& make,
-                         const std::string& model,
                          const std::string& make_and_model,
                          const std::vector<std::string>& document_formats,
                          bool ipp_everywhere);
@@ -103,8 +99,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       Printer printer,
       printing::PrinterQueryResult result,
       const printing::PrinterStatus& printer_status,
-      const std::string& make,
-      const std::string& model,
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere);

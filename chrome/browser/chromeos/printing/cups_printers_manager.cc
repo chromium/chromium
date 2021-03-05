@@ -398,8 +398,6 @@ class CupsPrintersManagerImpl
                             PrinterStatusCallback cb,
                             PrinterQueryResult result,
                             const ::printing::PrinterStatus& printer_status,
-                            const std::string& make,
-                            const std::string& model,
                             const std::string& make_and_model,
                             const std::vector<std::string>& document_formats,
                             bool ipp_everywhere) {
@@ -592,7 +590,7 @@ class CupsPrintersManagerImpl
         // Detected printer does not supports ipp-over-usb, so we cannot set it
         // up automatically. We have to move it to the discovered class.
         if (printer.IsUsbProtocol()) {
-          printer.set_manufacturer(
+          printer.set_usb_printer_manufacturer(
               ppd_resolution_tracker_.GetManufacturer(detected_printer_id));
         }
         printers_.Insert(PrinterClass::kDiscovered, printer);
