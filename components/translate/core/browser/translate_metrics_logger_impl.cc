@@ -30,6 +30,8 @@ const char kTranslatePageLoadFinalSourceLanguage[] =
 const char kTranslatePageLoadFinalState[] = "Translate.PageLoad.FinalState";
 const char kTranslatePageLoadFinalTargetLanguage[] =
     "Translate.PageLoad.FinalTargetLanguage";
+const char kTranslatePageLoadHrefTriggerDecision[] =
+    "Translate.PageLoad.HrefHint.TriggerDecision";
 const char kTranslatePageLoadInitialSourceLanguage[] =
     "Translate.PageLoad.InitialSourceLanguage";
 const char kTranslatePageLoadInitialState[] = "Translate.PageLoad.InitialState";
@@ -49,8 +51,10 @@ const char kTranslatePageLoadRankerVersion[] =
     "Translate.PageLoad.Ranker.Version";
 const char kTranslatePageLoadTriggerDecision[] =
     "Translate.PageLoad.TriggerDecision";
-const char kTranslatePageLoadHrefTriggerDecision[] =
-    "Translate.PageLoad.HrefHint.TriggerDecision";
+const char kTranslatePageLoadTriggerDecisionAllTriggerDecisions[] =
+    "Translate.PageLoad.TriggerDecision.AllTriggerDecisions";
+const char kTranslatePageLoadTriggerDecisionTotalCount[] =
+    "Translate.PageLoad.TriggerDecision.TotalCount";
 
 TranslationType NullTranslateMetricsLogger::GetNextManualTranslationType() {
   return TranslationType::kUninitialized;
@@ -169,8 +173,15 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics(
                                 ranker_decision_);
   base::UmaHistogramSparse(kTranslatePageLoadRankerVersion,
                            int(ranker_version_));
+
   base::UmaHistogramEnumeration(kTranslatePageLoadTriggerDecision,
                                 trigger_decision_);
+  base::UmaHistogramCounts100(kTranslatePageLoadTriggerDecisionTotalCount,
+                              all_trigger_decisions_.size());
+  for (const auto& trigger_decision : all_trigger_decisions_) {
+    base::UmaHistogramEnumeration(
+        kTranslatePageLoadTriggerDecisionAllTriggerDecisions, trigger_decision);
+  }
   if (has_href_translate_target_) {
     base::UmaHistogramEnumeration(kTranslatePageLoadHrefTriggerDecision,
                                   trigger_decision_);
@@ -239,6 +250,8 @@ void TranslateMetricsLoggerImpl::LogTriggerDecision(
   // there are multiple.
   if (trigger_decision_ == TriggerDecision::kUninitialized)
     trigger_decision_ = trigger_decision;
+
+  all_trigger_decisions_.push_back(trigger_decision);
 }
 
 void TranslateMetricsLoggerImpl::LogAutofillAssistantDeferredTriggerDecision() {

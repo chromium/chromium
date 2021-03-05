@@ -693,6 +693,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.TriggerDecision.AllTriggerDecisions"
+    enum="TranslateTriggerDecision" expires_after="M92">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs all trigger decisions (reason for the initial state of Translate) for
+    each page load. Each trigger decision is recorded as a separate sample, so
+    there may more than one value recorded per page load. If Translate is
+    initialized multiple times in a single page load, then we may record the
+    same enum multiple times for a single page load. Additionally we may record
+    no samples in cases were the page is abandoned before we process trigger
+    decisions. These values are logged at the end of the page load or the first
+    time Chrome is backgrounded during the page load, whichever comes first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.TriggerDecision.TotalCount"
+    units="trigger decisions" expires_after="M92">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the total number of trigger decisions (reason for the initial state of
+    Translate) for each page load. If Translate is initialized multiple times in
+    a single page load, then the same enum value could be counted multiple
+    times. This value is logged at the end of the page load or the first time
+    Chrome is backgrounded during the page load, whichever comes first.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PageScheme" enum="TranslateScheme"
     expires_after="M77">
   <owner>kenjibaheux@google.com</owner>

@@ -557,35 +557,80 @@ TEST_F(TranslateMetricsLoggerImplTest, LogRankerMetrics) {
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogTriggerDecision) {
-  // If we log multiple trigger decisions, we expect that only the first one is
-  // recorded.
-  std::vector<TriggerDecision> trigger_decisions = {
+  // If we log multiple trigger decisions, we expect to only record the first
+  // value to Translate.PageLoad.TriggerDecision. All of the values will be
+  // captured by Translate.PageLoad.TriggerDecision.TotalCount and
+  // Translate.PageLoad.TriggerDecision.AllTriggerDecisions.
+  const TriggerDecision kTriggerDecisions[] = {
       TriggerDecision::kAutomaticTranslationByLink,
       TriggerDecision::kDisabledByRanker,
-      TriggerDecision::kDisabledUnsupportedLanguage};
+      TriggerDecision::kDisabledUnsupportedLanguage,
+      TriggerDecision::kDisabledOffline,
+      TriggerDecision::kDisabledTranslationFeatureDisabled,
+      TriggerDecision::kShowUI,
+      TriggerDecision::kDisabledByRanker,
+      TriggerDecision::kDisabledOffline,
+      TriggerDecision::kDisabledNeverTranslateLanguage};
 
-  for (auto trigger_decision : trigger_decisions)
+  for (const auto& trigger_decision : kTriggerDecisions)
     translate_metrics_logger()->LogTriggerDecision(trigger_decision);
 
   translate_metrics_logger()->RecordMetrics(true);
 
+  // Check that we record only the highest priority value to
+  // Translate.PageLoad.TriggerDecision.
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadTriggerDecision,
-                                         trigger_decisions[0], 1);
+                                         kTriggerDecisions[0], 1);
 
   // Make sure that the href trigger decision wasn't logged.
   histogram_tester()->ExpectTotalCount(kTranslatePageLoadHrefTriggerDecision,
                                        0);
+
+  // Check that the expected values are recorded to the
+  // Translate.PageLoad.TriggerDecision.TotalCount and
+  // Translate.PageLoad.TriggerDecision.AllTriggerDecisions histograms.
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadTriggerDecisionTotalCount, 9, 1);
+  histogram_tester()->ExpectTotalCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions, 9);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kAutomaticTranslationByLink, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledByRanker, 2);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledUnsupportedLanguage, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledOffline, 2);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledTranslationFeatureDisabled, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kShowUI, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledNeverTranslateLanguage, 1);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogHrefTriggerDecision) {
   // If we log multiple trigger decisions, we expect that only the first one is
   // recorded.
-  std::vector<TriggerDecision> trigger_decisions = {
+  const TriggerDecision kTriggerDecisions[] = {
       TriggerDecision::kAutomaticTranslationByLink,
       TriggerDecision::kDisabledByRanker,
-      TriggerDecision::kDisabledUnsupportedLanguage};
+      TriggerDecision::kDisabledUnsupportedLanguage,
+      TriggerDecision::kDisabledOffline,
+      TriggerDecision::kDisabledTranslationFeatureDisabled,
+      TriggerDecision::kShowUI,
+      TriggerDecision::kDisabledByRanker,
+      TriggerDecision::kDisabledOffline,
+      TriggerDecision::kDisabledNeverTranslateLanguage};
 
-  for (auto trigger_decision : trigger_decisions)
+  for (const auto& trigger_decision : kTriggerDecisions)
     translate_metrics_logger()->LogTriggerDecision(trigger_decision);
 
   translate_metrics_logger()->SetHasHrefTranslateTarget(true);
@@ -593,10 +638,40 @@ TEST_F(TranslateMetricsLoggerImplTest, LogHrefTriggerDecision) {
 
   // CHeck that the main trigger decision histogram was logged.
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadTriggerDecision,
-                                         trigger_decisions[0], 1);
+                                         kTriggerDecisions[0], 1);
 
+  // Make sure that the href trigger decision was logged.
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadHrefTriggerDecision,
-                                         trigger_decisions[0], 1);
+                                         kTriggerDecisions[0], 1);
+
+  // Check that the expected values are recorded to the
+  // Translate.PageLoad.TriggerDecision.TotalCount and
+  // Translate.PageLoad.TriggerDecision.AllTriggerDecisions histograms.
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadTriggerDecisionTotalCount, 9, 1);
+  histogram_tester()->ExpectTotalCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions, 9);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kAutomaticTranslationByLink, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledByRanker, 2);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledUnsupportedLanguage, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledOffline, 2);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledTranslationFeatureDisabled, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kShowUI, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslatePageLoadTriggerDecisionAllTriggerDecisions,
+      TriggerDecision::kDisabledNeverTranslateLanguage, 1);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest,
