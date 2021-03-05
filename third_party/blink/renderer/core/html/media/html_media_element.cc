@@ -4501,13 +4501,6 @@ void HTMLMediaElement::AddMediaPlayerObserver(
   media_player_observer_remote_set_.Add(
       std::move(observer),
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
-
-  media_player_observer_remote_set_.set_disconnect_handler(WTF::BindRepeating(
-      [](HTMLMediaElement* html_media_element,
-         mojo::RemoteSetElementId remote_id) {
-        html_media_element->media_player_observer_remote_set_.Remove(remote_id);
-      },
-      WrapWeakPersistent(this)));
 }
 
 void HTMLMediaElement::RequestPlay() {
