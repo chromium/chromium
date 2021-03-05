@@ -657,7 +657,7 @@
       {
         "args": [
           "-v",
-          "--browser=android-chrome-64-bundle",
+          "--browser=android-trichrome-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel4-perf_map.json"
         ],
@@ -749,7 +749,7 @@
       {
         "args": [
           "-v",
-          "--browser=android-webview-trichrome-google",
+          "--browser=android-webview-trichrome-google-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel4_webview-perf_map.json"
         ],

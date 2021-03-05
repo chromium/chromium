@@ -38,7 +38,7 @@ _VALID_PERF_POOLS = {
 _VALID_WEBVIEW_BROWSERS = {
     'android-webview',
     'android-webview-google',
-    'android-webview-trichrome-google',
+    'android-webview-trichrome-google-bundle',
 }
 
 
@@ -112,7 +112,7 @@ def _ValidateBrowserType(builder_name, test_config):
   elif 'Android' in builder_name or 'android' in builder_name:
     android_browsers = ('android-chromium', 'android-chrome',
                         'android-chrome-bundle', 'android-chrome-64-bundle',
-                        'exact')
+                        'android-trichrome-bundle', 'exact')
     if browser_options.browser not in android_browsers:
       raise ValueError( 'The browser type for %s must be one of %s' % (
           builder_name, ', '.join(android_browsers)))
