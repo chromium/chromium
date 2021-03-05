@@ -116,7 +116,28 @@ class ASH_EXPORT DisplayColorManager
 
   // Attempts to start requesting the ICC profile for |display|. Returns true if
   // it was successful at initiating the request, false otherwise.
+  // TODO(jchinlee): Investigate if we need this return value, or if we can
+  // switch to a callback model.
   bool LoadCalibrationForDisplay(const display::DisplaySnapshot* display);
+
+  // Display-specific calibration methods.
+  // Look for VPD-written calibration.
+  void QueryVpdForCalibration(int64_t display_id,
+                              int64_t product_code,
+                              bool has_color_correction_matrix,
+                              display::DisplayConnectionType type);
+  void FinishQueryVpdForCalibration(int64_t display_id,
+                                    int64_t product_code,
+                                    bool has_color_correction_matrix,
+                                    display::DisplayConnectionType type,
+                                    const base::FilePath& expected_icc_path,
+                                    bool found_icc);
+  // Look for calibration for this display in Quirks.
+  void QueryQuirksForCalibration(int64_t display_id,
+                                 const std::string& display_name,
+                                 int64_t product_code,
+                                 bool has_color_correction_matrix,
+                                 display::DisplayConnectionType type);
 
   // Applies an empty color calibration data, potentially with a color
   // matrix from |displays_color_matrix_map_| (if any for this display is
