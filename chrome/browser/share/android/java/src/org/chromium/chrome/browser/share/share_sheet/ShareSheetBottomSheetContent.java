@@ -66,6 +66,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private String mUrl;
     private ScrollView mContentScrollableView;
     private @LinkGeneration int mLinkGenerationState;
+    private Toast mToast;
 
     /**
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
@@ -360,11 +361,14 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     }
 
     private void showToast(int resource) {
+        if (mToast != null) {
+            mToast.cancel();
+        }
         String toastMessage = mContext.getResources().getString(resource);
-        Toast toast = Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT);
-        toast.setGravity(toast.getGravity(), toast.getXOffset(),
+        mToast = Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT);
+        mToast.setGravity(mToast.getGravity(), mToast.getXOffset(),
                 mContext.getResources().getDimensionPixelSize(R.dimen.y_offset_full_sharesheet));
-        toast.show();
+        mToast.show();
     }
 
     private void centerIcon(ImageView imageView) {
@@ -483,6 +487,9 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
     @Override
     public void destroy() {
+        if (mToast != null) {
+            mToast.cancel();
+        }
         mShareSheetCoordinator.destroy();
     }
 
