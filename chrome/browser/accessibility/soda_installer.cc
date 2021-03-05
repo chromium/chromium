@@ -15,18 +15,18 @@ SodaInstaller::SodaInstaller() = default;
 SodaInstaller::~SodaInstaller() = default;
 
 void SodaInstaller::Init(PrefService* prefs) {
-  if (prefs->GetBoolean(prefs::kLiveCaptionEnabled))
-    // TODO(crbug.com/1055150):
-    // CaptionController::StartLiveCaption currently performs:
-    // reset of SODA deletion time, calls to install SODA and language.
-    // Refactor this work to here, or otherwise refactor work to take
-    // place within SodaInstaller.
-    return;
-  PrefService* global_prefs = g_browser_process->local_state();
-  base::Time deletion_time =
-      global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
-  if (!deletion_time.is_null() && deletion_time < base::Time::Now()) {
-    UninstallSoda(global_prefs);
+  if (prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
+    g_browser_process->local_state()->SetTime(prefs::kSodaScheduledDeletionTime,
+                                              base::Time());
+    speech::SodaInstaller::GetInstance()->InstallSoda(prefs);
+    speech::SodaInstaller::GetInstance()->InstallLanguage(prefs);
+  } else {
+    PrefService* global_prefs = g_browser_process->local_state();
+    base::Time deletion_time =
+        global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
+    if (!deletion_time.is_null() && deletion_time < base::Time::Now()) {
+      UninstallSoda(global_prefs);
+    }
   }
 }
 

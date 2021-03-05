@@ -143,21 +143,21 @@ bool CaptionController::IsLiveCaptionEnabled() {
 
 void CaptionController::StartLiveCaption() {
   DCHECK(enabled_);
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-      speech::SodaInstaller::GetInstance()->IsSodaInstalled()) {
+  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
     CreateUI();
     return;
   }
 
-  // Ask the SodaInstaller to download the speech model and language pack. The
-  // SodaInstaller determines whether SODA is already on the device and whether
-  // or not to download. Once SODA is on the device and ready, the SodaInstaller
-  // calls OnSodaInstalled on its observers. The UI is created at that time.
-  g_browser_process->local_state()->SetTime(prefs::kSodaScheduledDeletionTime,
-                                            base::Time());
-  speech::SodaInstaller::GetInstance()->AddObserver(this);
-  speech::SodaInstaller::GetInstance()->InstallSoda(profile_->GetPrefs());
-  speech::SodaInstaller::GetInstance()->InstallLanguage(profile_->GetPrefs());
+  // The SodaInstaller determines whether SODA is already on the device and
+  // whether or not to download. Once SODA is on the device and ready, the
+  // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at
+  // that time.
+  if (speech::SodaInstaller::GetInstance()->IsSodaInstalled()) {
+    CreateUI();
+  } else {
+    speech::SodaInstaller::GetInstance()->AddObserver(this);
+    speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs());
+  }
 }
 
 void CaptionController::StopLiveCaption() {
