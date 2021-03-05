@@ -141,17 +141,31 @@ UNTRUSTED_TEST(
       // The order must be kept.
       // See UntrustedDiagnosticsRoutineCommandWithInterceptor test in
       // telemetry_extension_ui_browsertests.js.
-      let routine = await dpsl.diagnostics.battery.runCapacityRoutine();
 
-      let routineGetStatus = await routine.getStatus();
+      const routine = await dpsl.diagnostics.battery.runCapacityRoutine();
+      const routineGetStatus = await routine.getStatus();
+      const routineResume = await routine.resume();
+      const routineStop = await routine.stop();
+
       assertDeepEquals(expectedRoutineStatus, routineGetStatus);
-
-      let routineResume = await routine.resume();
       assertDeepEquals(expectedRoutineStatus, routineResume);
-
-      let routineStop = await routine.stop();
       assertDeepEquals(expectedRoutineStatus, routineStop);
     });
+
+// Tests that diagnostics routines are successfully created and run.
+UNTRUSTED_TEST('UntrustedDiagnosticsRunRoutineWithInterceptor', async () => {
+  // The order must be kept.
+  // See UntrustedDiagnosticsRunRoutineWithInterceptor test in
+  // telemetry_extension_ui_browsertests.js.
+
+  // dpsl.diagnostics.battery.* routines
+  await dpsl.diagnostics.battery.runCapacityRoutine();
+  await dpsl.diagnostics.battery.runHealthRoutine();
+  await dpsl.diagnostics.battery.runDischargeRoutine(
+      {lengthSeconds: 7, maximumDischargePercentAllowed: 50});
+  await dpsl.diagnostics.battery.runChargeRoutine(
+      {lengthSeconds: 13, minimumChargePercentRequired: 87});
+});
 
 // Tests that runBatteryHealthRoutine returns the correct Object.
 UNTRUSTED_TEST(

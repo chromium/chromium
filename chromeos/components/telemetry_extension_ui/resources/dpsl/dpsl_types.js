@@ -162,6 +162,24 @@ dpsl.AvailableRoutinesList;
  */
 dpsl.RoutineStatus;
 
+/**
+ * Params object of dpsl.diagnostics.battery.runChargeRoutine()
+ * @typedef {{
+ *   lengthSeconds: !number,
+ *   minimumChargePercentRequired: !number
+ * }}
+ */
+dpsl.BatteryChargeRoutineParams;
+
+/**
+ * Params object of dpsl.diagnostics.battery.runDischargeRoutine()
+ * @typedef {{
+ *   lengthSeconds: !number,
+ *   maximumDischargePercentAllowed: !number
+ * }}
+ */
+dpsl.BatteryDischargeRoutineParams;
+
 //////////////////// dpsl.system_events.* type definitions /////////////////////
 
 /**

@@ -784,12 +784,6 @@ class TestDiagnosticsService {
   /** @override */
   runAcPowerRoutine() {}
   /** @override */
-  runBatteryChargeRoutine() {}
-  /** @override */
-  runBatteryDischargeRoutine() {}
-  /** @override */
-  runBatteryHealthRoutine() {}
-  /** @override */
   runCpuCacheRoutine() {}
   /** @override */
   runCpuStressRoutine() {}
@@ -812,6 +806,53 @@ class TestDiagnosticsService {
    */
   runBatteryCapacityRoutine() {
     this.callHistory.push(['runBatteryCapacityRoutine']);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @override
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runBatteryHealthRoutine() {
+    this.callHistory.push(['runBatteryHealthRoutine']);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @param {!number} lengthSeconds
+   * @param {!number} maximumDischargePercentAllowed
+   * @override
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runBatteryDischargeRoutine(lengthSeconds, maximumDischargePercentAllowed) {
+    this.callHistory.push([
+      'runBatteryDischargeRoutine', {
+        lengthSeconds: lengthSeconds,
+        maximumDischargePercentAllowed: maximumDischargePercentAllowed
+      }
+    ]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @param {!number} lengthSeconds
+   * @param {!number} minimumChargePercentRequired
+   * @override
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runBatteryChargeRoutine(lengthSeconds, minimumChargePercentRequired) {
+    this.callHistory.push([
+      'runBatteryChargeRoutine', {
+        lengthSeconds: lengthSeconds,
+        minimumChargePercentRequired: minimumChargePercentRequired
+      }
+    ]);
 
     let response = this.routineResponse;
     return Promise.resolve({response});
@@ -873,6 +914,7 @@ TEST_F(
     'UntrustedDiagnosticsRoutineCommandWithInterceptor', async function() {
       await runTestInUntrusted(
           'UntrustedDiagnosticsRoutineCommandWithInterceptor');
+
       assertDeepEquals(
           [
             ['runBatteryCapacityRoutine'],
@@ -907,6 +949,30 @@ TEST_F(
                     chromeos.health.mojom.DiagnosticRoutineCommandEnum.kRemove,
                 includeOutput: true
               }
+            ]
+          ],
+          this.diagnosticsService.callHistory);
+
+      testDone();
+    });
+
+// Tests that diagnostics routines are created and correct parameters are sent
+// to the fake Mojo service.
+TEST_F(
+    'TelemetryExtensionUIWithDiagnosticsInterceptorBrowserTest',
+    'UntrustedDiagnosticsRunRoutineWithInterceptor', async function() {
+      await runTestInUntrusted('UntrustedDiagnosticsRunRoutineWithInterceptor');
+
+      assertDeepEquals(
+          [
+            ['runBatteryCapacityRoutine'], ['runBatteryHealthRoutine'],
+            [
+              'runBatteryDischargeRoutine',
+              {lengthSeconds: 7, maximumDischargePercentAllowed: 50}
+            ],
+            [
+              'runBatteryChargeRoutine',
+              {lengthSeconds: 13, minimumChargePercentRequired: 87}
             ]
           ],
           this.diagnosticsService.callHistory);

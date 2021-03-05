@@ -131,6 +131,18 @@
   }
 
   /**
+   * @param {!string} messageName
+   * @param {(!Object|undefined)=} message
+   * @returns {!Promise<!Routine>}
+   */
+  async function genericRunRoutine(messageName, message) {
+    const response =
+        /** @type {{id: number, status: string}} */ (
+            await genericSendMessage(messageName, message));
+    return new Routine(response.id);
+  }
+
+  /**
    * Diagnostics Battery Manager for dpsl.diagnostics.battery.* APIs.
    */
   class BatteryManager {
@@ -140,10 +152,41 @@
      * @public
      */
     async runCapacityRoutine() {
-      const response =
-          /** @type {{id: number, status: string}} */ (await genericSendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE));
-      return new Routine(response.id);
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE);
+    }
+
+    /**
+     * Runs battery health test.
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runHealthRoutine() {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_HEALTH_ROUTINE);
+    }
+
+    /**
+     * Runs battery capacity test.
+     * @param {!dpsl.BatteryDischargeRoutineParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runDischargeRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_DISCHARGE_ROUTINE,
+          params);
+    }
+
+    /**
+     * Runs battery charge test.
+     * @param {!dpsl.BatteryChargeRoutineParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runChargeRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CHARGE_ROUTINE, params);
     }
   }
 
@@ -244,13 +287,13 @@
      * @public
      */
     async runBatteryHealthRoutine() {
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_HEALTH_ROUTINE));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      console.warn(
+          'chromeos.diagnostics.runBatteryHealthRoutine API function is',
+          'deprecated and will be removed. Use',
+          'dpsl.diagnostics.battery.runHealthRoutine, instead');
+
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_HEALTH_ROUTINE));
     }
 
     /**
@@ -451,6 +494,11 @@
      */
     async runBatteryDischargeRoutine(
         lengthSeconds, maximumDischargePercentAllowed) {
+      console.warn(
+          'chromeos.diagnostics.runBatteryDischargeRoutine API function is',
+          'deprecated and will be removed. Use',
+          'dpsl.diagnostics.battery.runDischargeRoutine, instead');
+
       const message =
           /**
              @type {!dpsl_internal.DiagnosticsRunBatteryDischargeRoutineRequest}
@@ -459,14 +507,9 @@
             lengthSeconds: lengthSeconds,
             maximumDischargePercentAllowed: maximumDischargePercentAllowed
           });
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_DISCHARGE_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_DISCHARGE_ROUTINE,
+          message));
     }
 
     /**
@@ -477,6 +520,11 @@
      * @public
      */
     async runBatteryChargeRoutine(lengthSeconds, minimumChargePercentRequired) {
+      console.warn(
+          'chromeos.diagnostics.runBatteryChargeRoutine API function is',
+          'deprecated and will be removed. Use',
+          'dpsl.diagnostics.battery.runChargeRoutine, instead');
+
       const message =
           /**
              @type {!dpsl_internal.DiagnosticsRunBatteryChargeRoutineRequest}
@@ -485,14 +533,9 @@
             lengthSeconds: lengthSeconds,
             minimumChargePercentRequired: minimumChargePercentRequired
           });
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CHARGE_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CHARGE_ROUTINE,
+          message));
     }
   };
 
