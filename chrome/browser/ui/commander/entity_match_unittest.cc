@@ -8,7 +8,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/command_source.h"
-#include "chrome/browser/ui/commander/entity_match.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -35,6 +36,23 @@ class CommanderEntityMatchTest : public BrowserWithTestWindowTest {
     browser->SetWindowUserTitle(title);
     BrowserList::GetInstance()->SetLastActive(browser.get());
     return browser;
+  }
+
+  // Creates a tab per string in |titles|, then places each one in a group,
+  // titled with the corresponding string.
+  void CreateGroups(std::vector<base::string16> titles) {
+    // Create the tabs first so they don't get autogrouped and make odd things
+    // happen.
+    for (size_t i = 0; i < titles.size(); ++i)
+      AddTab(browser(), GURL("chrome://newtab"));
+    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabGroupModel* group_model = tab_strip_model->group_model();
+    for (size_t i = 0; i < titles.size(); ++i) {
+      tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({i});
+      tab_groups::TabGroupVisualData data(
+          titles.at(i), tab_groups::TabGroupColorId::kGrey, false);
+      group_model->GetTabGroup(group)->SetVisualData(data);
+    }
   }
 };
 
@@ -113,6 +131,46 @@ TEST_F(CommanderEntityMatchTest, WindowMRUOrderWithNoInput) {
   ASSERT_EQ(matches.size(), 2u);
   base::ranges::sort(matches, std::greater<>(), &WindowMatch::score);
   EXPECT_EQ(matches.at(0).browser, browser1.get());
+}
+
+TEST_F(CommanderEntityMatchTest, GroupReturnsAllWithNoInput) {
+  CreateGroups({u"Foo", u"Bar", u"Baz"});
+
+  EXPECT_EQ(GroupsMatchingInput(browser(), u"").size(), 3u);
+}
+
+TEST_F(CommanderEntityMatchTest, GroupExcludeWithNoInput) {
+  CreateGroups({u"Foo", u"Bar", u"Baz"});
+
+  auto second_group = browser()->tab_strip_model()->GetTabGroupForTab(1);
+  EXPECT_TRUE(second_group.has_value());
+  EXPECT_EQ(GroupsMatchingInput(browser(), u"", second_group).size(), 2u);
+}
+
+TEST_F(CommanderEntityMatchTest, GroupOnlyIncludesMatches) {
+  CreateGroups({u"Orange juice", u"Aqua Regia"});
+
+  auto matches = GroupsMatchingInput(browser(), u"Orange");
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches.at(0).title, u"Orange juice");
+}
+
+TEST_F(CommanderEntityMatchTest, GroupRanksMatches) {
+  CreateGroups({u"Oracular Nouns Gesture Electrically", u"Orange juice"});
+
+  auto matches = GroupsMatchingInput(browser(), u"orange");
+  ASSERT_EQ(matches.size(), 2u);
+  base::ranges::sort(matches, std::greater<>(), &GroupMatch::score);
+  EXPECT_EQ(matches.at(0).title, u"Orange juice");
+}
+
+TEST_F(CommanderEntityMatchTest, GroupExcludeWithInput) {
+  CreateGroups({u"William of Orange", u"Orange juice"});
+
+  auto first_group = browser()->tab_strip_model()->GetTabGroupForTab(0);
+  auto matches = GroupsMatchingInput(browser(), u"orange", first_group);
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches.at(0).title, u"Orange juice");
 }
 
 }  // namespace commander

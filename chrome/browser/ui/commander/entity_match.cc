@@ -7,6 +7,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 
 namespace commander {
 
@@ -28,6 +30,20 @@ WindowMatch& WindowMatch::operator=(WindowMatch&& other) = default;
 std::unique_ptr<CommandItem> WindowMatch::ToCommandItem() const {
   auto item = std::make_unique<CommandItem>(title, score, matched_ranges);
   item->entity_type = CommandItem::Entity::kWindow;
+  return item;
+}
+
+GroupMatch::GroupMatch(tab_groups::TabGroupId group,
+                       const base::string16& title,
+                       double score)
+    : group(group), title(title), score(score) {}
+GroupMatch::~GroupMatch() = default;
+GroupMatch::GroupMatch(GroupMatch&& other) = default;
+GroupMatch& GroupMatch::operator=(GroupMatch&& other) = default;
+
+std::unique_ptr<CommandItem> GroupMatch::ToCommandItem() const {
+  auto item = std::make_unique<CommandItem>(title, score, matched_ranges);
+  item->entity_type = CommandItem::Entity::kGroup;
   return item;
 }
 
@@ -56,6 +72,39 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
       double score = finder.Find(title, &ranges);
       if (score > 0) {
         WindowMatch match(browser, std::move(title), score);
+        match.matched_ranges = ranges;
+        results.push_back(std::move(match));
+      }
+    }
+  }
+  return results;
+}
+
+std::vector<GroupMatch> GroupsMatchingInput(
+    const Browser* browser,
+    const base::string16& input,
+    base::Optional<tab_groups::TabGroupId> group_to_exclude) {
+  DCHECK(browser);
+  std::vector<GroupMatch> results;
+  FuzzyFinder finder(input);
+  std::vector<gfx::Range> ranges;
+  TabGroupModel* model = browser->tab_strip_model()->group_model();
+  // For empty input, use this to preserve TabGroupModel's ordering, which is
+  // arbitrary but still helpful to keep consistent across calls and surfaces.
+  double ordering_score = 1.0;
+  for (const tab_groups::TabGroupId& group_id : model->ListTabGroups()) {
+    if (group_to_exclude == group_id)
+      continue;
+    const base::string16& title =
+        model->GetTabGroup(group_id)->visual_data()->title();
+    if (input.empty()) {
+      GroupMatch match(group_id, title, ordering_score);
+      results.push_back(std::move(match));
+      ordering_score *= .95;
+    } else {
+      double score = finder.Find(title, &ranges);
+      if (score > 0) {
+        GroupMatch match(group_id, title, score);
         match.matched_ranges = ranges;
         results.push_back(std::move(match));
       }
