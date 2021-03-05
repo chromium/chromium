@@ -2569,6 +2569,15 @@ const FeatureEntry::FeatureVariation kPasswordsAccountStorageVariations[] = {
 constexpr char kWallpaperWebUIInternalName[] = "wallpaper-webui";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_PAINT_PREVIEW) && defined(OS_ANDROID)
+const FeatureEntry::FeatureParam kPaintPreviewStartupWithAccessibility[] = {
+    {"has_accessibility_support", "true"}};
+
+const FeatureEntry::FeatureVariation kPaintPreviewStartupVariations[] = {
+    {"with accessibility support", kPaintPreviewStartupWithAccessibility,
+     base::size(kPaintPreviewStartupWithAccessibility), nullptr}};
+#endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW) && defined(OS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -6360,7 +6369,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(paint_preview::kPaintPreviewDemo)},
     {"paint-preview-startup", flag_descriptions::kPaintPreviewStartupName,
      flag_descriptions::kPaintPreviewStartupDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(paint_preview::kPaintPreviewShowOnStartup)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(paint_preview::kPaintPreviewShowOnStartup,
+                                    kPaintPreviewStartupVariations,
+                                    "PaintPreviewStartup")},
 #endif  // ENABLE_PAINT_PREVIEW && defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
