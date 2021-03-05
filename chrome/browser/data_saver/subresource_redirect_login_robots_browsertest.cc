@@ -17,6 +17,7 @@
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
+#include "chrome/browser/subresource_redirect/subresource_redirect_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -103,6 +104,16 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
     if (!web_contents)
       web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     return EvalJs(web_contents, script).ExtractBool();
+  }
+
+  void VerifyImageCompressionPageInfoState(
+      bool is_https_image_compression_applied,
+      content::WebContents* web_contents = nullptr) {
+    if (!web_contents)
+      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(is_https_image_compression_applied,
+              subresource_redirect::SubresourceRedirectObserver::
+                  IsHttpsImageCompressionApplied(web_contents));
   }
 
   void CreateUkmRecorder() {
@@ -195,6 +206,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   // components/subresource_redirect/common to access it here.
   EXPECT_THAT(ukm_metrics, testing::Contains(testing::Key(
                                ImageCompressionUkm::kRedirectResultNameHash)));
+  VerifyImageCompressionPageInfoState(true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -246,6 +258,10 @@ IN_PROC_BROWSER_TEST_F(
   // components/subresource_redirect/common to access it here.
   EXPECT_THAT(ukm_metrics, testing::Contains(testing::Key(
                                ImageCompressionUkm::kRedirectResultNameHash)));
+
+  // Page info would still show compression is enabled even whn no image got
+  // compressed.
+  VerifyImageCompressionPageInfoState(true);
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
@@ -271,6 +287,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
 
   robots_rules_server_.VerifyRequestedOrigins({});
   image_compression_server_.VerifyRequestedImagePaths({});
+  VerifyImageCompressionPageInfoState(false);
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
@@ -295,6 +312,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
 
   robots_rules_server_.VerifyRequestedOrigins({});
   image_compression_server_.VerifyRequestedImagePaths({});
+  VerifyImageCompressionPageInfoState(false);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -352,6 +370,7 @@ IN_PROC_BROWSER_TEST_F(
   // components/subresource_redirect/common to access it here.
   EXPECT_THAT(ukm_metrics, testing::Contains(testing::Key(
                                ImageCompressionUkm::kRedirectResultNameHash)));
+  VerifyImageCompressionPageInfoState(true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -379,6 +398,7 @@ IN_PROC_BROWSER_TEST_F(
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png"});
+  VerifyImageCompressionPageInfoState(true);
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
@@ -405,6 +425,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png", "/load_image/image.png?foo"});
+  VerifyImageCompressionPageInfoState(true);
 }
 
 // Verify an new image loads fine after robots rules fetch is complete.
@@ -445,6 +466,7 @@ IN_PROC_BROWSER_TEST_F(
       "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", 1);
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png", "/load_image/image.png?foo"});
+  VerifyImageCompressionPageInfoState(true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -512,6 +534,7 @@ IN_PROC_BROWSER_TEST_F(
       "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", 2);
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png", "/load_image/image.png?allowed"});
+  VerifyImageCompressionPageInfoState(true);
 }
 
 // Verifies that LitePages gets blocked due to robots fetch failure, and
@@ -560,6 +583,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   // No more additional fetches.
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths({});
+  VerifyImageCompressionPageInfoState(true);
 }
 
 // Verifies that when an image load fails, LitePages gets blocked, and
@@ -620,6 +644,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png"});
+  VerifyImageCompressionPageInfoState(true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -666,6 +691,7 @@ IN_PROC_BROWSER_TEST_F(
 
   robots_rules_server_.VerifyRequestedOrigins({});
   image_compression_server_.VerifyRequestedImagePaths({});
+  VerifyImageCompressionPageInfoState(false);
 }
 
 // Tests images in subframe are compressed.
@@ -700,6 +726,7 @@ IN_PROC_BROWSER_TEST_F(
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png?mainframe", "/load_image/image.png"});
+  VerifyImageCompressionPageInfoState(true);
 }
 
 // Tests images in cross-origin subframe are compressed.
@@ -740,6 +767,7 @@ IN_PROC_BROWSER_TEST_F(
        https_test_server_.GetURL("foo.com", "/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png?mainframe", "/load_image/image.png"});
+  VerifyImageCompressionPageInfoState(true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -779,6 +807,8 @@ IN_PROC_BROWSER_TEST_F(
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png?mainframe"});
+  // Main frame still enables image compression.
+  VerifyImageCompressionPageInfoState(true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -810,6 +840,7 @@ IN_PROC_BROWSER_TEST_F(
 
   robots_rules_server_.VerifyRequestedOrigins({});
   image_compression_server_.VerifyRequestedImagePaths({});
+  VerifyImageCompressionPageInfoState(false);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -872,6 +903,7 @@ IN_PROC_BROWSER_TEST_F(
       net::HTTP_TEMPORARY_REDIRECT, 7);
   histogram_tester_.ExpectTotalCount(
       "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
+  VerifyImageCompressionPageInfoState(true);
 }
 
 }  // namespace subresource_redirect
