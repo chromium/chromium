@@ -58,6 +58,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
  private:
   friend class CellularMetricsLoggerTest;
+  FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
+                           CellularServiceAtLoginTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest, CellularUsageCountTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularUsageCountDongleTest);
@@ -152,6 +154,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // when usage state changes.
   void CheckForCellularUsageCountMetric();
 
+  // Tracks how many eSIM profiles are installed on the device and how many pSIM
+  // networks are available on the device if |is_service_count_logged_| is true.
+  void CheckForCellularServiceCountMetric();
+
   // Returns the ConnectionInfo for given |cellular_network_guid|.
   ConnectionInfo* GetConnectionInfoForCellularNetwork(
       const std::string& cellular_network_guid);
@@ -180,6 +186,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Tracks whether activation state is already logged for this
   // session.
   bool is_activation_state_logged_ = false;
+
+  // Tracks whether service count is already logged for this session.
+  bool is_service_count_logged_ = false;
 
   // Stores connection information for all cellular networks.
   base::flat_map<std::string, std::unique_ptr<ConnectionInfo>>

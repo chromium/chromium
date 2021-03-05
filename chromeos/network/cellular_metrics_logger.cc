@@ -151,6 +151,7 @@ void CellularMetricsLogger::NetworkListChanged() {
 void CellularMetricsLogger::OnInitializationTimeout() {
   CheckForActivationStateMetric();
   CheckForCellularUsageCountMetric();
+  CheckForCellularServiceCountMetric();
 }
 
 void CellularMetricsLogger::LoggedInStateChanged() {
@@ -161,6 +162,11 @@ void CellularMetricsLogger::LoggedInStateChanged() {
   // the user logs in.
   is_activation_state_logged_ = false;
   CheckForActivationStateMetric();
+
+  // This flag ensures that the service count is only logged once when
+  // the user logs in.
+  is_service_count_logged_ = false;
+  CheckForCellularServiceCountMetric();
 }
 
 void CellularMetricsLogger::NetworkConnectionStateChanged(
@@ -283,6 +289,33 @@ void CellularMetricsLogger::CheckForActivationStateMetric() {
   UMA_HISTOGRAM_ENUMERATION("Network.Cellular.Activation.StatusAtLogin",
                             activation_state);
   is_activation_state_logged_ = true;
+}
+
+void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
+  if (!is_cellular_available_ || is_service_count_logged_ ||
+      !CellularMetricsLogger::IsLoggedInUserOwnerOrRegular()) {
+    return;
+  }
+
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetVisibleNetworkListByType(
+      NetworkTypePattern::Cellular(), &network_list);
+
+  size_t psim_networks = 0;
+  size_t esim_profiles = 0;
+
+  for (const auto* network : network_list) {
+    if (!network->eid().empty())
+      esim_profiles++;
+    else
+      psim_networks++;
+  }
+
+  UMA_HISTOGRAM_COUNTS_100("Network.Cellular.PSim.ServiceAtLogin.Count",
+                           psim_networks);
+  UMA_HISTOGRAM_COUNTS_100("Network.Cellular.ESim.ServiceAtLogin.Count",
+                           esim_profiles);
+  is_service_count_logged_ = true;
 }
 
 void CellularMetricsLogger::CheckForCellularUsageCountMetric() {

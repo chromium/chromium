@@ -27,6 +27,11 @@ const char kTestEthServicePath[] = "/service/eth0";
 const char kPSimUsageCountHistogram[] = "Network.Cellular.PSim.Usage.Count";
 const char kESimUsageCountHistogram[] = "Network.Cellular.ESim.Usage.Count";
 
+const char kPSimServiceAtLoginHistogram[] =
+    "Network.Cellular.PSim.ServiceAtLogin.Count";
+const char kESimServiceAtLoginHistogram[] =
+    "Network.Cellular.ESim.ServiceAtLogin.Count";
+
 const char kActivationStatusAtLoginHistogram[] =
     "Network.Cellular.Activation.StatusAtLogin";
 const char kTimeToConnectedHistogram[] =
@@ -124,6 +129,43 @@ class CellularMetricsLoggerTest : public testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(CellularMetricsLoggerTest);
 };
+
+TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
+  base::HistogramTester histogram_tester;
+
+  // Should defer logging when there are no cellular networks.
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+  histogram_tester.ExpectTotalCount(kESimServiceAtLoginHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPSimServiceAtLoginHistogram, 0);
+
+  // Should wait until initialization timeout before logging status.
+  InitCellular();
+  histogram_tester.ExpectTotalCount(kESimServiceAtLoginHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPSimServiceAtLoginHistogram, 0);
+  task_environment_.FastForwardBy(
+      CellularMetricsLogger::kInitializationTimeout);
+  histogram_tester.ExpectTotalCount(kESimServiceAtLoginHistogram, 1);
+  histogram_tester.ExpectTotalCount(kPSimServiceAtLoginHistogram, 1);
+
+  // Should log immediately when networks are already initialized.
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_NONE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+  histogram_tester.ExpectTotalCount(kESimServiceAtLoginHistogram, 2);
+  histogram_tester.ExpectTotalCount(kPSimServiceAtLoginHistogram, 2);
+
+  // Should not log when the logged in user is neither owner nor regular.
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK_APP);
+  histogram_tester.ExpectTotalCount(kESimServiceAtLoginHistogram, 2);
+  histogram_tester.ExpectTotalCount(kPSimServiceAtLoginHistogram, 2);
+}
 
 TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
   InitEthernet();
