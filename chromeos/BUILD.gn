@@ -243,6 +243,7 @@ if (is_chromeos_device) {
 
   tast_test("chrome_login_tast_tests") {
     tast_tests = [
+      "ui.ChromeLogin",
       "ui.ChromeCrashLoggedIn",
       "ui.ChromeCrashNotLoggedIn",
     ]
