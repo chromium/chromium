@@ -6552,6 +6552,21 @@
             ]
         }
     ],
+    "SimplifySignOutIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SimplifySignOutIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmartSuggestionForLargeDownloads": [
         {
             "platforms": [
