@@ -455,6 +455,8 @@ crbug.com/1052202 external/wpt/svg/linking/scripted/href-mpath-element.html [ Ti
 crbug.com/1052202 external/wpt/svg/linking/scripted/href-animate-element.html [ Timeout ]
 
 crbug.com/785246 external/wpt/svg/struct/reftests/use-inheritance-001.svg [ Failure ]
+crbug.com/785246 external/wpt/svg/linking/reftests/use-descendant-combinator-003.html [ Failure ]
+
 crbug.com/674797 external/wpt/svg/painting/reftests/marker-path-022.svg [ Failure ]
 crbug.com/674797 external/wpt/svg/painting/reftests/marker-path-023.svg [ Failure ]
 
@@ -3053,7 +3055,6 @@ crbug.com/626703 external/wpt/clear-site-data/executionContexts.sub.html [ Timeo
 crbug.com/626703 [ Win7 ] external/wpt/css/css-lists/content-property/marker-text-matches-armenian.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-lists/content-property/marker-text-matches-disc.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-lists/content-property/marker-text-matches-square.html [ Failure ]
-crbug.com/626703 external/wpt/svg/linking/reftests/use-descendant-combinator-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-lists/content-property/marker-text-matches-circle.html [ Failure ]
 crbug.com/626703 external/wpt/content-security-policy/securitypolicyviolation/targeting.html [ Timeout ]
 crbug.com/863355 [ Mac ] external/wpt/svg/shapes/reftests/pathlength-002.svg [ Failure ]
