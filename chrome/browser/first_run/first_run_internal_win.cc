@@ -154,10 +154,15 @@ bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {
 
 base::FilePath InitialPrefsPath() {
   // The standard location of the initial prefs is next to the chrome binary.
-  base::FilePath initial_prefs;
-  if (!base::PathService::Get(base::DIR_EXE, &initial_prefs))
+  base::FilePath dir_exe;
+  if (!base::PathService::Get(base::DIR_EXE, &dir_exe))
     return base::FilePath();
-  return initial_prefs.AppendASCII(installer::kLegacyInitialPrefs);
+
+  base::FilePath initial_prefs = dir_exe.AppendASCII(installer::kInitialPrefs);
+  if (base::PathIsReadable(initial_prefs))
+    return initial_prefs;
+
+  return dir_exe.AppendASCII(installer::kLegacyInitialPrefs);
 }
 
 }  // namespace internal
