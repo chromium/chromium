@@ -3261,11 +3261,11 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Questo criterio aziendale è finalizzato al periodo di transizione e sarà disponibile almeno fino alla versione 93 di Chrome.</translation>
 <translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
 
-      Se viene selezionata l'opzione "Attiva" o se il criterio non viene impostato, è possibile aprire le pagine in modalità di navigazione in incognito.
+      Se viene selezionata l'opzione "Enabled" o se il criterio non viene impostato, è possibile aprire le pagine in modalità di navigazione in incognito.
 
-      Se viene selezionata l'opzione "Non attiva", non è possibile aprire le pagine in modalità di navigazione in incognito.
+      Se viene selezionata l'opzione "Disabled", non è possibile aprire le pagine in modalità di navigazione in incognito.
 
-      Se viene selezionata l'opzione "Forzata", è possibile aprire le pagine SOLTANTO in modalità di navigazione in incognito. Tieni presente che l'opzione "Forzata" non funziona per Android-on-Chrome.
+      Se viene selezionata l'opzione "Forced", è possibile aprire le pagine SOLTANTO in modalità di navigazione in incognito. Tieni presente che l'opzione "Forced" non funziona per Android-on-Chrome.
 
       Nota: su iOS, se il criterio viene modificato durante una sessione, avrà effetto solamente al riavvio.</translation>
 <translation id="5497565614013170656">Espressione regolare per trovare corrispondenze con l'ID stampante.</translation>
@@ -4952,10 +4952,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="776110834126722255">Deprecata</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
-<translation id="7774451488719504808">Come descritto alla pagina https://www.chromestatus.com/feature/5148698084376576, le finestre di dialogo modali JavaScript, attivate da <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> e <ph name="JS_PROMPT" /> saranno bloccate in <ph name="PRODUCT_NAME" /> se attivate da un frame secondario la cui origine è diversa dall'origine del frame principale.
+<translation id="7774451488719504808">Come descritto alla pagina https://www.chromestatus.com/feature/5148698084376576, le finestre di dialogo modali JavaScript, attivate da <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> e <ph name="JS_PROMPT" />, saranno bloccate in <ph name="PRODUCT_NAME" /> se attivate da un frame secondario la cui origine è diversa dall'origine del frame principale.
        Questo criterio consente di eseguire l'override di tale modifica.
-       Se il criterio viene impostato su attivato o non viene impostato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa vengono bloccate.
-       Se il criterio viene impostato su disattivato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa non vengono bloccate.</translation>
+       Se il criterio viene impostato su Attivato o non viene impostato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa vengono bloccate.
+       Se il criterio viene impostato su Disattivato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa non vengono bloccate.</translation>
 <translation id="7774768074957326919">Utilizza le impostazioni proxy di sistema</translation>
 <translation id="777734450201217641">Consente di attivare le scorciatoie delle funzioni di accessibilità nella schermata di accesso.
 

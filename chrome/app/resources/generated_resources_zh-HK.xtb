@@ -278,6 +278,7 @@
 <translation id="1303178898338186101">無法連線至 Google Play。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="1303671224831497365">找不到藍牙裝置</translation>
 <translation id="130491383855577612">已成功取代 Linux 應用程式和檔案</translation>
+<translation id="1306390193749326011">您將不會再在此頁面看到<ph name="MODULE_NAME" /></translation>
 <translation id="1306606229401759371">變更設定</translation>
 <translation id="1307165550267142340">已建立 PIN</translation>
 <translation id="1307431692088049276">不要再問我</translation>
@@ -702,6 +703,7 @@
 <translation id="17584710573359123">在「Chrome 網上應用程式商店」上查看</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
 <translation id="176193854664720708">指紋感應器位於開關按鈕中。請以任何一隻手指輕觸按鈕。</translation>
+<translation id="176272781006230109">購物建議</translation>
 <translation id="1763046204212875858">建立應用程式捷徑</translation>
 <translation id="1763808908432309942">在新分頁中開啟</translation>
 <translation id="1764226536771329714">測試版</translation>
@@ -996,6 +998,7 @@
 <translation id="2099686503067610784">要刪除伺服器憑證「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
 <translation id="2100273922101894616">自動登入</translation>
 <translation id="2101225219012730419">版本：</translation>
+<translation id="2105809836724866556">「<ph name="MODULE_TITLE" />」已隱藏</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="211144231511833662">清除類型</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
@@ -1287,6 +1290,7 @@
 <translation id="2424424966051154874">{0,plural, =1{訪客}other{訪客 (#)}}</translation>
 <translation id="2428510569851653187">請說明分頁當機時您正在執行的動作</translation>
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
+<translation id="2428978615149723410">這些購物車</translation>
 <translation id="2431027948063157455">無法載入「Google 助理」，請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="2433452467737464329">在網址中新增查詢參數即可自動重新整理網頁：chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">外觀</translation>
@@ -2029,6 +2033,7 @@
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3269069891205016797">登出帳戶後，系統會將您的資料從裝置上移除。</translation>
 <translation id="3269093882174072735">載入圖片</translation>
+<translation id="326911502853238749">不要顯示<ph name="MODULE_NAME" /></translation>
 <translation id="3269612321104318480">淺藍綠色和白色</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
 <translation id="326999365752735949">正在下載差異部分</translation>
@@ -2227,7 +2232,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可查看以下檔案</translation>
 <translation id="3484273680291419129">正在移除有害的軟件…</translation>
 <translation id="3484869148456018791">取得新憑證</translation>
-<translation id="3484991308207164042">隱藏這些購物車</translation>
 <translation id="3487007233252413104">匿名函數</translation>
 <translation id="348780365869651045">正在等待 AppCache…</translation>
 <translation id="3490695139702884919">正在下載… <ph name="PERCENT" />%</translation>
@@ -2244,6 +2248,7 @@
 <translation id="3498215018399854026">目前無法聯絡您的家長。請再試一次。</translation>
 <translation id="3500417806337761827">連接共用檔案時發生錯誤。已連接過多 SMB 共用檔案。</translation>
 <translation id="3505030558724226696">撤銷裝置存取權</translation>
+<translation id="3505100368357440862">購物建議</translation>
 <translation id="3507132249039706973">已開啟「標準保護功能」</translation>
 <translation id="3507421388498836150">「<ph name="EXTENSION_NAME" />」目前的權限</translation>
 <translation id="3507888235492474624">重新掃瞄藍牙裝置</translation>
@@ -2585,7 +2590,6 @@
 <translation id="3866249974567520381">描述</translation>
 <translation id="3867134342671430205">透過拖曳方式或方向鍵移動螢幕</translation>
 <translation id="3867944738977021751">憑證欄位</translation>
-<translation id="3868847547183917201">您將不會再在此頁面看到購物車</translation>
 <translation id="3869917919960562512">錯誤的索引。</translation>
 <translation id="3870931306085184145">沒有儲存的 <ph name="DOMAIN" /> 密碼</translation>
 <translation id="3871350334636688135">24 小時後，管理員會在您重新啟動裝置時執行一次性更新，而此更新會刪除您的本機資料。請在 24 小時內將您需要的任何本機資料儲存至雲端儲存空間。</translation>
@@ -2863,7 +2867,6 @@
 <translation id="4186763173530196927">一個應用程式正在嘗試存取攝錄機。如要允許存取，請將攝錄機的私隱開關切換至關閉。</translation>
 <translation id="4187424053537113647">正在設定 <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">突顯鍵盤焦點</translation>
-<translation id="4193575319002689239">顯示資訊卡</translation>
 <translation id="4194570336751258953">啟用輕按點擊功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4195814663415092787">開啟上次瀏覽的內容</translation>
@@ -2955,7 +2958,7 @@
 <translation id="4307992518367153382">基本</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K 使用中)</translation>
 <translation id="4310139701823742692">檔案格式錯誤。請檢查 PPD 檔案，然後再試一次。</translation>
-<translation id="43106757207292366">您可透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。您向網站和應用程式授予的權限，可能會套用到所有帳戶。如果不要讓網站和應用程式存取您的帳戶資料，請以訪客身分登入您的 <ph name="DEVICE_TYPE" />，或透過<ph name="LINK_2_BEGIN" />無痕式視窗<ph name="LINK_2_END" />瀏覽網頁。</translation>
+<translation id="43106757207292366">您可透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。您向網站和應用程式授予的權限，可能會套用到所有帳戶。如果您不想網站和應用程式存取您的帳戶資料，請以訪客身分登入您的 <ph name="DEVICE_TYPE" />，或透過<ph name="LINK_2_BEGIN" />無痕式視窗<ph name="LINK_2_END" />瀏覽網頁。</translation>
 <translation id="431076611119798497">詳情(&amp;D)</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步資料</translation>
@@ -3127,6 +3130,7 @@
 <translation id="4508765956121923607">檢視原始碼(&amp;O)</translation>
 <translation id="4510479820467554003">家長帳戶清單</translation>
 <translation id="4510614391273086606">正在將 Linux 檔案和應用程式還原至備份狀態。</translation>
+<translation id="451102079304155829">購物車</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="451407183922382411">由 <ph name="COMPANY_NAME" /> 提供</translation>
 <translation id="4514610446763173167">喺播放同暫停影片之間切換</translation>
@@ -3240,6 +3244,7 @@
 <translation id="4628757576491864469">裝置</translation>
 <translation id="4628762811416793313">未完成 Linux 容器設定。請再試一次。</translation>
 <translation id="4629521233550547305">開啟 <ph name="PROFILE_NAME" /> 設定檔</translation>
+<translation id="4632655012900268062">自訂資訊卡</translation>
 <translation id="4633003931260532286">此擴充程式要求 <ph name="IMPORT_NAME" /> <ph name="IMPORT_VERSION" /> 或以上，但現有版本僅為 <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或改用其他裝置。備份包含應用程式資料。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。</translation>
 <translation id="4634575639321169635">將此裝置設定為工作或個人使用</translation>
@@ -3247,6 +3252,7 @@
 <translation id="4635072447747973225">解除安裝 Crostini</translation>
 <translation id="4635398712689569051">訪客使用者無法瀏覽「<ph name="PAGE_NAME" />」。</translation>
 <translation id="4635444580397524003">已成功還原 Linux 備份。</translation>
+<translation id="4636682061478263818">「雲端硬碟」檔案</translation>
 <translation id="4636930964841734540">資訊</translation>
 <translation id="4637083375689622795">更多操作，<ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
@@ -3380,7 +3386,6 @@
 <translation id="4808667324955055115">已封鎖彈出式視窗：</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="480990236307250886">開啟首頁</translation>
-<translation id="4810383437107234249">永不顯示購物車</translation>
 <translation id="4811212958317149293">「按鈕控制」鍵盤自動掃瞄</translation>
 <translation id="4811503964269049987">將所選分頁分組</translation>
 <translation id="4813136279048157860">我的圖片</translation>
@@ -3501,6 +3506,7 @@
 <translation id="4932733599132424254">日期</translation>
 <translation id="4933484234309072027">嵌入至 <ph name="URL" /></translation>
 <translation id="4936042273057045735">設有工作設定檔的手機不支援通知同步功能</translation>
+<translation id="4938788218358929252">這些食譜提議</translation>
 <translation id="4939805055470675027">無法連接 <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 部可以儲存嘅打印機。</translation>
 <translation id="4940448324259979830">此帳戶是由 <ph name="PROFILE_NAME" /> 管理</translation>
@@ -3517,6 +3523,7 @@
 <translation id="4955710816792587366">選擇 PIN</translation>
 <translation id="4959262764292427323">密碼會儲存在您的 Google 帳戶中，讓您可在任何裝置上使用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
+<translation id="4961361269522589229">食譜提議</translation>
 <translation id="496185450405387901">您的管理員已安裝此應用程式。</translation>
 <translation id="4964455510556214366">排列方式</translation>
 <translation id="496446150016900060">將 Wi-Fi 網絡設定同步至您的手機</translation>
@@ -4792,6 +4799,7 @@
 <translation id="6451689256222386810">如果您忘記密碼短語，或要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />。</translation>
 <translation id="6452181791372256707">拒絕</translation>
 <translation id="6452251728599530347">已完成 <ph name="PERCENT" /></translation>
+<translation id="645286928527869380">食譜提議</translation>
 <translation id="6452961788130242735">網絡發生問題或領域錯誤</translation>
 <translation id="6455264371803474013">在特定網站上</translation>
 <translation id="6455894534188563617">新增資料夾(&amp;N)</translation>
@@ -4990,6 +4998,7 @@
 <translation id="6686490380836145850">關閉右側分頁</translation>
 <translation id="6686665106869989887">分頁移咗去右邊</translation>
 <translation id="6686817083349815241">儲存您的密碼</translation>
+<translation id="6687079240787935001">隱藏<ph name="MODULE_TITLE" /></translation>
 <translation id="6688285987813868112">為此圖片建立二維條碼</translation>
 <translation id="6690659332373509948">無法解析檔案：<ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">在 Google 資訊主頁上管理已同步的資料</translation>
@@ -5061,6 +5070,7 @@
 <translation id="6775163072363532304">可用的裝置將會在這裡顯示。</translation>
 <translation id="6777817260680419853">已禁止重新導向</translation>
 <translation id="6778737459546443941">您的家長尚未批准瀏覽此網站</translation>
+<translation id="6779447100905857289">您的購物車</translation>
 <translation id="677965093459947883">非常小</translation>
 <translation id="6781005693196527806">管理搜尋引擎…(&amp;M)</translation>
 <translation id="6781284683813954823">Doodle 連結</translation>
@@ -6307,6 +6317,7 @@
 <translation id="8168435359814927499">內容</translation>
 <translation id="8168943654413034772">這是為「選取」動作指派的唯一按鍵，因此無法移除。請按任何按鍵以離開。</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
+<translation id="8171334254070436367">隱藏所有資訊卡</translation>
 <translation id="8174047975335711832">裝置資料</translation>
 <translation id="8174876712881364124">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或改用其他裝置。備份包含應用程式資料。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">粉紅色和白色</translation>
@@ -6646,7 +6657,6 @@
 <translation id="8592141010104017453">完全不顯示通知</translation>
 <translation id="859246725979739260">此網站已被禁止存取您的位置。</translation>
 <translation id="8593121833493516339">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
-<translation id="8593735906501637689">已移除「<ph name="MODULE_TITLE" />」</translation>
 <translation id="8594908476761052472">拍攝影片</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">網絡屬性：</translation>
@@ -6720,7 +6730,6 @@
 <translation id="866611985033792019">信任這個用於識別電郵使用者的憑證</translation>
 <translation id="8666584013686199826">在網站要存取 USB 裝置時詢問您</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕，並且停用了滑鼠游標。</translation>
-<translation id="866851964140184995">您將不會再在此頁面看到「<ph name="MODULE_NAME" />」</translation>
 <translation id="8669284339312441707">暖色調</translation>
 <translation id="8670537393737592796">如要快速返回此處，請按一下安裝按鈕來安裝「<ph name="APP_NAME" />」</translation>
 <translation id="867085395664725367">伺服器暫時發生錯誤。</translation>

@@ -278,6 +278,7 @@
 <translation id="1303178898338186101">Не бе установена връзка с Google Play. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="1303671224831497365">Няма намерени устройства с Bluetooth</translation>
 <translation id="130491383855577612">Приложенията и файловете за Linux са заменени успешно</translation>
+<translation id="1306390193749326011">Повече няма да виждате <ph name="MODULE_NAME" /> на тази страница</translation>
 <translation id="1306606229401759371">Промяна на настройките</translation>
 <translation id="1307165550267142340">ПИН кодът ви бе създаден</translation>
 <translation id="1307431692088049276">Не ме питайте отново</translation>
@@ -699,6 +700,7 @@
 <translation id="17584710573359123">Преглед в уеб магазина на Chrome</translation>
 <translation id="1761845175367251960">Профилите на <ph name="NAME" /></translation>
 <translation id="176193854664720708">Сензорът за отпечатъци е в бутона за включване/изключване. Докоснете го леко с който и да е пръст.</translation>
+<translation id="176272781006230109">предложения за пазаруване</translation>
 <translation id="1763046204212875858">Създаване на преки пътища към приложението</translation>
 <translation id="1763808908432309942">Отваря се в нов раздел</translation>
 <translation id="1764226536771329714">бета</translation>
@@ -993,6 +995,7 @@
 <translation id="2099686503067610784">Да се изтрие ли сертификатът на сървър „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="2100273922101894616">Автоматичен вход</translation>
 <translation id="2101225219012730419">Версия:</translation>
+<translation id="2105809836724866556">„<ph name="MODULE_TITLE" />“ бе скрито</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонен номер}other{# телефонни номера}}</translation>
 <translation id="211144231511833662">Изчистване на типовете</translation>
 <translation id="2111670510994270194">Нов раздел отдясно</translation>
@@ -1285,6 +1288,7 @@
 <translation id="2424424966051154874">{0,plural, =1{Гост}other{Гост (#)}}</translation>
 <translation id="2428510569851653187">Опишете какво правехте, когато разделът претърпя срив</translation>
 <translation id="2428939361789119025">Изключване на Wi-Fi</translation>
+<translation id="2428978615149723410">тези кошници</translation>
 <translation id="2431027948063157455">Google Асистент не можа да се зареди. Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="2433452467737464329">За да опресните страницата автоматично, добавете към URL адреса параметър на заявката: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Облик</translation>
@@ -2027,6 +2031,7 @@
 <translation id="3268451620468152448">Отворени раздели</translation>
 <translation id="3269069891205016797">Информацията ви ще бъде премахната от устройството, когато излезете от профила си.</translation>
 <translation id="3269093882174072735">Зареждане на изображението</translation>
+<translation id="326911502853238749">Без показване на <ph name="MODULE_NAME" /></translation>
 <translation id="3269612321104318480">Светло синьо-зелено и бяло</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файла}}</translation>
 <translation id="326999365752735949">Файлът с разликите се изтегля</translation>
@@ -2225,7 +2230,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> може да преглежда следните файлове</translation>
 <translation id="3484273680291419129">Опасният софтуер се премахва...</translation>
 <translation id="3484869148456018791">Получаване на нов сертификат</translation>
-<translation id="3484991308207164042">Скриване на тези кошници</translation>
 <translation id="3487007233252413104">анонимна функция</translation>
 <translation id="348780365869651045">Изчаква се кешът на приложението...</translation>
 <translation id="3490695139702884919">Изтегля се... <ph name="PERCENT" />%</translation>
@@ -2242,6 +2246,7 @@
 <translation id="3498215018399854026">Не можахме да се свържем с родителя ви. Моля, опитайте отново.</translation>
 <translation id="3500417806337761827">Грешка при свързването с мрежовия дял. Вече са свързани твърде много мрежови дялове през SMB.</translation>
 <translation id="3505030558724226696">Отмяна на достъпа до устройството</translation>
+<translation id="3505100368357440862">Предложения за пазаруване</translation>
 <translation id="3507132249039706973">Режимът за стандартна защита е включен</translation>
 <translation id="3507421388498836150">Текущи разрешения за <ph name="EXTENSION_NAME" /></translation>
 <translation id="3507888235492474624">Повторно сканиране за устройства с Bluetooth</translation>
@@ -2584,7 +2589,6 @@
 <translation id="3866249974567520381">Описание</translation>
 <translation id="3867134342671430205">Преместете екран с плъзгане или посредством клавишите със стрелки</translation>
 <translation id="3867944738977021751">Полета на сертификата</translation>
-<translation id="3868847547183917201">Повече няма да виждате кошниците си на тази страница</translation>
 <translation id="3869917919960562512">Грешен индекс.</translation>
 <translation id="3870931306085184145">Няма запазени пароли за <ph name="DOMAIN" /></translation>
 <translation id="3871350334636688135">След 24 часа администраторът ви ще извърши еднократна актуализация, при която ще бъдат изтрити локалните ви данни, когато рестартирате устройството си. До 24 часа запазете в хранилището в облака локалните данни, които са ви необходими.</translation>
@@ -2862,7 +2866,6 @@
 <translation id="4186763173530196927">Приложение се опитва да осъществи достъп до камерата. За да разрешите достъпа, поставете превключвателя за поверителност на камерата в изключено положение.</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> се настройва...</translation>
 <translation id="4190828427319282529">Открояване на елемента, върху който е фокусът за клавиатурата</translation>
-<translation id="4193575319002689239">Показване на картите</translation>
 <translation id="4194570336751258953">Активиране на кликване с докосване</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4195814663415092787">Продължаване оттам, откъдето сте прекъснали</translation>
@@ -3126,6 +3129,7 @@
 <translation id="4508765956121923607">Преглед на изходн&amp;ия код</translation>
 <translation id="4510479820467554003">Списък с профили на родителите</translation>
 <translation id="4510614391273086606">Файловете и приложенията за Linux се възстановяват от резервното копие.</translation>
+<translation id="451102079304155829">кошници</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="451407183922382411">Предоставено от <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Превключвател за възпроизвеждане или поставяне на пауза на видеоклипа</translation>
@@ -3239,6 +3243,7 @@
 <translation id="4628757576491864469">Устройства</translation>
 <translation id="4628762811416793313">Настройването на контейнера за Linux не завърши. Моля, опитайте отново.</translation>
 <translation id="4629521233550547305">Отваряне на потребителския профил <ph name="PROFILE_NAME" /></translation>
+<translation id="4632655012900268062">Персонализиране на картите</translation>
 <translation id="4633003931260532286">Разширението изисква <ph name="IMPORT_VERSION" /> или по-нова версия на <ph name="IMPORT_NAME" />, но само <ph name="INSTALLED_VERSION" /> е инсталирана</translation>
 <translation id="4633757335284074492">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството или да го замените с друго. Резервното копие включва данните на приложенията. Резервните копия се качват в Google и се шифроват посредством паролата за профила на детето ви в Google.</translation>
 <translation id="4634575639321169635">Настройте това устройство за служебна или лична употреба</translation>
@@ -3246,6 +3251,7 @@
 <translation id="4635072447747973225">Деинсталиране на Crostini</translation>
 <translation id="4635398712689569051">Страницата „<ph name="PAGE_NAME" />“ не е достъпна за гости.</translation>
 <translation id="4635444580397524003">Възстановяването на резервното копие на Linux бе успешно.</translation>
+<translation id="4636682061478263818">Файлове в Диск</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4637083375689622795">Още действия, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{SMS съобщение}other{# SMS съобщения}}</translation>
@@ -3379,7 +3385,6 @@
 <translation id="4808667324955055115">Изскачащите прозорци са блокирани:</translation>
 <translation id="4809079943450490359">Инструкции от администратора на устройството ви:</translation>
 <translation id="480990236307250886">Отваряне на началната страница</translation>
-<translation id="4810383437107234249">Без показване на кошниците</translation>
 <translation id="4811212958317149293">Автоматично сканиране на клавиатурата при достъп с превключване</translation>
 <translation id="4811503964269049987">Добавяне на избрания раздел към група</translation>
 <translation id="4813136279048157860">Моите изображения</translation>
@@ -3500,6 +3505,7 @@
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4933484234309072027">вградена в <ph name="URL" /></translation>
 <translation id="4936042273057045735">Синхронизирането на известията не се поддържа за телефони, работещи със служебен потребителски профил</translation>
+<translation id="4938788218358929252">тези идеи за рецепти</translation>
 <translation id="4939805055470675027">Не можа да се установи връзка с(ъс) <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">За запазване са налице <ph name="PRINTER_COUNT" /> принтера.</translation>
 <translation id="4940448324259979830">Този профил се управлява от <ph name="PROFILE_NAME" /></translation>
@@ -3516,6 +3522,7 @@
 <translation id="4955710816792587366">Изберете ПИН код</translation>
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961361269522589229">идеи за рецепти</translation>
 <translation id="496185450405387901">Това приложение е инсталирано от администратора ви.</translation>
 <translation id="4964455510556214366">Подредба</translation>
 <translation id="496446150016900060">Синхронизирайте Wi-Fi мрежите с телефона си</translation>
@@ -4792,6 +4799,7 @@
 <translation id="6451689256222386810">Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Отхвърляне</translation>
 <translation id="6452251728599530347">Завършено: <ph name="PERCENT" /></translation>
+<translation id="645286928527869380">Идеи за рецепти</translation>
 <translation id="6452961788130242735">Проблем с мрежата или неправилна област</translation>
 <translation id="6455264371803474013">На конкретни сайтове</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
@@ -4990,6 +4998,7 @@
 <translation id="6686490380836145850">Затваряне на разделите отдясно</translation>
 <translation id="6686665106869989887">Разделът бе преместен надясно</translation>
 <translation id="6686817083349815241">Запазване на паролата ви</translation>
+<translation id="6687079240787935001">Скриване на <ph name="MODULE_TITLE" /></translation>
 <translation id="6688285987813868112">Създаване на код за бърза реакция за това изображение</translation>
 <translation id="6690659332373509948">Файлът „<ph name="FILE_NAME" />“ не може да се анализира синтактично</translation>
 <translation id="6691331417640343772">Управление на синхронизираните данни чрез Google Табло за управление</translation>
@@ -5061,6 +5070,7 @@
 <translation id="6775163072363532304">Наличните устройства ще се показват тук.</translation>
 <translation id="6777817260680419853">Блокирано бе пренасочване</translation>
 <translation id="6778737459546443941">Родителят ви все още не е одобрил заявката</translation>
+<translation id="6779447100905857289">вашите кошници</translation>
 <translation id="677965093459947883">Много малък</translation>
 <translation id="6781005693196527806">&amp;Управление на търсещите машини…</translation>
 <translation id="6781284683813954823">Връзка към драскулката</translation>
@@ -6308,6 +6318,7 @@
 <translation id="8168435359814927499">Съдържание</translation>
 <translation id="8168943654413034772">Единственият превключвател за избиране не може да бъде премахнат. Натиснете произволен клавиш, за да излезете.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
+<translation id="8171334254070436367">Скриване на всички карти</translation>
 <translation id="8174047975335711832">Информация за устройството</translation>
 <translation id="8174876712881364124">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството или да го замените с друго. Резервните копия включват данните на приложенията, качени са в Google и са шифровани посредством паролата за профила в Google на детето ви. <ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Розово и бяло</translation>
@@ -6648,7 +6659,6 @@
 <translation id="8592141010104017453">Известията да не се показват въобще</translation>
 <translation id="859246725979739260">Достъпът до местоположението ви е блокиран за този сайт.</translation>
 <translation id="8593121833493516339">Изпращане на данни за употребата и диагностиката. Помогнете за подобряването на работата на детето ви с Android, като автоматично изпращате до Google диагностична информация и данни за употребата на устройството и приложенията. Тази информация няма да се използва за идентифициране на детето ви, а ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за детето ви, тези данни може да се запазват в профила му в Google. <ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
-<translation id="8593735906501637689">Премахнахте „<ph name="MODULE_TITLE" />“</translation>
 <translation id="8594908476761052472">Заснемане на видеоклип</translation>
 <translation id="8596540852772265699">Персонализирани файлове</translation>
 <translation id="8597845839771543242">Формат на свойството:</translation>
@@ -6722,7 +6732,6 @@
 <translation id="866611985033792019">Да се има доверие на този сертификат за идентифициране на потребители на имейл</translation>
 <translation id="8666584013686199826">Извеждане на запитване, когато сайт иска достъп до USB устройства</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> сега е на цял екран и курсорът на мишката ви е деактивиран.</translation>
-<translation id="866851964140184995">На тази страница повече няма да виждате „<ph name="MODULE_NAME" />“</translation>
 <translation id="8669284339312441707">По-топли цветове</translation>
 <translation id="8670537393737592796">За да се връщате тук бързо, инсталирайте <ph name="APP_NAME" />, като кликнете върху съответния бутон</translation>
 <translation id="867085395664725367">Възникна временна грешка в сървъра.</translation>

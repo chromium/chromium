@@ -281,6 +281,7 @@
 <translation id="1303178898338186101">Не ўдалося атрымаць доступ да Google Play. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="1303671224831497365">Прылады Bluetooth не знойдзены</translation>
 <translation id="130491383855577612">Файлы і праграмы Linux заменены</translation>
+<translation id="1306390193749326011">На гэтай старонцы больш не будзе паказвацца нічога з катэгорыі "<ph name="MODULE_NAME" />"</translation>
 <translation id="1306606229401759371">Змяніць налады</translation>
 <translation id="1307165550267142340">PIN-код створаны</translation>
 <translation id="1307431692088049276">Не пытаць мяне зноў</translation>
@@ -705,6 +706,7 @@
 <translation id="17584710573359123">Прагледзець у Вэб-краме Chrome</translation>
 <translation id="1761845175367251960">Уліковыя запісы карыстальніка <ph name="NAME" /></translation>
 <translation id="176193854664720708">Сканер адбіткаў пальцаў – гэта кнопка сілкавання. Злёгку дакраніцеся да яе любым пальцам.</translation>
+<translation id="176272781006230109">прапановы тавараў</translation>
 <translation id="1763046204212875858">Стварэнне ярлыкоў праграм</translation>
 <translation id="1763808908432309942">Адкрываецца ў новай укладцы</translation>
 <translation id="1764226536771329714">бэта</translation>
@@ -999,6 +1001,7 @@
 <translation id="2099686503067610784">Выдаліць сертыфікат сервера "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="2100273922101894616">Аўтаматычны ўваход</translation>
 <translation id="2101225219012730419">Версія:</translation>
+<translation id="2105809836724866556">Схавана: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Нумар тэлефона}one{# нумар тэлефона}few{# нумары тэлефонаў}many{# нумароў тэлефонаў}other{# нумара тэлефона}}</translation>
 <translation id="211144231511833662">Скасаваць выбар тыпаў прылад</translation>
 <translation id="2111670510994270194">Новая ўкладка справа</translation>
@@ -1291,6 +1294,7 @@
 <translation id="2424424966051154874">{0,plural, =1{Госць}one{Госць (#)}few{Госць (#)}many{Госць (#)}other{Госць (#)}}</translation>
 <translation id="2428510569851653187">Апішыце, што вы рабілі, калі ўкладка дала збой</translation>
 <translation id="2428939361789119025">Выключыць Wi-Fi</translation>
+<translation id="2428978615149723410">гэтыя кошыкі</translation>
 <translation id="2431027948063157455">Не ўдалося загрузіць Памочніка Google. Праверце падключэнне да сеткі і паўтарыце спробу.</translation>
 <translation id="2433452467737464329">Дадайце параметр запыту ў URL-адрас для аўтаматычнага абнаўлення старонкі: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Выгляд</translation>
@@ -2033,6 +2037,7 @@
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
 <translation id="3269069891205016797">Ваша інфармацыя будзе выдалена з прылады, калі вы выйдзеце.</translation>
 <translation id="3269093882174072735">Загрузіць відарыс</translation>
+<translation id="326911502853238749">Не паказваць нічога з катэгорыі "<ph name="MODULE_NAME" />"</translation>
 <translation id="3269612321104318480">Светла-бірузовы і белы</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="326999365752735949">Спампоўванне розніцы</translation>
@@ -2231,7 +2236,6 @@
 <translation id="3482719661246593752">Сайт <ph name="ORIGIN" /> можа праглядаць наступныя файлы</translation>
 <translation id="3484273680291419129">Ідзе выдаленне шкоднага праграмнага забеспячэння...</translation>
 <translation id="3484869148456018791">Стварыць новы сертыфікат</translation>
-<translation id="3484991308207164042">Схаваць гэтыя кошыкі</translation>
 <translation id="3487007233252413104">ананімная функцыя</translation>
 <translation id="348780365869651045">Чакаецца AppCache...</translation>
 <translation id="3490695139702884919">Ідзе спампоўванне… <ph name="PERCENT" />%</translation>
@@ -2248,6 +2252,7 @@
 <translation id="3498215018399854026">Не ўдалося звязацца з вашымі бацькамі. Паўтарыце спробу.</translation>
 <translation id="3500417806337761827">Не ўдалося падключыць абагулены рэсурс: падключана занадта шмат рэсурсаў SMB.</translation>
 <translation id="3505030558724226696">Забараніць доступ да прылады</translation>
+<translation id="3505100368357440862">Прапановы тавараў</translation>
 <translation id="3507132249039706973">Стандартная абарона ўключана</translation>
 <translation id="3507421388498836150">Бягучыя дазволы для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3507888235492474624">Пашукаць прылады Bluetooth яшчэ раз</translation>
@@ -2589,7 +2594,6 @@
 <translation id="3866249974567520381">Апісанне</translation>
 <translation id="3867134342671430205">Каб перамясціць дысплэй, выкарыстайце перацягванне або клавішы са стрэлкамі</translation>
 <translation id="3867944738977021751">Палі сертыфіката</translation>
-<translation id="3868847547183917201">Вы больш не будзеце бачыць кошыкі на гэтай старонцы</translation>
 <translation id="3869917919960562512">Няправільны індэкс.</translation>
 <translation id="3870931306085184145">Няма захаваных пароляў для <ph name="DOMAIN" /></translation>
 <translation id="3871350334636688135">Праз 24 гадзіны адміністратар выканае разавае абнаўленне, пры якім пасля перазагрузкі прылады выдаляцца вашы лакальныя даныя. Захавайце ўсе патрэбныя лакальныя даныя ў воблачнае сховішча на працягу 24 гадзін.</translation>
@@ -2867,7 +2871,6 @@
 <translation id="4186763173530196927">Праграма спрабуе атрымаць доступ да камеры. Каб дазволіць такі доступ, перавядзіце пераключальнік, які рэгулюе налады прыватнасці камеры, у становішча "выключана".</translation>
 <translation id="4187424053537113647">Ідзе наладжванне праграмы <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">Вылучаць фокус клавіятуры</translation>
-<translation id="4193575319002689239">Паказаць карткі</translation>
 <translation id="4194570336751258953">Уключыць націсканне дотыкам</translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4195814663415092787">Працягнуць з месца, дзе вы спыніліся</translation>
@@ -3131,6 +3134,7 @@
 <translation id="4508765956121923607">Паказаць к&amp;рыніцу</translation>
 <translation id="4510479820467554003">Спіс бацькоўскіх уліковых запісаў</translation>
 <translation id="4510614391273086606">Файлы і праграмы Linux аднаўляюцца з рэзервовай копіі.</translation>
+<translation id="451102079304155829">кошыкі</translation>
 <translation id="4513946894732546136">Водгук</translation>
 <translation id="451407183922382411">На платформе <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Прайграванне або прыпыненне відэа</translation>
@@ -3244,6 +3248,7 @@
 <translation id="4628757576491864469">Прылады</translation>
 <translation id="4628762811416793313">Наладжванне кантэйнера Linux не завершана. Паўтарыце спробу.</translation>
 <translation id="4629521233550547305">Адкрыць профіль "<ph name="PROFILE_NAME" />"</translation>
+<translation id="4632655012900268062">Наладзіць карткі</translation>
 <translation id="4633003931260532286">Для пашырэння патрабуецца <ph name="IMPORT_NAME" /> версіі <ph name="IMPORT_VERSION" /> і вышэй, але ўсталявана толькі версія <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">Рэзервовае капіраванне на Google Дыск. Лёгка аднаўляйце даныя і пераносьце іх на іншыя прылады. У рэзервовую копію ўваходзяць даныя праграм. Рэзервовыя копіі запампоўваюцца ў Google і шыфруюцца пад паролем ад Уліковага запісу Google дзіцяці.</translation>
 <translation id="4634575639321169635">Наладзіць прыладу для работы або асабістага карыстання</translation>
@@ -3251,6 +3256,7 @@
 <translation id="4635072447747973225">Выдаліць Crostini</translation>
 <translation id="4635398712689569051">Старонка <ph name="PAGE_NAME" /> недаступная для гасцявых карыстальнікаў.</translation>
 <translation id="4635444580397524003">Рэзервовая копія Linux адноўлена.</translation>
+<translation id="4636682061478263818">Файлы на Дыску</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
 <translation id="4637083375689622795">Іншыя дзеянні, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Тэкст}one{# тэкст}few{# тэксты}many{# тэкстаў}other{# тэксту}}</translation>
@@ -3384,7 +3390,6 @@
 <translation id="4808667324955055115">Заблакіраваны выплыўныя вокны:</translation>
 <translation id="4809079943450490359">Інструкцыі ад адміністратара прылады:</translation>
 <translation id="480990236307250886">Адкрыць галоўную старонку</translation>
-<translation id="4810383437107234249">Ніколі не паказваць кошыкі</translation>
 <translation id="4811212958317149293">Аўтаматычнае сканіраванне клавіятуры з дапамогай функцыі доступу праз пераключальнікі</translation>
 <translation id="4811503964269049987">Дадаць выбраную ўкладку ў групу</translation>
 <translation id="4813136279048157860">Мае відарысы</translation>
@@ -3505,6 +3510,7 @@
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4933484234309072027">убудавана на сайце <ph name="URL" /></translation>
 <translation id="4936042273057045735">Сінхранізацыя апавяшчэнняў не падтрымліваецца, калі на тэлефоне выкарыстоўваецца працоўны профіль.</translation>
+<translation id="4938788218358929252">гэтыя прыклады рэцэптаў</translation>
 <translation id="4939805055470675027">Не ўдалося падключыцца да аператара <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Даступна некалькі (<ph name="PRINTER_COUNT" />) прынтараў, якія можна захаваць.</translation>
 <translation id="4940448324259979830">Гэтым уліковым запісам кіруе <ph name="PROFILE_NAME" /></translation>
@@ -3521,6 +3527,7 @@
 <translation id="4955710816792587366">Набярыце PIN-код</translation>
 <translation id="4959262764292427323">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
+<translation id="4961361269522589229">прыклады рэцэптаў</translation>
 <translation id="496185450405387901">Праграма ўсталявана адміністратарам.</translation>
 <translation id="4964455510556214366">Размяшчэнне</translation>
 <translation id="496446150016900060">Сінхранізаваць параметры сетак Wi-Fi з вашым тэлефонам</translation>
@@ -4796,6 +4803,7 @@
 <translation id="6451689256222386810">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />скіньце сінхранізацыю<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Адхіліць</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> выканана</translation>
+<translation id="645286928527869380">Прыклады рэцэптаў</translation>
 <translation id="6452961788130242735">Праблема з сеткай або няправільная вобласць</translation>
 <translation id="6455264371803474013">На канкрэтных сайтах</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
@@ -4994,6 +5002,7 @@
 <translation id="6686490380836145850">Закрыць укладкі справа</translation>
 <translation id="6686665106869989887">Укладка перамешчана ўправа</translation>
 <translation id="6686817083349815241">Захаваць пароль</translation>
+<translation id="6687079240787935001">Схаваць: <ph name="MODULE_TITLE" /></translation>
 <translation id="6688285987813868112">Стварыць QR-код для гэтага відарыса</translation>
 <translation id="6690659332373509948">Не ўдалося прааналізаваць файл: "<ph name="FILE_NAME" />"</translation>
 <translation id="6691331417640343772">Кіраванне сінхранізаванымі данымі на Панэлі кіравання Google</translation>
@@ -5065,6 +5074,7 @@
 <translation id="6775163072363532304">Тут будуць з'яўляцца даступныя прылады.</translation>
 <translation id="6777817260680419853">Перанакіраванне заблакіравана</translation>
 <translation id="6778737459546443941">Вашы бацькі яшчэ не ўхвалілі гэты сайт</translation>
+<translation id="6779447100905857289">вашы кошыкі</translation>
 <translation id="677965093459947883">Вельмі дробны</translation>
 <translation id="6781005693196527806">&amp;Кіраваць пошукавымі сістэмамі...</translation>
 <translation id="6781284683813954823">Спасылка на дудл</translation>
@@ -6311,6 +6321,7 @@
 <translation id="8168435359814927499">Змесціва</translation>
 <translation id="8168943654413034772">Прызначэнне адзінага пераключальніка, звязанага з дзеяннем "Выбраць", скасаваць нельга. Каб выйсці, націсніце любую клавішу.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Дадаць укладку ў спіс чытання}one{Дадаць укладкі ў спіс чытання}few{Дадаць укладкі ў спіс чытання}many{Дадаць укладкі ў спіс чытання}other{Дадаць укладкі ў спіс чытання}}</translation>
+<translation id="8171334254070436367">Схаваць усе карткі</translation>
 <translation id="8174047975335711832">Інфармацыя аб прыладзе</translation>
 <translation id="8174876712881364124">Рэзервовае капіраванне на Дыск Google. Лёгка аднаўляйце даныя і пераносьце іх на іншыя прылады. У рэзервовую копію ўваходзяць даныя праграм. Рэзервовыя копіі запампоўваюцца ў Google і шыфруюцца пад паролем ад Уліковага запісу Google дзіцяці. <ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Ружовы і белы</translation>
@@ -6651,7 +6662,6 @@
 <translation id="8592141010104017453">Ніколі не паказваць апавяшчэнні</translation>
 <translation id="859246725979739260">Гэтаму сайту быў заблакіраваны доступ да даных пра ваша месцазнаходжанне.</translation>
 <translation id="8593121833493516339">Адпраўка даных пра выкарыстанне і дыягностыку. Дапамажыце палепшыць функцыянальнасць прылады Android для дзіцяці шляхам аўтаматычнай адпраўкі даных пра дыягностыку, выкарыстанне прылады і праграм у Google. Яны не будуць выкарыстаны для ідэнтыфікацыі асобы дзіцяці, але дапамогуць у паляпшэнні стабільнасці сістэмы і праграм і для іншых удасканаленняў. Некаторыя згрупаваныя даныя таксама будуць карысныя для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Калі налада "Дадатковая гісторыя дзеянняў у інтэрнэце і праграмах" уключана, адпаведныя даныя могуць захоўвацца ва Уліковым запісе Google дзіцяці. <ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
-<translation id="8593735906501637689">Выдалены модуль "<ph name="MODULE_TITLE" />"</translation>
 <translation id="8594908476761052472">Зняць відэа</translation>
 <translation id="8596540852772265699">Карыстальніцкія файлы</translation>
 <translation id="8597845839771543242">Фармат уласцівасці:</translation>
@@ -6725,7 +6735,6 @@
 <translation id="866611985033792019">Давяраць гэтаму сертыфікату пры ідэнтыфікацыі карыстальнікаў электроннай пошты</translation>
 <translation id="8666584013686199826">Пытацца, калі сайт запытвае доступ да USB-прылад</translation>
 <translation id="8667328578593601900">Сайт <ph name="FULLSCREEN_ORIGIN" /> перайшоў у поўнаэкранны рэжым і выключыў вам курсор мышы.</translation>
-<translation id="866851964140184995">Вы больш не будзеце бачыць модуль "<ph name="MODULE_NAME" />" на гэтай старонцы</translation>
 <translation id="8669284339312441707">Цяплей</translation>
 <translation id="8670537393737592796">Каб хутка вяртацца сюды, усталюйце праграму "<ph name="APP_NAME" />", націснуўшы кнопку ўсталявання</translation>
 <translation id="867085395664725367">Узнікла часовая памылка сервера.</translation>
