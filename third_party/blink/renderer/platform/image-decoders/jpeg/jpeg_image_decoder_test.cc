@@ -91,6 +91,7 @@ void ReadYUV(size_t max_decoded_bytes,
   ASSERT_TRUE(decoder->CanDecodeToYUV());
 
   IntSize size = decoder->DecodedSize();
+
   IntSize y_size = decoder->DecodedYUVSize(cc::YUVIndex::kY);
   IntSize u_size = decoder->DecodedYUVSize(cc::YUVIndex::kU);
   IntSize v_size = decoder->DecodedYUVSize(cc::YUVIndex::kV);
@@ -413,18 +414,25 @@ TEST(JPEGImageDecoderTest, SupportedSizesTruncatedIfMemoryBound) {
   }
 }
 
-struct ColorSpaceUMATestParam {
+struct ColorSpaceTestParam {
   std::string file;
-  bool expected_success;
+  bool expected_success = false;
   BitmapImageMetrics::JpegColorSpace expected_color_space;
+  bool expect_yuv_decoding = false;
+  IntSize expected_uv_size;
 };
 
-class ColorSpaceUMATest
-    : public ::testing::TestWithParam<ColorSpaceUMATestParam> {};
+void PrintTo(const ColorSpaceTestParam& param, std::ostream* os) {
+  *os << "{\"" << param.file << "\", " << param.expected_success << ","
+      << static_cast<int>(param.expected_color_space) << ","
+      << param.expected_uv_size << "," << param.expect_yuv_decoding << "}";
+}
+
+class ColorSpaceTest : public ::testing::TestWithParam<ColorSpaceTestParam> {};
 
 // Tests that the JPEG color space/subsampling is recorded correctly as a UMA
 // for a variety of images. When the decode fails, no UMA should be recorded.
-TEST_P(ColorSpaceUMATest, CorrectColorSpaceRecorded) {
+TEST_P(ColorSpaceTest, CorrectColorSpaceUMARecorded) {
   base::HistogramTester histogram_tester;
   scoped_refptr<SharedBuffer> data =
       ReadFile(("/images/resources/" + GetParam().file).c_str());
@@ -446,7 +454,49 @@ TEST_P(ColorSpaceUMATest, CorrectColorSpaceRecorded) {
   }
 }
 
-const ColorSpaceUMATest::ParamType kColorSpaceUMATestParams[] = {
+// Tests YUV decoding path with different color encodings (and chroma
+// subsamplings if applicable).
+TEST_P(ColorSpaceTest, YuvDecode) {
+  // Test only successful decoding
+  if (!GetParam().expected_success)
+    return;
+
+  if (GetParam().expect_yuv_decoding) {
+    const auto jpeg_file = ("/images/resources/" + GetParam().file);
+    ReadYUV(kLargeEnoughSize, jpeg_file.c_str(), IntSize(64, 64),
+            GetParam().expected_uv_size,
+            /*expect_decoding_failure=*/false);
+  }
+}
+
+// Tests RGB decoding path with different color encodings (and chroma
+// subsamplings if applicable).
+TEST_P(ColorSpaceTest, RgbDecode) {
+  // Test only successful decoding
+  if (!GetParam().expected_success)
+    return;
+
+  if (!GetParam().expect_yuv_decoding) {
+    const auto jpeg_file = ("/images/resources/" + GetParam().file);
+    scoped_refptr<SharedBuffer> data = ReadFile(jpeg_file.c_str());
+    ASSERT_TRUE(data);
+
+    std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(kLargeEnoughSize);
+    decoder->SetData(data.get(), true);
+
+    IntSize size = decoder->DecodedSize();
+    EXPECT_EQ(IntSize(64, 64), size);
+    ASSERT_FALSE(decoder->CanDecodeToYUV());
+
+    const ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+    EXPECT_FALSE(decoder->Failed());
+    return;
+  }
+}
+
+const ColorSpaceTest::ParamType kColorSpaceTestParams[] = {
     {"cs-uma-grayscale.jpg", true,
      BitmapImageMetrics::JpegColorSpace::kGrayscale},
     {"cs-uma-rgb.jpg", true, BitmapImageMetrics::JpegColorSpace::kRGB},
@@ -467,37 +517,37 @@ const ColorSpaceUMATest::ParamType kColorSpaceUMATestParams[] = {
     {"cs-uma-cmyk-unknown-transform.jpg", true,
      BitmapImageMetrics::JpegColorSpace::kYCCK},
     {"cs-uma-ycbcr-410.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr410},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr410, false},
     {"cs-uma-ycbcr-411.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr411},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr411, false},
     {"cs-uma-ycbcr-420.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, IntSize(32, 32)},
     // Each component is in a separate scan. Should not make a difference.
     {"cs-uma-ycbcr-420-non-interleaved.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, IntSize(32, 32)},
     // 3 components/both JFIF and Adobe markers, so we expect libjpeg_turbo to
     // guess YCbCr.
     {"cs-uma-ycbcr-420-both-jfif-adobe.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, IntSize(32, 32)},
     {"cs-uma-ycbcr-422.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr422},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr422, true, IntSize(32, 64)},
     {"cs-uma-ycbcr-440.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr440},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr440, false},
     {"cs-uma-ycbcr-444.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr444},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr444, true, IntSize(64, 64)},
     // Contains RGB data but uses a bad Adobe color transform, so libjpeg_turbo
     // will guess YCbCr.
     {"cs-uma-rgb-unknown-transform.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr444},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr444, true, IntSize(64, 64)},
     {"cs-uma-ycbcr-other.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCrOther},
+     BitmapImageMetrics::JpegColorSpace::kYCbCrOther, false},
     // Contains only 2 components. We expect the decode to fail and not produce
     // any samples.
     {"cs-uma-two-channels-jfif-marker.jpg", false}};
 
 INSTANTIATE_TEST_SUITE_P(JPEGImageDecoderTest,
-                         ColorSpaceUMATest,
-                         ::testing::ValuesIn(kColorSpaceUMATestParams));
+                         ColorSpaceTest,
+                         ::testing::ValuesIn(kColorSpaceTestParams));
 
 TEST(JPEGImageDecoderTest, PartialDataWithoutSize) {
   const char* jpeg_file = "/images/resources/gracehopper.jpg";
