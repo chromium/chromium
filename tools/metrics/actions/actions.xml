@@ -14606,6 +14606,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileOmniboxLens">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <description>Mobile Omnibox Lens button clicked.</description>
+</action>
+
 <action name="MobileOmniboxRefineSuggestion">
   <obsolete>
     Deprecated 07/2017. Replaced by MobileOmniboxRefineSuggestion.Query and
