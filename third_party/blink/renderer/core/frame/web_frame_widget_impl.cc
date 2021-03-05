@@ -3743,11 +3743,11 @@ void WebFrameWidgetImpl::SetPageScaleStateAndLimits(
 void WebFrameWidgetImpl::UpdateViewportDescription(
     const ViewportDescription& viewport) {
   bool is_device_width = viewport.max_width.IsDeviceWidth();
-  bool is_zoom_one = viewport.zoom_is_explicit && viewport.zoom == 1.0;
+  bool is_zoom_at_least_one = viewport.zoom >= 1.0 || viewport.min_zoom >= 1;
   widget_base_->LayerTreeHost()->UpdateViewportIsMobileOptimized(
-      (is_device_width && is_zoom_one) ||
+      (is_device_width && is_zoom_at_least_one) ||
       (is_device_width && !viewport.zoom_is_explicit) ||
-      (viewport.max_width.IsAuto() && is_zoom_one));
+      (viewport.max_width.IsAuto() && is_zoom_at_least_one));
 }
 
 bool WebFrameWidgetImpl::UpdateScreenRects(

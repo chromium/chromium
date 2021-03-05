@@ -138,5 +138,30 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(
             "initial-scale=1, height=device-height",
             true,
-            "initial scale set to 1 and height set to device-height")));
+            "initial scale set to 1 and height set to device-height"),
+        std::make_tuple("minimum-scale=1",
+                        true,
+                        "minimum scale set to 1 implying initial-scale >=1"),
+        std::make_tuple(
+            "initial-scale=1.5",
+            true,
+            "initial scale set to >=1 implying the site is readable"),
+        std::make_tuple(
+            "initial-scale=1.5, minimum-scale=2",
+            true,
+            "minimum scale set to >=1 implying the site is readable"),
+        std::make_tuple(
+            "initial-scale=0.5, minimum-scale=2",
+            true,
+            "minimum scale set to >=1 implying the site is readable"),
+        std::make_tuple("initial-scale=0.5, minimum-scale=0.75",
+                        false,
+                        "minimum scale set to <1 and initial-scale <1"),
+        std::make_tuple("width=500", false, "fixed width"),
+        std::make_tuple("width=500, minimum-scale=1",
+                        false,
+                        "fixed width with minimum scale"),
+        std::make_tuple("maximum-scale=1",
+                        false,
+                        "maximum scale seeting does not disable DTZ")));
 }  // namespace content
