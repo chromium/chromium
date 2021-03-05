@@ -40,6 +40,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
       const ui::DataTransferEndpoint* const data_dst) override;
   void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
                       const ui::DataTransferEndpoint* const data_dst,
+                      content::WebContents* web_contents,
                       base::OnceCallback<void(bool)> callback) override;
   bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
                          const ui::DataTransferEndpoint* const data_dst,
@@ -56,6 +57,11 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
 
   virtual void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
                            const ui::DataTransferEndpoint* const data_dst);
+
+  virtual void WarnOnBlinkPaste(const ui::DataTransferEndpoint* const data_src,
+                                const ui::DataTransferEndpoint* const data_dst,
+                                content::WebContents* web_contents,
+                                base::OnceCallback<void(bool)> paste_cb);
 
   virtual bool ShouldProceedOnWarn(
       const ui::DataTransferEndpoint* const data_dst);

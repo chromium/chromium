@@ -69,9 +69,10 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
                bool(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst));
 
-  MOCK_METHOD3(PasteIfAllowed,
+  MOCK_METHOD4(PasteIfAllowed,
                void(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst,
+                    content::WebContents* web_contents,
                     base::OnceCallback<void(bool)> callback));
 
   MOCK_METHOD3(IsDragDropAllowed,
@@ -328,6 +329,7 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_NotAllowed) {
       .WillOnce(
           testing::Invoke([](const ui::DataTransferEndpoint* const data_src,
                              const ui::DataTransferEndpoint* const data_dst,
+                             content::WebContents* web_contents,
                              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
           }));
@@ -359,6 +361,7 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_Allowed) {
       .WillOnce(
           testing::Invoke([](const ui::DataTransferEndpoint* const data_src,
                              const ui::DataTransferEndpoint* const data_dst,
+                             content::WebContents* web_contents,
                              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
           }));

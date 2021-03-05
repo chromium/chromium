@@ -83,7 +83,7 @@ class FakeDlpController : public DataTransferDlpController,
 
   void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
                    const ui::DataTransferEndpoint* const data_dst) override {
-    helper_->WarnOnAction(data_src, data_dst);
+    helper_->WarnOnPaste(data_src, data_dst);
   }
 
   bool ShouldProceedOnWarn(
@@ -412,70 +412,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
 
   EXPECT_EQ(kClipboardText1, base::UTF16ToUTF8(textfield_->GetText()));
 
-  // Initiate a paste on example url.
-  ui::DataTransferEndpoint url_endpoint1(
-      url::Origin::Create(GURL(kExampleUrl)));
-  base::string16 result;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &url_endpoint1, &result);
-  EXPECT_EQ(base::string16(), result);
-  ASSERT_TRUE(dlp_controller.ObserveWidget());
-
-  // Accept warning.
-  EXPECT_CALL(dlp_controller, OnWidgetClosing);
-  helper->ProceedOnWarn(url_endpoint1);
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller);
-
-  // Initiate a paste on example url.
-  result.clear();
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &url_endpoint1, &result);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
-  ASSERT_FALSE(dlp_controller.ObserveWidget());
-
-  // Initiate a paste on docs url.
-  ui::DataTransferEndpoint url_endpoint2(url::Origin::Create(GURL(kDocsUrl)));
-  result.clear();
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &url_endpoint2, &result);
-  EXPECT_EQ(base::string16(), result);
-  ASSERT_TRUE(dlp_controller.ObserveWidget());
-
-  // Accept warning.
-  EXPECT_CALL(dlp_controller, OnWidgetClosing);
-  helper->ProceedOnWarn(url_endpoint2);
-  testing::Mock::VerifyAndClearExpectations(&dlp_controller);
-
-  // Initiate a paste on docs url.
-  result.clear();
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &url_endpoint2, &result);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
-  ASSERT_FALSE(dlp_controller.ObserveWidget());
-
   SetClipboardText(base::UTF8ToUTF16(kClipboardText2),
                    std::make_unique<ui::DataTransferEndpoint>(
                        url::Origin::Create(GURL(kMailUrl))));
 
-  // Initiate a paste on example url with notify_if_restricted set to false.
-  ui::DataTransferEndpoint url_endpoint3(url::Origin::Create(GURL(kExampleUrl)),
-                                         /*notify_if_restricted=*/false);
-  result.clear();
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &url_endpoint3, &result);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText2), result);
-  ASSERT_FALSE(dlp_controller.ObserveWidget());
-
-  // Initiate a paste on example url with notify_if_restricted set to true.
-  result.clear();
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &url_endpoint1, &result);
-  EXPECT_EQ(base::string16(), result);
-  ASSERT_TRUE(dlp_controller.ObserveWidget());
-
   // Initiate a paste on textfield_.
   textfield_->SetText(base::string16());
-  EXPECT_CALL(dlp_controller, OnWidgetClosing);
   textfield_->RequestFocus();
   event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
   event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
@@ -485,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   ASSERT_TRUE(dlp_controller.ObserveWidget());
 
   // Initiate a paste on nullptr data_dst.
-  result.clear();
+  base::string16 result;
   EXPECT_CALL(dlp_controller, OnWidgetClosing);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, nullptr, &result);

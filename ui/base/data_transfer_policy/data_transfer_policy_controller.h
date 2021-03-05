@@ -9,6 +9,10 @@
 #include "base/component_export.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace ui {
 
 // The DataTransfer policy controller controls transferring data via
@@ -38,8 +42,11 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
   // data is set to be in warning mode, this function will show a notification
   // to the user. If clipboard read is allowed, `callback` will be invoked with
   // true. Otherwise `callback` will be invoked with false.
+  // If `web_contents` got destroyed before `callback` is invoked, the
+  // notification will get closed.
   virtual void PasteIfAllowed(const DataTransferEndpoint* const data_src,
                               const DataTransferEndpoint* const data_dst,
+                              content::WebContents* web_contents,
                               base::OnceCallback<void(bool)> callback) = 0;
 
   // nullptr can be passed instead of `data_src` or `data_dst`. If dropping the

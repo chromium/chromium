@@ -21,6 +21,7 @@
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -478,9 +479,17 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
                      data_type, std::move(data), std::move(callback));
 
   if (ui::DataTransferPolicyController::HasInstance()) {
+    WebContents* web_contents = nullptr;
+    RenderFrameHostImpl* render_frame_host =
+        RenderFrameHostImpl::FromID(render_frame_routing_id_);
+    if (render_frame_host) {
+      auto* delegate = render_frame_host->delegate();
+      web_contents = delegate ? delegate->GetAsWebContents() : nullptr;
+    }
+
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
         clipboard_->GetSource(clipboard_buffer), CreateDataEndpoint().get(),
-        std::move(policy_cb));
+        web_contents, std::move(policy_cb));
     return;
   }
   std::move(policy_cb).Run(/*is_allowed=*/true);

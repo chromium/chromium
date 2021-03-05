@@ -9,6 +9,8 @@
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
+#include "base/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -104,11 +106,14 @@ void DlpClipboardNotifier::NotifyBlockedAction(
       IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name));
 }
 
-void DlpClipboardNotifier::WarnOnAction(
+void DlpClipboardNotifier::WarnOnPaste(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
   DCHECK(data_src);
   DCHECK(data_src->origin());
+
+  CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
+
   const base::string16 host_name =
       base::UTF8ToUTF16(data_src->origin()->host());
 
@@ -134,6 +139,7 @@ void DlpClipboardNotifier::WarnOnAction(
                     l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS)));
       return;
     }
+    DCHECK(!data_dst->IsUrlType());
   }
 
   auto proceed_cb =
@@ -141,7 +147,31 @@ void DlpClipboardNotifier::WarnOnAction(
                           base::Unretained(this), CloneEndpoint(data_dst));
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name),
-                    proceed_cb);
+                    std::move(proceed_cb));
+}
+
+void DlpClipboardNotifier::WarnOnBlinkPaste(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst,
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> paste_cb) {
+  DCHECK(data_src);
+  DCHECK(data_src->origin());
+
+  CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
+
+  const base::string16 host_name =
+      base::UTF8ToUTF16(data_src->origin()->host());
+
+  blink_paste_cb_ = std::move(paste_cb);
+  Observe(web_contents);
+
+  auto proceed_cb =
+      base::BindRepeating(&DlpClipboardNotifier::ProceedOnBlinkWarn,
+                          base::Unretained(this), CloneEndpoint(data_dst));
+  ShowWarningBubble(l10n_util::GetStringFUTF16(
+                        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name),
+                    std::move(proceed_cb));
 }
 
 bool DlpClipboardNotifier::DidUserProceedOnWarn(
@@ -168,6 +198,16 @@ void DlpClipboardNotifier::ProceedOnWarn(
   SynthesizePaste();
 }
 
+void DlpClipboardNotifier::ProceedOnBlinkWarn(
+    const ui::DataTransferEndpoint& data_dst,
+    views::Widget* widget) {
+  DCHECK(!blink_paste_cb_.is_null());
+
+  approved_dsts_.push_back(data_dst);
+  std::move(blink_paste_cb_).Run(true);
+  CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
+}
+
 void DlpClipboardNotifier::ResetUserWarnSelection() {
   approved_dsts_.clear();
 }
@@ -183,6 +223,24 @@ void DlpClipboardNotifier::ShowToast(const std::string& id,
 void DlpClipboardNotifier::OnClipboardDataChanged() {
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
   ResetUserWarnSelection();
+}
+
+void DlpClipboardNotifier::OnWidgetClosing(views::Widget* widget) {
+  if (!blink_paste_cb_.is_null()) {
+    std::move(blink_paste_cb_).Run(false);
+    Observe(nullptr);
+  }
+}
+
+void DlpClipboardNotifier::OnWidgetDestroyed(views::Widget* widget) {
+  if (!blink_paste_cb_.is_null()) {
+    std::move(blink_paste_cb_).Run(false);
+    Observe(nullptr);
+  }
+}
+
+void DlpClipboardNotifier::WebContentsDestroyed() {
+  CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 }
 
 }  // namespace policy

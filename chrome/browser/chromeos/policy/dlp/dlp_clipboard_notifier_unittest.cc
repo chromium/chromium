@@ -9,10 +9,14 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +40,13 @@ struct ToastTest {
   const int expected_dst_name_id;
 };
 
+std::unique_ptr<content::WebContents> CreateTestWebContents(
+    content::BrowserContext* browser_context) {
+  auto site_instance = content::SiteInstance::Create(browser_context);
+  return content::WebContentsTester::CreateTestWebContents(
+      browser_context, std::move(site_instance));
+}
+
 }  // namespace
 
 class MockDlpClipboardNotifier : public DlpClipboardNotifier {
@@ -46,18 +57,17 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
                     base::RepeatingCallback<void(views::Widget*)> proceed_cb));
   MOCK_CONST_METHOD2(ShowToast,
                      void(const std::string& id, const base::string16& text));
-  void ProceedOnWarn(const ui::DataTransferEndpoint& data_dst,
-                     views::Widget* widget) {
-    DlpClipboardNotifier::ProceedOnWarn(data_dst, widget);
-  }
 
-  void ResetUserWarnSelection() {
-    DlpClipboardNotifier::ResetUserWarnSelection();
-  }
+  using DlpClipboardNotifier::ProceedOnBlinkWarn;
+  using DlpClipboardNotifier::ProceedOnWarn;
+  using DlpClipboardNotifier::ResetUserWarnSelection;
 };
 
 class DlpClipboardBubbleTest
-    : public ::testing::TestWithParam<base::Optional<ui::EndpointType>> {};
+    : public ::testing::TestWithParam<base::Optional<ui::EndpointType>> {
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
 
 TEST_P(DlpClipboardBubbleTest, BlockBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
@@ -83,17 +93,16 @@ TEST_P(DlpClipboardBubbleTest, WarnBubble) {
   ui::DataTransferEndpoint data_src(origin);
   base::Optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
-  if (param.has_value()) {
-    if (param.value() == ui::EndpointType::kUrl)
-      data_dst.emplace(url::Origin::Create(GURL(kUrl)));
-    else
-      data_dst.emplace(param.value());
-  }
+  if (param.has_value() && param.value() == ui::EndpointType::kUrl)
+    return;
+
+  if (param.has_value())
+    data_dst.emplace(param.value());
 
   EXPECT_CALL(notifier, ShowWarningBubble);
 
   const ui::DataTransferEndpoint* dst_ptr = base::OptionalOrNullptr(data_dst);
-  notifier.WarnOnAction(&data_src, dst_ptr);
+  notifier.WarnOnPaste(&data_src, dst_ptr);
 }
 
 TEST_P(DlpClipboardBubbleTest, ProceedOnWarn) {
@@ -121,6 +130,28 @@ INSTANTIATE_TEST_SUITE_P(DlpClipboard,
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,
                                            ui::EndpointType::kUrl));
+
+TEST_F(DlpClipboardBubbleTest, BlinkWarn) {
+  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
+  url::Origin origin = url::Origin::Create(GURL(kUrl));
+  ui::DataTransferEndpoint data_src(origin);
+  ui::DataTransferEndpoint data_dst(origin);
+
+  EXPECT_CALL(notifier, ShowWarningBubble);
+
+  std::unique_ptr<TestingProfile> testing_profile =
+      TestingProfile::Builder().Build();
+  auto web_contents = CreateTestWebContents(testing_profile.get());
+  ::testing::StrictMock<base::MockOnceCallback<void(bool)>> callback;
+
+  notifier.WarnOnBlinkPaste(&data_src, &data_dst, web_contents.get(),
+                            callback.Get());
+
+  EXPECT_CALL(callback, Run(true));
+  notifier.ProceedOnBlinkWarn(data_dst, nullptr);
+
+  EXPECT_TRUE(notifier.DidUserProceedOnWarn(&data_dst));
+}
 
 TEST_F(DlpClipboardBubbleTest, ProceedSavedHistory) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
@@ -177,7 +208,7 @@ TEST_P(DlpClipboardToastTest, WarnToast) {
 
   EXPECT_CALL(notifier, ShowToast(testing::_, expected_toast_str));
 
-  notifier.WarnOnAction(&data_src, &data_dst);
+  notifier.WarnOnPaste(&data_src, &data_dst);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -5,13 +5,20 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFIER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFIER_H_
 
+#include "base/callback.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace policy {
 
 class DlpClipboardNotifier : public DlpDataTransferNotifier,
-                             public ui::ClipboardObserver {
+                             public ui::ClipboardObserver,
+                             public content::WebContentsObserver {
  public:
   DlpClipboardNotifier();
   ~DlpClipboardNotifier() override;
@@ -25,10 +32,18 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   void NotifyBlockedAction(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override;
+
+  // Warns the user that this paste action is not recommended.
   // If the type of `data_dst` is kCrostini, kPluginVm or kArc, it will show a
   // toast instead of a bubble.
-  void WarnOnAction(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst) override;
+  void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
+                   const ui::DataTransferEndpoint* const data_dst);
+
+  // Warns the user that this paste action in Blink is not recommended.
+  void WarnOnBlinkPaste(const ui::DataTransferEndpoint* const data_src,
+                        const ui::DataTransferEndpoint* const data_dst,
+                        content::WebContents* web_contents,
+                        base::OnceCallback<void(bool)> paste_cb);
 
   // Returns true if the user approved to paste the clipboard data to this
   // |data_dst| before.
@@ -37,6 +52,9 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
  protected:
   void ProceedOnWarn(const ui::DataTransferEndpoint& data_dst,
                      views::Widget* widget);
+
+  void ProceedOnBlinkWarn(const ui::DataTransferEndpoint& data_dst,
+                          views::Widget* widget);
 
   void ResetUserWarnSelection();
 
@@ -47,9 +65,20 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   // ui::ClipboardObserver
   void OnClipboardDataChanged() override;
 
+  // views::WidgetObserver
+  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
+  // content::WebContentsObserver:
+  // Should I override other functions??
+  void WebContentsDestroyed() override;
+
   // Vector of destinations approved by the user on warning for copy/paste. It
   // gets reset when the clipboard data changes.
   std::vector<ui::DataTransferEndpoint> approved_dsts_;
+
+  // Blink paste callback.
+  base::OnceCallback<void(bool)> blink_paste_cb_;
 };
 
 }  // namespace policy

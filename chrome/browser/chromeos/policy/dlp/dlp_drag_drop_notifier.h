@@ -21,8 +21,6 @@ class DlpDragDropNotifier : public DlpDataTransferNotifier {
   void NotifyBlockedAction(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override;
-  void WarnOnAction(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst) override;
 };
 
 }  // namespace policy

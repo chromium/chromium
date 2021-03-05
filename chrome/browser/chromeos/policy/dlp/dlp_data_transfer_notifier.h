@@ -29,10 +29,6 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) = 0;
 
-  // Warns the user that the data transfer action is not recommended.
-  virtual void WarnOnAction(const ui::DataTransferEndpoint* const data_src,
-                            const ui::DataTransferEndpoint* const data_dst) = 0;
-
  protected:
   virtual void ShowBlockBubble(const base::string16& text);
 
