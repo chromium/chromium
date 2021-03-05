@@ -38,6 +38,22 @@ namespace {
         base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
     return;                                                                 \
   }
+
+// Helper function to convert |action::Suggestion| to |AssistantSuggestion|.
+std::vector<assistant::AssistantSuggestion> ToAssistantSuggestion(
+    const std::vector<assistant::action::Suggestion>& suggestions) {
+  std::vector<assistant::AssistantSuggestion> result;
+  for (const auto& suggestion : suggestions) {
+    assistant::AssistantSuggestion assistant_suggestion;
+    assistant_suggestion.id = base::UnguessableToken::Create();
+    assistant_suggestion.text = suggestion.text;
+    assistant_suggestion.icon_url = GURL(suggestion.icon_url);
+    assistant_suggestion.action_url = GURL(suggestion.action_url);
+    result.push_back(std::move(assistant_suggestion));
+  }
+
+  return result;
+}
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -314,6 +330,14 @@ void ConversationController::OnShowContextualQueryFallback() {
   // Show fallback message.
   OnShowText(l10n_util::GetStringUTF8(
       IDS_ASSISTANT_SCREEN_CONTEXT_QUERY_FALLBACK_TEXT));
+}
+
+void ConversationController::OnShowSuggestions(
+    const std::vector<assistant::action::Suggestion>& suggestions) {
+  ENSURE_MOJOM_THREAD(&ConversationController::OnShowSuggestions, suggestions);
+
+  for (auto& observer : observers_)
+    observer->OnSuggestionsResponse(ToAssistantSuggestion(suggestions));
 }
 
 void ConversationController::SendVoicelessInteraction(

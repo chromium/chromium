@@ -8,16 +8,17 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
-#include "base/notreached.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
@@ -127,6 +128,36 @@ struct EnumTraits<chromeos::libassistant::mojom::AssistantQuerySource,
   static MojomType ToMojom(NativeType input);
   static bool FromMojom(MojomType input, NativeType* output);
 };
+
+template <>
+struct StructTraits<chromeos::libassistant::mojom::AssistantSuggestionDataView,
+                    chromeos::assistant::AssistantSuggestion> {
+  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+
+  static const base::UnguessableToken& id(const AssistantSuggestion& input);
+  static chromeos::assistant::AssistantSuggestionType type(
+      const AssistantSuggestion& input);
+  static const std::string& text(const AssistantSuggestion& input);
+  static const GURL& icon_url(const AssistantSuggestion& input);
+  static const GURL& action_url(const AssistantSuggestion& input);
+
+  static bool Read(
+      chromeos::libassistant::mojom::AssistantSuggestionDataView data,
+      AssistantSuggestion* output);
+};
+
+template <>
+struct EnumTraits<chromeos::libassistant::mojom::AssistantSuggestionType,
+                  chromeos::assistant::AssistantSuggestionType> {
+  using AssistantSuggestionType = chromeos::assistant::AssistantSuggestionType;
+  using MojoSuggestionType =
+      chromeos::libassistant::mojom::AssistantSuggestionType;
+
+  static MojoSuggestionType ToMojom(AssistantSuggestionType input);
+  static bool FromMojom(MojoSuggestionType input,
+                        AssistantSuggestionType* output);
+};
+
 }  // namespace mojo
 
 #endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_

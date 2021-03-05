@@ -40,6 +40,12 @@ class CrosActionModuleHelper {
       observer->OnShowText(text);
   }
 
+  void ShowSuggestions(
+      const std::vector<assistant::action::Suggestion>& suggestions) {
+    for (auto* observer : action_observers())
+      observer->OnShowSuggestions(suggestions);
+  }
+
  private:
   const std::vector<assistant::action::AssistantActionObserver*>&
   action_observers() {
@@ -71,6 +77,9 @@ class ConversationObserverMock : public mojom::ConversationObserver {
   MOCK_METHOD(void, OnTextResponse, (const std::string& text));
   MOCK_METHOD(void, OnNotificationRemoved, (const std::string& id));
   MOCK_METHOD(void, OnAllNotificationsRemoved, ());
+  MOCK_METHOD(void,
+              OnSuggestionsResponse,
+              (const std::vector<assistant::AssistantSuggestion>& suggestions));
 
   mojo::PendingRemote<mojom::ConversationObserver> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -173,6 +182,25 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnTextResponse) {
   EXPECT_CALL(observer_mock(), OnTextResponse(fake_text));
 
   action_module_helper().ShowText(fake_text);
+  observer_mock().FlushForTesting();
+}
+
+TEST_F(ConversationObserverTest, ShouldReceiveOnSuggestionsResponse) {
+  const std::string fake_text = "text";
+  const std::string fake_icon_url = "https://icon-url/";
+  const std::string fake_action_url = "https://action-url/";
+  std::vector<assistant::action::Suggestion> fake_suggestions{
+      {fake_text, fake_icon_url, fake_action_url}};
+
+  EXPECT_CALL(observer_mock(), OnSuggestionsResponse)
+      .WillOnce(testing::Invoke(
+          [&](const std::vector<assistant::AssistantSuggestion>& suggestions) {
+            EXPECT_EQ(fake_text, suggestions[0].text);
+            EXPECT_EQ(GURL(fake_icon_url), suggestions[0].icon_url);
+            EXPECT_EQ(GURL(fake_action_url), suggestions[0].action_url);
+          }));
+
+  action_module_helper().ShowSuggestions(fake_suggestions);
   observer_mock().FlushForTesting();
 }
 

@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_CONVERSATION_OBSERVER_H_
 
 #include "base/component_export.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -24,6 +25,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
   void OnHtmlResponse(const std::string& response,
                       const std::string& fallback) override {}
   void OnTextResponse(const std::string& response) override {}
+  void OnSuggestionsResponse(
+      const std::vector<AssistantSuggestion>& suggestions) override {}
   void OnNotificationRemoved(const std::string& id) override {}
   void OnAllNotificationsRemoved() override {}
 

@@ -72,6 +72,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
                   const std::string& fallback) override;
   void OnShowText(const std::string& text) override;
   void OnShowContextualQueryFallback() override;
+  void OnShowSuggestions(
+      const std::vector<assistant::action::Suggestion>& suggestions) override;
 
   const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
     return &observers_;

@@ -56,28 +56,6 @@ enum class AssistantInteractionResolution {
   kMaxValue = kMultiDeviceHotwordLoss,
 };
 
-// Enumeration of possible Assistant suggestion types.
-enum class AssistantSuggestionType {
-  kUnspecified,
-  kConversationStarter,
-  kBetterOnboarding,
-};
-
-// Enumeration of better onboarding options. This is reported to histogram,
-// please do not change the values.
-enum class AssistantBetterOnboardingType {
-  kUnspecified = 0,
-  kMath = 1,
-  kKnowledgeEdu = 2,
-  kConversion = 3,
-  kKnowledge = 4,
-  kProductivity = 5,
-  kPersonality = 6,
-  kLanguage = 7,
-  kTechnical = 8,
-  kMaxValue = kTechnical,
-};
-
 // Enumeration of Assistant entry points. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.
 // Only append to this enum is allowed if the possible entry source grows.

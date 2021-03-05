@@ -28,21 +28,6 @@ AssistantService::~AssistantService() {
   g_instance = nullptr;
 }
 
-AssistantSuggestion::AssistantSuggestion() = default;
-AssistantSuggestion::AssistantSuggestion(base::UnguessableToken id,
-                                         AssistantSuggestionType type,
-                                         const std::string& text)
-    : id(id), type(type), text(text) {}
-AssistantSuggestion::AssistantSuggestion(
-    const AssistantSuggestion& suggestion) = default;
-AssistantSuggestion& AssistantSuggestion::operator=(
-    const AssistantSuggestion&) = default;
-AssistantSuggestion::AssistantSuggestion(AssistantSuggestion&& suggestion) =
-    default;
-AssistantSuggestion& AssistantSuggestion::operator=(AssistantSuggestion&&) =
-    default;
-AssistantSuggestion::~AssistantSuggestion() = default;
-
 bool AssistantInteractionSubscriber::OnOpenAppResponse(
     const AndroidAppInfo& app_info) {
   return false;

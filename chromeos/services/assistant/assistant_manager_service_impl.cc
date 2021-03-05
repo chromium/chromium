@@ -538,25 +538,6 @@ void AssistantManagerServiceImpl::OnScheduleWait(int id, int time_ms) {
     it.OnWaitStarted();
 }
 
-void AssistantManagerServiceImpl::OnShowSuggestions(
-    const std::vector<action::Suggestion>& suggestions) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnShowSuggestions,
-                     suggestions);
-
-  std::vector<AssistantSuggestion> result;
-  for (const action::Suggestion& suggestion : suggestions) {
-    AssistantSuggestion assistant_suggestion;
-    assistant_suggestion.id = base::UnguessableToken::Create();
-    assistant_suggestion.text = suggestion.text;
-    assistant_suggestion.icon_url = GURL(suggestion.icon_url);
-    assistant_suggestion.action_url = GURL(suggestion.action_url);
-    result.push_back(std::move(assistant_suggestion));
-  }
-
-  for (auto& it : interaction_subscribers_)
-    it.OnSuggestionsResponse(result);
-}
-
 void AssistantManagerServiceImpl::OnOpenUrl(const std::string& url,
                                             bool is_background) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnOpenUrl, url,

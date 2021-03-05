@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list_types.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 
 namespace ash {
 

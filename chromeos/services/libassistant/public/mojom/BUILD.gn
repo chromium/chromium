@@ -69,6 +69,14 @@ mojom("mojom") {
           mojom = "chromeos.libassistant.mojom.AssistantQuerySource"
           cpp = "::chromeos::assistant::AssistantQuerySource"
         },
+        {
+          mojom = "chromeos.libassistant.mojom.AssistantSuggestionType"
+          cpp = "::chromeos::assistant::AssistantSuggestionType"
+        },
+        {
+          mojom = "chromeos.libassistant.mojom.AssistantSuggestion"
+          cpp = "::chromeos::assistant::AssistantSuggestion"
+        },
       ]
 
       traits_headers = [ "mojom_traits.h" ]

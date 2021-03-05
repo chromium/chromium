@@ -16,7 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observer.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 

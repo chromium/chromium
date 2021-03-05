@@ -4,6 +4,10 @@
 
 #include "chromeos/services/libassistant/public/mojom/mojom_traits.h"
 
+#include "base/notreached.h"
+#include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "url/mojom/url_gurl_mojom_traits.h"
+
 namespace mojo {
 
 using AndroidAppStatus = chromeos::libassistant::mojom::AndroidAppStatus;
@@ -11,19 +15,24 @@ using AppStatus = chromeos::assistant::AppStatus;
 using AssistantInteractionType = chromeos::assistant::AssistantInteractionType;
 using AssistantQuerySource = chromeos::assistant::AssistantQuerySource;
 using AssistantResolution = chromeos::assistant::AssistantInteractionResolution;
+using AssistantSuggestionType = chromeos::assistant::AssistantSuggestionType;
 using MojoResolution =
     chromeos::libassistant::mojom::AssistantInteractionResolution;
 using MojomInteractionType =
     chromeos::libassistant::mojom::AssistantInteractionType;
-using chromeos::assistant::AssistantInteractionMetadata;
 using MojomQuerySource = chromeos::libassistant::mojom::AssistantQuerySource;
+using MojoSuggestionType =
+    chromeos::libassistant::mojom::AssistantSuggestionType;
 using chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::AssistantFeedback;
+using chromeos::assistant::AssistantInteractionMetadata;
 using chromeos::assistant::AssistantNotification;
+using chromeos::assistant::AssistantSuggestion;
 using chromeos::libassistant::mojom::AndroidAppInfoDataView;
 using chromeos::libassistant::mojom::AssistantFeedbackDataView;
 using chromeos::libassistant::mojom::AssistantInteractionMetadataDataView;
 using chromeos::libassistant::mojom::AssistantNotificationDataView;
+using chromeos::libassistant::mojom::AssistantSuggestionDataView;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AndroidAppStatus
@@ -392,6 +401,93 @@ bool EnumTraits<MojomQuerySource, AssistantQuerySource>::FromMojom(
       *output = NativeType::kBetterOnboarding;
       return true;
   }
+  return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantSuggestion
+////////////////////////////////////////////////////////////////////////////////
+
+const base::UnguessableToken&
+StructTraits<AssistantSuggestionDataView, AssistantSuggestion>::id(
+    const AssistantSuggestion& input) {
+  return input.id;
+}
+
+AssistantSuggestionType
+StructTraits<AssistantSuggestionDataView, AssistantSuggestion>::type(
+    const AssistantSuggestion& input) {
+  return input.type;
+}
+
+const std::string&
+StructTraits<AssistantSuggestionDataView, AssistantSuggestion>::text(
+    const AssistantSuggestion& input) {
+  return input.text;
+}
+
+const GURL&
+StructTraits<AssistantSuggestionDataView, AssistantSuggestion>::icon_url(
+    const AssistantSuggestion& input) {
+  return input.icon_url;
+}
+
+const GURL&
+StructTraits<AssistantSuggestionDataView, AssistantSuggestion>::action_url(
+    const AssistantSuggestion& input) {
+  return input.action_url;
+}
+
+bool StructTraits<AssistantSuggestionDataView, AssistantSuggestion>::Read(
+    chromeos::libassistant::mojom::AssistantSuggestionDataView data,
+    AssistantSuggestion* output) {
+  if (!data.ReadId(&output->id))
+    return false;
+  if (!data.ReadType(&output->type))
+    return false;
+  if (!data.ReadText(&output->text))
+    return false;
+  if (!data.ReadIconUrl(&output->icon_url))
+    return false;
+  if (!data.ReadActionUrl(&output->action_url))
+    return false;
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantSuggestionType
+////////////////////////////////////////////////////////////////////////////////
+
+MojoSuggestionType
+EnumTraits<MojoSuggestionType, AssistantSuggestionType>::ToMojom(
+    AssistantSuggestionType input) {
+  switch (input) {
+    case AssistantSuggestionType::kUnspecified:
+      return MojoSuggestionType::kUnspecified;
+    case AssistantSuggestionType::kConversationStarter:
+      return MojoSuggestionType::kConversationStarter;
+    case AssistantSuggestionType::kBetterOnboarding:
+      return MojoSuggestionType::kBetterOnboarding;
+  }
+  NOTREACHED();
+  return MojoSuggestionType::kUnspecified;
+}
+
+bool EnumTraits<MojoSuggestionType, AssistantSuggestionType>::FromMojom(
+    MojoSuggestionType input,
+    AssistantSuggestionType* output) {
+  switch (input) {
+    case MojoSuggestionType::kUnspecified:
+      *output = AssistantSuggestionType::kUnspecified;
+      return true;
+    case MojoSuggestionType::kConversationStarter:
+      *output = AssistantSuggestionType::kConversationStarter;
+      return true;
+    case MojoSuggestionType::kBetterOnboarding:
+      *output = AssistantSuggestionType::kBetterOnboarding;
+      return true;
+  }
+  NOTREACHED();
   return false;
 }
 

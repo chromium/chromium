@@ -23,40 +23,6 @@ namespace assistant {
 
 struct AssistantFeedback;
 
-// Models an Assistant suggestion.
-struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantSuggestion {
-  AssistantSuggestion();
-  AssistantSuggestion(base::UnguessableToken id,
-                      AssistantSuggestionType type,
-                      const std::string& text);
-  AssistantSuggestion(const AssistantSuggestion& suggestion);
-  AssistantSuggestion& operator=(const AssistantSuggestion&);
-  AssistantSuggestion(AssistantSuggestion&& suggestion);
-  AssistantSuggestion& operator=(AssistantSuggestion&&);
-  ~AssistantSuggestion();
-  // Uniquely identifies a given suggestion.
-  base::UnguessableToken id;
-
-  // Allows us to differentiate between a typical Assistant suggestion and an
-  // Assistant suggestion of another type (e.g. a conversation starter).
-  AssistantSuggestionType type{AssistantSuggestionType::kUnspecified};
-
-  AssistantBetterOnboardingType better_onboarding_type{
-      AssistantBetterOnboardingType::kUnspecified};
-
-  // Display text. e.g. "Cancel".
-  std::string text;
-
-  // Optional URL for icon. e.g. "https://www.gstatic.com/icon.png".
-  // NOTE: This may be an icon resource link. e.g.
-  // "googleassistant://resource?type=icon&name=assistant".
-  GURL icon_url;
-
-  // Optional URL for action. e.g.
-  // "https://www.google.com/search?query=action".
-  GURL action_url;
-};
-
 // Subscribes to Assistant's interaction event. These events are server driven
 // in response to the user's direct interaction with the assistant. Responses
 // from the assistant may contain untrusted third-party content. Subscriber
@@ -71,10 +37,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
   AssistantInteractionSubscriber& operator=(
       const AssistantInteractionSubscriber&) = delete;
   ~AssistantInteractionSubscriber() override = default;
-
-  // Assistant got suggestions response from server.
-  virtual void OnSuggestionsResponse(
-      const std::vector<AssistantSuggestion>& response) {}
 
   // Assistant got open URL response from server. |in_background| refers to
   // being in background of Assistant UI, not in background of browser.
