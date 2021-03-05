@@ -241,6 +241,11 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 TabUiFeatureUtilities.supportInstantStart(false));
     }
 
+    @Override
+    public boolean isDialogVisible() {
+        return false;
+    }
+
     private void updateSelectedTab(Tab tab) {
         mPropertyModel.set(TITLE, tab.getTitle());
         mTabListFaviconProvider.getFaviconForUrlAsync(tab.getUrlString(), false,

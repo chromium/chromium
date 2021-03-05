@@ -70,6 +70,7 @@ import androidx.test.filters.MediumTest;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -95,11 +96,14 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.SingleTabSwitcherMediator;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTestingRobot;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.HomeButton;
@@ -121,9 +125,11 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Integration tests of the {@link StartSurface} for cases with tabs. See {@link
@@ -1549,6 +1555,104 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testShow_SingleAsHomepage_BackButtonOnTabSwitcherWithDialogShowing()
+            throws ExecutionException {
+        // clang-format on
+        backButtonOnTabSwitcherWithDialogShowingImpl();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true"})
+    public void testShow_SingleAsHomepageV2_BackButtonOnTabSwitcherWithDialogShowing()
+            throws ExecutionException {
+        // clang-format on
+        backButtonOnTabSwitcherWithDialogShowingImpl();
+    }
+
+    private void backButtonOnTabSwitcherWithDialogShowingImpl() throws ExecutionException {
+        if (!mImmediateReturn) {
+            pressHomePageButton();
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        onViewWaiting(withId(R.id.logo));
+
+        // Launches the first site in mv tiles.
+        LinearLayout tilesLayout =
+                cta.findViewById(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tilesLayout.getChildAt(0).performClick());
+        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
+        // Verifies a new Tab is created.
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+
+        List<Tab> tabs =
+                getTabsInCurrentTabModel(mActivityTestRule.getActivity().getCurrentTabModel());
+        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
+
+        if (isInstantReturn()) {
+            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
+            // omnibox.
+            return;
+        }
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_button));
+        TabUiTestHelper.enterTabSwitcher(cta);
+
+        waitForView(withId(R.id.secondary_tasks_surface_view));
+        StartSurfaceCoordinator startSurfaceCoordinator = getStartSurfaceFromUIThread();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> startSurfaceCoordinator.showTabSelectionEditorForTesting(tabs));
+        robot.resultRobot.verifyTabSelectionEditorIsVisible()
+                .verifyToolbarActionButtonDisabled()
+                .verifyToolbarActionButtonWithResourceId(
+                        org.chromium.chrome.tab_ui.R.string.tab_selection_editor_group)
+                .verifyToolbarSelectionTextWithResourceId(
+                        org.chromium.chrome.tab_ui.R.string
+                                .tab_selection_editor_toolbar_select_tabs)
+                .verifyAdapterHasItemCount(tabs.size())
+                .verifyHasAtLeastNItemVisible(2);
+
+        // Verifies that tapping the back button will close the TabSelectionEditor.
+        pressBack();
+        robot.resultRobot.verifyTabSelectionEditorIsHidden();
+        onView(allOf(withId(R.id.secondary_tasks_surface_view), isDisplayed()));
+
+        // Groups the two tabs.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> startSurfaceCoordinator.showTabSelectionEditorForTesting(tabs));
+        robot.resultRobot.verifyToolbarActionButtonWithResourceId(
+                org.chromium.chrome.tab_ui.R.string.tab_selection_editor_group);
+        robot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickToolbarActionButton();
+        robot.resultRobot.verifyTabSelectionEditorIsHidden();
+
+        // Opens the TabGridDialog by clicking the first group card.
+        onView(Matchers.allOf(
+                       withParent(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body)),
+                       withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        CriteriaHelper.pollUiThread(() -> isTabGridDialogShown(cta));
+
+        // Verifies that the TabGridDialog is closed by tapping back button.
+        pressBack();
+        CriteriaHelper.pollUiThread(() -> isTabGridDialogHidden(cta));
+        onView(allOf(withId(R.id.secondary_tasks_surface_view), isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
     public void testOmnibox_FocusedOnNewTabInSingleSurface() {
@@ -1881,6 +1985,33 @@ public class StartSurfaceTest {
                 mActivityTestRule.getActivity().findViewById(org.chromium.chrome.R.id.toolbar);
         Assert.assertEquals(toolbar.getToolbarDataProvider().getPrimaryColor(),
                 toolbar.getBackgroundDrawable().getColor());
+    }
+
+    private List<Tab> getTabsInCurrentTabModel(TabModel currentTabModel) {
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < currentTabModel.getCount(); i++) {
+            tabs.add(currentTabModel.getTabAt(i));
+        }
+        return tabs;
+    }
+
+    private StartSurfaceCoordinator getStartSurfaceFromUIThread() {
+        AtomicReference<StartSurface> startSurface = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            startSurface.set(
+                    ((ChromeTabbedActivity) mActivityTestRule.getActivity()).getStartSurface());
+        });
+        return (StartSurfaceCoordinator) startSurface.get();
+    }
+
+    private boolean isTabGridDialogShown(ChromeTabbedActivity cta) {
+        View dialogView = cta.findViewById(org.chromium.chrome.tab_ui.R.id.dialog_parent_view);
+        return dialogView.getVisibility() == View.VISIBLE && dialogView.getAlpha() == 1f;
+    }
+
+    private boolean isTabGridDialogHidden(ChromeTabbedActivity cta) {
+        View dialogView = cta.findViewById(org.chromium.chrome.tab_ui.R.id.dialog_parent_view);
+        return dialogView.getVisibility() == View.GONE;
     }
 }
 

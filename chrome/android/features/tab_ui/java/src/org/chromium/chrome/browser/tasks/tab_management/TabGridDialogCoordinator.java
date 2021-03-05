@@ -130,7 +130,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         }
     }
 
-    boolean isVisible() {
+    @Override
+    public boolean isVisible() {
         return mMediator.isVisible();
     }
 

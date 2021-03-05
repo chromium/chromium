@@ -224,6 +224,11 @@ class TabSelectionEditorMediator
         mModel.set(TabSelectionEditorProperties.IS_VISIBLE, false);
     }
 
+    @Override
+    public boolean isVisible() {
+        return isEditorVisible();
+    }
+
     /**
      * Destroy any members that needs clean up.
      */

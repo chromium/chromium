@@ -81,6 +81,11 @@ class TabSelectionEditorCoordinator {
                 @Nullable TabSelectionEditorActionProvider actionProvider,
                 int actionButtonEnablingThreshold,
                 @Nullable TabSelectionEditorNavigationProvider navigationProvider);
+
+        /**
+         * @return Whether the TabSelectionEditor is visible.
+         */
+        boolean isVisible();
     }
 
     /**

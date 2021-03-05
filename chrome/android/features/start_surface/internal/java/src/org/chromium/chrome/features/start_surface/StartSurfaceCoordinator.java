@@ -39,6 +39,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Root coordinator that is responsible for showing start surfaces, like a grid of Tabs, explore
@@ -355,6 +356,11 @@ public class StartSurfaceCoordinator implements StartSurface {
     @VisibleForTesting
     public boolean isSecondaryTaskInitPendingForTesting() {
         return mIsSecondaryTaskInitPending;
+    }
+
+    @VisibleForTesting
+    public void showTabSelectionEditorForTesting(List<Tab> tabs) {
+        mStartSurfaceMediator.getSecondaryTasksSurfaceController().showTabSelectionEditor(tabs);
     }
 
     private @SurfaceMode int computeSurfaceMode() {
