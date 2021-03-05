@@ -159,8 +159,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kWebXrHitTest,
     // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
     ::features::kBackgroundFetch,
-    // TODO(crbug.com/1130989): Support GetInstalledRelatedApps on WebLayer.
-    ::features::kInstalledApp,
     // TODO(crbug.com/1091212): make Notification triggers work with
     // WebLayer.
     ::features::kNotificationTriggers,

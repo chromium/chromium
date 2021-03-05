@@ -671,6 +671,7 @@ source_set("weblayer_lib_base") {
       "//components/favicon/android",
       "//components/infobars/android",
       "//components/infobars/content",
+      "//components/installedapp/android",
       "//components/javascript_dialogs",
       "//components/location/android:settings",
       "//components/media_router/browser",

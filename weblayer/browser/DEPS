@@ -30,6 +30,7 @@ include_rules = [
   "+components/infobars/android",
   "+components/infobars/content",
   "+components/infobars/core",
+  "+components/installedapp/android",
   "+components/javascript_dialogs",
   "+components/keep_alive_registry",
   "+components/keyed_service/content",
