@@ -10,6 +10,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -301,7 +302,9 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
 
     // Expect that ExtractResponseRecords validates that all results correctly
     // have the same name.
-    DCHECK_EQ(canonical_name, record->name());
+    DCHECK(base::EqualsCaseInsensitiveASCII(canonical_name, record->name()))
+        << "canonical_name: " << canonical_name
+        << "\nrecord->name(): " << record->name();
 
     IPAddress address;
     if (address_qtype == dns_protocol::kTypeA) {
@@ -323,8 +326,13 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
   // from canonical name (i.e. record name) through to query name.
   if (!addresses.empty()) {
     DCHECK(!aliases.empty());
-    DCHECK(aliases.front() == canonical_name);
-    DCHECK(aliases.back() == response.GetDottedName());
+    DCHECK(base::EqualsCaseInsensitiveASCII(aliases.front(), canonical_name))
+        << "aliases.front(): " << aliases.front()
+        << "\ncanonical_name: " << canonical_name;
+    DCHECK(base::EqualsCaseInsensitiveASCII(aliases.back(),
+                                            response.GetDottedName()))
+        << "aliases.back(): " << aliases.back()
+        << "\nresponse.GetDottedName(): " << response.GetDottedName();
     addresses.SetDnsAliases(std::move(aliases));
   }
 
