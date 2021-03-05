@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_VIDEO_FRAME_FEEDBACK_H_
-#define MEDIA_BASE_VIDEO_FRAME_FEEDBACK_H_
+#ifndef MEDIA_CAPTURE_VIDEO_FRAME_FEEDBACK_H_
+#define MEDIA_CAPTURE_VIDEO_FRAME_FEEDBACK_H_
 
 #include <limits>
 
 #include "base/callback.h"
-#include "media/base/media_export.h"
+#include "media/capture/capture_export.h"
 
 namespace media {
 
@@ -20,7 +20,7 @@ using VideoCaptureFeedbackCB =
 // Feedback from the frames consumer.
 // This class is passed from the frames sink to the capturer to limit
 // incoming video feed frame-rate and/or resolution.
-struct MEDIA_EXPORT VideoFrameFeedback {
+struct CAPTURE_EXPORT VideoFrameFeedback {
   VideoFrameFeedback();
   VideoFrameFeedback(const VideoFrameFeedback& other);
 
@@ -88,4 +88,4 @@ struct MEDIA_EXPORT VideoFrameFeedback {
 };
 
 }  // namespace media
-#endif  // MEDIA_BASE_VIDEO_FRAME_FEEDBACK_H_
+#endif  // MEDIA_CAPTURE_VIDEO_FRAME_FEEDBACK_H_

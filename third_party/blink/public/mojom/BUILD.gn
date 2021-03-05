@@ -285,6 +285,7 @@ mojom("mojom_platform") {
   if (!is_ios) {
     public_deps += [
       "//media/capture/mojom:video_capture",
+      "//media/capture/mojom:video_capture_types",
       "//media/mojo/mojom",
     ]
   }

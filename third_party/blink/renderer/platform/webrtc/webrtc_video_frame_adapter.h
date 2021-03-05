@@ -14,8 +14,8 @@
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
-#include "media/base/video_frame_feedback.h"
 #include "media/base/video_frame_pool.h"
+#include "media/capture/video_frame_feedback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 
@@ -90,7 +90,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     virtual ~SharedResources();
 
    private:
-
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
     media::VideoFramePool pool_for_tmp_frames_;

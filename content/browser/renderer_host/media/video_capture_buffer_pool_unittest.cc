@@ -32,8 +32,19 @@
 
 namespace content {
 
+namespace {
+
+size_t ImageAllocationSize(const media::VideoCaptureFormat& format) {
+  return media::VideoFrame::AllocationSize(format.pixel_format,
+                                           format.frame_size);
+}
+
+}  // namespace
+
 static const media::VideoPixelFormat kCapturePixelFormats[] = {
-    media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_ARGB, media::PIXEL_FORMAT_Y16,
+    media::PIXEL_FORMAT_I420,
+    media::PIXEL_FORMAT_ARGB,
+    media::PIXEL_FORMAT_Y16,
 };
 
 static const int kTestBufferPoolSize = 3;
@@ -128,9 +139,9 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
   ASSERT_NE(nullptr, buffer3.get());
   ASSERT_EQ(3.0 / kTestBufferPoolSize, pool_->GetBufferPoolUtilization());
 
-  ASSERT_LE(format_lo.ImageAllocationSize(), buffer1->mapped_size());
-  ASSERT_LE(format_lo.ImageAllocationSize(), buffer2->mapped_size());
-  ASSERT_LE(format_lo.ImageAllocationSize(), buffer3->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_lo), buffer1->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_lo), buffer2->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_lo), buffer3->mapped_size());
 
   ASSERT_NE(nullptr, buffer1->data());
   ASSERT_NE(nullptr, buffer2->data());
@@ -233,7 +244,7 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
   ASSERT_EQ(2.0 / kTestBufferPoolSize, pool_->GetBufferPoolUtilization());
   buffer2 = ReserveBuffer(size_hi, GetParam());
   ASSERT_NE(nullptr, buffer2.get());
-  ASSERT_LE(format_hi.ImageAllocationSize(), buffer2->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_hi), buffer2->mapped_size());
   ASSERT_EQ(3, buffer2->id());
   ASSERT_EQ(3.0 / kTestBufferPoolSize, pool_->GetBufferPoolUtilization());
   void* const memory_pointer_hi = buffer2->data();
@@ -246,7 +257,7 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
       << "Decrease in resolution should not reallocate buffer";
   ASSERT_NE(nullptr, buffer2.get());
   ASSERT_EQ(3, buffer2->id());
-  ASSERT_LE(format_lo.ImageAllocationSize(), buffer2->mapped_size());
+  ASSERT_LE(ImageAllocationSize(format_lo), buffer2->mapped_size());
   ASSERT_EQ(3.0 / kTestBufferPoolSize, pool_->GetBufferPoolUtilization());
   ASSERT_FALSE(ReserveBuffer(size_lo, GetParam())) << "Pool should be empty";
   ASSERT_EQ(1.0, pool_->GetBufferPoolUtilization());
@@ -350,4 +361,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                          VideoCaptureBufferPoolTest,
                          testing::ValuesIn(kCapturePixelFormats));
 
-} // namespace content
+}  // namespace content

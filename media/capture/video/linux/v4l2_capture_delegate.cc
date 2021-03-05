@@ -17,6 +17,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
@@ -927,7 +928,9 @@ void V4L2CaptureDelegate::DoCapture() {
       client_->OnFrameDropped(
           VideoCaptureFrameDropReason::kV4L2BufferErrorFlagWasSet);
 #endif
-    } else if (buffer.bytesused < capture_format_.ImageAllocationSize()) {
+    } else if (buffer.bytesused <
+               media::VideoFrame::AllocationSize(capture_format_.pixel_format,
+                                                 capture_format_.frame_size)) {
       LOG(ERROR) << "Dequeued v4l2 buffer contains invalid length ("
                  << buffer.bytesused << " bytes).";
       buffer.bytesused = 0;

@@ -17,6 +17,7 @@ include_rules = [
     "+base/threading/thread_restrictions.h",
     "+media/base",
     "+media/capture/capture_switches.h",
+    "+media/capture/video_frame_feedback.h",
     "+media/filters/decoder_stream.h",
     "+media/media_buildflags.h",
     # This is only needed for a cast to DecoderFactory.

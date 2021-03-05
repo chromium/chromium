@@ -1,5 +1,6 @@
 include_rules = [
     "+media/base",
+    "+media/capture/video_frame_feedback.h",
 ]
 
 specific_include_rules = {

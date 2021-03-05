@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "media/capture/capture_export.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"

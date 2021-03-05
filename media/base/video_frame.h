@@ -572,9 +572,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // This is the media timestamp, and not the reference time.
   // See VideoFrameMetadata::REFERENCE_TIME for details.
   base::TimeDelta timestamp() const { return timestamp_; }
-  void set_timestamp(base::TimeDelta timestamp) {
-    timestamp_ = timestamp;
-  }
+  void set_timestamp(base::TimeDelta timestamp) { timestamp_ = timestamp; }
 
   // It uses |client| to insert a new sync token and potentially waits on an
   // older sync token. The final sync point will be used to release this

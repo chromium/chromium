@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
+#include "media/base/video_frame.h"
 #include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "media/capture/video/mock_video_frame_receiver.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
@@ -55,8 +56,8 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
  public:
   VideoCaptureDeviceClientTest() {
     scoped_refptr<VideoCaptureBufferPoolImpl> buffer_pool(
-        new VideoCaptureBufferPoolImpl(
-            VideoCaptureBufferType::kSharedMemory, 2));
+        new VideoCaptureBufferPoolImpl(VideoCaptureBufferType::kSharedMemory,
+                                       2));
     auto controller = std::make_unique<NiceMock<MockVideoFrameReceiver>>();
     receiver_ = controller.get();
     gpu_memory_buffer_manager_ =
@@ -241,7 +242,9 @@ TEST_F(VideoCaptureDeviceClientTest, DataCaptureGoodPixelFormats) {
     EXPECT_CALL(*receiver_, OnLog(_)).Times(1);
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _)).Times(1);
     device_client_->OnIncomingCapturedData(
-        data, params.requested_format.ImageAllocationSize(),
+        data,
+        media::VideoFrame::AllocationSize(params.requested_format.pixel_format,
+                                          params.requested_format.frame_size),
         params.requested_format, kColorSpace, 0 /* clockwise_rotation */,
         false /* flip_y */, base::TimeTicks(), base::TimeDelta());
     Mock::VerifyAndClearExpectations(receiver_);
@@ -281,7 +284,9 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
         .Times(1)
         .WillOnce(SaveArg<2>(&coded_size));
     device_client_->OnIncomingCapturedData(
-        data, params.requested_format.ImageAllocationSize(),
+        data,
+        media::VideoFrame::AllocationSize(params.requested_format.pixel_format,
+                                          params.requested_format.frame_size),
         params.requested_format, gfx::ColorSpace(), size_and_rotation.rotation,
         false /* flip_y */, base::TimeTicks(), base::TimeDelta());
 

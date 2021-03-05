@@ -38,11 +38,14 @@ component("capture_base") {
     "video/video_capture_device_info.h",
     "video_capture_types.cc",
     "video_capture_types.h",
+    "video_frame_feedback.cc",
+    "video_frame_feedback.h",
   ]
   deps = [
     "//base",
     "//base:i18n",
-    "//media",
+    "//media:shared_memory_support",
+    "//media/base:video_facing",
     "//ui/gfx",
   ]
 }

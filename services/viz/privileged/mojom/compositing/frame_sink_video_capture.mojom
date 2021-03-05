@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";

@@ -45,8 +45,10 @@ size_t CalculateRequiredBufferSize(
     }
     return result;
   } else {
-    return media::VideoCaptureFormat(dimensions, 0.0f, format)
-        .ImageAllocationSize();
+    const auto& frame_format =
+        media::VideoCaptureFormat(dimensions, 0.0f, format);
+    return media::VideoFrame::AllocationSize(frame_format.pixel_format,
+                                             frame_format.frame_size);
   }
 }
 

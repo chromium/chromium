@@ -53,9 +53,11 @@ class FakeVideoCaptureStack::Receiver : public media::VideoFrameReceiver {
     base::ReadOnlySharedMemoryMapping mapping =
         it->second->get_read_only_shmem_region().Map();
     CHECK(mapping.IsValid());
-    CHECK_LE(media::VideoCaptureFormat(frame.frame_info->coded_size, 0.0f,
-                                       frame.frame_info->pixel_format)
-                 .ImageAllocationSize(),
+
+    const auto& frame_format = media::VideoCaptureFormat(
+        frame.frame_info->coded_size, 0.0f, frame.frame_info->pixel_format);
+    CHECK_LE(media::VideoFrame::AllocationSize(frame_format.pixel_format,
+                                               frame_format.frame_size),
              mapping.size());
 
     auto video_frame = media::VideoFrame::WrapExternalData(

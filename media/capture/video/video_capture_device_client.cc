@@ -351,7 +351,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 
   // The input |length| can be greater than the required buffer size because of
   // paddings and/or alignments, but it cannot be smaller.
-  DCHECK_GE(static_cast<size_t>(length), format.ImageAllocationSize());
+  DCHECK_GE(static_cast<size_t>(length),
+            media::VideoFrame::AllocationSize(format.pixel_format,
+                                              format.frame_size));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (external_jpeg_decoder_) {
@@ -679,7 +681,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
       format.frame_size, PIXEL_FORMAT_Y16, frame_feedback_id, &buffer);
   // The input |length| can be greater than the required buffer size because of
   // paddings and/or alignments, but it cannot be smaller.
-  DCHECK_GE(static_cast<size_t>(length), format.ImageAllocationSize());
+  DCHECK_GE(static_cast<size_t>(length),
+            media::VideoFrame::AllocationSize(format.pixel_format,
+                                              format.frame_size));
   // Failed to reserve output buffer, so drop the frame.
   if (reservation_result_code != ReserveResult::kSucceeded) {
     receiver_->OnFrameDropped(

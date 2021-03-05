@@ -11,9 +11,9 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "media/base/video_frame_feedback.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video_capture_types.h"
+#include "media/capture/video_frame_feedback.h"
 
 namespace media {
 

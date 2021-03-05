@@ -6,6 +6,7 @@
 #define MEDIA_CAPTURE_VIDEO_VIDEO_FRAME_RECEIVER_H_
 
 #include "media/capture/capture_export.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video/video_capture_device.h"

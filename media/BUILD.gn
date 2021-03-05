@@ -283,6 +283,8 @@ component("shared_memory_support") {
     "base/vector_math.cc",
     "base/vector_math.h",
     "base/vector_math_testing.h",
+    "base/video_types.cc",
+    "base/video_types.h",
   ]
   if (is_mac) {
     # These need to be included here because audio_latency.cc depends on them.

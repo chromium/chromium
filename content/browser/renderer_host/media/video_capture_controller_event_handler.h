@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "content/common/content_export.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "ui/gfx/geometry/size.h"

@@ -4,6 +4,7 @@
 
 module video_capture.mojom;
 
+import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "services/video_capture/public/mojom/scoped_access_permission.mojom";
 

@@ -20,7 +20,7 @@
 #include "components/mirroring/service/rtp_stream.h"
 #include "components/mirroring/service/wifi_status_monitor.h"
 #include "gpu/config/gpu_info.h"
-#include "media/base/video_frame_feedback.h"
+#include "media/capture/video_frame_feedback.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"

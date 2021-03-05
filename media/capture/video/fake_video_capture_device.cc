@@ -725,7 +725,9 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
     base::TimeDelta timestamp_to_paint) {
   if (!client())
     return;
-  const size_t frame_size = device_state()->format.ImageAllocationSize();
+  const auto& frame_format = device_state()->format;
+  const size_t frame_size = VideoFrame::AllocationSize(
+      frame_format.pixel_format, frame_format.frame_size);
   memset(buffer_.get(), 0, frame_size);
   frame_painter()->PaintFrame(timestamp_to_paint, buffer_.get());
   base::TimeTicks now = base::TimeTicks::Now();
