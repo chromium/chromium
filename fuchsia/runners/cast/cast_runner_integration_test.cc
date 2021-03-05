@@ -984,6 +984,48 @@ TEST_F(CastRunnerIntegrationTest, CameraAccessAfterComponentShutdown) {
             "getUserMediaFailed");
 }
 
+TEST_F(CastRunnerIntegrationTest, MultipleComponentsUsingCamera) {
+  TestCastComponent first_component(cast_runner_.get());
+  TestCastComponent second_component(cast_runner_.get());
+
+  GURL app_url = test_server_.GetURL("/camera.html");
+
+  // Start two apps, both with camera permission.
+  auto app_config1 =
+      FakeApplicationConfigManager::CreateConfig(kTestAppId, app_url);
+  fuchsia::web::PermissionDescriptor camera_permission1;
+  camera_permission1.set_type(fuchsia::web::PermissionType::CAMERA);
+  app_config1.mutable_permissions()->push_back(std::move(camera_permission1));
+  first_component.app_config_manager()->AddAppConfig(std::move(app_config1));
+  first_component.CreateComponentContextAndStartComponent(kTestAppId);
+
+  auto app_config2 =
+      FakeApplicationConfigManager::CreateConfig(kSecondTestAppId, app_url);
+  fuchsia::web::PermissionDescriptor camera_permission2;
+  camera_permission2.set_type(fuchsia::web::PermissionType::CAMERA);
+  app_config2.mutable_permissions()->push_back(std::move(camera_permission2));
+  second_component.app_config_manager()->AddAppConfig(std::move(app_config2));
+  second_component.CreateComponentContextAndStartComponent(kSecondTestAppId);
+
+  // Shut down the first component.
+  first_component.ShutdownComponent();
+  first_component.ResetComponentState();
+
+  // Expect fuchsia.camera3.DeviceWatcher connection to be redirected to the
+  // agent.
+  bool received_device_watcher_request = false;
+  second_component.component_state()->outgoing_directory()->AddPublicService(
+      std::make_unique<vfs::Service>(
+          [&received_device_watcher_request](
+              zx::channel channel, async_dispatcher_t* dispatcher) mutable {
+            received_device_watcher_request = true;
+          }),
+      fuchsia::camera3::DeviceWatcher::Name_);
+
+  second_component.ExecuteJavaScript("connectCamera();");
+  EXPECT_TRUE(received_device_watcher_request);
+}
+
 class HeadlessCastRunnerIntegrationTest : public CastRunnerIntegrationTest {
  public:
   HeadlessCastRunnerIntegrationTest()
