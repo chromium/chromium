@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/core/css/cssom/computed_style_property_map.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/invalidation/style_invalidator.h"
+#include "third_party/blink/renderer/core/css/media_query_list.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -6967,6 +6968,13 @@ Vector<IconURL> Document::IconURLs(int icon_types_mask) {
     }
     if (link_element->Href().IsEmpty())
       continue;
+
+    if (!link_element->Media().IsEmpty()) {
+      auto* media_query =
+          GetMediaQueryMatcher().MatchMedia(link_element->Media());
+      if (!media_query->matches())
+        continue;
+    }
 
     IconURL new_url(link_element->Href(), link_element->IconSizes(),
                     link_element->GetType(), link_element->GetIconType());

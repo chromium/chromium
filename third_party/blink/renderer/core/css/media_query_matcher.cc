@@ -106,6 +106,10 @@ void MediaQueryMatcher::MediaFeaturesChanged() {
   if (!document_)
     return;
 
+  // Make sure the favicon is updated when media features have changed.
+  if (document_->GetFrame())
+    document_->GetFrame()->UpdateFaviconURL();
+
   HeapVector<Member<MediaQueryListListener>> listeners_to_notify;
   for (const auto& list : media_lists_) {
     if (list->MediaFeaturesChanged(&listeners_to_notify)) {
