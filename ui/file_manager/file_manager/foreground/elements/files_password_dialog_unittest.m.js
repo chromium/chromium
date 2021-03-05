@@ -66,6 +66,63 @@ export function setUp() {
 }
 
 /**
+ * Tests that the password dialog is modal.
+ */
+export async function testPasswordDialogIsModal(done) {
+  // Check that the dialog is closed.
+  assertFalse(dialog.open);
+
+  // Open the password dialog.
+  const passwordPromise = passwordDialog.askForPassword('encrypted.zip');
+
+  // Wait until the dialog is open.
+  await waitUntil(() => dialog.open);
+
+  // Check that the name of the encrypted zip displays correctly on the dialog.
+  assertEquals('encrypted.zip', name.innerText);
+
+  // Enter password.
+  input.value = 'password';
+
+  // Keyboard events should not propagate out to the <files-password-dialog>
+  // element. The internal <cr-dialog> element should handle keyboard events
+  // and should prevent them from bubbling up to the <files-password-dialog>
+  // element (modal operation).
+  let isModal = true;
+  passwordDialog.addEventListener('keydown', event => {
+    console.error('<files-password-dialog> keydown event', event);
+    isModal = false;
+  });
+
+  // Add a <cr-dialog> listener to confirm it saw the test keyboard event.
+  let keydownSeen = false;
+  dialog.addEventListener('keydown', event => {
+    keydownSeen = true;
+  });
+
+  // Create a <ctrl>-A keyboard event. The event has 'composed' true, so it
+  // can cross shadow DOM bondaries and bubble up into the DOM document.
+  const keyEvent = new KeyboardEvent('keydown', {
+    bubbles: true,
+    cancelable: true,
+    composed: true,
+    ctrlKey: true,
+    key: 'A',
+  });
+
+  // Dispatch the keyboard event to the <cr-input> inner <input> element.
+  const inputElement = input.shadowRoot.querySelector('input');
+  assertEquals(inputElement.value, 'password');
+  assert(inputElement.dispatchEvent(keyEvent));
+
+  // Check: the <files-password-dialog> should be modal.
+  await waitUntil(() => keydownSeen);
+  assert(isModal, 'FAILED: <files-password-dialog> should be modal');
+
+  done();
+}
+
+/**
  * Tests cancel functionality of password dialog for single encrypted archive.
  * The askForPassword method should return a promise that is rejected with
  * FilesPasswordDialog.USER_CANCELLED.
