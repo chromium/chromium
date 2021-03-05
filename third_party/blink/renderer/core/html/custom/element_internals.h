@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -113,7 +114,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
 
   // See
   // https://whatpr.org/html/3917/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element
-  HeapHashMap<QualifiedName, Member<HeapVector<Member<Element>>>>
+  HeapHashMap<QualifiedName, Member<HeapLinkedHashSet<WeakMember<Element>>>>
       explicitly_set_attr_elements_map_;
 
   DISALLOW_COPY_AND_ASSIGN(ElementInternals);

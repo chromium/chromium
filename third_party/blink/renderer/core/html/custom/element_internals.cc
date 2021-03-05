@@ -277,40 +277,65 @@ void ElementInternals::SetElementAttribute(const QualifiedName& name,
   auto result = explicitly_set_attr_elements_map_.insert(name, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
-        MakeGarbageCollected<HeapVector<Member<Element>>>();
+        MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
   } else {
     result.stored_value->value->clear();
   }
-  result.stored_value->value->push_back(element);
+  result.stored_value->value->insert(element);
 }
 
 Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
-  HeapVector<Member<Element>>* element_vector =
+  HeapLinkedHashSet<WeakMember<Element>>* stored_elements =
       explicitly_set_attr_elements_map_.at(name);
-  if (!element_vector)
+  if (!stored_elements)
     return nullptr;
-  DCHECK_EQ(element_vector->size(), 1u);
-  return element_vector->at(0);
+  DCHECK_EQ(stored_elements->size(), 1u);
+  return *(stored_elements->begin());
 }
 
 base::Optional<HeapVector<Member<Element>>>
 ElementInternals::GetElementArrayAttribute(const QualifiedName& name) const {
   const auto& iter = explicitly_set_attr_elements_map_.find(name);
-  if (iter != explicitly_set_attr_elements_map_.end()) {
-    return *(iter->value);
+  if (iter == explicitly_set_attr_elements_map_.end()) {
+    return base::nullopt;
   }
-  return base::nullopt;
+
+  // Convert from our internal HeapLinkedHashSet of weak references to a
+  // HeapVector of strong references so that V8 can implicitly convert to a
+  // FrozenArray.
+  HeapVector<Member<Element>>* results =
+      MakeGarbageCollected<HeapVector<Member<Element>>>();
+
+  blink::HeapLinkedHashSet<blink::WeakMember<blink::Element>>* stored_elements =
+      iter->value;
+  for (auto item : *stored_elements) {
+    results->push_back(item);
+  }
+
+  return *results;
 }
 
 void ElementInternals::SetElementArrayAttribute(
     const QualifiedName& name,
-    const base::Optional<HeapVector<Member<Element>>>& elements) {
-  if (elements) {
-    explicitly_set_attr_elements_map_.Set(
-        name,
-        MakeGarbageCollected<HeapVector<Member<Element>>>(elements.value()));
-  } else {
+    const base::Optional<HeapVector<Member<Element>>>& given_elements) {
+  if (!given_elements) {
     explicitly_set_attr_elements_map_.erase(name);
+    return;
+  }
+
+  // Otherwise convert from our external strong references to our internal weak
+  // references.
+  auto stored_elements =
+      explicitly_set_attr_elements_map_.insert(name, nullptr);
+  if (stored_elements.is_new_entry) {
+    stored_elements.stored_value->value =
+        MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
+  } else {
+    stored_elements.stored_value->value->clear();
+  }
+
+  for (auto element : given_elements.value()) {
+    stored_elements.stored_value->value->insert(element);
   }
 }
 
