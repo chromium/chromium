@@ -11,6 +11,7 @@ import plistlib
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 
 from . import logger
@@ -121,29 +122,77 @@ def macos_version():
     return [int(x) for x in platform.mac_ver()[0].split('.')]
 
 
+def read_plist(path):
+    """Loads Plist at |path| and returns it as a dictionary."""
+    if sys.version_info.major == 2:
+        fd, name = tempfile.mkstemp()
+        try:
+            subprocess.check_call(
+                ['plutil', '-convert', 'xml1', '-o', name, path])
+            with os.fdopen(fd, 'rb') as f:
+                return plistlib.readPlist(f)
+        finally:
+            os.unlink(name)
+    else:
+        with open(path, 'rb') as f:
+            return plistlib.load(f)
+
+
+def write_plist(data, path, format):
+    """Saves |data| as a Plist to |path| in the specified |format|."""
+    # The below does not replace the destination file but update it in place,
+    # so if more than one hardlink points to destination all of them will be
+    # modified. This is not what is expected, so delete destination file if
+    # it does exist.
+    if os.path.exists(path):
+        os.unlink(path)
+    if sys.version_info.major == 2:
+        fd, name = tempfile.mkstemp()
+        try:
+            with os.fdopen(fd, 'wb') as f:
+                plistlib.writePlist(data, f)
+            subprocess.check_call(
+                ['plutil', '-convert', format, '-o', path, name])
+        finally:
+            os.unlink(name)
+    else:
+        with open(path, 'wb') as f:
+            plist_format = {
+                'binary1': plistlib.FMT_BINARY,
+                'xml1': plistlib.FMT_XML
+            }
+            plistlib.dump(data, f, fmt=plist_format[format])
+
+
 class PlistContext(object):
     """
     PlistContext is a context manager that reads a plist on entry, providing
     the contents as a dictionary. If |rewrite| is True, then the same dictionary
     is re-serialized on exit. If |create_new| is True, then the file is not read
-    but rather an empty dictionary is created.
+    but rather an empty dictionary is created. If |binary| is True, then both
+    input and output will be in binary instead of the default XML format.
     """
 
-    def __init__(self, plist_path, rewrite=False, create_new=False):
+    def __init__(self,
+                 plist_path,
+                 rewrite=False,
+                 create_new=False,
+                 binary=False):
         self._path = plist_path
         self._rewrite = rewrite
         self._create_new = create_new
+        self._format = 'binary1' if binary else 'xml1'
 
     def __enter__(self):
         if self._create_new:
             self._plist = {}
         else:
-            self._plist = plistlib.readPlist(self._path)
+            self._plist = read_plist(self._path)
         return self._plist
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if self._rewrite and not exc_type:
-            plistlib.writePlist(self._plist, self._path)
+            write_plist(self._plist, self._path, self._format)
         self._plist = None
 
 

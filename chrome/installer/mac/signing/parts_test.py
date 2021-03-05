@@ -250,14 +250,14 @@ class TestSignChrome(unittest.TestCase):
         ])
 
     @mock.patch(
-        'signing.commands.plistlib.readPlist',
+        'signing.commands.read_plist',
         side_effect=_get_plist_read('99.0.9999.99'))
     def test_sanity_check_ok(self, read_plist, **kwargs):
         config = model.Distribution().to_config(test_config.TestConfig())
         parts.sign_chrome(self.paths, config, sign_framework=True)
 
     @mock.patch(
-        'signing.commands.plistlib.readPlist',
+        'signing.commands.read_plist',
         side_effect=_get_plist_read('55.0.5555.55'))
     def test_sanity_check_bad(self, read_plist, **kwargs):
         config = model.Distribution().to_config(test_config.TestConfig())

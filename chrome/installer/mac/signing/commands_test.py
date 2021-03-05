@@ -206,3 +206,31 @@ class TestCommands(unittest.TestCase):
         self.assertGreaterEqual(len(version), 2)
         self.assertGreaterEqual(version, [10, 10])
         self.assertLess(version, [30])
+
+    def test_plist_context_xml(self):
+        path = os.path.join(self.tempdir, 'plist.strings')
+        with commands.PlistContext(
+                path, rewrite=True, create_new=True) as plist:
+            plist['A'] = 'B'
+            plist['C'] = 'D'
+
+        # Verify that the file is an XML file.
+        with open(path, 'rb') as file:
+            self.assertEqual(file.read(5), b'<?xml')
+
+        data = commands.read_plist(path)
+        self.assertEqual(data, {'A': 'B', 'C': 'D'})
+
+    def test_plist_context_binary(self):
+        path = os.path.join(self.tempdir, 'plist.strings')
+        with commands.PlistContext(
+                path, rewrite=True, create_new=True, binary=True) as plist:
+            plist['A'] = 'B'
+            plist['C'] = 'D'
+
+        # Verify that the file is a binary Plist file.
+        with open(path, 'rb') as file:
+            self.assertEqual(file.read(8), b'bplist00')
+
+        data = commands.read_plist(path)
+        self.assertEqual(data, {'A': 'B', 'C': 'D'})

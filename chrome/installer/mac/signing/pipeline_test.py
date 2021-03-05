@@ -350,7 +350,7 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
             'BundleIsRelocatable': False
         }])
 
-    @mock.patch('signing.commands.plistlib.readPlist', _read_plist)
+    @mock.patch('signing.commands.read_plist', _read_plist)
     @mock.patch('signing.commands.run_command_output', _run_command_output_lipo)
     def test_productbuild_distribution_path(self, **kwargs):
         manager = mock.Mock()

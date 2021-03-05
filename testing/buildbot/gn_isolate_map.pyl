@@ -1172,12 +1172,8 @@
     "type": "script",
   },
   "mac_signing_tests": {
-    "args": [
-      "../../chrome/installer/mac/signing/run_mac_signing_tests.py",
-    ],
     "label": "//chrome/installer/mac:mac_signing_tests",
-    "script": "//testing/scripts/run_isolated_script_test.py",
-    "type": "script",
+    "type": "generated_script",
   },
   "media_base_junit_tests": {
     "label": "//media/base/android:media_base_junit_tests",
