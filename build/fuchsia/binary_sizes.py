@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 '''Implements Chrome-Fuchsia package binary size checks.'''
 
+from __future__ import division
 from __future__ import print_function
 
 import argparse
@@ -375,8 +376,8 @@ def GetPackageSizes(far_files, build_out_dir, extract_dir):
     for blob_name in package_blobs[package_name]:
       count = blob_counts[blob_name]
       blob = package_blobs[package_name][blob_name]
-      compressed_total += blob.compressed / count
-      uncompressed_total += blob.uncompressed / count
+      compressed_total += blob.compressed // count
+      uncompressed_total += blob.uncompressed // count
     package_sizes[package_name] = PackageSizes(compressed_total,
                                                uncompressed_total)
 
