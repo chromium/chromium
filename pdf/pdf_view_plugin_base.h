@@ -269,6 +269,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   AccessibilityState accessibility_state() { return accessibility_state_; }
 
+  bool edit_mode() const { return edit_mode_; }
+  void set_edit_mode(bool edit_mode) { edit_mode_ = edit_mode; }
+
  private:
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value& message);
@@ -381,6 +384,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // The next accessibility page index, used to track interprocess calls when
   // reconstructing the tree for new document layouts.
   int32_t next_accessibility_page_index_ = 0;
+
+  // Whether the document is in edit mode.
+  bool edit_mode_ = false;
 };
 
 }  // namespace chrome_pdf

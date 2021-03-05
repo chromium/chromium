@@ -655,9 +655,9 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   // Not all edits go through the PDF plugin's form filler. The plugin instance
   // can be restarted by exiting annotation mode on ChromeOS, which can set the
   // document to an edited state.
-  edit_mode_ = has_edits;
+  set_edit_mode(has_edits);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(!edit_mode_);
+  DCHECK(!edit_mode());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   pp::PDF::SetCrashData(GetPluginInstance(), original_url, top_level_url);
@@ -1046,7 +1046,7 @@ void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
   // This will be overwritten if the save is successful.
   message.Set(kJSDataToSave, pp::Var(pp::Var::Null()));
 
-  if (edit_mode_) {
+  if (edit_mode()) {
     std::vector<uint8_t> data = engine()->GetSaveData();
     if (IsSaveDataSizeValid(data.size())) {
       pp::VarArrayBuffer buffer(data.size());
@@ -1369,7 +1369,7 @@ void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
     case SaveRequestType::kOriginal:
       pp::PDF::SetPluginCanSave(this, false);
       SaveToFile(dict.Get(pp::Var(kJSToken)).AsString());
-      pp::PDF::SetPluginCanSave(this, edit_mode_);
+      pp::PDF::SetPluginCanSave(this, edit_mode());
       break;
     case SaveRequestType::kEdited:
       SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
@@ -1558,7 +1558,7 @@ bool OutOfProcessInstance::IsPrintPreview() {
 }
 
 void OutOfProcessInstance::EnteredEditMode() {
-  edit_mode_ = true;
+  set_edit_mode(true);
   pp::PDF::SetPluginCanSave(this, true);
 
   pp::VarDictionary message;

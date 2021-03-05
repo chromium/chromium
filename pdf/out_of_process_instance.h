@@ -343,8 +343,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // document finishes loading.
   bool did_call_start_loading_ = false;
 
-  bool edit_mode_ = false;
-
   base::WeakPtrFactory<OutOfProcessInstance> weak_factory_{this};
 };
 
