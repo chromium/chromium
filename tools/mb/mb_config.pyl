@@ -126,6 +126,7 @@
       'android-pie-arm64-coverage-experimental-rel': 'android_release_bot_arm64_webview_google_expectations_native_coverage',
       'android-pie-arm64-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-pie-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
+      'android-weblayer-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-10-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_google',
     },
 
@@ -135,7 +136,6 @@
       'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-11-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
-      'android-weblayer-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-weblayer-with-aosp-webview-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild',
     },
