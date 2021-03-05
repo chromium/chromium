@@ -75334,6 +75334,12 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Native Speech"/>
 </enum>
 
+<enum name="TextToSpeechSource">
+  <int value="0" label="Other"/>
+  <int value="1" label="ChromeVox"/>
+  <int value="2" label="SelectToSpeak"/>
+</enum>
+
 <enum name="TextToSpeechVoiceIdHashes">
   <int value="-2140886774" label="patts: Chrome OS UK English"/>
   <int value="-1258442847" label="patts: Chrome OS Nederlands"/>
