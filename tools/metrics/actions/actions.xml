@@ -1672,6 +1672,44 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AltBasedKeyRewrite_Delete">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Alt+Backspace to produce the Delete key.
+  </description>
+</action>
+
+<action name="AltBasedKeyRewrite_End">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Alt+Ctrl+DownArrow to produce the End key.
+  </description>
+</action>
+
+<action name="AltBasedKeyRewrite_Home">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Alt+Ctrl+UpArrow to produce the Home key.
+  </description>
+</action>
+
+<action name="AltBasedKeyRewrite_PageDown">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Alt+DownArrow to produce the PageDown key.
+  </description>
+</action>
+
+<action name="AltBasedKeyRewrite_PageUp">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>User pressed Alt+UpArrow to produce the PageUp key.</description>
+</action>
+
 <action name="AltClickMappedToRightClick">
   <owner>zentaro@chromium.org</owner>
   <description>
@@ -21019,6 +21057,54 @@ should be able to be added at any place in this file.
 <action name="SearchAnswer_UserInteraction">
   <owner>vadimt@chromium.org</owner>
   <description>User interacts with an answer card.</description>
+</action>
+
+<action name="SearchBasedKeyRewrite_Delete">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Search+Backspace to produce the Delete key.
+  </description>
+</action>
+
+<action name="SearchBasedKeyRewrite_End">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Search+RightArrow to produce the End key.
+  </description>
+</action>
+
+<action name="SearchBasedKeyRewrite_Home">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Search+LeftArrow to produce the Home key.
+  </description>
+</action>
+
+<action name="SearchBasedKeyRewrite_Insert">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Search+Period to produce the Insert key.
+  </description>
+</action>
+
+<action name="SearchBasedKeyRewrite_PageDown">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Search+DownArrow to produce the PageDown key.
+  </description>
+</action>
+
+<action name="SearchBasedKeyRewrite_PageUp">
+  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <description>
+    User pressed Search+UpArrow to produce the PageUp key.
+  </description>
 </action>
 
 <action name="SearchClickMappedToRightClick">
