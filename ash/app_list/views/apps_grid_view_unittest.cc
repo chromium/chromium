@@ -1950,7 +1950,7 @@ TEST_P(AppsGridViewTest, DISABLED_MouseDragFlipPage) {
 
   // Cancel drag and put the dragged view back to its ideal position so that
   // the next drag would pick it up.
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag(apps_grid_view_, true /*cancel*/);
   test_api_->LayoutToIdealBounds();
 
   // Now drag to the top edge, and test the other direction.
@@ -1969,7 +1969,7 @@ TEST_P(AppsGridViewTest, DISABLED_MouseDragFlipPage) {
   EXPECT_EQ(0, GetPaginationModel()->selected_page());
   EXPECT_EQ(to, GetDragViewCenter());
 
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag(apps_grid_view_, true /*cancel*/);
 }
 
 TEST_F(AppsGridViewTest, UpdateFolderBackgroundOnCancelDrag) {
