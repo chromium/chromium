@@ -71,28 +71,13 @@ int PrerenderHostRegistry::CreateAndStartHost(
       std::move(attributes), initiator_origin, web_contents);
   const int frame_tree_node_id = prerender_host->frame_tree_node_id();
 
-  // Start prerendering before adding the host to `frame_tree_node_id_by_url_`
-  // to make sure navigation for prerendering doesn't select itself.
-  // TODO(https://crbug.com/1132746): ReserveHostToActivate() should avoid
-  // selecting a prerender host when the current NavigationRequest is for
-  // prerendering regardless of the calling order of StartPrerendering(). At
-  // this point, RenderFrameHostImpl doesn't know its prerendering state until
-  // it receives NavigationRequest, so it cannot guarantee to provide
-  // PrerenderHostRegistry with a stable prerendering state. This issue will be
-  // fixed after landing the new approach of depending on FrameTree's
-  // prerendering state.
   CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
                         frame_tree_node_id));
   prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
       std::move(prerender_host);
+  frame_tree_node_id_by_url_[prerendering_url] = frame_tree_node_id;
   prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
       ->StartPrerendering();
-
-  // Make sure StartPrerendering() doesn't call AbandonHost().
-  DCHECK(base::Contains(prerender_host_by_frame_tree_node_id_,
-                        frame_tree_node_id));
-
-  frame_tree_node_id_by_url_[prerendering_url] = frame_tree_node_id;
 
   return frame_tree_node_id;
 }
