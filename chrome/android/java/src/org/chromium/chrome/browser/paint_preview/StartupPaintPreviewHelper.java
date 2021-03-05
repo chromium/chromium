@@ -95,7 +95,7 @@ public class StartupPaintPreviewHelper {
                 // Avoid running the audit in multi-window mode as otherwise we will delete
                 // data that is possibly in use by the other Activity's TabModelSelector.
                 PaintPreviewTabServiceFactory.getServiceInstance().onRestoreCompleted(
-                        tabModelSelector, runAudit, /*captureOnSwitch=*/false);
+                        tabModelSelector, runAudit);
                 tabModelSelector.removeObserver(this);
             }
 
