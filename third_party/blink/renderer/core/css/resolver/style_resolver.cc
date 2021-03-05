@@ -731,6 +731,13 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
     const StyleRequest& style_request) {
+  if (!element) {
+    DCHECK(style_request.IsPseudoStyleRequest());
+    return nullptr;
+  }
+
+  DCHECK(!style_request.IsPseudoStyleRequest() ||
+         style_request.parent_override);
   DCHECK(GetDocument().GetFrame());
   DCHECK(GetDocument().GetSettings());
 
@@ -1011,22 +1018,6 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
   }
   return CompositorKeyframeValueFactory::Create(property, *state.Style(),
                                                 offset);
-}
-
-scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
-    Element* element,
-    const StyleRecalcContext& style_recalc_context,
-    const PseudoElementStyleRequest& pseudo_style_request,
-    const ComputedStyle* parent_style,
-    const ComputedStyle* parent_layout_object_style) {
-  DCHECK(parent_style);
-  if (!element)
-    return nullptr;
-
-  StyleRequest style_request = pseudo_style_request;
-  style_request.parent_override = parent_style;
-  style_request.layout_parent_override = parent_layout_object_style;
-  return ResolveStyle(element, style_recalc_context, style_request);
 }
 
 scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(

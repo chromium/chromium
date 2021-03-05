@@ -208,8 +208,9 @@ static bool OverridesTextDecorationColors(const Element* element) {
          (IsA<HTMLFontElement>(element) || IsA<HTMLAnchorElement>(element));
 }
 
-// FIXME: This helper is only needed because pseudoStyleForElement passes a null
-// element to adjustComputedStyle, so we can't just use element->isInTopLayer().
+// FIXME: This helper is only needed because ResolveStyle passes a null
+// element to AdjustComputedStyle for pseudo-element styles, so we can't just
+// use element->isInTopLayer().
 static bool IsInTopLayer(const Element* element, const ComputedStyle& style) {
   return (element && element->IsInTopLayer()) ||
          style.StyleType() == kPseudoIdBackdrop;

@@ -4916,13 +4916,15 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
       layout_parent_style = parent_layout_object->Style();
   }
 
+  StyleRequest style_request;
+  style_request.pseudo_id = pseudo_element_specifier;
+  style_request.type = StyleRequest::kForComputedStyle;
+  style_request.parent_override = element_style;
+  style_request.layout_parent_override = layout_parent_style;
+
   scoped_refptr<ComputedStyle> result =
-      GetDocument().GetStyleResolver().PseudoStyleForElement(
-          this, style_recalc_context,
-          PseudoElementStyleRequest(
-              pseudo_element_specifier,
-              PseudoElementStyleRequest::kForComputedStyle),
-          element_style, layout_parent_style);
+      GetDocument().GetStyleResolver().ResolveStyle(this, style_recalc_context,
+                                                    style_request);
   DCHECK(result);
   result->SetIsEnsuredInDisplayNone();
   return element_style->AddCachedPseudoElementStyle(std::move(result));
@@ -5233,6 +5235,10 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
 
   DCHECK(parent_style);
 
+  StyleRequest style_request = request;
+  style_request.parent_override = parent_style;
+  style_request.layout_parent_override = parent_style;
+
   if (is_before_or_after) {
     const ComputedStyle* layout_parent_style = parent_style;
     if (parent_style->Display() == EDisplay::kContents) {
@@ -5245,28 +5251,26 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
         layout_parent_style = layout_parent->GetComputedStyle();
       }
     }
-    return GetDocument().GetStyleResolver().PseudoStyleForElement(
-        this, style_recalc_context, request, parent_style, layout_parent_style);
+    style_request.layout_parent_override = layout_parent_style;
+    return GetDocument().GetStyleResolver().ResolveStyle(
+        this, style_recalc_context, style_request);
   }
 
   if (request.pseudo_id == kPseudoIdFirstLineInherited) {
-    scoped_refptr<ComputedStyle> result;
-    if (IsPseudoElement()) {
-      result = GetDocument().GetStyleResolver().PseudoStyleForElement(
-          parentElement(), style_recalc_context,
-          PseudoElementStyleRequest(To<PseudoElement>(this)->GetPseudoId()),
-          parent_style, parent_style);
-    } else {
-      result = GetDocument().GetStyleResolver().StyleForElement(
-          this, style_recalc_context, parent_style, parent_style);
-    }
+    style_request.pseudo_id = IsPseudoElement()
+                                  ? To<PseudoElement>(this)->GetPseudoId()
+                                  : kPseudoIdNone;
+    Element* target = IsPseudoElement() ? parentElement() : this;
+    scoped_refptr<ComputedStyle> result =
+        GetDocument().GetStyleResolver().ResolveStyle(
+            target, style_recalc_context, style_request);
     if (result)
       result->SetStyleType(kPseudoIdFirstLineInherited);
     return result;
   }
 
-  return GetDocument().GetStyleResolver().PseudoStyleForElement(
-      this, style_recalc_context, request, parent_style, parent_style);
+  return GetDocument().GetStyleResolver().ResolveStyle(
+      this, style_recalc_context, style_request);
 }
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {

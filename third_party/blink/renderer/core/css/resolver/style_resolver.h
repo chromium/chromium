@@ -86,14 +86,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const CSSValue*,
       double offset);
 
-  // TODO(andruud): Remove this function, use ResolveStyle directly.
-  scoped_refptr<ComputedStyle> PseudoStyleForElement(
-      Element*,
-      const StyleRecalcContext&,
-      const PseudoElementStyleRequest&,
-      const ComputedStyle* parent_style,
-      const ComputedStyle* layout_parent_style);
-
   scoped_refptr<const ComputedStyle> StyleForPage(
       uint32_t page_index,
       const AtomicString& page_name);
