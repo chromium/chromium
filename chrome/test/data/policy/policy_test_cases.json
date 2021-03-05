@@ -3932,30 +3932,6 @@
     ]
   },
 
-  "GaiaLockScreenOfflineSigninTimeLimitDays": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "GaiaLockScreenOfflineSigninTimeLimitDays": 0
-        },
-        "prefs": { "gaia.lock_screen_offline_signin_time_limit": {"value": 0} }
-      }
-    ]
-  },
-
-  "SamlLockScreenOfflineSigninTimeLimitDays": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SamlLockScreenOfflineSigninTimeLimitDays": 0
-        },
-        "prefs": { "saml.lock_screen_offline_signin_time_limit": {"value": 0} }
-      }
-    ]
-  },
-
   "DriveDisabled": {
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [

@@ -19,8 +19,6 @@ extern const char kGaiaOfflineSigninTimeLimitDays[];
 extern const char kGaiaLastOnlineSignInTime[];
 extern const char kSAMLOfflineSigninTimeLimit[];
 extern const char kSAMLLastGAIASignInTime[];
-extern const char kGaiaLockScreenOfflineSigninTimeLimitDays[];
-extern const char kSamlLockScreenOfflineSigninTimeLimitDays[];
 extern const char kSamlInSessionPasswordChangeEnabled[];
 extern const char kSamlPasswordExpirationAdvanceWarningDays[];
 extern const char kLockScreenReauthenticationEnabled[];

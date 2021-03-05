@@ -45,8 +45,8 @@ const char kGaiaLastOnlineSignInTime[] = "gaia.last_online_sign_in_time";
 // Indicates the amount of time for which a user authenticated via SAML can use
 // offline authentication against a cached password before being forced to go
 // through online authentication against GAIA again. The time is expressed in
-// seconds. A value of -1 indicates no limit, meaning that this policy will not
-// enforce online authentication. The limit is in effect only if GAIA redirected
+// seconds. A value of -1 indicates no limit, allowing the user to use offline
+// authentication indefinitely. The limit is in effect only if GAIA redirected
 // the user to a SAML IdP during the last online authentication.
 const char kSAMLOfflineSigninTimeLimit[] = "saml.offline_signin_time_limit";
 
@@ -57,26 +57,6 @@ const char kSAMLOfflineSigninTimeLimit[] = "saml.offline_signin_time_limit";
 // cleared. The time is expressed as the serialization obtained from
 // PrefService::SetTime().
 const char kSAMLLastGAIASignInTime[] = "saml.last_gaia_sign_in_time";
-
-// Indicates the amount of time for which a user authenticated via GAIA
-// without SAML can use offline authentication against a cached password
-// before being forced to go through online authentication against GAIA again
-// when logging in through the lock screen. The time is expressed in days. A
-// value of -1 indicates no limit, meaning that this policy will not enforce
-// online authentication. The limit is in effect only if GAIA without SAML is
-// used.
-const char kGaiaLockScreenOfflineSigninTimeLimitDays[] =
-    "gaia.lock_screen_offline_signin_time_limit";
-
-// Indicates the amount of time for which a user authenticated via SAML can use
-// offline authentication against a cached password before being forced to go
-// through online authentication against GAIA again when logging in through the
-// lock screen. The time is expressed in days. A value of -1 indicates no limit,
-// meaning that this policy will not enforce online authentication. The limit is
-// in effect only if GAIA redirected the user to a SAML IdP during the last
-// online authentication.
-const char kSamlLockScreenOfflineSigninTimeLimitDays[] =
-    "saml.lock_screen_offline_signin_time_limit";
 
 // Enable chrome://password-change page for in-session change of SAML passwords.
 // Also enables SAML password expiry notifications, if we have that information.
