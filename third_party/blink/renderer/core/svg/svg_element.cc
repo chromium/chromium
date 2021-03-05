@@ -1011,16 +1011,19 @@ scoped_refptr<ComputedStyle> SVGElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   SVGElement* corresponding_element = CorrespondingElement();
   if (!corresponding_element) {
-    return GetDocument().GetStyleResolver().StyleForElement(
-        this, style_recalc_context);
+    return GetDocument().GetStyleResolver().ResolveStyle(this,
+                                                         style_recalc_context);
   }
 
   const ComputedStyle* style = nullptr;
   if (Element* parent = ParentOrShadowHostElement())
     style = parent->GetComputedStyle();
 
-  return GetDocument().GetStyleResolver().StyleForElement(
-      corresponding_element, style_recalc_context, style, style);
+  StyleRequest style_request;
+  style_request.parent_override = style;
+  style_request.layout_parent_override = style;
+  return GetDocument().GetStyleResolver().ResolveStyle(
+      corresponding_element, style_recalc_context, style_request);
 }
 
 bool SVGElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {

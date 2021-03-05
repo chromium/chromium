@@ -714,19 +714,6 @@ static void IncrementResolvedStyleCounters(const StyleRequest& style_request,
   }
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::StyleForElement(
-    Element* element,
-    const StyleRecalcContext& style_recalc_context,
-    const ComputedStyle* default_parent,
-    const ComputedStyle* default_layout_parent,
-    RuleMatchingBehavior matching_behavior) {
-  StyleRequest style_request;
-  style_request.parent_override = default_parent;
-  style_request.layout_parent_override = default_layout_parent;
-  style_request.matching_behavior = matching_behavior;
-  return ResolveStyle(element, style_recalc_context, style_request);
-}
-
 scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,

@@ -1359,7 +1359,7 @@ The Blink animation engine interacts with Blink/Chrome in the following ways:
 
     The most user visible functionality of the animation engine is animating
     CSS values. This means animations have a place in the [CSS cascade][] and
-    influence the [ComputedStyle][]s returned by [styleForElement()][].
+    influence the [ComputedStyle][]s returned by [ResolveStyle()][].
 
     The implementation for this lives under [ApplyAnimatedStandardProperties()][]
     for standard properties and [ApplyAnimatedCustomProperties()][] for custom
@@ -1368,13 +1368,13 @@ The Blink animation engine interacts with Blink/Chrome in the following ways:
 
     Animations can be controlled by CSS via the [`animation`](https://www.w3.org/TR/css-animations-1/#animation)
     and [`transition`](https://www.w3.org/TR/css-transitions-1/#transition-shorthand-property) properties.
-    In code this happens when [styleForElement()][] uses [CalculateAnimationUpdate()][]
+    In code this happens when [ResolveStyle()][] uses [CalculateAnimationUpdate()][]
     and [CalculateTransitionUpdate()][] to build a [set of mutations][] to make
     to the animation engine which gets [applied later][].
 
 [CSS cascade]: https://www.w3.org/TR/css-cascade-3/#cascade-origin
 [ComputedStyle]: https://cs.chromium.org/search/?q=class:blink::ComputedStyle$
-[styleForElement()]: https://cs.chromium.org/search/?q=function:StyleResolver::styleForElement
+[ResolveStyle()]: https://cs.chromium.org/search/?q=function:StyleResolver::ResolveStyle
 [ApplyAnimatedStandardProperties()]: https://cs.chromium.org/?type=cs&q=function:StyleResolver::ApplyAnimatedStandardProperties
 [ApplyAnimatedCustomProperties()]: https://cs.chromium.org/?type=cs&q=function:ApplyAnimatedCustomProperties
 [variable references]: https://www.w3.org/TR/css-variables-1/#using-variables
@@ -1541,7 +1541,7 @@ animation.startTime = 6000;  // 6 seconds
     [SampledEffect][] into its target element's [EffectStack][] and marks the
     elements style as dirty to ensure it gets updated later in the document
     lifecycle.
-4.  During the next [style resolve][styleForElement()] on the target element all
+4.  During the next [style resolve][ResolveStyle()] on the target element all
     the [SampledEffect][]s in its [EffectStack][] are incorporated into building
     the element's [ComputedStyle][].
 
@@ -1629,7 +1629,7 @@ other specs (for example Javascript callback based effects).
 #### Lifecycle of an [Interpolation][]
 
 [Interpolation][] is the data structure that [style
-resolution][styleForElement()] uses to resolve what animated value to apply
+resolution][ResolveStyle()] uses to resolve what animated value to apply
 to an animated element's [ComputedStyle][].
 
 1.   [Interpolation][]s are lazily
@@ -1639,7 +1639,7 @@ to an animated element's [ComputedStyle][].
      [apply][ApplyAnimatedStandardProperties()] to the associated [Element][]
      and stashed away in the [Element][]'s [ElementAnimations][]'
      [EffectStack][]'s [SampledEffect][]s.
-3.   During [style resolution][styleForElement()] on the target [Element][] all
+3.   During [style resolution][ResolveStyle()] on the target [Element][] all
      the [Interpolation][]s are [collected and organised by
      category][AdoptActiveInterpolations] according to whether it's a transition
      or not (transitions in Blink are

@@ -2819,7 +2819,7 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
   DCHECK(GetDocument().InStyleRecalc());
 
   // FIXME: Instead of clearing updates that may have been added from calls to
-  // StyleForElement outside RecalcStyle, we should just never set them if we're
+  // ResolveStyle outside RecalcStyle, we should just never set them if we're
   // not inside RecalcStyle.
   if (ElementAnimations* element_animations = GetElementAnimations())
     element_animations->CssAnimations().ClearPendingUpdate();
@@ -2833,7 +2833,7 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     return nullptr;
   }
 
-  // StyleForElement() might add active animations so we need to get it again.
+  // ResolveStyle() might add active animations so we need to get it again.
   if (ElementAnimations* element_animations = GetElementAnimations()) {
     element_animations->CssAnimations().MaybeApplyPendingUpdate(this);
     element_animations->UpdateAnimationFlags(*style);
@@ -2848,8 +2848,8 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
 
 scoped_refptr<ComputedStyle> Element::OriginalStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  return GetDocument().GetStyleResolver().StyleForElement(this,
-                                                          style_recalc_context);
+  return GetDocument().GetStyleResolver().ResolveStyle(this,
+                                                       style_recalc_context);
 }
 
 void Element::RecalcStyleForTraversalRootAncestor() {
