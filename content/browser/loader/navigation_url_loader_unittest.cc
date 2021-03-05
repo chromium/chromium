@@ -100,7 +100,7 @@ class NavigationURLLoaderTest : public testing::Test {
         browser_context_.get(), storage_partition, std::move(request_info),
         nullptr, nullptr, nullptr, nullptr, delegate,
         NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote(),
-        storage_partition->CreateAuthAndCertObserverForNavigationRequest(
+        storage_partition->CreateURLLoaderNetworkObserverForNavigationRequest(
             -1 /* frame_tree_node_id */),
         /*devtools_observer=*/mojo::NullRemote());
   }

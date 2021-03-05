@@ -92,10 +92,10 @@
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
-#include "services/network/public/mojom/auth_and_certificate_observer.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
@@ -1919,8 +1919,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       RenderFrameHostImpl* old_frame_host,
       const UrlInfo& dest_url_info);
 
-  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-  CreateAuthAndCertObserver();
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+  CreateURLLoaderNetworkObserver();
 
   mojo::PendingRemote<network::mojom::CookieAccessObserver>
   CreateCookieAccessObserver();

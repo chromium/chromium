@@ -1343,8 +1343,8 @@ void NetworkContext::CreateWebSocket(
     uint32_t options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-        auth_cert_observer,
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer,
     mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) {
 #if !defined(OS_IOS)
@@ -1357,7 +1357,7 @@ void NetworkContext::CreateWebSocket(
       url, requested_protocols, site_for_cookies, isolation_info,
       std::move(additional_headers), process_id, origin, options,
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
-      std::move(handshake_client), std::move(auth_cert_observer),
+      std::move(handshake_client), std::move(url_loader_network_observer),
       std::move(auth_handler), std::move(header_client));
 #endif  // !defined(OS_IOS)
 }

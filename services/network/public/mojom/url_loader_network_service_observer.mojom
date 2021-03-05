@@ -10,7 +10,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
 
-// Contains progress information for a particular load.
+// Loading info.
 struct LoadInfo {
   mojo_base.mojom.TimeTicks timestamp;
   string host;
@@ -79,8 +79,6 @@ interface AuthChallengeResponder {
 // This interface is used by an URLLoaderFactory to provide notification
 // of authentication and certificate events. This is typically implemented
 // by a trusted process such as the browser process.
-// TODO(dtapuska): Rename this interface. It is used for more than
-// authentication and certificate now.
 interface URLLoaderNetworkServiceObserver {
   // Called when an SSL certificate is encountered.
   // The callback argument is a net::ERROR value. If it's net::OK, then the
@@ -139,7 +137,7 @@ interface URLLoaderNetworkServiceObserver {
   // Called periodically to update the client about progress of the current
   // loads. To avoid flooding the client, it has to ack the update before it can
   // receive the next update.
-  OnLoadingStateUpdate(LoadInfo info) => ();
+  OnLoadingStateUpdate(LoadInfo infos) => ();
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

@@ -68,8 +68,8 @@ class CONTENT_EXPORT NavigationURLLoader {
       NavigationURLLoaderDelegate* delegate,
       LoaderType loader_type,
       mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
-      mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer,
+      mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
           initial_interceptors = {});

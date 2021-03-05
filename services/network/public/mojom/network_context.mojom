@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/address_list.mojom";
-import "services/network/public/mojom/auth_and_certificate_observer.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
@@ -653,7 +653,7 @@ struct URLLoaderFactoryParams {
   pending_remote<CookieAccessObserver>? cookie_observer;
 
   // Used to notify clients about authentication and certificate events.
-  pending_remote<AuthenticationAndCertificateObserver>? auth_cert_observer;
+  pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer;
 
   // Used to notify devtools about events.
   pending_remote<DevToolsObserver>? devtools_observer;
@@ -1120,7 +1120,7 @@ interface NetworkContext {
       uint32 options,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
       pending_remote<WebSocketHandshakeClient> handshake_client,
-      pending_remote<AuthenticationAndCertificateObserver>? auth_cert_observer,
+      pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer,
       pending_remote<WebSocketAuthenticationHandler>? auth_handler,
       pending_remote<TrustedHeaderClient>? header_client);
 

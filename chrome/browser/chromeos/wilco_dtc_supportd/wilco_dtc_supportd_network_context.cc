@@ -35,8 +35,9 @@ WilcoDtcSupportdNetworkContextImpl::GetURLLoaderFactory() {
     url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
     url_loader_factory_params->is_corb_enabled = false;
     url_loader_factory_params->is_trusted = true;
-    cert_receivers_.Add(this, url_loader_factory_params->auth_cert_observer
-                                  .InitWithNewPipeAndPassReceiver());
+    cert_receivers_.Add(this,
+                        url_loader_factory_params->url_loader_network_observer
+                            .InitWithNewPipeAndPassReceiver());
     url_loader_factory_.reset();
     network_context_->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(),
@@ -124,7 +125,7 @@ void WilcoDtcSupportdNetworkContextImpl::OnLoadingStateUpdate(
 }
 
 void WilcoDtcSupportdNetworkContextImpl::Clone(
-    mojo::PendingReceiver<network::mojom::AuthenticationAndCertificateObserver>
+    mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {
   cert_receivers_.Add(this, std::move(observer));
 }

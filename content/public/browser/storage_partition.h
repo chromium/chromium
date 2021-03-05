@@ -118,13 +118,13 @@ class CONTENT_EXPORT StoragePartition {
       mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
       const url::Origin& top_frame_origin) = 0;
 
-  virtual mojo::PendingRemote<
-      network::mojom::AuthenticationAndCertificateObserver>
-  CreateAuthAndCertObserverForFrame(int process_id, int frame_routing_id) = 0;
+  virtual mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+  CreateURLLoaderNetworkObserverForFrame(int process_id,
+                                         int frame_routing_id) = 0;
 
-  virtual mojo::PendingRemote<
-      network::mojom::AuthenticationAndCertificateObserver>
-  CreateAuthAndCertObserverForNavigationRequest(int frame_tree_node_id) = 0;
+  virtual mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+  CreateURLLoaderNetworkObserverForNavigationRequest(
+      int frame_tree_node_id) = 0;
 
   virtual storage::QuotaManager* GetQuotaManager() = 0;
   virtual AppCacheService* GetAppCacheService() = 0;

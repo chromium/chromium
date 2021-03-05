@@ -156,7 +156,6 @@ mojom("mojom_network_isolation_key") {
 mojom("url_loader_base") {
   generate_java = true
   sources = [
-    "auth_and_certificate_observer.mojom",
     "blocked_by_response_reason.mojom",
     "chunked_data_pipe_getter.mojom",
     "client_security_state.mojom",
@@ -187,6 +186,7 @@ mojom("url_loader_base") {
     "source_location.mojom",
     "trust_tokens.mojom",
     "url_loader.mojom",
+    "url_loader_network_service_observer.mojom",
     "url_request.mojom",
     "url_response_head.mojom",
     "web_bundle_handle.mojom",

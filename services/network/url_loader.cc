@@ -471,8 +471,8 @@ URLLoader::URLLoader(
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
     const cors::OriginAccessList& origin_access_list,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-        auth_cert_observer,
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
     : url_request_context_(url_request_context),
       network_service_client_(network_service_client),
@@ -514,7 +514,7 @@ URLLoader::URLLoader(
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       origin_access_list_(origin_access_list),
       cookie_observer_(std::move(cookie_observer)),
-      auth_cert_observer_(std::move(auth_cert_observer)),
+      url_loader_network_observer_(std::move(url_loader_network_observer)),
       devtools_observer_(std::move(devtools_observer)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
@@ -1193,7 +1193,7 @@ void URLLoader::OnAuthRequired(net::URLRequest* url_request,
     // |this| may have been deleted.
     return;
   }
-  if (!auth_cert_observer_) {
+  if (!url_loader_network_observer_) {
     OnAuthCredentials(base::nullopt);
     return;
   }
@@ -1205,7 +1205,7 @@ void URLLoader::OnAuthRequired(net::URLRequest* url_request,
 
   DCHECK(!auth_challenge_responder_receiver_.is_bound());
 
-  auth_cert_observer_->OnAuthRequired(
+  url_loader_network_observer_->OnAuthRequired(
       fetch_window_id_, request_id_, url_request_->url(), first_auth_attempt_,
       auth_info, url_request->response_headers(),
       auth_challenge_responder_receiver_.BindNewPipeAndPassRemote());
@@ -1228,7 +1228,7 @@ void URLLoader::OnCertificateRequested(net::URLRequest* unused,
     return;
   }
 
-  if (!auth_cert_observer_) {
+  if (!url_loader_network_observer_) {
     CancelRequest();
     return;
   }
@@ -1236,7 +1236,7 @@ void URLLoader::OnCertificateRequested(net::URLRequest* unused,
   // Set up mojo endpoints for ClientCertificateResponder and bind to the
   // Receiver. This enables us to receive messages regarding the client
   // certificate selection.
-  auth_cert_observer_->OnCertificateRequested(
+  url_loader_network_observer_->OnCertificateRequested(
       fetch_window_id_, cert_info,
       client_cert_responder_receiver_.BindNewPipeAndPassRemote());
   client_cert_responder_receiver_.set_disconnect_handler(
@@ -1247,11 +1247,11 @@ void URLLoader::OnSSLCertificateError(net::URLRequest* request,
                                       int net_error,
                                       const net::SSLInfo& ssl_info,
                                       bool fatal) {
-  if (!auth_cert_observer_) {
+  if (!url_loader_network_observer_) {
     OnSSLCertificateErrorResponse(ssl_info, net::ERR_INSECURE_RESPONSE);
     return;
   }
-  auth_cert_observer_->OnSSLCertificateError(
+  url_loader_network_observer_->OnSSLCertificateError(
       url_request_->url(), net_error, ssl_info, fatal,
       base::BindOnce(&URLLoader::OnSSLCertificateErrorResponse,
                      weak_ptr_factory_.GetWeakPtr(), ssl_info));
@@ -1649,10 +1649,10 @@ int URLLoader::OnHeadersReceived(
   return net::OK;
 }
 
-mojom::AuthenticationAndCertificateObserver* URLLoader::GetAuthCertObserver() {
-  if (!auth_cert_observer_)
+mojom::URLLoaderNetworkServiceObserver* URLLoader::GetAuthCertObserver() {
+  if (!url_loader_network_observer_)
     return nullptr;
-  return auth_cert_observer_.get();
+  return url_loader_network_observer_.get();
 }
 
 void URLLoader::UpdateLoadInfo() {
@@ -1669,7 +1669,7 @@ void URLLoader::UpdateLoadInfo() {
 
   waiting_on_load_state_ack_ = true;
 
-  auth_cert_observer_->OnLoadingStateUpdate(
+  url_loader_network_observer_->OnLoadingStateUpdate(
       std::move(load_info),
       base::BindOnce(&URLLoader::AckUpdateLoadInfo, base::Unretained(this)));
 }
@@ -1682,7 +1682,7 @@ void URLLoader::AckUpdateLoadInfo() {
 
 void URLLoader::MaybeStartUpdateLoadInfoTimer() {
   if (waiting_on_load_state_ack_ || update_load_info_timer_.IsRunning() ||
-      !auth_cert_observer_) {
+      !url_loader_network_observer_) {
     return;
   }
 

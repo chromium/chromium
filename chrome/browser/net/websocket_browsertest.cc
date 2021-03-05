@@ -120,7 +120,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
         network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(handshake_client),
-        process->GetStoragePartition()->CreateAuthAndCertObserverForFrame(
+        process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
             process->GetID(), frame->GetRoutingID()),
         /*auth_handler=*/mojo::NullRemote(),
         /*header_client=*/mojo::NullRemote());

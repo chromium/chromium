@@ -71,11 +71,13 @@ class TestStoragePartition : public StoragePartition {
       mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
       const url::Origin& top_frame_origin) override;
 
-  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-  CreateAuthAndCertObserverForFrame(int process_id, int routing_id) override;
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+  CreateURLLoaderNetworkObserverForFrame(int process_id,
+                                         int routing_id) override;
 
-  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-  CreateAuthAndCertObserverForNavigationRequest(int frame_tree_id) override;
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+  CreateURLLoaderNetworkObserverForNavigationRequest(
+      int frame_tree_id) override;
 
   void set_quota_manager(storage::QuotaManager* manager) {
     quota_manager_ = manager;

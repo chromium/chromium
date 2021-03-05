@@ -88,7 +88,7 @@ void WebSocketConnectorImpl::Connect(
       std::move(headers), process_id_, origin_, options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
-      process->GetStoragePartition()->CreateAuthAndCertObserverForFrame(
+      process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           process_id_, frame_id_),
       mojo::NullRemote(), mojo::NullRemote());
 }
@@ -119,7 +119,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
       std::move(additional_headers), process_id, origin, options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
-      process->GetStoragePartition()->CreateAuthAndCertObserverForFrame(
+      process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           process_id, frame_id),
       std::move(auth_handler), std::move(trusted_header_client));
 }

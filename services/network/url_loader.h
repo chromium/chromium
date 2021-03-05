@@ -135,8 +135,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           trust_token_helper_factory,
       const cors::OriginAccessList& origin_access_list,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-      mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer,
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
   ~URLLoader() override;
 
@@ -179,7 +179,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const net::IPEndPoint& endpoint,
       base::Optional<GURL>* preserve_fragment_on_redirect_url);
 
-  mojom::AuthenticationAndCertificateObserver* GetAuthCertObserver();
+  mojom::URLLoaderNetworkServiceObserver* GetAuthCertObserver();
 
   void OnBeforeURLRequest();
 
@@ -352,7 +352,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       base::Optional<mojom::BlockedByResponseReason> reason = base::nullopt);
 
   // Starts the timer to call
-  // AuthenticationAndCertificateObserver::OnLoadingStateUpdate(), if timer
+  // URLLoaderNetworkServiceObserver::OnLoadingStateUpdate(), if timer
   // isn't already running, |waiting_on_load_state_ack_| is false.
   void MaybeStartUpdateLoadInfoTimer();
 
@@ -545,7 +545,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Observer listening to all cookie reads and writes made by this request.
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
 
-  mojo::Remote<mojom::AuthenticationAndCertificateObserver> auth_cert_observer_;
+  mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer_;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 

@@ -47,14 +47,14 @@ void TestStoragePartition::CreateHasTrustTokensAnswerer(
   NOTREACHED() << "Not implemented.";
 }
 
-mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-TestStoragePartition::CreateAuthAndCertObserverForFrame(int process_id,
-                                                        int routing_id) {
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+TestStoragePartition::CreateURLLoaderNetworkObserverForFrame(int process_id,
+                                                             int routing_id) {
   return mojo::NullRemote();
 }
 
-mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-TestStoragePartition::CreateAuthAndCertObserverForNavigationRequest(
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+TestStoragePartition::CreateURLLoaderNetworkObserverForNavigationRequest(
     int frame_tree_id) {
   return mojo::NullRemote();
 }

@@ -655,9 +655,8 @@ void OnCertificateRequestedContinuation(
 
 class SSLErrorDelegate : public SSLErrorHandler::Delegate {
  public:
-  explicit SSLErrorDelegate(
-      network::mojom::AuthenticationAndCertificateObserver::
-          OnSSLCertificateErrorCallback response)
+  explicit SSLErrorDelegate(network::mojom::URLLoaderNetworkServiceObserver::
+                                OnSSLCertificateErrorCallback response)
       : response_(std::move(response)) {}
   ~SSLErrorDelegate() override = default;
   void CancelSSLRequest(int error, const net::SSLInfo* ssl_info) override {
@@ -673,8 +672,8 @@ class SSLErrorDelegate : public SSLErrorHandler::Delegate {
   }
 
  private:
-  network::mojom::AuthenticationAndCertificateObserver::
-      OnSSLCertificateErrorCallback response_;
+  network::mojom::URLLoaderNetworkServiceObserver::OnSSLCertificateErrorCallback
+      response_;
   base::WeakPtrFactory<SSLErrorDelegate> weak_factory_{this};
 };
 
@@ -1672,8 +1671,8 @@ void StoragePartitionImpl::OnAuthRequired(
         auth_challenge_responder) {
   bool is_main_frame = false;
   base::RepeatingCallback<WebContents*(void)> web_contents_getter;
-  int process_id = auth_cert_observers_.current_context().process_id;
-  int routing_id = auth_cert_observers_.current_context().routing_id;
+  int process_id = url_loader_network_observers_.current_context().process_id;
+  int routing_id = url_loader_network_observers_.current_context().routing_id;
   if (window_id) {
     DCHECK_EQ(network::mojom::kBrowserProcessId, process_id);
     DCHECK_EQ(routing_id, RenderFrameHost::kNoFrameTreeNodeId);
@@ -1708,8 +1707,8 @@ void StoragePartitionImpl::OnCertificateRequested(
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder) {
   base::RepeatingCallback<WebContents*(void)> web_contents_getter;
-  int process_id = auth_cert_observers_.current_context().process_id;
-  int routing_id = auth_cert_observers_.current_context().routing_id;
+  int process_id = url_loader_network_observers_.current_context().process_id;
+  int routing_id = url_loader_network_observers_.current_context().routing_id;
   // Use |window_id| if it's provided.
   if (window_id) {
     DCHECK_EQ(process_id, network::mojom::kBrowserProcessId);
@@ -1738,8 +1737,8 @@ void StoragePartitionImpl::OnSSLCertificateError(
     const net::SSLInfo& ssl_info,
     bool fatal,
     OnSSLCertificateErrorCallback response) {
-  int process_id = auth_cert_observers_.current_context().process_id;
-  int routing_id = auth_cert_observers_.current_context().routing_id;
+  int process_id = url_loader_network_observers_.current_context().process_id;
+  int routing_id = url_loader_network_observers_.current_context().routing_id;
 
   SSLErrorDelegate* delegate =
       new SSLErrorDelegate(std::move(response));  // deletes self
@@ -1752,8 +1751,8 @@ void StoragePartitionImpl::OnSSLCertificateError(
 void StoragePartitionImpl::OnLoadingStateUpdate(
     network::mojom::LoadInfoPtr info,
     OnLoadingStateUpdateCallback callback) {
-  int process_id = auth_cert_observers_.current_context().process_id;
-  int routing_id = auth_cert_observers_.current_context().routing_id;
+  int process_id = url_loader_network_observers_.current_context().process_id;
+  int routing_id = url_loader_network_observers_.current_context().routing_id;
 
   auto* web_contents = GetWebContents(process_id, routing_id);
   if (web_contents) {
@@ -1764,37 +1763,36 @@ void StoragePartitionImpl::OnLoadingStateUpdate(
 }
 
 void StoragePartitionImpl::Clone(
-    mojo::PendingReceiver<network::mojom::AuthenticationAndCertificateObserver>
+    mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {
-  auth_cert_observers_.Add(this, std::move(observer),
-                           auth_cert_observers_.current_context());
+  url_loader_network_observers_.Add(
+      this, std::move(observer),
+      url_loader_network_observers_.current_context());
 }
 
-mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-StoragePartitionImpl::CreateAuthAndCertObserverForFrame(int process_id,
-                                                        int routing_id) {
-  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-      remote;
-  auth_cert_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver(),
-                           {process_id, routing_id});
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+StoragePartitionImpl::CreateURLLoaderNetworkObserverForFrame(int process_id,
+                                                             int routing_id) {
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
+  url_loader_network_observers_.Add(
+      this, remote.InitWithNewPipeAndPassReceiver(), {process_id, routing_id});
   return remote;
 }
 
-mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-StoragePartitionImpl::CreateAuthAndCertObserverForNavigationRequest(
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+StoragePartitionImpl::CreateURLLoaderNetworkObserverForNavigationRequest(
     int frame_tree_id) {
-  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-      remote;
-  auth_cert_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver(),
-                           {network::mojom::kBrowserProcessId, frame_tree_id});
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
+  url_loader_network_observers_.Add(
+      this, remote.InitWithNewPipeAndPassReceiver(),
+      {network::mojom::kBrowserProcessId, frame_tree_id});
   return remote;
 }
 
-mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
 StoragePartitionImpl::CreateAuthCertObserverForServiceWorker() {
-  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-      remote;
-  auth_cert_observers_.Add(
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
+  url_loader_network_observers_.Add(
       this, remote.InitWithNewPipeAndPassReceiver(),
       {network::mojom::kBrowserProcessId, RenderFrameHost::kNoFrameTreeNodeId});
   return remote;
@@ -1847,8 +1845,8 @@ void StoragePartitionImpl::OnClearSiteData(const GURL& url,
                                            int load_flags,
                                            OnClearSiteDataCallback callback) {
   DCHECK(initialized_);
-  int process_id = auth_cert_observers_.current_context().process_id;
-  int routing_id = auth_cert_observers_.current_context().routing_id;
+  int process_id = url_loader_network_observers_.current_context().process_id;
+  int routing_id = url_loader_network_observers_.current_context().routing_id;
   auto browser_context_getter = base::BindRepeating(
       GetBrowserContextFromStoragePartition, weak_factory_.GetWeakPtr());
   auto web_contents_getter =
@@ -2557,7 +2555,8 @@ StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessInternal(
   // Corb requests are likely made on behalf of untrusted renderers.
   if (!corb_enabled)
     params->is_trusted = true;
-  params->auth_cert_observer = CreateAuthCertObserverForServiceWorker();
+  params->url_loader_network_observer =
+      CreateAuthCertObserverForServiceWorker();
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);

@@ -77,8 +77,8 @@ class URLLoaderFactoryParamsHelper {
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer,
+      mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       base::StringPiece debug_tag);
 

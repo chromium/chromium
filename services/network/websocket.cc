@@ -353,12 +353,12 @@ void WebSocket::WebSocketEventHandler::OnSSLCertificateError(
   DVLOG(3) << "WebSocketEventHandler::OnSSLCertificateError"
            << reinterpret_cast<void*>(this) << " url=" << url.spec()
            << " cert_status=" << ssl_info.cert_status << " fatal=" << fatal;
-  if (!impl_->auth_cert_observer_) {
+  if (!impl_->url_loader_network_observer_) {
     impl_->OnSSLCertificateErrorResponse(std::move(callbacks), ssl_info,
                                          net::ERR_INSECURE_RESPONSE);
     return;
   }
-  impl_->auth_cert_observer_->OnSSLCertificateError(
+  impl_->url_loader_network_observer_->OnSSLCertificateError(
       url, net_error, ssl_info, fatal,
       base::BindOnce(&WebSocket::OnSSLCertificateErrorResponse,
                      impl_->weak_ptr_factory_.GetWeakPtr(),
@@ -406,8 +406,8 @@ WebSocket::WebSocket(
     net::NetworkTrafficAnnotationTag traffic_annotation,
     HasRawHeadersAccess has_raw_headers_access,
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-        auth_cert_observer,
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer,
     mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
     base::Optional<WebSocketThrottler::PendingConnection>
@@ -415,7 +415,7 @@ WebSocket::WebSocket(
     DataPipeUseTracker data_pipe_use_tracker,
     base::TimeDelta delay)
     : factory_(factory),
-      auth_cert_observer_(std::move(auth_cert_observer)),
+      url_loader_network_observer_(std::move(url_loader_network_observer)),
       handshake_client_(std::move(handshake_client)),
       auth_handler_(std::move(auth_handler)),
       header_client_(std::move(header_client)),

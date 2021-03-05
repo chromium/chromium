@@ -53,8 +53,8 @@ class TestNetworkContext : public network::TestNetworkContext {
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
-      mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer,
+      mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
       mojo::PendingRemote<network::mojom::WebSocketAuthenticationHandler>
           auth_handler,
       mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client)

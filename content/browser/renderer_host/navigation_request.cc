@@ -3137,7 +3137,7 @@ void NavigationRequest::OnStartChecksComplete(
       appcache_handle_.get(), std::move(prefetched_signed_exchange_cache_),
       this, loader_type, CreateCookieAccessObserver(),
       static_cast<StoragePartitionImpl*>(partition)
-          ->CreateAuthAndCertObserverForNavigationRequest(
+          ->CreateURLLoaderNetworkObserverForNavigationRequest(
               frame_tree_node_->frame_tree_node_id()),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
       std::move(interceptor));

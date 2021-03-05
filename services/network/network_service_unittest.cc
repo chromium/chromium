@@ -58,10 +58,10 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
-#include "services/network/test/test_auth_cert_observer.h"
 #include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_network_service_client.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "services/network/test/test_url_loader_network_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -1411,14 +1411,14 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
 
   void LoadURL(const GURL& url,
                int options = mojom::kURLLoadOptionNone,
-               mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-                   auth_cert_observer = mojo::NullRemote()) {
+               mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+                   url_loader_network_observer = mojo::NullRemote()) {
     ResourceRequest request;
     request.url = url;
     request.method = "GET";
     request.request_initiator = url::Origin();
     StartLoadingURL(request, 0 /* process_id */, options,
-                    std::move(auth_cert_observer));
+                    std::move(url_loader_network_observer));
     client_->RunUntilComplete();
   }
 
@@ -1426,15 +1426,16 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
       const ResourceRequest& request,
       uint32_t process_id,
       int options = mojom::kURLLoadOptionNone,
-      mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer = mojo::NullRemote()) {
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer = mojo::NullRemote()) {
     client_.reset(new TestURLLoaderClient());
     mojo::Remote<mojom::URLLoaderFactory> loader_factory;
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
     params->process_id = process_id;
     params->is_corb_enabled = false;
-    params->auth_cert_observer = std::move(auth_cert_observer);
+    params->url_loader_network_observer =
+        std::move(url_loader_network_observer);
     network_context_->CreateURLLoaderFactory(
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 
@@ -1492,7 +1493,7 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
   DISALLOW_COPY_AND_ASSIGN(NetworkServiceNetworkDelegateTest);
 };
 
-class ClearSiteDataAuthCertObserver : public TestAuthCertObserver {
+class ClearSiteDataAuthCertObserver : public TestURLLoaderNetworkObserver {
  public:
   explicit ClearSiteDataAuthCertObserver() = default;
   ~ClearSiteDataAuthCertObserver() override = default;
@@ -1528,14 +1529,14 @@ TEST_F(NetworkServiceNetworkDelegateTest, ClearSiteDataObserver) {
   const char kClearCookiesHeader[] = "Clear-Site-Data: \"cookies\"";
   CreateNetworkContext();
 
-  // Null |auth_cert_observer|. The request should complete without being
-  // deferred.
+  // Null |url_loader_network_observer|. The request should complete without
+  // being deferred.
   GURL url = https_server()->GetURL("/foo");
   url = AddQuery(url, "header", kClearCookiesHeader);
   LoadURL(url);
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 
-  // With |auth_cert_observer|. The request should go through
+  // With |url_loader_network_observer|. The request should go through
   // |ClearSiteDataAuthCertObserver| and complete.
   ClearSiteDataAuthCertObserver clear_site_observer;
   url = https_server()->GetURL("/bar");

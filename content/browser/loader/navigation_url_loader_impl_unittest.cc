@@ -106,7 +106,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         nullptr /* network_usage_accumulator */, nullptr /* header_client */,
         nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
         kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */,
-        mojo::NullRemote() /* auth_cert_observer */,
+        mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote());
   }
 
@@ -227,7 +227,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
         nullptr /* service_worker_handle */, nullptr /* appcache_handle */,
         nullptr /* prefetched_signed_exchange_cache */, delegate,
         mojo::NullRemote() /* cookie_access_obsever */,
-        mojo::NullRemote() /* auth_cert_observer */,
+        mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(), std::move(interceptors));
   }
 

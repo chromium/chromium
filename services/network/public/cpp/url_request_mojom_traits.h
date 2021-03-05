@@ -25,13 +25,13 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/site_for_cookies_mojom_traits.h"
-#include "services/network/public/mojom/auth_and_certificate_observer.mojom.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-shared.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -80,15 +80,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .cookie_observer);
   }
-  static mojo::PendingRemote<
-      network::mojom::AuthenticationAndCertificateObserver>
-  auth_cert_observer(
+  static mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+  url_loader_network_observer(
       const network::ResourceRequest::TrustedParams& trusted_params) {
-    if (!trusted_params.auth_cert_observer)
+    if (!trusted_params.url_loader_network_observer)
       return mojo::NullRemote();
     return std::move(
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
-            .auth_cert_observer);
+            .url_loader_network_observer);
   }
   static mojo::PendingRemote<network::mojom::DevToolsObserver>
   devtools_observer(

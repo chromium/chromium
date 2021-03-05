@@ -66,8 +66,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       net::NetworkTrafficAnnotationTag traffic_annotation,
       HasRawHeadersAccess has_raw_cookie_access,
       mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-      mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer,
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
       base::Optional<WebSocketThrottler::PendingConnection>
@@ -179,7 +179,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   WebSocketFactory* const factory_;
   mojo::Receiver<mojom::WebSocket> receiver_{this};
 
-  mojo::Remote<mojom::AuthenticationAndCertificateObserver> auth_cert_observer_;
+  mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer_;
   mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_;
   mojo::Remote<mojom::WebSocketClient> client_;
   mojo::Remote<mojom::WebSocketAuthenticationHandler> auth_handler_;

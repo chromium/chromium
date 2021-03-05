@@ -17,9 +17,9 @@
 #include "net/base/auth.h"
 #include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_cert_request_info.h"
-#include "services/network/public/mojom/auth_and_certificate_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -33,7 +33,7 @@ class WilcoDtcSupportdNetworkContext {
 
 class WilcoDtcSupportdNetworkContextImpl
     : public WilcoDtcSupportdNetworkContext,
-      public network::mojom::AuthenticationAndCertificateObserver {
+      public network::mojom::URLLoaderNetworkServiceObserver {
  public:
   WilcoDtcSupportdNetworkContextImpl();
   ~WilcoDtcSupportdNetworkContextImpl() override;
@@ -50,7 +50,7 @@ class WilcoDtcSupportdNetworkContextImpl
   // Creates Network Context.
   void CreateNetworkContext();
 
-  // network::mojom::AuthenticationAndCertificateObserver interface.
+  // network::mojom::URLLoaderNetworkServiceObserver interface.
   void OnSSLCertificateError(const GURL& url,
                              int net_error,
                              const net::SSLInfo& ssl_info,
@@ -76,9 +76,9 @@ class WilcoDtcSupportdNetworkContextImpl
                        OnClearSiteDataCallback callback) override;
   void OnLoadingStateUpdate(network::mojom::LoadInfoPtr info,
                             OnLoadingStateUpdateCallback callback) override;
-  void Clone(mojo::PendingReceiver<
-             network::mojom::AuthenticationAndCertificateObserver> listener)
-      override;
+  void Clone(
+      mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
+          listener) override;
 
   ProxyConfigMonitor proxy_config_monitor_;
 
@@ -87,7 +87,7 @@ class WilcoDtcSupportdNetworkContextImpl
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
-  mojo::ReceiverSet<network::mojom::AuthenticationAndCertificateObserver>
+  mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver>
       cert_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdNetworkContextImpl);

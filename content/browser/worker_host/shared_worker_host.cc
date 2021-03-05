@@ -322,7 +322,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
                                      origin, origin,
                                      net::SiteForCookies::FromOrigin(origin)),
           /*coep_reporter=*/mojo::NullRemote(),
-          /*auth_cert_observer=*/mojo::NullRemote(),
+          /*url_loader_network_observer=*/mojo::NullRemote(),
           /*devtools_observer=*/mojo::NullRemote(),
           /*debug_tag=*/"SharedWorkerHost::CreateNetworkFactoryForSubresource");
   return factory_params;

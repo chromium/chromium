@@ -10410,11 +10410,11 @@ void RenderFrameHostImpl::BindReportingObserver(
   GetAssociatedLocalFrame()->BindReportingObserver(std::move(receiver));
 }
 
-mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-RenderFrameHostImpl::CreateAuthAndCertObserver() {
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+RenderFrameHostImpl::CreateURLLoaderNetworkObserver() {
   return static_cast<StoragePartitionImpl*>(GetStoragePartition())
-      ->CreateAuthAndCertObserverForFrame(GetProcess()->GetID(),
-                                          GetRoutingID());
+      ->CreateURLLoaderNetworkObserverForFrame(GetProcess()->GetID(),
+                                               GetRoutingID());
 }
 
 PeerConnectionTrackerHost& RenderFrameHostImpl::GetPeerConnectionTrackerHost() {

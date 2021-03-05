@@ -348,16 +348,16 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
   } else {
     // Add the default factory to the bundle for browser.
     DCHECK(factory_bundle_for_browser_info);
-    mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
-        auth_cert_observer;
+    mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer;
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer;
     // If we have a |creator_render_frame_host| associate the load with that
     // RenderFrameHost. Note that |factory_process| may be different than the
     // |creator_render_frame_host|'s RenderProcessHost.
     if (creator_render_frame_host) {
-      auth_cert_observer =
+      url_loader_network_observer =
           factory_process->GetStoragePartition()
-              ->CreateAuthAndCertObserverForFrame(
+              ->CreateURLLoaderNetworkObserverForFrame(
                   creator_render_frame_host->GetProcess()->GetID(),
                   creator_render_frame_host->GetRoutingID());
       devtools_observer = NetworkServiceDevToolsObserver::MakeSelfOwned(
@@ -370,7 +370,8 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
     network::mojom::URLLoaderFactoryParamsPtr factory_params =
         URLLoaderFactoryParamsHelper::CreateForWorker(
             factory_process, request_initiator, trusted_isolation_info,
-            /*coep_reporter=*/mojo::NullRemote(), std::move(auth_cert_observer),
+            /*coep_reporter=*/mojo::NullRemote(),
+            std::move(url_loader_network_observer),
             std::move(devtools_observer),
             /*debug_tag=*/"WorkerScriptFetchInitiator::CreateScriptLoader");
 

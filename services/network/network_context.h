@@ -320,8 +320,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       uint32_t options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-      mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer,
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) override;
   void CreateQuicTransport(

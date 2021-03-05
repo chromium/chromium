@@ -25,14 +25,13 @@ mojo::PendingRemote<mojom::CookieAccessObserver> Clone(
   return new_remote;
 }
 
-mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver> Clone(
-    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>*
-        observer) {
+mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> Clone(
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>* observer) {
   if (!*observer)
     return mojo::NullRemote();
-  mojo::Remote<mojom::AuthenticationAndCertificateObserver> remote(
+  mojo::Remote<mojom::URLLoaderNetworkServiceObserver> remote(
       std::move(*observer));
-  mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver> new_remote;
+  mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
   *observer = remote.Unbind();
   return new_remote;
@@ -84,10 +83,9 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   cookie_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
           other.cookie_observer));
-  auth_cert_observer =
-      Clone(&const_cast<
-            mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>&>(
-          other.auth_cert_observer));
+  url_loader_network_observer = Clone(
+      &const_cast<mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
+          other.url_loader_network_observer));
   devtools_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
           other.devtools_observer));

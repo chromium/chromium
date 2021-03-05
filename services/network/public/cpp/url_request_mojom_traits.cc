@@ -159,8 +159,8 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
   out->has_user_activation = data.has_user_activation();
   out->cookie_observer = data.TakeCookieObserver<
       mojo::PendingRemote<network::mojom::CookieAccessObserver>>();
-  out->auth_cert_observer = data.TakeAuthCertObserver<mojo::PendingRemote<
-      network::mojom::AuthenticationAndCertificateObserver>>();
+  out->url_loader_network_observer = data.TakeUrlLoaderNetworkObserver<
+      mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>>();
   out->devtools_observer = data.TakeDevtoolsObserver<
       mojo::PendingRemote<network::mojom::DevToolsObserver>>();
   if (!data.ReadClientSecurityState(&out->client_security_state)) {

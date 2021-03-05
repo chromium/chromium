@@ -79,7 +79,8 @@ URLLoaderFactory::URLLoaderFactory(
       coep_reporter_(std::move(params_->coep_reporter)),
       cors_url_loader_factory_(cors_url_loader_factory),
       cookie_observer_(std::move(params_->cookie_observer)),
-      auth_cert_observer_(std::move(params_->auth_cert_observer)),
+      url_loader_network_observer_(
+          std::move(params_->url_loader_network_observer)),
       devtools_observer_(std::move(params_->devtools_observer)) {
   DCHECK(context);
   DCHECK_NE(mojom::kInvalidProcessId, params_->process_id);
@@ -267,17 +268,17 @@ void URLLoaderFactory::CreateLoaderAndStart(
   } else if (cookie_observer_) {
     cookie_observer_->Clone(cookie_observer.InitWithNewPipeAndPassReceiver());
   }
-  mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-      auth_cert_observer;
+  mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer;
   if (url_request.trusted_params &&
-      url_request.trusted_params->auth_cert_observer) {
-    auth_cert_observer = std::move(
-        const_cast<
-            mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>&>(
-            url_request.trusted_params->auth_cert_observer));
-  } else if (auth_cert_observer_) {
-    auth_cert_observer_->Clone(
-        auth_cert_observer.InitWithNewPipeAndPassReceiver());
+      url_request.trusted_params->url_loader_network_observer) {
+    url_loader_network_observer =
+        std::move(const_cast<
+                  mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
+            url_request.trusted_params->url_loader_network_observer));
+  } else if (url_loader_network_observer_) {
+    url_loader_network_observer_->Clone(
+        url_loader_network_observer.InitWithNewPipeAndPassReceiver());
   }
 
   mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
@@ -307,7 +308,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
       header_client_.is_bound() ? header_client_.get() : nullptr,
       context_->origin_policy_manager(), std::move(trust_token_factory),
       context_->cors_origin_access_list(), std::move(cookie_observer),
-      std::move(auth_cert_observer), std::move(devtools_observer));
+      std::move(url_loader_network_observer), std::move(devtools_observer));
 
   cors_url_loader_factory_->OnLoaderCreated(std::move(loader));
 }

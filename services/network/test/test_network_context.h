@@ -21,7 +21,6 @@
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
-#include "services/network/public/mojom/auth_and_certificate_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -32,6 +31,7 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "url/origin.h"
 
@@ -174,8 +174,8 @@ class TestNetworkContext : public mojom::NetworkContext {
       uint32_t options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-      mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
-          auth_cert_observer,
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) override {}
   void CreateQuicTransport(
