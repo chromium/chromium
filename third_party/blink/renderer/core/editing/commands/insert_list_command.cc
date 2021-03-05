@@ -178,7 +178,7 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
 
   const HTMLQualifiedName& list_tag =
       (type_ == kOrderedList) ? html_names::kOlTag : html_names::kUlTag;
-  if (EndingSelection().IsRange()) {
+  if (EndingVisibleSelection().IsRange()) {
     bool force_list_creation = false;
     VisibleSelection selection =
         SelectionForParagraphIteration(EndingVisibleSelection());
