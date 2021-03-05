@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/browser_actions_bar_browsertest.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
@@ -58,7 +57,6 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
-#include "chrome/browser/ui/views/toolbar/extension_toolbar_menu_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
@@ -823,7 +821,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest, TabAndBrowserFullscreen) {
 namespace {
 
 class WebAppNonClientFrameViewAshTest
-    : public TopChromeMdParamTest<BrowserActionsBarBrowserTest> {
+    : public TopChromeMdParamTest<InProcessBrowserTest> {
  public:
   WebAppNonClientFrameViewAshTest() = default;
 
@@ -840,29 +838,27 @@ class WebAppNonClientFrameViewAshTest
   chromeos::DefaultFrameHeader* frame_header_ = nullptr;
   WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
   const std::vector<ContentSettingImageView*>* content_setting_views_ = nullptr;
-  BrowserActionsContainer* browser_actions_container_ = nullptr;
   AppMenuButton* web_app_menu_button_ = nullptr;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    TopChromeMdParamTest<BrowserActionsBarBrowserTest>::SetUpCommandLine(
-        command_line);
+    TopChromeMdParamTest<InProcessBrowserTest>::SetUpCommandLine(command_line);
     cert_verifier_.SetUpCommandLine(command_line);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     TopChromeMdParamTest<
-        BrowserActionsBarBrowserTest>::SetUpInProcessBrowserTestFixture();
+        InProcessBrowserTest>::SetUpInProcessBrowserTestFixture();
     cert_verifier_.SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
     cert_verifier_.TearDownInProcessBrowserTestFixture();
     TopChromeMdParamTest<
-        BrowserActionsBarBrowserTest>::TearDownInProcessBrowserTestFixture();
+        InProcessBrowserTest>::TearDownInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
-    TopChromeMdParamTest<BrowserActionsBarBrowserTest>::SetUpOnMainThread();
+    TopChromeMdParamTest<InProcessBrowserTest>::SetUpOnMainThread();
 
     WebAppToolbarButtonContainer::DisableAnimationForTesting();
 
@@ -902,8 +898,6 @@ class WebAppNonClientFrameViewAshTest
 
     content_setting_views_ =
         &web_app_frame_toolbar_->GetContentSettingViewsForTesting();
-    browser_actions_container_ =
-        web_app_frame_toolbar_->GetBrowserActionsContainer();
     web_app_menu_button_ = web_app_frame_toolbar_->GetAppMenuButton();
   }
 
@@ -1221,31 +1215,6 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, ContentSettingIcons) {
   histograms.ExpectBucketCount(
       "ContentSettings.ImagePressed",
       static_cast<int>(ContentSettingImageModel::ImageType::GEOLOCATION), 1);
-}
-
-// Tests that a web app's browser action icons can be interacted with.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, BrowserActions) {
-  SetUpWebApp();
-  // Even though 2 are visible in the browser, no extension actions should show.
-  ToolbarActionsBar* toolbar_actions_bar =
-      browser_actions_container_->toolbar_actions_bar();
-  LoadExtensions();
-  toolbar_model()->SetVisibleIconCount(2);
-  EXPECT_EQ(0u, browser_actions_container_->GetVisibleBrowserActions());
-
-  // Show the menu.
-  SimulateClickOnView(web_app_menu_button_);
-
-  // All extension actions should always be showing in the menu.
-  EXPECT_EQ(3u, GetAppMenu()
-                    ->extension_toolbar_for_testing()
-                    ->container_for_testing()
-                    ->GetVisibleBrowserActions());
-
-  // Popping out an extension makes its action show in the bar.
-  toolbar_actions_bar->PopOutAction(toolbar_actions_bar->GetActions()[2], false,
-                                    base::DoNothing());
-  EXPECT_EQ(1u, browser_actions_container_->GetVisibleBrowserActions());
 }
 
 // Regression test for https://crbug.com/839955

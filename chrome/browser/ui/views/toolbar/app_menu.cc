@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/toolbar/extension_toolbar_menu_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -927,8 +926,7 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
   // The items representing the cut menu (cut/copy/paste), zoom menu
   // (increment/decrement/reset) and extension toolbar view are always enabled.
   // The child views of these items enabled state updates appropriately.
-  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU ||
-      command_id == IDC_EXTENSIONS_OVERFLOW_MENU)
+  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU)
     return true;
 
   const Entry& entry = command_id_to_entry_.find(command_id)->second;
@@ -945,8 +943,7 @@ void AppMenu::ExecuteCommand(int command_id, int mouse_event_flags) {
     return;
   }
 
-  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU ||
-      command_id == IDC_EXTENSIONS_OVERFLOW_MENU) {
+  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU) {
     // These items are represented by child views. If ExecuteCommand is invoked
     // it means the user clicked on the area around the buttons and we should
     // not do anyting.
@@ -962,8 +959,7 @@ bool AppMenu::GetAccelerator(int command_id,
   if (IsBookmarkCommand(command_id))
     return false;
 
-  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU ||
-      command_id == IDC_EXTENSIONS_OVERFLOW_MENU) {
+  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU) {
     // These have special child views; don't show the accelerator for them.
     return false;
   }
@@ -1065,12 +1061,6 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
       PopulateMenu(item, model->GetSubmenuModelAt(i));
 
     switch (model->GetCommandIdAt(i)) {
-      case IDC_EXTENSIONS_OVERFLOW_MENU: {
-        extension_toolbar_ = item->AddChildView(
-            std::make_unique<ExtensionToolbarMenuView>(browser_, item));
-        break;
-      }
-
       case IDC_EDIT_MENU: {
         ui::ButtonMenuItemModel* submodel = model->GetButtonMenuItemAt(i);
         DCHECK_EQ(IDC_CUT, submodel->GetCommandIdAt(0));

@@ -214,7 +214,6 @@
 #define IDC_SHOW_SYNC_ERROR             40242
 #define IDC_DISTILL_PAGE                40243
 #define IDC_HELP_MENU                   40244
-#define IDC_EXTENSIONS_OVERFLOW_MENU    40245
 #define IDC_SHOW_SRT_BUBBLE             40246
 #define IDC_ELEVATED_RECOVERY_DIALOG    40247
 #define IDC_TAKE_SCREENSHOT             40248

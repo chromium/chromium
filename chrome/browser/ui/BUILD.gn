@@ -4175,8 +4175,6 @@ static_library("ui") {
       "views/toolbar/chrome_labs_button.h",
       "views/toolbar/chrome_labs_item_view.cc",
       "views/toolbar/chrome_labs_item_view.h",
-      "views/toolbar/extension_toolbar_menu_view.cc",
-      "views/toolbar/extension_toolbar_menu_view.h",
       "views/toolbar/home_button.cc",
       "views/toolbar/home_button.h",
       "views/toolbar/reload_button.cc",

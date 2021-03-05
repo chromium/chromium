@@ -177,10 +177,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Appends a clipboard menu (without separators).
   void CreateCutCopyPasteMenu();
 
-  // Add a menu item for the browser action icons if there is overflow, returns
-  // whether the menu was added.
-  bool CreateActionToolbarOverflowMenu();
-
   // Appends a zoom menu (without separators).
   void CreateZoomMenu();
 

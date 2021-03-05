@@ -120,12 +120,6 @@ const base::Feature kChromeTipsInMainMenuNewBadge{
     "ChromeTipsInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_MAC)
-// An empty command used because of a bug in AppKit menus.
-// See comment in CreateActionToolbarOverflowMenu().
-const int kEmptyMenuItemCommand = 0;
-#endif
-
 // Conditionally return the update app menu item title based on upgrade detector
 // state.
 base::string16 GetUpgradeDialogMenuItemName() {
@@ -737,10 +731,6 @@ bool AppMenuModel::IsCommandIdEnabled(int command_id) const {
 
 bool AppMenuModel::IsCommandIdVisible(int command_id) const {
   switch (command_id) {
-#if defined(OS_MAC)
-    case kEmptyMenuItemCommand:
-      return false;  // Always hidden (see CreateActionToolbarOverflowMenu).
-#endif
     case IDC_PIN_TO_START_SCREEN:
       return false;
     case IDC_UPGRADE_DIALOG: {
@@ -796,9 +786,6 @@ void AppMenuModel::LogMenuAction(AppMenuAction action_id) {
 void AppMenuModel::Build() {
   // Build (and, by extension, Init) should only be called once.
   DCHECK_EQ(0, GetItemCount());
-
-  if (CreateActionToolbarOverflowMenu())
-    AddSeparator(ui::UPPER_SEPARATOR);
 
   if (IsCommandIdVisible(IDC_UPGRADE_DIALOG))
     AddItem(IDC_UPGRADE_DIALOG, GetUpgradeDialogMenuItemName());
@@ -930,27 +917,6 @@ void AppMenuModel::Build() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   uma_action_recorded_ = false;
-}
-
-bool AppMenuModel::CreateActionToolbarOverflowMenu() {
-  // The extensions menu replaces the 3-dot menu entry.
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
-    return false;
-
-  // We only add the extensions overflow container if there are any icons that
-  // aren't shown in the main container.
-  // browser_->window() can return null during startup.
-  if (!browser_->window())
-    return false;
-
-  // |toolbar_actions_bar| can be null in testing.
-  ToolbarActionsBar* const toolbar_actions_bar =
-      ToolbarActionsBar::FromBrowserWindow(browser_->window());
-  if (toolbar_actions_bar && toolbar_actions_bar->NeedsOverflow()) {
-    AddItem(IDC_EXTENSIONS_OVERFLOW_MENU, base::string16());
-    return true;
-  }
-  return false;
 }
 
 void AppMenuModel::CreateCutCopyPasteMenu() {

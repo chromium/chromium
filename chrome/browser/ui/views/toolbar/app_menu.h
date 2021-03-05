@@ -21,7 +21,6 @@
 
 class BookmarkMenuDelegate;
 class Browser;
-class ExtensionToolbarMenuView;
 
 namespace views {
 class MenuButtonController;
@@ -103,10 +102,6 @@ class AppMenu : public views::MenuDelegate,
   // GlobalErrorObserver:
   void OnGlobalErrorsChanged() override;
 
-  ExtensionToolbarMenuView* extension_toolbar_for_testing() {
-    return extension_toolbar_;
-  }
-
  private:
   class CutCopyPasteView;
   class RecentTabsMenuModelDelegate;
@@ -175,10 +170,6 @@ class AppMenu : public views::MenuDelegate,
 
   // Menu corresponding to IDC_TAKE_SCREENSHOT.
   views::MenuItemView* screenshot_menu_item_ = nullptr;
-
-  // The view within the IDC_EXTENSIONS_OVERFLOW_MENU item (only present with
-  // the toolbar action redesign enabled).
-  ExtensionToolbarMenuView* extension_toolbar_ = nullptr;
 
   // Used for managing "Recent tabs" menu items.
   std::unique_ptr<RecentTabsMenuModelDelegate> recent_tabs_menu_model_delegate_;
