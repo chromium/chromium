@@ -69,13 +69,13 @@ class LayoutGrid final : public LayoutBlock {
 
   Vector<LayoutUnit> TrackSizesForComputedStyle(GridTrackSizingDirection) const;
 
-  const Vector<LayoutUnit>& ColumnPositions() const {
+  Vector<LayoutUnit> ColumnPositions() const {
     NOT_DESTROYED();
     DCHECK(!grid_->NeedsItemsPlacement());
     return column_positions_;
   }
 
-  const Vector<LayoutUnit>& RowPositions() const {
+  Vector<LayoutUnit> RowPositions() const {
     NOT_DESTROYED();
     DCHECK(!grid_->NeedsItemsPlacement());
     return row_positions_;

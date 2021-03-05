@@ -1350,9 +1350,9 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   if (is_layout_grid && track_list_is_empty) {
     // For grids we should consider every listed track, whether implicitly or
     // explicitly created. Empty grids have a sole grid line per axis.
-    auto& positions = is_row_axis
-                          ? To<LayoutGrid>(layout_object)->ColumnPositions()
-                          : To<LayoutGrid>(layout_object)->RowPositions();
+    const Vector<LayoutUnit> positions =
+        is_row_axis ? To<LayoutGrid>(layout_object)->ColumnPositions()
+                    : To<LayoutGrid>(layout_object)->RowPositions();
     track_list_is_empty = positions.size() == 1;
   }
 
