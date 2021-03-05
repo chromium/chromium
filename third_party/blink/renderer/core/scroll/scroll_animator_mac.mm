@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "third_party/blink/renderer/platform/heap/impl/persistent.h"
 #include "third_party/blink/renderer/platform/mac/block_exceptions.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -342,7 +343,11 @@ class BlinkScrollbarPartAnimationTimer {
 }  // namespace blink
 
 @interface BlinkScrollbarPartAnimation : NSObject {
-  blink::Scrollbar* _scrollbar;
+  // TODO(crbug.com/1185337): This WeakPersistent was added as a speculative
+  // because fix for crbug.com/1183276.
+  // We need to figure out how to correctly clear the scrollbar manually
+  // instead of relying on WeakPersistent which adds overhead.
+  blink::WeakPersistent<blink::Scrollbar> _scrollbar;
   std::unique_ptr<blink::BlinkScrollbarPartAnimationTimer> _timer;
   base::scoped_nsobject<ScrollbarPainter> _scrollbarPainter;
   FeatureToAnimate _featureToAnimate;
@@ -372,7 +377,7 @@ class BlinkScrollbarPartAnimationTimer {
 
   _timer = std::make_unique<blink::BlinkScrollbarPartAnimationTimer>(
       self, duration, std::move(taskRunner));
-  _scrollbar = scrollbar;
+  _scrollbar = blink::WeakPersistent<blink::Scrollbar>(scrollbar);
   _featureToAnimate = featureToAnimate;
   _startValue = startValue;
   _endValue = endValue;
@@ -382,7 +387,10 @@ class BlinkScrollbarPartAnimationTimer {
 
 - (void)startAnimation {
   DCHECK(_scrollbar);
-
+  // This was added as a speculative fix for crbug.com/1183276.
+  // Accessing scrollbar is problematic in _timer
+  if (!_scrollbar)
+    return;
   _scrollbarPainter.reset(ScrollbarPainterForScrollbar(*_scrollbar),
                           base::scoped_policy::RETAIN);
   _timer->Start();
@@ -406,6 +414,10 @@ class BlinkScrollbarPartAnimationTimer {
 
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
   DCHECK(_scrollbar);
+  // This was added as a speculative fix for crbug.com/1183276.
+  // Accessing scrollbar is problematic in _timer
+  if (!_scrollbar)
+    return;
 
   CGFloat currentValue;
   if (_startValue > _endValue)
