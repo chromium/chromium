@@ -173,6 +173,8 @@ vs-chromium-project.txt
 /chrome/web_ui_mojo_bindings.xml
 /chromecast/internal
 /chromeos/assistant/internal
+/chromeos/components/eche_app_ui/resources/app
+/chromeos/components/eche_app_ui/resources/prod
 /chromeos/components/help_app_ui/resources/app
 /chromeos/components/help_app_ui/resources/prod
 /chromeos/components/media_app_ui/resources/prod

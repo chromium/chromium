@@ -51,7 +51,7 @@ js_type_check("closure_compile") {
 js_library("app") {
   sources = [
     "resources/browser_proxy.js",
-    "resources/prod/js/app_bundle.js",
+    "resources/mock/js/app_bundle.js",
   ]
 }
 

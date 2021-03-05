@@ -1622,6 +1622,17 @@ deps = {
     'condition': 'checkout_src_internal',
   },
 
+  'src/chromeos/components/eche_app_ui/resources/prod': {
+    'packages': [
+      {
+        'package': 'chromeos_internal/apps/eche_app/app',
+        'version': '-Aqm8wAtLdukTz6Nos_0AZNsAH704_EqBftOBZFHjtAC',
+      },
+    ],
+    'condition': 'checkout_chromeos and checkout_src_internal',
+    'dep_type': 'cipd',
+  },
+
   'src/chromeos/components/help_app_ui/resources/prod': {
     'packages': [
       {
