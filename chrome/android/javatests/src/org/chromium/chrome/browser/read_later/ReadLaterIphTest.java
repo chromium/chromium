@@ -14,8 +14,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
@@ -40,10 +38,13 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -52,11 +53,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.GURL;
 
 /** Integration tests for showing IPH bubbles for read later. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -126,10 +127,20 @@ public class ReadLaterIphTest {
         mActivityTestRule.loadUrl(mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL));
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
-        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_read_later);
-        verify(mTracker, timeout(10000L).times(1))
-                .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
+        // Allow DiskWrites temporarily in main thread to avoid violation during copying under
+        // emulator environment.
+        try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
+            RevampedContextMenuUtils.selectContextMenuItem(
+                    InstrumentationRegistry.getInstrumentation(), activity, tab,
+                    CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_read_later);
+        }
+
+        String linkUrl = mTestServer.getServer().getURL(
+                "/chrome/test/data/android/contextmenu/test_link.html");
+        CriteriaHelper.pollUiThread(() -> {
+            BookmarkModel bookmarkModel = new BookmarkModel();
+            return bookmarkModel.getReadingListItem(new GURL(linkUrl)) != null;
+        });
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
