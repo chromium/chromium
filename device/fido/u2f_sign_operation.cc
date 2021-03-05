@@ -53,7 +53,7 @@ void U2fSignOperation::WinkAndTrySign() {
 }
 
 void U2fSignOperation::TrySign() {
-  DispatchDeviceRequest(
+  DispatchU2FCommand(
       ConvertToU2fSignCommand(request(), app_param_type_, key_handle()),
       base::BindOnce(&U2fSignOperation::OnSignResponseReceived,
                      weak_factory_.GetWeakPtr()));
@@ -62,7 +62,14 @@ void U2fSignOperation::TrySign() {
 void U2fSignOperation::OnSignResponseReceived(
     base::Optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
+    FIDO_LOG(DEBUG) << "-> u2f (cancelled)";
     return;
+  }
+
+  if (device_response) {
+    FIDO_LOG(DEBUG) << "-> u2f " << base::HexEncode(*device_response);
+  } else {
+    FIDO_LOG(DEBUG) << "-> u2f (empty)";
   }
 
   auto result = apdu::ApduResponse::Status::SW_WRONG_DATA;
@@ -149,7 +156,7 @@ void U2fSignOperation::WinkAndTryFakeEnrollment() {
 }
 
 void U2fSignOperation::TryFakeEnrollment() {
-  DispatchDeviceRequest(
+  DispatchU2FCommand(
       ConstructBogusU2fRegistrationCommand(),
       base::BindOnce(&U2fSignOperation::OnEnrollmentResponseReceived,
                      weak_factory_.GetWeakPtr()));
@@ -158,7 +165,14 @@ void U2fSignOperation::TryFakeEnrollment() {
 void U2fSignOperation::OnEnrollmentResponseReceived(
     base::Optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
+    FIDO_LOG(DEBUG) << "-> u2f (cancelled)";
     return;
+  }
+
+  if (device_response) {
+    FIDO_LOG(DEBUG) << "-> u2f " << base::HexEncode(*device_response);
+  } else {
+    FIDO_LOG(DEBUG) << "-> u2f (empty)";
   }
 
   auto result = apdu::ApduResponse::Status::SW_WRONG_DATA;

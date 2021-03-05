@@ -57,13 +57,13 @@ void U2fRegisterOperation::TrySign() {
     CtapMakeCredentialRequest sign_request(request());
     sign_request.rp.id = *request().app_id;
     sign_command = ConvertToU2fSignCommandWithBogusChallenge(
-      sign_request, excluded_key_handle());
+        sign_request, excluded_key_handle());
   } else {
     sign_command = ConvertToU2fSignCommandWithBogusChallenge(
-      request(), excluded_key_handle());
+        request(), excluded_key_handle());
   }
 
-  DispatchDeviceRequest(
+  DispatchU2FCommand(
       std::move(sign_command),
       base::BindOnce(&U2fRegisterOperation::OnCheckForExcludedKeyHandle,
                      weak_factory_.GetWeakPtr()));
@@ -72,7 +72,14 @@ void U2fRegisterOperation::TrySign() {
 void U2fRegisterOperation::OnCheckForExcludedKeyHandle(
     base::Optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
+    FIDO_LOG(DEBUG) << "-> u2f (cancelled)";
     return;
+  }
+
+  if (device_response) {
+    FIDO_LOG(DEBUG) << "-> u2f " << base::HexEncode(*device_response);
+  } else {
+    FIDO_LOG(DEBUG) << "-> u2f (empty)";
   }
 
   auto result = apdu::ApduResponse::Status::SW_WRONG_DATA;
@@ -146,7 +153,7 @@ void U2fRegisterOperation::WinkAndTryRegistration() {
 }
 
 void U2fRegisterOperation::TryRegistration() {
-  DispatchDeviceRequest(
+  DispatchU2FCommand(
       ConvertToU2fRegisterCommand(request()),
       base::BindOnce(&U2fRegisterOperation::OnRegisterResponseReceived,
                      weak_factory_.GetWeakPtr()));
@@ -155,7 +162,14 @@ void U2fRegisterOperation::TryRegistration() {
 void U2fRegisterOperation::OnRegisterResponseReceived(
     base::Optional<std::vector<uint8_t>> device_response) {
   if (canceled_) {
+    FIDO_LOG(DEBUG) << "-> u2f (cancelled)";
     return;
+  }
+
+  if (device_response) {
+    FIDO_LOG(DEBUG) << "-> u2f " << base::HexEncode(*device_response);
+  } else {
+    FIDO_LOG(DEBUG) << "-> u2f (empty)";
   }
 
   auto result = apdu::ApduResponse::Status::SW_WRONG_DATA;
