@@ -4,11 +4,16 @@
 
 /** @fileoverview Test suite for managed-dialog. */
 
-import 'chrome://settings/lazy_load.js';
+import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 
-suite('SettingsManagedDialog', function() {
+suite('ManagedDialogTest', function() {
+  suiteSetup(function() {
+    loadTimeData.data = {};
+  });
+
   setup(function() {
     document.body.innerHTML = '';
   });
@@ -21,7 +26,15 @@ suite('SettingsManagedDialog', function() {
    * @return {Element}
    */
   function createManagedDialog(title, body) {
-    const dialog = document.createElement('settings-managed-dialog');
+    loadTimeData.overrideValues({
+      title,
+      body,
+      controlledSettingPolicy: '',
+      ok: 'OK',
+      close: 'Close',
+    });
+
+    const dialog = document.createElement('managed-dialog');
     dialog.title = title;
     dialog.body = body;
     document.body.appendChild(dialog);
@@ -36,12 +49,6 @@ suite('SettingsManagedDialog', function() {
     assertTrue(dialog.$$('cr-dialog').open);
     assertTrue(dialog.shadowRoot.textContent.includes(title));
     assertTrue(dialog.shadowRoot.textContent.includes(body));
-  });
-
-  test('DialogDismiss', function() {
-    const dialog = createManagedDialog('', '');
-    assertNotEquals('none', getComputedStyle(dialog).display);
-    assertTrue(dialog.$$('cr-dialog').open);
 
     // Click OK button to dismiss dialog
     dialog.$$('.action-button').click();

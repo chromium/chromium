@@ -508,7 +508,6 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['ExtensionControlledIndicator', 'extension_controlled_indicator_tests.js'],
  ['HelpPage', 'help_page_v3_test.js'],
  ['Languages', 'languages_tests.js'],
- ['ManagedDialog', 'managed_dialog_test.js'],
  ['Menu', 'settings_menu_test.js'],
  ['OnStartupPage', 'on_startup_page_tests.js'],
  ['PaymentsSection', 'payments_section_test.js'],

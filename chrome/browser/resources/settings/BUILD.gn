@@ -228,7 +228,6 @@ preprocess_if_expr("preprocess_generated") {
     "languages_page/languages_page.js",
     "languages_page/languages_subpage.js",
     "lifetime_browser_proxy.m.js",
-    "managed_dialog.js",
     "settings_menu/settings_menu.js",
     "on_startup_page/on_startup_page.js",
     "on_startup_page/startup_url_dialog.js",
@@ -499,7 +498,6 @@ js_type_check("closure_compile_local_module") {
     ":i18n_setup",
     ":lazy_load",
     ":lifetime_browser_proxy.m",
-    ":managed_dialog",
     ":metrics_browser_proxy",
     ":open_window_proxy",
     ":page_visibility",
@@ -580,12 +578,6 @@ js_library("lifetime_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/lifetime_browser_proxy.m.js" ]
   deps = [ "//ui/webui/resources/js:cr.m" ]
   extra_deps = [ ":modulize" ]
-}
-
-js_library("managed_dialog") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
 }
 
 js_library("metrics_browser_proxy") {
@@ -729,10 +721,7 @@ polymer_modulizer("settings_vars_css") {
 }
 
 html_to_js("web_components_local") {
-  js_files = [
-    "managed_dialog.js",
-    "site_favicon.js",
-  ]
+  js_files = [ "site_favicon.js" ]
 }
 
 js_modulizer("modulize") {

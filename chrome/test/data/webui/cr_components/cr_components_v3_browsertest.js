@@ -82,3 +82,15 @@ TEST_F('CrComponentsCertificateManagerProvisioningV3Test', 'All', function() {
 });
 
 GEN('#endif  // defined(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
+
+// eslint-disable-next-line no-var
+var CrComponentsManagedDialogV3Test = class extends CrComponentsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_components/managed_dialog_test.js';
+  }
+};
+
+TEST_F('CrComponentsManagedDialogV3Test', 'All', function() {
+  mocha.run();
+});

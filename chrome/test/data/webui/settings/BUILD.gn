@@ -113,9 +113,6 @@ js_type_check("closure_compile") {
 
     #":languages_page_tests",
     #":languages_tests",
-
-    ":managed_dialog_test",
-
     #":metrics_reporting_tests",
     #":on_startup_page_tests",
     #":password_check_test",
@@ -475,14 +472,6 @@ js_library("security_page_test") {
     "//chrome/browser/resources/settings:lazy_load",
     "//chrome/browser/resources/settings:settings",
     "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("managed_dialog_test") {
-  deps = [
-    "..:chai_assert",
-    "//chrome/browser/resources/settings:lazy_load",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
