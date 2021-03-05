@@ -365,11 +365,13 @@ public class Navigation extends IClientNavigation.Stub {
     /**
      * Returns true if this navigation was initiated by a form submission.
      *
-     * @since 90
+     * @since 89
      */
     public boolean isFormSubmission() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 89
+                || WebLayer.getVersion().equals("89.0.4389.69")
+                || WebLayer.getVersion().equals("89.0.4389.72")) {
             throw new UnsupportedOperationException();
         }
         try {
@@ -382,12 +384,14 @@ public class Navigation extends IClientNavigation.Stub {
     /**
      * Returns the referrer for this request.
      *
-     * @since 90
+     * @since 89
      */
     @NonNull
     public Uri getReferrer() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 89
+                || WebLayer.getVersion().equals("89.0.4389.69")
+                || WebLayer.getVersion().equals("89.0.4389.72")) {
             throw new UnsupportedOperationException();
         }
         try {

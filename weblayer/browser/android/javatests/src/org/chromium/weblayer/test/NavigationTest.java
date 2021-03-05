@@ -123,10 +123,10 @@ public class NavigationTest {
                 if (majorVersion >= 89) {
                     mIsKnownProtocol = navigation.isKnownProtocol();
                     mIsServedFromBackForwardCache = navigation.isServedFromBackForwardCache();
-                }
-                if (majorVersion >= 90) {
                     mIsFormSubmission = navigation.isFormSubmission();
                     mReferrer = navigation.getReferrer();
+                }
+                if (majorVersion >= 90) {
                     if (getPage) {
                         mPage = navigation.getPage();
                     }
