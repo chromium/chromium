@@ -145,7 +145,8 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
-    id_ = MediaPlayerId(contents()->GetMainFrame(), 0);
+    id_ =
+        MediaPlayerId(contents()->GetMainFrame()->GetGlobalFrameRoutingId(), 0);
     controller_ = CreateController();
     media_player_receiver_ = CreateMediaPlayerReceiver(controller_.get());
 

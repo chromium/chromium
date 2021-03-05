@@ -102,12 +102,15 @@ class MediaWebContentsObserver::PlayerInfo {
         WebContentsObserver::MediaPlayerInfo(has_video_, has_audio_), id_);
 
     if (observer_->power_experiment_manager_) {
+      auto* render_frame_host = RenderFrameHost::FromID(id_.frame_routing_id);
+      DCHECK(render_frame_host);
+
       // Bind the callback to a WeakPtr for the frame, so that we won't try to
       // notify the frame after it's been destroyed.
       observer_->power_experiment_manager_->PlayerStarted(
           id_, base::BindRepeating(
                    &MediaWebContentsObserver::OnExperimentStateChanged,
-                   observer_->GetWeakPtrForFrame(id_.render_frame_host), id_));
+                   observer_->GetWeakPtrForFrame(render_frame_host), id_));
     }
   }
 
@@ -167,39 +170,42 @@ void MediaWebContentsObserver::WebContentsDestroyed() {
 void MediaWebContentsObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
   use_after_free_checker_.check();
+
+  GlobalFrameRoutingId frame_routing_id =
+      render_frame_host->GetGlobalFrameRoutingId();
+
   base::EraseIf(
       player_info_map_,
-      [render_frame_host](const PlayerInfoMap::value_type& id_and_player_info) {
-        return render_frame_host == id_and_player_info.first.render_frame_host;
+      [frame_routing_id](const PlayerInfoMap::value_type& id_and_player_info) {
+        return frame_routing_id == id_and_player_info.first.frame_routing_id;
       });
 
   base::EraseIf(media_player_hosts_,
-                [render_frame_host](const MediaPlayerHostImplMap::value_type&
-                                        media_player_hosts_value_type) {
-                  return render_frame_host ==
+                [frame_routing_id](const MediaPlayerHostImplMap::value_type&
+                                       media_player_hosts_value_type) {
+                  return frame_routing_id ==
                          media_player_hosts_value_type.first;
                 });
 
   base::EraseIf(
       media_player_observer_hosts_,
-      [render_frame_host](const MediaPlayerObserverHostImplMap::value_type&
-                              media_player_observer_hosts_value_type) {
-        return render_frame_host ==
-               media_player_observer_hosts_value_type.first.render_frame_host;
+      [frame_routing_id](const MediaPlayerObserverHostImplMap::value_type&
+                             media_player_observer_hosts_value_type) {
+        return frame_routing_id ==
+               media_player_observer_hosts_value_type.first.frame_routing_id;
       });
 
-  base::EraseIf(
-      media_player_remotes_,
-      [render_frame_host](const MediaPlayerRemotesMap::value_type&
-                              media_player_remotes_value_type) {
-        return render_frame_host ==
-               media_player_remotes_value_type.first.render_frame_host;
-      });
+  base::EraseIf(media_player_remotes_,
+                [frame_routing_id](const MediaPlayerRemotesMap::value_type&
+                                       media_player_remotes_value_type) {
+                  return frame_routing_id ==
+                         media_player_remotes_value_type.first.frame_routing_id;
+                });
 
   session_controllers_manager_->RenderFrameDeleted(render_frame_host);
 
   if (fullscreen_player_ &&
-      fullscreen_player_->render_frame_host == render_frame_host) {
+      fullscreen_player_->frame_routing_id == frame_routing_id) {
     picture_in_picture_allowed_in_fullscreen_.reset();
     fullscreen_player_.reset();
   }
@@ -260,12 +266,15 @@ void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
   if (!fullscreen_player_)
     return;
 
+  auto* render_frame_host =
+      RenderFrameHost::FromID(fullscreen_player_->frame_routing_id);
+  DCHECK(render_frame_host);
+
   // The message is sent to the renderer even though the video is already the
   // fullscreen element itself. It will eventually be handled by Blink.
-  fullscreen_player_->render_frame_host->Send(
-      new MediaPlayerDelegateMsg_BecamePersistentVideo(
-          fullscreen_player_->render_frame_host->GetRoutingID(),
-          fullscreen_player_->delegate_id, value));
+  render_frame_host->Send(new MediaPlayerDelegateMsg_BecamePersistentVideo(
+      render_frame_host->GetRoutingID(), fullscreen_player_->delegate_id,
+      value));
 }
 
 bool MediaWebContentsObserver::IsPlayerActive(
@@ -277,9 +286,9 @@ bool MediaWebContentsObserver::IsPlayerActive(
 }
 
 MediaWebContentsObserver::MediaPlayerHostImpl::MediaPlayerHostImpl(
-    RenderFrameHost* render_frame_host,
+    GlobalFrameRoutingId frame_routing_id,
     MediaWebContentsObserver* media_web_contents_observer)
-    : render_frame_host_(render_frame_host),
+    : frame_routing_id_(frame_routing_id),
       media_web_contents_observer_(media_web_contents_observer) {}
 
 MediaWebContentsObserver::MediaPlayerHostImpl::~MediaPlayerHostImpl() = default;
@@ -293,7 +302,7 @@ void MediaWebContentsObserver::MediaPlayerHostImpl::OnMediaPlayerAdded(
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> media_player,
     int32_t player_id) {
   media_web_contents_observer_->OnMediaPlayerAdded(
-      std::move(media_player), MediaPlayerId(render_frame_host_, player_id));
+      std::move(media_player), MediaPlayerId(frame_routing_id_, player_id));
 }
 
 MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -474,9 +483,12 @@ void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(
 void MediaWebContentsObserver::OnAudioOutputSinkChanged(
     const MediaPlayerId& player_id,
     std::string hashed_device_id) {
+  auto* render_frame_host = RenderFrameHost::FromID(player_id.frame_routing_id);
+  DCHECK(render_frame_host);
+
   auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
-      player_id.render_frame_host->GetProcess()->GetID(),
-      player_id.render_frame_host->GetRoutingID());
+      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID());
 
   auto callback_on_io_thread = base::BindOnce(
       [](const std::string& salt, const url::Origin& origin,
@@ -552,33 +564,36 @@ WebContentsImpl* MediaWebContentsObserver::web_contents_impl() const {
 }
 
 void MediaWebContentsObserver::BindMediaPlayerHost(
-    RenderFrameHost* host,
+    GlobalFrameRoutingId frame_routing_id,
     mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
         player_receiver) {
-  if (!media_player_hosts_.contains(host)) {
-    media_player_hosts_[host] =
-        std::make_unique<MediaPlayerHostImpl>(host, this);
+  if (!media_player_hosts_.contains(frame_routing_id)) {
+    media_player_hosts_[frame_routing_id] =
+        std::make_unique<MediaPlayerHostImpl>(frame_routing_id, this);
   }
 
-  media_player_hosts_[host]->BindMediaPlayerHostReceiver(
+  media_player_hosts_[frame_routing_id]->BindMediaPlayerHostReceiver(
       std::move(player_receiver));
 }
 
 void MediaWebContentsObserver::OnMediaPlayerAdded(
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
     MediaPlayerId player_id) {
+  auto* const rfh = RenderFrameHost::FromID(player_id.frame_routing_id);
+  DCHECK(rfh);
+
   if (media_player_remotes_.contains(player_id)) {
     // Collect debug information to help explain the numbers of attempts at
     // |player_id| reuse that we're seeing.
     // TODO(https://crbug.com/1172882): Remove once enough data has been
     // collected.
-    RenderFrameHost* const rfh = player_id.render_frame_host;
     const auto rfh_player_count = base::ranges::count_if(
-        media_player_remotes_, [rfh](const auto& player_id_and_remote) {
-          return player_id_and_remote.first.render_frame_host == rfh;
+        media_player_remotes_, [player_id](const auto& player_id_and_remote) {
+          return player_id_and_remote.first.frame_routing_id ==
+                 player_id.frame_routing_id;
         });
     const auto renderer_exit_count =
-        RenderFrameHostImpl::FromID(rfh->GetGlobalFrameRoutingId())
+        RenderFrameHostImpl::FromID(player_id.frame_routing_id)
             ->renderer_exit_count();
 
     NavigationEntry* const previous_entry =
@@ -639,9 +654,12 @@ void MediaWebContentsObserver::SuspendAllMediaPlayers() {
 void MediaWebContentsObserver::OnExperimentStateChanged(MediaPlayerId id,
                                                         bool is_starting) {
   use_after_free_checker_.check();
-  id.render_frame_host->Send(
-      new MediaPlayerDelegateMsg_NotifyPowerExperimentState(
-          id.render_frame_host->GetRoutingID(), id.delegate_id, is_starting));
+
+  auto* render_frame_host = RenderFrameHost::FromID(id.frame_routing_id);
+  DCHECK(render_frame_host);
+
+  render_frame_host->Send(new MediaPlayerDelegateMsg_NotifyPowerExperimentState(
+      render_frame_host->GetRoutingID(), id.delegate_id, is_starting));
 }
 
 base::WeakPtr<MediaWebContentsObserver>

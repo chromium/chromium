@@ -111,9 +111,13 @@ void MediaSessionController::OnSeekBackward(int player_id,
 void MediaSessionController::OnSetVolumeMultiplier(int player_id,
                                                    double volume_multiplier) {
   DCHECK_EQ(player_id_, player_id);
-  id_.render_frame_host->Send(new MediaPlayerDelegateMsg_UpdateVolumeMultiplier(
-      id_.render_frame_host->GetRoutingID(), id_.delegate_id,
-      volume_multiplier));
+
+  auto* render_frame_host = RenderFrameHost::FromID(id_.frame_routing_id);
+  if (!render_frame_host)
+    return;
+
+  render_frame_host->Send(new MediaPlayerDelegateMsg_UpdateVolumeMultiplier(
+      render_frame_host->GetRoutingID(), id_.delegate_id, volume_multiplier));
 }
 
 void MediaSessionController::OnEnterPictureInPicture(int player_id) {
@@ -149,17 +153,21 @@ void MediaSessionController::OnSetAudioSinkId(
     const std::string& raw_device_id) {
   DCHECK_EQ(player_id_, player_id);
 
+  auto* render_frame_host = RenderFrameHost::FromID(id_.frame_routing_id);
+  if (!render_frame_host)
+    return;
+
   // The sink id needs to be hashed before it is suitable for use in the
   // renderer process.
   auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
-      id_.render_frame_host->GetProcess()->GetID(),
-      id_.render_frame_host->GetRoutingID());
+      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID());
 
   std::string hashed_sink_id = GetHMACForMediaDeviceID(
       salt_and_origin.device_id_salt, salt_and_origin.origin, raw_device_id);
 
   // Grant the renderer the permission to use this audio output device.
-  static_cast<RenderFrameHostImpl*>(id_.render_frame_host)
+  static_cast<RenderFrameHostImpl*>(render_frame_host)
       ->SetAudioOutputDeviceIdForGlobalMediaControls(hashed_sink_id);
 
   media::mojom::MediaPlayer* remote =
@@ -174,7 +182,7 @@ void MediaSessionController::OnSetAudioSinkId(
 }
 
 RenderFrameHost* MediaSessionController::render_frame_host() const {
-  return id_.render_frame_host;
+  return RenderFrameHost::FromID(id_.frame_routing_id);
 }
 
 base::Optional<media_session::MediaPosition>

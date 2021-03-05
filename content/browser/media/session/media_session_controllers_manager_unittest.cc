@@ -77,8 +77,10 @@ class MediaSessionControllersManagerTest
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
-    media_player_id_ = MediaPlayerId(contents()->GetMainFrame(), 1);
-    media_player_id2_ = MediaPlayerId(contents()->GetMainFrame(), 2);
+    GlobalFrameRoutingId frame_routing_id =
+        contents()->GetMainFrame()->GetGlobalFrameRoutingId();
+    media_player_id_ = MediaPlayerId(frame_routing_id, 1);
+    media_player_id2_ = MediaPlayerId(frame_routing_id, 2);
     manager_ = std::make_unique<MediaSessionControllersManager>(contents());
   }
 

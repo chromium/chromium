@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/media_controller.h"
 #include "media/base/media_switches.h"
@@ -21,8 +22,8 @@ class MediaPowerExperimentManagerTest : public testing::Test {
  public:
   MediaPowerExperimentManagerTest()
       : manager_(std::make_unique<MediaPowerExperimentManager>()),
-        player_id_1_(nullptr, 1),
-        player_id_2_(nullptr, 2),
+        player_id_1_(GlobalFrameRoutingId(), 1),
+        player_id_2_(GlobalFrameRoutingId(), 2),
         cb_1_(base::BindRepeating([](bool* out, bool state) { *out = state; },
                                   &experiment_state_1_)),
         cb_2_(base::BindRepeating([](bool* out, bool state) { *out = state; },

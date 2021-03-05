@@ -306,7 +306,8 @@ void PageLoadMetricsObserverTester::SimulateMediaPlayed() {
       true /* has_video*/, true /* has_audio */);
   content::RenderFrameHost* render_frame_host = web_contents()->GetMainFrame();
   metrics_web_contents_observer_->MediaStartedPlaying(
-      video_type, content::MediaPlayerId(render_frame_host, 0));
+      video_type,
+      content::MediaPlayerId(render_frame_host->GetGlobalFrameRoutingId(), 0));
 }
 
 void PageLoadMetricsObserverTester::SimulateCookieAccess(

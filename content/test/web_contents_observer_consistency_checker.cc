@@ -111,7 +111,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameDeleted(
 
   // All players should have been paused by this point.
   for (const auto& id : active_media_players_)
-    CHECK_NE(id.render_frame_host, render_frame_host);
+    CHECK_NE(RenderFrameHost::FromID(id.frame_routing_id), render_frame_host);
 }
 
 void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(

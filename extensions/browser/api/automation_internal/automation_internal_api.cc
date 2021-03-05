@@ -216,8 +216,13 @@ class AutomationWebContentsObserver
 
   void MediaStartedPlaying(const MediaPlayerInfo& video_type,
                            const content::MediaPlayerId& id) override {
+    auto* render_frame_host =
+        content::RenderFrameHost::FromID(id.frame_routing_id);
+    if (!render_frame_host)
+      return;
+
     content::AXEventNotificationDetails content_event_bundle;
-    content_event_bundle.ax_tree_id = id.render_frame_host->GetAXTreeID();
+    content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
     content_event_bundle.events.resize(1);
     content_event_bundle.events[0].event_type =
         ax::mojom::Event::kMediaStartedPlaying;
@@ -228,8 +233,13 @@ class AutomationWebContentsObserver
       const MediaPlayerInfo& video_type,
       const content::MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) override {
+    auto* render_frame_host =
+        content::RenderFrameHost::FromID(id.frame_routing_id);
+    if (!render_frame_host)
+      return;
+
     content::AXEventNotificationDetails content_event_bundle;
-    content_event_bundle.ax_tree_id = id.render_frame_host->GetAXTreeID();
+    content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
     content_event_bundle.events.resize(1);
     content_event_bundle.events[0].event_type =
         ax::mojom::Event::kMediaStoppedPlaying;

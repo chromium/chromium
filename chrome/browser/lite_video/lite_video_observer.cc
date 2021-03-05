@@ -237,7 +237,8 @@ void LiteVideoObserver::MaybeUpdateCoinflipExperimentState(
 }
 
 void LiteVideoObserver::MediaBufferUnderflow(const content::MediaPlayerId& id) {
-  content::RenderFrameHost* render_frame_host = id.render_frame_host;
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(id.frame_routing_id);
 
   if (!render_frame_host || !render_frame_host->GetProcess())
     return;
@@ -276,11 +277,12 @@ void LiteVideoObserver::MediaBufferUnderflow(const content::MediaPlayerId& id) {
 }
 
 void LiteVideoObserver::MediaPlayerSeek(const content::MediaPlayerId& id) {
-  content::RenderFrameHost* render_frame_host = id.render_frame_host;
 
   if (!lite_video::features::DisableLiteVideoOnMediaPlayerSeek())
     return;
 
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(id.frame_routing_id);
   if (!render_frame_host || !render_frame_host->GetProcess())
     return;
 

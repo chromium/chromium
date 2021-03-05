@@ -154,14 +154,17 @@ void MetricsWebContentsObserver::RenderFrameDeleted(
 void MetricsWebContentsObserver::MediaStartedPlaying(
     const content::WebContentsObserver::MediaPlayerInfo& video_type,
     const content::MediaPlayerId& id) {
-  if (!id.render_frame_host->GetMainFrame()->IsCurrent()) {
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(id.frame_routing_id);
+
+  if (!render_frame_host || !render_frame_host->GetMainFrame()->IsCurrent()) {
     // Ignore media that starts playing in a page that was navigated away
     // from.
     return;
   }
 
   if (committed_load_)
-    committed_load_->MediaStartedPlaying(video_type, id.render_frame_host);
+    committed_load_->MediaStartedPlaying(video_type, render_frame_host);
 }
 
 void MetricsWebContentsObserver::WillStartNavigationRequest(

@@ -18,6 +18,7 @@
 #include "content/browser/media/media_power_experiment_manager.h"
 #include "content/browser/media/session/media_session_controllers_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -119,7 +120,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // needed, and then passes |player_receiver| to it to establish a
   // communication channel.
   void BindMediaPlayerHost(
-      RenderFrameHost* host,
+      GlobalFrameRoutingId frame_routing_id,
       mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
           player_receiver);
 
@@ -154,7 +155,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // has been created, so that a communication channel can be established.
   class MediaPlayerHostImpl : public media::mojom::MediaPlayerHost {
    public:
-    MediaPlayerHostImpl(RenderFrameHost* render_frame_host,
+    MediaPlayerHostImpl(GlobalFrameRoutingId frame_routing_id,
                         MediaWebContentsObserver* media_web_contents_observer);
     ~MediaPlayerHostImpl() override;
 
@@ -169,7 +170,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
         int32_t player_id) override;
 
    private:
-    RenderFrameHost* render_frame_host_;
+    GlobalFrameRoutingId frame_routing_id_;
     MediaWebContentsObserver* media_web_contents_observer_;
     mojo::AssociatedReceiverSet<media::mojom::MediaPlayerHost> receivers_;
   };
@@ -214,7 +215,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   };
 
   using MediaPlayerHostImplMap =
-      base::flat_map<RenderFrameHost*, std::unique_ptr<MediaPlayerHostImpl>>;
+      base::flat_map<GlobalFrameRoutingId,
+                     std::unique_ptr<MediaPlayerHostImpl>>;
   using MediaPlayerObserverHostImplMap =
       base::flat_map<MediaPlayerId,
                      std::unique_ptr<MediaPlayerObserverHostImpl>>;

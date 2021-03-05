@@ -41,7 +41,8 @@ void PictureInPictureSession::Update(
     const base::Optional<viz::SurfaceId>& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
-  player_id_ = MediaPlayerId(service_->render_frame_host(), player_id);
+  player_id_ = MediaPlayerId(
+      service_->render_frame_host()->GetGlobalFrameRoutingId(), player_id);
 
   GetController().EmbedSurface(surface_id.value(), natural_size);
   GetController().SetShowPlayPauseButton(show_play_pause_button);
