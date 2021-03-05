@@ -2043,6 +2043,13 @@ const char kPrinterStatusName[] = "Show printer Status";
 const char kPrinterStatusDescription[] =
     "Enables printer status icons and labels for saved and nearby printers";
 
+const char kIncognitoBrandConsistencyForDesktopName[] =
+    "Enable Incognito brand consistency in desktop.";
+const char kIncognitoBrandConsistencyForDesktopDescription[] =
+    "When enabled, removes any theme or background customization done by the "
+    "user and also overrides any dark/light mode treatment on the Incognito "
+    "UI.";
+
 const char kPrinterStatusDialogName[] =
     "Show printer status on destination dialog";
 const char kPrinterStatusDialogDescription[] =

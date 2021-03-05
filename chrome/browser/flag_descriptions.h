@@ -201,6 +201,9 @@ extern const char kAutoScreenBrightnessDescription[];
 extern const char kAvatarToolbarButtonName[];
 extern const char kAvatarToolbarButtonDescription[];
 
+extern const char kIncognitoBrandConsistencyForDesktopName[];
+extern const char kIncognitoBrandConsistencyForDesktopDescription[];
+
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
