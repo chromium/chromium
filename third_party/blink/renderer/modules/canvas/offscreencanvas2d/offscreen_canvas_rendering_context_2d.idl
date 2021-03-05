@@ -14,20 +14,20 @@
     [RuntimeEnabled=OffscreenCanvasCommit] void commit();
 
     // state
-    void save(); // push state on state stack
-    void restore(); // pop state stack and restore state
+    [NoAllocDirectCall] void save(); // push state on state stack
+    [NoAllocDirectCall] void restore(); // pop state stack and restore state
     // Clear the canvas and reset the path
-    [RuntimeEnabled=NewCanvas2DAPI] void reset();
+    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void reset();
 
     // transformations (default transform is the identity matrix)
     void scale(unrestricted double x, unrestricted double y);
     [RuntimeEnabled=NewCanvas2DAPI] void scale(unrestricted double x, unrestricted double y, unrestricted double z);
-    void rotate(unrestricted double angle);
-    [RuntimeEnabled=NewCanvas2DAPI] void rotate3d(unrestricted double angleX, unrestricted double angleY, unrestricted double angleZ);
-    [RuntimeEnabled=NewCanvas2DAPI] void rotateAxis(unrestricted double axisX, unrestricted double axisY, unrestricted double axisZ, unrestricted double angle);
+    [NoAllocDirectCall] void rotate(unrestricted double angle);
+    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void rotate3d(unrestricted double angleX, unrestricted double angleY, unrestricted double angleZ);
+    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void rotateAxis(unrestricted double axisX, unrestricted double axisY, unrestricted double axisZ, unrestricted double angle);
     void translate(unrestricted double x, unrestricted double y);
     [RuntimeEnabled=NewCanvas2DAPI] void translate(unrestricted double x, unrestricted double y, unrestricted double z);
-    [RuntimeEnabled=NewCanvas2DAPI] void perspective(unrestricted double length);
+    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void perspective(unrestricted double length);
     void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     [RuntimeEnabled=NewCanvas2DAPI] void transform(
         unrestricted double m11, unrestricted double m12, unrestricted double m13, unrestricted double m14,
@@ -38,7 +38,7 @@
     void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     [RaisesException] void setTransform(optional DOMMatrixInit transform = {});
     DOMMatrix getTransform();
-    void resetTransform();
+    [NoAllocDirectCall] void resetTransform();
 
     // compositing
     attribute unrestricted double globalAlpha; // (default 1.0)
@@ -64,12 +64,12 @@
     attribute DOMString shadowColor;
 
     // CanvasRect interface
-    void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [NoAllocDirectCall] void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [NoAllocDirectCall] void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [NoAllocDirectCall] void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
 
     // Path API (See BaseRenderingContext2D)
-    void beginPath();
+    [NoAllocDirectCall] void beginPath();
     void fill(optional CanvasFillRule winding);
     void fill(Path2D path, optional CanvasFillRule winding);
     void stroke();

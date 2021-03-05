@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/double_or_dom_point.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -40,7 +41,7 @@ namespace blink {
 
 class ExceptionState;
 
-class MODULES_EXPORT CanvasPath {
+class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
   DISALLOW_NEW();
 
  public:
