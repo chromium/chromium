@@ -133,6 +133,10 @@ class ProfilePicker {
   // Overrides the timeout delay for waiting for extended account info.
   static void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
 
+  // Returns a pref value indicating whether the profile picker has ever been
+  // shown to the user.
+  static bool Shown();
+
   // Returns whether to show profile picker at launch. This can be called on
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.

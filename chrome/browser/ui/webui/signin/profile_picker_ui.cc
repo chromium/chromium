@@ -80,7 +80,6 @@ bool IsSignInProfileCreationFlowSupported() {
 
 void AddStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"mainViewTitle", IDS_PROFILE_PICKER_MAIN_VIEW_TITLE},
       {"mainViewSubtitle", IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE},
       {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
       {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
@@ -143,6 +142,11 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddLocalizedString("mainViewTitle",
+                                  ProfilePicker::Shown()
+                                      ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
+                                      : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
+
   ProfilePicker::AvailabilityOnStartup availability_on_startup =
       static_cast<ProfilePicker::AvailabilityOnStartup>(
           g_browser_process->local_state()->GetInteger(
