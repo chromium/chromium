@@ -494,11 +494,14 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
 
     CHECK_NE(template_url, default_provider);
 
-    // For Extensions that use Override Settings API, there was a bug that
-    // caused extension engines to duplicate the Sync GUID of prepopulated
-    // engines. Since users still have those duplicated GUIDs in the wild,
-    // we skip the check for extensions. https://crbug.com/1166372#c13
-    if (default_provider &&
+    // Before we are loaded, we want to CHECK that we aren't accidentally
+    // removing the in-table representation of the Default Search Engine.
+    //
+    // But users in the wild do indeed have engines with duplicated sync GUIDs.
+    // For instance, Extensions Override Settings API used to have a bug that
+    // would clone GUIDs. So therefore skip the check after loading.
+    // https://crbug.com/1166372#c13
+    if (!loaded() && default_provider &&
         default_provider->type() !=
             TemplateURL::Type::NORMAL_CONTROLLED_BY_EXTENSION &&
         template_url->type() !=
