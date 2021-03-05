@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
@@ -454,14 +455,17 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    public byte[] serialize() {
-        return ShoppingPersistedTabDataProto.newBuilder()
-                .setPriceMicros(mPriceMicros)
-                .setPreviousPriceMicros(mPreviousPriceMicros)
-                .setLastUpdatedMs(getLastUpdatedMs())
-                .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs)
-                .build()
-                .toByteArray();
+    public Supplier<byte[]> getSerializeSupplier() {
+        ShoppingPersistedTabDataProto.Builder builder =
+                ShoppingPersistedTabDataProto.newBuilder()
+                        .setPriceMicros(mPriceMicros)
+                        .setPreviousPriceMicros(mPreviousPriceMicros)
+                        .setLastUpdatedMs(getLastUpdatedMs())
+                        .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs);
+
+        return () -> {
+            return builder.build().toByteArray();
+        };
     }
 
     @Override

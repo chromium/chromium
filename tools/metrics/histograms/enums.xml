@@ -33274,6 +33274,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Service Worker"/>
 </enum>
 
+<enum name="FileStorageRequestType">
+  <int value="0" label="Save Request"/>
+  <int value="1" label="Restore Request"/>
+  <int value="2" label="Delete Request"/>
+</enum>
+
 <enum name="FileSystemDatabaseInitResult">
   <int value="0" label="OK"/>
   <int value="1" label="Corruption"/>
