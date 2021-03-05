@@ -272,6 +272,7 @@ public final class MultiprocessTestClientLauncher {
         // this gets called.
         if (launcher != null) {
             Integer mainResult = launcher.getMainReturnCode(timeoutMs);
+            launcher.mLauncher.stop();
             return mainResult == null ? MainReturnCodeResult.createTimeoutMainResult()
                                       : MainReturnCodeResult.createMainResult(mainResult);
         }
