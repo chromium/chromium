@@ -191,6 +191,55 @@
   }
 
   /**
+   * Diagnostics NVME Manager for dpsl.diagnostics.nmve.* APIs.
+   */
+  class NvmeManager {
+    /**
+     * Runs NVMe smartctl test.
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runSmartctlCheckRoutine() {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE);
+    }
+
+    /**
+     * Runs NVMe wear level test.
+     * @param {!dpsl.NvmeWearLevelRoutineParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runWearLevelRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_WEAR_LEVEL_ROUTINE,
+          params);
+    }
+
+    /**
+     * Runs NVMe short-self-test type test.
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runShortSelfTestRoutine() {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE,
+          {nvmeSelfTestType: 'short-self-test'});
+    }
+
+    /**
+     * Runs NVMe long-self-test type test.
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runLongSelfTestRoutine() {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE,
+          {nvmeSelfTestType: 'long-self-test'});
+    }
+  }
+
+  /**
    * DPSL Diagnostics Manager for dpsl.diagnostics.* APIs.
    */
   class DPSLDiagnosticsManager {
@@ -200,6 +249,12 @@
        * @public
        */
       this.battery = new BatteryManager();
+
+      /**
+       * @type {!NvmeManager}
+       * @public
+       */
+      this.nvme = new NvmeManager();
     }
 
     /**
@@ -302,11 +357,13 @@
      * @public
      */
     async runSmartctlCheckRoutine() {
-      const response =
-          /** @type {!Object} */
-          (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE));
-      return response;
+      console.warn(
+          'chromeos.diagnostics.runSmartctlCheckRoutine API function is',
+          'deprecated and will be removed. Use',
+          'dpsl.diagnostics.nvme.runSmartctlCheckRoutine, instead');
+
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE));
     }
 
     /**
@@ -401,19 +458,19 @@
      * @public
      */
     async runNvmeWearLevelRoutine(wearLevelThreshold) {
+      console.warn(
+          'chromeos.diagnostics.runNvmeWearLevelRoutine API function is',
+          'deprecated and will be removed. Use',
+          'dpsl.diagnostics.nvme.runWearLevelRoutine, instead');
+
       const message =
           /**
              @type {!dpsl_internal.DiagnosticsRunNvmeWearLevelRoutineRequest}
            */
           ({wearLevelThreshold: wearLevelThreshold});
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_WEAR_LEVEL_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_WEAR_LEVEL_ROUTINE,
+          message));
     }
 
     /**
@@ -423,19 +480,19 @@
      * @public
      */
     async runNvmeSelfTestRoutine(nvmeSelfTestType) {
+      console.warn(
+          'chromeos.diagnostics.runNvmeSelfTestRoutine API function is',
+          'deprecated and will be removed. Use',
+          'dpsl.diagnostics.nvme.run{Short/Long}SelfTestRoutine, instead');
+
       const message =
           /**
              @type {!dpsl_internal.DiagnosticsRunNvmeSelfTestRoutineRequest}
            */
           ({nvmeSelfTestType: nvmeSelfTestType});
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE,
+          message));
     }
 
     /**

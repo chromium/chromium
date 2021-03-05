@@ -180,6 +180,11 @@ dpsl.BatteryChargeRoutineParams;
  */
 dpsl.BatteryDischargeRoutineParams;
 
+/**
+ * Params object of dpsl.diagnostics.nvme.runWearLevelRoutine()
+ * @typedef {{wearLevelThreshold: !number}}
+ */
+dpsl.NvmeWearLevelRoutineParams;
 //////////////////// dpsl.system_events.* type definitions /////////////////////
 
 /**

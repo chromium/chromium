@@ -792,13 +792,7 @@ class TestDiagnosticsService {
   /** @override */
   runFloatingPointAccuracyRoutine() {}
   /** @override */
-  runNvmeSelfTestRoutine() {}
-  /** @override */
-  runNvmeWearLevelRoutine() {}
-  /** @override */
   runPrimeSearchRoutine() {}
-  /** @override */
-  runSmartctlCheckRoutine() {}
 
   /**
    * @override
@@ -874,6 +868,41 @@ class TestDiagnosticsService {
     let routineUpdate = /** @type {!chromeos.health.mojom.RoutineUpdate} */ (
         this.routineUpdateResponse);
     return Promise.resolve({routineUpdate});
+  }
+
+  /**
+   * @override
+   * @param {!chromeos.health.mojom.NvmeSelfTestTypeEnum} type
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runNvmeSelfTestRoutine(type) {
+    this.callHistory.push(['runNvmeSelfTestRoutine', {type: type}]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @override
+   * @param {!number} threshold
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runNvmeWearLevelRoutine(threshold) {
+    this.callHistory.push(['runNvmeWearLevelRoutine', {threshold: threshold}]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @override
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runSmartctlCheckRoutine() {
+    this.callHistory.push(['runSmartctlCheckRoutine']);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
   }
 };
 
@@ -973,6 +1002,16 @@ TEST_F(
             [
               'runBatteryChargeRoutine',
               {lengthSeconds: 13, minimumChargePercentRequired: 87}
+            ],
+            ['runSmartctlCheckRoutine'],
+            ['runNvmeWearLevelRoutine', {threshold: 37}],
+            [
+              'runNvmeSelfTestRoutine',
+              {type: chromeos.health.mojom.NvmeSelfTestTypeEnum.kShortSelfTest}
+            ],
+            [
+              'runNvmeSelfTestRoutine',
+              {type: chromeos.health.mojom.NvmeSelfTestTypeEnum.kLongSelfTest}
             ]
           ],
           this.diagnosticsService.callHistory);

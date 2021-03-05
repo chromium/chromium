@@ -165,6 +165,13 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRunRoutineWithInterceptor', async () => {
       {lengthSeconds: 7, maximumDischargePercentAllowed: 50});
   await dpsl.diagnostics.battery.runChargeRoutine(
       {lengthSeconds: 13, minimumChargePercentRequired: 87});
+
+  // dpsl.diangostics.nvme.* routines
+  await dpsl.diagnostics.nvme.runSmartctlCheckRoutine();
+  await dpsl.diagnostics.nvme.runWearLevelRoutine({wearLevelThreshold: 37});
+  await dpsl.diagnostics.nvme.runShortSelfTestRoutine();
+  await dpsl.diagnostics.nvme.runLongSelfTestRoutine();
+
 });
 
 // Tests that runBatteryHealthRoutine returns the correct Object.
