@@ -372,6 +372,11 @@ const base::Feature kFallbackAfterDecodeError{"FallbackAfterDecodeError",
 const base::Feature kGav1VideoDecoder{"Gav1VideoDecoder",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, a media player uses mojo interface that communicates with blink
+// instead of a legacy IPC messages.
+const base::Feature kUseMediaPlayerMojoInterface{
+    "UseMediaPlayerMojoInterface", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Show toolbar button that opens dialog for controlling media sessions.
 const base::Feature kGlobalMediaControls {
   "GlobalMediaControls",
