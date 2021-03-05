@@ -111,10 +111,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Network.Cellular.Connection.TimeToConnected" units="ms"
     expires_after="2021-06-30">
   <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Tracks the amount fo time taken between when cellular device starts and
     finishes connecting.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.ServiceAtLogin.Count" units="units"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivit@google.com</owner>
+  <summary>
+    Tracks how many eSIM profiles are installed on the devices after a primary
+    user login.
   </summary>
 </histogram>
 
@@ -125,6 +135,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Tracks the number of times a ESim cellular network is connected as the only
     network, or with other network or not connected at all.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.PSim.ServiceAtLogin.Count" units="units"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-system-services-networking@google.com</owner>
+  <summary>
+    Tracks how many pSIM networks are available on the device after a primary
+    user login.
   </summary>
 </histogram>
 
