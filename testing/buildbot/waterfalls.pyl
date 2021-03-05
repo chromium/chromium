@@ -1648,6 +1648,10 @@
         'additional_compile_targets': [
           'chrome',
         ],
+        'test_suites': {
+          'gtest_tests': 'lacros_tast_tests_amd64_generic',
+        },
+        'os_type': 'chromeos'
       },
       'linux-cfm-rel': {
         'test_suites': {
