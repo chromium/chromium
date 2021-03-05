@@ -177,7 +177,7 @@ void InitializeCrashpadImpl(bool initial_client,
 #else
   // "platform" is used to determine device_model on the crash server.
   static crashpad::StringAnnotation<24> platform("platform");
-  platform.Set(base::SysInfo::OperatingSystemArchitecture());
+  platform.Set(base::SysInfo::HardwareModelName());
 #endif  // OS_IOS
 
   logging::SetLogMessageHandler(LogMessageHandler);

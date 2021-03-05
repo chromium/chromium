@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -184,15 +185,40 @@ TEST_F(SysInfoTest, Uptime) {
 TEST_F(SysInfoTest, HardwareModelNameFormatMacAndiOS) {
   std::string hardware_model = SysInfo::HardwareModelName();
   ASSERT_FALSE(hardware_model.empty());
-  // Check that the model is of the expected format "Foo,Bar" where "Bar" is
+
+  // Check that the model is of the expected format, which is different on iOS
+  // simulators and real iOS / MacOS devices.
+#if defined(OS_IOS) && TARGET_OS_SIMULATOR
+  // On iOS simulators, the device model looks like "iOS Simulator (Foo[,Bar])"
+  // where Foo is either "Unknown", "iPhone" or "iPad", and Bar, if present, is
+  // a number.
+  EXPECT_TRUE(base::MatchPattern(hardware_model, "iOS Simulator (*)"))
+      << hardware_model;
+  std::vector<StringPiece> mainPieces =
+      SplitStringPiece(hardware_model, "()", KEEP_WHITESPACE, SPLIT_WANT_ALL);
+  ASSERT_EQ(3u, mainPieces.size()) << hardware_model;
+  std::vector<StringPiece> modelPieces =
+      SplitStringPiece(mainPieces[1], ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
+  ASSERT_GE(modelPieces.size(), 1u) << hardware_model;
+  if (modelPieces.size() == 1u) {
+    EXPECT_TRUE(modelPieces[0] == "Unknown" || modelPieces[0] == "iPhone" ||
+                modelPieces[0] == "iPad")
+        << hardware_model;
+  } else {
+    int value;
+    EXPECT_TRUE(StringToInt(modelPieces[1], &value)) << hardware_model;
+  }
+#else
+  // The expected format is "Foo,Bar" where Foo is "iPhone" or "iPad" and Bar is
   // a number.
   std::vector<StringPiece> pieces =
       SplitStringPiece(hardware_model, ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_EQ(2u, pieces.size()) << hardware_model;
   int value;
   EXPECT_TRUE(StringToInt(pieces[1], &value)) << hardware_model;
+#endif  // defined(OS_IOS) && TARGET_OS_SIMULATOR
 }
-#endif
+#endif  // defined(OS_APPLE)
 
 TEST_F(SysInfoTest, GetHardwareInfo) {
   test::TaskEnvironment task_environment;
