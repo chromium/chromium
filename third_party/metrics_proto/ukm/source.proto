@@ -10,7 +10,7 @@ option java_package = "org.chromium.components.metrics";
 package ukm;
 
 // Types of source ids defined by
-// https://cs.chromium.org/chromium/src/base/metrics/ukm_source_id.h?l=19
+// https://cs.chromium.org/chromium/src/services/metrics/public/cpp/ukm_source_id.h?l=18
 enum SourceType {
   DEFAULT = 0;
   NAVIGATION_ID = 1;
