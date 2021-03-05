@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":oobe_adaptive_dialog",
     ":oobe_adaptive_dialog_old",
@@ -19,6 +20,7 @@ js_library("oobe_adaptive_dialog") {
 js_library("oobe_adaptive_dialog_old") {
   deps = [
     "../oobe_dialog:oobe_dialog",
+    "../oobe_focus_behavior:oobe_focus_behavior",
     "../oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
   ]

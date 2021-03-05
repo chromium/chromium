@@ -16,7 +16,7 @@ const OobeFocusBehavior = {
    * to bug, we have to handle this separately.
    * TODO(crbug.com/882612): Replace this with focus() in focusMarkedElement().
    */
-  focusElement_(element) {
+  focusOnElement_(element) {
     if (element.focusInput) {
       element.focusInput();
       return;
@@ -39,12 +39,12 @@ const OobeFocusBehavior = {
 
       focused = true;
       Polymer.RenderStatus.afterNextRender(
-          this, () => this.focusElement_(focusedElements[i]));
+          this, () => this.focusOnElement_(focusedElements[i]));
       break;
     }
     if (!focused && focusedElements.length > 0) {
       Polymer.RenderStatus.afterNextRender(
-          this, () => this.focusElement_(focusedElements[0]));
+          this, () => this.focusOnElement_(focusedElements[0]));
     }
 
     this.fire('show-dialog');

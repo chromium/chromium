@@ -9,6 +9,7 @@ group("closure_compile") {
   deps = [
     ":closure_compile_local",
     "hd_iron_icon:closure_compile",
+    "oobe_adaptive_dialog:closure_compile",
     "oobe_carousel:closure_compile",
     "oobe_content_dialog:closure_compile",
     "oobe_dialog_host_behavior:closure_compile",

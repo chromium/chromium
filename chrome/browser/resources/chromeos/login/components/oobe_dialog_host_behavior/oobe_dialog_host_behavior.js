@@ -13,18 +13,16 @@ var OobeDialogHostBehavior = {
   properties: {},
 
   /**
-   * Triggers onBeforeShow for elements matched by |selector|.
-   * @param {string=} selector CSS selector (optional).
+   * Triggers onBeforeShow for descendants.
    */
-  propagateOnBeforeShow(selector) {
-    if (!selector) {
-      selector = 'oobe-dialog,oobe-adaptive-dialog,oobe-content-dialog,' +
-          'gaia-dialog,oobe-loading-dialog';
-    }
-
-    var screens = Polymer.dom(this.root).querySelectorAll(selector);
-    for (var i = 0; i < screens.length; ++i) {
-      screens[i].onBeforeShow();
+  propagateOnBeforeShow() {
+    const screens = this.shadowRoot.querySelectorAll(
+        'oobe-dialog,oobe-adaptive-dialog,oobe-content-dialog,' +
+        'gaia-dialog,oobe-loading-dialog');
+    for (const screen of screens) {
+      // |screen| should ideally be cast to OobeDialogElement et al, but this
+      // isn't possible right now with the modules of this directory.
+      (/** @type {{onBeforeShow: function()}} */ (screen)).onBeforeShow();
     }
   },
 

@@ -25,6 +25,7 @@ js_type_check("closure_compile_jsmodules") {
 }
 
 js_type_check("closure_compile_module") {
+  uses_legacy_modules = true
   deps = [
     ":app_installer",
     ":cws_webview_client",

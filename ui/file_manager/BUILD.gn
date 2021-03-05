@@ -40,6 +40,7 @@ group("closure_compile") {
     "base/js:closure_compile",
     "file_manager/background/js:closure_compile",
     "file_manager/common/js:closure_compile",
+    "file_manager/cws_widget:closure_compile",
     "file_manager/foreground/elements:closure_compile",
     "file_manager/foreground/js:closure_compile",
     "file_manager/foreground/js/metadata:closure_compile",
