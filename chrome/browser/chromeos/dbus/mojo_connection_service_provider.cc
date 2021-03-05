@@ -67,9 +67,7 @@ void MojoConnectionServiceProvider::BootstrapMojoConnectionForIioService(
 
   mojo::PlatformChannel platform_channel;
   mojo::ScopedMessagePipeHandle pipe;
-  SendInvitation(::mojo_connection_service::
-                     kBootstrapMojoConnectionForIioServiceChannelToken,
-                 &platform_channel, &pipe);
+  SendInvitation(&platform_channel, &pipe);
 
   sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
       mojo::PendingRemote<sensors::mojom::SensorHalServer>(std::move(pipe),
@@ -86,9 +84,7 @@ void MojoConnectionServiceProvider::BootstrapMojoConnectionForSensorClients(
 
   mojo::PlatformChannel platform_channel;
   mojo::ScopedMessagePipeHandle pipe;
-  SendInvitation(::mojo_connection_service::
-                     kBootstrapMojoConnectionForSensorClientsChannelToken,
-                 &platform_channel, &pipe);
+  SendInvitation(&platform_channel, &pipe);
 
   sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
       mojo::PendingRemote<sensors::mojom::SensorHalClient>(std::move(pipe),
@@ -99,13 +95,12 @@ void MojoConnectionServiceProvider::BootstrapMojoConnectionForSensorClients(
 }
 
 void MojoConnectionServiceProvider::SendInvitation(
-    const std::string& token,
     mojo::PlatformChannel* platform_channel,
     mojo::ScopedMessagePipeHandle* pipe) {
   // Prepare a Mojo invitation to send through |platform_channel|.
   mojo::OutgoingInvitation invitation;
   // Include an initial Mojo pipe in the invitation.
-  *pipe = invitation.AttachMessagePipe(token);
+  *pipe = invitation.AttachMessagePipe(0);
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  platform_channel->TakeLocalEndpoint());
