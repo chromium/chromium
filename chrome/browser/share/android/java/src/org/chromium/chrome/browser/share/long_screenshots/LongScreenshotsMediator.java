@@ -93,7 +93,11 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
             return;
         }
 
-        mPendingEntry = mEntryManager.getNextEntry(mCurrentEntry.getId());
+        LongScreenshotsEntry newEntry = mEntryManager.getNextEntry(mCurrentEntry.getId());
+        if (newEntry == null) {
+            return;
+        }
+        mPendingEntry = newEntry;
         mPendingEntry.setListener(this);
 
         // Next entry is already generated/available.
@@ -110,7 +114,11 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
             return;
         }
 
-        mPendingEntry = mEntryManager.getPreviousEntry(mCurrentEntry.getId());
+        LongScreenshotsEntry newEntry = mEntryManager.getPreviousEntry(mCurrentEntry.getId());
+        if (newEntry == null) {
+            return;
+        }
+        mPendingEntry = newEntry;
         mPendingEntry.setListener(this);
 
         // Next entry is already generated/available.
