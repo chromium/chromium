@@ -119,12 +119,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174748): Remove.
   NOTIFICATION_EXTENSION_BOOKMARKS_API_INVOKED,
 
-  // Sent when a downloads extensions API event is fired. The source is an
-  // ExtensionDownloadsEventRouter::NotificationSource, and the details is a
-  // std::string containing json. Used for testing.
-  // TODO(https://crbug.com/1174749): Remove.
-  NOTIFICATION_EXTENSION_DOWNLOADS_EVENT,
-
   // Sent when an omnibox extension has sent back omnibox suggestions. The
   // source is the BrowserContext*, and the details are an
   // extensions::api::omnibox::SendSuggestions::Params object.

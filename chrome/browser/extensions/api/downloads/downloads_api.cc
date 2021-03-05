@@ -19,7 +19,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -59,9 +58,6 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -69,7 +65,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/filename_util.h"
@@ -1989,15 +1984,6 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
                               restrict_to_browser_context);
   event->will_dispatch_callback = std::move(will_dispatch_callback);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
-  DownloadsNotificationSource notification_source;
-  notification_source.event_name = event_name;
-  notification_source.profile = profile_;
-  content::Source<DownloadsNotificationSource> content_source(
-      &notification_source);
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_DOWNLOADS_EVENT,
-      content_source,
-      content::Details<std::string>(&json_args));
 }
 
 void ExtensionDownloadsEventRouter::OnExtensionUnloaded(

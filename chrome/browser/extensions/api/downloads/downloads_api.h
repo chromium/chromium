@@ -365,12 +365,6 @@ class ExtensionDownloadsEventRouter
   // extensions::EventRouter::Observer.
   void OnListenerRemoved(const extensions::EventListenerInfo& details) override;
 
-  // Used for testing.
-  struct DownloadsNotificationSource {
-    std::string event_name;
-    Profile* profile;
-  };
-
   void CheckForHistoryFilesRemoval();
 
  private:
