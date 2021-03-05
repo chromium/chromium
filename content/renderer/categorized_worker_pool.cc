@@ -13,7 +13,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/base/math_util.h"
 #include "cc/raster/task_category.h"
 
@@ -419,8 +419,12 @@ void CategorizedWorkerPool::RunTaskInCategoryWithLockAcquired(
 
   auto prioritized_task = work_queue_.GetNextTaskToRun(category);
 
-  TRACE_EVENT1("toplevel", "TaskGraphRunner::RunTask", "source_frame_number_",
-               prioritized_task.task->frame_number());
+  TRACE_EVENT(
+      "toplevel", "TaskGraphRunner::RunTask", [&](perfetto::EventContext ctx) {
+        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+            ->set_chrome_task_graph_runner()
+            ->set_source_frame_number(prioritized_task.task->frame_number());
+      });
   // There may be more work available, so wake up another worker thread.
   SignalHasReadyToRunTasksWithLockAcquired();
 

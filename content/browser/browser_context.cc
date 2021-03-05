@@ -30,6 +30,7 @@
 #include "base/supports_user_data.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -344,8 +345,13 @@ void BrowserContext::FirePushSubscriptionChangeEvent(
 
 // static
 void BrowserContext::NotifyWillBeDestroyed(BrowserContext* browser_context) {
-  TRACE_EVENT1("shutdown", "BrowserContext::NotifyWillBeDestroyed",
-               "browser_context", static_cast<void*>(browser_context));
+  TRACE_EVENT("shutdown", "BrowserContext::NotifyWillBeDestroyed",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(browser_context));
+              });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "shutdown", "BrowserContext::NotifyWillBeDestroyed() called.",
       browser_context, "browser_context", static_cast<void*>(browser_context));
@@ -441,16 +447,26 @@ void BrowserContext::SetPermissionControllerForTesting(
 
 BrowserContext::BrowserContext()
     : unique_id_(base::UnguessableToken::Create().ToString()) {
-  TRACE_EVENT1("shutdown", "BrowserContext::BrowserContext", "browser_context",
-               static_cast<void*>(this));
+  TRACE_EVENT("shutdown", "BrowserContext::BrowserContext",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(this));
+              });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("shutdown", "Browser.BrowserContext", this,
                                     "browser_context",
                                     static_cast<void*>(this));
 }
 
 BrowserContext::~BrowserContext() {
-  TRACE_EVENT1("shutdown", "BrowserContext::~BrowserContext", "browser_context",
-               static_cast<void*>(this));
+  TRACE_EVENT("shutdown", "BrowserContext::~BrowserContext",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(this));
+              });
   DCHECK(!GetUserData(kStoragePartitionMapKeyName))
       << "StoragePartitionMap is not shut down properly";
 

@@ -1311,15 +1311,19 @@ void TaskQueueImpl::ReportIpcTaskQueued(
     Task* pending_task,
     const char* task_queue_name,
     const base::TimeDelta& time_since_disabled) {
-  // Use a begin/end event pair so we can get 4 fields in the event.
-  TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("lifecycles"),
-                     "task_posted_to_disabled_queue", "task_queue_name",
-                     task_queue_name, "time_since_disabled_ms",
-                     time_since_disabled.InMilliseconds());
-  TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("lifecycles"),
-                   "task_posted_to_disabled_queue", "ipc_hash",
-                   pending_task->ipc_hash, "location",
-                   pending_task->posted_from.program_counter());
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("lifecycles"), "task_posted_to_disabled_queue",
+      [&](perfetto::EventContext ctx) {
+        auto* proto = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                          ->set_chrome_task_posted_to_disabled_queue();
+        proto->set_task_queue_name(task_queue_name);
+        proto->set_time_since_disabled_ms(time_since_disabled.InMilliseconds());
+        proto->set_ipc_hash(pending_task->ipc_hash);
+        proto->set_source_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx, base::trace_event::TraceSourceLocation(
+                          pending_task->posted_from)));
+      });
 }
 
 void TaskQueueImpl::OnQueueUnblocked() {

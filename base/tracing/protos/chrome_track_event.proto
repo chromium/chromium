@@ -26,12 +26,52 @@ message ChromeMemoryPressureNotification {
   optional uint64 creation_location_iid = 2;
 }
 
+message ChromeTaskAnnotator {
+  optional uint32 ipc_hash = 1;
+}
+
+message ChromeBrowserContext {
+  optional fixed64 ptr = 1;
+}
+
+message ChromeProfileDestroyer {
+  optional fixed64 profile_ptr = 1;
+  optional bool is_off_the_record = 2;
+  optional string otr_profile_id = 3;
+  optional uint32 host_count_at_creation = 4;
+  optional uint32 host_count_at_destruction = 5;
+  optional fixed64 render_process_host_ptr = 6;
+}
+
+message ChromeTaskPostedToDisabledQueue {
+  optional string task_queue_name = 1;
+  optional uint64 time_since_disabled_ms = 2;
+  optional uint32 ipc_hash = 3;
+  optional uint64 source_location_iid = 4;
+}
+
+message ChromeTaskGraphRunner {
+  optional int64 source_frame_number = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
+  // Next ID: 1007
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
     optional ChromeMemoryPressureNotification
         chrome_memory_pressure_notification = 1001;
+
+    optional ChromeTaskAnnotator chrome_task_annotator = 1002;
+
+    optional ChromeBrowserContext chrome_browser_context = 1003;
+
+    optional ChromeProfileDestroyer chrome_profile_destroyer = 1004;
+
+    optional ChromeTaskPostedToDisabledQueue
+        chrome_task_posted_to_disabled_queue = 1005;
+
+    optional ChromeTaskGraphRunner chrome_task_graph_runner = 1006;
   }
 }

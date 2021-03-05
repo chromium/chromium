@@ -117,8 +117,13 @@ void TaskAnnotator::RunTask(const char* trace_event_name,
 
   debug::ScopedTaskRunActivity task_activity(*pending_task);
 
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
-               "TaskAnnotator::RunTask", "ipc_hash", pending_task->ipc_hash);
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
+              "TaskAnnotator::RunTask", [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_task_annotator()->set_ipc_hash(
+                    pending_task->ipc_hash);
+              });
 
   TRACE_EVENT_WITH_FLOW0("toplevel.flow", trace_event_name,
                          TRACE_ID_LOCAL(GetTaskTraceID(*pending_task)),
