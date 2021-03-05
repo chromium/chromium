@@ -417,7 +417,11 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   }
 
 #if DCHECK_IS_ON()
-  slot_span->freelist_head->CheckFreeList();
+  // We didn't necessarily provision more than one slot (e.g. if |slot_size|
+  // is large), meaning that |slot_span->freelist_head| can be nullptr.
+  if (slot_span->freelist_head) {
+    slot_span->freelist_head->CheckFreeList();
+  }
 #endif
 
   return return_slot;
