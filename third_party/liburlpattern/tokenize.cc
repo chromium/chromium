@@ -17,7 +17,7 @@ namespace liburlpattern {
 
 namespace {
 
-bool IsASCII(char c) {
+bool IsASCII(UChar32 c) {
   // Characters should be valid ASCII code points:
   // https://infra.spec.whatwg.org/#ascii-code-point
   return c >= 0x00 && c <= 0x7f;
@@ -35,11 +35,10 @@ bool IsNameCodepoint(UChar32 c, bool first_codepoint) {
   // should take care of this long before we reach this level of code.  So
   // we don't need to handle it here.
   if (first_codepoint) {
-    return u_hasBinaryProperty(c, UCHAR_ID_START) ||
-           (c < 0x60 && (c == '$' || c == '_'));
+    return u_hasBinaryProperty(c, UCHAR_ID_START) || c == '$' || c == '_';
   }
-  return u_hasBinaryProperty(c, UCHAR_ID_CONTINUE) ||
-         (c < 0x60 && (c == '$' || c == '_' || c == 0x200c || c == 0x200d));
+  return u_hasBinaryProperty(c, UCHAR_ID_CONTINUE) || c == '$' || c == '_' ||
+         c == 0x200c || c == 0x200d;
 }
 
 }  // namespace
@@ -85,17 +84,20 @@ absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
 
   size_t i = 0;
   while (i < pattern.size()) {
-    char c = pattern[i];
+    size_t next_i = i;
+    UChar32 c = U_SENTINEL;
+    U8_NEXT(pattern.data(), next_i, pattern.size(), c);
     if (c == '*') {
-      token_list.emplace_back(TokenType::kAsterisk, i, pattern.substr(i, 1));
-      i += 1;
+      token_list.emplace_back(TokenType::kAsterisk, i,
+                              pattern.substr(i, next_i - i));
+      i = next_i;
       continue;
     }
 
     if (c == '+' || c == '?') {
       token_list.emplace_back(TokenType::kOtherModifier, i,
-                              pattern.substr(i, 1));
-      i += 1;
+                              pattern.substr(i, next_i - i));
+      i = next_i;
       continue;
     }
 
@@ -106,30 +108,30 @@ absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
         return absl::InvalidArgumentError(
             absl::StrFormat("Trailing escape character at %d.", i));
       }
-      if (!IsASCII(pattern[i + 1])) {
-        return absl::InvalidArgumentError(
-            absl::StrFormat("Invalid character 0x%02x at %d.", pattern[i], i));
-      }
+      size_t escaped_i = next_i;
+      U8_NEXT(pattern.data(), next_i, pattern.size(), c);
       token_list.emplace_back(TokenType::kEscapedChar, i,
-                              pattern.substr(i + 1, 1));
-      i += 2;
+                              pattern.substr(escaped_i, next_i - escaped_i));
+      i = next_i;
       continue;
     }
 
     if (c == '{') {
-      token_list.emplace_back(TokenType::kOpen, i, pattern.substr(i, 1));
-      i += 1;
+      token_list.emplace_back(TokenType::kOpen, i,
+                              pattern.substr(i, next_i - i));
+      i = next_i;
       continue;
     }
 
     if (c == '}') {
-      token_list.emplace_back(TokenType::kClose, i, pattern.substr(i, 1));
-      i += 1;
+      token_list.emplace_back(TokenType::kClose, i,
+                              pattern.substr(i, next_i - i));
+      i = next_i;
       continue;
     }
 
     if (c == ':') {
-      size_t pos = i + 1;
+      size_t pos = next_i;
       size_t name_start = pos;
       while (pos < pattern.size()) {
         // Reads next unicode codepoint from utf8 sequence and automatically
@@ -160,15 +162,18 @@ absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
 
     if (c == '(') {
       size_t paren_nesting = 1;
-      size_t j = i + 1;
+      size_t j = next_i;
       const size_t regex_start = j;
 
       while (j < pattern.size()) {
-        if (!IsASCII(pattern[j])) {
-          return absl::InvalidArgumentError(absl::StrFormat(
-              "Invalid character 0x%02x at %d.", pattern[i], i));
+        size_t next_j = j;
+        U8_NEXT(pattern.data(), next_j, pattern.size(), c);
+
+        if (!IsASCII(c)) {
+          return absl::InvalidArgumentError(
+              absl::StrFormat("Invalid character 0x%02x at %d.", c, j));
         }
-        if (j == regex_start && pattern[j] == '?') {
+        if (j == regex_start && c == '?') {
           return absl::InvalidArgumentError(
               absl::StrFormat("Regex cannot start with '?' at %d", j));
         }
@@ -179,41 +184,45 @@ absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
         // regex expression.  This permits authors to write longer escape
         // sequences such as `\x22` since the later characters will be
         // propagated on subsequent loop iterations.
-        if (pattern[j] == '\\') {
+        if (c == '\\') {
           if (j == (pattern.size() - 1)) {
             return absl::InvalidArgumentError(
                 absl::StrFormat("Trailing escape character at %d.", j));
           }
-          if (!IsASCII(pattern[j + 1])) {
+          size_t escaped_j = next_j;
+          U8_NEXT(pattern.data(), next_j, pattern.size(), c);
+          if (!IsASCII(c)) {
             return absl::InvalidArgumentError(absl::StrFormat(
-                "Invalid character 0x%02x at %d.", pattern[i], i));
+                "Invalid character 0x%02x at %d.", c, escaped_j));
           }
-          j += 2;
+          j = next_j;
           continue;
         }
 
-        if (pattern[j] == ')') {
+        if (c == ')') {
           paren_nesting -= 1;
           if (paren_nesting == 0) {
-            j += 1;
+            j = next_j;
             break;
           }
-        } else if (pattern[j] == '(') {
+        } else if (c == '(') {
           paren_nesting += 1;
           if (j == (pattern.size() - 1)) {
             return absl::InvalidArgumentError(
-                absl::StrFormat("Unbalanced regex at %d.", i));
+                absl::StrFormat("Unbalanced regex at %d.", j));
           }
+          size_t tmp_j = next_j;
+          U8_NEXT(pattern.data(), tmp_j, pattern.size(), c);
           // Require the the first character after an open paren is `?`.  This
           // permits assertions, named capture groups, and non-capturing groups.
           // It blocks, however, unnamed capture groups.
-          if (pattern[j + 1] != '?') {
+          if (c != '?') {
             return absl::InvalidArgumentError(absl::StrFormat(
-                "Unnamed capturing groups are not allowed at %d.", j));
+                "Unnamed capturing groups are not allowed at %d.", next_j));
           }
         }
 
-        j += 1;
+        j = next_j;
       }
 
       if (paren_nesting) {
@@ -233,12 +242,8 @@ absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
       continue;
     }
 
-    if (!IsASCII(pattern[i])) {
-      return absl::InvalidArgumentError(
-          absl::StrFormat("Invalid character 0x%02x at %d.", pattern[i], i));
-    }
-    token_list.emplace_back(TokenType::kChar, i, pattern.substr(i, 1));
-    i += 1;
+    token_list.emplace_back(TokenType::kChar, i, pattern.substr(i, next_i - i));
+    i = next_i;
   }
 
   token_list.emplace_back(TokenType::kEnd, i, absl::string_view());

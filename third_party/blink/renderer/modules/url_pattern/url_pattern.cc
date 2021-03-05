@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
 
 namespace blink {
@@ -122,8 +122,34 @@ bool IsAbsolutePathname(const String& pathname, ValueType type) {
 }
 
 String StringFromCanonOutput(const url::CanonOutput& output,
-                             url::Component component) {
+                             const url::Component& component) {
   return String::FromUTF8(output.data() + component.begin, component.len);
+}
+
+std::string StdStringFromCanonOutput(const url::CanonOutput& output,
+                                     const url::Component& component) {
+  return std::string(output.data() + component.begin, component.len);
+}
+
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the protocol component.
+absl::StatusOr<std::string> ProtocolEncodeCallback(absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+
+  bool result = url::CanonicalizeScheme(
+      input.data(), url::Component(0, static_cast<int>(input.size())),
+      &canon_output, &component);
+
+  if (!result) {
+    return absl::InvalidArgumentError("Invalid protocol '" +
+                                      std::string(input) + "'.");
+  }
+
+  return StdStringFromCanonOutput(canon_output, component);
 }
 
 // Utility function to canonicalize a protocol string.  Throws an exception
@@ -133,6 +159,8 @@ String CanonicalizeProtocol(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
+    // Canonicalization for patterns is handled during compilation via
+    // encoding callbacks.
     return input;
   }
 
@@ -157,6 +185,52 @@ String CanonicalizeProtocol(const String& input,
   return StringFromCanonOutput(canon_output, component);
 }
 
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the username component.
+absl::StatusOr<std::string> UsernameEncodeCallback(absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component username_component;
+  url::Component password_component;
+
+  bool result = url::CanonicalizeUserInfo(
+      input.data(), url::Component(0, static_cast<int>(input.size())), "",
+      url::Component(0, 0), &canon_output, &username_component,
+      &password_component);
+
+  if (!result) {
+    return absl::InvalidArgumentError("Invalid username pattern '" +
+                                      std::string(input) + "'.");
+  }
+
+  return StdStringFromCanonOutput(canon_output, username_component);
+}
+
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the password component.
+absl::StatusOr<std::string> PasswordEncodeCallback(absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component username_component;
+  url::Component password_component;
+
+  bool result = url::CanonicalizeUserInfo(
+      "", url::Component(0, 0), input.data(),
+      url::Component(0, static_cast<int>(input.size())), &canon_output,
+      &username_component, &password_component);
+
+  if (!result) {
+    return absl::InvalidArgumentError("Invalid password pattern '" +
+                                      std::string(input) + "'.");
+  }
+
+  return StdStringFromCanonOutput(canon_output, password_component);
+}
+
 // Utility function to canonicalize username and/or password strings. Throws
 // an exception if either is invalid.  The canonicalization and/or validation
 // will differ depending on whether |type| is kURL or kPattern.  On success
@@ -168,6 +242,8 @@ void CanonicalizeUsernameAndPassword(const String& username,
                                      String& password_out,
                                      ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
+    // Canonicalization for patterns is handled during compilation via
+    // encoding callbacks.
     username_out = username;
     password_out = password;
     return;
@@ -211,6 +287,27 @@ void CanonicalizeUsernameAndPassword(const String& username,
     password_out = StringFromCanonOutput(canon_output, password_component);
 }
 
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the hostname component.
+absl::StatusOr<std::string> HostnameEncodeCallback(absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+
+  bool result = url::CanonicalizeHost(
+      input.data(), url::Component(0, static_cast<int>(input.size())),
+      &canon_output, &component);
+
+  if (!result) {
+    return absl::InvalidArgumentError("Invalid hostname pattern '" +
+                                      std::string(input) + "'.");
+  }
+
+  return StdStringFromCanonOutput(canon_output, component);
+}
+
 // Utility function to canonicalize a hostname string.  Throws an exception
 // if the input is invalid.  The canonicalization and/or validation will
 // differ depending on whether |type| is kURL or kPattern.
@@ -218,6 +315,8 @@ String CanonicalizeHostname(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
+    // Canonicalization for patterns is handled during compilation via
+    // encoding callbacks.
     return input;
   }
 
@@ -231,6 +330,45 @@ String CanonicalizeHostname(const String& input,
   return result;
 }
 
+// Utility function to determine if the default port for the given protocol
+// matches the given port number.
+bool IsProtocolDefaultPort(const String& protocol, const String& port) {
+  if (protocol.IsEmpty() || port.IsEmpty())
+    return false;
+
+  bool port_ok = false;
+  int port_number =
+      port.Impl()->ToInt(WTF::NumberParsingOptions::kNone, &port_ok);
+  if (!port_ok)
+    return false;
+
+  StringUTF8Adaptor protocol_utf8(protocol);
+  int default_port =
+      url::DefaultPortForScheme(protocol_utf8.data(), protocol_utf8.size());
+  return default_port != url::PORT_UNSPECIFIED && default_port == port_number;
+}
+
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the port component.
+absl::StatusOr<std::string> PortEncodeCallback(absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+
+  bool result = url::CanonicalizePort(
+      input.data(), url::Component(0, static_cast<int>(input.size())),
+      url::PORT_UNSPECIFIED, &canon_output, &component);
+
+  if (!result) {
+    return absl::InvalidArgumentError("Invalid port pattern '" +
+                                      std::string(input) + "'.");
+  }
+
+  return StdStringFromCanonOutput(canon_output, component);
+}
+
 // Utility function to canonicalize a port string.  Throws an exception
 // if the input is invalid.  The canonicalization and/or validation will
 // differ depending on whether |type| is kURL or kPattern.  The |protocol|
@@ -240,6 +378,8 @@ String CanonicalizePort(const String& input,
                         const String& protocol,
                         ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
+    // Canonicalization for patterns is handled during compilation via
+    // encoding callbacks.
     return input;
   }
 
@@ -265,6 +405,27 @@ String CanonicalizePort(const String& input,
                              : StringFromCanonOutput(canon_output, component);
 }
 
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the pathname component.
+absl::StatusOr<std::string> PathnameEncodeCallback(absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+
+  bool result = url::CanonicalizePartialPath(
+      input.data(), url::Component(0, static_cast<int>(input.size())),
+      &canon_output, &component);
+
+  if (!result) {
+    return absl::InvalidArgumentError("Invalid pathname pattern '" +
+                                      std::string(input) + "'.");
+  }
+
+  return StdStringFromCanonOutput(canon_output, component);
+}
+
 // Utility function to canonicalize a pathname string.  Throws an exception
 // if the input is invalid.  The canonicalization and/or validation will
 // differ depending on whether |type| is kURL or kPattern.
@@ -272,11 +433,13 @@ String CanonicalizePathname(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
+    // Canonicalization for patterns is handled during compilation via
+    // encoding callbacks.
     return input;
   }
 
   if (!IsAbsolutePathname(input, type)) {
-    exception_state.ThrowTypeError("Cannot resolve absolute pathname  for '" +
+    exception_state.ThrowTypeError("Cannot resolve absolute pathname for '" +
                                    input + "'.");
     return String();
   }
@@ -302,6 +465,22 @@ String CanonicalizePathname(const String& input,
   return StringFromCanonOutput(canon_output, component);
 }
 
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the search component.
+absl::StatusOr<std::string> SearchEncodeCallback(absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+
+  url::CanonicalizeQuery(input.data(),
+                         url::Component(0, static_cast<int>(input.size())),
+                         /*converter=*/nullptr, &canon_output, &component);
+
+  return StdStringFromCanonOutput(canon_output, component);
+}
+
 // Utility function to canonicalize a search string.  Throws an exception
 // if the input is invalid.  The canonicalization and/or validation will
 // differ depending on whether |type| is kURL or kPattern.
@@ -309,6 +488,8 @@ String CanonicalizeSearch(const String& input,
                           ValueType type,
                           ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
+    // Canonicalization for patterns is handled during compilation via
+    // encoding callbacks.
     return input;
   }
 
@@ -327,6 +508,22 @@ String CanonicalizeSearch(const String& input,
   return StringFromCanonOutput(canon_output, component);
 }
 
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the hash component.
+absl::StatusOr<std::string> HashEncodeCallback(absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+
+  url::CanonicalizeRef(input.data(),
+                       url::Component(0, static_cast<int>(input.size())),
+                       &canon_output, &component);
+
+  return StdStringFromCanonOutput(canon_output, component);
+}
+
 // Utility function to canonicalize a hash string.  Throws an exception
 // if the input is invalid.  The canonicalization and/or validation will
 // differ depending on whether |type| is kURL or kPattern.
@@ -334,6 +531,8 @@ String CanonicalizeHash(const String& input,
                         ValueType type,
                         ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
+    // Canonicalization for patterns is handled during compilation via
+    // encoding callbacks.
     return input;
   }
 
@@ -471,47 +670,61 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
   if (exception_state.HadException())
     return nullptr;
 
+  // Manually canonicalize port patterns that exactly match the default
+  // port for the protocol.  We must do this separately from the compile
+  // since the liburlpattern::Parse() method will invoke encoding callbacks
+  // for partial values within the pattern and this transformation must apply
+  // to the entire value.
+  if (IsProtocolDefaultPort(protocol, port))
+    port = "";
+
   // Compile each component pattern into a Component structure that can
   // be used for matching.  Components that match any input may have a
   // nullptr Component struct pointer.
 
   auto* protocol_component =
-      CompilePattern(protocol, "protocol", DefaultOptions(), exception_state);
+      CompilePattern(protocol, "protocol", ProtocolEncodeCallback,
+                     DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* username_component =
-      CompilePattern(username, "username", DefaultOptions(), exception_state);
+      CompilePattern(username, "username", UsernameEncodeCallback,
+                     DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* password_component =
-      CompilePattern(password, "password", DefaultOptions(), exception_state);
+      CompilePattern(password, "password", PasswordEncodeCallback,
+                     DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* hostname_component =
-      CompilePattern(hostname, "hostname", HostnameOptions(), exception_state);
+      CompilePattern(hostname, "hostname", HostnameEncodeCallback,
+                     HostnameOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* port_component =
-      CompilePattern(port, "port", DefaultOptions(), exception_state);
+  auto* port_component = CompilePattern(port, "port", PortEncodeCallback,
+                                        DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* pathname_component =
-      CompilePattern(pathname, "pathname", PathnameOptions(), exception_state);
+      CompilePattern(pathname, "pathname", PathnameEncodeCallback,
+                     PathnameOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* search_component =
-      CompilePattern(search, "search", DefaultOptions(), exception_state);
+      CompilePattern(search, "search", SearchEncodeCallback, DefaultOptions(),
+                     exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* hash_component =
-      CompilePattern(hash, "hash", DefaultOptions(), exception_state);
+  auto* hash_component = CompilePattern(hash, "hash", HashEncodeCallback,
+                                        DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
@@ -568,6 +781,7 @@ void URLPattern::Trace(Visitor* visitor) const {
 URLPattern::Component* URLPattern::CompilePattern(
     const String& pattern,
     StringView component,
+    liburlpattern::EncodeCallback encode_callback,
     const liburlpattern::Options& options,
     ExceptionState& exception_state) {
   // If the pattern is null then optimize by not compiling a pattern.  Instead,
@@ -577,8 +791,9 @@ URLPattern::Component* URLPattern::CompilePattern(
 
   // Parse the pattern.
   StringUTF8Adaptor utf8(pattern);
-  auto parse_result = liburlpattern::Parse(
-      absl::string_view(utf8.data(), utf8.size()), options);
+  auto parse_result =
+      liburlpattern::Parse(absl::string_view(utf8.data(), utf8.size()),
+                           std::move(encode_callback), options);
   if (!parse_result.ok()) {
     exception_state.ThrowTypeError("Invalid " + component + " pattern '" +
                                    pattern + "'.");

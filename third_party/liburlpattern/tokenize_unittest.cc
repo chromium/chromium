@@ -117,12 +117,6 @@ TEST(TokenizeTest, EscapedCharAtEnd) {
                   absl::InvalidArgumentError("Trailing escape character"));
 }
 
-TEST(TokenizeTest, EscapedInvalidChar) {
-  // Use a single byte invalid character since the escape only applies to the
-  // next byte character.
-  RunTokenizeTest("\\\xff", absl::InvalidArgumentError("Invalid character"));
-}
-
 TEST(TokenizeTest, Name) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kName, 0, "Foo_1"),

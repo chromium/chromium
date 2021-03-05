@@ -1067,105 +1067,117 @@ TEST(URLCanonTest, Port) {
   }
 }
 
-TEST(URLCanonTest, Path) {
-  DualComponentCase path_cases[] = {
-      // ----- path collapsing tests -----
-      {"/././foo", L"/././foo", "/foo", Component(0, 4), true},
-      {"/./.foo", L"/./.foo", "/.foo", Component(0, 5), true},
-      {"/foo/.", L"/foo/.", "/foo/", Component(0, 5), true},
-      {"/foo/./", L"/foo/./", "/foo/", Component(0, 5), true},
-      // double dots followed by a slash or the end of the string count
-      {"/foo/bar/..", L"/foo/bar/..", "/foo/", Component(0, 5), true},
-      {"/foo/bar/../", L"/foo/bar/../", "/foo/", Component(0, 5), true},
-      // don't count double dots when they aren't followed by a slash
-      {"/foo/..bar", L"/foo/..bar", "/foo/..bar", Component(0, 10), true},
-      // some in the middle
-      {"/foo/bar/../ton", L"/foo/bar/../ton", "/foo/ton", Component(0, 8),
-       true},
-      {"/foo/bar/../ton/../../a", L"/foo/bar/../ton/../../a", "/a",
-       Component(0, 2), true},
-      // we should not be able to go above the root
-      {"/foo/../../..", L"/foo/../../..", "/", Component(0, 1), true},
-      {"/foo/../../../ton", L"/foo/../../../ton", "/ton", Component(0, 4),
-       true},
-      // escaped dots should be unescaped and treated the same as dots
-      {"/foo/%2e", L"/foo/%2e", "/foo/", Component(0, 5), true},
-      {"/foo/%2e%2", L"/foo/%2e%2", "/foo/.%2", Component(0, 8), true},
-      {"/foo/%2e./%2e%2e/.%2e/%2e.bar", L"/foo/%2e./%2e%2e/.%2e/%2e.bar",
-       "/..bar", Component(0, 6), true},
-      // Multiple slashes in a row should be preserved and treated like empty
-      // directory names.
-      {"////../..", L"////../..", "//", Component(0, 2), true},
+DualComponentCase kCommonPathCases[] = {
+    // ----- path collapsing tests -----
+    {"/././foo", L"/././foo", "/foo", Component(0, 4), true},
+    {"/./.foo", L"/./.foo", "/.foo", Component(0, 5), true},
+    {"/foo/.", L"/foo/.", "/foo/", Component(0, 5), true},
+    {"/foo/./", L"/foo/./", "/foo/", Component(0, 5), true},
+    // double dots followed by a slash or the end of the string count
+    {"/foo/bar/..", L"/foo/bar/..", "/foo/", Component(0, 5), true},
+    {"/foo/bar/../", L"/foo/bar/../", "/foo/", Component(0, 5), true},
+    // don't count double dots when they aren't followed by a slash
+    {"/foo/..bar", L"/foo/..bar", "/foo/..bar", Component(0, 10), true},
+    // some in the middle
+    {"/foo/bar/../ton", L"/foo/bar/../ton", "/foo/ton", Component(0, 8), true},
+    {"/foo/bar/../ton/../../a", L"/foo/bar/../ton/../../a", "/a",
+     Component(0, 2), true},
+    // we should not be able to go above the root
+    {"/foo/../../..", L"/foo/../../..", "/", Component(0, 1), true},
+    {"/foo/../../../ton", L"/foo/../../../ton", "/ton", Component(0, 4), true},
+    // escaped dots should be unescaped and treated the same as dots
+    {"/foo/%2e", L"/foo/%2e", "/foo/", Component(0, 5), true},
+    {"/foo/%2e%2", L"/foo/%2e%2", "/foo/.%2", Component(0, 8), true},
+    {"/foo/%2e./%2e%2e/.%2e/%2e.bar", L"/foo/%2e./%2e%2e/.%2e/%2e.bar",
+     "/..bar", Component(0, 6), true},
+    // Multiple slashes in a row should be preserved and treated like empty
+    // directory names.
+    {"////../..", L"////../..", "//", Component(0, 2), true},
 
-      // ----- escaping tests -----
-      {"/foo", L"/foo", "/foo", Component(0, 4), true},
-      // Valid escape sequence
-      {"/%20foo", L"/%20foo", "/%20foo", Component(0, 7), true},
-      // Invalid escape sequence we should pass through unchanged.
-      {"/foo%", L"/foo%", "/foo%", Component(0, 5), true},
-      {"/foo%2", L"/foo%2", "/foo%2", Component(0, 6), true},
-      // Invalid escape sequence: bad characters should be treated the same as
-      // the sourrounding text, not as escaped (in this case, UTF-8).
-      {"/foo%2zbar", L"/foo%2zbar", "/foo%2zbar", Component(0, 10), true},
-      {"/foo%2\xc2\xa9zbar", nullptr, "/foo%2%C2%A9zbar", Component(0, 16),
-       true},
-      {nullptr, L"/foo%2\xc2\xa9zbar", "/foo%2%C3%82%C2%A9zbar",
-       Component(0, 22), true},
-      // Regular characters that are escaped should be unescaped
-      {"/foo%41%7a", L"/foo%41%7a", "/fooAz", Component(0, 6), true},
-      // Funny characters that are unescaped should be escaped
-      {"/foo\x09\x91%91", nullptr, "/foo%09%91%91", Component(0, 13), true},
-      {nullptr, L"/foo\x09\x91%91", "/foo%09%C2%91%91", Component(0, 16), true},
-      // Invalid characters that are escaped should cause a failure.
-      {"/foo%00%51", L"/foo%00%51", "/foo%00Q", Component(0, 8), false},
-      // Some characters should be passed through unchanged regardless of esc.
-      {"/(%28:%3A%29)", L"/(%28:%3A%29)", "/(%28:%3A%29)", Component(0, 13),
-       true},
-      // Characters that are properly escaped should not have the case changed
-      // of hex letters.
-      {"/%3A%3a%3C%3c", L"/%3A%3a%3C%3c", "/%3A%3a%3C%3c", Component(0, 13),
-       true},
-      // Funny characters that are unescaped should be escaped
-      {"/foo\tbar", L"/foo\tbar", "/foo%09bar", Component(0, 10), true},
-      // Backslashes should get converted to forward slashes
-      {"\\foo\\bar", L"\\foo\\bar", "/foo/bar", Component(0, 8), true},
-      // Hashes found in paths (possibly only when the caller explicitly sets
-      // the path on an already-parsed URL) should be escaped.
-      {"/foo#bar", L"/foo#bar", "/foo%23bar", Component(0, 10), true},
-      // %7f should be allowed and %3D should not be unescaped (these were wrong
-      // in a previous version).
-      {"/%7Ffp3%3Eju%3Dduvgw%3Dd", L"/%7Ffp3%3Eju%3Dduvgw%3Dd",
-       "/%7Ffp3%3Eju%3Dduvgw%3Dd", Component(0, 24), true},
-      // @ should be passed through unchanged (escaped or unescaped).
-      {"/@asdf%40", L"/@asdf%40", "/@asdf%40", Component(0, 9), true},
-      // Nested escape sequences should result in escaping the leading '%' if
-      // unescaping would result in a new escape sequence.
-      {"/%A%42", L"/%A%42", "/%25AB", Component(0, 6), true},
-      {"/%%41B", L"/%%41B", "/%25AB", Component(0, 6), true},
-      {"/%%41%42", L"/%%41%42", "/%25AB", Component(0, 6), true},
-      // Make sure truncated "nested" escapes don't result in reading off the
-      // string end.
-      {"/%%41", L"/%%41", "/%A", Component(0, 3), true},
-      // Don't unescape the leading '%' if unescaping doesn't result in a valid
-      // new escape sequence.
-      {"/%%470", L"/%%470", "/%G0", Component(0, 4), true},
-      {"/%%2D%41", L"/%%2D%41", "/%-A", Component(0, 4), true},
-      // Don't erroneously downcast a UTF-16 charater in a way that makes it
-      // look like part of an escape sequence.
-      {nullptr, L"/%%41\x0130", "/%A%C4%B0", Component(0, 9), true},
+    // ----- escaping tests -----
+    {"/foo", L"/foo", "/foo", Component(0, 4), true},
+    // Valid escape sequence
+    {"/%20foo", L"/%20foo", "/%20foo", Component(0, 7), true},
+    // Invalid escape sequence we should pass through unchanged.
+    {"/foo%", L"/foo%", "/foo%", Component(0, 5), true},
+    {"/foo%2", L"/foo%2", "/foo%2", Component(0, 6), true},
+    // Invalid escape sequence: bad characters should be treated the same as
+    // the surrounding text, not as escaped (in this case, UTF-8).
+    {"/foo%2zbar", L"/foo%2zbar", "/foo%2zbar", Component(0, 10), true},
+    {"/foo%2\xc2\xa9zbar", nullptr, "/foo%2%C2%A9zbar", Component(0, 16), true},
+    {nullptr, L"/foo%2\xc2\xa9zbar", "/foo%2%C3%82%C2%A9zbar", Component(0, 22),
+     true},
+    // Regular characters that are escaped should be unescaped
+    {"/foo%41%7a", L"/foo%41%7a", "/fooAz", Component(0, 6), true},
+    // Funny characters that are unescaped should be escaped
+    {"/foo\x09\x91%91", nullptr, "/foo%09%91%91", Component(0, 13), true},
+    {nullptr, L"/foo\x09\x91%91", "/foo%09%C2%91%91", Component(0, 16), true},
+    // Invalid characters that are escaped should cause a failure.
+    {"/foo%00%51", L"/foo%00%51", "/foo%00Q", Component(0, 8), false},
+    // Some characters should be passed through unchanged regardless of esc.
+    {"/(%28:%3A%29)", L"/(%28:%3A%29)", "/(%28:%3A%29)", Component(0, 13),
+     true},
+    // Characters that are properly escaped should not have the case changed
+    // of hex letters.
+    {"/%3A%3a%3C%3c", L"/%3A%3a%3C%3c", "/%3A%3a%3C%3c", Component(0, 13),
+     true},
+    // Funny characters that are unescaped should be escaped
+    {"/foo\tbar", L"/foo\tbar", "/foo%09bar", Component(0, 10), true},
+    // Backslashes should get converted to forward slashes
+    {"\\foo\\bar", L"\\foo\\bar", "/foo/bar", Component(0, 8), true},
+    // Hashes found in paths (possibly only when the caller explicitly sets
+    // the path on an already-parsed URL) should be escaped.
+    {"/foo#bar", L"/foo#bar", "/foo%23bar", Component(0, 10), true},
+    // %7f should be allowed and %3D should not be unescaped (these were wrong
+    // in a previous version).
+    {"/%7Ffp3%3Eju%3Dduvgw%3Dd", L"/%7Ffp3%3Eju%3Dduvgw%3Dd",
+     "/%7Ffp3%3Eju%3Dduvgw%3Dd", Component(0, 24), true},
+    // @ should be passed through unchanged (escaped or unescaped).
+    {"/@asdf%40", L"/@asdf%40", "/@asdf%40", Component(0, 9), true},
+    // Nested escape sequences should result in escaping the leading '%' if
+    // unescaping would result in a new escape sequence.
+    {"/%A%42", L"/%A%42", "/%25AB", Component(0, 6), true},
+    {"/%%41B", L"/%%41B", "/%25AB", Component(0, 6), true},
+    {"/%%41%42", L"/%%41%42", "/%25AB", Component(0, 6), true},
+    // Make sure truncated "nested" escapes don't result in reading off the
+    // string end.
+    {"/%%41", L"/%%41", "/%A", Component(0, 3), true},
+    // Don't unescape the leading '%' if unescaping doesn't result in a valid
+    // new escape sequence.
+    {"/%%470", L"/%%470", "/%G0", Component(0, 4), true},
+    {"/%%2D%41", L"/%%2D%41", "/%-A", Component(0, 4), true},
+    // Don't erroneously downcast a UTF-16 character in a way that makes it
+    // look like part of an escape sequence.
+    {nullptr, L"/%%41\x0130", "/%A%C4%B0", Component(0, 9), true},
 
-      // ----- encoding tests -----
-      // Basic conversions
-      {"/\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd",
-       L"/\x4f60\x597d\x4f60\x597d", "/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD",
-       Component(0, 37), true},
-      // Invalid unicode characters should fail. We only do validation on
-      // UTF-16 input, so this doesn't happen on 8-bit.
-      {"/\xef\xb7\x90zyx", nullptr, "/%EF%B7%90zyx", Component(0, 13), true},
-      {nullptr, L"/\xfdd0zyx", "/%EF%BF%BDzyx", Component(0, 13), false},
-  };
+    // ----- encoding tests -----
+    // Basic conversions
+    {"/\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd",
+     L"/\x4f60\x597d\x4f60\x597d", "/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD",
+     Component(0, 37), true},
+    // Invalid unicode characters should fail. We only do validation on
+    // UTF-16 input, so this doesn't happen on 8-bit.
+    {"/\xef\xb7\x90zyx", nullptr, "/%EF%B7%90zyx", Component(0, 13), true},
+    {nullptr, L"/\xfdd0zyx", "/%EF%BF%BDzyx", Component(0, 13), false},
+};
 
-  for (size_t i = 0; i < base::size(path_cases); i++) {
+typedef bool (*CanonFunc8Bit)(const char*,
+                              const Component&,
+                              CanonOutput*,
+                              Component*);
+typedef bool (*CanonFunc16Bit)(const base::char16*,
+                               const Component&,
+                               CanonOutput*,
+                               Component*);
+
+void DoPathTest(const DualComponentCase* path_cases,
+                size_t num_cases,
+                CanonFunc8Bit canon_func_8,
+                CanonFunc16Bit canon_func_16) {
+  for (size_t i = 0; i < num_cases; i++) {
+    testing::Message scope_message;
+    scope_message << path_cases[i].input8 << "," << path_cases[i].input16;
+    SCOPED_TRACE(scope_message);
     if (path_cases[i].input8) {
       int len = static_cast<int>(strlen(path_cases[i].input8));
       Component in_comp(0, len);
@@ -1173,7 +1185,7 @@ TEST(URLCanonTest, Path) {
       std::string out_str;
       StdStringCanonOutput output(&out_str);
       bool success =
-          CanonicalizePath(path_cases[i].input8, in_comp, &output, &out_comp);
+          canon_func_8(path_cases[i].input8, in_comp, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(path_cases[i].expected_success, success);
@@ -1192,7 +1204,7 @@ TEST(URLCanonTest, Path) {
       StdStringCanonOutput output(&out_str);
 
       bool success =
-          CanonicalizePath(input16.c_str(), in_comp, &output, &out_comp);
+          canon_func_16(input16.c_str(), in_comp, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(path_cases[i].expected_success, success);
@@ -1201,6 +1213,11 @@ TEST(URLCanonTest, Path) {
       EXPECT_EQ(path_cases[i].expected, out_str);
     }
   }
+}
+
+TEST(URLCanonTest, Path) {
+  DoPathTest(kCommonPathCases, base::size(kCommonPathCases), CanonicalizePath,
+             CanonicalizePath);
 
   // Manual test: embedded NULLs should be escaped and the URL should be marked
   // as invalid.
@@ -1214,6 +1231,18 @@ TEST(URLCanonTest, Path) {
   output.Complete();
   EXPECT_FALSE(success);
   EXPECT_EQ("/ab%00c", out_str);
+}
+
+TEST(URLCanonTest, PartialPath) {
+  DualComponentCase partial_path_cases[] = {
+      {".html", L".html", ".html", Component(0, 5), true},
+      {"", L"", "", Component(0, 0), true},
+  };
+
+  DoPathTest(kCommonPathCases, base::size(kCommonPathCases),
+             CanonicalizePartialPath, CanonicalizePartialPath);
+  DoPathTest(partial_path_cases, base::size(partial_path_cases),
+             CanonicalizePartialPath, CanonicalizePartialPath);
 }
 
 TEST(URLCanonTest, Query) {

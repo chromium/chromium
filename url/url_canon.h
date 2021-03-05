@@ -524,6 +524,19 @@ bool CanonicalizePath(const base::char16* spec,
                       CanonOutput* output,
                       Component* out_path);
 
+// Like CanonicalizePath(), but does not assume that its operating on the
+// entire path.  It therefore does not prepend a slash, etc.
+COMPONENT_EXPORT(URL)
+bool CanonicalizePartialPath(const char* spec,
+                             const Component& path,
+                             CanonOutput* output,
+                             Component* out_path);
+COMPONENT_EXPORT(URL)
+bool CanonicalizePartialPath(const base::char16* spec,
+                             const Component& path,
+                             CanonOutput* output,
+                             Component* out_path);
+
 // Canonicalizes the input as a file path. This is like CanonicalizePath except
 // that it also handles Windows drive specs. For example, the path can begin
 // with "c|\" and it will get properly canonicalized to "C:/".

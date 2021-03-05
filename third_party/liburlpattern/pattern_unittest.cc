@@ -12,7 +12,9 @@ void RunRegexTest(absl::string_view input,
                   absl::string_view expected_regex,
                   std::vector<std::string> expected_name_list,
                   Options options = Options()) {
-  auto result = Parse(input, options);
+  auto result = Parse(
+      input, [](absl::string_view input) { return std::string(input); },
+      options);
   ASSERT_TRUE(result.ok());
   auto& pattern = result.value();
   std::vector<std::string> name_list;

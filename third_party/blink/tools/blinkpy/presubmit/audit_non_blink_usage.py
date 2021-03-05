@@ -1150,6 +1150,10 @@ _CONFIG = [
             'third_party/blink/renderer/modules/url_pattern/',
         ],
         'allowed': [
+            # Required to provide a canonicalization functor to liburlpattern.
+            "absl::InvalidArgumentError",
+            "absl::StatusOr",
+
             # Required by liburlpattern API in order to pass string data
             # efficiently.
             "absl::string_view",
