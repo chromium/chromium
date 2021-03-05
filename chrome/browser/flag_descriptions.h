@@ -2770,6 +2770,9 @@ extern const char kShowBluetoothDebugLogToggleDescription[];
 extern const char kEnableBluetoothVerboseLogsForGooglersName[];
 extern const char kEnableBluetoothVerboseLogsForGooglersDescription[];
 
+extern const char kShowDateInTrayName[];
+extern const char kShowDateInTrayDescription[];
+
 extern const char kShowTapsName[];
 extern const char kShowTapsDescription[];
 

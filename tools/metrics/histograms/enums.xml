@@ -46000,6 +46000,7 @@ from previous Chrome versions.
   <int value="403554154" label="SafetyCheckWeakPasswords:enabled"/>
   <int value="405329388"
       label="FramebustingNeedsSameOriginOrUserGesture:enabled"/>
+  <int value="407491045" label="ShowDateInTrayButton:enabled"/>
   <int value="408190863" label="OmniboxDisableInstantExtendedLimit:disabled"/>
   <int value="409566604" label="IntentPickerPWAPersistence:enabled"/>
   <int value="409622437" label="disable-buffer-bw-compression"/>
@@ -46758,6 +46759,7 @@ from previous Chrome versions.
   <int value="1108663108" label="disable-device-discovery-notifications"/>
   <int value="1109907837"
       label="PrefetchMainResourceNetworkIsolationKey:enabled"/>
+  <int value="1110683161" label="ShowDateInTrayButton:disabled"/>
   <int value="1111871757" label="ForceUnifiedConsentBump:enabled"/>
   <int value="1112051724" label="DetectingHeavyPages:enabled"/>
   <int value="1112817963" label="WebViewConnectionlessSafeBrowsing:enabled"/>

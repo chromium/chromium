@@ -4683,8 +4683,8 @@ const char kReleaseNotesNotificationAllChannelsDescription[] =
 
 const char kScalableStatusAreaName[] = "Enable Scalable Status Area";
 const char kScalableStatusAreaDescription[] =
-    "Showing important notification icons and date in status area when the "
-    "screen is sufficiently large.";
+    "Showing important notification icons in status area when the screen is "
+    "sufficiently large.";
 
 const char kScanningUIName[] = "Scanning UI";
 const char kScanningUIDescription[] =
@@ -4731,6 +4731,10 @@ const char kEnableBluetoothVerboseLogsForGooglersName[] =
     "Enable Bluetooth verbose logs for Googlers";
 const char kEnableBluetoothVerboseLogsForGooglersDescription[] =
     "Enables Bluetooth verbose logs for Googlers in feedback reports.";
+
+const char kShowDateInTrayName[] = "Enable Show Date In Tray";
+const char kShowDateInTrayDescription[] =
+    "Showing date in status area when the screen is sufficiently large.";
 
 const char kShowTapsName[] = "Show taps";
 const char kShowTapsDescription[] =
