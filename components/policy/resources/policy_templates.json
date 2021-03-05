@@ -19702,7 +19702,7 @@
       When this policy is left unset or set to disabled, extension installation requests are not created or uploaded.
       When this policy is set to enabled, extension installation requests are created and uploaded to Google Admin console.
 
-      Extension installation requests are created when users try to install an extension that is not allowed by <ph name="EXTENSION_INSTALL_ALLOWLIST">ExtesionInstallAllowlist</ph> or <ph name="EXTENSION_SETTINGS">ExtensionSettings</ph>.
+      Extension installation requests are created when users try to install an extension that is not allowed by <ph name="EXTENSION_INSTALL_ALLOWLIST">ExtensionInstallAllowlist</ph> or <ph name="EXTENSION_SETTINGS">ExtensionSettings</ph>.
 
       This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
       This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.'''
@@ -20966,7 +20966,7 @@
       This policy also enables notifications that warn SAML users if their SAML passwords are soon to expire so that they can deal with this immediately by doing an in-session password change.
       But, these notifications will only be shown if password expiry information is sent to the device by the SAML identity provider during the SAML login flow.
 
-      Setting this policy to Disabled or not set, SAML password can't be changed at chrome://password-change and there won't be any notification when SAML passwods are soon to expire.''',
+      Setting this policy to Disabled or not set, SAML password can't be changed at chrome://password-change and there won't be any notification when SAML passwords are soon to expire.''',
     },
     {
       'name': 'LockScreenReauthenticationEnabled',
