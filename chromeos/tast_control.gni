@@ -43,4 +43,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1181283
   "ui.QuickSettingsLockScreen.no_battery",
+
+  # crbug.com/1185176
+  "arc.Optin",
 ]
