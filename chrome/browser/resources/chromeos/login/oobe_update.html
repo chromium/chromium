@@ -18,7 +18,7 @@
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="oobe_update.css">
-    <oobe-dialog hidden="[[!requiresPermissionForCellular]]" tabindex="0"
+    <oobe-dialog for-step="cellular" tabindex="0"
         subtitle-key="updateOverCellularPromptMessage"
         aria-live="polite" has-buttons footer-shrinkable
         id="cellular-permission-dialog">
@@ -44,8 +44,7 @@
       </div>
     </oobe-dialog>
     <oobe-dialog footer-shrinkable id="checking-for-updates-dialog"
-        hidden="[[!isCheckingForUpdate_(uiState,
-                                        requiresPermissionForCellular)]]"
+        for-step="checking"
         title-key="checkingForUpdates" aria-live="polite">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
@@ -59,8 +58,7 @@
       </div>
     </oobe-dialog>
     <oobe-dialog footer-shrinkable id="update-in-progress-dialog"
-        hidden="[[!isUpdateInProgress_(uiState,
-                                        requiresPermissionForCellular)]]"
+        for-step="update"
         title-key="updateStatusTitle" aria-live="polite">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
@@ -91,8 +89,8 @@
       </div>
       <div hidden="[[showLowBatteryWarning]]" id="carousel" class="slide-view"
           slot="footer">
-        <oobe-carousel slide-duration-in-seconds=3
-            auto-transition="[[getAutoTransition_(uiState, autoTransition)]]"
+        <oobe-carousel slide-duration-in-seconds=5
+            auto-transition="[[getAutoTransition_(uiStep, autoTransition)]]"
             slide-label="slideLabel"
             selected-button-label="slideSelectedButtonLabel"
             unselected-button-label="slideUnselectedButtonLabel">
@@ -141,9 +139,7 @@
         </oobe-carousel>
       </div>
     </oobe-dialog>
-    <oobe-dialog footer-shrinkable id="restarting-dialog"
-        hidden="[[!isRestartInProgress_(uiState,
-                                        requiresPermissionForCellular)]]"
+    <oobe-dialog footer-shrinkable id="restarting-dialog" for-step="restart"
         title-key="updateCompeletedRebootingMsg" aria-live="polite">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
@@ -152,7 +148,7 @@
       </paper-progress>
     </oobe-dialog>
     <oobe-dialog footer-shrinkable id="better-update-complete-dialog"
-        hidden="[[!isManualReboot_(uiState, requiresPermissionForCellular)]]"
+        for-step="reboot"
         title-key="updateCompeletedMsg" aria-live="polite">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">

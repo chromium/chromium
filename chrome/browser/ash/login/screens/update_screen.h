@@ -132,8 +132,6 @@ class UpdateScreen : public BaseScreen,
   FRIEND_TEST_ALL_PREFIXES(UpdateScreenTest, TestAPReselection);
   friend class UpdateScreenUnitTest;
 
-  void RefreshView(const VersionUpdater::UpdateInfo& update_info);
-
   // Returns true if there is critical system update that requires installation
   // and immediate reboot.
   bool HasCriticalUpdate();

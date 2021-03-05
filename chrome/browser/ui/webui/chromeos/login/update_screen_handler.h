@@ -26,13 +26,12 @@ class UpdateView {
   // versions.
   constexpr static StaticOobeScreenId kScreenId{"oobe-update"};
 
-  // Enumeration of UI states. These values must be kept in sync with
-  // UpdateUIState in JS code.
   enum class UIState {
     kCheckingForUpdate = 0,
-    KUpdateInProgress = 1,
+    kUpdateInProgress = 1,
     kRestartInProgress = 2,
     kManualReboot = 3,
+    kCellularPermission = 4,
   };
 
   virtual ~UpdateView() {}
@@ -49,12 +48,10 @@ class UpdateView {
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
 
-  virtual void SetUIState(UIState value) = 0;
+  virtual void SetUpdateState(UIState value) = 0;
   virtual void SetUpdateStatus(int percent,
                                const base::string16& percent_message,
                                const base::string16& timeleft_message) = 0;
-  // Set the estimated time left, in seconds.
-  virtual void SetRequiresPermissionForCellular(bool value) = 0;
   virtual void ShowLowBatteryWarningMessage(bool value) = 0;
   virtual void SetAutoTransition(bool value) = 0;
   virtual void SetCancelUpdateShortcutEnabled(bool value) = 0;
@@ -74,11 +71,10 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   void Bind(UpdateScreen* screen) override;
   void Unbind() override;
 
-  void SetUIState(UpdateView::UIState value) override;
+  void SetUpdateState(UpdateView::UIState value) override;
   void SetUpdateStatus(int percent,
                        const base::string16& percent_message,
                        const base::string16& timeleft_message) override;
-  void SetRequiresPermissionForCellular(bool value) override;
   void ShowLowBatteryWarningMessage(bool value) override;
   void SetAutoTransition(bool value) override;
   void SetCancelUpdateShortcutEnabled(bool value) override;

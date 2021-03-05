@@ -230,11 +230,6 @@ IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest, TestUpdateCheckDoneBeforeShow) {
 
   ASSERT_NE(GetOobeUI()->current_screen(), UpdateView::kScreenId);
 
-  // Show another screen, and verify the Update screen in not shown before it.
-  GetOobeUI()->GetView<NetworkScreenHandler>()->Show();
-  OobeScreenWaiter network_screen_waiter(NetworkScreenView::kScreenId);
-  network_screen_waiter.set_assert_next_screen();
-  network_screen_waiter.Wait();
   histogram_tester_.ExpectTotalCount("OOBE.UpdateScreen.UpdateDownloadingTime",
                                      0);
   histogram_tester_.ExpectTotalCount(kTimeCheck, 1);
@@ -676,6 +671,9 @@ IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest, UpdateOverCellularAccepted) {
   test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
 
   test::OobeJS().TapOnPath(kCellularPermissionNext);
+  status.set_current_operation(update_engine::Operation::CHECKING_FOR_UPDATE);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
 
   test::OobeJS()
       .CreateVisibilityWaiter(true, kBetterUpdateCheckingForUpdatesDialog)
@@ -920,9 +918,14 @@ IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest, UpdateScreenSteps) {
   update_engine_client()->set_default_status(status);
   update_engine_client()->NotifyObserversThatStatusChanged(status);
 
-  test::OobeJS()
-      .CreateVisibilityWaiter(true, kBetterUpdateCheckingForUpdatesDialog)
-      ->Wait();
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
+  test::OobeJS().ExpectHiddenPath(kUpdateInProgressDialog);
+  test::OobeJS().ExpectHiddenPath(kRestartingDialog);
+  test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
+
+  update_screen_->GetShowTimerForTesting()->FireNow();
+
+  test::OobeJS().ExpectVisiblePath(kBetterUpdateCheckingForUpdatesDialog);
   test::OobeJS().ExpectHiddenPath(kUpdateInProgressDialog);
   test::OobeJS().ExpectHiddenPath(kRestartingDialog);
   test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
@@ -1021,6 +1024,9 @@ IN_PROC_BROWSER_TEST_F(BetterUpdateScreenTest, UpdateOverCellularShown) {
   test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
 
   test::OobeJS().TapOnPath(kCellularPermissionNext);
+  status.set_current_operation(update_engine::Operation::UPDATE_AVAILABLE);
+  update_engine_client()->set_default_status(status);
+  update_engine_client()->NotifyObserversThatStatusChanged(status);
 
   test::OobeJS()
       .CreateVisibilityWaiter(true, kBetterUpdateCheckingForUpdatesDialog)
