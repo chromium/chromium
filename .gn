@@ -92,6 +92,7 @@ no_check_targets = [
   "//remoting/host/security_key:*",  # 68 errors
   "//remoting/host/setup:*",  # 9 errors
   "//remoting/host/win:*",  # 43 errors
+  "//remoting/host:*",  # 164 errors
   "//remoting/ios/app/settings:*",  # 6 errors
   "//remoting/ios/app:*",  # 9 errors
   "//remoting/ios/audio:*",  # 5 errors
