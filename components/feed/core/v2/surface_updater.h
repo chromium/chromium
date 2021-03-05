@@ -27,8 +27,6 @@ class MetricsReporter;
 // changes (for spinners and zero-state).
 class SurfaceUpdater : public StreamModel::Observer {
  public:
-  using FeedStreamSurface = FeedStreamSurface;
-
   explicit SurfaceUpdater(MetricsReporter* metrics_reporter);
   ~SurfaceUpdater() override;
   SurfaceUpdater(const SurfaceUpdater&) = delete;
