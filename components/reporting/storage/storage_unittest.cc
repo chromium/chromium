@@ -438,8 +438,6 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     }
 
     // Verify digest and its match.
-    // Last record digest is not verified yet, since duplicate records are
-    // accepted in this test.
     {
       std::string serialized_record;
       wrapped_record.record().SerializeToString(&serialized_record);
@@ -458,8 +456,28 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
             std::make_tuple(sequencing_information.priority(),
                             sequencing_information.sequencing_id() - 1,
                             sequencing_information.generation_id()));
-        if (it == last_record_digest_map_->end() ||
-            it->second != wrapped_record.last_record_digest()) {
+        if (it == last_record_digest_map_->end()) {
+          // Previous record has not been seen yet, reschedule. This can happen
+          // because decryption is done asynchronously and only sets on
+          // sequenced_task_runner_ after it. As a result, later record may get
+          // decrypted early and be posted to sequenced_task_runner_ for
+          // verification before its predecessor. Rescheduling will move it back
+          // in the sequence.
+          // Rescheduling may happen multiple times, but once the earlier record
+          // is decrypted, it will be also posted to sequenced_task_runner_ and
+          // get its digest recorded, making it ready for the current one. This
+          // is not an efficient method, but is simple and good enough for the
+          // test.
+          sequenced_task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(&MockUploadClient::VerifyRecord,
+                             base::Unretained(this), sequencing_information,
+                             std::move(wrapped_record),
+                             std::move(processed_cb)));
+          return;
+        }
+        // Previous record has been seen, last record digest must match it.
+        if (it->second != wrapped_record.last_record_digest()) {
           std::move(processed_cb)
               .Run(UploadRecordFailure(
                   sequencing_information.priority(),

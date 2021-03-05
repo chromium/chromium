@@ -119,8 +119,6 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     }
 
     // Verify digest and its match.
-    // Last record digest is not verified yet, since duplicate records are
-    // accepted in this test.
     {
       std::string serialized_record;
       wrapped_record.record().SerializeToString(&serialized_record);
@@ -138,7 +136,8 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
           std::make_pair(sequencing_information.sequencing_id(),
                          sequencing_information.generation_id()),
           record_digest);
-      // If last record digest is present, match it and validate.
+      // If last record digest is present, match it and validate,
+      // unless previous record was a gap.
       if (wrapped_record.has_last_record_digest()) {
         auto it = last_record_digest_map_->find(
             std::make_pair(sequencing_information.sequencing_id() - 1,
