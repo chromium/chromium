@@ -673,16 +673,13 @@ class BuildConfigGenerator extends DefaultTask {
             }
             def depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
             def cipdPath = "${cipdBucket}/${repoPath}/${depPath}"
-            // TODO(crbug.com/1132368): Update the version format to
-            // 'version:${dependency.version}.${dependency.cipdSuffix}'
-            // once ready to roll 3pp-based CIPD packages.
             sb.append("""\
             |
             |  'src/${repoPath}/${depPath}': {
             |      'packages': [
             |          {
             |              'package': '${cipdPath}',
-            |              'version': 'version:${dependency.version}-${dependency.cipdSuffix}',
+            |              'version': 'version:${dependency.version}.${dependency.cipdSuffix}',
             |          },
             |      ],
             |      'condition': 'checkout_android',

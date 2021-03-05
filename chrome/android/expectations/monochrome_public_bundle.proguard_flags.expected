@@ -788,12 +788,12 @@
 
 # Keep the classes/members we need for client functionality.
 -keep @interface android.support.annotation.Keep
--keep @androidx.annotation.Keep class *
+-keep @android.support.annotation.Keep class *
 -keepclasseswithmembers class * {
-  @androidx.annotation.Keep <fields>;
+  @android.support.annotation.Keep <fields>;
 }
 -keepclasseswithmembers class * {
-  @androidx.annotation.Keep <methods>;
+  @android.support.annotation.Keep <methods>;
 }
 
 # Keep androidX equivalent of above android.support to allow Jetification.
