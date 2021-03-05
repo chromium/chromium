@@ -646,7 +646,7 @@ using base::UmaHistogramEnumeration;
   } else {
     UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                             ReauthenticationEvent::kMissingPasscode);
-    [self.securityAlertHandler showSetPasscodeDialog];
+    [self.currentProvider didSelectSuggestion:formSuggestion];
   }
 }
 
