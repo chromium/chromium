@@ -70,13 +70,13 @@ constexpr int kZeroStateButtonSpacing = 8;
 // The local Y coordinate of the zero state desk buttons.
 constexpr int kZeroStateY = 6;
 
-// Size of the scroll button.
-constexpr int kScrollButtonSize = 20;
+// The minimum horizontal padding of the scroll view. This is set to make sure
+// there is enough space for the scroll buttons.
+constexpr int kScrollViewMinimumHorizontalPadding = 32;
 
-// Padding between the scroll view and the scroll buttons.
-constexpr int kScrollButtonHorizontalPadding = 4;
+constexpr int kScrollButtonWidth = 36;
 
-constexpr int kGradientZoneLength = 24;
+constexpr int kGradientZoneLength = 40;
 
 gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
   DCHECK(event.IsGestureEvent());
@@ -263,22 +263,29 @@ class BentoDesksBarLayout : public views::LayoutManager {
   void Layout(views::View* host) override {
     const gfx::Rect bar_bounds = bar_view_->bounds();
     bar_view_->background_view()->SetBoundsRect(bar_bounds);
+    // Scroll buttons are kept |kScrollViewMinimumHorizontalPadding| away from
+    // the edge of the scroll view. So the horizontal padding of the scroll view
+    // is set to guarantee enough space for the scroll buttons.
+    const gfx::Insets insets = bar_view_->overview_grid_->GetGridInsets();
+    DCHECK(insets.left() == insets.right());
+    const int horizontal_padding =
+        std::max(kScrollViewMinimumHorizontalPadding, insets.left());
+    bar_view_->left_scroll_button_->SetBounds(
+        horizontal_padding - kScrollViewMinimumHorizontalPadding,
+        bar_bounds.y(), kScrollButtonWidth, bar_bounds.height());
+    bar_view_->right_scroll_button_->SetBounds(
+        bar_bounds.right() - horizontal_padding -
+            (kScrollButtonWidth - kScrollViewMinimumHorizontalPadding),
+        bar_bounds.y(), kScrollButtonWidth, bar_bounds.height());
+
     gfx::Rect scroll_bounds = bar_bounds;
     // Align with the overview grid in horizontal, so only horizontal insets are
     // needed here.
-    const gfx::Insets insets = bar_view_->overview_grid_->GetGridInsets();
-    scroll_bounds.Inset(insets.left(), 0, insets.right(), 0);
+    scroll_bounds.Inset(horizontal_padding, 0);
     bar_view_->scroll_view_->SetBoundsRect(scroll_bounds);
 
     // Clip the contents that are outside of the |scroll_view_|'s bounds.
     bar_view_->scroll_view_->layer()->SetMasksToBounds(true);
-
-    bar_view_->left_scroll_button_->SetBounds(
-        scroll_bounds.x() - kScrollButtonSize - kScrollButtonHorizontalPadding,
-        scroll_bounds.y(), kScrollButtonSize, scroll_bounds.height());
-    bar_view_->right_scroll_button_->SetBounds(
-        scroll_bounds.right() + kScrollButtonHorizontalPadding,
-        scroll_bounds.y(), kScrollButtonSize, scroll_bounds.height());
     bar_view_->UpdateScrollButtonsVisibility();
     bar_view_->UpdateGradientZone();
 
@@ -414,11 +421,11 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
     scroll_view_->SetTreatAllScrollEventsAsHorizontal(true);
 
     left_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
-        base::BindRepeating(&DesksBarView::ClickOnLeftScrollButton,
+        base::BindRepeating(&DesksBarView::ScrollToPreviousPage,
                             base::Unretained(this)),
         /*is_left_arrow=*/true, this));
     right_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
-        base::BindRepeating(&DesksBarView::ClickOnRightScrollButton,
+        base::BindRepeating(&DesksBarView::ScrollToNextPage,
                             base::Unretained(this)),
         /*is_left_arrow=*/false, this));
 
@@ -938,20 +945,27 @@ void DesksBarView::UpdateScrollButtonsVisibility() {
 }
 
 void DesksBarView::UpdateGradientZone() {
-  const gfx::Rect bounds = scroll_view_->bounds();
   const bool is_rtl = base::i18n::IsRTL();
   const bool is_left_scroll_button_visible = left_scroll_button_->GetVisible();
   const bool is_right_scroll_button_visible =
       right_scroll_button_->GetVisible();
+  const bool is_left_visible_only =
+      is_left_scroll_button_visible && !is_right_scroll_button_visible;
+  const bool is_right_visible_only =
+      !is_left_scroll_button_visible && is_right_scroll_button_visible;
+
+  // Only showing the gradient while scrolled to the start or end position of
+  // the scroll view.
+  const bool should_show_start_gradient =
+      is_rtl ? is_right_visible_only : is_left_visible_only;
+  const bool should_show_end_gradient =
+      is_rtl ? is_left_visible_only : is_right_visible_only;
 
   // The bounds of the start and end gradient will be the same regardless it is
   // LTR or RTL layout. While the |left_scroll_button_| will be changed from
   // left to right and |right_scroll_button_| will be changed from right to left
   // if it is RTL layout.
-  const bool should_show_start_gradient =
-      is_rtl ? is_right_scroll_button_visible : is_left_scroll_button_visible;
-  const bool should_show_end_gradient =
-      is_rtl ? is_left_scroll_button_visible : is_right_scroll_button_visible;
+  const gfx::Rect bounds = scroll_view_->bounds();
   gfx::Rect start_gradient_bounds, end_gradient_bounds;
   if (should_show_start_gradient) {
     start_gradient_bounds =
@@ -974,13 +988,16 @@ void DesksBarView::UpdateGradientZone() {
   gradient_layer_delegate_->layer()->SetBounds(scroll_view_->layer()->bounds());
 }
 
-void DesksBarView::ClickOnLeftScrollButton() {
-  scroll_view_->ScrollToPosition(scroll_view_->horizontal_scroll_bar(), 0);
+void DesksBarView::ScrollToPreviousPage() {
+  scroll_view_->ScrollToPosition(
+      scroll_view_->horizontal_scroll_bar(),
+      scroll_view_->GetVisibleRect().x() - scroll_view_->width());
 }
 
-void DesksBarView::ClickOnRightScrollButton() {
-  scroll_view_->ScrollToPosition(scroll_view_->horizontal_scroll_bar(),
-                                 scroll_view_contents_->bounds().width());
+void DesksBarView::ScrollToNextPage() {
+  scroll_view_->ScrollToPosition(
+      scroll_view_->horizontal_scroll_bar(),
+      scroll_view_->GetVisibleRect().x() + scroll_view_->width());
 }
 
 }  // namespace ash

@@ -51,7 +51,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -2080,7 +2080,7 @@ class TabletModeDesksTest : public DesksTest {
     // Enter tablet mode. Avoid TabletModeController::OnGetSwitchStates() from
     // disabling tablet mode.
     base::RunLoop().RunUntilIdle();
-    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    TabletModeControllerTestApi().EnterTabletMode();
   }
 
   SplitViewController* split_view_controller() {
@@ -2159,7 +2159,7 @@ TEST_F(TabletModeDesksTest, Backdrops) {
   EXPECT_TRUE(desk_2_backdrop_controller->backdrop_window()->IsVisible());
 
   // No backdrops after exiting tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_FALSE(desk_1_backdrop_controller->backdrop_window());
   EXPECT_FALSE(desk_2_backdrop_controller->backdrop_window());
 }
@@ -4107,58 +4107,53 @@ TEST_F(DesksBentoTest, ScrollableDesks) {
 // Tests the visibility of the scroll buttons and behavior while clicking the
 // corresponding scroll button.
 TEST_F(DesksBentoTest, ScrollButtons) {
-  UpdateDisplay("201x400");
-  auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
-  auto* root_window = Shell::GetPrimaryRootWindow();
-  auto* desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
-  ASSERT_TRUE(desks_bar_view->IsZeroState());
-  auto* event_generator = GetEventGenerator();
-  ClickOnView(desks_bar_view->zero_state_new_desk_button(), event_generator);
+  UpdateDisplay("501x600");
+  for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++)
+    NewDesk();
 
-  // Click the new desk button to create maximum number of desks.
-  auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->new_desk_button();
+  EXPECT_EQ(DesksController::Get()->desks().size(),
+            desks_util::GetMaxNumberOfDesks());
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  TabletModeControllerTestApi().EnterTabletMode();
+  // Snap the window to left and then right side of the display should enter
+  // overview mode.
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  SplitViewController::Get(root_window)
+      ->SnapWindow(window.get(), SplitViewController::LEFT);
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  auto* desks_bar = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(desks_bar->GetBoundsInScreen().CenterPoint());
+
   // Set the scroll delta large enough to make sure the desks bar can be
   // scrolled to the end each time.
-  const int x_scroll_delta = 200;
-  for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++) {
-    ClickOnView(new_desk_button, event_generator);
-    event_generator->MoveMouseWheel(-x_scroll_delta, 0);
-  }
-
-  auto* controller = DesksController::Get();
-  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
-  EXPECT_FALSE(controller->CanCreateDesks());
-
-  // Scroll to the end position should show the left scroll button and hide the
-  // right scroll button.
-  event_generator->MoveMouseWheel(-x_scroll_delta, 0);
-  EXPECT_TRUE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_FALSE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
-
-  // Scroll to the start position should show the right scroll button and hide
-  // the left scroll button.
+  const int x_scroll_delta = 500;
+  // Left scroll button should be hidden and right scroll button should be
+  // visible while at the start position.
   event_generator->MoveMouseWheel(x_scroll_delta, 0);
-  EXPECT_FALSE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_TRUE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
+  EXPECT_FALSE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_TRUE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
 
-  // Scroll to the middle position should show both left scroll button and right
-  // scroll button.
-  event_generator->MoveMouseWheel(-x_scroll_delta / 4, 0);
-  EXPECT_TRUE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_TRUE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
+  // Click the right scroll button should scroll to the next page. And left and
+  // right scroll buttons should both be visible while at the middle position.
+  ClickOnView(desks_bar->GetRightScrollButtonForTesting(), event_generator);
+  EXPECT_TRUE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_TRUE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
 
-  // Clicking the left scroll button should scroll to the start position.
-  ClickOnView(desks_bar_view->GetLeftScrollButtonForTesting(), event_generator);
-  EXPECT_FALSE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_TRUE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
+  // Click the left scroll button should scroll to the previous page. In this
+  // case, it will scroll back to the start position and left scroll button
+  // should be hidden and right scroll button should be visible.
+  ClickOnView(desks_bar->GetLeftScrollButtonForTesting(), event_generator);
+  EXPECT_FALSE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_TRUE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
 
-  // Clicking the right scroll button should scroll to the end position.
-  ClickOnView(desks_bar_view->GetRightScrollButtonForTesting(),
-              event_generator);
-  EXPECT_TRUE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_FALSE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
+  // Left scroll button should be visible and right scroll button should be
+  // hidden while at the end position.
+  event_generator->MoveMouseTo(desks_bar->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveMouseWheel(-x_scroll_delta, 0);
+  EXPECT_TRUE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_FALSE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
 }
 
 // Tests that the bounds of a window that is visible on all desks is shared
