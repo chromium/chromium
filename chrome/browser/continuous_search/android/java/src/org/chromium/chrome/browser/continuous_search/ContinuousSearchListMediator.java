@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -25,18 +26,25 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
     private Tab mCurrentTab;
     private boolean mOnSrp;
     private SearchResultUserData mCurrentSearchUserData;
+    private @SearchResultCategory int mResultCategory;
+    private boolean mVisible;
+    private boolean mScrolled;
 
     ContinuousSearchListMediator(ModelList modelList, Callback<Boolean> setLayoutVisibility) {
         mModelList = modelList;
         mSetLayoutVisibility = setLayoutVisibility;
     }
 
-    private void handleResultClick(GURL url) {
+    private void handleResultClick(GURL url, int position) {
         if (url == null || mCurrentTab == null) return;
 
         LoadUrlParams params = new LoadUrlParams(url.getSpec());
         params.setReferrer(new Referrer("https://www.google.com", ReferrerPolicy.STRICT_ORIGIN));
         mCurrentTab.loadUrl(params);
+
+        RecordHistogram.recordCount100Histogram("Browser.ContinuousSearch.UI.ClickedItemPosition"
+                        + SearchUrlHelper.getHistogramSuffixForResultCategory(mResultCategory),
+                position);
     }
 
     /**
@@ -44,7 +52,7 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
      */
     @Override
     public void onResult(Tab tab) {
-        mSetLayoutVisibility.onResult(false);
+        setVisibility(false);
         if (mCurrentSearchUserData != null) {
             mCurrentSearchUserData.removeObserver(this);
             mCurrentSearchUserData = null;
@@ -63,7 +71,7 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
     @Override
     public void onInvalidate() {
         mModelList.clear();
-        mSetLayoutVisibility.onResult(false);
+        setVisibility(false);
         mOnSrp = false;
     }
 
@@ -71,17 +79,19 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
     public void onUpdate(SearchResultMetadata metadata) {
         mModelList.clear();
 
+        int linkCount = 0;
         for (SearchResultGroup group : metadata.getGroups()) {
             if (!group.isAdGroup()) {
                 mModelList.add(new ListItem(
-                        ListItemType.GROUP_LABEL, generateListItem(group.getLabel(), null)));
+                        ListItemType.GROUP_LABEL, generateListItem(group.getLabel(), null, 0)));
             }
             int itemType = group.isAdGroup() ? ListItemType.AD : ListItemType.SEARCH_RESULT;
             for (SearchResult result : group.getResults()) {
-                mModelList.add(new ListItem(
-                        itemType, generateListItem(result.getTitle(), result.getUrl())));
+                mModelList.add(new ListItem(itemType,
+                        generateListItem(result.getTitle(), result.getUrl(), linkCount++)));
             }
         }
+        mResultCategory = metadata.getCategory();
     }
 
     @Override
@@ -94,17 +104,34 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
                     && currentUrl.equals(listItem.model.get(ContinuousSearchListProperties.URL));
             listItem.model.set(ContinuousSearchListProperties.IS_SELECTED, isSelected);
         }
-        mSetLayoutVisibility.onResult(mModelList.size() > 0 && !mOnSrp);
+        setVisibility(mModelList.size() > 0 && !mOnSrp);
     }
 
-    private PropertyModel generateListItem(String text, GURL url) {
+    private PropertyModel generateListItem(String text, GURL url, int position) {
         return new PropertyModel.Builder(ContinuousSearchListProperties.ALL_KEYS)
                 .with(ContinuousSearchListProperties.LABEL, text)
                 .with(ContinuousSearchListProperties.URL, url)
                 .with(ContinuousSearchListProperties.IS_SELECTED, false)
                 .with(ContinuousSearchListProperties.CLICK_LISTENER,
-                        (view) -> handleResultClick(url))
+                        (view) -> handleResultClick(url, position))
                 .build();
+    }
+
+    private void setVisibility(boolean visibility) {
+        if (mVisible && !visibility) recordListScrolled();
+        mVisible = visibility;
+        mSetLayoutVisibility.onResult(mVisible);
+    }
+
+    void onScrolled() {
+        mScrolled = true;
+    }
+
+    private void recordListScrolled() {
+        RecordHistogram.recordBooleanHistogram("Browser.ContinuousSearch.UI.CarouselScrolled"
+                        + SearchUrlHelper.getHistogramSuffixForResultCategory(mResultCategory),
+                mScrolled);
+        mScrolled = false;
     }
 
     void destroy() {

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -72,6 +73,13 @@ public class ContinuousSearchListCoordinator {
                 new LinearLayoutManager(root.getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mRecyclerViewAdapter);
+        recyclerView.addOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                // onScrolled is also called after a layout calculation. dx will be 0 in that case.
+                if (dx != 0) mListMediator.onScrolled();
+            }
+        });
     }
 
     void destroy() {

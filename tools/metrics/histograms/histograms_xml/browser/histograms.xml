@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="ContinuousSearchExperiment">
+  <variant name=".News"/>
+  <variant name=".Organic"/>
+</variants>
+
 <histogram name="Browser.AnyWindowHasName" enum="Boolean"
     expires_after="2021-06-30">
   <owner>ellyjones@chromium.org</owner>
@@ -110,6 +115,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     results for a Google search results page are extracted by the browser when
     the continuous search mode is enabled.
   </summary>
+</histogram>
+
+<histogram
+    name="Browser.ContinuousSearch.UI.CarouselScrolled{ExperimentCategory}"
+    enum="Boolean" expires_after="2021-06-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>mahmoudi@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records whether the UI was scrolled while being shown. It it emmited when
+    the UI gets hidden.
+  </summary>
+  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
+</histogram>
+
+<histogram
+    name="Browser.ContinuousSearch.UI.ClickedItemPosition{ExperimentCategory}"
+    units="position" expires_after="2021-06-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>mahmoudi@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records the 0-indexed position of list item in the UI when the user clicks
+    on the item.
+  </summary>
+  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
 </histogram>
 
 <histogram name="Browser.DarkModeStatus" enum="DarkModeStatus"
