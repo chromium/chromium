@@ -160,6 +160,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   // For hosting this GraphicsLayer in a native layer hierarchy.
   cc::PictureLayer& CcLayer() const { return *layer_; }
 
+  bool IsTrackingRasterInvalidations() const;
   void UpdateTrackingRasterInvalidations();
   void ResetTrackedRasterInvalidations();
   bool HasTrackedRasterInvalidations() const;

@@ -431,7 +431,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // For notifying blink of composited scrolling.
   base::WeakPtr<CompositorScrollCallbacks> scroll_callbacks_;
 
-  bool tracks_raster_invalidations_ = false;
+  bool tracks_raster_invalidations_;
   bool needs_update_ = true;
   PreviousUpdateType previous_update_for_testing_ = PreviousUpdateType::kNone;
   bool layer_debug_info_enabled_ = false;

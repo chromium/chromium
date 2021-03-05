@@ -124,8 +124,7 @@ void GraphicsLayer::AppendAdditionalInfoAsJSON(LayerTreeFlags flags,
 
   if ((flags & (kLayerTreeIncludesInvalidations |
                 kLayerTreeIncludesDetailedInvalidations)) &&
-      Client().IsTrackingRasterInvalidations() &&
-      GetRasterInvalidationTracking()) {
+      IsTrackingRasterInvalidations() && GetRasterInvalidationTracking()) {
     GetRasterInvalidationTracking()->AsJSON(
         &json, flags & kLayerTreeIncludesDetailedInvalidations);
   }
@@ -505,14 +504,21 @@ RasterInvalidator& GraphicsLayer::EnsureRasterInvalidator() {
   if (!raster_invalidator_) {
     raster_invalidator_ = std::make_unique<RasterInvalidator>();
     raster_invalidator_->SetTracksRasterInvalidations(
-        client_.IsTrackingRasterInvalidations());
+        IsTrackingRasterInvalidations());
   }
   return *raster_invalidator_;
 }
 
+bool GraphicsLayer::IsTrackingRasterInvalidations() const {
+#if DCHECK_IS_ON()
+  if (VLOG_IS_ON(3))
+    return true;
+#endif
+  return Client().IsTrackingRasterInvalidations();
+}
+
 void GraphicsLayer::UpdateTrackingRasterInvalidations() {
-  bool should_track = client_.IsTrackingRasterInvalidations();
-  if (should_track)
+  if (IsTrackingRasterInvalidations())
     EnsureRasterInvalidator().SetTracksRasterInvalidations(true);
   else if (raster_invalidator_)
     raster_invalidator_->SetTracksRasterInvalidations(false);

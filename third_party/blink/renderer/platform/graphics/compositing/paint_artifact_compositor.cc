@@ -47,14 +47,15 @@ static int g_s_property_tree_sequence_number = 1;
 
 PaintArtifactCompositor::PaintArtifactCompositor(
     base::WeakPtr<CompositorScrollCallbacks> scroll_callbacks)
-    : scroll_callbacks_(std::move(scroll_callbacks)) {
+    : scroll_callbacks_(std::move(scroll_callbacks)),
+      tracks_raster_invalidations_(VLOG_IS_ON(3)) {
   root_layer_ = cc::Layer::Create();
 }
 
 PaintArtifactCompositor::~PaintArtifactCompositor() {}
 
 void PaintArtifactCompositor::SetTracksRasterInvalidations(bool should_track) {
-  tracks_raster_invalidations_ = should_track;
+  tracks_raster_invalidations_ = should_track || VLOG_IS_ON(3);
   for (auto& client : content_layer_clients_)
     client->GetRasterInvalidator().SetTracksRasterInvalidations(should_track);
 }
