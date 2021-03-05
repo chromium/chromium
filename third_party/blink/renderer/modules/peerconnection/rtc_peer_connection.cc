@@ -777,9 +777,6 @@ RTCPeerConnection::RTCPeerConnection(
       suppress_events_(true),
       sdp_semantics_(configuration.sdp_semantics),
       sdp_semantics_specified_(sdp_semantics_specified),
-      blink_webrtc_time_diff_(
-          base::TimeTicks::Now() - base::TimeTicks() -
-          base::TimeDelta::FromMicroseconds(rtc::TimeMicros())),
       force_encoded_audio_insertable_streams_(
           force_encoded_audio_insertable_streams),
       force_encoded_video_insertable_streams_(
@@ -3678,11 +3675,6 @@ void RTCPeerConnection::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   MediaStreamObserver::Trace(visitor);
-}
-
-base::TimeTicks RTCPeerConnection::WebRtcTimestampToBlinkTimestamp(
-    base::TimeTicks webrtc_monotonic_time) const {
-  return webrtc_monotonic_time + blink_webrtc_time_diff_;
 }
 
 // static
