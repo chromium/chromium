@@ -567,7 +567,6 @@ Chromium is unable to recover your settings.
         Google API keys are missing. Some functionality of Chromium will be disabled.
       </message>
 
-      <!-- Extension/App install prompt -->
       <if expr="enable_extensions">
         <!-- Extension installed bubble -->
         <message name="IDS_EXTENSION_INSTALLED_HEADING" desc="Title of the extension-installed bubble. Instructs that the extension was installed.">
@@ -578,18 +577,6 @@ Chromium is unable to recover your settings.
         <message name="IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time. Only used when uninstalling an app associated with a particular website.">
           Also clear data from Chromium (<ph name="URL">$1<ex>www.google.com</ex></ph>)
         </message>
-
-        <!-- Extension context menu -->
-        <if expr="not use_titlecase">
-          <message name="IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU" desc="The extension context menu item to hide the button in the application menu (sentence case).">
-            Hide in Chromium menu
-          </message>
-        </if>
-        <if expr="use_titlecase">
-          <message name="IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU" desc="The extension context menu item to hide the button in the application menu (title case).">
-            Hide in Chromium Menu
-          </message>
-        </if>
       </if>
 
       <!-- chrome://settings/extensions page -->

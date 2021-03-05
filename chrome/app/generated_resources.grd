@@ -4410,15 +4410,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSIONS_DISABLE" desc="The link for disabling an extension (sentence case).">
             Disable
           </message>
-          <message name="IDS_EXTENSIONS_HIDE_BUTTON" desc="The text for the Hide context menu item (sentence case).">
-            Hide button
-          </message>
-          <message name="IDS_EXTENSIONS_KEEP_BUTTON_IN_TOOLBAR" desc="The text for the menu item to keep a button pinned in the toolbar (sentence case).">
-            Keep in toolbar
-          </message>
-          <message name="IDS_EXTENSIONS_SHOW_BUTTON_IN_TOOLBAR" desc="The text for the menu item to move a button to the toolbar (sentence case).">
-            Show in toolbar
-          </message>
           <message name="IDS_EXTENSIONS_PIN_TO_TOOLBAR" desc="The text for the menu item to pin an extension to the toolbar (sentence case).">
             Pin
           </message>

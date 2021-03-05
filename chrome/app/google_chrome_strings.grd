@@ -585,18 +585,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time. Only used when uninstalling an app associated with a particular website.">
           Also clear data from Chrome (<ph name="URL">$1<ex>www.google.com</ex></ph>)
         </message>
-
-        <!-- Extension context menu -->
-        <if expr="not use_titlecase">
-          <message name="IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU" desc="The extension context menu item to hide the button in the application menu (sentence case).">
-            Hide in Chrome menu
-          </message>
-        </if>
-        <if expr="use_titlecase">
-          <message name="IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU" desc="The extension context menu item to hide the button in the application menu (title case).">
-            Hide in Chrome Menu
-          </message>
-        </if>
       </if>
 
       <!-- chrome://settings/extensions page -->

@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -97,31 +96,11 @@ int GetVisibilityStringId(
     Profile* profile,
     const Extension* extension,
     ExtensionContextMenuModel::ButtonVisibility button_visibility) {
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    if (IsExtensionForcePinned(*extension, profile))
-      return IDS_EXTENSIONS_PINNED_BY_ADMIN;
-    if (button_visibility == ExtensionContextMenuModel::PINNED)
-      return IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
-    return IDS_EXTENSIONS_PIN_TO_TOOLBAR;
-  }
-  DCHECK(profile);
-  int string_id = -1;
-  // We display "show" or "hide" based on the icon's visibility, and can have
-  // "transitively shown" buttons that are shown only while the button has a
-  // popup or menu visible.
-  switch (button_visibility) {
-    case (ExtensionContextMenuModel::PINNED):
-      string_id = IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU;
-      break;
-    case (ExtensionContextMenuModel::TRANSITIVELY_VISIBLE):
-      string_id = IDS_EXTENSIONS_KEEP_BUTTON_IN_TOOLBAR;
-      break;
-    case (ExtensionContextMenuModel::UNPINNED):
-      string_id = IDS_EXTENSIONS_SHOW_BUTTON_IN_TOOLBAR;
-      break;
-  }
-
-  return string_id;
+  if (IsExtensionForcePinned(*extension, profile))
+    return IDS_EXTENSIONS_PINNED_BY_ADMIN;
+  if (button_visibility == ExtensionContextMenuModel::PINNED)
+    return IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
+  return IDS_EXTENSIONS_PIN_TO_TOOLBAR;
 }
 
 // Returns true if the given |extension| is required to remain installed by
@@ -306,9 +285,8 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     // Extension pinning/unpinning is not available for Incognito as this leaves
     // a trace of user activity.
     case TOGGLE_VISIBILITY:
-      return (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu) &&
-              !browser_->profile()->IsOffTheRecord() &&
-              !IsExtensionForcePinned(*extension, profile_));
+      return !browser_->profile()->IsOffTheRecord() &&
+             !IsExtensionForcePinned(*extension, profile_);
     // Manage extensions is always enabled.
     case MANAGE_EXTENSIONS:
       return true;
