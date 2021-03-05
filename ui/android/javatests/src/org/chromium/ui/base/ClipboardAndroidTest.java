@@ -16,10 +16,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Clipboard tests for Android platform that depend on access to the ClipboardManager.
@@ -45,8 +47,7 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1184226 ClipboardManager#setPrimaryClip not applying.")
-    public void internalClipboardInvalidation() {
+    public void internalClipboardInvalidation() throws TimeoutException {
         // Write to the clipboard in native and ensure that is propagated to the platform clipboard.
         final String originalText = "foo";
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -54,12 +55,22 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
                     ClipboardAndroidTestSupport.writeHtml(originalText));
         });
 
+        CallbackHelper helper = new CallbackHelper();
+        ClipboardManager.OnPrimaryClipChangedListener clipboardChangedListener =
+                new ClipboardManager.OnPrimaryClipChangedListener() {
+                    @Override
+                    public void onPrimaryClipChanged() {
+                        helper.notifyCalled();
+                    }
+                };
+
         // Assert that the ClipboardManager contains the original text. Then simulate another
         // application writing to the clipboard.
         final String invalidatingText = "Hello, World!";
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ClipboardManager clipboardManager =
                     (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboardManager.addPrimaryClipChangedListener(clipboardChangedListener);
 
             Assert.assertEquals("Original text not found in ClipboardManager.", originalText,
                     Clipboard.getInstance().clipDataToHtmlText(clipboardManager.getPrimaryClip()));
@@ -67,10 +78,16 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
             clipboardManager.setPrimaryClip(ClipData.newPlainText(null, invalidatingText));
         });
 
+        helper.waitForFirst("ClipboardManager did not notify of PrimaryClip change.");
+
         // Assert that the overwrite from another application is registered by the native clipboard.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("Invalidating text not found in the native clipboard.",
                     ClipboardAndroidTestSupport.clipboardContains(invalidatingText));
+
+            ClipboardManager clipboardManager =
+                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboardManager.removePrimaryClipChangedListener(clipboardChangedListener);
         });
     }
 }
