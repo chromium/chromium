@@ -49,6 +49,7 @@ group("resources") {
       "chromeos:multidevice_setup_resources",
       "chromeos/accessibility:build",
       "chromeos/emoji_picker:resources",
+      "chromeos/login:resources",
       "chromeos/multidevice_internals:resources",
       "chromeos/network_ui:resources",
       "nearby_internals:resources",

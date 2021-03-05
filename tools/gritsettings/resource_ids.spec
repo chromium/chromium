@@ -117,6 +117,11 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [1365],
   },
+  "chrome/browser/resources/chromeos/login/oobe_resources.grd": {
+    "META": {"sizes": {"includes": [20], "structures": [100]}},
+    "includes": [1367],
+    "structures": [1368],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/multidevice_internals/resources.grd": {
     "META": {"sizes": {"includes": [35]}},
     "includes": [1370],
