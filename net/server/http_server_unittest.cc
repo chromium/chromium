@@ -444,6 +444,19 @@ TEST_F(HttpServerTest, RequestWithBody) {
   ASSERT_EQ('c', *body.rbegin());
 }
 
+// Tests that |HttpServer::HandleReadResult| will ignore Upgrade header if value
+// is not WebSocket.
+TEST_F(HttpServerTest, UpgradeIgnored) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: h2c\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "\r\n");
+  RunUntilRequestsReceived(1);
+}
+
 TEST_F(WebSocketTest, RequestWebSocket) {
   TestHttpClient client;
   CreateConnection(&client);

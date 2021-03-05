@@ -299,7 +299,8 @@ void HttpServer::HandleReadResult(HttpConnection* connection, MojoResult rv) {
     // Sets peer address.
     request.peer = connection->GetPeerAddress();
 
-    if (request.HasHeaderValue("connection", "upgrade")) {
+    if (request.HasHeaderValue("connection", "upgrade") &&
+        request.HasHeaderValue("upgrade", "websocket")) {
       connection->SetWebSocket(std::make_unique<WebSocket>(this, connection));
       connection->read_buf().erase(0, pos);
       delegate_->OnWebSocketRequest(connection->id(), request);

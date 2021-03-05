@@ -461,6 +461,19 @@ TEST_F(HttpServerTest, RequestWithBody) {
   ASSERT_EQ('c', *body.rbegin());
 }
 
+// Tests that |HttpServer::HandleReadResult| will ignore Upgrade header if value
+// is not WebSocket.
+TEST_F(HttpServerTest, UpgradeIgnored) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: h2c\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "\r\n");
+  RunUntilRequestsReceived(1);
+}
+
 // Tests that |HttpServer:OnReadable()| will notice the closure of the connected
 // socket and not try to read from an invalid pipe.
 TEST_F(WebSocketTest, PipeClosed) {
