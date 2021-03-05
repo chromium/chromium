@@ -6745,12 +6745,18 @@ domain Page
   # Returns metrics relating to the layouting of the page, such as viewport bounds/scale.
   command getLayoutMetrics
     returns
-      # Metrics relating to the layout viewport.
-      LayoutViewport layoutViewport
-      # Metrics relating to the visual viewport.
-      VisualViewport visualViewport
-      # Size of scrollable area.
-      DOM.Rect contentSize
+      # Deprecated metrics relating to the layout viewport. Can be in DP or in CSS pixels depending on the `enable-use-zoom-for-dsf` flag. Use `normalisedLayoutViewport` instead.
+      deprecated LayoutViewport layoutViewport
+      # Deprecated metrics relating to the visual viewport. Can be in DP or in CSS pixels depending on the `enable-use-zoom-for-dsf` flag. Use `normalisedVisualViewport` instead.
+      deprecated VisualViewport visualViewport
+      # Deprecated size of scrollable area. Can be in DP or in CSS pixels depending on the `enable-use-zoom-for-dsf` flag. Use `normalisedContentSize` instead.
+      deprecated DOM.Rect contentSize
+      # Metrics relating to the layout viewport in CSS pixels.
+      LayoutViewport cssLayoutViewport
+      # Metrics relating to the visual viewport in CSS pixels.
+      VisualViewport cssVisualViewport
+      # Size of scrollable area in CSS pixels.
+      DOM.Rect cssContentSize
 
   # Returns navigation history for the current page.
   command getNavigationHistory

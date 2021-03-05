@@ -1357,7 +1357,10 @@ Response InspectorPageAgent::stopScreencast() {
 Response InspectorPageAgent::getLayoutMetrics(
     std::unique_ptr<protocol::Page::LayoutViewport>* out_layout_viewport,
     std::unique_ptr<protocol::Page::VisualViewport>* out_visual_viewport,
-    std::unique_ptr<protocol::DOM::Rect>* out_content_size) {
+    std::unique_ptr<protocol::DOM::Rect>* out_content_size,
+    std::unique_ptr<protocol::Page::LayoutViewport>* out_css_layout_viewport,
+    std::unique_ptr<protocol::Page::VisualViewport>* out_css_visual_viewport,
+    std::unique_ptr<protocol::DOM::Rect>* out_css_content_size) {
   LocalFrame* main_frame = inspected_frames_->Root();
   VisualViewport& visual_viewport = main_frame->GetPage()->GetVisualViewport();
 
@@ -1373,8 +1376,43 @@ Response InspectorPageAgent::getLayoutMetrics(
                              .setClientHeight(visible_contents.Height())
                              .build();
 
+  // `visible_contents` is in DIP or DP depending on the
+  // `enable-use-zoom-for-dsf` flag. Normlisation needed to convert it to CSS
+  // pixels. Details: https://crbug.com/1181313
+  IntRect css_visible_contents =
+      main_frame->GetPage()->GetChromeClient().ViewportToScreen(
+          visible_contents, main_frame->View());
+  *out_css_layout_viewport = protocol::Page::LayoutViewport::create()
+                                 .setPageX(css_visible_contents.X())
+                                 .setPageY(css_visible_contents.Y())
+                                 .setClientWidth(css_visible_contents.Width())
+                                 .setClientHeight(css_visible_contents.Height())
+                                 .build();
+
   LocalFrameView* frame_view = main_frame->View();
   ScrollOffset page_offset = frame_view->GetScrollableArea()->GetScrollOffset();
+
+  IntSize content_size = frame_view->GetScrollableArea()->ContentsSize();
+  *out_content_size = protocol::DOM::Rect::create()
+                          .setX(0)
+                          .setY(0)
+                          .setWidth(content_size.Width())
+                          .setHeight(content_size.Height())
+                          .build();
+
+  // `content_size` is in DIP or DP depending on the
+  // `enable-use-zoom-for-dsf` flag. Normlisation needed to convert it to CSS
+  // pixels. Details: https://crbug.com/1181313
+  IntRect css_content_size =
+      main_frame->GetPage()->GetChromeClient().ViewportToScreen(
+          IntRect(IntPoint(0, 0), content_size), main_frame->View());
+  *out_css_content_size = protocol::DOM::Rect::create()
+                              .setX(css_content_size.X())
+                              .setY(css_content_size.Y())
+                              .setWidth(css_content_size.Width())
+                              .setHeight(css_content_size.Height())
+                              .build();
+
   // page_zoom is either CSS-to-DP or CSS-to-DIP depending on
   // enable-use-zoom-for-dsf flag.
   float page_zoom = main_frame->PageZoomFactor();
@@ -1385,15 +1423,6 @@ Response InspectorPageAgent::getLayoutMetrics(
           main_frame, 1);
   FloatRect visible_rect = visual_viewport.VisibleRect();
   float scale = visual_viewport.Scale();
-
-  IntSize content_size = frame_view->GetScrollableArea()->ContentsSize();
-  *out_content_size = protocol::DOM::Rect::create()
-                          .setX(0)
-                          .setY(0)
-                          .setWidth(content_size.Width())
-                          .setHeight(content_size.Height())
-                          .build();
-
   *out_visual_viewport = protocol::Page::VisualViewport::create()
                              .setOffsetX(AdjustForAbsoluteZoom::AdjustScroll(
                                  visible_rect.X(), page_zoom))
@@ -1408,6 +1437,24 @@ Response InspectorPageAgent::getLayoutMetrics(
                              .setScale(scale)
                              .setZoom(page_zoom_factor)
                              .build();
+
+  *out_css_visual_viewport =
+      protocol::Page::VisualViewport::create()
+          .setOffsetX(
+              AdjustForAbsoluteZoom::AdjustScroll(visible_rect.X(), page_zoom))
+          .setOffsetY(
+              AdjustForAbsoluteZoom::AdjustScroll(visible_rect.Y(), page_zoom))
+          .setPageX(AdjustForAbsoluteZoom::AdjustScroll(page_offset.Width(),
+                                                        page_zoom))
+          .setPageY(AdjustForAbsoluteZoom::AdjustScroll(page_offset.Height(),
+                                                        page_zoom))
+          .setClientWidth(AdjustForAbsoluteZoom::AdjustScroll(
+              visible_rect.Width(), page_zoom))
+          .setClientHeight(AdjustForAbsoluteZoom::AdjustScroll(
+              visible_rect.Height(), page_zoom))
+          .setScale(scale)
+          .setZoom(page_zoom_factor)
+          .build();
   return Response::Success();
 }
 

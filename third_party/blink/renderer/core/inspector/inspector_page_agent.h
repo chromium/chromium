@@ -155,9 +155,12 @@ class CORE_EXPORT InspectorPageAgent final
                                      Maybe<int> every_nth_frame) override;
   protocol::Response stopScreencast() override;
   protocol::Response getLayoutMetrics(
-      std::unique_ptr<protocol::Page::LayoutViewport>*,
-      std::unique_ptr<protocol::Page::VisualViewport>*,
-      std::unique_ptr<protocol::DOM::Rect>*) override;
+      std::unique_ptr<protocol::Page::LayoutViewport>* out_layout_viewport,
+      std::unique_ptr<protocol::Page::VisualViewport>* out_visual_viewport,
+      std::unique_ptr<protocol::DOM::Rect>* out_content_size,
+      std::unique_ptr<protocol::Page::LayoutViewport>* out_css_layout_viewport,
+      std::unique_ptr<protocol::Page::VisualViewport>* out_css_visual_viewport,
+      std::unique_ptr<protocol::DOM::Rect>* out_css_content_size) override;
   protocol::Response createIsolatedWorld(const String& frame_id,
                                          Maybe<String> world_name,
                                          Maybe<bool> grant_universal_access,

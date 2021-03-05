@@ -233,7 +233,8 @@
   {
     "prefix": "scalefactor200withoutzoom",
     "bases": ["external/wpt/element-timing",
-              "external/wpt/largest-contentful-paint"],
+              "external/wpt/largest-contentful-paint",
+              "inspector-protocol/page/get-layout-metrics-css.js"],
     "args": ["--force-device-scale-factor=2",
              "--enable-use-zoom-for-dsf=false"]
   },
@@ -245,7 +246,8 @@
   },
   {
     "prefix": "scalefactor200withzoom",
-    "bases": ["fast/hidpi/static"],
+    "bases": ["fast/hidpi/static",
+              "inspector-protocol/page/get-layout-metrics-css.js"],
     "args": ["--force-device-scale-factor=2",
              "--enable-use-zoom-for-dsf"]
   },
