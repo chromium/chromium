@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessor.java",
     "java/src/org/chromium/chrome/browser/layouts/EventFilter.java",
+    "java/src/org/chromium/chrome/browser/layouts/FilterLayoutStateObserver.java",
     "java/src/org/chromium/chrome/browser/layouts/LayoutManager.java",
     "java/src/org/chromium/chrome/browser/layouts/LayoutManagerProvider.java",
     "java/src/org/chromium/chrome/browser/layouts/LayoutStateProvider.java",
@@ -57,6 +58,7 @@ java_library("junit") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/layouts/FilterLayoutStateObserverTest.java",
     "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimationHandlerTest.java",
     "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimatorTest.java",
   ]
