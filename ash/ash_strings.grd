@@ -2717,6 +2717,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE" desc="Message shown as part of the notification shown to a user that has become eligible to enable Wi-Fi Sync.">
         Wi-Fi networks will be shared between your phone and <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph>
       </message>
+      <message name="IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TURN_ON_BUTTON" desc="Button shown on the bottom of notification to enable Wi-Fi Sync for newly eligible users.">
+        Turn on
+      </message>
+      <message name="IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_CANCEL_BUTTON" desc="Cancel button shown on the bottom of the Wi-Fi Sync announcement notification.">
+        Cancel
+      </message>
 
       <!-- Window teleportation warning dialog -->
       <message name="IDS_ASH_TELEPORT_WARNING_TITLE" desc="The title of the dialog which warns user about oddities which can be seen when a window gets moved to another user desktop.">

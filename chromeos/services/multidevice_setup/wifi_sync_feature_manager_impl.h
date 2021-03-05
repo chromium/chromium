@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
@@ -35,6 +36,7 @@ class WifiSyncFeatureManagerImpl
     : public WifiSyncFeatureManager,
       public HostStatusProvider::Observer,
       public device_sync::DeviceSyncClient::Observer,
+      public base::PowerObserver,
       public session_manager::SessionManagerObserver {
  public:
   class Factory {
@@ -85,6 +87,9 @@ class WifiSyncFeatureManagerImpl
 
   // SessionManagerObserver:
   void OnSessionStateChanged() override;
+
+  // PowerObserver:
+  void OnResume() override;
 
   // WifiSyncFeatureManager:
 
@@ -143,6 +148,7 @@ class WifiSyncFeatureManagerImpl
   AccountStatusChangeDelegateNotifier* delegate_notifier_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
+  bool did_register_session_observers_ = false;
   bool network_request_in_flight_ = false;
 
   base::WeakPtrFactory<WifiSyncFeatureManagerImpl> weak_ptr_factory_{this};

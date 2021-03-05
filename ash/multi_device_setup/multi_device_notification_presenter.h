@@ -22,6 +22,7 @@
 namespace message_center {
 class MessageCenter;
 class Notification;
+class RichNotificationData;
 }  // namespace message_center
 
 namespace ash {
@@ -117,7 +118,8 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
                              const base::string16& message);
   void ShowNotification(const std::string& id,
                         const base::string16& title,
-                        const base::string16& message);
+                        const base::string16& message,
+                        message_center::RichNotificationData optional_fields);
 
   void FlushForTesting();
 

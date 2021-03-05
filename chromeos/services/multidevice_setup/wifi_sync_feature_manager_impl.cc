@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/stl_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/software_feature.h"
@@ -91,7 +92,12 @@ WifiSyncFeatureManagerImpl::WifiSyncFeatureManagerImpl(
       timer_(std::move(timer)) {
   host_status_provider_->AddObserver(this);
   device_sync_client_->AddObserver(this);
-  session_manager::SessionManager::Get()->AddObserver(this);
+
+  if (pref_service_->GetBoolean(kCanShowAnnouncementPrefName)) {
+    session_manager::SessionManager::Get()->AddObserver(this);
+    base::PowerMonitor::AddObserver(this);
+    did_register_session_observers_ = true;
+  }
 
   if (GetCurrentState() == CurrentState::kValidPendingRequest) {
     AttemptSetWifiSyncHostStateNetworkRequest(false /* is_retry */);
@@ -105,7 +111,10 @@ WifiSyncFeatureManagerImpl::WifiSyncFeatureManagerImpl(
 WifiSyncFeatureManagerImpl::~WifiSyncFeatureManagerImpl() {
   host_status_provider_->RemoveObserver(this);
   device_sync_client_->RemoveObserver(this);
-  session_manager::SessionManager::Get()->RemoveObserver(this);
+  if (did_register_session_observers_) {
+    session_manager::SessionManager::Get()->RemoveObserver(this);
+    base::PowerMonitor::RemoveObserver(this);
+  }
 }
 
 void WifiSyncFeatureManagerImpl::OnHostStatusChange(
@@ -134,18 +143,23 @@ void WifiSyncFeatureManagerImpl::OnNewDevicesSynced() {
 }
 
 void WifiSyncFeatureManagerImpl::OnSessionStateChanged() {
-  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
-    return;
-  }
+  ShowAnnouncementNotificationIfEligible();
+}
 
-  // Show the announcement notification when the device is unlocked and
-  // eligible for wi-fi sync.  This is done on unlock to avoid showing the
-  // notification on the first sign-in when it would distract from showoff
-  // and other announcements.
+void WifiSyncFeatureManagerImpl::OnResume() {
   ShowAnnouncementNotificationIfEligible();
 }
 
 void WifiSyncFeatureManagerImpl::ShowAnnouncementNotificationIfEligible() {
+  // Show the announcement notification when the device is unlocked and
+  // eligible for wi-fi sync.  This is done on unlock/resume to avoid showing
+  // it on the first sign-in when it would distract from showoff and other
+  // announcements.
+
+  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
+    return;
+  }
+
   if (!IsFeatureAllowed(mojom::Feature::kWifiSync, pref_service_)) {
     return;
   }
