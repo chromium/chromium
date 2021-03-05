@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="2277224997687551299">修改组名称</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{将所选的 <ph name="TABS_COUNT_ONE" /> 个标签页从组内移出。}other{将所选的 <ph name="TABS_COUNT_MANY" /> 个标签页从组内移出。}}</translation>
+<translation id="2479148705183875116">转到“设置”</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收起 <ph name="TABS_COUNT_ONE" /> 个标签页。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页组。}}</translation>
 <translation id="2569352796411618312">建议：您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>
 <translation id="257674075312929031">群组</translation>

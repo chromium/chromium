@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="2015722694326466240">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder ver las contraseñas.</translation>
-<translation id="2047933465321076474">Tu organización ha desactivado la navegación privada. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Borrando datos de navegación...</translation>
 <translation id="2257567812274161158">No se puede realizar la sincronización.</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Tu organización requiere que navegues de forma privada. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Añadir cuenta</translation>
 <translation id="2268044343513325586">Restringir</translation>
 <translation id="2273327106802955778">Menú más</translation>
@@ -270,7 +268,6 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3691593122358196899">Marcador añadido a <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Marcar como no leído</translation>
-<translation id="3720541637541300822">Bloquear las pestañas de incógnito al cerrar Chrome</translation>
 <translation id="3740397331642243698">Abre las URL introducidas en Google Chrome en incógnito.</translation>
 <translation id="3771033907050503522">Pestañas incógnito</translation>
 <translation id="3775743491439407556">La sincronización no funciona</translation>
@@ -432,7 +429,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5551897871312988470">Ofrecer la traducción</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5592679540098330836">Activar sincronización de <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Tu organización requiere que navegues de forma privada. En el modo de incógnito, las pestañas no se guardan. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
 <translation id="5626245204502895507">No se puede descargar el archivo en este momento.</translation>
 <translation id="5631164295104953411">Añadir método de pago</translation>
@@ -546,6 +542,7 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="6620279676667515405">Cancelar</translation>
 <translation id="6624219055418309072">Bloquear en incógnito</translation>
 <translation id="6628106477656132239">La fecha de vencimiento no es válida</translation>
+<translation id="6634432609054530164">Tu organización ha desactivado el modo de incógnito</translation>
 <translation id="6638511529934826365">Ampliar texto…</translation>
 <translation id="6639730758971422557">Para activar Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google y sincronización<ph name="END_LINK" /> y toca Navegación segura.</translation>
 <translation id="6642362222295953972">Cambiar a la pestaña existente</translation>

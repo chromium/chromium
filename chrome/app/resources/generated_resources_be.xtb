@@ -1868,7 +1868,6 @@
 <translation id="3045447014237878114">Гэты сайт спампаваў некалькі файлаў аўтаматычна</translation>
 <translation id="3046910703532196514">Вэб-старонка поўнасцю</translation>
 <translation id="304747341537320566">Модулі маўлення</translation>
-<translation id="3047644958362961983">Гэтыя звесткі дапамагаюць нам зразумець вашу праблему з Памочнікам. Яны захоўваюцца да 90 дзён, доступ да іх маюць толькі адпаведныя інжынеры-распрацоўшчыкі і спецыялісты па працы з водгукамі.</translation>
 <translation id="3051250416341590778">Памер элементаў дысплэя</translation>
 <translation id="3053013834507634016">Выкарыстанне ключа сертыфіката</translation>
 <translation id="3053273573829329829">Уключыць PIN-код карыстальніка</translation>
@@ -2067,7 +2066,6 @@
 <translation id="32939749466444286">Кантэйнер Linux не запусціўся. Паўтарыце спробу.</translation>
 <translation id="3294437725009624529">Госць</translation>
 <translation id="3294686910656423119">Статыстыка выкарыстання і справаздачы аб збоях</translation>
-<translation id="329703603001918157">Не ўдалося змяніць ярлык</translation>
 <translation id="329838636886466101">Выправіць</translation>
 <translation id="3298789223962368867">Уведзены недапушчальны URL-адрас.</translation>
 <translation id="32991397311664836">Прылады:</translation>
@@ -2241,7 +2239,6 @@
 <translation id="3490695139702884919">Ідзе спампоўванне… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Для ўліковага запісу вашага дзіцяці не наладжаны бацькоўскі кантроль Family Link. Вы можаце дадаць функцыю бацькоўскага кантролю па завяршэнні наладкі. Інфармацыю пра бацькоўскі кантроль можна знайсці ў праграме "Агляд".</translation>
 <translation id="3491678231052507920">Сайты звычайна выкарыстоўваюць даныя і прылады віртуальнай рэальнасці для запуску сеансаў VR</translation>
-<translation id="3492788708641132712">Сінхранізацыя не працуе. Увайдзіце яшчэ раз.</translation>
 <translation id="3493486281776271508">Патрабуецца падключэнне да інтэрнэту</translation>
 <translation id="3493881266323043047">Тэрмін дзеяння</translation>
 <translation id="3494769164076977169">Пытацца, калі сайт спрабуе пасля першага файла аўтаматычна спампаваць яшчэ файлы (рэкамендуецца)</translation>
@@ -2576,7 +2573,6 @@
 <translation id="3846116211488856547">Вы атрымаеце інструменты для распрацоўкі вэб-сайтаў, праграм Android і іншага. Каб усталяваць Linux, трэба будзе спампаваць <ph name="DOWNLOAD_SIZE" /> даных.</translation>
 <translation id="3847319713229060696">Дапамагаць павышаць бяспеку ў інтэрнэце для ўсіх</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3850914401008572843">Сайт <ph name="ORIGIN" /> не можа адкрыць гэту папку, бо ў ёй знаходзяцца сістэмныя файлы</translation>
 <translation id="3851428669031642514">Загрузіць небяспечныя сцэнарыі</translation>
 <translation id="3854599674806204102">Выберыце варыянт</translation>
 <translation id="3854967233147778866">Прапаноўваць перакладаць вэб-сайты на іншых мовах</translation>
@@ -2669,7 +2665,6 @@
   <ph name="CONTROL_PANEL_APPLET_NAME" /> на Панэлі кіравання.
 
   Запусціць <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
-<translation id="394183848452296464">Не ўдалося стварыць ярлык</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
 <translation id="3943494825379372497">Аднавіць праграмы і старонкі?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
@@ -3004,7 +2999,6 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> абагульвае акно.</translation>
 <translation id="4364830672918311045">Паказ апавяшчэнняў</translation>
 <translation id="4366138410738374926">Пачатак друку</translation>
-<translation id="4370425812909262207">Кошыкі схаваны. Яны з'явяцца тут зноў, калі вы ўнесяце змены.</translation>
 <translation id="4370975561335139969">Вы ўвялі няправільны адрас электроннай пошты або пароль</translation>
 <translation id="4374831787438678295">Усталёўшчык Linux</translation>
 <translation id="4375035964737468845">Адкрыць спампаваныя файлы</translation>
@@ -3816,11 +3810,9 @@
 <translation id="5307386115243749078">Спалучыць пераключальнік Bluetooth</translation>
 <translation id="5308380583665731573">Падключыцца</translation>
 <translation id="5310281978693206542">Адправіць спасылку на вашы прылады</translation>
-<translation id="531118851858162334">Гэты прадукт паказваецца вам на аснове вашых папярэдніх дзеянняў у сэрвісах Google. Праглядаць і выдаляць свае даныя, а таксама змяняць налады можна на старонцы <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Уваход з уліковага запісу</translation>
 <translation id="5311565231560644461">Не дазваляць сайтам выкарыстоўваць даныя і прылады віртуальнай рэальнасці</translation>
 <translation id="5312876166662946389">{COUNT,plural, =1{відарыс}one{# відарыс}few{# відарысы}many{# відарысаў}other{# відарыса}}</translation>
-<translation id="5314381603623123224">Умовы выкарыстання Chrome зменяцца 31 сакавіка</translation>
 <translation id="5315738755890845852">Лішняя фігурная дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319359161174645648">Google рэкамендуе браўзер Chrome</translation>
@@ -3873,7 +3865,6 @@
 <translation id="5376169624176189338">Каб перайсці назад, націсніце кнопкай мышы, каб паглядзець гісторыю – утрымлівайце</translation>
 <translation id="5376931455988532197">Файл занадта вялікі</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{Даныя (<ph name="ATTACHMENTS" />) адпраўлены на прыладу "<ph name="DEVICE_NAME" />"}one{Даныя (<ph name="ATTACHMENTS" />) адпраўлены на прыладу "<ph name="DEVICE_NAME" />"}few{Даныя (<ph name="ATTACHMENTS" />) адпраўлены на прыладу "<ph name="DEVICE_NAME" />"}many{Даныя (<ph name="ATTACHMENTS" />) адпраўлены на прыладу "<ph name="DEVICE_NAME" />"}other{Даныя (<ph name="ATTACHMENTS" />) адпраўлены на прыладу "<ph name="DEVICE_NAME" />"}}</translation>
-<translation id="537813040452600081">Старонкі, якія вы праглядаеце ў гэтым акне, не будуць паказвацца ў гісторыі прагляду сайтаў і пасля выхаду з уліковага запісу не пакінуць ніякіх слядоў (напрыклад, файлаў cookie) на камп'ютары. Спампаваныя файлы і створаныя закладкі не захаваюцца.</translation>
 <translation id="5379140238605961210">Працягваць блакіраваць доступ да мікрафона</translation>
 <translation id="5382591305415226340">Кіраваць спасылкамі, якія падтрымліваюцца</translation>
 <translation id="5383377866517186886">Камера выключана ў наладах System Preferences сістэмы Mac</translation>
@@ -3908,7 +3899,6 @@
 <translation id="5425863515030416387">Просты ўваход на ўсіх прыладах</translation>
 <translation id="5427278936122846523">Заўсёды перакладаць</translation>
 <translation id="5427459444770871191">Павярнуць &amp;па гадзіннікавай стрэлцы</translation>
-<translation id="542872847390508405">Вы выкарыстоўваеце браўзер як госць</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (ёсць абнаўленне)</translation>
 <translation id="542948651837270806">Неабходна ўсталяваць абнаўленне для ўбудаванага праграмнага забеспячэння Trusted Platform Module. Глядзіце старонку <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
@@ -3996,7 +3986,6 @@
 <translation id="5510775624736435856">Атрымліваць апісанні відарысаў ад Google</translation>
 <translation id="5511379779384092781">Вельмі малы</translation>
 <translation id="5511823366942919280">Сапраўды наладзіць гэту прыладу як "Shark"?</translation>
-<translation id="5512653252560939721">Сертыфікат карыстальніка павінен быць апаратна забяспечаны.</translation>
 <translation id="5517304475148761050">Гэтай праграме патрабуецца доступ да Крамы Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Пытацца, калі сайт запытвае доступ на прагляд тэксту і відарысаў, скапіраваных у буфер абмену</translation>
@@ -4724,7 +4713,6 @@
 <translation id="6345418402353744910">Проксі-серверу <ph name="PROXY" /> патрабуюцца вашы імя карыстальніка і пароль, каб адміністратар мог наладзіць сетку</translation>
 <translation id="6345878117466430440">Пазначыць як прачытанае</translation>
 <translation id="6349101878882523185">Усталяваць праграму "<ph name="APP_NAME" />"</translation>
-<translation id="6349170655202535379">Сінхранізацыя не працуе. Паспрабуйце выйсці і ўвайсці зноў.</translation>
 <translation id="6354918092619878358">SECG эліптычны secp256r1 (іншая назва – ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Не выключайце прыладу.</translation>
 <translation id="63566973648609420">Толькі карыстальнікі, якія ведаюць фразу-пароль, могуць чытаць вашы зашыфраваныя даныя. Google не адпраўляе і не захоўвае фразу-пароль. Калі вы не памятаеце фразу-пароль або хочаце змяніць гэту наладу, вам трэба <ph name="BEGIN_LINK" />скінуць сінхранізацыю<ph name="END_LINK" />.</translation>
@@ -4747,7 +4735,6 @@
 <translation id="6388429472088318283">Пошук моў</translation>
 <translation id="6388711141388085034">Сетка перагружана</translation>
 <translation id="6390020764191254941">Перамясціць укладку ў новае акно</translation>
-<translation id="6390799748543157332">Старонкі, якія вы праглядаеце ў гэтым акне, не будуць паказвацца ў гісторыі прагляду сайтаў і пасля закрыцця ўсіх адкрытых гасцявых вокнаў не пакінуць ніякіх слядоў (напрыклад, файлаў cookie) на камп'ютары. Пры гэтым спампаваныя файлы будуць захаваны.</translation>
 <translation id="6393156038355142111">Прапанаваць надзейны пароль</translation>
 <translation id="6393550101331051049">Дазволена паказваць небяспечнае змесціва</translation>
 <translation id="6395423953133416962">Адпраўляць <ph name="BEGIN_LINK1" />звесткі пра сістэму<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />значэнні паказчыкаў<ph name="END_LINK2" /></translation>
@@ -5041,7 +5028,6 @@
 <translation id="6727969043791803658">Прылада падключана. Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732801395666424405">Сертыфікаты не загружаны</translation>
-<translation id="6732900235521116609">Не ўдалося выдаліць ярлык</translation>
 <translation id="6734468588183300211">У рэжыме інкогніта сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах у мэтах персаналізацыі рэкламы. На некаторых сайтах можа перастаць працаваць частка функцый.</translation>
 <translation id="6735304988756581115">Паказаць файлы cookie і іншыя даныя сайта...</translation>
 <translation id="6736243959894955139">Адрас</translation>
@@ -5257,7 +5243,6 @@
 <translation id="6970480684834282392">Тып запуску</translation>
 <translation id="6970856801391541997">Друк канкрэтных старонак</translation>
 <translation id="6972180789171089114">Аўдыя/Відэа</translation>
-<translation id="6972553992270299730">Сайт <ph name="ORIGIN" /> не можа адкрываць файлы ў гэтай папцы, бо ў ёй знаходзяцца сістэмныя файлы</translation>
 <translation id="6972629891077993081">Прылады HID</translation>
 <translation id="6972754398087986839">Пачатак працы</translation>
 <translation id="6972887130317925583">Раскрыты пароль зменены. Праверыць паролі можна ў любы час у раздзеле "<ph name="SETTINGS" />".</translation>

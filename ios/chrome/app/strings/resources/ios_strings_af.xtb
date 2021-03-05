@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Gevorderd</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
-<translation id="2047933465321076474">Jou organisasie het private blaai afgeskakel. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> dae gelede aktief</translation>
 <translation id="2074131957428911366">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer.</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Vee blaaierdata uit …</translation>
 <translation id="2257567812274161158">Sinkronisering werk nie.</translation>
 <translation id="225943865679747347">Foutkode: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Jou organisasie vereis dat jy privaat blaai. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Voeg rekening by</translation>
 <translation id="2268044343513325586">Verfyn</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
@@ -270,7 +268,6 @@ Volg die stappe hieronder:</translation>
 <translation id="3670030362669914947">Nommer</translation>
 <translation id="3691593122358196899">Geboekmerk in <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Merk as ongelees</translation>
-<translation id="3720541637541300822">Sluit Incognito-oortjies wanneer jy Chrome toemaak</translation>
 <translation id="3740397331642243698">Maak die URL'e wat by Google Chrome ingevoer word in Incognitomodus oop.</translation>
 <translation id="3771033907050503522">Incognito-oortjies</translation>
 <translation id="3775743491439407556">Sinkronisering werk nie</translation>
@@ -432,7 +429,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5551897871312988470">Aanbieding om te vertaal</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5592679540098330836">Skakel sinkronisering aan vir <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Jou organisasie vereis dat jy privaat blaai. Oortjies word nie in Incognitomodus gestoor nie. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
 <translation id="5626245204502895507">Die lêer kon nie nou afgelaai word nie.</translation>
 <translation id="5631164295104953411">Voeg betaalmetode by</translation>
@@ -546,6 +542,7 @@ Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="6620279676667515405">Kanselleer</translation>
 <translation id="6624219055418309072">Blokkeer in Incognito</translation>
 <translation id="6628106477656132239">Ongeldige vervaldatum</translation>
+<translation id="6634432609054530164">Jou organisasie het Incognitomodus afgeskakel</translation>
 <translation id="6638511529934826365">Zoem teks …</translation>
 <translation id="6639730758971422557">Maak <ph name="BEGIN_LINK" />Sinkronisering en Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>
 <translation id="6642362222295953972">Skakel oor na bestaande oortjie</translation>

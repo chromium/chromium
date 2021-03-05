@@ -622,6 +622,7 @@
 <translation id="7628656427739290098">Завършено: <ph name="PERCENT" />%</translation>
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> елемента се преместват...</translation>
+<translation id="7655441028674523381">Лесен достъп до Google Снимки</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7663224033570512922">Хинди</translation>
 <translation id="7693909743393669729">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни и всички негови дялове, включително тези, които не са видими. Това действие не може да бъде отменено.</translation>
@@ -713,6 +714,7 @@
 <translation id="8466234950814670489">Tar архив</translation>
 <translation id="8475647382427415476">Google Диск не можа да синхронизира „<ph name="FILENAME" />“. По-късно ще се извърши повторен опит.</translation>
 <translation id="8477649328507734757">Кръгове</translation>
+<translation id="8484284835977497781">Изберете от скорошните си снимки.</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>
 <translation id="8521441079177373948">Британска клавиатура</translation>
 <translation id="8525306231823319788">На цял екран</translation>

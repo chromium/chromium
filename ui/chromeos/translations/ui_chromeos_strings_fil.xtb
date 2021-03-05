@@ -622,6 +622,7 @@
 <translation id="7628656427739290098">Kumpleto na nang <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7654209398114106148">Inililipat ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
+<translation id="7655441028674523381">Madaling i-access ang Google Photos</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Kapag nag-format ng drive, mabubura ang lahat ng data na naka-store dito at maaalis ang lahat ng kasalukuyang partition, kasama ang mga partition na posibleng hindi nakikita. Hindi maa-undo ang pagkilos na ito.</translation>
@@ -713,6 +714,7 @@
 <translation id="8466234950814670489">Archive na Tar</translation>
 <translation id="8475647382427415476">Hindi na-sync ng Google Drive ang "<ph name="FILENAME" />" sa ngayon. Susubukang muli ng Google Drive sa ibang pagkakataon.</translation>
 <translation id="8477649328507734757">Spin</translation>
+<translation id="8484284835977497781">Pumili sa iyong mga kamakailang larawan.</translation>
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Buong screen</translation>

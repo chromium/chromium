@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
 <translation id="2277224997687551299">Επεξεργασία ονόματος ομάδας</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Αφαιρέστε <ph name="TABS_COUNT_ONE" /> επιλεγμένη καρτέλα από την ομάδα.}other{Αφαιρέστε <ph name="TABS_COUNT_MANY" /> επιλεγμένες καρτέλες από την ομάδα.}}</translation>
+<translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="2569352796411618312">Πρόταση: <ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
 <translation id="257674075312929031">Ομάδα</translation>

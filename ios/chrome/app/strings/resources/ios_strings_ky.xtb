@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
 <translation id="1989112275319619282">Серептөө</translation>
 <translation id="2015722694326466240">Сырсөздөрдү көрүү үчүн, адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
-<translation id="2047933465321076474">Уюмуңуз жекече серептөөнү өчүрүп койду. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Серептөө дайындары тазаланууда…</translation>
 <translation id="2257567812274161158">Шайкештирүү иштебей жатат.</translation>
 <translation id="225943865679747347">Ката коду: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Уюмуңуз жекече серептөөңүздү талап кылат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Аккаунт кошуу</translation>
 <translation id="2268044343513325586">Мыктылоо</translation>
 <translation id="2273327106802955778">"Дагы" менюсу</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">Сан</translation>
 <translation id="3691593122358196899">Кыстарма <ph name="FOLDER_TITLE" /> куржунуна кошулду</translation>
 <translation id="3709582977625132201">Окула элек деп белгилөө</translation>
-<translation id="3720541637541300822">Chrome жабылганда, жашыруун өтмөктөрдү кулпулоо</translation>
 <translation id="3740397331642243698">Киргизилген URL даректерин Google Chrome'до Жашыруун режимде ачат.</translation>
 <translation id="3771033907050503522">Жашыруун өтмөктөр</translation>
 <translation id="3775743491439407556">Шайкештирүү иштебей жатат</translation>
@@ -432,7 +429,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5551897871312988470">Которуу сунушталсын</translation>
 <translation id="5556459405103347317">Кайра жүктөө</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> үчүн шайкештирүүнү күйгүзүү</translation>
-<translation id="5597169624050330492">Уюмуңуз жекече серептөөңүздү талап кылат. Жашыруун режимде өтмөктөр сакталбайт. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Сырсөз сакталсынбы?</translation>
 <translation id="5626245204502895507">Файлды учурда жүктөп алуу мүмкүн эмес.</translation>
 <translation id="5631164295104953411">Төлөм ыкмасын кошуу</translation>

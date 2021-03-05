@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="2277224997687551299">Redakto emrin e grupit</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Hiq <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur nga grupi.}other{Hiq <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura nga grupi.}}</translation>
+<translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Palos <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="2569352796411618312">Sugjerim: <ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
 <translation id="257674075312929031">Grup</translation>

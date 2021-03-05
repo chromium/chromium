@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
 <translation id="2277224997687551299">Rediģēt grupas nosaukumu</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Noņemt <ph name="TABS_COUNT_ONE" /> atlasīto cilni no grupas.}zero{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}one{Noņemt <ph name="TABS_COUNT_MANY" /> atlasīto cilni no grupas.}other{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}}</translation>
+<translation id="2479148705183875116">Atvērt iestatījumus</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sakļaut <ph name="TABS_COUNT_ONE" /> cilni.}zero{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="2569352796411618312">Ieteikums: vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
 <translation id="257674075312929031">Grupa</translation>

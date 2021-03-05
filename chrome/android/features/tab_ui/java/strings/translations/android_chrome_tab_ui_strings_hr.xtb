@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="2277224997687551299">Uredi naziv grupe</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Ukloni <ph name="TABS_COUNT_ONE" /> odabranu karticu iz grupe.}one{Ukloni <ph name="TABS_COUNT_MANY" /> odabranu karticu iz grupe.}few{Ukloni <ph name="TABS_COUNT_MANY" /> odabrane kartice iz grupe.}other{Ukloni <ph name="TABS_COUNT_MANY" /> odabranih kartica iz grupe.}}</translation>
+<translation id="2479148705183875116">Otvori Postavke</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sažmi <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="2569352796411618312">Prijedlog: broj vaših kartica koje niste koristili neko vrijeme: <ph name="NUMBER_OF_TABS" />. Želite li ih zatvoriti?</translation>
 <translation id="257674075312929031">Grupa</translation>

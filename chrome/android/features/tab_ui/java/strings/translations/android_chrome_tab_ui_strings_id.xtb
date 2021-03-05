@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2277224997687551299">Edit nama grup</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Hapus <ph name="TABS_COUNT_ONE" /> tab yang dipilih dari grup.}other{Hapus <ph name="TABS_COUNT_MANY" /> tab yang dipilih dari grup.}}</translation>
+<translation id="2479148705183875116">Buka Setelan</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Saran: <ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
 <translation id="257674075312929031">Grup</translation>

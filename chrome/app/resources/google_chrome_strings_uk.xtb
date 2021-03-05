@@ -21,7 +21,7 @@
 <translation id="1516530951338665275">Щоб продовжити підключення, надайте веб-переглядачу Google Chrome
 доступ до Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
-<translation id="1583073672411044740">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="1583073672411044740">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome використовує вашу камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небезпечний, тому Chrome заблокував його.</translation>
 <translation id="1597911401261118146">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
@@ -114,7 +114,7 @@
 <translation id="3735758079232443276">Розширення "<ph name="EXTENSION_NAME" />" змінило сторінку, яка відкривається під час запуску Chrome.</translation>
 <translation id="3779473566290487688">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система OS X 10.11 або новішої версії. На цьому комп'ютері встановлено OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3835168907083856002">Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="3835168907083856002">Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="386202838227397562">Закрийте всі вікна Google Chrome і повторіть спробу.</translation>
 <translation id="3865754807470779944">Chrome версії <ph name="PRODUCT_VERSION" /> встановлено</translation>
 <translation id="3873044882194371212">Відкрити посилання в аноні&amp;мному вікні Chrome</translation>

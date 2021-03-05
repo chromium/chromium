@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
-<translation id="2047933465321076474">La tua organizzazione ha disattivato la navigazione privata. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Attivo <ph name="DAYS" /> giorni fa</translation>
 <translation id="2074131957428911366">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annulla</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Cancellazione dati di navigazione…</translation>
 <translation id="2257567812274161158">La sincronizzazione non funziona.</translation>
 <translation id="225943865679747347">Codice di errore: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">La tua organizzazione ti richiede di navigare in privato. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Aggiungi account</translation>
 <translation id="2268044343513325586">Perfeziona</translation>
 <translation id="2273327106802955778">Menu Altro</translation>
@@ -270,7 +268,6 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3691593122358196899">Preferito aggiunto in: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Contrassegna come da leggere</translation>
-<translation id="3720541637541300822">Blocca le schede di navigazione in incognito quando chiudi Chrome</translation>
 <translation id="3740397331642243698">Consente di aprire gli URL inseriti in Google Chrome nella modalità in incognito.</translation>
 <translation id="3771033907050503522">Schede di navigazione in incognito</translation>
 <translation id="3775743491439407556">La sincronizzazione non funziona</translation>
@@ -432,7 +429,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5551897871312988470">Proponi di tradurre</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5592679540098330836">Attiva la sincronizzazione per <ph name="NAME" /></translation>
-<translation id="5597169624050330492">La tua organizzazione ti richiede di navigare in privato. Le schede non vengono salvate nella modalità in incognito. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>
 <translation id="5631164295104953411">Aggiungi il metodo di pagamento</translation>
@@ -546,6 +542,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6620279676667515405">Annulla</translation>
 <translation id="6624219055418309072">Blocca in modalità di navigazione in incognito</translation>
 <translation id="6628106477656132239">Data di scadenza non valida</translation>
+<translation id="6634432609054530164">La tua organizzazione ha disattivato la modalità di navigazione in incognito</translation>
 <translation id="6638511529934826365">Zoom del testo…</translation>
 <translation id="6639730758971422557">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Sincronizzazione e servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
 <translation id="6642362222295953972">Passa alla scheda esistente</translation>

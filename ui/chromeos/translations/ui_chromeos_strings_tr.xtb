@@ -622,6 +622,7 @@
 <translation id="7628656427739290098">%<ph name="PERCENT" /> tamamlandı.</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> öğe taşınıyor...</translation>
+<translation id="7655441028674523381">Google Fotoğraflar'a kolayca erişin</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7663224033570512922">Hintçe</translation>
 <translation id="7693909743393669729">Bir sürücünün biçimlendirilmesi sürücüde depolanan tüm verileri siler ve görünür olmayan bölümler de dahil olmak üzere tüm mevcut bölümleri kaldırır. Bu işlem geri alınamaz.</translation>
@@ -713,6 +714,7 @@
 <translation id="8466234950814670489">Tar arşivi</translation>
 <translation id="8475647382427415476">Google Drive, "<ph name="FILENAME" />" dosyasını şu anda senkronize edemedi. Google Drive senkronize etme işlemini daha sonra tekrar deneyecek.</translation>
 <translation id="8477649328507734757">Dönme</translation>
+<translation id="8484284835977497781">Son fotoğraflarınızdan seçin.</translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
 <translation id="8521441079177373948">İngiltere</translation>
 <translation id="8525306231823319788">Tam ekran</translation>

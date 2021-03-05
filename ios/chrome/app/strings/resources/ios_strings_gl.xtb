@@ -30,7 +30,7 @@
 <translation id="1209206284964581585">Ocultar por agora</translation>
 <translation id="1219674500290482172">Non se puido conectar a Internet.</translation>
 <translation id="122699739164161391">Pechar todas as pestanas</translation>
-<translation id="1229222343402087523">Buscar "${searchPhrase}" en Chrome</translation>
+<translation id="1229222343402087523">Busca "${searchPhrase}" en Chrome</translation>
 <translation id="1231733316453485619">Queres activar a sincronización?</translation>
 <translation id="1254117744268754948">Seleccionar cartafol</translation>
 <translation id="1265739287306757398">Máis información</translation>
@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
-<translation id="2047933465321076474">A túa organización desactivou a navegación privada. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
 <translation id="2257567812274161158">A sincronización non funciona.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">A túa organización esixe que navegues de forma privada. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Engadir conta</translation>
 <translation id="2268044343513325586">Refina</translation>
 <translation id="2273327106802955778">Menú Máis</translation>
@@ -249,7 +247,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="3484946776651937681">Abrir en Descargas</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca do contido suxerido</translation>
 <translation id="3494788280727468875">Confirmar a eliminación dos datos de navegación</translation>
-<translation id="35083190962747987">Abrir ${url}</translation>
+<translation id="35083190962747987">Abre ${url}</translation>
 <translation id="3519193562722059437">Abre unha pestana para examinar a web.</translation>
 <translation id="3523473570015918798">Ao pechar sesión, os marcadores, o historial, os contrasinais e outros datos de Chrome deixarán de sincronizarse coa túa Conta de Google.</translation>
 <translation id="3527085408025491307">Cartafol</translation>
@@ -270,7 +268,6 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3691593122358196899">Marcador engadido a <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Marcar como non lido</translation>
-<translation id="3720541637541300822">Bloquear pestanas do modo de incógnito ao pechar Chrome</translation>
 <translation id="3740397331642243698">Abre os URL escritos en Google Chrome no modo de incógnito.</translation>
 <translation id="3771033907050503522">Pestanas de incógnito</translation>
 <translation id="3775743491439407556">A sincronización non funciona</translation>
@@ -432,7 +429,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5551897871312988470">Ofrecer a tradución</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5592679540098330836">Activar a sincronización para <ph name="NAME" /></translation>
-<translation id="5597169624050330492">A túa organización esixe que navegues de forma privada. As pestanas non se gardan no modo de incógnito. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
 <translation id="5626245204502895507">Non se puido descargar o ficheiro neste momento.</translation>
 <translation id="5631164295104953411">Engadir método de pago</translation>
@@ -487,7 +483,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6122191549521593678">Online</translation>
 <translation id="6127379762771434464">Eliminouse o elemento</translation>
 <translation id="6136914049981179737">Seg. antes</translation>
-<translation id="6144589619057374135">Abrir ${url} no modo de incógnito</translation>
+<translation id="6144589619057374135">Abre ${url} no modo de incógnito</translation>
 <translation id="616831107264507309">Ler máis tarde</translation>
 <translation id="6177442314419606057">Busca en Chrome</translation>
 <translation id="6184086493125982861">Amosar pestanas</translation>
@@ -546,6 +542,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6620279676667515405">Cancelar</translation>
 <translation id="6624219055418309072">Bloquear no modo de incógnito</translation>
 <translation id="6628106477656132239">A data de vencemento non é válida</translation>
+<translation id="6634432609054530164">A túa organización desactivou o modo de incógnito</translation>
 <translation id="6638511529934826365">Aplicar zoom ao texto…</translation>
 <translation id="6639730758971422557">Para activar a opción Navegación segura, abre <ph name="BEGIN_LINK" />Sincronización e servizos de Google<ph name="END_LINK" /> e toca Navegación segura.</translation>
 <translation id="6642362222295953972">Cambiar á pestana xa aberta</translation>

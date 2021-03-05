@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="2277224997687551299">Edit group name</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Remove <ph name="TABS_COUNT_ONE" /> selected tab from group.}other{Remove <ph name="TABS_COUNT_MANY" /> selected tabs from group.}}</translation>
+<translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="2569352796411618312">Suggestion: <ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
 <translation id="257674075312929031">Group</translation>

@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1989112275319619282">Skoða</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
-<translation id="2047933465321076474">Fyrirtækið þitt slökkti á óskráðri vefnotkun. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Hreinsar vefskoðunargögn...</translation>
 <translation id="2257567812274161158">Samstilling virkar ekki.</translation>
 <translation id="225943865679747347">Villukóði: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Fyrirtækið þitt krefst þess að þú farir huldu höfði. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Bæta reikningi við</translation>
 <translation id="2268044343513325586">Þrengja</translation>
 <translation id="2273327106802955778">Valmynd fyrir meira</translation>
@@ -270,7 +268,6 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3670030362669914947">Númer</translation>
 <translation id="3691593122358196899">Bókamerki var búið til í <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Merkja sem ólesið</translation>
-<translation id="3720541637541300822">Læsa huliðsflipum um leið og þú lokar Chrome</translation>
 <translation id="3740397331642243698">Opnar innslegnar vefslóðir í Google Chrome í huliðsstillingu.</translation>
 <translation id="3771033907050503522">Huliðsflipar</translation>
 <translation id="3775743491439407556">Samstilling virkar ekki</translation>
@@ -432,7 +429,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5551897871312988470">Bjóðast til að þýða</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="5592679540098330836">Kveikja á samstillingu fyrir <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Fyrirtækið þitt krefst þess að þú farir huldu höfði. Flipar eru ekki vistaðir í huliðsstillingu. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
 <translation id="5626245204502895507">Ekki var hægt að sækja skrána.</translation>
 <translation id="5631164295104953411">Bæta við greiðslumáta</translation>
@@ -546,6 +542,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6620279676667515405">Hætta við</translation>
 <translation id="6624219055418309072">Útiloka í huliðsstillingu</translation>
 <translation id="6628106477656132239">Ógildur gildistími</translation>
+<translation id="6634432609054530164">Fyrirtækið þitt slökkti á huliðsstillingu</translation>
 <translation id="6638511529934826365">Stækka/minnka texta…</translation>
 <translation id="6639730758971422557">Til að kveikja á öruggri vefnotkun skaltu opna <ph name="BEGIN_LINK" />Samstilling og þjónusta Google<ph name="END_LINK" /> og ýta á Örugg vefnotkun.</translation>
 <translation id="6642362222295953972">Skipta yfir í núverandi flipa</translation>

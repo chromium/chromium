@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
-<translation id="2047933465321076474">贵单位关闭了无痕浏览。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">正在清除浏览数据…</translation>
 <translation id="2257567812274161158">同步功能无法正常运行。</translation>
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">贵单位要求您进行无痕浏览。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">添加帐号</translation>
 <translation id="2268044343513325586">优化</translation>
 <translation id="2273327106802955778">“更多”菜单</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">卡号</translation>
 <translation id="3691593122358196899">已将书签添加到“<ph name="FOLDER_TITLE" />”</translation>
 <translation id="3709582977625132201">标记为未读</translation>
-<translation id="3720541637541300822">在您关闭 Chrome 时锁定无痕式标签页</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以无痕模式打开输入的网址。</translation>
 <translation id="3771033907050503522">无痕模式标签页</translation>
 <translation id="3775743491439407556">同步功能无法正常运行</translation>
@@ -432,7 +429,6 @@
 <translation id="5551897871312988470">询问是否翻译</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5592679540098330836">为<ph name="NAME" />开启同步</translation>
-<translation id="5597169624050330492">贵单位要求您进行无痕浏览。在无痕模式下，系统不会保存标签页。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="5631164295104953411">添加付款方式</translation>
@@ -632,6 +628,7 @@
 <translation id="7481312909269577407">前进</translation>
 <translation id="7483467499335917849">使用您的当前位置</translation>
 <translation id="750493650310597496">未选中任何项</translation>
+<translation id="7508728395076009983">如需锁定您的无痕式标签页，请设置 Touch ID、Face ID 或密码。</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="7554791636758816595">新标签页</translation>

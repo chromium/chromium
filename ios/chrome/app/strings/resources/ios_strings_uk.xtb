@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1989112275319619282">Переглянути</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
-<translation id="2047933465321076474">Адміністратор вашої організації вимкнув режим анонімного перегляду. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
 <translation id="2257567812274161158">Синхронізація не працює.</translation>
 <translation id="225943865679747347">Код помилки: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Адміністратор вашої організації вимагає, щоб ви переглядали веб-сторінки конфіденційно. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Додати обліковий запис</translation>
 <translation id="2268044343513325586">Уточнити</translation>
 <translation id="2273327106802955778">Більше опцій</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Закладку збережено в папці "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Позначити як непрочитане</translation>
-<translation id="3720541637541300822">Блокувати анонімні вкладки після закриття Chrome</translation>
 <translation id="3740397331642243698">Відкриває введені URL-адреси в Google Chrome в анонімному режимі.</translation>
 <translation id="3771033907050503522">Анонімні вкладки</translation>
 <translation id="3775743491439407556">Синхронізація не працює</translation>
@@ -432,7 +429,6 @@
 <translation id="5551897871312988470">Пропонувати переклад</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5592679540098330836">Увімкнути синхронізацію для користувача <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Адміністратор вашої організації вимагає, щоб ви переглядали веб-сторінки конфіденційно. Вкладки в режимі анонімного перегляду не зберігаються. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
 <translation id="5626245204502895507">Зараз неможливо завантажити цей файл.</translation>
 <translation id="5631164295104953411">Додати спосіб оплати</translation>
@@ -546,6 +542,7 @@
 <translation id="6620279676667515405">Скасувати</translation>
 <translation id="6624219055418309072">Блокувати в анонімному режимі</translation>
 <translation id="6628106477656132239">Недійсна дата закінчення терміну дії</translation>
+<translation id="6634432609054530164">Адміністратор вашої організації вимкнув режим анонімного перегляду</translation>
 <translation id="6638511529934826365">Масштабувати текст…</translation>
 <translation id="6639730758971422557">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Синхронізація та сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>
 <translation id="6642362222295953972">Перейти на наявну вкладку</translation>

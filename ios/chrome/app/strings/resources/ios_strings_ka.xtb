@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">გაფართოებული</translation>
 <translation id="1989112275319619282">დათვალიერება</translation>
 <translation id="2015722694326466240">პაროლების სანახავად, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
-<translation id="2047933465321076474">თქვენმა ორგანიზაციამ გამორთო კონფიდენციალური დათვალიერება. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">აქტიური იყო <ph name="DAYS" /> დღის წინ</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">მიმდინარეობს დათვალიერების მონაცემების გასუფთავება…</translation>
 <translation id="2257567812274161158">სინქრონიზაცია არ მუშაობს.</translation>
 <translation id="225943865679747347">შეცდომის კოდი: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">ანგარიშის დამატება</translation>
 <translation id="2268044343513325586">დახვეწა</translation>
 <translation id="2273327106802955778">ვარიანტების მენიუ</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">ნომერი</translation>
 <translation id="3691593122358196899">სანიშნე შენახულია „<ph name="FOLDER_TITLE" />“-ში</translation>
 <translation id="3709582977625132201">წაუკითხავად მონიშვნა</translation>
-<translation id="3720541637541300822">Chrome-ის დახურვისას ინკოგნიტო ჩანართების ჩაკეტვა</translation>
 <translation id="3740397331642243698">მითითებულ URL-ებს Google Chrome-ის ინკოგნიტო რეჟიმში გახსნის.</translation>
 <translation id="3771033907050503522">ინკოგნიტო ჩანართები</translation>
 <translation id="3775743491439407556">სინქრონიზაცია არ მუშაობს</translation>
@@ -432,7 +429,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5551897871312988470">თარგმანის შემოთავაზება</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
 <translation id="5592679540098330836">სინქრონიზაციის ჩართვა <ph name="NAME" />-ისთვის</translation>
-<translation id="5597169624050330492">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ. ჩანართები არ ინახება ინკოგნიტო რეჟიმში. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">გსურთ პაროლის შენახვა?</translation>
 <translation id="5626245204502895507">ფაილის ჩამოტვირთვა ამჯერად ვერ მოხერხდა.</translation>
 <translation id="5631164295104953411">გადახდის მეთოდის დამატება</translation>

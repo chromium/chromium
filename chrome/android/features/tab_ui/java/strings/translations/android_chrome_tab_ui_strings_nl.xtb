@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="2277224997687551299">Groepsnaam bewerken</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad uit groep verwijderen.}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen uit groep verwijderen.}}</translation>
+<translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
 <translation id="2569352796411618312">Suggestie: <ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
 <translation id="257674075312929031">Groep</translation>

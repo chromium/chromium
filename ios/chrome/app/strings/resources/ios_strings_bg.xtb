@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
-<translation id="2047933465321076474">Организацията ви е изключила режима за частно сърфиране. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Активно преди <ph name="DAYS" /> дни</translation>
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмяна</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Данните за сърфирането се изчистват...</translation>
 <translation id="2257567812274161158">Синхронизирането не работи.</translation>
 <translation id="225943865679747347">Код на грешката: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Организацията ви изисква да сърфирате частно. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Добавяне на профил</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2273327106802955778">Меню „Още“</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Отметката бе запазена в/ъв „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="3709582977625132201">Означав. като непрочетено</translation>
-<translation id="3720541637541300822">Заключване на разделите в режим „инкогнито“ при затваряне на Chrome</translation>
 <translation id="3740397331642243698">Въведените URL адреси се отварят в режим „инкогнито“ в Google Chrome.</translation>
 <translation id="3771033907050503522">Раздели „инкогнито“</translation>
 <translation id="3775743491439407556">Синхронизирането не работи</translation>
@@ -432,7 +429,6 @@
 <translation id="5551897871312988470">Предложения за превод</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5592679540098330836">Включване на синхронизирането за <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Организацията ви изисква да сърфирате частно. В режим „инкогнито“ разделите не се запазват. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
 <translation id="5626245204502895507">Понастоящем файлът не можа да бъде изтеглен.</translation>
 <translation id="5631164295104953411">Добавяне на начин на плащане</translation>
@@ -546,6 +542,7 @@
 <translation id="6620279676667515405">Отказ</translation>
 <translation id="6624219055418309072">Блокирани в режим „инкогнито“</translation>
 <translation id="6628106477656132239">Невалидна дата на валидност</translation>
+<translation id="6634432609054530164">Организацията ви е изключила режима „инкогнито“</translation>
 <translation id="6638511529934826365">Промяна на мащаба на текста…</translation>
 <translation id="6639730758971422557">За да включите Безопасно сърфиране, отворете <ph name="BEGIN_LINK" />Синхронизиране и услуги на Google<ph name="END_LINK" /> и докоснете съответната опция.</translation>
 <translation id="6642362222295953972">Превключване към съществуващия раздел</translation>

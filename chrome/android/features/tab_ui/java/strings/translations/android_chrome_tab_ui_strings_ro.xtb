@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="2277224997687551299">Editează numele grupului</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Elimină <ph name="TABS_COUNT_ONE" /> filă selectată din grup.}few{Elimină <ph name="TABS_COUNT_MANY" /> file selectate din grup.}other{Elimină <ph name="TABS_COUNT_MANY" /> de file selectate din grup.}}</translation>
+<translation id="2479148705183875116">Accesează Setările</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Restrânge <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="2569352796411618312">Sugestie: <ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
 <translation id="257674075312929031">Grupează</translation>

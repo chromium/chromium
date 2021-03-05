@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1989112275319619282">Ընտրել</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
-<translation id="2047933465321076474">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Այցելությունների պատմությունը ջնջվում է…</translation>
 <translation id="2257567812274161158">Համաժամացումը չի աշխատում։</translation>
 <translation id="225943865679747347">Սխալի կոդ` <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Ավելացնել հաշիվ</translation>
 <translation id="2268044343513325586">Թարմացնել</translation>
 <translation id="2273327106802955778">Այլ ընտրանքներ</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">Քարտի համարը</translation>
 <translation id="3691593122358196899">Էջանիշը պահվել է <ph name="FOLDER_TITLE" />-ում</translation>
 <translation id="3709582977625132201">Նշել որպես չկարդացված</translation>
-<translation id="3720541637541300822">Կողպել ինկոգնիտո ներդիրները, երբ փակում եք Chrome-ը</translation>
 <translation id="3740397331642243698">Մուտքագրված URL-ները բացվում են Google Chrome-ի ինկոգնիտո ներդիրում։</translation>
 <translation id="3771033907050503522">Ինկոգնիտո ներդիրներ</translation>
 <translation id="3775743491439407556">Համաժամացումը չի աշխատում</translation>
@@ -432,7 +429,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5551897871312988470">Առաջարկել թարգմանություն</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="5592679540098330836">Միացնել համաժամացումը <ph name="NAME" /> օգտատիրոջ համար</translation>
-<translation id="5597169624050330492">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։ Ինկոգնիտո ռեժիմում բացված ներդիրները չեն պահպանվում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
 <translation id="5626245204502895507">Այս պահին հնարավոր չէ ներբեռնել ֆայլը:</translation>
 <translation id="5631164295104953411">Ավելացրեք վճարման եղանակը</translation>
@@ -546,6 +542,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6620279676667515405">Չեղարկել</translation>
 <translation id="6624219055418309072">Արգելափակել ինկոգնիտո ռեժիմում</translation>
 <translation id="6628106477656132239">Վավերականության ժամկետը սխալ է</translation>
+<translation id="6634432609054530164">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը</translation>
 <translation id="6638511529934826365">Մեծացնել տեքստը…</translation>
 <translation id="6639730758971422557">Անվտանգ դիտարկումը միացնելու համար բացեք <ph name="BEGIN_LINK" />Համաժամացում և Google-ի ծառայություններ<ph name="END_LINK" /> էջը և սեղմեք «Անվտանգ դիտարկում»։</translation>
 <translation id="6642362222295953972">Անցնել մինչ այդ բացած ներդիր</translation>

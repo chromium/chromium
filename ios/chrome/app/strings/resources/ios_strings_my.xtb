@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">အဆင့်မြင့်</translation>
 <translation id="1989112275319619282">ကြည့်ရန်</translation>
 <translation id="2015722694326466240">စကားဝှက်များကို ကြည့်ရှုရန်အတွက် သင့်စက်တွင် လျှို့ဝှက်ကုဒ်တစ်ခုကို ဦးစွာ သတ်မှတ်ရပါမည်။</translation>
-<translation id="2047933465321076474">သင့်အဖွဲ့အစည်းက ကိုယ်ဖျောက်မုဒ်ဖြင့် ဝင်ရောက်ကြည့်ရှုခြင်းကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">ပြီးခဲ့သော <ph name="DAYS" /> ရက်က အသုံးပြုထားသည်</translation>
 <translation id="2074131957428911366">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" />တွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာများ ဖယ်ရှားနေသည်…</translation>
 <translation id="2257567812274161158">စင့်ခ်လုပ်၍ မရပါ။</translation>
 <translation id="225943865679747347">အမှား ကုဒ်: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">ကိုယ်ဖျောက်မုဒ်ဖြင့် ဝင်ရောက်ကြည့်ရှုရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားပါသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">အကောင့် ပေါင်းထည့်ပါ</translation>
 <translation id="2268044343513325586">ပြန်မွမ်းမံ</translation>
 <translation id="2273327106802955778">မီနူးကို ပိုပြပေးပါ</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">နံပါတ်</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" />သို့ စာညှပ်ကို ထည့်ထားပါသည်</translation>
 <translation id="3709582977625132201">မဖတ်ရသေးအဖြစ် မှတ်သားရန်</translation>
-<translation id="3720541637541300822">Chrome ကို ပိတ်သည့်အခါ ရုပ်ဖျက်တဘ်များကို လော့ခ်ချရန်</translation>
 <translation id="3740397331642243698">ထည့်သွင်းထားသော URL များကို Google Chrome ရုပ်ဖျက်မုဒ်တွင် ဖွင့်သည်။</translation>
 <translation id="3771033907050503522">ကိုယ်ပျောက် တဲဘ်များ</translation>
 <translation id="3775743491439407556">စင့်ခ်လုပ်၍ မရပါ</translation>
@@ -431,7 +428,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5551897871312988470">ဘာသာပြန်ရန် ကမ်းလှမ်းချက်</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> အတွက် စင့်ခ်ဖွင့်ပါ</translation>
-<translation id="5597169624050330492">ကိုယ်ဖျောက်မုဒ်ဖြင့် ဝင်ရောက်ကြည့်ရှုရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားပါသည်။ 'ရုပ်ဖျက်မုဒ်' တွင် တဘ်များကို မသိမ်းပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">စကားဝှက်ကို သိမ်းလိုပါသလား။</translation>
 <translation id="5626245204502895507">ဤဖိုင်ကို ယခုအချိန်တွင် ဒေါင်းလုဒ် လုပ်၍မရနိုင်ပါ။</translation>
 <translation id="5631164295104953411">ငွေပေးချေနည်းလမ်း ထည့်ရန်</translation>

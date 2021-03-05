@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
 <translation id="2277224997687551299">ਗਰੁੱਪ ਦੇ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_ONE" /> ਚੁਣੀ ਹੋਈ ਟੈਬ ਨੂੰ ਹਟਾਓ।}one{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_MANY" /> ਚੁਣੀ ਹੋਈ ਟੈਬ ਨੂੰ ਹਟਾਓ।}other{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_MANY" /> ਚੁਣੀਆਂ ਹੋਈਆਂ ਟੈਬਾਂ ਨੂੰ ਹਟਾਓ।}}</translation>
+<translation id="2479148705183875116">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਸਮੇਟੋ।}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਮੇਟੋ।}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸਮੇਟੋ।}}</translation>
 <translation id="2569352796411618312">ਸੁਝਾਅ: ਤੁਹਾਡੀਆਂ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਦੀ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੋਂ ਨਹੀਂ ਹੋਈ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="257674075312929031">ਸਮੂਹ</translation>

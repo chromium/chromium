@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
 <translation id="2277224997687551299">ویرایش نام گروه</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{برداشتن <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده از گروه.}one{برداشتن <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده از گروه.}other{برداشتن <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده از گروه.}}</translation>
+<translation id="2479148705183875116">رفتن به تنظیمات</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
 <translation id="2569352796411618312">پیشنهاد: <ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="257674075312929031">گروه</translation>

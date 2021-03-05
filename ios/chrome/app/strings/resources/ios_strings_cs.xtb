@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
 <translation id="1989112275319619282">Procházet</translation>
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
-<translation id="2047933465321076474">Vaše organizace vypnula soukromé prohlížení. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Aktivní před tímto počtem dní: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Mazání údajů o prohlížení...</translation>
 <translation id="2257567812274161158">Synchronizace nefunguje.</translation>
 <translation id="225943865679747347">Kód chyby: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Vaše organizace vyžaduje, abyste si obsah prohlíželi anonymně. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Přidat účet</translation>
 <translation id="2268044343513325586">Upřesnit</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
@@ -270,7 +268,6 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="3670030362669914947">Číslo</translation>
 <translation id="3691593122358196899">Záložka přidána do složky <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Označit jako nepřečtené</translation>
-<translation id="3720541637541300822">Při zavření Chromu zamknout anonymní karty</translation>
 <translation id="3740397331642243698">Otevře zadané adresy URL v prohlížeči Google Chrome v anonymním režimu.</translation>
 <translation id="3771033907050503522">Anonymní karty</translation>
 <translation id="3775743491439407556">Synchronizace nefunguje</translation>
@@ -432,7 +429,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5551897871312988470">Nabízet překlad</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5592679540098330836">Zapnout synchronizaci pro: <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Vaše organizace vyžaduje, abyste si obsah prohlíželi anonymně. V anonymním režimu se karty neukládají. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
 <translation id="5626245204502895507">Soubor v tuto chvíli nelze stáhnout.</translation>
 <translation id="5631164295104953411">Přidat platební metodu</translation>
@@ -546,6 +542,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6620279676667515405">Zrušit</translation>
 <translation id="6624219055418309072">V anonymním režimu blokovat</translation>
 <translation id="6628106477656132239">Neplatné datum konce platnosti</translation>
+<translation id="6634432609054530164">Vaše organizace vypnula anonymní režim</translation>
 <translation id="6638511529934826365">Přiblížit text…</translation>
 <translation id="6639730758971422557">Pokud chcete zapnout Bezpečné prohlížení, otevřete sekci <ph name="BEGIN_LINK" />Synchronizace a služby Google<ph name="END_LINK" /> a klepněte na Bezpečné prohlížení.</translation>
 <translation id="6642362222295953972">Přepnout na existující kartu</translation>
@@ -632,6 +629,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7483467499335917849">Použití aktuální polohy</translation>
 <translation id="750493650310597496">Vybráno 0</translation>
+<translation id="7508728395076009983">Pokud chcete uzamknout anonymní karty, nastavte Touch ID, Face ID nebo heslo.</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="7537586195939242955">Pass v této chvíli do aplikace Passbook nelze nainstalovat.</translation>
 <translation id="7554791636758816595">Nová karta</translation>

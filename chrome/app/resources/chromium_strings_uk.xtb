@@ -49,7 +49,7 @@
 <translation id="2770231113462710648">Змінити веб-переглядач за умовчанням на:</translation>
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2816712596130903444">Створити окремий профіль Chromium?</translation>
-<translation id="2837693172913560447">Буде створено новий профіль Chromium для <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="2837693172913560447">Буде створено новий профіль Chromium для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2847479871509788944">Видалити з Chromium…</translation>
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2910007522516064972">Про &amp;Chromium</translation>
@@ -124,7 +124,7 @@
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
-<translation id="5252179775517634216">Цей профіль Chromium уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chromium для <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="5252179775517634216">Цей профіль Chromium уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chromium для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="5277894862589591112">Щоб застосувати зміни, перезапустіть Chromium</translation>
 <translation id="5358375970380395591">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Chromium. Ваші дані Chromium, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>

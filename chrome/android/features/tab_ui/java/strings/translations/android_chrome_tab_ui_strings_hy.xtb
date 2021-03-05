@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2277224997687551299">Փոփոխել խմբի անունը</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Հեռացնել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը խմբից։}one{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը խմբից։}other{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները խմբից։}}</translation>
+<translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>
 <translation id="2569352796411618312">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վաղուց չեք օգտագործել։ Փակե՞լ դրանք։</translation>
 <translation id="257674075312929031">Խումբ</translation>

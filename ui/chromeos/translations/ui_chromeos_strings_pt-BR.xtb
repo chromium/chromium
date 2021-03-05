@@ -622,6 +622,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% concluído.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7654209398114106148">Movendo <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
+<translation id="7655441028674523381">Acesso fácil ao Google Fotos</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7663224033570512922">Híndi</translation>
 <translation id="7693909743393669729">Formatar uma unidade excluirá todos os dados armazenados nela e todas as partições existentes, incluindo partições não visíveis. Essa ação não pode ser desfeita.</translation>
@@ -713,6 +714,7 @@
 <translation id="8466234950814670489">Arquivo tar</translation>
 <translation id="8475647382427415476">Não foi possível para o Google Drive sincronizar "<ph name="FILENAME" />" no momento. O Google Drive tentará novamente mais tarde.</translation>
 <translation id="8477649328507734757">Giro</translation>
+<translation id="8484284835977497781">Escolha uma foto recente.</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="8521441079177373948">Reino Unido</translation>
 <translation id="8525306231823319788">Tela cheia</translation>
@@ -729,7 +731,7 @@
 <translation id="8600173386174225982">A lista de arquivos foi alterada para a visualização em miniatura.</translation>
 <translation id="8601932370724196034">Arquivo de imagem do Crostini</translation>
 <translation id="8609695766746872526">Islandês</translation>
-<translation id="8698464937041809063">Desenho do Google</translation>
+<translation id="8698464937041809063">Desenhos Google</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8713112442029511308">Maltês</translation>
 <translation id="8714406895390098252">Bicicleta</translation>

@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2277224997687551299">Изменить название группы</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Удалить <ph name="TABS_COUNT_ONE" /> выбранную вкладку из группы.}one{Удалить <ph name="TABS_COUNT_MANY" /> выбранную вкладку из группы.}few{Удалить <ph name="TABS_COUNT_MANY" /> выбранные вкладки из группы.}many{Удалить <ph name="TABS_COUNT_MANY" /> выбранных вкладок из группы.}other{Удалить <ph name="TABS_COUNT_MANY" /> выбранной вкладки из группы.}}</translation>
+<translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="2569352796411618312">Подсказка: вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
 <translation id="257674075312929031">Группа</translation>

@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2277224997687551299">แก้ไขชื่อกลุ่ม</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{นำแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บออกจากกลุ่ม}other{นำแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บออกจากกลุ่ม}}</translation>
+<translation id="2479148705183875116">ไปที่การตั้งค่า</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ยุบ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ยุบกลุ่มแท็บที่มีแท็บอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2569352796411618312">คำแนะนำ: คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
 <translation id="257674075312929031">จัดกลุ่ม</translation>

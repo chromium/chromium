@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="2277224997687551299">Змяніць назву групы</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Выдаліць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку з групы.}one{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку з групы.}few{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі з групы.}many{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраных укладак з групы.}other{Выдаліць <ph name="TABS_COUNT_MANY" /> выбранай укладкі з групы.}}</translation>
+<translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2569352796411618312">Прапанова: некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
 <translation id="257674075312929031">Група</translation>

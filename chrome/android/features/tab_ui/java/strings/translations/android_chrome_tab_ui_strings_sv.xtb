@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik}other{<ph name="TABS_COUNT_MANY" /> flikar}}</translation>
 <translation id="2277224997687551299">Redigera gruppnamn</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Ta bort <ph name="TABS_COUNT_ONE" /> markerad flik från gruppen.}other{Ta bort <ph name="TABS_COUNT_MANY" /> markerade flikar från gruppen.}}</translation>
+<translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
 <translation id="257674075312929031">Grupp</translation>

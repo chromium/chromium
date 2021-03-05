@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Avancerat</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
-<translation id="2047933465321076474">Organisationen har inaktiverat möjligheten att surfa privat. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Ångra</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Tar bort webbinformation …</translation>
 <translation id="2257567812274161158">Det går inte att synkronisera.</translation>
 <translation id="225943865679747347">Felkod: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Organisationen kräver att du surfar privat. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Lägg till konto</translation>
 <translation id="2268044343513325586">Finjustera</translation>
 <translation id="2273327106802955778">Mer-menyn</translation>
@@ -270,7 +268,6 @@ Följ stegen nedan:</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3691593122358196899">Bokmärkt i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Markera som oläst</translation>
-<translation id="3720541637541300822">Lås inkognitoflikar när du stänger Chrome</translation>
 <translation id="3740397331642243698">Öppnar de angivna webbadresserna i Google Chrome i inkognitoläge.</translation>
 <translation id="3771033907050503522">Inkognitoflikar</translation>
 <translation id="3775743491439407556">Det går inte att synkronisera</translation>
@@ -432,7 +429,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5551897871312988470">Erbjud översättning</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="5592679540098330836">Aktivera synkronisering för <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Organisationen kräver att du surfar privat. Flikar sparas inte i inkognitoläge. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
 <translation id="5626245204502895507">Det gick inte att ladda ned filen just nu.</translation>
 <translation id="5631164295104953411">Lägg till betalningsmetod</translation>
@@ -546,6 +542,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6620279676667515405">Avbryt</translation>
 <translation id="6624219055418309072">Blockera i inkognitoläget</translation>
 <translation id="6628106477656132239">Ogiltigt sista giltighetsdatum</translation>
+<translation id="6634432609054530164">Organisationen har inaktiverat inkognitoläge</translation>
 <translation id="6638511529934826365">Zooma text …</translation>
 <translation id="6639730758971422557">Aktivera Säker webbsökning genom att öppna <ph name="BEGIN_LINK" />Synk och Googles tjänster<ph name="END_LINK" /> och trycka på Säker webbsökning.</translation>
 <translation id="6642362222295953972">Byt till befintlig flik</translation>

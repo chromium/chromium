@@ -622,6 +622,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% 完了しました。</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを移動しています...</translation>
+<translation id="7655441028674523381">Google フォトに簡単アクセス</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7663224033570512922">ヒンディー語</translation>
 <translation id="7693909743393669729">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが消去され、既存のパーティションは非表示のパーティションを含めすべて削除されます。この操作は元に戻せません。</translation>
@@ -713,6 +714,7 @@
 <translation id="8466234950814670489">tar アーカイブ</translation>
 <translation id="8475647382427415476">Google ドライブでは「<ph name="FILENAME" />」を直ちに同期できませんでした。時間を置いて再試行します。</translation>
 <translation id="8477649328507734757">スピン</translation>
+<translation id="8484284835977497781">最近撮影した写真をピックアップ。</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">全画面表示</translation>

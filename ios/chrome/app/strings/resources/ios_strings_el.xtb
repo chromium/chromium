@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Σύνθετες</translation>
 <translation id="1989112275319619282">Περιήγηση</translation>
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
-<translation id="2047933465321076474">Ο οργανισμός σας απενεργοποίησε την απόρρητη περιήγηση. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="2257567812274161158">Ο συγχρονισμός δεν λειτουργεί.</translation>
 <translation id="225943865679747347">Κωδικός σφάλματος: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Ο οργανισμός σας απαιτεί οι περιηγήσεις σας να είναι ιδιωτικές. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Προσθήκη λογαριασμού</translation>
 <translation id="2268044343513325586">Περιορισμός</translation>
 <translation id="2273327106802955778">Μενού "Περισσότερα"</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">Αριθμός</translation>
 <translation id="3691593122358196899">Ο σελιδοδείκτης είναι στο "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Επισήμανση ως μη αναγνωσμένη</translation>
-<translation id="3720541637541300822">Κλείδωμα καρτελών ανώνυμης περιήγησης κατά το κλείσιμο του Chrome</translation>
 <translation id="3740397331642243698">Ανοίγει τα URL που εισάγονται στο Google Chrome σε ανώνυμη περιήγηση.</translation>
 <translation id="3771033907050503522">Καρτ.αν.περιήγ.</translation>
 <translation id="3775743491439407556">Ο συγχρονισμός δεν λειτουργεί</translation>
@@ -432,7 +429,6 @@
 <translation id="5551897871312988470">Προσφορά για μετάφραση</translation>
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
 <translation id="5592679540098330836">Ενεργοποιήστε τον συγχρονισμό για το <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Ο οργανισμός σας απαιτεί οι περιηγήσεις σας να είναι ιδιωτικές. Οι καρτέλες δεν αποθηκεύονται στην Κατάσταση ανώνυμης περιήγησης. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Αποθήκευση κωδικού πρόσβασης;</translation>
 <translation id="5626245204502895507">Δεν ήταν δυνατή η λήψη του αρχείου αυτή τη φορά.</translation>
 <translation id="5631164295104953411">Προσθήκη τρόπου πληρωμής</translation>
@@ -547,6 +543,7 @@
 <translation id="6620279676667515405">Άκυρο</translation>
 <translation id="6624219055418309072">Αποκλεισμός σε Ανώνυμη περιήγηση</translation>
 <translation id="6628106477656132239">Μη έγκυρη ημερομηνία λήξης</translation>
+<translation id="6634432609054530164">Ο οργανισμός σας απενεργοποίησε την κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="6638511529934826365">Εστίαση στο κείμενο…</translation>
 <translation id="6639730758971422557">Για να ενεργοποιήσετε την Ασφαλή περιήγηση, ανοίξτε τη σελίδα <ph name="BEGIN_LINK" />Συγχρονισμός και υπηρεσίες Google<ph name="END_LINK" /> και πατήστε Ασφαλής περιήγηση.</translation>
 <translation id="6642362222295953972">Εναλλαγή στην υπάρχουσα καρτέλα</translation>

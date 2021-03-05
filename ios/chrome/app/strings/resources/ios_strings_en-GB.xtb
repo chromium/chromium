@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
-<translation id="2047933465321076474">Your organisation turned off private browsing. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Clearing browsing data…</translation>
 <translation id="2257567812274161158">Sync isn't working.</translation>
 <translation id="225943865679747347">Error code: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Your organisation requires you to browse privately. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Add Account</translation>
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2273327106802955778">More menu</translation>
@@ -270,7 +268,6 @@ Follow the steps below:</translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3691593122358196899">Bookmarked to <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Mark as unread</translation>
-<translation id="3720541637541300822">Lock incognito tabs when you close Chrome</translation>
 <translation id="3740397331642243698">Opens the inputted URLs in Google Chrome in Incognito.</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3775743491439407556">Sync isn't working</translation>
@@ -432,7 +429,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5592679540098330836">Turn on sync for <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5626245204502895507">The file could not be downloaded at this time.</translation>
 <translation id="5631164295104953411">Add payment method</translation>
@@ -546,6 +542,7 @@ Try to use a unique password for every site.</translation>
 <translation id="6620279676667515405">Cancel</translation>
 <translation id="6624219055418309072">Block in Incognito</translation>
 <translation id="6628106477656132239">Invalid Expiry Date</translation>
+<translation id="6634432609054530164">Your organisation turned off Incognito mode</translation>
 <translation id="6638511529934826365">Zoom text…</translation>
 <translation id="6639730758971422557">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Sync and Google Services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
 <translation id="6642362222295953972">Switch to existing tab</translation>

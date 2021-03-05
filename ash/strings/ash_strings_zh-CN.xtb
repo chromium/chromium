@@ -609,6 +609,7 @@
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6179832488876878285">您可将自己的重要文件固定在此处。打开“文件”应用即可开始操作。</translation>
 <translation id="622484624075952240">向下箭头键</translation>
+<translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
 <translation id="6236290670123303279">管理设置</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">已锁定为横向</translation>
@@ -732,6 +733,7 @@
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
+<translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7377169924702866686">大写锁定已打开。</translation>
 <translation id="7378203170292176219">拖动鼠标指针即可选择要录制的区域</translation>
@@ -790,6 +792,7 @@
 <translation id="7780159184141939021">旋转屏幕</translation>
 <translation id="7796353162336583443">点按任务栏中的触控笔按钮可开始记事、截取屏幕截图，以及使用 Google 助理、激光笔或放大镜。</translation>
 <translation id="7798302898096527229">按搜索键或按 Shift 键可取消。</translation>
+<translation id="7807966291075028781">出于安全考虑，在访客模式下无法使用外围设备</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">信号较强</translation>
 <translation id="7837740436429729974">时间到</translation>
@@ -858,6 +861,7 @@
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
 <translation id="8351131234907093545">创建记事</translation>
 <translation id="8371779926711439835">前进一个字母</translation>
+<translation id="8371991222807690464">在访客模式下，外围设备的性能可能会受到限制</translation>
 <translation id="8375916635258623388">此<ph name="DEVICE_NAME" />将会自动连接到您的手机</translation>
 <translation id="8380784334203145311">晚安！</translation>
 <translation id="8388750414311082622">无法移除最后一个桌面。</translation>

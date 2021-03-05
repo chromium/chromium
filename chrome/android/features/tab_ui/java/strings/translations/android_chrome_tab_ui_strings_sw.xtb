@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" />}other{Vichupo <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="2277224997687551299">Badilisha jina la kikundi</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Ondoa kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa kwenye kikundi.}other{Ondoa vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa kwenye kikundi.}}</translation>
+<translation id="2479148705183875116">Nenda kwenye Mipangilio</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Kunja kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Pendekezo: Hujatumia vichupo <ph name="NUMBER_OF_TABS" /> hivi majuzi. Ungependa tuvifunge?</translation>
 <translation id="257674075312929031">Kikundi</translation>

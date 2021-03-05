@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1989112275319619282">Прегледај</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
-<translation id="2047933465321076474">Организација је искључила приватно прегледање. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Последња активност: пре <ph name="DAYS" /> дан/а</translation>
 <translation id="2074131957428911366">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Опозови</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Бришу се подаци прегледања...</translation>
 <translation id="2257567812274161158">Синхронизација не ради.</translation>
 <translation id="225943865679747347">Кôд грешке: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Организација захтева да прегледате приватно. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Додај налог</translation>
 <translation id="2268044343513325586">Прецизирај</translation>
 <translation id="2273327106802955778">Мени Још</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">Број</translation>
 <translation id="3691593122358196899">Обележивач је додат у <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Означи као непрочитано</translation>
-<translation id="3720541637541300822">Закључајте картице без архивирања после затварања Chrome-а</translation>
 <translation id="3740397331642243698">Отвара унете URL-ове у Google Chrome-у у режиму без архивирања.</translation>
 <translation id="3771033907050503522">Картице Без архивирања</translation>
 <translation id="3775743491439407556">Синхронизација не ради</translation>
@@ -432,7 +429,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5551897871312988470">Понуди превод</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5592679540098330836">Укључите синхронизацију за: <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Организација захтева да прегледате приватно. Картице се не чувају у режиму без архивирања. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
 <translation id="5626245204502895507">Тренутно није могуће преузети датотеку.</translation>
 <translation id="5631164295104953411">Додај начина плаћања</translation>
@@ -546,6 +542,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6620279676667515405">Откажи</translation>
 <translation id="6624219055418309072">Блокирај у режиму без архивирања</translation>
 <translation id="6628106477656132239">Неважећи датум истека</translation>
+<translation id="6634432609054530164">Организација је искључила режим без архивирања</translation>
 <translation id="6638511529934826365">Зумирај текст…</translation>
 <translation id="6639730758971422557">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Синхронизација и Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
 <translation id="6642362222295953972">Пређите на постојећу картицу</translation>

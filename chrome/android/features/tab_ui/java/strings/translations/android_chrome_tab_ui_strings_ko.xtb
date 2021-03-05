@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="2277224997687551299">그룹 이름 수정</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개를 그룹에서 삭제합니다.}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개를 그룹에서 삭제합니다.}}</translation>
+<translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 탭 그룹을 접습니다.}}</translation>
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
 <translation id="257674075312929031">그룹화</translation>

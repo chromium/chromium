@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="2277224997687551299">Editatu taldearen izena</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Kendu hautatutako <ph name="TABS_COUNT_ONE" /> fitxa taldetik.}other{Kendu hautatutako <ph name="TABS_COUNT_MANY" /> fitxak taldetik.}}</translation>
+<translation id="2479148705183875116">Joan "Ezarpenak" atalera</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tolestu <ph name="TABS_COUNT_ONE" /> fitxa.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea.}}</translation>
 <translation id="2569352796411618312">Iradokizuna: fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
 <translation id="257674075312929031">Taldekatu</translation>

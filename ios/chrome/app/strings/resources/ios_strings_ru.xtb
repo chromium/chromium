@@ -106,7 +106,6 @@
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1989112275319619282">Выбрать</translation>
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
-<translation id="2047933465321076474">В вашей организации режим инкогнито отключен. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
@@ -124,7 +123,6 @@
 <translation id="2239626343334228536">Удаление данных о работе в браузере…</translation>
 <translation id="2257567812274161158">Ошибка синхронизации.</translation>
 <translation id="225943865679747347">Код ошибки: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Согласно правилам вашей организации, использовать режим инкогнито обязательно. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Добавить аккаунт</translation>
 <translation id="2268044343513325586">Уточнить</translation>
 <translation id="2273327106802955778">Меню "Ещё"</translation>
@@ -270,7 +268,6 @@
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Закладка добавлена в папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Отметить как непрочитанное</translation>
-<translation id="3720541637541300822">Блокировать доступ к вкладкам инкогнито при закрытии Chrome</translation>
 <translation id="3740397331642243698">Введенные URL будут открываться в Google Chrome в режиме инкогнито.</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
 <translation id="3775743491439407556">Ошибка синхронизации</translation>
@@ -432,7 +429,6 @@
 <translation id="5551897871312988470">Предлагать перевести</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5592679540098330836">Включить синхронизацию для пользователя <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Согласно правилам вашей организации, использовать режим инкогнито обязательно. В этом режиме вкладки не сохраняются. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Сохранение пароля</translation>
 <translation id="5626245204502895507">Не удалось скачать файлы.</translation>
 <translation id="5631164295104953411">Добавить способ оплаты</translation>
@@ -546,6 +542,7 @@
 <translation id="6620279676667515405">Отмена</translation>
 <translation id="6624219055418309072">Запретить использование в режиме инкогнито</translation>
 <translation id="6628106477656132239">Неверная дата окончания срока действия</translation>
+<translation id="6634432609054530164">В вашей организации режим инкогнито отключен.</translation>
 <translation id="6638511529934826365">Изменить масштаб текста</translation>
 <translation id="6639730758971422557">Безопасный просмотр можно включить в разделе <ph name="BEGIN_LINK" />Синхронизация сервисов Google<ph name="END_LINK" />.</translation>
 <translation id="6642362222295953972">Переключиться на открытую ранее вкладку</translation>
