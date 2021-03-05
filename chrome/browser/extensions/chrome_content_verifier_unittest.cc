@@ -188,6 +188,13 @@ TEST_F(ChromeContentVerifierTest, CaseSensitivityInManifestPaths) {
            "h.png .", "G.png ..", "I.png.."})));
     }
   }
+
+  // Ensure content verification is skipped for case-insensitive path matching,
+  // by comparing the lowercase path with the lowercase canonical locale.
+  if (content_verifier_utils::IsFileAccessCaseSensitive()) {
+    EXPECT_FALSE(ShouldVerifyAnyPaths(ToFilePaths(
+        {"_locales/en_GB/messages.json", "_locales/en_gb/messages.json"})));
+  }
 }
 
 // Tests that tampered resources cause verification failure due to hash mismatch
