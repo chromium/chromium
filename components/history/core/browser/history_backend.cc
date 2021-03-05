@@ -283,11 +283,6 @@ HistoryBackend::~HistoryBackend() {
 #if DCHECK_IS_ON()
   HistoryPathsTracker::GetInstance()->RemovePath(history_dir_);
 #endif
-
-#if defined(OS_ANDROID)
-  if (backend_client_ && !history_dir_.empty())
-    backend_client_->OnHistoryBackendDestroyed(this, history_dir_);
-#endif
 }
 
 void HistoryBackend::Init(
@@ -880,13 +875,6 @@ void HistoryBackend::InitImpl(
 
   // Start expiring old stuff.
   expirer_.StartExpiringOldStuff(TimeDelta::FromDays(kExpireDaysThreshold));
-
-#if defined(OS_ANDROID)
-  if (backend_client_) {
-    backend_client_->OnHistoryBackendInitialized(this, db_.get(),
-                                                 favicon_db_ptr, history_dir_);
-  }
-#endif
 
   LOCAL_HISTOGRAM_TIMES("History.InitTime", TimeTicks::Now() - beginning_time);
 }

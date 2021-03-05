@@ -481,7 +481,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplNativeTest.java",
   "javatests/src/org/chromium/chrome/browser/profiles/OTRProfileIDTest.java",
   "javatests/src/org/chromium/chrome/browser/profiles/ProfileTest.java",
-  "javatests/src/org/chromium/chrome/browser/provider/ProviderBookmarkNodeUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/provider/ProviderBookmarksUriTest.java",
   "javatests/src/org/chromium/chrome/browser/provider/ProviderSearchesUriTest.java",
   "javatests/src/org/chromium/chrome/browser/provider/ProviderTestRule.java",

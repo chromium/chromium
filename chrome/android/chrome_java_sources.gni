@@ -479,7 +479,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarAnimationDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarColorController.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarCoordinator.java",
-  "java/src/org/chromium/chrome/browser/database/SQLiteCursor.java",
   "java/src/org/chromium/chrome/browser/datareduction/DataReductionMainMenuItem.java",
   "java/src/org/chromium/chrome/browser/datareduction/DataReductionPromoScreen.java",
   "java/src/org/chromium/chrome/browser/datareduction/DataReductionPromoUtils.java",

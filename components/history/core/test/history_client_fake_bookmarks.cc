@@ -83,14 +83,6 @@ class HistoryBackendClientFakeBookmarks : public HistoryBackendClient {
   bool IsPinnedURL(const GURL& url) override;
   std::vector<URLAndTitle> GetPinnedURLs() override;
   bool IsWebSafe(const GURL& url) override;
-#if defined(OS_ANDROID)
-  void OnHistoryBackendInitialized(HistoryBackend* history_backend,
-                                   HistoryDatabase* history_database,
-                                   favicon::FaviconDatabase* favicon_database,
-                                   const base::FilePath& history_dir) override;
-  void OnHistoryBackendDestroyed(HistoryBackend* history_backend,
-                                 const base::FilePath& history_dir) override;
-#endif  // defined(OS_ANDROID)
 
  private:
   scoped_refptr<FakeBookmarkDatabase> bookmarks_;
@@ -117,19 +109,6 @@ std::vector<URLAndTitle> HistoryBackendClientFakeBookmarks::GetPinnedURLs() {
 bool HistoryBackendClientFakeBookmarks::IsWebSafe(const GURL& url) {
   return true;
 }
-
-#if defined(OS_ANDROID)
-void HistoryBackendClientFakeBookmarks::OnHistoryBackendInitialized(
-    HistoryBackend* history_backend,
-    HistoryDatabase* history_database,
-    favicon::FaviconDatabase* favicon_database,
-    const base::FilePath& history_dir) {}
-
-void HistoryBackendClientFakeBookmarks::OnHistoryBackendDestroyed(
-    HistoryBackend* history_backend,
-    const base::FilePath& history_dir) {
-}
-#endif  // defined(OS_ANDROID)
 
 }  // namespace
 

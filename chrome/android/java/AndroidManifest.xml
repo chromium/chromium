@@ -101,8 +101,6 @@ by a child template that "extends" this file.
     <uses-permission android:name="{{ manifest_package }}.TOS_ACKED" />
 
     <uses-permission android:name="com.chrome.permission.DEVICE_EXTRAS" />
-    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS"/>
-    <uses-permission android:name="com.android.browser.permission.WRITE_HISTORY_BOOKMARKS"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
 

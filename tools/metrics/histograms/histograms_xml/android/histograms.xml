@@ -340,6 +340,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.ChromeBrowserProvider.CallerHasPermission"
     enum="ClientAppId" expires_after="2021-06-28">
+  <obsolete>
+    ChromeBrowserProvider removed in 03/2021.
+  </obsolete>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Android: Count of requests to Chrome browser which are granted to other apps
@@ -350,6 +353,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.ChromeBrowserProvider.SignaturePassed"
     enum="ClientAppId" expires_after="2021-06-28">
+  <obsolete>
+    ChromeBrowserProvider removed in 03/2021.
+  </obsolete>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Android: Count of requests to Chrome browser which are granted to other apps
