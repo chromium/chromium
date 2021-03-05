@@ -83,41 +83,51 @@ class TabStripContainerOverflowIndicator : public views::View {
   // Making this smaller than the margin provided by the leftmost/rightmost
   // tab's tail (TabStyle::kTabOverlap / 2) makes the transition in and out of
   // the scroll state smoother.
-  static constexpr int kOpaqueWidth = 5;
-  static constexpr int kFadeWidth = 15;
-  static constexpr int kTotalWidth = kOpaqueWidth + kFadeWidth;
+  static constexpr int kOpaqueWidth = 8;
+  // The width of the full opacity part of the shadow.
+  static constexpr int kShadowSpread = 1;
+  // The width of the soft edge of the shadow.
+  static constexpr int kShadowBlur = 3;
+  static constexpr int kTotalWidth = kOpaqueWidth + kShadowSpread + kShadowBlur;
 
   // views::View overrides:
   void OnPaint(gfx::Canvas* canvas) override {
     // TODO(tbergquist): Handle themes with titlebar background images.
+    // TODO(tbergquist): Handle dark themes where GG800 doesn't contrast well.
     SkColor frame_color = tab_strip_->controller()->GetFrameColor(
         BrowserFrameActiveState::kUseCurrent);
+    SkColor shadow_color = gfx::kGoogleGrey800;
 
+    // Mirror how the indicator is painted for the right vs left sides.
     SkPoint points[2];
-    points[0].iset(GetContentsBounds().origin().x(), GetContentsBounds().y());
-    points[1].iset(GetContentsBounds().right(), GetContentsBounds().y());
-
-    SkColor colors[3];
-    SkScalar color_positions[3];
     if (side_ == views::OverflowIndicatorAlignment::kLeft) {
-      colors[0] = frame_color;
-      colors[1] = frame_color;
-      colors[2] = SkColorSetA(frame_color, SK_AlphaTRANSPARENT);
-      color_positions[0] = 0;
-      color_positions[1] = static_cast<float>(kOpaqueWidth) / kTotalWidth;
-      color_positions[2] = 1;
+      points[0].iset(GetContentsBounds().origin().x(), GetContentsBounds().y());
+      points[1].iset(GetContentsBounds().right(), GetContentsBounds().y());
     } else {
-      colors[0] = SkColorSetA(frame_color, SK_AlphaTRANSPARENT);
-      colors[1] = frame_color;
-      colors[2] = frame_color;
-      color_positions[0] = 0;
-      color_positions[1] = static_cast<float>(kFadeWidth) / kTotalWidth;
-      color_positions[2] = 1;
+      points[0].iset(GetContentsBounds().right(), GetContentsBounds().y());
+      points[1].iset(GetContentsBounds().origin().x(), GetContentsBounds().y());
     }
+
+    SkColor colors[5];
+    SkScalar color_positions[5];
+    // Paint an opaque region on the outside.
+    colors[0] = frame_color;
+    colors[1] = frame_color;
+    color_positions[0] = 0;
+    color_positions[1] = static_cast<float>(kOpaqueWidth) / kTotalWidth;
+
+    // Paint a shadow-like gradient on the inside.
+    colors[2] = SkColorSetA(shadow_color, 0x4D);
+    colors[3] = SkColorSetA(shadow_color, 0x4D);
+    colors[4] = SkColorSetA(shadow_color, SK_AlphaTRANSPARENT);
+    color_positions[2] = static_cast<float>(kOpaqueWidth) / kTotalWidth;
+    color_positions[3] =
+        static_cast<float>(kOpaqueWidth + kShadowSpread) / kTotalWidth;
+    color_positions[4] = 1;
 
     cc::PaintFlags flags;
     flags.setShader(cc::PaintShader::MakeLinearGradient(
-        points, colors, color_positions, 3, SkTileMode::kClamp));
+        points, colors, color_positions, 5, SkTileMode::kClamp));
     canvas->DrawRect(GetContentsBounds(), flags);
   }
 
