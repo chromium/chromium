@@ -130,19 +130,17 @@ class MEDIA_GPU_EXPORT DecoderInterface {
 class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
                                               public DecoderInterface::Client {
  public:
-  using CreateDecoderFunction = std::unique_ptr<DecoderInterface> (*)(
-      scoped_refptr<base::SequencedTaskRunner>,
-      base::WeakPtr<DecoderInterface::Client>);
-  using CreateDecoderFunctions = std::list<CreateDecoderFunction>;
-  using GetCreateDecoderFunctionsCB =
-      base::RepeatingCallback<CreateDecoderFunctions()>;
+  using CreateDecoderFunctionCB =
+      base::RepeatingCallback<std::unique_ptr<DecoderInterface>(
+          scoped_refptr<base::SequencedTaskRunner>,
+          base::WeakPtr<DecoderInterface::Client>)>;
 
   static std::unique_ptr<VideoDecoder> Create(
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
       std::unique_ptr<VideoFrameConverter> frame_converter,
       std::unique_ptr<MediaLog> media_log,
-      GetCreateDecoderFunctionsCB get_create_decoder_functions_cb);
+      CreateDecoderFunctionCB create_decoder_function_cb);
 
   ~VideoDecoderPipeline() override;
   static void DestroyAsync(std::unique_ptr<VideoDecoderPipeline>);
@@ -179,7 +177,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
       std::unique_ptr<VideoFrameConverter> frame_converter,
-      GetCreateDecoderFunctionsCB get_create_decoder_functions_cb);
+      CreateDecoderFunctionCB create_decoder_function_cb);
 
   void InitializeTask(const VideoDecoderConfig& config,
                       CdmContext* cdm_context,
@@ -189,15 +187,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void ResetTask(base::OnceClosure closure);
   void DecodeTask(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb);
 
-  void CreateAndInitializeVD(VideoDecoderConfig config,
-                             CdmContext* cdm_context,
-                             const WaitingCB& waiting_cb,
-                             Status parent_error);
-  void OnInitializeDone(VideoDecoderConfig config,
-                        CdmContext* cdm_context,
-                        const WaitingCB& waiting_cb,
-                        Status parent_error,
-                        Status status);
+  void OnInitializeDone(Status status);
 
   void OnDecodeDone(bool eos_buffer, DecodeCB decode_cb, Status status);
   void OnResetDone();
@@ -252,10 +242,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // successfully done.
   std::unique_ptr<DecoderInterface> decoder_;
 
-  // |remaining_create_decoder_functions_| holds all the potential video decoder
-  // creation functions. We try them all in the given order until one succeeds.
   // Only used after initialization on |decoder_sequence_checker_|.
-  CreateDecoderFunctions remaining_create_decoder_functions_;
+  CreateDecoderFunctionCB create_decoder_function_cb_;
 
   // Callback from the client. These callback are called on
   // |client_task_runner_|.

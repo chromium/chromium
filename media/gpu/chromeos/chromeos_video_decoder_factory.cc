@@ -15,56 +15,22 @@
 
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
-#endif
-
-#if BUILDFLAG(USE_V4L2_CODEC)
+#elif BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
+#else
+#error Either VA-API or V4L2 must be used for decode acceleration on Chrome OS.
 #endif
 
 namespace media {
 
-namespace {
-
-// Gets a list of the available functions for creating VideoDecoders.
-VideoDecoderPipeline::CreateDecoderFunctions GetCreateDecoderFunctions() {
-  // Usually only one of USE_VAAPI or USE_V4L2_CODEC is defined on ChromeOS,
-  // except for Chromeboxes with companion video acceleration chips, which have
-  // both. In those cases prefer the V4L2 creation function.
-  constexpr VideoDecoderPipeline::CreateDecoderFunction kCreateVDFuncs[] = {
-#if BUILDFLAG(USE_V4L2_CODEC)
-    &V4L2VideoDecoder::Create,
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
-
-#if BUILDFLAG(USE_VAAPI)
-    &VaapiVideoDecoder::Create,
-#endif  // BUILDFLAG(USE_VAAPI)
-  };
-
-  return VideoDecoderPipeline::CreateDecoderFunctions(
-      kCreateVDFuncs, kCreateVDFuncs + base::size(kCreateVDFuncs));
-}
-
-}  // namespace
-
 // static
 SupportedVideoDecoderConfigs ChromeosVideoDecoderFactory::GetSupportedConfigs(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  SupportedVideoDecoderConfigs supported_configs;
-  SupportedVideoDecoderConfigs configs;
-
 #if BUILDFLAG(USE_VAAPI)
-  configs = VaapiVideoDecoder::GetSupportedConfigs(workarounds);
-  supported_configs.insert(supported_configs.end(), configs.begin(),
-                           configs.end());
-#endif  // BUILDFLAG(USE_VAAPI)
-
-#if BUILDFLAG(USE_V4L2_CODEC)
-  configs = V4L2VideoDecoder::GetSupportedConfigs();
-  supported_configs.insert(supported_configs.end(), configs.begin(),
-                           configs.end());
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
-
-  return supported_configs;
+  return VaapiVideoDecoder::GetSupportedConfigs(workarounds);
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  return V4L2VideoDecoder::GetSupportedConfigs();
+#endif
 }
 
 // static
@@ -76,7 +42,12 @@ std::unique_ptr<VideoDecoder> ChromeosVideoDecoderFactory::Create(
   return VideoDecoderPipeline::Create(
       std::move(client_task_runner), std::move(frame_pool),
       std::move(frame_converter), std::move(media_log),
-      base::BindRepeating(&GetCreateDecoderFunctions));
+#if BUILDFLAG(USE_VAAPI)
+      base::BindRepeating(&VaapiVideoDecoder::Create)
+#elif BUILDFLAG(USE_V4L2_CODEC)
+      base::BindRepeating(&V4L2VideoDecoder::Create)
+#endif
+  );
 }
 
 }  // namespace media

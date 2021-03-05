@@ -68,7 +68,7 @@ class MockDecoder : public DecoderInterface {
 };
 
 struct DecoderPipelineTestParams {
-  VideoDecoderPipeline::CreateDecoderFunctions create_decoder_functions;
+  VideoDecoderPipeline::CreateDecoderFunctionCB create_decoder_function_cb;
   StatusCode status_code;
 };
 
@@ -92,10 +92,9 @@ class VideoDecoderPipelineTest
             base::ThreadTaskRunnerHandle::Get(),
             std::move(pool_),
             std::move(converter_),
-            base::BindRepeating([]() {
-              // This callback needs to be configured in the individual tests.
-              return VideoDecoderPipeline::CreateDecoderFunctions();
-            }))) {}
+            // This callback needs to be configured in the individual tests.
+            base::BindRepeating(
+                &VideoDecoderPipelineTest::CreateNullMockDecoder))) {}
   ~VideoDecoderPipelineTest() override = default;
 
   void TearDown() override {
@@ -105,9 +104,9 @@ class VideoDecoderPipelineTest
   MOCK_METHOD1(OnInit, void(Status));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<VideoFrame>));
 
-  void SetCreateDecoderFunctions(
-      VideoDecoderPipeline::CreateDecoderFunctions functions) {
-    decoder_->remaining_create_decoder_functions_ = functions;
+  void SetCreateDecoderFunctionCB(
+      VideoDecoderPipeline::CreateDecoderFunctionCB function) {
+    decoder_->create_decoder_function_cb_ = std::move(function);
   }
 
   void InitializeDecoder() {
@@ -145,7 +144,7 @@ class VideoDecoderPipelineTest
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());
     EXPECT_CALL(*decoder, Initialize(_, _, _, _, _))
         .WillOnce(::testing::WithArgs<2>([](VideoDecoder::InitCB init_cb) {
-          std::move(init_cb).Run(StatusCode::kDecoderFailedInitialization);
+          std::move(init_cb).Run(StatusCode::kDecoderInitializationFailed);
         }));
     return std::move(decoder);
   }
@@ -161,9 +160,9 @@ class VideoDecoderPipelineTest
   std::unique_ptr<VideoDecoderPipeline> decoder_;
 };
 
-// Verifies the status code for several typical CreateDecoderFunctions cases.
+// Verifies the status code for several typical CreateDecoderFunctionCB cases.
 TEST_P(VideoDecoderPipelineTest, Initialize) {
-  SetCreateDecoderFunctions(GetParam().create_decoder_functions);
+  SetCreateDecoderFunctionCB(GetParam().create_decoder_function_cb);
 
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnInit(MatchesStatusCode(GetParam().status_code)))
@@ -177,54 +176,20 @@ TEST_P(VideoDecoderPipelineTest, Initialize) {
 }
 
 const struct DecoderPipelineTestParams kDecoderPipelineTestParams[] = {
-    // An empty set of CreateDecoderFunctions.
-    {{}, StatusCode::kChromeOSVideoDecoderNoDecoders},
-
-    // Just one CreateDecoderFunctions that fails to Create() (i.e. returns a
+    // A CreateDecoderFunctionCB that fails to Create() (i.e. returns a
     // null Decoder)
-    {{&VideoDecoderPipelineTest::CreateNullMockDecoder},
+    {base::BindRepeating(&VideoDecoderPipelineTest::CreateNullMockDecoder),
      StatusCode::kDecoderFailedCreation},
 
-    // Just one CreateDecoderFunctions that works fine, i.e. Create()s and
+    // A CreateDecoderFunctionCB that works fine, i.e. Create()s and
     // Initialize()s correctly.
-    {{&VideoDecoderPipelineTest::CreateGoodMockDecoder}, StatusCode::kOk},
-
-    // One CreateDecoderFunctions that Create()s ok but fails to Initialize()
-    // correctly
-    {{&VideoDecoderPipelineTest::CreateBadMockDecoder},
-     StatusCode::kDecoderFailedInitialization},
-
-    // Two CreateDecoderFunctions, one that fails to Create() (i.e. returns a
-    // null Decoder), and one that works. The first error StatusCode is lost
-    // because VideoDecoderPipeline::OnInitializeDone() throws it away.
-    {{&VideoDecoderPipelineTest::CreateNullMockDecoder,
-      &VideoDecoderPipelineTest::CreateGoodMockDecoder},
+    {base::BindRepeating(&VideoDecoderPipelineTest::CreateGoodMockDecoder),
      StatusCode::kOk},
 
-    // Two CreateDecoderFunctions, one that Create()s ok but fails  to
-    // Initialize(), and one that works. The first error StatusCode is lost
-    // because VideoDecoderPipeline::OnInitializeDone() throws it away.
-    {{&VideoDecoderPipelineTest::CreateBadMockDecoder,
-      &VideoDecoderPipelineTest::CreateGoodMockDecoder},
-     StatusCode::kOk},
-
-    // Two CreateDecoderFunctions, one that fails to Create() (i.e. returns a
-    // null Decoder), and one that fails to Initialize(). The first error
-    // StatusCode is the only one we can check here: a Status object is created
-    // with a "primary" StatusCode, archiving subsequent ones in a private
-    // member.
-    {{&VideoDecoderPipelineTest::CreateNullMockDecoder,
-      &VideoDecoderPipelineTest::CreateBadMockDecoder},
-     StatusCode::kDecoderFailedCreation},
-    // Previous one in reverse order.
-    {{&VideoDecoderPipelineTest::CreateBadMockDecoder,
-      &VideoDecoderPipelineTest::CreateNullMockDecoder},
-     StatusCode::kDecoderFailedInitialization},
-
-    {{&VideoDecoderPipelineTest::CreateBadMockDecoder,
-      &VideoDecoderPipelineTest::CreateBadMockDecoder,
-      &VideoDecoderPipelineTest::CreateGoodMockDecoder},
-     StatusCode::kOk},
+    // A CreateDecoderFunctionCB that Create()s ok but fails to Initialize()
+    // correctly.
+    {base::BindRepeating(&VideoDecoderPipelineTest::CreateBadMockDecoder),
+     StatusCode::kDecoderInitializationFailed},
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
