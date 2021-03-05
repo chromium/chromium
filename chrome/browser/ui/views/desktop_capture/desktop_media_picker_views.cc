@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -209,9 +210,15 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   std::vector<std::pair<base::string16, std::unique_ptr<View>>> panes;
 
-  // Default assumption, but can change to kGetCurrentBrowsingContextMedia if
-  // we find the relevant MediaList among |source_lists|.
-  dialog_source_ = DialogSource::kGetDisplayMedia;
+  const bool current_tab_among_sources = std::any_of(
+      source_lists.begin(), source_lists.end(),
+      [](const std::unique_ptr<DesktopMediaList>& list) {
+        return list->GetMediaListType() == DesktopMediaList::Type::kCurrentTab;
+      });
+
+  dialog_source_ = current_tab_among_sources
+                       ? DialogSource::kGetCurrentBrowsingContextMedia
+                       : DialogSource::kGetDisplayMedia;
 
   int selected_tab = 0;
 
@@ -295,15 +302,17 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       }
       case DesktopMediaList::Type::kWebContents: {
         source_types_.push_back(DesktopMediaList::Type::kWebContents);
-
-        base::string16 title =
-            l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB);
+        // Note that "other tab" is inaccurate - we actually allow any tab
+        // to be selected in either case.
+        const base::string16 title = l10n_util::GetStringUTF16(
+            current_tab_among_sources
+                ? IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_OTHER_TAB
+                : IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB);
         auto list_controller = std::make_unique<DesktopMediaListController>(
             this, std::move(source_list));
         panes.push_back(
             std::make_pair(title, list_controller->CreateTabListView(title)));
         list_controllers_.push_back(std::move(list_controller));
-
         break;
       }
       case DesktopMediaList::Type::kCurrentTab: {
@@ -320,7 +329,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         std::unique_ptr<views::ScrollView> window_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
         const base::string16 title = l10n_util::GetStringUTF16(
-            IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_CURRENT_TAB);
+            IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_THIS_TAB);
         auto list_controller = std::make_unique<DesktopMediaListController>(
             this, std::move(source_list));
         window_scroll_view->SetContents(list_controller->CreateView(
@@ -332,7 +341,6 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         window_scroll_view->SetHorizontalScrollBarMode(
             views::ScrollView::ScrollBarMode::kDisabled);
         panes.emplace_back(title, std::move(window_scroll_view));
-        dialog_source_ = DialogSource::kGetCurrentBrowsingContextMedia;
         break;
       }
     }

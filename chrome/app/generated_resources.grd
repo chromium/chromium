@@ -9789,7 +9789,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
       <!-- Desktop media picker UI for Desktop Capture API -->
       <message name="IDS_DESKTOP_MEDIA_PICKER_TITLE" desc="Title for the window picker dialog shown when desktop capture is requested by an app.">
-        Share your screen
+        Choose what to share
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TITLE_SCREEN_ONLY" desc="Title for the window picker dialog shown when desktop capture of the entire screen is requested by an app.">
         Share your entire screen
@@ -9798,10 +9798,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Share an application window
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by the app itself.">
-        <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen. Choose what you'd like to share.
+        <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen.
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT_DELEGATED" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by a tab.">
-        <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen with <ph name="TARGET_NAME">$2<ex>https://google.com</ex></ph>. Choose what you'd like to share.
+        <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen with <ph name="TARGET_NAME">$2<ex>https://google.com</ex></ph>.
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE" desc="Text for the checkbox on the window picker dialog, when checked, audio will be shared, otherwise just video sharing">
         Share audio
@@ -9810,7 +9810,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Entire Screen
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_WINDOW" desc="Text for the button on the window picker dialog, clicking which takes one to window sharing">
-        Application Window
+        Window
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_SINGLE_SCREEN_NAME" desc="Name for screens in the desktop media picker UI when there is only one monitor.">
         Entire screen
@@ -9819,8 +9819,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
         {SCREEN_INDEX, plural, =1{Screen #} other{Screen #}}
       </message>
       <if expr="toolkit_views">
-        <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_CURRENT_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the current tab.">
-          Current Tab
+        <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_THIS_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the current tab.">
+          This Tab
+        </message>
+        <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_OTHER_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the any tab. ('Any' is inaccurate, but preferred by our writer.)" >
+          Other Tab
         </message>
       </if>
 
