@@ -77,9 +77,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   //    OOF descendants might be positioned wrt inline containing block.
   //    Inline containing block is positioned wrt default containing block.
   struct ContainingBlockInfo {
-    STACK_ALLOCATED();
-
-   public:
     // The writing direction of the container.
     WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
                                               TextDirection::kLtr};
@@ -106,9 +103,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   // Info needed to perform Layout() on an OOF positioned node.
   struct NodeToLayout {
-    STACK_ALLOCATED();
-
-   public:
     NGBlockNode node;
     const NGConstraintSpace constraint_space;
     const NGLogicalStaticPosition static_position;
@@ -186,15 +180,19 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   scoped_refptr<const NGLayoutResult> LayoutOOFNode(
       const NodeToLayout& oof_node_to_layout,
       const LayoutBox* only_layout,
-      OffsetInfo offset_info);
+      OffsetInfo offset_info,
+      wtf_size_t fragmentainer_index = 0);
 
+  // TODO(almaher): We are calculating more than just the offset. Consider
+  // changing this to a more accurate name.
   OffsetInfo CalculateOffset(const NodeToLayout& oof_node_to_layout,
                              const LayoutBox* only_layout,
                              bool is_first_run = true);
 
   scoped_refptr<const NGLayoutResult> Layout(
       const NodeToLayout& oof_node_to_layout,
-      const OffsetInfo& offset_info);
+      const OffsetInfo& offset_info,
+      wtf_size_t fragmentainer_index);
 
   bool IsContainingBlockForCandidate(const NGLogicalOutOfFlowPositionedNode&);
 

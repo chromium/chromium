@@ -696,34 +696,67 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     Vector<NGLogicalOutOfFlowPositionedNode>* descendants,
     LayoutUnit column_inline_progression,
     Vector<MulticolChildInfo>* multicol_children) {
+  struct PendingDescendant {
+    NodeToLayout node_to_layout;
+    OffsetInfo offset_info;
+  };
+
   nested_fragmentation_context_ = multicol_children;
   original_column_block_size_ =
       ShrinkLogicalSize(container_builder_->InitialBorderBoxSize(),
                         container_builder_->BorderScrollbarPadding())
           .block_size;
 
+  Vector<Vector<PendingDescendant>> descendants_to_layout;
   while (descendants->size() > 0) {
+    // Sort the descendants by fragmentainer index in |descendants_to_layout|.
+    // This will ensure that the descendants are laid out in the correct order.
     for (auto& descendant : *descendants) {
-      // TODO(almaher): Determine the fragmentainer index from the offset, and
-      // layout OOFs one fragmentainer at a time.
       NodeToLayout node_to_layout = SetUpNodeForLayout(descendant);
-      scoped_refptr<const NGLayoutResult> result = LayoutOOFNode(
-          node_to_layout, /* only_layout */ nullptr,
-          CalculateOffset(node_to_layout, /* only_layout */ nullptr));
-      // TODO(almaher): Handle nested OOFs and inner multicols with pending OOFs
-      // in the case of nested fragmentation.
-      container_builder_->PropagateOOFPositionedInfo(
-          result->PhysicalFragment(), result->OutOfFlowPositionedOffset());
+      PendingDescendant pending_descendant = {
+          node_to_layout,
+          CalculateOffset(node_to_layout, /* only_layout */ nullptr)};
+
+      // Determine in which fragmentainer this OOF element will start its layout
+      // and adjust the offset to be relative to that fragmentainer.
+      wtf_size_t start_index = 0;
+      ComputeStartFragmentIndexAndRelativeOffset(
+          node_to_layout.container_info,
+          node_to_layout.default_writing_direction.GetWritingMode(),
+          *pending_descendant.offset_info.block_estimate, &start_index,
+          &pending_descendant.offset_info.offset);
+      if (start_index >= descendants_to_layout.size())
+        descendants_to_layout.resize(start_index + 1);
+      descendants_to_layout[start_index].emplace_back(pending_descendant);
+    }
+
+    // Layout the OOF descendants in order of fragmentainer index.
+    for (wtf_size_t index = 0; index < descendants_to_layout.size(); index++) {
+      const Vector<PendingDescendant>& pending_descendants =
+          descendants_to_layout[index];
+      for (auto& descendant : pending_descendants) {
+        scoped_refptr<const NGLayoutResult> result =
+            LayoutOOFNode(descendant.node_to_layout, /* only_layout */ nullptr,
+                          descendant.offset_info, index);
+        // TODO(almaher): Handle nested OOFs and inner multicols with pending
+        // OOFs in the case of nested fragmentation.
+        container_builder_->PropagateOOFPositionedInfo(
+            result->PhysicalFragment(), result->OutOfFlowPositionedOffset());
+      }
     }
     // Sweep any descendants that might have been bubbled up from the fragment
     // to the |container_builder_|. This happens when we have nested absolute
     // position elements.
     descendants->Shrink(0);
+    descendants_to_layout.Shrink(0);
     container_builder_->SwapOutOfFlowFragmentainerDescendants(descendants);
   }
 
   // Add all of the descendant layout results as children to the fragment at
   // the associated index.
+  // TODO(almaher): Since we perform layout one fragmentainer at a time, we
+  // can get rid of |fragmentainer_descendant_results_| and place the OOFs
+  // inside the fragmentainers directly in the loop above.
   wtf_size_t index = 0;
   while (!fragmentainer_descendant_results_.IsEmpty()) {
     // We don't allow keys of 0, so shift the index by 1.
@@ -813,7 +846,8 @@ NGOutOfFlowLayoutPart::NodeToLayout NGOutOfFlowLayoutPart::SetUpNodeForLayout(
 scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
     const NodeToLayout& oof_node_to_layout,
     const LayoutBox* only_layout,
-    OffsetInfo offset_info) {
+    OffsetInfo offset_info,
+    wtf_size_t fragmentainer_index) {
   if (offset_info.has_cached_layout_result) {
     DCHECK(offset_info.initial_layout_result);
     return offset_info.initial_layout_result;
@@ -823,7 +857,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
       freeze_scrollbars;
   do {
     scoped_refptr<const NGLayoutResult> layout_result =
-        Layout(oof_node_to_layout, offset_info);
+        Layout(oof_node_to_layout, offset_info, fragmentainer_index);
 
     // TODO(almaher): Remove the check for is_fragmentainer_descendant.
     if (!freeze_scrollbars.has_value() &&
@@ -842,7 +876,9 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
         // Freeze the scrollbars for this layout pass. We don't want them to
         // change *again*.
         freeze_scrollbars.emplace();
-        // TODO(almaher): Does the entire offset need to be recalculated?
+        // The offset itself does not need to be recalculated. However, the
+        // |node_dimensions| and |initial_layout_result| may need to be updated,
+        // so recompute the OffsetInfo.
         offset_info = CalculateOffset(oof_node_to_layout, only_layout,
                                       /* is_first_run */ false);
         continue;
@@ -1066,44 +1102,36 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
 
 scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     const NodeToLayout& oof_node_to_layout,
-    const OffsetInfo& offset_info) {
+    const OffsetInfo& offset_info,
+    wtf_size_t fragmentainer_index) {
   const WritingDirectionMode candidate_writing_direction =
       oof_node_to_layout.node.Style().GetWritingDirection();
   LogicalSize container_content_size_in_candidate_writing_mode =
       oof_node_to_layout.container_physical_content_size.ConvertToLogical(
           candidate_writing_direction.GetWritingMode());
   LogicalOffset offset = offset_info.offset;
-  scoped_refptr<const NGLayoutResult> layout_result =
-      offset_info.initial_layout_result;
-
-  // Determine in which fragmentainer this OOF element will start its layout and
-  // adjust the offset to be relative to that fragmentainer.
-  wtf_size_t start_index = 0;
-  wtf_size_t num_children = container_builder_->Children().size();
-  if (oof_node_to_layout.is_fragmentainer_descendant) {
-    DCHECK_GT(num_children, 0u);
-    ComputeStartFragmentIndexAndRelativeOffset(
-        oof_node_to_layout.container_info,
-        oof_node_to_layout.default_writing_direction.GetWritingMode(),
-        *offset_info.block_estimate, &start_index, &offset);
-  }
 
   // Reset the |layout_result| computed earlier to allow fragmentation in the
   // next layout pass, if needed.
-  if (oof_node_to_layout.is_fragmentainer_descendant)
-    layout_result = nullptr;
+  scoped_refptr<const NGLayoutResult> layout_result =
+      !oof_node_to_layout.is_fragmentainer_descendant
+          ? offset_info.initial_layout_result
+          : nullptr;
+
+  // TODO(almaher): Clean up the code for handling break tokens. Break tokens
+  // should now be handled by LayoutFragmentainerDescendants().
   const NGBlockBreakToken* break_token = nullptr;
   do {
     if (break_token) {
       layout_result = nullptr;
-      start_index++;
+      fragmentainer_index++;
 
       // Skip over spanning fragments when finding the next fragmentainer to add
       // an OOF result to.
-      while (start_index < num_children &&
-             !container_builder_->Children()[start_index]
+      while (fragmentainer_index < container_builder_->Children().size() &&
+             !container_builder_->Children()[fragmentainer_index]
                   .fragment->IsFragmentainerBox()) {
-        start_index++;
+        fragmentainer_index++;
       }
       offset.block_offset = LayoutUnit();
     }
@@ -1115,7 +1143,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
       bool should_use_fixed_block_size = !!offset_info.block_estimate;
       if (oof_node_to_layout.is_fragmentainer_descendant) {
         fragmentainer_constraint_space =
-            &GetFragmentainerConstraintSpace(start_index);
+            &GetFragmentainerConstraintSpace(fragmentainer_index);
         should_use_fixed_block_size &=
             !offset_info.absolute_needs_child_block_size;
       }
@@ -1148,7 +1176,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
         offset, allow_first_tier_oof_cache_);
     if (oof_node_to_layout.is_fragmentainer_descendant) {
-      AddOOFResultToFragmentainerResults(layout_result, start_index);
+      AddOOFResultToFragmentainerResults(layout_result, fragmentainer_index);
 
       const auto& physical_fragment =
           To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
