@@ -4,44 +4,11 @@
 
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-
-namespace {
-
-// Prevent font size preferences from affecting chrome:// WebUI pages.
-void SetWebUIFontPrefs(blink::web_pref::WebPreferences* web_prefs) {
-  blink::web_pref::WebPreferences default_prefs;
-  web_prefs->default_font_size = default_prefs.default_font_size;
-  web_prefs->default_fixed_font_size = default_prefs.default_fixed_font_size;
-  web_prefs->minimum_font_size = default_prefs.minimum_font_size;
-  web_prefs->minimum_logical_font_size =
-      default_prefs.minimum_logical_font_size;
-}
-
-// Revert WebUI font size overrides back to the values specified in preferences.
-void RevertWebUIFontPrefs(content::WebContents* web_contents,
-                          blink::web_pref::WebPreferences* web_prefs) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  PrefService* prefs = profile->GetPrefs();
-  web_prefs->default_font_size =
-      prefs->GetInteger(prefs::kWebKitDefaultFontSize);
-  web_prefs->default_fixed_font_size =
-      prefs->GetInteger(prefs::kWebKitDefaultFixedFontSize);
-  web_prefs->minimum_font_size =
-      prefs->GetInteger(prefs::kWebKitMinimumFontSize);
-  web_prefs->minimum_logical_font_size =
-      prefs->GetInteger(prefs::kWebKitMinimumLogicalFontSize);
-}
-
-}  // namespace
 
 ChromeContentBrowserClientWebUIPart::ChromeContentBrowserClientWebUIPart() =
     default;
@@ -62,7 +29,13 @@ void ChromeContentBrowserClientWebUIPart::OverrideWebkitPrefs(
     return;
   }
 
-  SetWebUIFontPrefs(web_prefs);
+  // Prevent font size preferences from affecting chrome:// WebUI pages.
+  blink::web_pref::WebPreferences default_prefs;
+  web_prefs->default_font_size = default_prefs.default_font_size;
+  web_prefs->default_fixed_font_size = default_prefs.default_fixed_font_size;
+  web_prefs->minimum_font_size = default_prefs.minimum_font_size;
+  web_prefs->minimum_logical_font_size =
+      default_prefs.minimum_logical_font_size;
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   if (url.host_piece() == chrome::kChromeUITabStripHost) {
@@ -70,23 +43,4 @@ void ChromeContentBrowserClientWebUIPart::OverrideWebkitPrefs(
     web_prefs->touch_dragend_context_menu = true;
   }
 #endif
-}
-
-bool ChromeContentBrowserClientWebUIPart::OverrideWebPreferencesAfterNavigation(
-    content::WebContents* web_contents,
-    blink::web_pref::WebPreferences* web_prefs) {
-  if (!web_contents)
-    return false;
-
-  content::NavigationEntry* entry =
-      web_contents->GetController().GetVisibleEntry();
-  GURL url = entry ? entry->GetURL() : GURL();
-
-  if (!url.SchemeIs(content::kChromeUIScheme)) {
-    RevertWebUIFontPrefs(web_contents, web_prefs);
-    return true;
-  }
-
-  SetWebUIFontPrefs(web_prefs);
-  return true;
 }

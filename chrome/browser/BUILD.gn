@@ -286,7 +286,6 @@ static_library("browser") {
     "chrome_content_browser_client.h",
     "chrome_content_browser_client_binder_policies.cc",
     "chrome_content_browser_client_binder_policies.h",
-    "chrome_content_browser_client_parts.cc",
     "chrome_content_browser_client_parts.h",
     "chrome_content_browser_client_receiver_bindings.cc",
     "chrome_notification_types.h",
