@@ -1005,7 +1005,7 @@ TEST_F(DocumentProviderTest, Scoring) {
         ]})",
       "bows", {0, 669, 669});
 
-  // Client scoring should consider snippet but not URL matches
+  // Client scoring should consider snippet but not URL matches.
   CheckScoring(
       {
           {"DocumentUseServerScore", "false"},
@@ -1020,6 +1020,22 @@ TEST_F(DocumentProviderTest, Scoring) {
             "snippet": {"snippet": "bow bow"}}
         ]})",
       "rain bow", {669, 669, 793});
+
+  // Client scoring should break user input on colon.
+  CheckScoring(
+      {
+          {"DocumentUseServerScore", "false"},
+          {"DocumentUseClientScore", "true"},
+          {"DocumentCapScorePerRank", "false"},
+          {"DocumentBoostOwned", "false"},
+      },
+      R"({"results": [
+          {"title": "teapot", "score": 1150, "url": "url"},
+          {"title": "owner:teapot", "score": 1150, "url": "url"},
+          {"title": "owner teapot", "score": 1150, "url": "url"},
+          {"title": "teapot owner", "score": 1150, "url": "url"}
+        ]})",
+      "owner:teapot", {871, 1165, 1165, 1165});
 }
 
 TEST_F(DocumentProviderTest, CachingForAsyncMatches) {

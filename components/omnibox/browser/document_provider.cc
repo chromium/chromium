@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -101,19 +102,26 @@ AutocompleteMatch::DocumentType GetIconForMIMEType(
              : AutocompleteMatch::DocumentType::DRIVE_OTHER;
 }
 
+String16Vector SplitByColon(const String16Vector& words) {
+  return std::accumulate(
+      words.begin(), words.end(), String16Vector(),
+      [](String16Vector accumulated, const auto& word) {
+        const auto split =
+            base::SplitString(word, base::UTF8ToUTF16(":"),
+                              base::WhitespaceHandling::TRIM_WHITESPACE,
+                              base::SplitResult::SPLIT_WANT_NONEMPTY);
+        accumulated.insert(accumulated.end(), split.begin(), split.end());
+        return accumulated;
+      });
+}
+
 struct FieldMatches {
   double weight;
   String16Vector words;
   size_t count;
 
   FieldMatches(double weight, const std::string* string)
-      : weight(weight),
-        words(string ? String16VectorFromString16(
-                           base::UTF8ToUTF16(string->c_str()),
-                           false,
-                           nullptr)
-                     : String16Vector()),
-        count(0) {}
+      : FieldMatches(weight, std::vector<const std::string*>{string}) {}
 
   FieldMatches(double weight, std::vector<const std::string*> strings)
       : weight(weight),
@@ -123,8 +131,9 @@ struct FieldMatches {
             String16Vector(),
             [](String16Vector words, const std::string* string) {
               if (string) {
-                const auto string_words = String16VectorFromString16(
-                    base::UTF8ToUTF16(string->c_str()), false, nullptr);
+                const auto string_words =
+                    SplitByColon(String16VectorFromString16(
+                        base::UTF8ToUTF16(string->c_str()), false, nullptr));
                 words.insert(words.end(), string_words.begin(),
                              string_words.end());
               }
@@ -205,7 +214,8 @@ int CalculateScore(const base::string16& input,
                    });
 
   String16Vector input_words =
-      String16VectorFromString16(input, false, nullptr);
+      SplitByColon(String16VectorFromString16(input, false, nullptr));
+
   for (const auto& word : input_words) {
     (void)std::find_if(
         field_matches_vec.begin(), field_matches_vec.end(),
