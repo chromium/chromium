@@ -4352,8 +4352,8 @@ void RenderFrameHostImpl::DispatchLoad() {
   if (IsInactiveAndDisallowReactivation())
     return;
 
-  // We should never be receiving this message from a speculative RFH.
-  DCHECK(IsCurrent());
+  DCHECK(lifecycle_state() == LifecycleState::kActive ||
+         lifecycle_state() == LifecycleState::kPrerendering);
 
   // Only frames with an out-of-process parent frame should be sending this
   // message.
@@ -4451,8 +4451,8 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
   if (IsInactiveAndDisallowReactivation())
     return;
 
-  // We should never be receiving this message from a speculative RFH.
-  DCHECK(IsCurrent());
+  DCHECK(lifecycle_state() == LifecycleState::kActive ||
+         lifecycle_state() == LifecycleState::kPrerendering);
 
   RenderFrameProxyHost* proxy =
       frame_tree_node()->render_manager()->GetProxyToParent();
@@ -7284,12 +7284,6 @@ bool RenderFrameHostImpl::IsCurrent() {
   // the current one. In that case, return false.
   if (has_pending_lifecycle_state_update_)
     return false;
-
-  // TODO(https://crbug.com/1177743): Remove this check and replace all the
-  // navigation-related IsCurrent checks with explicit checks allowing
-  // navigation when the document is in kPrerendering state.
-  if (lifecycle_state_ == LifecycleState::kPrerendering)
-    return true;
 
   // Only documents in the kActive lifecycle state are considered current.
   return lifecycle_state_ == LifecycleState::kActive;

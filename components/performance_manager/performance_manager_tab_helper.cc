@@ -22,6 +22,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
@@ -241,7 +242,14 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
       FROM_HERE, base::BindOnce(
                      [](FrameNodeImpl* old_frame, FrameNodeImpl* new_frame) {
                        if (old_frame) {
-                         DCHECK(old_frame->is_current());
+                         // Prerendering is a special case where,
+                         // old_frame->is_current() would be set to false.
+                         // Ignore this check when Prerender2 is enabled.
+                         // TODO(https://crbug.com/1177859): Remove this check
+                         // once PerformanceManagerTabHelper is supported with
+                         // Prerender2.
+                         DCHECK(blink::features::IsPrerender2Enabled() ||
+                                old_frame->is_current());
                          old_frame->SetIsCurrent(false);
                        }
                        if (new_frame) {

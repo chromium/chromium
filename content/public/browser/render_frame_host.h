@@ -486,6 +486,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // boundary in general, e.g. when using WebContents::FromRenderFrameHost) to
   // check if the given RenderFrameHost is currently being displayed in a given
   // tab.
+  //
+  // TODO(https://crbug.com/1184622): Rename IsCurrent to a more suitable name
+  // and update this comment accordingly considering the new feature Prerender2,
+  // where it is possible to have current RenderFrameHosts in multiple frame
+  // trees.
   virtual bool IsCurrent() = 0;
 
   // Returns true iff the RenderFrameHost is inactive i.e., when the
