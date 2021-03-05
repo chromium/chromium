@@ -41,11 +41,10 @@ LLD does have a few advantages unrelated to speed, however:
 For that reason, it's possible to opt in to LLD for macOS builds (not for
 iOS builds, and that's intentionally not in scope).
 
-A background note: There are two versions of LLD upstream: The newer ports
-that are nowadays used for ELF and COFF, and an older design that's still the
-default Mach-O LLD. There's however an effort underway to write a new Mach-O
-LLD that's built on the same design as the ELF and COFF ports. Chromium Mac
-builds uses the new Mach-O port of LLD ("`ld64.lld.darwinnew`").
+A background note: There are two versions of LLD upstream: The newer ports,
+and an older design that's still available as ld64.lld.darwinold for Mach-O
+LLD. We use the new `lld/MachO` port, not the old one. The new one is the
+default selection for `-fuse-ld=lld` on macOS as of March 1 2021.
 
 Just like the LLD ELF port tries to be commandline-compatible with other ELF
 linkers and the LLD COFF port tries to be commandline-compatible with the
@@ -55,17 +54,16 @@ different platforms.
 
 ## Current status and known issues
 
-A `symbol_level = 0` `is_debug = false` `use_lld = true` build produces
+A `symbol_level = 0` `is_debug = false` `use_lld = true` x64 build produces
 a mostly-working Chromium.app, but there are open issues and missing features:
 
-- LLD does not yet have any ARM support
-  - relocations are missing
-    ([in-progress patch](https://reviews.llvm.org/D88629))
-  - ad-hoc code signing is missing
+- LLD's ARM support is very new
+  - relocations aren't handled correctly ([bug](https://llvm.org/PR49444))
+  - ad-hoc code signing only signs executables, not yet dylibs
+    ([in-progress patch](https://reviews.llvm.org/D97994)).
+  - likely other bugs for `target_cpu="arm64"`
 - LLD produces bad debug info, and LLD-linked binaries don't yet show C++
   source code in a debugger ([bug](https://llvm.org/PR48714)]
-- LLD doesn't produce unwind info, so code relying on exceptions doesn't work
-  ([bug](https://llvm.org/PR48389))
 - We haven't tried actually running any other binaries, so chances are many
   other tests fail
 - LLD doesn't yet implement `-dead_strip`, leading to many linker warnings
@@ -81,8 +79,8 @@ a mostly-working Chromium.app, but there are open issues and missing features:
    1. run `src/tools/clang/scripts/update.py --package=lld_mac` to download a
       prebuilt lld binary.
    2. build `lld` and `llvm-ar` locally and copy it to
-      `third_party/llvm-build/Relase+Asserts/bin`. Also run
-      `ln -s lld third_party/llvm-build/Release+Asserts/bin/ld64.lld.darwinnew`.
+      `third_party/llvm-build/Release+Asserts/bin`. Also run
+      `ln -s lld third_party/llvm-build/Release+Asserts/bin/ld64.lld`.
 
    You have to do this again every time `runhooks` updates the clang
    package.

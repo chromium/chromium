@@ -326,11 +326,7 @@ config("compiler") {
     }
 
     if (use_lld) {
-      if (is_apple) {
-        ldflags += [ "-fuse-ld=lld.darwinnew" ]
-      } else {
-        ldflags += [ "-fuse-ld=lld" ]
-      }
+      ldflags += [ "-fuse-ld=lld" ]
     }
 
     # Linker warnings.
