@@ -42,7 +42,6 @@ void WaitForNavigationAction::InternalProcessAction(
     SendResult(INVALID_ACTION);
     return;
   }
-  action_stopwatch_.StartWaitTime();
 }
 
 void WaitForNavigationAction::OnWaitForNavigation(bool success) {
@@ -50,7 +49,7 @@ void WaitForNavigationAction::OnWaitForNavigation(bool success) {
     // Already timed out.
     return;
   }
-  action_stopwatch_.StartActiveTime();
+
   SendResult(success ? ACTION_APPLIED : NAVIGATION_ERROR);
 }
 
@@ -65,7 +64,6 @@ void WaitForNavigationAction::OnTimeout() {
     // OnWaitForNavigation.
     return;
   }
-  action_stopwatch_.StartActiveTime();
   SendResult(TIMED_OUT);
 }
 

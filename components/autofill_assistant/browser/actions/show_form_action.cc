@@ -42,7 +42,6 @@ void ShowFormAction::InternalProcessAction(ProcessActionCallback callback) {
 }
 
 void ShowFormAction::OnFormValuesChanged(const FormProto::Result* form_result) {
-  action_stopwatch_.StartActiveTime();
   // Copy the current values to the action result.
   *processed_action_proto_->mutable_form_result() = *form_result;
 
@@ -63,7 +62,6 @@ void ShowFormAction::OnFormValuesChanged(const FormProto::Result* form_result) {
   user_actions->emplace_back(std::move(user_action));
   delegate_->Prompt(std::move(user_actions),
                     /* disable_force_expand_sheet = */ false);
-  action_stopwatch_.StartWaitTime();
 }
 
 void ShowFormAction::OnCancelForm(const ClientStatus& status) {
@@ -189,7 +187,6 @@ void ShowFormAction::OnButtonClicked() {
 }
 
 void ShowFormAction::EndAction(const ClientStatus& status) {
-  action_stopwatch_.StartActiveTime();
   delegate_->CleanUpAfterPrompt();
   delegate_->SetForm(nullptr, base::DoNothing(), base::DoNothing());
   UpdateProcessedAction(status);
