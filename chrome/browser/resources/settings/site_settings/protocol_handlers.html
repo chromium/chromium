@@ -8,16 +8,65 @@
         margin-inline-start: 20px;
         margin-top: 15px;
       }
+      #radioGroup {
+        padding: 0 var(--cr-section-padding);
+      }
+
+      #radioGroupSubHeading {
+        padding-bottom: 10px;
+      }
+
+      settings-collapse-radio-button {
+        --settings-collapse-toggle-min-height: var(--settings-row-min-height);
+      }
+
+      settings-collapse-radio-button:not(:first-of-type) {
+        --settings-collapse-separator-line: var(--cr-separator-line);
+      }
     </style>
-    <div class="cr-row first two-line">
-      <div id="categoryLabel" class="flex" on-click="categoryLabelClicked_"
-          actionable>
-        [[computeHandlersDescription_(categoryEnabled)]]
+    <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+      <div id="radioGroup">
+        <!-- TODO(1113642): Apply actual strings and new off icon. -->
+        <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+        <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+        <div id="radioSubHeading" class="secondary">
+          $i18n{siteSettingsDefaultBehaviorDescription}
+        </div>
+        <settings-radio-group
+          id="protcolHandlersRadio"
+          pref="[[handlersEnabledPref_]]"
+          on-change="onToggleChange_"
+          selectable-elements="settings-collapse-radio-button">
+          <settings-collapse-radio-button no-collapse
+              id="protcolHandlersRadioAllow"
+              pref="[[handlersEnabledPref_]]"
+              label="$i18n{siteSettingsAllow}"
+              name="true"
+              disabled$="[[isGuest_]]"
+              icon="settings:pdf">
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button no-collapse
+              id="protcolHandlersRadioBlock"
+              pref="[[handlersEnabledPref_]]"
+              label="$i18n{siteSettingsBlock}"
+              name="false"
+              disabled$="[[isGuest_]]"
+              icon="settings:pdf">
+          </settings-collapse-radio-button>
+        </settings-radio-group>
       </div>
-      <cr-toggle id="toggle" checked="{{categoryEnabled}}"
-          on-change="onToggleChange_" aria-labelledby="categoryLabel">
-      </cr-toggle>
-    </div>
+    </template>
+    <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+      <div class="cr-row first two-line">
+        <div id="categoryLabel" class="flex" on-click="categoryLabelClicked_"
+            actionable>
+          [[computeHandlersDescription_(categoryEnabled)]]
+        </div>
+        <cr-toggle id="toggle" checked="{{categoryEnabled}}"
+            on-change="onToggleChange_" aria-labelledby="categoryLabel">
+        </cr-toggle>
+      </div>
+    </template>
 
     <template is="dom-repeat" items="[[protocols]]" as="protocol">
       <div class="column-header">[[protocol.protocol_display_name]]</div>

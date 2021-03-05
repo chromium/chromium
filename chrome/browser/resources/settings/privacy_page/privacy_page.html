@@ -1,10 +1,10 @@
     <style include="cr-shared-style settings-shared iron-flex">
       .content-settings-header,
-      #notificationRadioGroup {
+      .radio-group {
         padding: 0 var(--cr-section-padding);
       }
 
-      #notificationSubHeading {
+      .radio-group-sub-heading {
         padding-bottom: 10px;
       }
 
@@ -388,7 +388,37 @@
       </template>
       <template is="dom-if" route-path="/content/pdfDocuments" no-search>
         <settings-subpage page-title="$i18n{siteSettingsPdfDocuments}">
-          <settings-pdf-documents prefs="{{prefs}}"></settings-pdf-documents>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div class="radio-group">
+              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+              <div class="secondary radio-sub-heading">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+              <settings-radio-group
+                  pref="{{prefs.plugins.always_open_pdf_externally}}"
+                  selectable-elements="settings-collapse-radio-button">
+                <!-- TODO(1113642): Apply actual strings and new off icon. -->
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.plugins.always_open_pdf_externally]]"
+                    label="$i18n{siteSettingsAllow}"
+                    name="true"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:pdf">
+                </settings-collapse-radio-button>
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.plugins.always_open_pdf_externally]]"
+                    label="$i18n{siteSettingsBlock}"
+                    name="false"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:pdf">
+                </settings-collapse-radio-button>
+              </settings-radio-group>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <settings-pdf-documents prefs="{{prefs}}"></settings-pdf-documents>
+          </template>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/javascript" no-search>
@@ -565,10 +595,11 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div id="notificationRadioGroup">
+            <div id="notificationRadioGroup" class="radio-group">
               <h2>$i18n{siteSettingsNotificationsDescription}</h2>
               <h2>$i18n{siteSettingsDefaultBehavior}</h2>
-              <div id="notificationSubHeading" class="secondary">
+              <div id="notificationSubHeading"
+                class="secondary radio-sub-heading">
                 $i18n{siteSettingsDefaultBehaviorDescription}
               </div>
               <settings-radio-group
@@ -817,12 +848,28 @@
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
         <template is="dom-if" route-path="/content/bluetoothDevices" no-search>
           <settings-subpage page-title="$i18n{siteSettingsBluetoothDevices}">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsBluetoothDevicesBlock}"
-                toggle-on-label=
-                    "$i18n{siteSettingsBluetoothDevicesAskRecommended}"
-                category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]">
-            </category-default-setting>
+            <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+              <div class="content-settings-header">
+                <h2>$i18n{siteSettingsBluetoothDevices}</h2>
+              </div>
+              <!-- TODO(1113642): Apply actual strings. -->
+              <settings-category-default-radio-group
+                    category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
+                    allow-option-label=
+                        "$i18n{siteSettingsAllow}"
+                    allow-option-icon="settings:bluetooth"
+                    block-option-label="$i18n{siteSettingsBlock}"
+                    block-option-icon="settings:bluetooth-off">
+            </settings-category-default-radio-group>
+            </template>
+            <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+              <category-default-setting
+                  toggle-off-label="$i18n{siteSettingsBluetoothDevicesBlock}"
+                  toggle-on-label=
+                      "$i18n{siteSettingsBluetoothDevicesAskRecommended}"
+                  category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]">
+              </category-default-setting>
+            </template>
             <chooser-exception-list
                 category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
                 chooser-type="[[ChooserType.BLUETOOTH_DEVICES]]">
@@ -873,12 +920,29 @@
       </template>
       <template is="dom-if" route-path="/content/hidDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsHidDevices}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsHidDevicesBlock}"
-              toggle-on-label=
-                  "$i18n{siteSettingsHidDevicesAskRecommended}"
-              category="[[ContentSettingsTypes.HID_DEVICES]]">
-          </category-default-setting>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div class="content-settings-header">
+              <h2>$i18n{siteSettingsHidDevices}</h2>
+            </div>
+            <!-- TODO(1113642): Apply actual strings. -->
+            <settings-category-default-radio-group
+                category="[[ContentSettingsTypes.HID_DEVICES]]"
+                allow-option-label=
+                    "$i18n{siteSettingsAllow}"
+                allow-option-icon="settings:hid-device"
+                block-option-label=
+                    "$i18n{siteSettingsBlock}"
+                block-option-icon="settings:hid-device-off">
+            </settings-category-default-radio-group>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-default-setting
+                toggle-off-label="$i18n{siteSettingsHidDevicesBlock}"
+                toggle-on-label=
+                    "$i18n{siteSettingsHidDevicesAskRecommended}"
+                category="[[ContentSettingsTypes.HID_DEVICES]]">
+            </category-default-setting>
+          </template>
           <chooser-exception-list
               category="[[ContentSettingsTypes.HID_DEVICES]]"
               chooser-type="[[ChooserType.HID_DEVICES]]">
@@ -912,22 +976,82 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
 </if>
-          <settings-toggle-button
-              pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
-              label="[[getProtectedContentLabel_(
-                  prefs.webkit.webprefs.encrypted_media_enabled.value)]]"
-              disabled$="[[isGuest_]]">
-          </settings-toggle-button>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div class="radio-group">
+              <!-- TODO(1113642): Apply actual strings and new off icon. -->
+              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+              <div class="secondary radio-sub-heading">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+              <settings-radio-group
+                pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
+                selectable-elements="settings-collapse-radio-button">
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
+                    label="$i18n{siteSettingsAllow}"
+                    name="true"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:protected-content">
+                </settings-collapse-radio-button>
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
+                    label="$i18n{siteSettingsBlock}"
+                    name="false"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:protected-content">
+                </settings-collapse-radio-button>
+              </settings-radio-group>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <settings-toggle-button
+                pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
+                label="[[getProtectedContentLabel_(
+                    prefs.webkit.webprefs.encrypted_media_enabled.value)]]"
+                disabled$="[[isGuest_]]">
+            </settings-toggle-button>
+          </template>
 <if expr="chromeos or is_win">
-          <div class="cr-row first two-line cr-padded-text">
-            $i18n{siteSettingsProtectedContentIdentifiersExplanation}
-          </div>
-          <settings-toggle-button
-              pref="{{prefs.settings.privacy.drm_enabled}}"
-              label="[[getProtectedContentIdentifiersLabel_(
-                  prefs.settings.privacy.drm_enabled.value)]]"
-              disabled$="[[isGuest_]]">
-          </settings-toggle-button>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+             <div class="radio-group">
+              <!-- TODO(1113642): Apply actual strings and new off icon. -->
+              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+              <div class="secondary radio-sub-heading">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+              <settings-radio-group
+                pref="{{prefs.settings.privacy.drm_enabled}}"
+                selectable-elements="settings-collapse-radio-button">
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.settings.privacy.drm_enabled]]"
+                    label="$i18n{siteSettingsAllow}"
+                    name="true"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:protected-content">
+                </settings-collapse-radio-button>
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.settings.privacy.drm_enabled]]"
+                    label="$i18n{siteSettingsBlock}"
+                    name="false"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:protected-content">
+                </settings-collapse-radio-button>
+              </settings-radio-group>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <div class="cr-row first two-line cr-padded-text">
+              $i18n{siteSettingsProtectedContentIdentifiersExplanation}
+            </div>
+            <settings-toggle-button
+                pref="{{prefs.settings.privacy.drm_enabled}}"
+                label="[[getProtectedContentIdentifiersLabel_(
+                    prefs.settings.privacy.drm_enabled.value)]]"
+                disabled$="[[isGuest_]]">
+            </settings-toggle-button>
+          </template>
 </if>
 <if expr="chromeos">
           <template is="dom-if"

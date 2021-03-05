@@ -10,14 +10,18 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../prefs/prefs.m.js';
+import '../privacy_page/collapse_radio_button.js';
 import '../settings_shared_css.m.js';
 import '../site_favicon.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -55,7 +59,10 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [SiteSettingsBehavior, WebUIListenerBehavior],
+  behaviors: [
+    SiteSettingsBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /**
@@ -84,6 +91,25 @@ Polymer({
      * @type {!Array<!HandlerEntry>}
      */
     ignoredProtocols: Array,
+
+    /** @private */
+    enableContentSettingsRedesign_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableContentSettingsRedesign');
+      }
+    },
+
+    /** @private {chrome.settingsPrivate.PrefObject} */
+    handlersEnabledPref_: {
+      type: Object,
+      value() {
+        return /** @type {chrome.settingsPrivate.PrefObject} */ ({
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        });
+      },
+    },
   },
 
   /** @override */
@@ -119,6 +145,7 @@ Polymer({
    */
   setHandlersEnabled_(enabled) {
     this.categoryEnabled = enabled;
+    this.set('handlersEnabledPref_.value', this.categoryEnabled);
   },
 
   /**
@@ -154,6 +181,10 @@ Polymer({
    * @private
    */
   onToggleChange_(event) {
+    if (this.enableContentSettingsRedesign_) {
+      this.categoryEnabled =
+          (this.$$('#protcolHandlersRadio').selected === 'true');
+    }
     this.browserProxy.setProtocolHandlerDefault(this.categoryEnabled);
   },
 

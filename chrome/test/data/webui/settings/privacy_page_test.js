@@ -28,13 +28,18 @@ const redesignedPages = [
   routes.SITE_SETTINGS_BACKGROUND_SYNC,
   routes.SITE_SETTINGS_CAMERA,
   routes.SITE_SETTINGS_CLIPBOARD,
+  routes.SITE_SETTINGS_HANDLERS,
+  routes.SITE_SETTINGS_HID_DEVICES,
+  routes.SITE_SETTINGS_IDLE_DETECTION,
   routes.SITE_SETTINGS_IMAGES,
   routes.SITE_SETTINGS_JAVASCRIPT,
   routes.SITE_SETTINGS_LOCATION,
   routes.SITE_SETTINGS_MICROPHONE,
   routes.SITE_SETTINGS_MIDI_DEVICES,
   routes.SITE_SETTINGS_NOTIFICATIONS,
+  routes.SITE_SETTINGS_PDF_DOCUMENTS,
   routes.SITE_SETTINGS_POPUPS,
+  routes.SITE_SETTINGS_PROTECTED_CONTENT,
   routes.SITE_SETTINGS_SENSORS,
   routes.SITE_SETTINGS_SERIAL_PORTS,
   routes.SITE_SETTINGS_SOUND,
@@ -52,8 +57,6 @@ const redesignedPages = [
 
 /** @type {!Array<!Route>} */
 const notRedesignedPages = [
-  routes.SITE_SETTINGS_HID_DEVICES,
-
   // Content settings that depend on flags being enabled.
   // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
   // routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
@@ -142,9 +145,11 @@ suite('PrivacyPage', function() {
     await flushTasks();
 
     assertFalse(loadTimeData.getBoolean('enableContentSettingsRedesign'));
+    // protocol handlers, pdf documents, and protected content do not use
+    // category-default-setting, resulting in the -3 below.
     assertEquals(
         page.root.querySelectorAll('category-default-setting').length,
-        redesignedPages.length + notRedesignedPages.length);
+        redesignedPages.length + notRedesignedPages.length - 3);
     assertEquals(
         page.root.querySelectorAll('settings-category-default-radio-group')
             .length,
@@ -245,12 +250,13 @@ suite('ContentSettingsRedesign', function() {
     assertEquals(
         page.root.querySelectorAll('category-default-setting').length,
         notRedesignedPages.length);
-    // All redesigned pages, except notifications, will use a
+    // All redesigned pages, except notifications, protocol handlers, pdf
+    // documents, and protected content, will use a
     // settings-category-default-radio-group.
     assertEquals(
         page.root.querySelectorAll('settings-category-default-radio-group')
             .length,
-        redesignedPages.length - 1);
+        redesignedPages.length - 4);
   });
 
   test('NotificationPageRedesign', async function() {
