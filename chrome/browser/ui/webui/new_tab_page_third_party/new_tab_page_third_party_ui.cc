@@ -70,10 +70,10 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
                     GetNewTabBackgroundTilingCSS(theme_provider));
   source->AddString("bookmarkbarattached",
                     bookmarkBarAttached ? "bookmark-bar-attached" : "");
-  source->AddString(
-      "colorBackground",
-      color_utils::SkColorToRgbaString(GetThemeColor(
-          theme_provider, ThemeProperties::COLOR_NTP_BACKGROUND)));
+  source->AddString("colorBackground",
+                    color_utils::SkColorToRgbaString(GetThemeColor(
+                        webui::GetNativeTheme(web_contents), theme_provider,
+                        ThemeProperties::COLOR_NTP_BACKGROUND)));
   source->AddString("themeId",
                     profile->GetPrefs()->GetString(prefs::kCurrentThemeID));
   source->AddString("hascustombackground",

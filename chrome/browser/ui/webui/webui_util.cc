@@ -21,6 +21,14 @@
 #include "base/enterprise_util.h"
 #endif
 
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/views/widget/widget.h"
+#endif  // defined(TOOLKIT_VIEWS)
+
 namespace webui {
 
 void SetJSModuleDefaults(content::WebUIDataSource* source) {
@@ -56,5 +64,38 @@ bool IsEnterpriseManaged() {
   return false;
 #endif
 }
+
+#if defined(TOOLKIT_VIEWS)
+ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents) {
+  ui::NativeTheme* native_theme = nullptr;
+
+  if (web_contents) {
+    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+
+    if (browser) {
+      // Find for WebContents hosted in a tab.
+      native_theme = browser->window()->GetNativeTheme();
+    }
+
+    if (!native_theme) {
+      // Find for WebContents hosted in a widget, but not directly in a
+      // Browser. e.g. Tab Search, Read Later.
+      views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+          web_contents->GetContentNativeView());
+      if (widget)
+        native_theme = widget->GetNativeTheme();
+    }
+  }
+
+  if (!native_theme) {
+    // Find for isolated WebContents, e.g. in tests.
+    // Or when |web_contents| is nullptr, because the renderer is not ready.
+    // TODO(crbug/1056916): Remove global accessor to NativeTheme.
+    native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  }
+
+  return native_theme;
+}
+#endif  // !defined(TOOLKIT_VIEWS)
 
 }  // namespace webui

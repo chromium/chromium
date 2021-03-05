@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/webui/app_launcher_login_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -99,12 +100,13 @@ std::string ReplaceTemplateExpressions(
 
 }  // namespace
 
-SkColor GetThemeColor(const ui::ThemeProvider& tp, int id) {
+SkColor GetThemeColor(const ui::NativeTheme* native_theme,
+                      const ui::ThemeProvider& tp,
+                      int id) {
   SkColor color = tp.GetColor(id);
   // If web contents are being inverted because the system is in high-contrast
   // mode, any system theme colors we use must be inverted too to cancel out.
-  return ui::NativeTheme::GetInstanceForNativeUi()
-                     ->GetPlatformHighContrastColorScheme() ==
+  return native_theme->GetPlatformHighContrastColorScheme() ==
                  ui::NativeTheme::PlatformHighContrastColorScheme::kDark
              ? color_utils::InvertColor(color)
              : color;
@@ -168,6 +170,7 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
   profile_pref_change_registrar_.Add(prefs::kNtpShownPage, callback);
   profile_pref_change_registrar_.Add(prefs::kCookieControlsMode, callback);
 
+  // TODO(crbug/1056916): Remove the global accessor to NativeTheme.
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 
   policy_change_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
@@ -240,21 +243,25 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(WindowType win_type) {
   }
 }
 
-base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(WindowType win_type) {
+base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(
+    WindowType win_type,
+    content::WebContents::Getter wc_getter) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Guest mode doesn't have theme-related CSS.
   if (win_type == GUEST)
     return nullptr;
 
+  // Returns the cached CSS if it exists.
+  // The cache will be invalidated when the theme of |wc_getter| changes.
   if (win_type == INCOGNITO) {
     if (!new_tab_incognito_css_)
-      CreateNewTabIncognitoCSS();
+      CreateNewTabIncognitoCSS(wc_getter);
     return new_tab_incognito_css_.get();
   }
 
   if (!new_tab_css_)
-    CreateNewTabCSS();
+    CreateNewTabCSS(wc_getter);
   return new_tab_css_.get();
 }
 
@@ -268,6 +275,7 @@ void NTPResourceCache::Observe(int type,
 }
 
 void NTPResourceCache::OnNativeThemeUpdated(ui::NativeTheme* updated_theme) {
+  // TODO(crbug/1056916): Remove the global accessor to NativeTheme.
   DCHECK_EQ(updated_theme, ui::NativeTheme::GetInstanceForNativeUi());
   Invalidate();
 }
@@ -469,7 +477,9 @@ scoped_refptr<base::RefCountedString> NTPResourceCache::CreateNewTabGuestHTML(
   return base::RefCountedString::TakeString(&full_html);
 }
 
-void NTPResourceCache::CreateNewTabIncognitoCSS() {
+void NTPResourceCache::CreateNewTabIncognitoCSS(
+    const content::WebContents::Getter wc_getter) {
+  const ui::NativeTheme* native_theme = webui::GetNativeTheme(wc_getter.Run());
   const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
       profile_->GetPrimaryOTRProfile());
 
@@ -482,7 +492,7 @@ void NTPResourceCache::CreateNewTabIncognitoCSS() {
 
   // Colors.
   substitutions["colorBackground"] = color_utils::SkColorToRgbaString(
-      GetThemeColor(tp, ThemeProperties::COLOR_NTP_BACKGROUND));
+      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_BACKGROUND));
   substitutions["backgroundBarDetached"] = GetNewTabBackgroundCSS(tp, false);
   substitutions["backgroundBarAttached"] = GetNewTabBackgroundCSS(tp, true);
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
@@ -501,19 +511,22 @@ void NTPResourceCache::CreateNewTabIncognitoCSS() {
   new_tab_incognito_css_ = base::RefCountedString::TakeString(&full_css);
 }
 
-void NTPResourceCache::CreateNewTabCSS() {
+void NTPResourceCache::CreateNewTabCSS(
+    const content::WebContents::Getter wc_getter) {
+  const ui::NativeTheme* native_theme = webui::GetNativeTheme(wc_getter.Run());
   const ui::ThemeProvider& tp =
       ThemeService::GetThemeProviderForProfile(profile_);
 
   // Get our theme colors.
   SkColor color_background =
-      GetThemeColor(tp, ThemeProperties::COLOR_NTP_BACKGROUND);
-  SkColor color_text = GetThemeColor(tp, ThemeProperties::COLOR_NTP_TEXT);
+      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_BACKGROUND);
+  SkColor color_text =
+      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_TEXT);
   SkColor color_text_light =
-      GetThemeColor(tp, ThemeProperties::COLOR_NTP_TEXT_LIGHT);
+      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_TEXT_LIGHT);
 
   SkColor color_header =
-      GetThemeColor(tp, ThemeProperties::COLOR_NTP_HEADER);
+      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_HEADER);
   // Generate a lighter color for the header gradients.
   color_utils::HSL header_lighter;
   color_utils::SkColorToHSL(color_header, &header_lighter);
@@ -539,7 +552,7 @@ void NTPResourceCache::CreateNewTabCSS() {
   substitutions["colorBackground"] =
       color_utils::SkColorToRgbaString(color_background);
   substitutions["colorLink"] = color_utils::SkColorToRgbString(
-      GetThemeColor(tp, ThemeProperties::COLOR_NTP_LINK));
+      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_LINK));
   substitutions["backgroundBarDetached"] = GetNewTabBackgroundCSS(tp, false);
   substitutions["backgroundBarAttached"] = GetNewTabBackgroundCSS(tp, true);
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);

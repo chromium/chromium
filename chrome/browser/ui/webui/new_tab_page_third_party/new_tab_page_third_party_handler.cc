@@ -15,6 +15,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
@@ -205,7 +206,8 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
       color_utils::IsDark(theme->shortcut_background_color);
   theme->shortcut_use_title_pill = false;
   theme->color_background = color_utils::SkColorToRgbaString(
-      GetThemeColor(theme_provider, ThemeProperties::COLOR_NTP_BACKGROUND));
+      GetThemeColor(webui::GetNativeTheme(web_contents_), theme_provider,
+                    ThemeProperties::COLOR_NTP_BACKGROUND));
   if (theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
     theme->background_tiling = GetNewTabBackgroundTilingCSS(theme_provider);
     theme->bookmark_bar_attached =

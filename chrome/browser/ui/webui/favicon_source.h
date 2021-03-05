@@ -58,7 +58,8 @@ class FaviconSource : public content::URLDataSource {
 
  protected:
   // Exposed for testing.
-  virtual ui::NativeTheme* GetNativeTheme();
+  virtual ui::NativeTheme* GetNativeTheme(
+      const content::WebContents::Getter& wc_getter);
   virtual base::RefCountedMemory* LoadIconBytes(float scale_factor,
                                                 int resource_id);
 
@@ -79,19 +80,23 @@ class FaviconSource : public content::URLDataSource {
   void OnFaviconDataAvailable(
       content::URLDataSource::GotDataCallback callback,
       const chrome::ParsedFaviconPath& parsed,
+      const content::WebContents::Getter& wc_getter,
       const favicon_base::FaviconRawBitmapResult& bitmap_result);
 
   // Sends the 16x16 DIP 1x default favicon.
-  void SendDefaultResponse(content::URLDataSource::GotDataCallback callback);
+  void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
+                           const content::WebContents::Getter& wc_getter);
 
   // Sends back default favicon or fallback monogram.
   void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
-                           const chrome::ParsedFaviconPath& parsed);
+                           const chrome::ParsedFaviconPath& parsed,
+                           const content::WebContents::Getter& wc_getter);
 
   // Sends the default favicon.
   void SendDefaultResponse(content::URLDataSource::GotDataCallback callback,
                            int size_in_dip,
-                           float scale_factor);
+                           float scale_factor,
+                           bool dark_mode);
 
   chrome::FaviconUrlFormat url_format_;
 
