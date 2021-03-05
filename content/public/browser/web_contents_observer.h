@@ -25,7 +25,6 @@
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -61,7 +60,10 @@ struct PrunedDetails;
 struct Referrer;
 
 // An observer API implemented by classes which are interested in various page
-// load events from WebContents.  They also get a chance to filter IPC messages.
+// events from WebContents.  They also get a chance to filter IPC messages.
+// The difference between WebContentsDelegate (WCD) and WebContentsObserver
+// (WCO) is that there is one WCD per WebContents and many WCOs. Methods which
+// have a return value, e.g. are expected to change state, should be on WCD.
 //
 // Since a WebContents can be a delegate to almost arbitrarily many
 // RenderViewHosts, it is important to check in those WebContentsObserver
@@ -653,17 +655,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void OnServiceWorkerAccessed(NavigationHandle* navigation_handle,
                                        const GURL& scope,
                                        AllowServiceWorkerResult allowed) {}
-  virtual bool ShowPopupMenu(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-      const gfx::Rect& bounds,
-      int32_t item_height,
-      double font_size,
-      int32_t selected_item,
-      std::vector<blink::mojom::MenuItemPtr>* menu_items,
-      bool right_aligned,
-      bool allow_multiple_selection);
-
   // IPC::Listener implementation.
   // DEPRECATED: Use (i.e. override) the other overload instead:
   //     virtual bool OnMessageReceived(const IPC::Message& message,

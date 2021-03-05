@@ -433,9 +433,14 @@ RenderProcessHostBadIpcMessageWaiter::Wait() {
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
-ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContents* web_contents,
+ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                                              RenderFrameHostImpl* frame_host)
-    : WebContentsObserver(web_contents), frame_host_(frame_host) {
+    : frame_host_(frame_host) {
+#if defined(OS_MAC) || defined(OS_ANDROID)
+  web_contents_ = web_contents;
+  web_contents_->set_show_popup_menu_callback_for_testing(base::BindOnce(
+      &ShowPopupWidgetWaiter::ShowPopupMenu, base::Unretained(this)));
+#endif
   frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
       &ShowPopupWidgetWaiter::DidCreatePopupWidget, base::Unretained(this)));
 }
@@ -453,7 +458,9 @@ void ShowPopupWidgetWaiter::Wait() {
 }
 
 void ShowPopupWidgetWaiter::Stop() {
-  Observe(nullptr);
+#if defined(OS_MAC) || defined(OS_ANDROID)
+  web_contents_->set_show_popup_menu_callback_for_testing(base::NullCallback());
+#endif
   frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
   frame_host_ = nullptr;
 }
@@ -479,19 +486,9 @@ void ShowPopupWidgetWaiter::DidCreatePopupWidget(
 }
 
 #if defined(OS_MAC) || defined(OS_ANDROID)
-bool ShowPopupWidgetWaiter::ShowPopupMenu(
-    RenderFrameHost* render_frame_host,
-    mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-    const gfx::Rect& bounds,
-    int32_t item_height,
-    double font_size,
-    int32_t selected_item,
-    std::vector<blink::mojom::MenuItemPtr>* menu_items,
-    bool right_aligned,
-    bool allow_multiple_selection) {
+void ShowPopupWidgetWaiter::ShowPopupMenu(const gfx::Rect& bounds) {
   initial_rect_ = bounds;
   run_loop_.Quit();
-  return true;
 }
 #endif
 

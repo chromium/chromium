@@ -112,7 +112,11 @@ enum class PictureInPictureResult {
 };
 
 // Objects implement this interface to get notified about changes in the
-// WebContents and to provide necessary functionality.
+// WebContents and to provide necessary functionality. If a method doesn't
+// change state, e.g. has no return value, then it can move to
+// WebContentsObserver if many places want to observe the change. If the
+// implementation of one of the methods below would be shared by many or all of
+// WebContentsDelegate implementations then it can go on ContentBrowserClient.
 class CONTENT_EXPORT WebContentsDelegate {
  public:
   WebContentsDelegate();

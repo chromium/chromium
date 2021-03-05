@@ -232,10 +232,9 @@ class RenderProcessHostBadIpcMessageWaiter {
 };
 
 class ShowPopupWidgetWaiter
-    : public WebContentsObserver,
-      public blink::mojom::PopupWidgetHostInterceptorForTesting {
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
  public:
-  ShowPopupWidgetWaiter(WebContents* web_contents,
+  ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                         RenderFrameHostImpl* frame_host);
   ~ShowPopupWidgetWaiter() override;
 
@@ -250,19 +249,8 @@ class ShowPopupWidgetWaiter
   void Stop();
 
  private:
-
-  // WebContentsObserver:
 #if defined(OS_MAC) || defined(OS_ANDROID)
-  bool ShowPopupMenu(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-      const gfx::Rect& bounds,
-      int32_t item_height,
-      double font_size,
-      int32_t selected_item,
-      std::vector<blink::mojom::MenuItemPtr>* menu_items,
-      bool right_aligned,
-      bool allow_multiple_selection) override;
+  void ShowPopupMenu(const gfx::Rect& bounds);
 #endif
 
   // Callback bound for creating a popup widget.
@@ -278,6 +266,9 @@ class ShowPopupWidgetWaiter
   int32_t routing_id_ = MSG_ROUTING_NONE;
   int32_t process_id_ = 0;
   RenderFrameHostImpl* frame_host_;
+#if defined(OS_MAC) || defined(OS_ANDROID)
+  WebContentsImpl* web_contents_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(ShowPopupWidgetWaiter);
 };

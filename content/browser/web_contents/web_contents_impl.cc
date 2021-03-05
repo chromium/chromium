@@ -8426,14 +8426,18 @@ bool WebContentsImpl::ShowPopupMenu(
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShowPopupMenu",
                         "render_frame_host",
                         base::trace_event::ToTracedValue(render_frame_host));
-  for (auto& observer : observers_.observer_list()) {
-    if (observer.ShowPopupMenu(render_frame_host, popup_client, bounds,
-                               item_height, font_size, selected_item,
-                               menu_items, right_aligned,
-                               allow_multiple_selection)) {
-      return true;
-    }
+  if (show_poup_menu_callback_) {
+    std::move(show_poup_menu_callback_).Run(bounds);
+    return true;
   }
+#if defined(OS_MAC)
+  if (browser_plugin_guest_) {
+    browser_plugin_guest_->ShowPopupMenu(
+        render_frame_host, popup_client, bounds, item_height, font_size,
+        selected_item, menu_items, right_aligned, allow_multiple_selection);
+    return true;
+  }
+#endif
   return false;
 }
 
