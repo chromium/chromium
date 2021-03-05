@@ -140,6 +140,12 @@ struct SIMInfo {
 };
 
 struct CellularStateProperties {
+  // ICCID of the eSIM profile or the physical SIM that corresponds to this
+  // network.
+  string iccid;
+  // The EID of EUICC that this network is installed on. Empty if this network
+  // corresponds to a physical SIM.
+  string eid;
   // Enumerated ONC activation state.
   ActivationStateType activation_state = kUnknown;
   // ONC NetworkTechnology value.

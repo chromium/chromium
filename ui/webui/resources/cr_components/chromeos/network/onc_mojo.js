@@ -622,6 +622,8 @@
     switch (type) {
       case mojom.NetworkType.kCellular:
         result.typeState.cellular = {
+          iccid: '',
+          eid: '',
           activationState: mojom.ActivationStateType.kUnknown,
           networkTechnology: '',
           roaming: false,

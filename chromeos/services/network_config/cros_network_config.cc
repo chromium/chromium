@@ -402,6 +402,8 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
         result->name = *profile_name;
 
       auto cellular = mojom::CellularStateProperties::New();
+      cellular->iccid = network->iccid();
+      cellular->eid = network->eid();
       cellular->activation_state = network->GetMojoActivationState();
       cellular->network_technology = ShillToOnc(network->network_technology(),
                                                 onc::kNetworkTechnologyTable);
