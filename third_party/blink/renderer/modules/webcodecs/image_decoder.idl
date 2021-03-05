@@ -14,7 +14,8 @@
   [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsImageDecoder] constructor(ImageDecoderInit init);
 
   // Returns true if ImageDecoder supports decoding of the given mime type.
-  static boolean canDecodeType(USVString type);
+  [CallWith=ScriptState]
+  static Promise<boolean> isTypeSupported(DOMString type);
 
   // Decodes a frame using the given |options| or the first frame if no options
   // are provided. If data is still being received, the promise won't be
@@ -47,7 +48,7 @@
 
   // The mime type for the decoded image. This reflects the value provided
   // during construction.
-  readonly attribute USVString type;
+  readonly attribute DOMString type;
 
   // The image's preferred repetition count.
   //

@@ -18,6 +18,7 @@
 
 namespace blink {
 
+class DOMException;
 class ExceptionState;
 class ScriptState;
 class ImageDecodeOptions;
@@ -43,7 +44,7 @@ class MODULES_EXPORT ImageDecoderExternal final
   ImageDecoderExternal(ScriptState*, const ImageDecoderInit*, ExceptionState&);
   ~ImageDecoderExternal() override;
 
-  static bool canDecodeType(String type);
+  static ScriptPromise isTypeSupported(ScriptState*, String type);
 
   using ImageTrackList = HeapVector<Member<ImageTrackExternal>>;
 
@@ -80,6 +81,9 @@ class MODULES_EXPORT ImageDecoderExternal final
   // Returns false if the decoder was constructed with an ArrayBuffer or
   // ArrayBufferView that has since been neutered.
   bool HasValidEncodedData() const;
+
+  // Create a common unsupported image type exception for rejecting promises.
+  DOMException* CreateUnsupportedImageTypeException() const;
 
   Member<ScriptState> script_state_;
 

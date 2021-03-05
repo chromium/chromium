@@ -31,6 +31,15 @@
 
 namespace blink {
 
+namespace {
+
+bool IsTypeSupportedInternal(String type) {
+  return type.ContainsOnlyASCIIOrEmpty() &&
+         IsSupportedImageMimeType(type.Ascii());
+}
+
+}  // namespace
+
 // static
 ImageDecoderExternal* ImageDecoderExternal::Create(
     ScriptState* script_state,
@@ -56,9 +65,12 @@ void ImageDecoderExternal::DecodeRequest::Trace(Visitor* visitor) const {
 }
 
 // static
-bool ImageDecoderExternal::canDecodeType(String type) {
-  return type.ContainsOnlyASCIIOrEmpty() &&
-         IsSupportedImageMimeType(type.Ascii());
+ScriptPromise ImageDecoderExternal::isTypeSupported(ScriptState* script_state,
+                                                    String type) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
+  resolver->Resolve(IsTypeSupportedInternal(type));
+  return promise;
 }
 
 ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
@@ -82,11 +94,8 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     desired_size_ = SkISize::Make(init->desiredWidth(), init->desiredHeight());
 
   mime_type_ = init->type().LowerASCII();
-  if (!canDecodeType(mime_type_)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Unsupported image format");
+  if (!IsTypeSupportedInternal(mime_type_))
     return;
-  }
 
   if (init->hasPreferAnimation())
     prefer_animation_ = init->preferAnimation();
@@ -157,9 +166,14 @@ ImageDecoderExternal::~ImageDecoderExternal() {
 
 ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
   DVLOG(1) << __func__;
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   auto promise = resolver->Promise();
+
+  if (!decoder_) {
+    resolver->Reject(CreateUnsupportedImageTypeException());
+    return promise;
+  }
+
   pending_decodes_.push_back(MakeGarbageCollected<DecodeRequest>(
       resolver, options ? options->frameIndex() : 0,
       options ? options->completeFramesOnly() : true));
@@ -172,6 +186,12 @@ ScriptPromise ImageDecoderExternal::decodeMetadata() {
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   auto promise = resolver->Promise();
+
+  if (!decoder_) {
+    resolver->Reject(CreateUnsupportedImageTypeException());
+    return promise;
+  }
+
   pending_metadata_decodes_.push_back(resolver);
   MaybeSatisfyPendingMetadataDecodes();
   return promise;
@@ -289,13 +309,13 @@ void ImageDecoderExternal::CreateImageDecoder() {
     DCHECK(data_complete_);
   }
 
-  DCHECK(canDecodeType(mime_type_));
+  DCHECK(IsTypeSupportedInternal(mime_type_));
   decoder_ = ImageDecoder::CreateByMimeType(
       mime_type_, segment_reader_, data_complete_, alpha_option_,
       ImageDecoder::kHighBitDepthToHalfFloat, color_behavior_, desired_size_);
 
   // CreateByImageType() can't fail if we use a supported image type. Which we
-  // DCHECK above via canDecodeType().
+  // DCHECK above via isTypeSupported().
   DCHECK(decoder_) << mime_type_;
 }
 
@@ -444,8 +464,8 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
 }
 
 void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
-  DCHECK(HasValidEncodedData());
   DCHECK(decoder_);
+  DCHECK(HasValidEncodedData());
   if (!decoder_->IsSizeAvailable() && !decoder_->Failed())
     return;
 
@@ -456,6 +476,8 @@ void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
 }
 
 void ImageDecoderExternal::MaybeUpdateMetadata() {
+  DCHECK(decoder_);
+
   if (!HasValidEncodedData())
     return;
 
@@ -527,6 +549,15 @@ bool ImageDecoderExternal::HasValidEncodedData() const {
   }
 
   return true;
+}
+
+DOMException* ImageDecoderExternal::CreateUnsupportedImageTypeException()
+    const {
+  DCHECK(!decoder_);
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError,
+      String::Format("The provided image type (%s) is not supported",
+                     mime_type_.Ascii().c_str()));
 }
 
 }  // namespace blink

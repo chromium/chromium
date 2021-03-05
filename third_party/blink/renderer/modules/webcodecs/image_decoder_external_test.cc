@@ -60,34 +60,47 @@ class ImageDecoderTest : public testing::Test {
     file_path.Append(file_name);
     return test::ReadFromFile(file_path.ToString());
   }
+
+  bool IsTypeSupported(V8TestingScope* v8_scope, String type) {
+    auto promise =
+        ImageDecoderExternal::isTypeSupported(v8_scope->GetScriptState(), type);
+    ScriptPromiseTester tester(v8_scope->GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_FALSE(tester.IsRejected());
+
+    auto v8_value = tester.Value().V8Value();
+    EXPECT_TRUE(v8_value->IsBoolean());
+    return v8_value.As<v8::Boolean>()->Value();
+  }
 };
 
-TEST_F(ImageDecoderTest, CanDecodeType) {
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/jpeg"));
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/pjpeg"));
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/jpg"));
+TEST_F(ImageDecoderTest, IsTypeSupported) {
+  V8TestingScope v8_scope;
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/jpeg"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/pjpeg"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/jpg"));
 
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/png"));
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/x-png"));
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/apng"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/png"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/x-png"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/apng"));
 
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/gif"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/gif"));
 
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/webp"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/webp"));
 
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/x-icon"));
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/vnd.microsoft.icon"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/x-icon"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/vnd.microsoft.icon"));
 
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/bmp"));
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType("image/x-xbitmap"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/bmp"));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, "image/x-xbitmap"));
 
-  EXPECT_EQ(ImageDecoderExternal::canDecodeType("image/avif"),
+  EXPECT_EQ(IsTypeSupported(&v8_scope, "image/avif"),
             BUILDFLAG(ENABLE_AV1_DECODER));
 
-  EXPECT_FALSE(ImageDecoderExternal::canDecodeType("image/svg+xml"));
-  EXPECT_FALSE(ImageDecoderExternal::canDecodeType("image/heif"));
-  EXPECT_FALSE(ImageDecoderExternal::canDecodeType("image/pcx"));
-  EXPECT_FALSE(ImageDecoderExternal::canDecodeType("image/bpg"));
+  EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/svg+xml"));
+  EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/heif"));
+  EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/pcx"));
+  EXPECT_FALSE(IsTypeSupported(&v8_scope, "image/bpg"));
 }
 
 TEST_F(ImageDecoderTest, DecodeEmpty) {
@@ -126,7 +139,7 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
   V8TestingScope v8_scope;
 
   constexpr char kImageType[] = "image/gif";
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType(kImageType));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
@@ -157,17 +170,31 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
 TEST_F(ImageDecoderTest, DecodeUnsupported) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/svg+xml";
-  EXPECT_FALSE(ImageDecoderExternal::canDecodeType(kImageType));
+  EXPECT_FALSE(IsTypeSupported(&v8_scope, kImageType));
   auto* decoder =
       CreateDecoder(&v8_scope, "images/resources/test.svg", kImageType);
-  EXPECT_FALSE(decoder);
-  EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
+  EXPECT_TRUE(decoder);
+  EXPECT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->decodeMetadata();
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+  }
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+  }
 }
 
 TEST_F(ImageDecoderTest, DecoderCreationMixedCaseMimeType) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/GiF";
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType(kImageType));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
   auto* decoder =
       CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
   ASSERT_TRUE(decoder);
@@ -178,7 +205,7 @@ TEST_F(ImageDecoderTest, DecoderCreationMixedCaseMimeType) {
 TEST_F(ImageDecoderTest, DecodeGif) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/gif";
-  EXPECT_TRUE(ImageDecoderExternal::canDecodeType(kImageType));
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
   auto* decoder =
       CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
   ASSERT_TRUE(decoder);

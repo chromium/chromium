@@ -4633,7 +4633,7 @@ interface ImageData
     method constructor
     method getSettings
 interface ImageDecoder
-    static method canDecodeType
+    static method isTypeSupported
     attribute @@toStringTag
     getter complete
     getter frameCount
