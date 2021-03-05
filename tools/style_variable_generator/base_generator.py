@@ -26,6 +26,10 @@ import jinja2
 class Modes:
     LIGHT = 'light'
     DARK = 'dark'
+    # The mode that colors will fallback to when not specified in a
+    # non-default mode. An error will be raised if a color in any mode is
+    # not specified in the default mode.
+    DEFAULT = LIGHT
     ALL = [LIGHT, DARK]
 
 
@@ -39,9 +43,8 @@ class ColorModel:
        e.g ColorModel['blue'][Modes.LIGHT] = Color(...)
     '''
 
-    def __init__(self, default_mode, opacity_model):
+    def __init__(self, opacity_model):
         self.variables = collections.OrderedDict()
-        self._default_mode = default_mode
         self.opacity_model = opacity_model
 
     def Add(self, mode, name, value):
@@ -56,7 +59,7 @@ class ColorModel:
         if mode in self.variables[name]:
             return self.variables[name][mode]
 
-        return self.variables[name][self._default_mode]
+        return self.variables[name][Modes.DEFAULT]
 
     # Returns a value from 0-1 representing the final opacity of |color|.
     def ResolveOpacity(self, color):
@@ -110,13 +113,8 @@ class BaseGenerator:
         # If specified, only generates the given mode.
         self.generate_single_mode = None
 
-        # The mode that colors will fallback to when not specified in a
-        # non-default mode. An error will be raised if a color in any mode is
-        # not specified in the default mode.
-        self._default_mode = Modes.LIGHT
-
         opacity_model = collections.OrderedDict()
-        color_model = ColorModel(self._default_mode, opacity_model)
+        color_model = ColorModel(opacity_model)
 
         # A dictionary of |VariableType| to models containing mappings of
         # variable names to values.
@@ -150,7 +148,7 @@ class BaseGenerator:
             strtype = str if sys.version_info >= (3, ) else basestring
 
             if isinstance(value_obj, strtype):
-                self.model[VariableType.COLOR].Add(self._default_mode, name,
+                self.model[VariableType.COLOR].Add(Modes.DEFAULT, name,
                                                    Color(value_obj))
             elif isinstance(value_obj, dict):
                 for mode in Modes.ALL:
@@ -226,9 +224,9 @@ class BaseGenerator:
 
         def CheckColorInDefaultMode(name):
             if (name not in colors.variables
-                    or self._default_mode not in colors.variables[name]):
+                    or Modes.DEFAULT not in colors.variables[name]):
                 raise ValueError("%s not defined in default mode '%s'" %
-                                 (name, self._default_mode))
+                                 (name, Modes.DEFAULT))
 
         # Check all colors in all modes refer to colors that exist in the
         # default mode.
