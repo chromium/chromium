@@ -459,6 +459,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
               old_mailbox, mailbox, GetBackingTextureTarget(), 0, 0, 0, 0,
               Size().Width(), Size().Height(), false /* unpack_flip_y */,
               false /* unpack_premultiply_alpha */);
+        } else if (use_oop_rasterization_) {
+          // If we're not copying over the previous contents, we need to ensure
+          // that the image is cleared on the next BeginRasterCHROMIUM.
+          is_cleared_ = false;
         }
 
         // In non-OOPR mode we need to update the client side SkSurface with the
@@ -518,14 +522,16 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     gfx::Size size(Size().Width(), Size().Height());
     size_t max_op_size_hint =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-    bool use_lcd = false;
     gfx::Rect full_raster_rect(Size().Width(), Size().Height());
     gfx::Rect playback_rect(Size().Width(), Size().Height());
     gfx::Vector2dF post_translate(0.f, 0.f);
 
+    const bool needs_clear = !is_cleared_;
+    is_cleared_ = true;
+
     ri->BeginRasterCHROMIUM(
-        background_color, 0 /* msaa_sample_count */, use_lcd,
-        ColorParams().GetStorageGfxColorSpace(),
+        background_color, needs_clear, /*msaa_sample_count=*/0,
+        /*can_use_lcd_text=*/false, ColorParams().GetStorageGfxColorSpace(),
         resource()->GetOrCreateGpuMailbox(kUnverifiedSyncToken).name);
 
     ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
@@ -674,6 +680,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   const uint32_t shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
   const bool use_oop_rasterization_;
+  bool is_cleared_ = false;
   scoped_refptr<CanvasResource> resource_;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 };

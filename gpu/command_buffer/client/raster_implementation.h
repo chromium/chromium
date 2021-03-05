@@ -138,6 +138,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       const gpu::Mailbox yuva_plane_mailboxes[]) override;
 
   void BeginRasterCHROMIUM(GLuint sk_color,
+                           GLboolean needs_clear,
                            GLuint msaa_sample_count,
                            GLboolean can_use_lcd_text,
                            const gfx::ColorSpace& color_space,

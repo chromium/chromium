@@ -272,6 +272,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   // Allocate a backing for the resource if needed, either for gpu or software
   // compositing.
   ResourcePool::InUsePoolResource pool_resource;
+  bool needs_clear = false;
   if (draw_mode == DRAW_MODE_HARDWARE) {
     DCHECK(raster_context_provider || context_provider);
     const auto& caps = raster_context_provider
@@ -317,6 +318,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       }
       pool_resource.set_gpu_backing(std::move(backing));
+      needs_clear = true;
     } else if (pool_resource.gpu_backing()->returned_sync_token.HasData()) {
       if (raster_context_provider) {
         auto* ri = raster_context_provider->RasterInterface();
@@ -373,7 +375,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       constexpr GLuint background_color = SkColorSetARGB(0, 0, 0, 0);
       constexpr GLuint msaa_sample_count = -1;
       constexpr bool can_use_lcd_text = true;
-      ri->BeginRasterCHROMIUM(background_color, msaa_sample_count,
+      ri->BeginRasterCHROMIUM(background_color, needs_clear, msaa_sample_count,
                               can_use_lcd_text, gfx::ColorSpace::CreateSRGB(),
                               backing->mailbox.name);
       gfx::Vector2dF post_translate(0.f, 0.f);

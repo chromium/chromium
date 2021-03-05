@@ -112,6 +112,7 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
       *static_cast<const volatile raster::cmds::BeginRasterCHROMIUMImmediate*>(
           cmd_data);
   GLuint sk_color = static_cast<GLuint>(c.sk_color);
+  GLboolean needs_clear = static_cast<GLboolean>(c.needs_clear);
   GLuint msaa_sample_count = static_cast<GLuint>(c.msaa_sample_count);
   GLboolean can_use_lcd_text = static_cast<GLboolean>(c.can_use_lcd_text);
   uint32_t mailbox_size;
@@ -127,7 +128,8 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
   if (mailbox == nullptr) {
     return error::kOutOfBounds;
   }
-  DoBeginRasterCHROMIUM(sk_color, msaa_sample_count, can_use_lcd_text, mailbox);
+  DoBeginRasterCHROMIUM(sk_color, needs_clear, msaa_sample_count,
+                        can_use_lcd_text, mailbox);
   return error::kNoError;
 }
 

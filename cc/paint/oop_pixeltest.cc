@@ -174,16 +174,20 @@ class OopPixelTest : public testing::Test,
 
     if (options.preclear) {
       raster_implementation->BeginRasterCHROMIUM(
-          options.preclear_color, options.msaa_sample_count,
-          options.use_lcd_text, options.color_space, mailbox.name);
+          options.preclear_color, /*needs_clear=*/options.preclear,
+          options.msaa_sample_count, options.use_lcd_text, options.color_space,
+          mailbox.name);
       raster_implementation->EndRasterCHROMIUM();
     }
 
     // "Out of process" raster! \o/
-
+    // If |options.preclear| is true, the mailbox has already been cleared by
+    // the BeginRasterCHROMIUM call above, and we want to test that it is indeed
+    // cleared, so set |needs_clear| to false here.
     raster_implementation->BeginRasterCHROMIUM(
-        options.background_color, options.msaa_sample_count,
-        options.use_lcd_text, options.color_space, mailbox.name);
+        options.background_color, /*needs_clear=*/!options.preclear,
+        options.msaa_sample_count, options.use_lcd_text, options.color_space,
+        mailbox.name);
     size_t max_op_size_limit =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
     raster_implementation->RasterCHROMIUM(

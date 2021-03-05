@@ -61,6 +61,7 @@ static void RasterizeSourceOOP(
     const RasterSource::PlaybackSettings& playback_settings,
     viz::RasterContextProvider* context_provider) {
   gpu::raster::RasterInterface* ri = context_provider->RasterInterface();
+  bool mailbox_needs_clear = false;
   if (mailbox->IsZero()) {
     DCHECK(!sync_token.HasData());
     auto* sii = context_provider->SharedImageInterface();
@@ -72,14 +73,16 @@ static void RasterizeSourceOOP(
     *mailbox = sii->CreateSharedImage(
         resource_format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
+    mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
   } else {
     ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   }
 
   ri->BeginRasterCHROMIUM(
-      raster_source->background_color(), playback_settings.msaa_sample_count,
-      playback_settings.use_lcd_text, color_space, mailbox->name);
+      raster_source->background_color(), mailbox_needs_clear,
+      playback_settings.msaa_sample_count, playback_settings.use_lcd_text,
+      color_space, mailbox->name);
   float recording_to_raster_scale =
       transform.scale() / raster_source->recording_scale_factor();
   gfx::Size content_size = raster_source->GetContentSize(transform.scale());

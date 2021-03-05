@@ -89,6 +89,7 @@ void LoseContextCHROMIUM(GLenum current, GLenum other) {
 }
 
 void BeginRasterCHROMIUMImmediate(GLuint sk_color,
+                                  GLboolean needs_clear,
                                   GLuint msaa_sample_count,
                                   GLboolean can_use_lcd_text,
                                   const GLbyte* mailbox) {
@@ -98,7 +99,8 @@ void BeginRasterCHROMIUMImmediate(GLuint sk_color,
       GetImmediateCmdSpaceTotalSize<raster::cmds::BeginRasterCHROMIUMImmediate>(
           size);
   if (c) {
-    c->Init(sk_color, msaa_sample_count, can_use_lcd_text, mailbox);
+    c->Init(sk_color, needs_clear, msaa_sample_count, can_use_lcd_text,
+            mailbox);
   }
 }
 
