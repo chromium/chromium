@@ -311,9 +311,9 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
   options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
+  options.os_hooks[OsHookType::kUrlHandlers] = true;
 #else
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
+  options.os_hooks[OsHookType::kUrlHandlers] = false;
 #endif
 
   os_integration_manager_->InstallOsHooks(

@@ -157,8 +157,7 @@ std::wstring GetAppNameExtensionForNextInstall(
 base::FilePath GetAppSpecificLauncherFilename(const std::wstring& app_name) {
   // Remove any characters that are illegal in Windows filenames.
   base::FilePath::StringType sanitized_app_name =
-      web_app::internals::GetSanitizedFileName(base::AsString16(app_name))
-          .value();
+      internals::GetSanitizedFileName(base::AsString16(app_name)).value();
 
   // On Windows 7, where the launcher has no file extension, replace any '.'
   // characters with '_' to prevent a portion of the filename from being

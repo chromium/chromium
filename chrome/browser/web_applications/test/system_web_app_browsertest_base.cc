@@ -102,7 +102,7 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
-    web_app::SystemAppType type,
+    SystemAppType type,
     Browser** browser) {
   return LaunchAppWithoutWaiting(LaunchParamsForApp(type), browser);
 }

@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
   EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));
   EXPECT_TRUE(registrar.HasExternalAppWithInstallSource(
-      app_id, web_app::ExternalInstallSource::kSystemInstalled));
+      app_id, ExternalInstallSource::kSystemInstalled));
   EXPECT_EQ(
       registrar.FindAppWithUrlInScope(content::GetWebUIURL("test-system-app/")),
       app_id);
@@ -986,11 +986,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
   // Check all system app types has a corresponding SystemWebAppDataProto entry
   // defined.
   for (const auto& type_and_info : app_map) {
-    EXPECT_TRUE(::web_app::SystemWebAppDataProto_SystemAppType_IsValid(
-        static_cast<::web_app::SystemWebAppDataProto_SystemAppType>(
-            type_and_info.first)))
+    EXPECT_TRUE(SystemWebAppDataProto_SystemAppType_IsValid(
+        static_cast<SystemWebAppDataProto_SystemAppType>(type_and_info.first)))
         << "Please make sure you have added a corresponding entry to "
-           "web_app::SystemWebAppDataProto when adding a new System Web App.";
+           "SystemWebAppDataProto when adding a new System Web App.";
   }
 }
 
@@ -1119,7 +1118,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));
   EXPECT_TRUE(registrar.HasExternalAppWithInstallSource(
-      app_id, web_app::ExternalInstallSource::kSystemInstalled));
+      app_id, ExternalInstallSource::kSystemInstalled));
   EXPECT_EQ(registrar.FindAppWithUrlInScope(
                 GURL("chrome-untrusted://test-system-app/")),
             app_id);

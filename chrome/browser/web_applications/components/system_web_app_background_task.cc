@@ -53,16 +53,14 @@ void SystemAppBackgroundTask::NavigateTimerBackgroundPage() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SystemAppBackgroundTask::OnLoaderReady(
-    web_app::WebAppUrlLoader::Result result) {
+void SystemAppBackgroundTask::OnLoaderReady(WebAppUrlLoader::Result result) {
   web_app_url_loader_->LoadUrl(
       url_, web_contents_.get(), WebAppUrlLoader::UrlComparison::kExact,
       base::BindOnce(&SystemAppBackgroundTask::OnPageReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SystemAppBackgroundTask::OnPageReady(
-    web_app::WebAppUrlLoader::Result result) {
+void SystemAppBackgroundTask::OnPageReady(WebAppUrlLoader::Result result) {
   if (result == WebAppUrlLoader::Result::kUrlLoaded)
     opened_count_++;
 }

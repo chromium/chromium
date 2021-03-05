@@ -331,7 +331,7 @@ TestSystemWebAppInstallation::CreateWebAppProvider(SystemAppInfo info,
 
   profile_ = profile;
   if (GetWebUIType(info.install_url) == WebUIType::kChromeUntrusted) {
-    web_app::AddTestURLDataSource(
+    AddTestURLDataSource(
         GetChromeUntrustedDataSourceNameFromInstallUrl(info.install_url),
         profile);
   }

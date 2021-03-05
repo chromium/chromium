@@ -163,7 +163,7 @@ apps::UrlHandlers WebAppRegistrar::GetAppUrlHandlers(
                  : std::vector<apps::UrlHandlerInfo>();
 }
 
-GURL WebAppRegistrar::GetAppManifestUrl(const web_app::AppId& app_id) const {
+GURL WebAppRegistrar::GetAppManifestUrl(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->manifest_url() : GURL::EmptyGURL();
 }

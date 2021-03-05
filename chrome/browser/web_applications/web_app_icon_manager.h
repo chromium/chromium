@@ -82,7 +82,7 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size_in_px,
       ReadCompressedIconWithPurposeCallback callback) const override;
-  SkBitmap GetFavicon(const web_app::AppId& app_id) const override;
+  SkBitmap GetFavicon(const AppId& app_id) const override;
 
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;

@@ -31,10 +31,9 @@ UrlHandlerManagerImpl::UrlHandlerManagerImpl(Profile* profile)
 UrlHandlerManagerImpl::~UrlHandlerManagerImpl() = default;
 
 // static
-std::vector<web_app::UrlHandlerLaunchParams>
-UrlHandlerManagerImpl::GetUrlHandlerMatches(
+std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
     const base::CommandLine& command_line) {
-  std::vector<web_app::UrlHandlerLaunchParams> results;
+  std::vector<UrlHandlerLaunchParams> results;
 
   if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers))
     return results;

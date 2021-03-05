@@ -31,7 +31,7 @@ namespace {
 class UninstallationViaOsSettingsHelper {
  public:
   UninstallationViaOsSettingsHelper(const base::FilePath& profile_path,
-                                    const web_app::AppId& app_id)
+                                    const AppId& app_id)
       : profile_path_(profile_path), app_id_(app_id) {}
 
   UninstallationViaOsSettingsHelper(

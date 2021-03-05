@@ -28,7 +28,7 @@ struct ShortcutInfo;
 //
 // TODO(crbug.com/860581): Migrate functions from
 // web_app_extension_shortcut.(h|cc) and
-// platform_apps/shortcut_manager.(h|cc) to web_app::AppShortcutManager and
+// platform_apps/shortcut_manager.(h|cc) to AppShortcutManager and
 // its subclasses.
 class AppShortcutManager {
  public:
@@ -50,8 +50,7 @@ class AppShortcutManager {
   void CreateShortcuts(const AppId& app_id,
                        bool add_to_desktop,
                        CreateShortcutsCallback callback);
-  void UpdateShortcuts(const web_app::AppId& app_id,
-                       base::StringPiece old_name);
+  void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
   void DeleteShortcuts(const AppId& app_id,
                        const base::FilePath& shortcuts_data_dir,
                        std::unique_ptr<ShortcutInfo> shortcut_info,

@@ -83,7 +83,7 @@ void DeletePlatformShortcutsAndPostCallback(
 void DeleteMultiProfileShortcutsForAppAndPostCallback(
     const std::string& app_id,
     CreateShortcutsCallback callback) {
-  web_app::internals::DeleteMultiProfileShortcutsForApp(app_id);
+  internals::DeleteMultiProfileShortcutsForApp(app_id);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

@@ -846,9 +846,9 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
+  options.os_hooks[OsHookType::kUrlHandlers] = true;
 #else
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
+  options.os_hooks[OsHookType::kUrlHandlers] = false;
 #endif
 
   if (install_source_ == webapps::WebappInstallSource::SYNC)

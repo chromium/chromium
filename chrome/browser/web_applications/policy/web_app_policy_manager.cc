@@ -174,7 +174,7 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy() {
 void WebAppPolicyManager::OnAppsPolicyChanged() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto disabled_web_apps = GetDisabledWebAppsIds();
-  std::vector<web_app::AppId> app_ids = app_registrar_->GetAppIds();
+  std::vector<AppId> app_ids = app_registrar_->GetAppIds();
   for (const auto& id : app_ids) {
     const bool is_disabled = base::Contains(disabled_web_apps, id);
     app_registry_controller_->SetAppIsDisabled(id, is_disabled);
@@ -313,16 +313,16 @@ void WebAppPolicyManager::ApplyPolicySettings() {
         GetUrlRunOnOsLoginPolicy(policy_installed_apps_[app_id]);
     if (policy == RunOnOsLoginPolicy::kBlocked) {
       app_registry_controller_->SetAppRunOnOsLoginMode(
-          app_id, web_app::RunOnOsLoginMode::kNotRun);
-      web_app::OsHooksResults os_hooks;
-      os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+          app_id, RunOnOsLoginMode::kNotRun);
+      OsHooksResults os_hooks;
+      os_hooks[OsHookType::kRunOnOsLogin] = true;
       os_integration_manager_->UninstallOsHooks(app_id, os_hooks,
                                                 base::DoNothing());
     } else if (policy == RunOnOsLoginPolicy::kRunWindowed) {
       app_registry_controller_->SetAppRunOnOsLoginMode(
-          app_id, web_app::RunOnOsLoginMode::kWindowed);
-      web_app::InstallOsHooksOptions options;
-      options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+          app_id, RunOnOsLoginMode::kWindowed);
+      InstallOsHooksOptions options;
+      options.os_hooks[OsHookType::kRunOnOsLogin] = true;
       os_integration_manager_->InstallOsHooks(app_id, base::DoNothing(),
                                               nullptr, options);
     }

@@ -84,14 +84,14 @@ class UrlHandlerManagerImplTest : public WebAppTest {
 
   UrlHandlerManagerImpl& url_handler_manager() { return *url_handler_manager_; }
 
-  std::unique_ptr<web_app::WebApp> CreateWebAppWithUrlHandlers(
+  std::unique_ptr<WebApp> CreateWebAppWithUrlHandlers(
       const GURL& app_url,
       const apps::UrlHandlers& url_handlers) {
-    const std::string app_id = web_app::GenerateAppIdFromURL(app_url);
-    auto web_app = std::make_unique<web_app::WebApp>(app_id);
-    web_app->AddSource(web_app::Source::kDefault);
-    web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
-    web_app->SetUserDisplayMode(web_app::DisplayMode::kStandalone);
+    const std::string app_id = GenerateAppIdFromURL(app_url);
+    auto web_app = std::make_unique<WebApp>(app_id);
+    web_app->AddSource(Source::kDefault);
+    web_app->SetDisplayMode(DisplayMode::kStandalone);
+    web_app->SetUserDisplayMode(DisplayMode::kStandalone);
     web_app->SetName("Name");
     web_app->SetStartUrl(app_url);
     web_app->SetUrlHandlers(url_handlers);

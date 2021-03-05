@@ -70,7 +70,7 @@ namespace web_app {
 namespace {
 
 WebAppInstallManager::InstallParams MakeParams(
-    web_app::DisplayMode display_mode = DisplayMode::kUndefined) {
+    DisplayMode display_mode = DisplayMode::kUndefined) {
   WebAppInstallManager::InstallParams params;
   params.fallback_start_url = GURL("https://example.com/fallback");
   params.user_display_mode = display_mode;

@@ -80,9 +80,9 @@ bool WriteShortcutsMenuIconsToIcoFiles(
 }
 
 std::wstring GenerateAppUserModelId(const base::FilePath& profile_path,
-                                    const web_app::AppId& app_id) {
+                                    const AppId& app_id) {
   std::wstring app_name =
-      base::UTF8ToWide(web_app::GenerateApplicationNameFromAppId(app_id));
+      base::UTF8ToWide(GenerateApplicationNameFromAppId(app_id));
   return shell_integration::win::GetAppUserModelIdForApp(app_name,
                                                          profile_path);
 }

@@ -123,7 +123,7 @@ const apps::ShareTarget* TestAppRegistrar::GetAppShareTarget(
 }
 
 blink::mojom::CaptureLinks TestAppRegistrar::GetAppCaptureLinks(
-    const web_app::AppId& app_id) const {
+    const AppId& app_id) const {
   return blink::mojom::CaptureLinks::kUndefined;
 }
 
@@ -158,7 +158,7 @@ apps::UrlHandlers TestAppRegistrar::GetAppUrlHandlers(
   return std::vector<apps::UrlHandlerInfo>();
 }
 
-GURL TestAppRegistrar::GetAppManifestUrl(const web_app::AppId& app_id) const {
+GURL TestAppRegistrar::GetAppManifestUrl(const AppId& app_id) const {
   NOTIMPLEMENTED();
   return GURL::EmptyGURL();
 }

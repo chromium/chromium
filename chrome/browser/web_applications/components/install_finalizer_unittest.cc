@@ -113,8 +113,7 @@ TEST_F(InstallFinalizerUnitTest, BasicInstallSucceeds) {
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-  EXPECT_EQ(result.installed_app_id,
-            web_app::GenerateAppIdFromURL(info->start_url));
+  EXPECT_EQ(result.installed_app_id, GenerateAppIdFromURL(info->start_url));
 }
 
 TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
@@ -137,11 +136,10 @@ TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
   {
     finalizer().FinalizeInstall(
         *info1, options,
-        base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                       web_app::InstallResultCode code) {
-          EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id,
-                    web_app::GenerateAppIdFromURL(info1->start_url));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       InstallResultCode code) {
+          EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          EXPECT_EQ(installed_app_id, GenerateAppIdFromURL(info1->start_url));
           callback1_called = true;
           if (callback2_called)
             run_loop.Quit();
@@ -152,11 +150,10 @@ TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
   {
     finalizer().FinalizeInstall(
         *info2, options,
-        base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                       web_app::InstallResultCode code) {
-          EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id,
-                    web_app::GenerateAppIdFromURL(info2->start_url));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       InstallResultCode code) {
+          EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          EXPECT_EQ(installed_app_id, GenerateAppIdFromURL(info2->start_url));
           callback2_called = true;
           if (callback1_called)
             run_loop.Quit();

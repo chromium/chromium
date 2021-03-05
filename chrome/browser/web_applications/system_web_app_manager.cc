@@ -159,7 +159,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
                               base::BindRepeating(
                                   &CreateWebAppInfoForOSSettingsSystemWebApp)));
   infos.at(SystemAppType::SETTINGS).uninstall_and_replace = {
-      web_app::kSettingsAppId, ash::kInternalAppIdSettings};
+      kSettingsAppId, ash::kInternalAppIdSettings};
   // Large enough to see the heading text "Settings" in the top-left.
   infos.at(SystemAppType::SETTINGS).minimum_window_size = {300, 100};
   infos.at(SystemAppType::SETTINGS).capture_navigations = true;

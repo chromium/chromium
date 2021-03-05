@@ -81,8 +81,8 @@ class SystemAppBackgroundTask {
 
  private:
   void NavigateTimerBackgroundPage();
-  void OnLoaderReady(web_app::WebAppUrlLoader::Result);
-  void OnPageReady(web_app::WebAppUrlLoader::Result);
+  void OnLoaderReady(WebAppUrlLoader::Result);
+  void OnPageReady(WebAppUrlLoader::Result);
 
   SystemAppType app_type_;
   std::unique_ptr<content::WebContents> web_contents_;

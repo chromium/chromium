@@ -700,7 +700,7 @@ void WebAppIconManager::ReadSmallestCompressedIcon(
       std::move(wrapped));
 }
 
-SkBitmap WebAppIconManager::GetFavicon(const web_app::AppId& app_id) const {
+SkBitmap WebAppIconManager::GetFavicon(const AppId& app_id) const {
   auto iter = favicon_cache_.find(app_id);
   if (iter == favicon_cache_.end())
     return SkBitmap();

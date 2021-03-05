@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     app_service_test().FlushMojoCalls();
     image_skia = app_service_test().LoadAppIconBlocking(
-        apps::mojom::AppType::kWeb, app_id, web_app::kWebAppIconSmall);
+        apps::mojom::AppType::kWeb, app_id, kWebAppIconSmall);
   }
 #endif
 
