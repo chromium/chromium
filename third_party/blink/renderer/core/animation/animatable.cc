@@ -115,6 +115,11 @@ Animation* Animatable::animate(ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
 
+  // Creation of the keyframe effect parses JavaScript, which could result
+  // in destruction of the execution context. Recheck that it is still valid.
+  if (!element->GetExecutionContext())
+    return nullptr;
+
   ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
                                                *effect->Model());
   return element->GetDocument().Timeline().Play(effect);
