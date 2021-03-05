@@ -191,8 +191,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // Sanity check destinationFrameOffset, numberOfFrames.
   size_t destination_length = bus->length();
 
-  DCHECK_LE(destination_length, audio_utilities::kRenderQuantumFrames);
-  DCHECK_LE(number_of_frames, audio_utilities::kRenderQuantumFrames);
+  DCHECK_LE(destination_length, GetDeferredTaskHandler().RenderQuantumFrames());
+  DCHECK_LE(number_of_frames, GetDeferredTaskHandler().RenderQuantumFrames());
 
   DCHECK_LE(destination_frame_offset, destination_length);
   DCHECK_LE(destination_frame_offset + number_of_frames, destination_length);

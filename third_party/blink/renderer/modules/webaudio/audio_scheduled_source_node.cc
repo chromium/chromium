@@ -63,8 +63,9 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
   double start_frame_offset = 0;
 
   DCHECK(output_bus);
-  DCHECK_EQ(quantum_frame_size,
-            static_cast<size_t>(audio_utilities::kRenderQuantumFrames));
+  DCHECK_EQ(
+      quantum_frame_size,
+      static_cast<size_t>(GetDeferredTaskHandler().RenderQuantumFrames()));
 
   double sample_rate = Context()->sampleRate();
 

@@ -71,10 +71,6 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
 
   double SampleRate() const override { return sample_rate_; }
 
-  size_t RenderQuantumFrames() const {
-    return audio_utilities::kRenderQuantumFrames;
-  }
-
   // This is called when rendering of the offline context is started
   // which will save the rendered audio data in |render_target|.  This
   // allows creation of the AudioBuffer when startRendering is called

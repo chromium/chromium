@@ -57,7 +57,9 @@ AudioParamHandler::AudioParamHandler(BaseAudioContext& context,
       min_value_(min_value),
       max_value_(max_value),
       summing_bus_(
-          AudioBus::Create(1, audio_utilities::kRenderQuantumFrames, false)) {
+          AudioBus::Create(1,
+                           GetDeferredTaskHandler().RenderQuantumFrames(),
+                           false)) {
   // An AudioParam needs the destination handler to run the timeline.  But the
   // destination may have been destroyed (e.g. page gone), so the destination is
   // null.  However, if the destination is gone, the AudioParam will never get
@@ -313,7 +315,7 @@ void AudioParamHandler::CalculateFinalValues(float* values,
   // together (unity-gain summing junction).  Note that connections would
   // normally be mono, but we mix down to mono if necessary.
   if (NumberOfRenderingConnections() > 0) {
-    DCHECK_LE(number_of_values, audio_utilities::kRenderQuantumFrames);
+    DCHECK_LE(number_of_values, GetDeferredTaskHandler().RenderQuantumFrames());
 
     // If we're not sample accurate, we only need one value, so make the summing
     // bus have length 1.  When the connections are added in, only the first
@@ -327,7 +329,7 @@ void AudioParamHandler::CalculateFinalValues(float* values,
 
       // Render audio from this output.
       AudioBus* connection_bus =
-          output->Pull(nullptr, audio_utilities::kRenderQuantumFrames);
+          output->Pull(nullptr, GetDeferredTaskHandler().RenderQuantumFrames());
 
       // Sum, with unity-gain.
       summing_bus_->SumFrom(*connection_bus);
@@ -365,7 +367,7 @@ void AudioParamHandler::CalculateTimelineValues(float* values,
                                                 unsigned number_of_values) {
   // Calculate values for this render quantum.  Normally
   // |numberOfValues| will equal to
-  // audio_utilities::kRenderQuantumFrames (the render quantum size).
+  // GetDeferredTaskHandler().RenderQuantumFrames() (the render quantum size).
   double sample_rate = DestinationHandler().SampleRate();
   size_t start_frame = DestinationHandler().CurrentSampleFrame();
   size_t end_frame = start_frame + number_of_values;
