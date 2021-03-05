@@ -52,6 +52,11 @@ Ensure that unicode filenames aren't mangled by HFS:
 $ git config --global core.precomposeUnicode true
 ```
 
+In System Preferences, check that "Energy Saver" -> "Power Adapter" ->
+"Prevent computer from sleeping automatically when the display is off" is
+checked so that your laptop doesn't go to sleep and interrupt the long network
+connection needed here.
+
 Create a `chromium` directory for the checkout and change to it (you can call
 this whatever you like and put it wherever you like, as long as the full path
 has no spaces):
