@@ -6225,8 +6225,7 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.dbus_unittests_wayland.filter"
+          "--enable-features=UseOzonePlatform"
         ],
         "merge": {
           "args": [],

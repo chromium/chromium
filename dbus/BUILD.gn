@@ -102,8 +102,6 @@ test("dbus_unittests") {
   ]
 
   configs += [ "//build/config/linux/dbus" ]
-
-  data_deps = [ "//testing/buildbot/filters:dbus_unittests_filters" ]
 }
 
 executable("dbus_test_server") {

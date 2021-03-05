@@ -1,5 +1,0 @@
-# TODO(https://crbug.com/1184129). dbus daemon requires X11 display. Figure out how to launch
-# dbus with Wayland. Thus, disable all the dbus tests now (it's easier to disable them via a filter
-# rather than having a separate gtests matrix of tests).
-# Error message is "Unable to autolaunch a dbus-daemon without a $DISPLAY for X11".
--*

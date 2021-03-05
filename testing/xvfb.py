@@ -243,6 +243,8 @@ def _run_with_weston(cmd, env, stdoutfile):
     signal.signal(signal.SIGTERM, raise_weston_error)
     signal.signal(signal.SIGINT, raise_weston_error)
 
+    dbus_pid = launch_dbus(env)
+
     # The bundled weston (//third_party/weston) is used by Linux Ozone Wayland
     # CI and CQ testers and compiled by //ui/ozone/platform/wayland whenever
     # there is a dependency on the Ozone/Wayland and use_bundled_weston is set
@@ -302,6 +304,11 @@ def _run_with_weston(cmd, env, stdoutfile):
   finally:
     kill(weston_proc, 'weston')
 
+    # dbus-daemon is not a subprocess, so we can't SIGTERM+waitpid() on it.
+    # To ensure it exits, use SIGKILL which should be safe since all other
+    # processes that it would have been servicing have exited.
+    if dbus_pid:
+      os.kill(dbus_pid, signal.SIGKILL)
 
 def _get_display_from_weston(weston_proc_pid):
   """Retrieves $WAYLAND_DISPLAY set by Weston.

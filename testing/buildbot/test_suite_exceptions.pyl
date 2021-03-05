@@ -1259,16 +1259,6 @@
       },
     },
   },
-  'dbus_unittests_wayland': {
-    'modifications': {
-      # CI Ozone/Wayland tester.
-      'Linux Tester (Ozone Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.dbus_unittests_wayland.filter',
-        ],
-      },
-    }
-  },
   'depth_capture_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
