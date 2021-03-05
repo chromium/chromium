@@ -17,6 +17,8 @@
    * @enum {string}
    */
   const EVENTS = {
+    AC_INSERTED: 'ac-inserted',
+    AC_REMOVED: 'ac-removed',
     BLUETOOTH_ADAPTER_ADDED: 'bluetooth-adapter-added',
     BLUETOOTH_ADAPTER_PROPERTY_CHANGED: 'bluetooth-adapter-property-changed',
     BLUETOOTH_ADAPTER_REMOVED: 'bluetooth-adapter-removed',
@@ -24,7 +26,9 @@
     BLUETOOTH_DEVICE_PROPERTY_CHANGED: 'bluetooth-device-property-changed',
     BLUETOOTH_DEVICE_REMOVED: 'bluetooth-device-removed',
     LID_CLOSED: 'lid-closed',
-    LID_OPENED: 'lid-opened'
+    LID_OPENED: 'lid-opened',
+    OS_RESUME: 'os-resume',
+    OS_SUSPEND: 'os-suspend'
   }
 
   /**
@@ -232,6 +236,94 @@
   }
 
   /**
+   * Power events observer for dpsl.system_events.power.* APIs.
+   */
+  class PowerObserver {
+    /**
+     * @param {!InternalEventTarget} eventTarget
+     */
+    constructor(eventTarget) {
+      /**
+       * @type {!InternalEventTarget}
+       * @const
+       * @private
+       */
+      this.eventTarget = eventTarget;
+    }
+
+    /**
+     * Starts listening on ac-inserted events.
+     * @param {function()} callback
+     * @public
+     */
+    addOnAcInsertedListener(callback) {
+      this.eventTarget.addEventListener(EVENTS.AC_INSERTED, callback);
+    }
+
+    /**
+     * Starts listening on ac-removed events.
+     * @param {function()} callback
+     * @public
+     */
+    addOnAcRemovedListener(callback) {
+      this.eventTarget.addEventListener(EVENTS.AC_REMOVED, callback);
+    }
+    /**
+     * Starts listening on os-suspend events.
+     * @param {function()} callback
+     * @public
+     */
+    addOnOsSuspendListener(callback) {
+      this.eventTarget.addEventListener(EVENTS.OS_SUSPEND, callback);
+    }
+
+    /**
+     * Starts listening on os-resume events.
+     * @param {function()} callback
+     * @public
+     */
+    addOnOsResumeListener(callback) {
+      this.eventTarget.addEventListener(EVENTS.OS_RESUME, callback);
+    }
+
+    /**
+     * Stops listening on ac-inserted events.
+     * @param {function()} callback
+     * @public
+     */
+    removeOnAcInsertedListener(callback) {
+      this.eventTarget.removeEventListener(EVENTS.AC_INSERTED, callback);
+    }
+
+    /**
+     * Stops listening on ac-removed events.
+     * @param {function()} callback
+     * @public
+     */
+    removeOnAcRemovedListener(callback) {
+      this.eventTarget.removeEventListener(EVENTS.AC_REMOVED, callback);
+    }
+
+    /**
+     * Stops listening on os-suspend events.
+     * @param {function()} callback
+     * @public
+     */
+    removeOnOsSuspendListener(callback) {
+      this.eventTarget.removeEventListener(EVENTS.OS_SUSPEND, callback);
+    }
+
+    /**
+     * Stops listening on os-resume events.
+     * @param {function()} callback
+     * @public
+     */
+    removeOnOsResumeListener(callback) {
+      this.eventTarget.removeEventListener(EVENTS.OS_RESUME, callback);
+    }
+  }
+
+  /**
    * DPSL Events service for dpsl.system_events.* APIs.
    */
   class DPSLEventsService {
@@ -249,6 +341,12 @@
        * @public
        */
       this.lid = new LidObserver(eventTarget);
+
+      /**
+       * @type {!PowerObserver}
+       * @public
+       */
+      this.power = new PowerObserver(eventTarget);
     }
 
     /**

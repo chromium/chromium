@@ -661,28 +661,64 @@ UNTRUSTED_TEST('UntrustedLidOpenedEventListener', async () => {
       (resolve) => dpsl.system_events.lid.addOnLidOpenedListener(resolve));
 });
 
-// Tests that addEventListener receives system ac inserted event.
+// Tests that:
+//   1) addEventListener receives system ac inserted event.
+//   2) removeEventListener stops receiving system ac inserted event.
 UNTRUSTED_TEST('UntrustedAcInsertedEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener('ac-inserted', resolve));
+
+  dpsl.system_events.power.addOnAcInsertedListener(shouldNeverBeCalledCallback);
+  dpsl.system_events.power.removeOnAcInsertedListener(
+      shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) => dpsl.system_events.power.addOnAcInsertedListener(resolve));
 });
 
-// Tests that addEventListener receives system ac removed event.
+// Tests that:
+//   1) addEventListener receives system ac removed event.
+//   2) removeEventListener stops receiving system ac removed event.
 UNTRUSTED_TEST('UntrustedAcRemovedEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener('ac-removed', resolve));
+
+  dpsl.system_events.power.addOnAcRemovedListener(shouldNeverBeCalledCallback);
+  dpsl.system_events.power.removeOnAcRemovedListener(
+      shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) => dpsl.system_events.power.addOnAcRemovedListener(resolve));
 });
 
-// Tests that addEventListener receives system os suspend event.
+// Tests that:
+//   1) addEventListener receives system os suspend event.
+//   2) removeEventListener stops receiving system os suspend event.
 UNTRUSTED_TEST('UntrustedOsSuspendEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener('os-suspend', resolve));
+
+  dpsl.system_events.power.addOnOsSuspendListener(shouldNeverBeCalledCallback);
+  dpsl.system_events.power.removeOnOsSuspendListener(
+      shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) => dpsl.system_events.power.addOnOsSuspendListener(resolve));
 });
 
-// Tests that addEventListener receives system os resume event.
+// Tests that:
+//   1) addEventListener receives system os resume event.
+//   2) removeEventListener stops receiving system os resume event.
 UNTRUSTED_TEST('UntrustedOsResumeEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener('os-resume', resolve));
+
+  dpsl.system_events.power.addOnOsResumeListener(shouldNeverBeCalledCallback);
+  dpsl.system_events.power.removeOnOsResumeListener(
+      shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) => dpsl.system_events.power.addOnOsResumeListener(resolve));
 });
 
 // Tests that TelemetryInfo throws an error if category is unknown.
