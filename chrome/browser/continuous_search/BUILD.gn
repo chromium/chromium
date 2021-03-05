@@ -88,13 +88,17 @@ android_library("junit") {
   bypass_platform_checks = true
   testonly = true
 
-  sources = [ "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListMediatorTest.java" ]
+  sources = [
+    "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerMediatorTest.java",
+    "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListMediatorTest.java",
+  ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/continuous_search/internal:java",
     "//chrome/browser/tab:java",
     "//content/public/android:content_java",

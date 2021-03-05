@@ -52,19 +52,16 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
      */
     @Override
     public void onResult(Tab tab) {
-        setVisibility(false);
         if (mCurrentSearchUserData != null) {
             mCurrentSearchUserData.removeObserver(this);
             mCurrentSearchUserData = null;
         }
 
+        onInvalidate();
         mCurrentTab = tab;
-        if (mCurrentTab == null) {
-            onInvalidate();
-            return;
-        }
+        if (mCurrentTab == null) return;
 
-        mCurrentSearchUserData = SearchResultUserData.getOrCreateForTab(tab);
+        mCurrentSearchUserData = SearchResultUserData.getOrCreateForTab(mCurrentTab);
         mCurrentSearchUserData.addObserver(this);
     }
 

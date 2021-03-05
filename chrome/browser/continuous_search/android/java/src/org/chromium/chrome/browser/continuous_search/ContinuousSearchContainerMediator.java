@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.continuous_search;
 
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -42,7 +44,6 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     void onLayoutInitialized(PropertyModel model, Runnable requestLayout) {
         mModel = model;
         mRequestLayout = requestLayout;
-        mBrowserControlsStateProvider.addObserver(this);
     }
 
     /**
@@ -80,6 +81,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
 
     private void updateVisibility(boolean isVisible) {
         mIsVisible = isVisible;
+        mBrowserControlsStateProvider.addObserver(this);
 
         for (Callback<Integer> observer : mObservers) {
             observer.onResult(isVisible ? mJavaLayoutHeight : 0);
@@ -97,7 +99,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
             int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-        // Whether continuous search height is part of top controls height.
+        // Whether container height is part of top controls height.
         boolean isIncludedInHeight = mBrowserControlsStateProvider.getTopControlsHeight()
                 > mDefaultTopContainerHeightSupplier.get()
                         + mBrowserControlsStateProvider.getTopControlsMinHeight();
@@ -106,33 +108,41 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
                         + mBrowserControlsStateProvider.getTopControlsHeight()
                         - mBrowserControlsStateProvider.getTopControlsMinHeight()
                 > 0;
-        // Whether continuous search is at least partly visible.
+        // Whether container is at least partly visible.
         boolean isUiVisible = isIncludedInHeight && isNonMinHeightTopControlsVisible;
-
-        final boolean isTopControlsFullyShown = isUiVisible && topOffset == 0;
-
+        final boolean uiFullyVisible = isUiVisible && topOffset == 0;
         int yOffset = topOffset + mBrowserControlsStateProvider.getTopControlsMinHeight()
                 + mDefaultTopContainerHeightSupplier.get();
-
         mModel.set(ContinuousSearchContainerProperties.VERTICAL_OFFSET, yOffset);
 
-        // Composited view should be visible if we have a positive top min-height offset (or current
-        // min-height) and we're running the animations in native.
+        // Only show the composited view when the UI is partly visible (mid transition) and native
+        // can run animations.
         mModel.set(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE,
-                !isTopControlsFullyShown
-                        || (isUiVisible && mCanAnimateNativeBrowserControls.get()));
+                !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get());
+
         // If we're running the animations in native, the Android view should only be visible when
-        // the indicator is fully shown. Otherwise, the Android view will be visible if it's within
+        // the container is fully shown. Otherwise, the Android view will be visible if it's within
         // screen boundaries.
         mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY,
-                !mIsVisible && (mCanAnimateNativeBrowserControls.get() || !isUiVisible)
+                !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get()
                         ? View.GONE
-                        : (isTopControlsFullyShown || !mCanAnimateNativeBrowserControls.get()
+                        : ((isUiVisible && !mCanAnimateNativeBrowserControls.get())
+                                                || uiFullyVisible
                                         ? View.VISIBLE
-                                        : View.INVISIBLE));
+                                        : View.GONE));
+
+        final boolean doneHiding = !isUiVisible && !mIsVisible;
+        if (doneHiding) {
+            mBrowserControlsStateProvider.removeObserver(this);
+        }
     }
 
     void destroy() {
         mBrowserControlsStateProvider.removeObserver(this);
+    }
+
+    @VisibleForTesting
+    boolean isVisibleForTesting() {
+        return mIsVisible;
     }
 }
