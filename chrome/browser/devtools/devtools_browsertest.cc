@@ -1613,22 +1613,46 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 }
 
 // Tests network timing.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkTiming) {
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_TestNetworkTiming DISABLED_TestNetworkTiming
+#else
+#define MAYBE_TestNetworkTiming TestNetworkTiming
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkTiming) {
   RunTest("testNetworkTiming", kSlowTestPage);
 }
 
 // Tests network size.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSize) {
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_TestNetworkSize DISABLED_TestNetworkSize
+#else
+#define MAYBE_TestNetworkSize TestNetworkSize
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSize) {
   RunTest("testNetworkSize", kChunkedTestPage);
 }
 
 // Tests raw headers text.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSyncSize) {
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_TestNetworkSyncSize DISABLED_TestNetworkSyncSize
+#else
+#define MAYBE_TestNetworkSyncSize TestNetworkSyncSize
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSyncSize) {
   RunTest("testNetworkSyncSize", kChunkedTestPage);
 }
 
 // Tests raw headers text.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkRawHeadersText) {
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_TestNetworkRawHeadersText DISABLED_TestNetworkRawHeadersText
+#else
+#define MAYBE_TestNetworkRawHeadersText TestNetworkRawHeadersText
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkRawHeadersText) {
   // This test expects headers to be exactly 112 bytes in length, so add an
   // extra header to reach that length.
   RunTest("testNetworkRawHeadersText",
@@ -2311,7 +2335,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   content::WebUIControllerFactory::UnregisterFactoryForTesting(&test_factory);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
+  DISABLED_TestRawHeadersWithRedirectAndHSTS
+#else
+#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
+  TestRawHeadersWithRedirectAndHSTS
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestRawHeadersWithRedirectAndHSTS) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
@@ -2397,7 +2429,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
   CloseDevToolsWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_LoadNetworkResourceForFrontend \
+  DISABLED_LoadNetworkResourceForFrontend
+#else
+#define MAYBE_LoadNetworkResourceForFrontend LoadNetworkResourceForFrontend
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_LoadNetworkResourceForFrontend) {
   std::string file_url =
       "file://" + base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
                       .AppendASCII("content/test/data/devtools/navigation.html")
