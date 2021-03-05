@@ -38,28 +38,46 @@ class VariableType:
     OPACITY = 'opacity'
 
 
-class ColorModel:
-    '''A dictionary of color names to their values in each mode.
-       e.g ColorModel['blue'][Modes.LIGHT] = Color(...)
-    '''
-
-    def __init__(self, opacity_model):
-        self.variables = collections.OrderedDict()
-        self.opacity_model = opacity_model
-
-    def Add(self, mode, name, value):
+class ModeKeyedModel(object):
+    def Add(self, name, value_obj):
         if name not in self.variables:
             self.variables[name] = {}
-        self.variables[name][mode] = value
 
-    # Returns the Color that |name| will have in |mode|. Resolves to the default
-    # mode's Color if the a Color for |mode| isn't specified. Always returns a
-    # Color.
+        if isinstance(value_obj, dict):
+            for mode in value_obj:
+                assert mode in Modes.ALL
+                self.variables[name][mode] = self._CreateValue(value_obj[mode])
+        else:
+            self.variables[name][Modes.DEFAULT] = self._CreateValue(value_obj)
+
+    # Returns the value that |name| will have in |mode|. Resolves to the default
+    # mode's value if the a value for |mode| isn't specified. Always returns a
+    # value.
     def Resolve(self, name, mode):
         if mode in self.variables[name]:
             return self.variables[name][mode]
 
         return self.variables[name][Modes.DEFAULT]
+
+    def keys(self):
+        return self.variables.keys()
+
+    def items(self):
+        return self.variables.items()
+
+    def __getitem__(self, key):
+        return self.variables[key]
+
+
+class ColorModel(ModeKeyedModel):
+    '''A dictionary of color names to their values in each mode.
+       e.g ColorModel['blue'][Modes.LIGHT] = Color(...)
+    '''
+
+    def __init__(self, opacity_model):
+        super(ColorModel, self).__init__()
+        self.variables = collections.OrderedDict()
+        self.opacity_model = opacity_model
 
     # Returns a value from 0-1 representing the final opacity of |color|.
     def ResolveOpacity(self, color):
@@ -84,14 +102,8 @@ class ColorModel:
         (result.r, result.g, result.b) = (rgb.r, rgb.g, rgb.b)
         return result
 
-    def keys(self):
-        return self.variables.keys()
-
-    def items(self):
-        return self.variables.items()
-
-    def __getitem__(self, key):
-        return self.variables[key]
+    def _CreateValue(self, value):
+        return Color(value)
 
 
 class BaseGenerator:
@@ -144,17 +156,7 @@ class BaseGenerator:
     def AddColor(self, name, value_obj, context=None):
         self._SetVariableContext(name, context)
         try:
-            # Python3's unicode class is just 'str'.
-            strtype = str if sys.version_info >= (3, ) else basestring
-
-            if isinstance(value_obj, strtype):
-                self.model[VariableType.COLOR].Add(Modes.DEFAULT, name,
-                                                   Color(value_obj))
-            elif isinstance(value_obj, dict):
-                for mode in Modes.ALL:
-                    if mode in value_obj:
-                        self.model[VariableType.COLOR].Add(
-                            mode, name, Color(value_obj[mode]))
+            self.model[VariableType.COLOR].Add(name, value_obj)
         except ValueError as err:
             raise ValueError('Error parsing color "%s": %s' % (value_obj, err))
 
