@@ -2131,9 +2131,6 @@
       name: "WebAppLinkCapturing",
     },
     {
-      name: "WebAppManifestDisplayOverride",
-    },
-    {
       name: "WebAppWindowControlsOverlay",
     },
     {

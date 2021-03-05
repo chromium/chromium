@@ -390,8 +390,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kTextFragmentColorChange},
           {"TrustedDOMTypes", features::kTrustedDOMTypes},
           {"UserAgentClientHint", features::kUserAgentClientHint},
-          {"WebAppManifestDisplayOverride",
-           features::kWebAppManifestDisplayOverride},
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},

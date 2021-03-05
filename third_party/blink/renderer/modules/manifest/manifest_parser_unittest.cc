@@ -595,7 +595,6 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
 }
 
 TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
-  ScopedWebAppManifestDisplayOverrideForTest display_override(true);
 
   // Smoke test: if no display_override, no value.
   {

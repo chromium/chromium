@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +25,6 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1874,23 +1872,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_EQ(tester->errors()[0], MANIFEST_URL_CHANGED);
 }
 
-// A dedicated test fixture for DisplayOverride, which is supported
-// only for the new web apps mode, and requires a command line switch
-// to enable manifest parsing.
-class InstallableManagerBrowserTest_DisplayOverride
-    : public InstallableManagerBrowserTest {
- public:
-  InstallableManagerBrowserTest_DisplayOverride() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppManifestDisplayOverride);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest_DisplayOverride,
-                       CheckManifestOnly) {
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
+                       CheckManifestOnly_DisplayOverride) {
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
@@ -1919,8 +1902,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest_DisplayOverride,
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest_DisplayOverride,
-                       ManifestDisplayOverrideReportsError) {
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
+                       ManifestDisplayOverrideReportsError_DisplayOverride) {
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
@@ -1946,8 +1929,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest_DisplayOverride,
       tester->errors());
 }
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest_DisplayOverride,
-                       FallbackToDisplayBrowser) {
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
+                       FallbackToDisplayBrowser_DisplayOverride) {
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));

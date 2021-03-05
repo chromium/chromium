@@ -172,28 +172,13 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
   }
 };
 
-// A dedicated test fixture for DisplayOverride, which requires a command line
-// switch to enable manifest parsing.
-class WebAppBrowserTest_DisplayOverride : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_DisplayOverride() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppManifestDisplayOverride);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // A dedicated test fixture for WindowControlsOverlay, which requires a command
 // line switch to enable manifest parsing.
 class WebAppBrowserTest_WindowControlsOverlay : public WebAppBrowserTest {
  public:
   WebAppBrowserTest_WindowControlsOverlay() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppManifestDisplayOverride,
-         features::kWebAppWindowControlsOverlay},
-        {});
+        {features::kWebAppWindowControlsOverlay}, {});
   }
 
  private:
@@ -387,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithoutMinimalUiButtons) {
                                    /*open_as_window=*/false));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride, DisplayOverride) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DisplayOverride) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_display_override.json");
@@ -404,8 +389,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride, DisplayOverride) {
   EXPECT_EQ(DisplayMode::kStandalone, app_display_mode_override[1]);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride,
-                       WithMinimalUiButtons) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       WithMinimalUiButtons_DisplayOverride) {
   EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kStandalone,
                                   DisplayMode::kBrowser,
                                   /*open_as_window=*/true));
@@ -421,8 +406,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride,
                                   /*open_as_window=*/false));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride,
-                       WithoutMinimalUiButtons) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       WithoutMinimalUiButtons_DisplayOverride) {
   EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kMinimalUi,
                                    DisplayMode::kStandalone,
                                    /*open_as_window=*/true));

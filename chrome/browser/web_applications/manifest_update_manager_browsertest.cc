@@ -40,7 +40,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_registry.h"
@@ -803,22 +802,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             DisplayMode::kMinimalUi);
 }
 
-// A dedicated test fixture for DisplayOverride, which is supported
-// only for the new web apps mode, and requires a command line switch
-// to enable manifest parsing.
-class ManifestUpdateManagerBrowserTest_DisplayOverride
-    : public ManifestUpdateManagerBrowserTest {
- public:
-  ManifestUpdateManagerBrowserTest_DisplayOverride() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppManifestDisplayOverride);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsDisplayOverrideChange) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -851,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
   EXPECT_EQ(DisplayMode::kMinimalUi, app_display_mode_override[1]);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsNewDisplayOverride) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -886,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
   EXPECT_EQ(DisplayMode::kStandalone, app_display_mode_override[1]);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsDeletedDisplayOverride) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -919,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
   ASSERT_EQ(0u, app_display_mode_override.size());
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsInvalidDisplayOverride) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -954,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
   ASSERT_EQ(0u, app_display_mode_override.size());
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckIgnoresDisplayOverrideInvalidChange) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -981,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
                                       ManifestUpdateResult::kAppUpToDate, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_DisplayOverride,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckIgnoresDisplayOverrideChange) {
   constexpr char kManifestTemplate[] = R"(
     {

@@ -792,10 +792,6 @@ const base::Feature kVideoPlaybackQuality{"VideoPlaybackQuality",
 const base::Feature kV8VmFuture{"V8VmFuture",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable display_override manifest entry for web applications.
-const base::Feature kWebAppManifestDisplayOverride{
-    "WebAppManifestDisplayOverride", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable window controls overlays for desktop PWAs
 const base::Feature kWebAppWindowControlsOverlay{
     "WebAppWindowControlsOverlay", base::FEATURE_DISABLED_BY_DEFAULT};

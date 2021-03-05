@@ -662,16 +662,13 @@ bool InstallableManager::IsManifestValidForWebApp(
     blink::mojom::DisplayMode display_mode_to_evaluate = manifest.display;
     InstallableStatusCode manifest_error = MANIFEST_DISPLAY_NOT_SUPPORTED;
 
-    if (base::FeatureList::IsEnabled(
-            features::kWebAppManifestDisplayOverride)) {
-      // Unsupported values are ignored when we parse the manifest, and
-      // consequently aren't in the manifest.display_override array.
-      // If this array is not empty, the first value will "win", so validate
-      // this value is installable.
-      if (!manifest.display_override.empty()) {
-        display_mode_to_evaluate = manifest.display_override[0];
-        manifest_error = MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
-      }
+    // Unsupported values are ignored when we parse the manifest, and
+    // consequently aren't in the manifest.display_override array.
+    // If this array is not empty, the first value will "win", so validate
+    // this value is installable.
+    if (!manifest.display_override.empty()) {
+      display_mode_to_evaluate = manifest.display_override[0];
+      manifest_error = MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
     }
 
     if (ShouldRejectDisplayMode(display_mode_to_evaluate)) {

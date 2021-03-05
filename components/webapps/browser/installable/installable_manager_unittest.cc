@@ -284,19 +284,7 @@ TEST_F(InstallableManagerUnitTest, ManifestDisplayModes) {
   EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
 }
 
-class InstallableManagerUnitTest_DisplayOverride
-    : public InstallableManagerUnitTest {
- public:
-  InstallableManagerUnitTest_DisplayOverride() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppManifestDisplayOverride);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(InstallableManagerUnitTest_DisplayOverride, ManifestDisplayOverride) {
+TEST_F(InstallableManagerUnitTest, ManifestDisplayOverride) {
   blink::Manifest manifest = GetValidManifest();
 
   manifest.display_override.push_back(blink::mojom::DisplayMode::kMinimalUi);
@@ -333,7 +321,7 @@ TEST_F(InstallableManagerUnitTest_DisplayOverride, ManifestDisplayOverride) {
   EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest_DisplayOverride, FallbackToBrowser) {
+TEST_F(InstallableManagerUnitTest, FallbackToBrowser) {
   blink::Manifest manifest = GetValidManifest();
 
   manifest.display = blink::mojom::DisplayMode::kBrowser;
@@ -347,9 +335,7 @@ class InstallableManagerUnitTest_WindowControlsOverlay
  public:
   InstallableManagerUnitTest_WindowControlsOverlay() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppManifestDisplayOverride,
-         features::kWebAppWindowControlsOverlay},
-        {});
+        {features::kWebAppWindowControlsOverlay}, {});
   }
 
  private:
