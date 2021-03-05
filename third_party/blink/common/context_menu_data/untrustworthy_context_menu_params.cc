@@ -69,12 +69,8 @@ void UntrustworthyContextMenuParams::Assign(
   frame_charset = other.frame_charset;
   referrer_policy = other.referrer_policy;
   link_followed = other.link_followed;
-  for (auto& item : other.custom_items) {
-    custom_items.push_back(blink::mojom::CustomContextMenuItem::New(
-        item->label, item->icon, item->tool_tip, item->type, item->action,
-        item->rtl, item->has_directional_override, item->enabled, item->checked,
-        std::move(item->submenu)));
-  }
+  for (auto& item : other.custom_items)
+    custom_items.push_back(item.Clone());
   source_type = other.source_type;
   input_field_type = other.input_field_type;
   selection_rect = other.selection_rect;
