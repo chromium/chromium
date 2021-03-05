@@ -67,6 +67,24 @@ class PaymentCredential : public mojom::PaymentCredential,
   // States of the enrollment flow, necessary to ensure correctness with
   // multiple round-trips to the renderer process. Each state is allowed to
   // transition only to the next state (if any) or back to idle.
+  // Methods that perform async actions (like DownloadIconAndShowUserPrompt,
+  // StorePaymentCredentialAndHideUserPrompt, DidDownloadIcon,
+  // OnUserResponseFromUI) have procedure:
+  //   1. Validate state.
+  //   2. Validate parameters.
+  //   3. Use parameters.
+  //   4. Update the state.
+  //   5. Make the async call.
+  // Methods that perform terminating actions (like HideUserPrompt,
+  // OnWebDataServiceRequestDone, or OnUserResponseFromUI telling the renderer
+  // that the user has rejected the prompt) have procedure:
+  //   1. Validate state.
+  //   2. Validate parameters.
+  //   3. Use parameters.
+  //   4. Call Reset() to close UI and perform cleanup.
+  //   5. Invoke a mojo callback to the renderer.
+  // Any method may call Reset() to ensure callbacks are called and return to a
+  // valid Idle state.
   enum class State {
     kIdle,
     kDownloadingIcon,
@@ -80,27 +98,30 @@ class PaymentCredential : public mojom::PaymentCredential,
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
 
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+
   bool IsCurrentStateValid() const;
 
-  void DidDownloadIcon(DownloadIconAndShowUserPromptCallback callback,
-                       const base::string16 instrument_name,
+  void DidDownloadIcon(const base::string16 instrument_name,
                        int request_id,
                        int unused_http_status_code,
-                       const GURL& image_url,
+                       const GURL& unused_image_url,
                        const std::vector<SkBitmap>& bitmaps,
                        const std::vector<gfx::Size>& unused_sizes);
 
-  void OnUserResponseFromUI(DownloadIconAndShowUserPromptCallback callback,
-                            bool user_confirm_from_ui);
+  void OnUserResponseFromUI(bool user_confirm_from_ui);
 
   void Reset();
 
   State state_ = State::kIdle;
   const content::GlobalFrameRoutingId initiator_frame_routing_id_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
-  std::map<WebDataServiceBase::Handle,
-           StorePaymentCredentialAndHideUserPromptCallback>
-      storage_callbacks_;
+  base::Optional<WebDataServiceBase::Handle> data_service_request_handle_;
+  DownloadIconAndShowUserPromptCallback prompt_callback_;
+  StorePaymentCredentialAndHideUserPromptCallback storage_callback_;
   mojo::Receiver<mojom::PaymentCredential> receiver_{this};
   base::Optional<int> pending_icon_download_request_id_;
   std::vector<uint8_t> encoded_icon_;

@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
+#include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/payments/content/payment_credential_enrollment_controller.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
@@ -36,6 +37,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "device/fido/virtual_fido_device_factory.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
@@ -286,8 +289,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
 #if !defined(OS_ANDROID)
 class SecurePaymentConfirmationCreationTest
     : public SecurePaymentConfirmationTest,
-      public PaymentCredentialEnrollmentController::ObserverForTest {
+      public PaymentCredentialEnrollmentController::ObserverForTest,
+      public content::WebContentsObserver {
  public:
+  enum Event : int {
+    AUTHENTICATOR_REQUEST,
+    WEB_CONTENTS_DESTROYED,
+  };
+
   void RespondToFutureEnrollments(bool confirm) {
     confirm_enroll_ = confirm;
     PaymentCredentialEnrollmentController::CreateForWebContents(
@@ -328,8 +337,10 @@ class SecurePaymentConfirmationCreationTest
 
     if (should_hang) {
       virtual_device_factory->mutable_state()->simulate_press_callback =
-          base::BindLambdaForTesting(
-              [](device::VirtualFidoDevice* device) { return false; });
+          base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
+            event_waiter_->OnEvent(AUTHENTICATOR_REQUEST);
+            return false;
+          });
     }
 
     // Currently this only supports tests relying on user-verifying platform
@@ -385,8 +396,24 @@ class SecurePaymentConfirmationCreationTest
                 JourneyLogger::EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION);
   }
 
+  void ObserveEvent(Event event) {
+    event_waiter_ =
+        std::make_unique<autofill::EventWaiter<Event>>(std::list<Event>{event});
+  }
+
+  void ObserveWebContentsDestroyed() {
+    ObserveEvent(WEB_CONTENTS_DESTROYED);
+    Observe(GetActiveWebContents());
+  }
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override {
+    event_waiter_->OnEvent(WEB_CONTENTS_DESTROYED);
+  }
+
   base::HistogramTester histogram_tester_;
   bool confirm_enroll_ = false;
+  std::unique_ptr<autofill::EventWaiter<Event>> event_waiter_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, UserCancel) {
@@ -629,20 +656,22 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
-// Disabled for flakiness (crbug.com/1184191)
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       DISABLED_WebContentsClosed) {
+                       WebContentsClosedDuringEnrollment) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true, /*should_hang=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
 
-  EXPECT_TRUE(content::ExecJs(
+  ObserveEvent(AUTHENTICATOR_REQUEST);
+  ExecuteScriptAsync(
       GetActiveWebContents(),
-      content::JsReplace("createPaymentCredential($1)", GetDefaultIconURL())));
+      content::JsReplace("createPaymentCredential($1)", GetDefaultIconURL()));
+  event_waiter_->Wait();
 
   // Expect no crash when the web contents is destroyed during enrollment.
+  ObserveWebContentsDestroyed();
   GetActiveWebContents()->Close();
-  base::RunLoop().RunUntilIdle();
+  event_waiter_->Wait();
 
   ExpectNoFunnelCount();
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
@@ -688,6 +717,44 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+}
+
+std::unique_ptr<net::test_server::HttpResponse> HangRequest(
+    const base::RepeatingClosure& on_called,
+    const net::test_server::HttpRequest& request) {
+  EXPECT_EQ(request.relative_url, "/icon.png");
+  on_called.Run();
+  return std::make_unique<net::test_server::HungResponse>();
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+                       WebContentsClosedDuringIconDownload) {
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  net::EmbeddedTestServer hanging_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  hanging_server.ServeFilesFromSourceDirectory("components/test/data/payments");
+
+  // A RunLoop must be used to wait for HangRequest instead of the EventWaiter
+  // because HangRequest is executed on a different thread.
+  base::RunLoop wait_for_icon_download;
+  hanging_server.RegisterRequestHandler(
+      base::BindRepeating(HangRequest, wait_for_icon_download.QuitClosure()));
+  ASSERT_TRUE(hanging_server.Start());
+
+  ExecuteScriptAsync(
+      GetActiveWebContents(),
+      content::JsReplace("createPaymentCredential($1)",
+                         hanging_server.GetURL("a.com", "/icon.png")));
+  wait_for_icon_download.Run();
+
+  // Expect no crash when closing the web contents mid-request.
+  ObserveWebContentsDestroyed();
+  GetActiveWebContents()->Close();
+  event_waiter_->Wait();
+
+  ExpectNoFunnelCount();
+  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
 #endif  // !defined(OS_ANDROID)
