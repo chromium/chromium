@@ -51,7 +51,6 @@ class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
 class WebContents;
-class WebContentsImpl;
 struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
 struct EntryChangedDetails;
@@ -694,7 +693,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   void ResetWebContents();
 
-  WebContentsImpl* web_contents_;
+  WebContents* web_contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
 };

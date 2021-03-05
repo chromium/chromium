@@ -33,6 +33,7 @@
 
 namespace content {
 class RenderWidgetHostViewBase;
+class WebContentsImpl;
 
 // A browser plugin guest provides functionality for WebContents to operate in
 // the guest role and implements guest-specific overrides for ViewHostMsg_*

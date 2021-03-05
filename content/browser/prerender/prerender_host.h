@@ -16,12 +16,10 @@
 #include "url/gurl.h"
 
 namespace content {
-
 class FrameTree;
 class NavigationController;
 class RenderFrameHostImpl;
-class WebContents;
-class FrameTree;
+class WebContentsImpl;
 
 // Prerender2:
 // PrerenderHost creates a new WebContents and starts prerendering with that.
