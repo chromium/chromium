@@ -1159,7 +1159,7 @@ void CompositeEditCommand::PushAnchorElementDown(Element* anchor_node,
   if (!anchor_node)
     return;
 
-  DCHECK(IsA<HTMLAnchorElement>(anchor_node)) << anchor_node;
+  DCHECK(anchor_node->IsLink()) << anchor_node;
 
   const VisibleSelection& visible_selection = CreateVisibleSelection(
       SelectionInDOMTree::Builder().SelectAllChildren(*anchor_node).Build());

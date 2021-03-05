@@ -116,4 +116,18 @@ selection_test(
     ],
     'InsertText tab not replacing the hyperlink where text is wrapped inside inline');
 
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a><i>test|</i></a>',
+        '</div>',
+    ],
+    'insertText c',
+    [
+        '<div contenteditable>',
+            '<a><i>testc|</i></a>',
+        '</div>',
+    ],
+    'InsertText after hyperlink where text is wrapped inside inline');
+
 </script>
