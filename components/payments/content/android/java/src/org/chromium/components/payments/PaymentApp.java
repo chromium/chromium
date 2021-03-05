@@ -74,12 +74,25 @@ public abstract class PaymentApp extends EditableOption {
     }
 
     protected PaymentApp(String id, String label, String sublabel, Drawable icon) {
-        super(id, label, sublabel, icon);
+        super(id, removeLineTerminators(label), sublabel, icon);
     }
 
     protected PaymentApp(
             String id, String label, String sublabel, String tertiarylabel, Drawable icon) {
-        super(id, label, sublabel, tertiarylabel, icon);
+        super(id, removeLineTerminators(label), sublabel, tertiarylabel, icon);
+    }
+
+    private static String removeLineTerminators(String text) {
+        // '\n' - A newline (line feed) character.
+        // '\f' - A form feed character.
+        // '\r' - A carriage-return character.
+        // '\u0085' - A next-line character.
+        // '\u2028' - A line-separator character.
+        // '\u2029' - A paragraph-separator character.
+        // [abc] - a, b, or c (simple character class).
+        // X+ - X, one or more times, a greedy quantifier.
+        // See: https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+        return text.replaceAll("[\n\f\r\u0085\u2028\u2029]+", "");
     }
 
     /**
