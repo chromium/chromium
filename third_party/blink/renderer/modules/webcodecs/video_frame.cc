@@ -275,7 +275,16 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const auto timestamp = base::TimeDelta::FromMicroseconds(
       (init && init->hasTimestamp()) ? init->timestamp() : 0);
 
-  const auto sk_image = image->PaintImageForCurrentFrame().GetSkImage();
+  // Note: The current PaintImage may be lazy generated, for simplicity, we just
+  // ask Skia to rasterize the image for us.
+  //
+  // A potential optimization could use PaintImage::DecodeYuv() to decode
+  // directly into a media::VideoFrame. This would improve VideoFrame from <img>
+  // creation, but probably such users should be using ImageDecoder directly.
+  auto sk_image = image->PaintImageForCurrentFrame().GetSkImage();
+  if (sk_image->isLazyGenerated())
+    sk_image = sk_image->makeRasterImage();
+
   const auto sk_image_info = sk_image->imageInfo();
 
   auto sk_color_space = sk_image_info.refColorSpace();

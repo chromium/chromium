@@ -950,6 +950,10 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
                                             base::TimeDelta timestamp) {
   DCHECK(!sk_image->isTextureBacked());
 
+  // A given SkImage may not exist until it's rasterized.
+  if (sk_image->isLazyGenerated())
+    sk_image = sk_image->makeRasterImage();
+
   // TODO(crbug.com/1073995): Add F16 support.
   auto sk_color_type = sk_image->colorType();
   if (sk_color_type != kRGBA_8888_SkColorType &&
