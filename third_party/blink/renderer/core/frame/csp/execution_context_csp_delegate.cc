@@ -266,9 +266,6 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
       }
     }
   }
-
-  frame->GetLocalFrameHostRemote().DidAddContentSecurityPolicies(
-      std::move(policies));
 }
 
 SecurityContext& ExecutionContextCSPDelegate::GetSecurityContext() {

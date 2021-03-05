@@ -256,15 +256,6 @@ interface LocalFrameHost {
   // |window.focus()| on a page has been invoked in the renderer process.
   DidCallFocus();
 
-  // Notifies the browser process about a new Content Security Policy that needs
-  // to be applies to the frame. This message is sent when a frame commits
-  // navigation to a new location (reporting accumulated policies from HTTP
-  // headers and/or policies that might have been inherited from the parent
-  // frame) or when a new policy has been discovered afterwards (i.e. found in a
-  // dynamically added or a static <meta> element).
-  DidAddContentSecurityPolicies(
-      array<network.mojom.ContentSecurityPolicy> policies);
-
   // Sent when the frame starts enforcing an insecure request policy. Sending
   // this information in DidCommitProvisionalLoad isn't sufficient; this
   // message is needed because, for example, a document can dynamically insert

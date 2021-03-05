@@ -1530,14 +1530,6 @@ void DocumentLoader::StartLoadingResponse() {
 
   CHECK_GE(state_, kCommitted);
 
-  // Let the browser process know about all the CSP applied to the document.
-  // The browser process is enforcing several directives. It needs to know about
-  // 'frame-src', 'child-src', 'navigate-to', 'upgrade-insecure-request', etc.
-  //
-  // It is important to forward all the CSP data before loading the response
-  // body, otherwise some loaded content might not be blocked.
-  frame_->DomWindow()->GetContentSecurityPolicy()->ReportAccumulatedHeaders();
-
   CreateParserPostCommit();
 
   // The main document from an MHTML archive is not loaded from its HTTP

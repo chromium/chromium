@@ -3060,13 +3060,6 @@ void RenderFrameHostImpl::DidCallFocus() {
   delegate_->DidCallFocus();
 }
 
-void RenderFrameHostImpl::DidAddContentSecurityPolicies(
-    std::vector<network::mojom::ContentSecurityPolicyPtr> policies) {
-  TRACE_EVENT1("navigation",
-               "RenderFrameHostImpl::OnDidAddContentSecurityPolicies",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id());
-}
-
 void RenderFrameHostImpl::CancelInitialHistoryLoad() {
   // A Javascript navigation interrupted the initial history load.  Check if an
   // initial subframe cross-process navigation needs to be canceled as a result.

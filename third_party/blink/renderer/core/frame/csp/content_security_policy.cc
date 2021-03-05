@@ -185,6 +185,7 @@ void ContentSecurityPolicy::BindToDelegate(
 
   // Report use counters for all the policies that have been parsed until now.
   ReportUseCounters(policies_);
+  delegate_->DidAddContentSecurityPolicies(mojo::Clone(GetParsedPolicies()));
 }
 
 void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
@@ -353,15 +354,6 @@ void ContentSecurityPolicy::AddPolicies(
   ApplyPolicySideEffectsToDelegate();
   ReportUseCounters(policies_to_report);
 
-  // Notify about the new header, so that it can be reported back to the
-  // browser process. This is needed in order to:
-  // 1) replicate CSP directives (i.e. frame-src) to OOPIFs (only for now /
-  // short-term).
-  // 2) enforce CSP in the browser process (long-term - see
-  // https://crbug.com/376522).
-  // TODO(arthursonzogni): policies are actually replicated (1) and some of
-  // them are enforced on the browser process (2). Stop doing (1) when (2) is
-  // finished.
   delegate_->DidAddContentSecurityPolicies(std::move(policies_to_report));
 }
 
@@ -450,11 +442,6 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
         break;
     }
   }
-}
-
-void ContentSecurityPolicy::ReportAccumulatedHeaders() const {
-  DCHECK(delegate_);
-  delegate_->DidAddContentSecurityPolicies(mojo::Clone(GetParsedPolicies()));
 }
 
 void ContentSecurityPolicy::SetOverrideAllowInlineStyle(bool value) {

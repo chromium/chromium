@@ -1712,8 +1712,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidFailLoadWithError(const GURL& url, int32_t error_code) override;
   void DidFocusFrame() override;
   void DidCallFocus() override;
-  void DidAddContentSecurityPolicies(
-      std::vector<network::mojom::ContentSecurityPolicyPtr> policies) override;
   void EnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy) override;
   void EnforceInsecureNavigationsSet(const std::vector<uint32_t>& set) override;
