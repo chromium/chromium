@@ -83,8 +83,8 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
   }
   DCHECK(bubble);
 
-  if (icon_view)
-    bubble->SetHighlightedButton(icon_view);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
@@ -104,8 +104,8 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kLocalCardMigration);
-  if (icon_view)
-    bubble->SetHighlightedButton(icon_view);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
@@ -122,6 +122,12 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowOfferNotificationBubble(
   OfferNotificationBubbleViews* bubble =
       new OfferNotificationBubbleViews(anchor_view, web_contents, controller);
 
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kPaymentsOfferNotification);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
+
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(is_user_gesture
                             ? OfferNotificationBubbleViews::USER_GESTURE
@@ -136,6 +142,13 @@ SaveUPIBubble* AutofillBubbleHandlerImpl::ShowSaveUPIBubble(
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
   SaveUPIOfferBubbleViews* bubble =
       new SaveUPIOfferBubbleViews(anchor_view, web_contents, controller);
+
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kSaveCard);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
+
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show();
   return bubble;
