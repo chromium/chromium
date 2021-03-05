@@ -432,7 +432,7 @@ class ChromiumDepGraph {
 
             for (ArtifactResult artifact : artifacts) {
               if (artifact instanceof ResolvedArtifactResult) {
-                return result
+                return artifact
               } else {
                 def errorMsg = "Unresolved artifact for ${componentId.displayName} " +
                     "${project.name} Num components ${components.size()} Num artifacts " +
