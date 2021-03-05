@@ -29,7 +29,8 @@ enum class WebApkUpdateReason {
 };
 
 // A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.webapps
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.browserservices.intents)
 //
 // This enum is used to back UMA/UKM histograms, and should therefore be treated
 // as append-only.

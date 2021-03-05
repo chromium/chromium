@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import android.app.Activity;
 
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
 import org.chromium.components.webapps.ShortcutSource;
 
 /**
