@@ -967,8 +967,7 @@
     /** @type {!BackgroundWindow} */
     this.backgroundPage_ = await new Promise(resolve => {
       if (window.isSWA) {
-        const backgroundWindowSWA = window.BackgroundWindowSWA || null;
-        resolve(new backgroundWindowSWA());
+        resolve(window);
       } else {
         chrome.runtime.getBackgroundPage(resolve);
       }
