@@ -411,9 +411,6 @@ void WizardController::Init(OobeScreenId first_screen) {
     is_out_of_box_ = true;
   }
 
-  wizard_context_->device_has_users =
-      !user_manager::UserManager::Get()->GetUsers().empty();
-
   // This is a hacky way to check for local state corruption, because
   // it depends on the fact that the local state is loaded
   // synchronously and at the first demand. IsEnterpriseManaged()
@@ -440,7 +437,8 @@ void WizardController::Init(OobeScreenId first_screen) {
   }
 
   const bool device_is_owned =
-      is_enterprise_managed || wizard_context_->device_has_users;
+      is_enterprise_managed ||
+      !user_manager::UserManager::Get()->GetUsers().empty();
   // Do not show the HID Detection screen if device is owned.
   if (!device_is_owned && CanShowHIDDetectionScreen() &&
       first_screen == OobeScreen::SCREEN_UNKNOWN) {

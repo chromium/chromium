@@ -50,10 +50,6 @@ class WizardContext {
   // (determines if user creation screen should be skipped).
   bool skip_to_login_for_tests = false;
 
-  // Indicates whether the device has users. Set during the initialization of
-  // WizardController.
-  bool device_has_users = false;
-
   // Whether wizard controller should skip to the update screen. Setting this
   // flag will ignore hid detection results.
   bool skip_to_update_for_tests = false;
