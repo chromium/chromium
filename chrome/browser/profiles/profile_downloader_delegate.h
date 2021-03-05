@@ -54,11 +54,6 @@ class ProfileDownloaderDelegate {
   // Returns the URLLoaderFactory to use for this download request.
   virtual network::mojom::URLLoaderFactory* GetURLLoaderFactory() = 0;
 
-  // Returns true if the profile download is taking place before the user has
-  // signed in. This can happen for example on Android and will trigger some
-  // additional fetches since some information is not yet available.
-  virtual bool IsPreSignin() const = 0;
-
   // Called when the profile download has completed successfully. Delegate can
   // query the downloader for the picture and full name.
   virtual void OnProfileDownloadSuccess(ProfileDownloader* downloader) = 0;

@@ -97,7 +97,6 @@ class UserImageManagerImpl : public UserImageManager,
   signin::IdentityManager* GetIdentityManager() override;
   network::mojom::URLLoaderFactory* GetURLLoaderFactory() override;
   std::string GetCachedPictureURL() const override;
-  bool IsPreSignin() const override;
   void OnProfileDownloadSuccess(ProfileDownloader* downloader) override;
   void OnProfileDownloadFailure(
       ProfileDownloader* downloader,

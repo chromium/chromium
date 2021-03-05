@@ -726,10 +726,6 @@ std::string UserImageManagerImpl::GetCachedPictureURL() const {
   return profile_image_url_.spec();
 }
 
-bool UserImageManagerImpl::IsPreSignin() const {
-  return false;
-}
-
 void UserImageManagerImpl::OnProfileDownloadSuccess(
     ProfileDownloader* downloader) {
   // Ensure that the `profile_downloader_` is deleted when this method returns.
