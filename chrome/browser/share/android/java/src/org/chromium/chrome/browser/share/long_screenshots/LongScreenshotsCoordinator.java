@@ -5,15 +5,11 @@
 package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
-import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
-import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -82,26 +78,9 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
      */
     @Override
     public void captureScreenshot() {
-        LongScreenshotsEntry entry = mEntryManager.generateInitialEntry();
-        entry.setListener(new LongScreenshotsEntry.EntryListener() {
-            @Override
-            public void onResult(@EntryStatus int status) {
-                if (status == EntryStatus.BITMAP_GENERATED) {
-                    mScreenshot = entry.getBitmap();
-
-                    if (mMediator == null) {
-                        mMediator = new LongScreenshotsMediator(mActivity, mEntryManager);
-                    }
-                    mMediator.showAreaSelectionDialog(mScreenshot);
-                } else {
-                    // TODO(tgupta/kmilka): Handle the error case correctly.
-                }
-            }
-        });
-    }
-
-    @VisibleForTesting
-    public Bitmap getScreenshot() {
-        return mScreenshot;
+        if (mMediator == null) {
+            mMediator = new LongScreenshotsMediator(mActivity, mEntryManager);
+        }
+        mMediator.displayInitialScreenshot();
     }
 }

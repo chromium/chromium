@@ -54,6 +54,9 @@ public class EntryManager {
         LongScreenshotsEntry entry =
                 new LongScreenshotsEntry(mGenerator, mBoundsManager.getInitialEntryBounds());
         processEntry(entry, false);
+        // Pre-compute these entries so that they are ready to go when the user starts scrolling.
+        getPreviousEntry(entry.getId());
+        getNextEntry(entry.getId());
         return entry;
     }
 

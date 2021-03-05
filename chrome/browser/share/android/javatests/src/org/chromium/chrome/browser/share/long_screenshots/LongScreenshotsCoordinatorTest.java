@@ -4,21 +4,18 @@
 
 package org.chromium.chrome.browser.share.long_screenshots;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyObject;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.graphics.Bitmap;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -79,19 +76,6 @@ public class LongScreenshotsCoordinatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mManager.generateInitialEntry()).thenReturn(mEntry);
-
-        mBitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
-
-        when(mEntry.getBitmap()).thenReturn(mBitmap);
-        Mockito.doCallRealMethod().when(mEntry).updateStatus(anyInt());
-        Mockito.doCallRealMethod().when(mEntry).setListener(anyObject());
-
-        Runnable noop = new Runnable() {
-            @Override
-            public void run() {}
-        };
-
         // Instantiate the object under test.
         mCoordinator = LongScreenshotsCoordinator.createForTests(mActivity, mTab,
                 mChromeOptionShareCallback, mBottomSheetControllerMock,
@@ -101,9 +85,6 @@ public class LongScreenshotsCoordinatorTest {
     @Test
     public void testCaptureScreenshotInitialEntrySuccess() {
         mCoordinator.captureScreenshot();
-
-        mEntry.updateStatus(LongScreenshotsEntry.EntryStatus.BITMAP_GENERATED);
-
-        Assert.assertEquals(mBitmap, mCoordinator.getScreenshot());
+        verify(mMediator, times(1)).displayInitialScreenshot();
     }
 }

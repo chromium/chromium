@@ -51,6 +51,20 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         mAnimationsComplete = 0;
     }
 
+    public void displayInitialScreenshot() {
+        LongScreenshotsEntry entry = mEntryManager.generateInitialEntry();
+        entry.setListener(new LongScreenshotsEntry.EntryListener() {
+            @Override
+            public void onResult(@EntryStatus int status) {
+                if (status == EntryStatus.BITMAP_GENERATED) {
+                    showAreaSelectionDialog(entry.getBitmap());
+                } else {
+                    // TODO(tgupta/kmilka): Handle the error case correctly.
+                }
+            }
+        });
+    }
+
     public void showAreaSelectionDialog(Bitmap bitmap) {
         mInitialBitmap = bitmap;
         mDialogView = mActivity.getLayoutInflater().inflate(
