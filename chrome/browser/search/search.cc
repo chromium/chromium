@@ -36,6 +36,7 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #endif
 
 namespace search {
@@ -182,9 +183,10 @@ struct NewTabURLDetails {
 #if defined(OS_ANDROID)
     const GURL local_url(chrome::kChromeSearchLocalNtpUrl);
 #else
-    const GURL local_url(base::FeatureList::IsEnabled(ntp_features::kWebUI) &&
-                                 DefaultSearchProviderIsGoogle(profile)
-                             ? chrome::kChromeUINewTabPageURL
+    const GURL local_url(base::FeatureList::IsEnabled(ntp_features::kWebUI)
+                             ? (DefaultSearchProviderIsGoogle(profile)
+                                    ? chrome::kChromeUINewTabPageURL
+                                    : chrome::kChromeUINewTabPageThirdPartyURL)
                              : chrome::kChromeSearchLocalNtpUrl);
 #endif
 
@@ -261,7 +263,8 @@ bool IsNTPURL(const GURL& url) {
 #if defined(OS_ANDROID)
   return false;
 #else
-  return NewTabPageUI::IsNewTabPageOrigin(url);
+  return NewTabPageUI::IsNewTabPageOrigin(url) ||
+         NewTabPageThirdPartyUI::IsNewTabPageOrigin(url);
 #endif
 }
 

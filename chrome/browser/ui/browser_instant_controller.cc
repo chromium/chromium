@@ -99,8 +99,9 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
     if (!contents)
       continue;
 
-    bool is_ntp = contents->GetMainFrame()->GetSiteInstance()->GetSiteURL() ==
-                  GURL(chrome::kChromeUINewTabPageURL);
+    GURL site_url = contents->GetMainFrame()->GetSiteInstance()->GetSiteURL();
+    bool is_ntp = site_url == GURL(chrome::kChromeUINewTabPageURL) ||
+                  site_url == GURL(chrome::kChromeUINewTabPageThirdPartyURL);
 
     if (!is_ntp) {
       InstantService* instant_service =

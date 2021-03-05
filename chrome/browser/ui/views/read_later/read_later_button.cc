@@ -66,7 +66,9 @@ void RecordBookmarkBarState(Browser* browser) {
     // These are also the NTP urls checked for showing the bookmark bar on the
     // NTP.
     if (site_origin == GURL(chrome::kChromeUINewTabURL).GetOrigin() ||
-        site_origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin()) {
+        site_origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin() ||
+        site_origin ==
+            GURL(chrome::kChromeUINewTabPageThirdPartyURL).GetOrigin()) {
       if (browser->profile()->GetPrefs()->GetBoolean(
               bookmarks::prefs::kShowBookmarkBar)) {
         state = BookmarkBarPrefAndState::kVisibleAndOnNTP;

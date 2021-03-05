@@ -1,0 +1,216 @@
+<style include="cr-hidden-style cr-icons">
+  :host {
+    --icon-button-color-active: var(--google-grey-refresh-700);
+    --icon-button-color: var(--google-grey-600);
+    --icon-size: 48px;
+    --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
+    --tile-size: 112px;
+    --title-height: 32px;
+    --ntp-focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
+    --ntp-focus-shadow: 0 0 0 2px var(--ntp-focus-shadow-color);
+  }
+
+  :host([show-background-image_]) {
+    --ntp-theme-text-shadow: 0 0 16px rgba(0, 0, 0, .3);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --ntp-focus-shadow-color: rgba(var(--google-blue-refresh-300-rgb), .5);
+    }
+  }
+
+
+  #container {
+    --content-width: calc(var(--column-count) * var(--tile-size)
+      /* We add an extra pixel because rounding errors on different zooms can
+       * make the width shorter than it should be. */
+      + 1px);
+    display: flex;
+    flex-wrap: wrap;
+    height: calc(var(--row-count) * var(--tile-size));
+    justify-content: center;
+    margin-bottom: 8px;
+    overflow: hidden;
+    padding: 2px;  /* Padding added so focus rings are not clipped. */
+    transition: opacity 300ms ease-in-out;
+    width: calc(var(--content-width) + 12px);
+  }
+
+  .query-tile-icon {
+    -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--google-grey-700);
+    height: 24px;
+    width: 24px;
+  }
+
+  :host([use-white-tile-icon_]) .query-tile-icon {
+    background-color: var(--google-grey-400);
+  }
+
+  .tile {
+    -webkit-tap-highlight-color: transparent;
+    align-items: center;
+    border-radius: 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: var(--tile-size);
+    opacity: 1;
+    outline: none;
+    position: relative;
+    text-decoration: none;
+    transition-duration: 300ms;
+    transition-property: left, top;
+    transition-timing-function: ease-in-out;
+    user-select: none;
+    width: var(--tile-size);
+  }
+
+  .tile:hover {
+    background-color: var(--tile-hover-color);
+  }
+
+  :host-context(.focus-outline-visible) .tile:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  .tile-icon {
+    align-items: center;
+    background-color: var(--ntp-theme-shortcut-background-color);
+    border-radius: 50%;
+    display: flex;
+    flex-shrink: 0;
+    height: var(--icon-size);
+    justify-content: center;
+    margin-top: 16px;
+    width: var(--icon-size);
+  }
+
+  .tile-icon img {
+    height: 24px;
+    width: 24px;
+  }
+
+  .tile-title {
+    align-items: center;
+    border-radius: 12px;
+    color: var(--ntp-theme-text-color);
+    display: flex;
+    height: var(--title-height);
+    line-height: calc(var(--title-height) / 2);
+    margin-top: 6px;
+    padding: 2px 8px;
+    width: 88px;
+  }
+
+  :host([use-title-pill_]) .tile-title {
+    background-color: white;
+    color: var(--google-grey-800);
+  }
+
+  .tile-title span {
+    font-weight: 400;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    text-shadow: var(--ntp-theme-text-shadow);
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .tile[query-tile] .tile-title span {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    white-space: initial;
+  }
+
+  :host([use-title-pill_]) .tile-title span {
+    text-shadow: none;
+  }
+
+  .title-rtl {
+    direction: rtl;
+  }
+
+  .title-ltr {
+    direction: ltr;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--icon-button-color);
+    --cr-icon-button-size: 28px;
+    --cr-icon-button-transition: none;
+    margin: 4px 2px;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: opacity 100ms ease-in-out;
+  }
+
+  :host-context([dir=rtl]) cr-icon-button {
+    left: 0;
+    right: unset;
+  }
+
+  .tile:hover cr-icon-button {
+    opacity: 1;
+    transition-delay: 400ms;
+  }
+
+  cr-icon-button:active,
+  :host-context(.focus-outline-visible) cr-icon-button:focus,
+  cr-icon-button:hover {
+    --cr-icon-button-fill-color: var(--icon-button-color-active);
+    opacity: 1;
+    transition-delay: 0s;
+  }
+</style>
+<div id="container"
+    style="--ntp-theme-text-color: [[rgbaOrInherit_(theme_.shortcutTextColor)]];
+        --ntp-theme-shortcut-background-color:
+              [[rgbaOrInherit_(theme_.shortcutBackgroundColor)]];
+        --column-count: [[columnCount_]]; --row-count: [[rowCount_]];">
+  <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
+    <template>
+      <a class="tile" href$="[[item.url.url]]" title$="[[item.title]]"
+          hidden$="[[isHidden_(index, maxVisibleTiles_)]]"
+          on-click="onTileClick_" on-keydown="onTileKeyDown_"
+          query-tile$="[[item.isQueryTile]]">
+        <cr-icon-button id="removeButton" class="icon-clear"
+            title="$i18n{linkRemove}" on-click="onTileRemoveButtonClick_"
+            tabindex="0" hidden$="[[customLinksEnabled_]]"></cr-icon-button>
+        <div class="tile-icon">
+          <img src$="[[getFaviconUrl_(item.url)]]" draggable="false"
+              hidden$="[[item.isQueryTile]]"></img>
+          <div class="query-tile-icon" draggable="false"
+              hidden$="[[!item.isQueryTile]]"></div>
+        </div>
+        <div class$="tile-title [[getTileTitleDirectionClass_(item)]]">
+          <span>[[item.title]]</span>
+        </div>
+      </a>
+    </template>
+  </dom-repeat>
+</div>
+<cr-toast id="toast" duration="10000">
+  <div>$i18n{linkRemovedMsg}</div>
+  <dom-if if="[[showToastButtons_]]">
+    <template>
+      <cr-button id="undo" aria-label="$i18n{undoDescription}"
+          on-click="onUndoClick_">
+        $i18n{undo}
+      </cr-button>
+      <cr-button id="restore"
+          aria-label="$i18n{restoreThumbnailsShort}"
+          on-click="onRestoreDefaultsClick_">
+        $i18n{restoreThumbnailsShort}
+      </cr-button>
+    </template>
+  </dom-if>
+</cr-toast>

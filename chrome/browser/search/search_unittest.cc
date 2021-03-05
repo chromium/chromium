@@ -312,13 +312,15 @@ TEST_F(SearchTest, InstantCacheableNTPNavigationEntryNewProfile) {
   content::WebContents* contents =
         browser()->tab_strip_model()->GetWebContentsAt(0);
   content::NavigationController& controller = contents->GetController();
-  // Test virtual url chrome://newtab  for first NTP of a new profile
-  EXPECT_TRUE(NavEntryIsInstantNTP(contents,
-                                   controller.GetLastCommittedEntry()));
+  // Test virtual url chrome://newtab for first NTP of a new profile
+  EXPECT_TRUE(
+      MatchesOriginAndPath(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+                           controller.GetLastCommittedEntry()->GetURL()));
   // The new_tab_url gets set after the first NTP is visible.
   SetSearchProvider(true, false);
-  EXPECT_TRUE(NavEntryIsInstantNTP(contents,
-                                   controller.GetLastCommittedEntry()));
+  EXPECT_TRUE(
+      MatchesOriginAndPath(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+                           controller.GetLastCommittedEntry()->GetURL()));
 }
 
 TEST_F(SearchTest, NoRewriteInIncognito) {
@@ -333,21 +335,21 @@ TEST_F(SearchTest, NoRewriteInIncognito) {
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsInsecure) {
   // Set an insecure new tab page URL and verify that it's ignored.
   SetSearchProvider(true, true);
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl),
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
             GetNewTabPageURL(profile()));
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl), new_tab_url);
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL), new_tab_url);
 }
 
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
   // Set an insecure new tab page URL and verify that it's ignored.
   SetSearchProvider(false, true);
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl),
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
             GetNewTabPageURL(profile()));
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl), new_tab_url);
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL), new_tab_url);
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -362,11 +364,11 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   hosts["foo.com"] = false;
   url_filter->SetManualHosts(std::move(hosts));
 
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl),
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
             GetNewTabPageURL(profile()));
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl), new_tab_url);
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL), new_tab_url);
 }
 #endif
 

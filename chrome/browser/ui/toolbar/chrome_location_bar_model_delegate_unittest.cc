@@ -108,8 +108,10 @@ TEST_P(ChromeLocationBarModelDelegateTest, IsNewTabPage) {
   SetSearchProvider(false);
   chrome::NewTab(browser());
   // New Tab URL with a user selected DSP without an NTP URL resolves to
-  // chrome-search://local-ntp/local-ntp.html.
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl),
+  // chrome://new-tab-page-third-party/ or local-ntp.
+  EXPECT_EQ(GURL(base::FeatureList::IsEnabled(ntp_features::kWebUI)
+                     ? chrome::kChromeUINewTabPageThirdPartyURL
+                     : chrome::kChromeSearchLocalNtpUrl),
             search::GetNewTabPageURL(profile()));
 
   EXPECT_FALSE(delegate_->IsNewTabPage());

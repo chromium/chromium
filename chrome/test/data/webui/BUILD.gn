@@ -394,6 +394,7 @@ if (include_js_tests) {
       "media/media_feeds_webui_browsertest.js",
       "media/media_history_webui_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
+      "new_tab_page_third_party/new_tab_page_third_party_browsertest.js",
       "read_later/read_later_browsertest.js",
     ]
 
@@ -435,7 +436,10 @@ if (include_js_tests) {
   js2gtest("interactive_ui_tests_js_mojo_lite_webui") {
     test_type = "mojo_lite_webui"
 
-    sources = [ "new_tab_page/new_tab_page_interactive_test.js" ]
+    sources = [
+      "new_tab_page/new_tab_page_interactive_test.js",
+      "new_tab_page_third_party/new_tab_page_third_party_interactive_test.js",
+    ]
 
     gen_include_files = [
       "polymer_browser_test_base.js",

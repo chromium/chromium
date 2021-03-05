@@ -111,9 +111,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest,
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest, LocalNewTabPage) {
   ASSERT_TRUE(https_test_server()->Start());
-  SetNewTabPage(chrome::kChromeSearchLocalNtpUrl);
-  // Already going to the local NTP, so we should arrive there as expected.
-  EXPECT_EQ(chrome::kChromeSearchLocalNtpUrl, NavigateToNewTabPage());
+  // This URL is not https so it will default to the 3P NTP.
+  SetNewTabPage(chrome::kChromeUINewTabPageThirdPartyURL);
+  // Already going to the 3P NTP, so we should arrive there as expected.
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest, 404Throttle) {

@@ -88,6 +88,17 @@ const char kLearnMoreGuestSessionUrl[] =
 const char kLearnMoreEphemeralGuestSessionUrl[] =
     "https://support.google.com/chrome/?p=ui_guest";
 
+std::string ReplaceTemplateExpressions(
+    const scoped_refptr<base::RefCountedMemory>& bytes,
+    const ui::TemplateReplacements& replacements) {
+  return ui::ReplaceTemplateExpressions(
+      base::StringPiece(reinterpret_cast<const char*>(bytes->front()),
+                        bytes->size()),
+      replacements);
+}
+
+}  // namespace
+
 SkColor GetThemeColor(const ui::ThemeProvider& tp, int id) {
   SkColor color = tp.GetColor(id);
   // If web contents are being inverted because the system is in high-contrast
@@ -140,17 +151,6 @@ std::string GetNewTabBackgroundTilingCSS(
       theme_provider.GetDisplayProperty(ThemeProperties::NTP_BACKGROUND_TILING);
   return ThemeProperties::TilingToString(repeat_mode);
 }
-
-std::string ReplaceTemplateExpressions(
-    const scoped_refptr<base::RefCountedMemory>& bytes,
-    const ui::TemplateReplacements& replacements) {
-  return ui::ReplaceTemplateExpressions(
-      base::StringPiece(reinterpret_cast<const char*>(bytes->front()),
-                        bytes->size()),
-      replacements);
-}
-
-}  // namespace
 
 NTPResourceCache::NTPResourceCache(Profile* profile)
     : profile_(profile), is_swipe_tracking_from_scroll_events_enabled_(false) {

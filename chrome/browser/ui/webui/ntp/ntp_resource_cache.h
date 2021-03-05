@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_NTP_NTP_RESOURCE_CACHE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -33,6 +34,16 @@ class RenderProcessHost;
 namespace policy {
 class PolicyChangeRegistrar;
 }
+
+namespace ui {
+class ThemeProvider;
+}
+
+SkColor GetThemeColor(const ui::ThemeProvider& tp, int id);
+std::string GetNewTabBackgroundCSS(const ui::ThemeProvider& theme_provider,
+                                   bool bar_attached);
+std::string GetNewTabBackgroundTilingCSS(
+    const ui::ThemeProvider& theme_provider);
 
 // This class keeps a cache of NTP resources (HTML and CSS) so we don't have to
 // regenerate them all the time.

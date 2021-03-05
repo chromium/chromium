@@ -168,7 +168,8 @@ GetNtpOverriddenParams(Profile* profile) {
     default_ntp_is_secondary =
         possible_rewrites[1] == ntp_url ||
         possible_rewrites[1] == GURL(chrome::kChromeSearchLocalNtpUrl) ||
-        possible_rewrites[1] == GURL(chrome::kChromeUINewTabPageURL);
+        possible_rewrites[1] == GURL(chrome::kChromeUINewTabPageURL) ||
+        possible_rewrites[1] == GURL(chrome::kChromeUINewTabPageThirdPartyURL);
   }
   // Check if there's another extension that would take over (this isn't
   // included in BrowserURLHandler::GetPossibleRewrites(), which only takes the
