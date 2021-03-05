@@ -56,8 +56,9 @@ uint32_t RTCRtpSource::RtpTimestamp() const {
 }
 
 base::Optional<int64_t> RTCRtpSource::CaptureTimestamp() const {
-  if (!source_.absolute_capture_time())
+  if (!source_.absolute_capture_time().has_value()) {
     return base::nullopt;
+  }
   return webrtc::UQ32x32ToInt64Ms(
       source_.absolute_capture_time()->absolute_capture_timestamp);
 }

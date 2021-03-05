@@ -22,6 +22,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:packet_socket_factory",
   "//third_party/webrtc/api:rtc_error",
   "//third_party/webrtc/api:rtc_stats_api",
+  "//third_party/webrtc/api:rtp_headers",
   "//third_party/webrtc/api:rtp_packet_info",
   "//third_party/webrtc/api:rtp_parameters",
   "//third_party/webrtc/api:scoped_refptr",
