@@ -3157,6 +3157,7 @@ def CheckSetNoParent(input_api, output_api):
           if directive.startswith('file://'):
             if directive in allowed_owners_files:
               found_owners_files.add(glob)
+
     # Check that every set noparent line has a corresponding file:// line
     # listed in build/OWNERS.setnoparent. An exception is made for top level
     # directories since src/OWNERS shouldn't review them.
@@ -5337,67 +5338,3 @@ def CheckDeprecationOfPreferences(input_api, output_api):
       potential_problems
     )]
   return []
-
-# string pattern, sequence of strings to show when pattern matches,
-# error flag. True if match is a presubmit error, otherwise it's a warning.
-_NON_INCLUSIVE_TERMS = (
-  (
-    # Note that \b pattern in python re is pretty particular. In this regexp,
-    # 'class WhiteList ...' will match, but 'class FooWhiteList ...' will not.
-    # This may require some tweaking to catch these cases without triggering
-    # a lot of false positives. Leaving it naive and less matchy for now.
-    r'/\b(?i)((black|white)list|master|slave)\b',
-    ('Please don\'t use blacklist, whitelist, master, or slave in your code',
-     'and make every effort to use other terms. Using "// nocheck" at the end',
-     'of the offending line will bypass this PRESUBMIT error but avoid using',
-     'this whenever possible. Reach out to community@chromium.org if you have',
-     ' questions'),
-    False
-  ),
-)
-
-def CheckInclusiveLanguage(input_api, output_api):
-  """Make sure that banned non-inclusive terms are not used."""
-  warnings = []
-  errors = []
-
-  # Note that this matches exact path prefixes, and does not match
-  # subdirectories. Only files directly in an exlcluded path will
-  # match.
-  def IsExcludedFile(affected_file, excluded_paths):
-    local_dir = input_api.os_path.dirname(affected_file.LocalPath())
-    return local_dir in excluded_paths
-
-  def CheckForMatch(affected_file, line_num, line, term, message, error):
-    problems = _GetMessageForMatchingType(input_api, f, line_num, line,
-                                          term, message)
-    if problems:
-      if error:
-        errors.extend(problems)
-      else:
-        warnings.extend(problems)
-
-  excluded_paths = []
-  f = input_api.ReadFile(input_api.os_path.join(
-        input_api.change.RepositoryRoot(),
-        'infra',
-        'inclusive_language_presubmit_exempt_dirs.txt'))
-  for line in f.split('\n'):
-    excluded_paths.append(line.split(' ')[0])
-
-  excluded_paths = set(excluded_paths)
-  for f in input_api.AffectedFiles():
-    for line_num, line in f.ChangedContents():
-      for term, message, error in _NON_INCLUSIVE_TERMS:
-        if IsExcludedFile(f, excluded_paths):
-          continue
-        CheckForMatch(f, line_num, line, term, message, error)
-
-  result = []
-  if (warnings):
-    result.append(output_api.PresubmitPromptWarning(
-        'Banned non-inclusive language was used.\n' + '\n'.join(warnings)))
-  if (errors):
-    result.append(output_api.PresubmitError(
-        'Banned non-inclusive language was used.\n' + '\n'.join(errors)))
-  return result
