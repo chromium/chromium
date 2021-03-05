@@ -246,6 +246,13 @@ bool IsRemoteApp(const std::string& app_id) {
   return cache && cache->GetAppType(app_id) == apps::mojom::AppType::kRemote;
 }
 
+// Records the user metric action for whenever a shelf item is pinned or
+// unpinned.
+void RecordPinUnpinUserAction(bool pinned) {
+  Shell::Get()->metrics()->RecordUserMetricsAction(
+      pinned ? UMA_SHELF_ITEM_PINNED : UMA_SHELF_ITEM_UNPINNED);
+}
+
 }  // namespace
 
 // ImplicitAnimationObserver used when adding an item.
@@ -1998,6 +2005,7 @@ void ShelfView::ShelfItemAdded(int model_index) {
   if (model_->is_current_mutation_user_triggered() &&
       item.type == TYPE_PINNED_APP) {
     AnnouncePinUnpinEvent(item, /*pinned=*/true);
+    RecordPinUnpinUserAction(/*pinned=*/true);
   }
 }
 
@@ -2057,6 +2065,7 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   if (model_->is_current_mutation_user_triggered() &&
       old_item.type == TYPE_PINNED_APP) {
     AnnouncePinUnpinEvent(old_item, /*pinned=*/false);
+    RecordPinUnpinUserAction(/*pinned=*/false);
   }
 }
 
@@ -2104,8 +2113,10 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
     // If an item is being pinned or unpinned, show the new status of the
     // shelf immediately so that the separator gets drawn as needed.
     if (old_item.type == TYPE_PINNED_APP || item.type == TYPE_PINNED_APP) {
-      if (model_->is_current_mutation_user_triggered())
+      if (model_->is_current_mutation_user_triggered()) {
         AnnouncePinUnpinEvent(old_item, item.type == TYPE_PINNED_APP);
+        RecordPinUnpinUserAction(item.type == TYPE_PINNED_APP);
+      }
       AnimateToIdealBounds();
     }
     return;

@@ -22166,18 +22166,35 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Shelf_AlignmentSetBottom">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <description>User sets shelf to bottom alignment on ChromeOS.</description>
 </action>
 
 <action name="Shelf_AlignmentSetLeft">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <description>User sets shelf to left alignment on ChromeOS.</description>
 </action>
 
 <action name="Shelf_AlignmentSetRight">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>mmourgos@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <description>User sets shelf to right alignment on ChromeOS.</description>
+</action>
+
+<action name="Shelf_ItemPinned">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <description>User pinned an app item to the shelf on ChromeOS.</description>
+</action>
+
+<action name="Shelf_ItemUnpinned">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    User unpinned an app item from the shelf on ChromeOS.
+  </description>
 </action>
 
 <action name="ShowAccessibilitySettings">

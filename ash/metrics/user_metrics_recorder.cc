@@ -252,6 +252,12 @@ void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
     case UMA_SHELF_ALIGNMENT_SET_RIGHT:
       RecordAction(UserMetricsAction("Shelf_AlignmentSetRight"));
       break;
+    case UMA_SHELF_ITEM_PINNED:
+      RecordAction(UserMetricsAction("Shelf_ItemPinned"));
+      break;
+    case UMA_SHELF_ITEM_UNPINNED:
+      RecordAction(UserMetricsAction("Shelf_ItemUnpinned"));
+      break;
     case UMA_STATUS_AREA_AUDIO_CURRENT_INPUT_DEVICE:
       RecordAction(UserMetricsAction("StatusArea_Audio_CurrentInputDevice"));
       break;
