@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/app_mode/certificate_manager_dialog.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/login/helper.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/url_constants.h"

@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/chromeos/login/helper.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"

@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 
 #include "base/task/post_task.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"

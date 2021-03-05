@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_MOCK_NETWORK_STATE_HELPER_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_MOCK_NETWORK_STATE_HELPER_H_
 
-#include "chrome/browser/chromeos/login/helper.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {

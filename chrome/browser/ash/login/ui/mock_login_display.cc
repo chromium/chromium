@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/mock_login_display.h"
 
-#include "chrome/browser/chromeos/login/help_app_launcher.h"
+#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "components/user_manager/user.h"
 #include "ui/gfx/geometry/rect.h"
 

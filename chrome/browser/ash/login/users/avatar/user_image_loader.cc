@@ -16,7 +16,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/login/helper.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"

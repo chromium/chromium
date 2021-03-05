@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_CONFIGURATION_KEYS_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_CONFIGURATION_KEYS_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_CONFIGURATION_KEYS_H_
+#define CHROME_BROWSER_ASH_LOGIN_CONFIGURATION_KEYS_H_
 
 #include "base/values.h"
 
@@ -61,4 +61,4 @@ void FilterConfiguration(const base::Value& configuration,
 }  // namespace configuration
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_CONFIGURATION_KEYS_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_CONFIGURATION_KEYS_H_

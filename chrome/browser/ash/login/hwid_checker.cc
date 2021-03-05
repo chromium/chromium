@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/hwid_checker.h"
+#include "chrome/browser/ash/login/hwid_checker.h"
 
 #include <cstdio>
 

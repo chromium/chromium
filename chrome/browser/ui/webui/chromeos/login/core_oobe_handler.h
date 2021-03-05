@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/help_app_launcher.h"
+#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/chromeos/login/oobe_configuration.h"
 #include "chrome/browser/chromeos/login/version_info_updater.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"

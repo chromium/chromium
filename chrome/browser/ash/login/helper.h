@@ -4,8 +4,8 @@
 //
 // This file contains helper functions used by Chromium OS login.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_HELPER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_HELPER_H_
+#define CHROME_BROWSER_ASH_LOGIN_HELPER_H_
 
 #include <string>
 
@@ -120,4 +120,4 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_HELPER_H_

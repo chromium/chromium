@@ -10717,8 +10717,9 @@ histogram as enum -->
 <enum name="ChromeOSUserImageId">
   <summary>
     Indices of the default images as defined in
-    chrome/browser/chromeos/login/default_user_images.cc. The last three values
-    are for taken photo, downloaded file and the image previously used by user.
+    chrome/browser/ash/login/users/default_user_image/default_user_images.cc.
+    The last three values are for taken photo, downloaded file and the image
+    previously used by user.
   </summary>
   <int value="0" label="Default, Beaker"/>
   <int value="1" label="Default, Bee"/>
@@ -24059,7 +24060,7 @@ Called by update_document_policy_enum.py.-->
 <enum name="EnterpriseUserSessionLogins">
   <summary>
     Types of sign-in events as defined in
-    chrome/browser/chromeos/login/enterprise_user_session_metrics.h
+    chrome/browser/ash/login/enterprise_user_session_metrics.h
   </summary>
   <int value="0" label="Regular user"/>
   <int value="1" label="Manual public session"/>

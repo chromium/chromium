@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "chrome/browser/chromeos/login/configuration_keys.h"
+#include "chrome/browser/ash/login/configuration_keys.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/oobe_configuration_client.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"

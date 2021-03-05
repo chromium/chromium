@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/error_screens_histogram_helper.h"
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
