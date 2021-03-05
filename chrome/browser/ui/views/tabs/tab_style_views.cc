@@ -991,10 +991,11 @@ int TabStyleViews::GetMinimumActiveWidth() {
   int min_active_width =
       TabCloseButton::GetGlyphSize() + GetContentsHorizontalInsetSize() * 2;
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-    return std::max(min_active_width,
-                    base::GetFieldTrialParamByFeatureAsInt(
-                        features::kScrollableTabStrip,
-                        features::kMinimumTabWidthFeatureParameterName, 72));
+    return std::max(
+        min_active_width,
+        base::GetFieldTrialParamByFeatureAsInt(
+            features::kScrollableTabStrip,
+            features::kMinimumTabWidthFeatureParameterName, min_active_width));
   }
   return min_active_width;
 }
@@ -1013,7 +1014,8 @@ int TabStyleViews::GetMinimumInactiveWidth() {
     return std::max(min_inactive_width,
                     base::GetFieldTrialParamByFeatureAsInt(
                         features::kScrollableTabStrip,
-                        features::kMinimumTabWidthFeatureParameterName, 72));
+                        features::kMinimumTabWidthFeatureParameterName,
+                        min_inactive_width));
   }
 
   return min_inactive_width;
