@@ -10,6 +10,7 @@ import org.gradle.api.artifacts.ResolvedConfiguration
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.artifacts.ResolvedModuleVersion
 import org.gradle.api.artifacts.component.ComponentIdentifier
+import org.gradle.api.artifacts.result.ArtifactResult
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
 import org.gradle.api.logging.Logger
 import org.gradle.maven.MavenModule
@@ -421,13 +422,24 @@ class ChromiumDepGraph {
 
     private ResolvedArtifactResult getPomFromArtifact(ComponentIdentifier componentId) {
         for (Project project : projects) {
-          def component = project.dependencies.createArtifactResolutionQuery()
+          def components = project.dependencies.createArtifactResolutionQuery()
                   .forComponents(componentId)
                   .withArtifacts(MavenModule, MavenPomArtifact)
                   .execute()
-                  .resolvedComponents[0]
-          if (component != null) {
-            return component.getArtifacts(MavenPomArtifact)[0]
+                  .resolvedComponents
+          if (components[0]) {
+            def artifacts = components[0].getArtifacts(MavenPomArtifact)
+
+            for (ArtifactResult artifact : artifacts) {
+              if (artifact instanceof ResolvedArtifactResult) {
+                return result
+              } else {
+                def errorMsg = "Unresolved artifact for ${componentId.displayName} " +
+                    "${project.name} Num components ${components.size()} Num artifacts " +
+                    "${artifacts.size()} ${artifact.getFailure().toString()}"
+                throw new IllegalStateException(errorMsg)
+              }
+            }
           }
        }
        return null
