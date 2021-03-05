@@ -4,8 +4,6 @@
 
 package org.chromium.base.metrics;
 
-import androidx.annotation.VisibleForTesting;
-
 /** Holds the {@link CachingUmaRecorder} used by {@link RecordHistogram}. */
 public class UmaRecorderHolder {
     private UmaRecorderHolder() {}
@@ -15,6 +13,9 @@ public class UmaRecorderHolder {
 
     /** Allow calling onLibraryLoaded() */
     private static boolean sAllowNativeUmaRecorder = true;
+
+    /** Whether onLibraryLoaded() was called. */
+    private static boolean sNativeInitialized;
 
     /** Returns the held {@link UmaRecorder}. */
     public static UmaRecorder get() {
@@ -51,16 +52,20 @@ public class UmaRecorderHolder {
      */
     public static void onLibraryLoaded() {
         assert sAllowNativeUmaRecorder : "Setting NativeUmaRecorder is not allowed";
+        assert !sNativeInitialized;
+        sNativeInitialized = true;
         sRecorder.setDelegate(new NativeUmaRecorder());
     }
 
     /**
-     * Tests may need to disable metrics. The value should be reset after the test done, to avoid
-     * carrying over state to unrelated tests.
-     *
-     * @deprecated This method does nothing.
+     * Reset globals for tests.
      */
-    @VisibleForTesting
-    @Deprecated
-    public static void setDisabledForTests(boolean disabled) {}
+    public static void resetForTesting() {
+        // Prevent hitting cache size limits from tests running without ever switching to the native
+        // recorder. Also guards against tests that use setNonNativeDelegate() to inject a mock from
+        // forgetting to reset it.
+        if (!sNativeInitialized) {
+            sRecorder = new CachingUmaRecorder();
+        }
+    }
 }

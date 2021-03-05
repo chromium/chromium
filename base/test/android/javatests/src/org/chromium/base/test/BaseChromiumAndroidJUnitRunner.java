@@ -43,6 +43,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.InMemorySharedPreferences;
@@ -494,6 +495,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
         try {
             checkOrDeleteOnDiskSharedPreferences(true);
+            UmaRecorderHolder.resetForTesting();
 
             // There is a bug on L and below that DestroyActivitiesRule does not cause onStop and
             // onDestroy. On other versions, DestroyActivitiesRule may still fail flakily. Ignore
