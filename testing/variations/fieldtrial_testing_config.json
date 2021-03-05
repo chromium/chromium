@@ -4872,7 +4872,7 @@
                     "name": "EnabledDefault",
                     "params": {
                         "colorful_mic": "false",
-                        "min_agsa_version": "11.7"
+                        "min_agsa_version": "12.7.2.23"
                     },
                     "enable_features": [
                         "OmniboxAssistantVoiceSearch"
@@ -4882,7 +4882,7 @@
                     "name": "EnabledColorfulMic",
                     "params": {
                         "colorful_mic": "true",
-                        "min_agsa_version": "11.7"
+                        "min_agsa_version": "12.7.2.23"
                     },
                     "enable_features": [
                         "OmniboxAssistantVoiceSearch"
