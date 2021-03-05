@@ -17,7 +17,7 @@
 
 namespace blink {
 
-class Font;
+class FontDescription;
 struct TextRunPaintInfo;
 
 class PLATFORM_EXPORT ShapeResultBloberizer {
@@ -26,25 +26,30 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
  public:
   enum class Type { kNormal, kTextIntercepts };
 
+  struct FillGlyphsNG;
+  struct FillTextEmphasisGlyphsNG;
+
+  struct FillGlyphs;
+  struct FillTextEmphasisGlyphs;
+
   ShapeResultBloberizer(const FontDescription&,
                         float device_scale_factor,
-                        Type = Type::kNormal);
+                        Type);
 
-  Type GetType() const { return type_; }
+  struct BlobInfo {
+    BlobInfo(sk_sp<SkTextBlob> b, CanvasRotationInVertical r)
+        : blob(std::move(b)), rotation(r) {}
+    sk_sp<SkTextBlob> blob;
+    CanvasRotationInVertical rotation;
+  };
+  using BlobBuffer = Vector<BlobInfo, 16>;
 
-  float FillGlyphs(const TextRunPaintInfo&, const ShapeResultBuffer&);
-  float FillGlyphs(const StringView&,
-                   unsigned from,
-                   unsigned to,
-                   const ShapeResultView*);
-  void FillTextEmphasisGlyphs(const TextRunPaintInfo&,
-                              const GlyphData& emphasis_data,
-                              const ShapeResultBuffer&);
-  void FillTextEmphasisGlyphs(const StringView&,
-                              unsigned from,
-                              unsigned to,
-                              const GlyphData& emphasis_data,
-                              const ShapeResultView*);
+  const BlobBuffer& Blobs();
+  float Advance() const { return advance_; }
+
+ private:
+  friend class ShapeResultBloberizerTestInfo;
+
   void Add(Glyph glyph,
            const SimpleFontData* font_data,
            CanvasRotationInVertical canvas_rotation,
@@ -91,21 +96,9 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
     pending_offsets_.push_back(offset.Y());
   }
 
-  struct BlobInfo {
-    BlobInfo(sk_sp<SkTextBlob> b, CanvasRotationInVertical r)
-        : blob(std::move(b)), rotation(r) {}
-    sk_sp<SkTextBlob> blob;
-    CanvasRotationInVertical rotation;
-  };
-
-  using BlobBuffer = Vector<BlobInfo, 16>;
-  const BlobBuffer& Blobs();
-
- private:
-  friend class ShapeResultBloberizerTestInfo;
-
-  // Whether the FillFastHorizontalGlyphs can be used. Only applies for full
-  // runs with no vertical offsets and no text intercepts.
+  // Whether the FillFastHorizontalGlyphs or AddFastHorizontalGlyphToBloberizer
+  // can be used. Only applies for full runs with no vertical offsets and no
+  // text intercepts.
   bool CanUseFastPath(unsigned from,
                       unsigned to,
                       unsigned length,
@@ -113,6 +106,43 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   bool CanUseFastPath(unsigned from, unsigned to, const ShapeResultView*);
   float FillFastHorizontalGlyphs(const ShapeResultBuffer&, TextDirection);
   float FillFastHorizontalGlyphs(const ShapeResult*, float advance = 0);
+  static void AddFastHorizontalGlyphToBloberizer(void* context,
+                                                 unsigned,
+                                                 Glyph,
+                                                 FloatSize glyph_offset,
+                                                 float advance,
+                                                 bool is_horizontal,
+                                                 CanvasRotationInVertical,
+                                                 const SimpleFontData*);
+
+  float FillGlyphsForResult(const ShapeResult*,
+                            const StringView&,
+                            unsigned from,
+                            unsigned to,
+                            float initial_advance,
+                            unsigned run_offset);
+  static void AddGlyphToBloberizer(void* context,
+                                   unsigned character_index,
+                                   Glyph,
+                                   FloatSize glyph_offset,
+                                   float advance,
+                                   bool is_horizontal,
+                                   CanvasRotationInVertical,
+                                   const SimpleFontData*);
+
+  void AddEmphasisMark(const GlyphData& emphasis_data,
+                       CanvasRotationInVertical canvas_rotation,
+                       FloatPoint glyph_center,
+                       float mid_glyph_offset);
+  static void AddEmphasisMarkToBloberizer(
+      void* context,
+      unsigned character_index,
+      float advance_so_far,
+      unsigned graphemes_in_cluster,
+      float cluster_advance,
+      CanvasRotationInVertical canvas_rotation);
+
+  bool IsSkipInkException(const StringView& text, unsigned character_index);
 
   void CommitPendingRun();
   void CommitPendingBlob();
@@ -139,8 +169,47 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
   // Constructed blobs.
   BlobBuffer blobs_;
+  float advance_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(ShapeResultBloberizer);
+};
+
+struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphsNG
+    : public ShapeResultBloberizer {
+  FillGlyphsNG(const FontDescription&,
+               float device_scale_factor,
+               const StringView&,
+               unsigned from,
+               unsigned to,
+               const ShapeResultView*,
+               Type);
+};
+struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphsNG
+    : public ShapeResultBloberizer {
+  FillTextEmphasisGlyphsNG(const FontDescription&,
+                           float device_scale_factor,
+                           const StringView&,
+                           unsigned from,
+                           unsigned to,
+                           const ShapeResultView*,
+                           const GlyphData& emphasis_data);
+};
+
+struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
+    : public ShapeResultBloberizer {
+  FillGlyphs(const FontDescription&,
+             float device_scale_factor,
+             const TextRunPaintInfo&,
+             const ShapeResultBuffer&,
+             Type);
+};
+struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphs
+    : public ShapeResultBloberizer {
+  FillTextEmphasisGlyphs(const FontDescription&,
+                         float device_scale_factor,
+                         const TextRunPaintInfo&,
+                         const ShapeResultBuffer&,
+                         const GlyphData& emphasis_data);
 };
 
 }  // namespace blink

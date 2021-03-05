@@ -36,6 +36,22 @@ class PLATFORM_EXPORT ShapeResultBloberizerTestInfo {
   STATIC_ONLY(ShapeResultBloberizerTestInfo);
 
  public:
+  static void Add(ShapeResultBloberizer& bloberizer,
+                  Glyph glyph,
+                  const SimpleFontData* font_data,
+                  CanvasRotationInVertical canvas_rotation,
+                  float h_offset) {
+    bloberizer.Add(glyph, font_data, canvas_rotation, h_offset);
+  }
+
+  static void Add(ShapeResultBloberizer& bloberizer,
+                  Glyph glyph,
+                  const SimpleFontData* font_data,
+                  CanvasRotationInVertical canvas_rotation,
+                  const FloatPoint& offset) {
+    bloberizer.Add(glyph, font_data, canvas_rotation, offset);
+  }
+
   static const SimpleFontData* PendingRunFontData(
       const ShapeResultBloberizer& bloberizer) {
     return bloberizer.pending_font_data_;

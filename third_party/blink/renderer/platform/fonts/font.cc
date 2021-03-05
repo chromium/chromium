@@ -225,11 +225,12 @@ void Font::DrawText(cc::PaintCanvas* canvas,
   if (ShouldSkipDrawing())
     return;
 
-  ShapeResultBloberizer bloberizer(GetFontDescription(), device_scale_factor);
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
-  bloberizer.FillGlyphs(run_info, buffer);
+  ShapeResultBloberizer::FillGlyphs bloberizer(
+      GetFontDescription(), device_scale_factor, run_info, buffer,
+      ShapeResultBloberizer::Type::kNormal);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point, node_id);
 }
 
@@ -244,9 +245,10 @@ void Font::DrawText(cc::PaintCanvas* canvas,
   if (ShouldSkipDrawing())
     return;
 
-  ShapeResultBloberizer bloberizer(GetFontDescription(), device_scale_factor);
-  bloberizer.FillGlyphs(text_info.text, text_info.from, text_info.to,
-                        text_info.shape_result);
+  ShapeResultBloberizer::FillGlyphsNG bloberizer(
+      GetFontDescription(), device_scale_factor, text_info.text, text_info.from,
+      text_info.to, text_info.shape_result,
+      ShapeResultBloberizer::Type::kNormal);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point, node_id);
 }
 
@@ -291,17 +293,17 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
 
     TextRunPaintInfo subrun_info(subrun);
 
-    // Fix regression with -ftrivial-auto-var-init=pattern. See
-    // crbug.com/1055652.
-    STACK_UNINITIALIZED ShapeResultBloberizer bloberizer(GetFontDescription(),
-                                                         device_scale_factor);
     ShapeResultBuffer buffer;
     word_shaper.FillResultBuffer(subrun_info, &buffer);
-    float run_width = bloberizer.FillGlyphs(subrun_info, buffer);
+    // Fix regression with -ftrivial-auto-var-init=pattern. See
+    // crbug.com/1055652.
+    STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
+        GetFontDescription(), device_scale_factor, subrun_info, buffer,
+        ShapeResultBloberizer::Type::kNormal);
     DrawBlobs(canvas, flags, bloberizer.Blobs(), curr_point);
 
     bidi_run = bidi_run->Next();
-    curr_point.Move(run_width, 0);
+    curr_point.Move(bloberizer.Advance(), 0);
   }
 
   bidi_runs.DeleteRuns();
@@ -323,11 +325,12 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   if (!emphasis_glyph_data.font_data)
     return;
 
-  ShapeResultBloberizer bloberizer(GetFontDescription(), device_scale_factor);
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
-  bloberizer.FillTextEmphasisGlyphs(run_info, emphasis_glyph_data, buffer);
+  ShapeResultBloberizer::FillTextEmphasisGlyphs bloberizer(
+      GetFontDescription(), device_scale_factor, run_info, buffer,
+      emphasis_glyph_data);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
 }
 
@@ -345,10 +348,9 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   if (!emphasis_glyph_data.font_data)
     return;
 
-  ShapeResultBloberizer bloberizer(GetFontDescription(), device_scale_factor);
-  bloberizer.FillTextEmphasisGlyphs(text_info.text, text_info.from,
-                                    text_info.to, emphasis_glyph_data,
-                                    text_info.shape_result);
+  ShapeResultBloberizer::FillTextEmphasisGlyphsNG bloberizer(
+      GetFontDescription(), device_scale_factor, text_info.text, text_info.from,
+      text_info.to, text_info.shape_result, emphasis_glyph_data);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
 }
 
@@ -431,13 +433,12 @@ void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
   if (ShouldSkipDrawing())
     return;
 
-  ShapeResultBloberizer bloberizer(
-      GetFontDescription(), device_scale_factor,
-      ShapeResultBloberizer::Type::kTextIntercepts);
   CachingWordShaper word_shaper(*this);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
-  bloberizer.FillGlyphs(run_info, buffer);
+  ShapeResultBloberizer::FillGlyphs bloberizer(
+      GetFontDescription(), device_scale_factor, run_info, buffer,
+      ShapeResultBloberizer::Type::kTextIntercepts);
 
   GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
 }
@@ -450,11 +451,10 @@ void Font::GetTextIntercepts(const NGTextFragmentPaintInfo& text_info,
   if (ShouldSkipDrawing())
     return;
 
-  ShapeResultBloberizer bloberizer(
-      GetFontDescription(), device_scale_factor,
+  ShapeResultBloberizer::FillGlyphsNG bloberizer(
+      GetFontDescription(), device_scale_factor, text_info.text, text_info.from,
+      text_info.to, text_info.shape_result,
       ShapeResultBloberizer::Type::kTextIntercepts);
-  bloberizer.FillGlyphs(text_info.text, text_info.from, text_info.to,
-                        text_info.shape_result);
 
   GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
 }

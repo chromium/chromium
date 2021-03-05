@@ -58,7 +58,8 @@ class ShapeResultBloberizerTest : public testing::Test {
 
 TEST_F(ShapeResultBloberizerTest, StartsEmpty) {
   Font font;
-  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1,
+                                   ShapeResultBloberizer::Type::kNormal);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
             nullptr);
@@ -77,14 +78,17 @@ TEST_F(ShapeResultBloberizerTest, StartsEmpty) {
 
 TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {
   Font font;
-  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1,
+                                   ShapeResultBloberizer::Type::kNormal);
 
   scoped_refptr<SimpleFontData> font1 = CreateTestSimpleFontData();
   scoped_refptr<SimpleFontData> font2 = CreateTestSimpleFontData();
 
   // 2 pending glyphs
-  bloberizer.Add(42, font1.get(), CanvasRotationInVertical::kRegular, 10);
-  bloberizer.Add(43, font1.get(), CanvasRotationInVertical::kRegular, 15);
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1.get(),
+                                     CanvasRotationInVertical::kRegular, 10);
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1.get(),
+                                     CanvasRotationInVertical::kRegular, 15);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
             font1.get());
@@ -109,7 +113,8 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {
   EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
 
   // one more glyph, different font => pending run flush
-  bloberizer.Add(44, font2.get(), CanvasRotationInVertical::kRegular, 12);
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2.get(),
+                                     CanvasRotationInVertical::kRegular, 12);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
             font2.get());
@@ -137,16 +142,19 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {
 
 TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
   Font font;
-  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1,
+                                   ShapeResultBloberizer::Type::kNormal);
 
   scoped_refptr<SimpleFontData> font1 = CreateTestSimpleFontData();
   scoped_refptr<SimpleFontData> font2 = CreateTestSimpleFontData();
 
   // 2 pending glyphs
-  bloberizer.Add(42, font1.get(), CanvasRotationInVertical::kRegular,
-                 FloatPoint(10, 0));
-  bloberizer.Add(43, font1.get(), CanvasRotationInVertical::kRegular,
-                 FloatPoint(15, 0));
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1.get(),
+                                     CanvasRotationInVertical::kRegular,
+                                     FloatPoint(10, 0));
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1.get(),
+                                     CanvasRotationInVertical::kRegular,
+                                     FloatPoint(15, 0));
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
             font1.get());
@@ -173,8 +181,9 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
   EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
 
   // one more glyph, different font => pending run flush
-  bloberizer.Add(44, font2.get(), CanvasRotationInVertical::kRegular,
-                 FloatPoint(12, 2));
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2.get(),
+                                     CanvasRotationInVertical::kRegular,
+                                     FloatPoint(12, 2));
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
             font2.get());
@@ -203,7 +212,8 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
 
 TEST_F(ShapeResultBloberizerTest, MixedBlobRotation) {
   Font font;
-  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
+  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1,
+                                   ShapeResultBloberizer::Type::kNormal);
 
   scoped_refptr<SimpleFontData> test_font = CreateTestSimpleFontData();
 
@@ -234,7 +244,8 @@ TEST_F(ShapeResultBloberizerTest, MixedBlobRotation) {
   };
 
   for (const auto& op : append_ops) {
-    bloberizer.Add(42, test_font.get(), op.canvas_rotation, FloatPoint());
+    ShapeResultBloberizerTestInfo::Add(bloberizer, 42, test_font.get(),
+                                       op.canvas_rotation, FloatPoint());
     EXPECT_EQ(
         op.expected_pending_glyphs,
         ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer).size());
@@ -259,21 +270,22 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   TextRunPaintInfo run_info(text_run);
   run_info.to = 3;
 
-  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
-  bloberizer.FillGlyphs(run_info, buffer);
+  ShapeResultBloberizer::FillGlyphs bloberizer(
+      font.GetFontDescription(), 1, run_info, buffer,
+      ShapeResultBloberizer::Type::kNormal);
 
   Font reference_font(font_description);
   reference_font.SetCanShapeWordByWordForTesting(false);
 
-  ShapeResultBloberizer reference_bloberizer(
-      reference_font.GetFontDescription(), 1);
   CachingWordShaper reference_word_shaper(reference_font);
   ShapeResultBuffer reference_buffer;
   reference_word_shaper.FillResultBuffer(run_info, &reference_buffer);
-  reference_bloberizer.FillGlyphs(run_info, reference_buffer);
+  ShapeResultBloberizer::FillGlyphs reference_bloberizer(
+      reference_font.GetFontDescription(), 1, run_info, reference_buffer,
+      ShapeResultBloberizer::Type::kNormal);
 
   const auto& glyphs =
       ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
@@ -297,21 +309,22 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
   TextRunPaintInfo run_info(text_run);
   run_info.from = 1;
 
-  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
-  bloberizer.FillGlyphs(run_info, buffer);
+  ShapeResultBloberizer::FillGlyphs bloberizer(
+      font.GetFontDescription(), 1, run_info, buffer,
+      ShapeResultBloberizer::Type::kNormal);
 
   Font reference_font(font_description);
   reference_font.SetCanShapeWordByWordForTesting(false);
 
-  ShapeResultBloberizer reference_bloberizer(
-      reference_font.GetFontDescription(), 1);
   CachingWordShaper reference_word_shaper(reference_font);
   ShapeResultBuffer reference_buffer;
   reference_word_shaper.FillResultBuffer(run_info, &reference_buffer);
-  reference_bloberizer.FillGlyphs(run_info, reference_buffer);
+  ShapeResultBloberizer::FillGlyphs reference_bloberizer(
+      reference_font.GetFontDescription(), 1, run_info, reference_buffer,
+      ShapeResultBloberizer::Type::kNormal);
 
   const auto& glyphs =
       ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
@@ -339,14 +352,15 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
   FloatRect glyph_bounds;
   ASSERT_GT(shaper.Width(text_run, nullptr, &glyph_bounds), 0);
 
-  ShapeResultBloberizer bloberizer(font.GetFontDescription(), 1);
   TextRunPaintInfo run_info(text_run);
   run_info.to = 8;
 
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
-  bloberizer.FillGlyphs(run_info, buffer);
+  ShapeResultBloberizer::FillGlyphs bloberizer(
+      font.GetFontDescription(), 1, run_info, buffer,
+      ShapeResultBloberizer::Type::kNormal);
 
   shaper.GetCharacterRange(text_run, 0, 8);
 }
