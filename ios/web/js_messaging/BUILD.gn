@@ -32,6 +32,7 @@ source_set("js_messaging") {
     "page_script_util.mm",
     "web_frame_impl.h",
     "web_frame_impl.mm",
+    "web_frame_internal.h",
     "web_frame_util.mm",
     "web_frames_manager_impl.mm",
     "web_view_js_utils.h",

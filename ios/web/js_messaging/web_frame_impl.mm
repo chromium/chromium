@@ -113,6 +113,10 @@ bool WebFrameImpl::CanCallJavaScriptFunction() const {
   return is_main_frame_ || frame_key_;
 }
 
+BrowserState* WebFrameImpl::GetBrowserState() {
+  return GetWebState()->GetBrowserState();
+}
+
 const std::string WebFrameImpl::EncryptPayload(
     base::DictionaryValue payload,
     const std::string& additiona_data) {
@@ -143,7 +147,7 @@ const std::string WebFrameImpl::EncryptPayload(
   return payload_string;
 }
 
-bool WebFrameImpl::CallJavaScriptFunction(
+bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
     const std::vector<base::Value>& parameters,
     JavaScriptContentWorld* content_world,
@@ -199,16 +203,17 @@ bool WebFrameImpl::CallJavaScriptFunction(
 bool WebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters) {
-  return CallJavaScriptFunction(name, parameters, /*content_world=*/nullptr,
-                                /*reply_with_result=*/false);
+  return CallJavaScriptFunctionInContentWorld(name, parameters,
+                                              /*content_world=*/nullptr,
+                                              /*reply_with_result=*/false);
 }
 
-bool WebFrameImpl::CallJavaScriptFunction(
+bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
     const std::vector<base::Value>& parameters,
     JavaScriptContentWorld* content_world) {
-  return CallJavaScriptFunction(name, parameters, content_world,
-                                /*reply_with_result=*/false);
+  return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
+                                              /*reply_with_result=*/false);
 }
 
 bool WebFrameImpl::CallJavaScriptFunction(
@@ -216,11 +221,12 @@ bool WebFrameImpl::CallJavaScriptFunction(
     const std::vector<base::Value>& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
-  return CallJavaScriptFunction(name, parameters, /*content_world=*/nullptr,
-                                std::move(callback), timeout);
+  return CallJavaScriptFunctionInContentWorld(name, parameters,
+                                              /*content_world=*/nullptr,
+                                              std::move(callback), timeout);
 }
 
-bool WebFrameImpl::CallJavaScriptFunction(
+bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
     const std::vector<base::Value>& parameters,
     JavaScriptContentWorld* content_world,
@@ -237,8 +243,9 @@ bool WebFrameImpl::CallJavaScriptFunction(
   base::PostDelayedTask(
       FROM_HERE, {web::WebThread::UI},
       pending_requests_[message_id]->timeout_callback->callback(), timeout);
-  bool called = CallJavaScriptFunction(name, parameters, content_world,
-                                       /*reply_with_result=*/true);
+  bool called =
+      CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
+                                           /*reply_with_result=*/true);
   if (!called) {
     // Remove callbacks if the call failed.
     auto request = pending_requests_.find(message_id);

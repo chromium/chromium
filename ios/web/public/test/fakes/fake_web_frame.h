@@ -34,13 +34,18 @@ class FakeWebFrame : public WebFrame {
   bool IsMainFrame() const override;
   GURL GetSecurityOrigin() const override;
   bool CanCallJavaScriptFunction() const override;
-  // This method will not call JavaScript and immediately return false.
+  BrowserState* GetBrowserState() override;
+  // If |can_call_function_| is true, the JavaScript call which would be
+  // executed by a real WebFrame will be added to |java_script_calls_|. Returns
+  // the value of |can_call_function_|.
   bool CallJavaScriptFunction(
       const std::string& name,
       const std::vector<base::Value>& parameters) override;
-  // This method will not call JavaScript and will return the value of
-  // |can_call_function_|. Will execute callback with value passed in to
-  // AddJsResultForFunctionCall(). If no such value exists, will pass null.
+  // If |can_call_function_| is true, the JavaScript call which would be
+  // executed by a real WebFrame will be added to |java_script_calls_|. Returns
+  // the value of |can_call_function_|.
+  // |callback| will be executed with the value passed in to
+  // AddJsResultForFunctionCall() or null if no such result has been added.
   bool CallJavaScriptFunction(
       const std::string& name,
       const std::vector<base::Value>& parameters,
@@ -55,6 +60,11 @@ class FakeWebFrame : public WebFrame {
   // Returns |javascript_calls|. Use LastJavaScriptCall() if possible.
   const std::vector<std::string>& GetJavaScriptCallHistory() {
     return java_script_calls_;
+  }
+
+  // Sets the browser state associated with this frame.
+  void set_browser_state(BrowserState* browser_state) {
+    browser_state_ = browser_state;
   }
 
   // Sets |js_result| that will be passed into callback for |name| function
@@ -90,6 +100,7 @@ class FakeWebFrame : public WebFrame {
   // When set to true, will force calls to CallJavaScriptFunction to fail with
   // timeout.
   bool force_timeout_ = false;
+  BrowserState* browser_state_;
 };
 
 // A fake web frame representing the main frame with a |frame_id_| of

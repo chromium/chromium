@@ -44,6 +44,10 @@ bool FakeWebFrame::CanCallJavaScriptFunction() const {
   return can_call_function_;
 }
 
+BrowserState* FakeWebFrame::GetBrowserState() {
+  return browser_state_;
+}
+
 bool FakeWebFrame::CallJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters) {

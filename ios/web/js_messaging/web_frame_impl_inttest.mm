@@ -278,7 +278,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
     JavaScriptContentWorld world(GetBrowserState(), WKContentWorld.pageWorld);
 
     std::vector<base::Value> function_params;
-    EXPECT_TRUE(main_frame_impl->CallJavaScriptFunction(
+    EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
         "fakeFunction", function_params, &world,
         base::BindOnce(^(const base::Value* value) {
           ASSERT_TRUE(value->is_string());
@@ -324,7 +324,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
                                  WKContentWorld.defaultClientWorld);
 
     std::vector<base::Value> function_params;
-    EXPECT_TRUE(main_frame_impl->CallJavaScriptFunction(
+    EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
         "fakeFunction", function_params, &world,
         base::BindOnce(^(const base::Value* value) {
           ASSERT_TRUE(value->is_string());
