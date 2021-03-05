@@ -452,6 +452,89 @@ TEST(CanonicalCookieTest, CreateSameParty) {
       {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
 }
 
+TEST(CanonicalCookieTest, CreateWithMaxAge) {
+  GURL url("http://www.example.com/test/foo.html");
+  base::Time creation_time = base::Time::Now();
+  base::Optional<base::Time> server_time = base::nullopt;
+
+  // Max-age with positive integer.
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+      url, "A=1; max-age=60", creation_time, server_time);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::TimeDelta::FromSeconds(60) + creation_time,
+            cookie->ExpiryDate());
+
+  // Max-age with expires (max-age should take precedence).
+  cookie = CanonicalCookie::Create(
+      url, "A=1; expires=01-Jan-1970, 00:00:00 GMT; max-age=60", creation_time,
+      server_time);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::TimeDelta::FromSeconds(60) + creation_time,
+            cookie->ExpiryDate());
+
+  // Max-age=0 should create an expired cookie with expiry equal to the earliest
+  // representable time.
+  cookie = CanonicalCookie::Create(url, "A=1; max-age=0", creation_time,
+                                   server_time);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_TRUE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::Time::Min(), cookie->ExpiryDate());
+
+  // Negative max-age should create an expired cookie with expiry equal to the
+  // earliest representable time.
+  cookie = CanonicalCookie::Create(url, "A=1; max-age=-1", creation_time,
+                                   server_time);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_TRUE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::Time::Min(), cookie->ExpiryDate());
+
+  // Max-age with whitespace (should be trimmed out).
+  cookie = CanonicalCookie::Create(url, "A=1; max-age = 60  ; Secure",
+                                   creation_time, server_time);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::TimeDelta::FromSeconds(60) + creation_time,
+            cookie->ExpiryDate());
+
+  // Max-age with non-integer should be ignored.
+  cookie = CanonicalCookie::Create(url, "A=1; max-age=abcd", creation_time,
+                                   server_time);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_FALSE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+
+  // Overflow max-age should be clipped.
+  cookie = CanonicalCookie::Create(url,
+                                   "A=1; "
+                                   "max-age="
+                                   "9999999999999999999999999999999999999999999"
+                                   "999999999999999999999999999999999999999999",
+                                   creation_time, server_time);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
+
+  // Underflow max-age should be clipped.
+  cookie = CanonicalCookie::Create(url,
+                                   "A=1; "
+                                   "max-age=-"
+                                   "9999999999999999999999999999999999999999999"
+                                   "999999999999999999999999999999999999999999",
+                                   creation_time, server_time);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_TRUE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::Time::Min(), cookie->ExpiryDate());
+}
+
 TEST(CanonicalCookieTest, EmptyExpiry) {
   GURL url("http://www7.ipdl.inpit.go.jp/Tokujitu/tjkta.ipdl?N0000=108");
   base::Time creation_time = base::Time::Now();

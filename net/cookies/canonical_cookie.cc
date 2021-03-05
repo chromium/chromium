@@ -44,6 +44,7 @@
 
 #include "net/cookies/canonical_cookie.h"
 
+#include <limits>
 #include <sstream>
 #include <utility>
 
@@ -54,6 +55,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/features.h"
@@ -334,15 +336,30 @@ Time CanonicalCookie::CanonExpiration(const ParsedCookie& pc,
                                       const Time& current,
                                       const Time& server_time) {
   // First, try the Max-Age attribute.
-  uint64_t max_age = 0;
-  if (pc.HasMaxAge() &&
-#ifdef COMPILER_MSVC
-      sscanf_s(
-#else
-      sscanf(
-#endif
-             pc.MaxAge().c_str(), " %" PRIu64, &max_age) == 1) {
-    return current + TimeDelta::FromSeconds(max_age);
+  if (pc.HasMaxAge()) {
+    int64_t max_age = 0;
+    // Use the output if StringToInt64 returns true ("perfect" conversion). This
+    // case excludes overflow/underflow, leading/trailing whitespace, non-number
+    // strings, and empty string. (ParsedCookie trims whitespace.)
+    if (base::StringToInt64(pc.MaxAge(), &max_age)) {
+      // RFC 6265bis algorithm for parsing Max-Age:
+      // "If delta-seconds is less than or equal to zero (0), let expiry-
+      // time be the earliest representable date and time. ... "
+      if (max_age <= 0)
+        return Time::Min();
+      // "... Otherwise, let the expiry-time be the current date and time plus
+      // delta-seconds seconds."
+      return current + TimeDelta::FromSeconds(max_age);
+    } else {
+      // If the conversion wasn't perfect, but the best-effort conversion
+      // resulted in an overflow/underflow, use the min/max representable time.
+      // (This is alluded to in the spec, which says the user agent MAY clip an
+      // Expires attribute to a saturated time. We'll do the same for Max-Age.)
+      if (max_age == std::numeric_limits<int64_t>::min())
+        return Time::Min();
+      if (max_age == std::numeric_limits<int64_t>::max())
+        return Time::Max();
+    }
   }
 
   // Try the Expires attribute.
