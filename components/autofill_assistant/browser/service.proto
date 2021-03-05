@@ -1189,15 +1189,6 @@ message SelectorProto {
       //   <label>First Name <input ...></label>
       EmptyFilter labelled = 9;
 
-      // Filter elements by their position on the page, relative to a given
-      // target element.
-      //
-      // The distance between two elements is the shortest euclidean distance
-      // between their borders. The distance between two overlapping elements is
-      // always 0. If there are multiple elements at exactly the same distance,
-      // an arbitrary one is returned.
-      ProximityFilter closest = 10;
-
       // Only keep results that match the given CSS selector.
       string match_css_selector = 11;
 
@@ -1236,6 +1227,8 @@ message SelectorProto {
       // frame element before calling enter_frame.
       OnTopFilter on_top = 13;
     }
+
+    reserved 10;
   }
 
   // A way of filtering elements by their pseudo-element content.
@@ -1271,72 +1264,6 @@ message SelectorProto {
     optional TextFilter value = 6;
 
     reserved 1, 2;
-  }
-
-  // Filter elements by their position on the page, relative to a given target
-  // element.
-  message ProximityFilter {
-    // From the set of potential matches, choose the one closest to the given
-    // target. The target filters are evaluated relative to the current frame
-    // and must select an element in the current frame.
-    //
-    // If there is no target the whole selector matches nothing.
-    //
-    // This element cannot include enter_frame filters.
-    repeated Filter target = 1;
-
-    // If true, the element and targets must be aligned either
-    // horizontally or vertically.
-    //
-    // This is usually what we want, as elements close, but in diagonal position
-    // relative to each other are usually not considered part of the same group.
-    optional bool in_alignment = 3;
-
-    // Require the target and element to have a specific relative position.
-    //
-    // If unspecified, the target and element be in any position relative to
-    // each other.
-    //
-    // If necessary, this can be combined with in_alignment, so in_aligment=true
-    // relative_position=LEFT requires the element to be strictly to the left or
-    // target.
-    optional RelativePosition relative_position = 4;
-
-    enum RelativePosition {
-      // Unspecified relative position.
-      UNSPECIFIED_POSITION = 0;
-
-      // Element is above target.
-      ABOVE = 1;
-
-      // Element is below target.
-      BELOW = 2;
-
-      // Element is left of target.
-      LEFT = 3;
-
-      // Element is right of target.
-      RIGHT = 4;
-    }
-
-    // Maximum number of pairs the client is allowed to compare.
-    //
-    // If there are too many pairs to compare, the client bails out and returns
-    // the status TOO_MANY_CANDIDATES to the server.
-    //
-    // The maximum number of pairs is limited, to avoid clients being slowed
-    // down by overly expensive selectors, as the current algorithm is not
-    // optimized for large number of pairs. Authors of selectors must take care
-    // to keep the number of pairs reasonable.
-    //
-    // For example, avoid looking for "a div near label X". This will be too
-    // slow to process. Look instead for "a button near label X" or "a clickable
-    // div near label X".
-    //
-    // This setting must not be exposed to scripts. It must not be increased
-    // just to allow that one slow selector. This is a value that must be
-    // maintained by the team responsible for keeping clients running properly.
-    optional int32 max_pairs = 5 [default = 50];
   }
 
   // Only keep elements that have a bounding box.

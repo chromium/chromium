@@ -130,9 +130,6 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::AUTOFILL_INCOMPLETE:
       out << "AUTOFILL_INCOMPLETE";
       break;
-    case ProcessedActionStatusProto::TOO_MANY_CANDIDATES:
-      out << "TOO_MANY_CANDIDATES";
-      break;
     case ProcessedActionStatusProto::ELEMENT_MISMATCH:
       out << "ELEMENT_MISMATCH";
       break;

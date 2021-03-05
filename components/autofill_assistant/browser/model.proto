@@ -194,10 +194,6 @@ enum ProcessedActionStatusProto {
   // ProcessedActionStatusProto.AutofillErrorInfoProto contains more details.
   AUTOFILL_INCOMPLETE = 24;
 
-  // Evaluating a selector required considering too many candidates. Please
-  // generate more specific selectors. See SelectorProto::ProximityFilter.
-  TOO_MANY_CANDIDATES = 25;
-
   // Evaluating the element did report an unexpected mismatch in either value
   // or text.
   ELEMENT_MISMATCH = 26;
@@ -210,7 +206,7 @@ enum ProcessedActionStatusProto {
   // used.
   CLIENT_ID_RESOLUTION_FAILED = 28;
 
-  reserved 15, 23;
+  reserved 15, 23, 25;
 }
 
 // A message to describe a chip.
