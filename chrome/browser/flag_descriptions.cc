@@ -3595,6 +3595,12 @@ const char kOmniboxPedalSuggestionsDescription[] =
     "flag has no effect unless \"Omnibox suggestion button row\" is also "
     "enabled.";
 
+const char kOmniboxPedalsBatch2Name[] = "Omnibox Pedals batch 2";
+const char kOmniboxPedalsBatch2Description[] =
+    "Enable the second batch of Omnibox Pedals (Safety Check, etc.). "
+    "This flag has no effect unless \"Omnibox Pedal suggestions\" is also "
+    "enabled.";
+
 const char kOmniboxKeywordSearchButtonName[] = "Omnibox keyword search button";
 const char kOmniboxKeywordSearchButtonDescription[] =
     "Enable the omnibox keyword search button which offers a way to search "

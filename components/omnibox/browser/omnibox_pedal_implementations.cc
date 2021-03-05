@@ -10,6 +10,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_pedal.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -158,7 +159,9 @@ GetPedalImplementations() {
   add(OmniboxPedalId::LAUNCH_INCOGNITO, new OmniboxPedalLaunchIncognito());
   add(OmniboxPedalId::TRANSLATE, new OmniboxPedalTranslate());
   add(OmniboxPedalId::UPDATE_CHROME, new OmniboxPedalUpdateChrome());
-  add(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
-      new OmniboxPedalRunChromeSafetyCheck());
+  if (OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
+    add(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
+        new OmniboxPedalRunChromeSafetyCheck());
+  }
   return pedals;
 }

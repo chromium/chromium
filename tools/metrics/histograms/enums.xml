@@ -44777,6 +44777,7 @@ from previous Chrome versions.
   <int value="-881447505" label="ash-disable-shelf-model-synchronization"/>
   <int value="-881054479" label="WebAssemblyStreaming:disabled"/>
   <int value="-880201293" label="OmniboxAssistantVoiceSearch:disabled"/>
+  <int value="-880087793" label="OmniboxPedalsBatch2:enabled"/>
   <int value="-879055117" label="ClipboardContentSetting:enabled"/>
   <int value="-879031960" label="FetchKeepaliveTimeoutSetting:disabled"/>
   <int value="-876773120" label="TabbedAppOverflowMenuActionBar:enabled"/>
@@ -47146,6 +47147,7 @@ from previous Chrome versions.
   <int value="1319024729" label="ServiceWorkerServicification:disabled"/>
   <int value="1319068611" label="SecondaryUiMd:disabled"/>
   <int value="1319498514" label="NewMacNotificationAPI:disabled"/>
+  <int value="1319632929" label="OmniboxPedalsBatch2:disabled"/>
   <int value="1319638975" label="UseWallpaperStagingUrl:disabled"/>
   <int value="1319725131" label="enable-distance-field-text"/>
   <int value="1320201920" label="enable-touchpad-three-finger-click"/>

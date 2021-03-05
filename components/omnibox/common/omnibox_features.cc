@@ -326,6 +326,10 @@ const base::Feature kOmniboxSuggestionButtonRow{
 const base::Feature kOmniboxPedalSuggestions{"OmniboxPedalSuggestions",
                                              enabled_by_default_desktop_only};
 
+// Feature used to enable the second batch of Pedals (Safety Check, etc.).
+const base::Feature kOmniboxPedalsBatch2{"OmniboxPedalsBatch2",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to enable the keyword search button.
 const base::Feature kOmniboxKeywordSearchButton{
     "OmniboxKeywordSearchButton", base::FEATURE_DISABLED_BY_DEFAULT};

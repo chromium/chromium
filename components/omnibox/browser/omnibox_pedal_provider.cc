@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_pedal.h"
+#include "components/omnibox/browser/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/omnibox_pedal_implementations.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/resources/grit/omnibox_resources.h"
@@ -189,8 +190,13 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
 
   for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
-    const OmniboxPedalId pedal_id =
-        static_cast<OmniboxPedalId>(pedal_value.FindKey("id")->GetInt());
+    const int id = pedal_value.FindIntKey("id").value();
+    if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
+        id <= static_cast<int>(OmniboxPedalId::CLEAR_YOUTUBE_HISTORY) &&
+        !OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
+      continue;
+    }
+    const OmniboxPedalId pedal_id = static_cast<OmniboxPedalId>(id);
     const auto pedal = pedals_.find(pedal_id);
     if (pedal == pedals_.end()) {
       CHECK(false) << "OmniboxPedalId " << static_cast<int>(pedal_id)

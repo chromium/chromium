@@ -2083,6 +2083,9 @@ extern const char kOmniboxSuggestionButtonRowDescription[];
 extern const char kOmniboxPedalSuggestionsName[];
 extern const char kOmniboxPedalSuggestionsDescription[];
 
+extern const char kOmniboxPedalsBatch2Name[];
+extern const char kOmniboxPedalsBatch2Description[];
+
 extern const char kOmniboxKeywordSearchButtonName[];
 extern const char kOmniboxKeywordSearchButtonDescription[];
 
