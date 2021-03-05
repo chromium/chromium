@@ -75,6 +75,7 @@ include_rules = [
   "+google_apis",
   "+media/base",
   "+media/mojo",
+  "+pdf/pdf_view_web_plugin.h",
   "+ppapi/shared_impl",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

@@ -206,6 +206,8 @@ static_library("renderer") {
     "//media/capture",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//pdf:buildflags",
+    "//pdf:pdf_view_web_plugin",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/metrics/public/cpp:metrics_cpp",

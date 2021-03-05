@@ -13,7 +13,10 @@ import("//v8/gni/v8.gni")
 # Generate a buildflag header for compile-time checking of PDF support.
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_PDF=$enable_pdf" ]
+  flags = [
+    "ENABLE_PDF=$enable_pdf",
+    "ENABLE_PDF_UNSEASONED=$enable_pdf_unseasoned",
+  ]
 }
 
 if (enable_pdf) {
@@ -49,7 +52,6 @@ if (enable_pdf) {
       ":internal",
       ":out_of_process_instance",
       ":pdf",
-      ":pdf_view_web_plugin",
       "//base",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
@@ -276,12 +278,14 @@ if (enable_pdf) {
   }
 
   # Eventual replacement for out_of_process_instance.
-  source_set("pdf_view_web_plugin") {
-    visibility = [ ":*" ]
+  static_library("pdf_view_web_plugin") {
+    visibility = [
+      ":*",
+      "//chrome/renderer",
+    ]
 
     sources = [
       "pdf_view_web_plugin.cc",
-      "pdf_view_web_plugin.h",
       "post_message_receiver.cc",
       "post_message_receiver.h",
       "post_message_sender.cc",
@@ -289,6 +293,8 @@ if (enable_pdf) {
     ]
 
     configs += [ ":pdf_common_config" ]
+
+    public = [ "pdf_view_web_plugin.h" ]
 
     deps = [
       ":accessibility_structs",
@@ -376,6 +382,7 @@ if (enable_pdf) {
       ":out_of_process_instance",
       ":pdf",
       ":pdf_test_utils",
+      ":pdf_view_web_plugin",
       ":ppapi_migration",
       "//base",
       "//base:i18n",
@@ -418,5 +425,7 @@ if (enable_pdf) {
   group("pdf") {
   }
   group("pdf_ppapi") {
+  }
+  group("pdf_view_web_plugin") {
   }
 }

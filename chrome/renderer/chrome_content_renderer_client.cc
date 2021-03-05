@@ -127,6 +127,7 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -192,6 +193,10 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
+#include "pdf/pdf_view_web_plugin.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -985,6 +990,16 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           placeholder->AllowLoading();
           break;
         }
+
+#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
+        if (info.name ==
+            ASCIIToUTF16(ChromeContentClient::kPDFInternalPluginName)) {
+          // Create unseasoned PDF plugin directly, for development purposes.
+          // TODO(crbug.com/1123621): Implement a more permanent solution once
+          // the new PDF viewer process model is approved and in place.
+          return new chrome_pdf::PdfViewWebPlugin(params);
+        }
+#endif  // BUILDFLAG(ENABLE_PDF_UNSEASONED)
 
         return render_frame->CreatePlugin(info, params);
       }
