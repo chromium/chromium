@@ -883,7 +883,11 @@ void BookmarkBarView::Layout() {
   if (other_bookmarks_button_->GetVisible()) {
     other_bookmarks_button_->SetBounds(x, y, other_bookmarks_pref.width(),
                                        button_height);
-    x += other_bookmarks_pref.width() + bookmark_bar_button_padding;
+    x += other_bookmarks_pref.width();
+    // Additional spacing is only needed for the last button in the bookmark
+    // bar. When the read later button exists this is no longer the last button.
+    if (!read_later_button_)
+      x += bookmark_bar_button_padding;
   }
 
   // Read-later button and separator.
