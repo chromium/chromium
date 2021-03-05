@@ -461,8 +461,6 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
 
   EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
   EXPECT_CALL(mock_observer, OnTabRemoved(window1_tab1));
-  // This time removing the tab will trigger a visibility change event, why?
-  // ¯\_(ツ)_/¯.
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
   EXPECT_CALL(mock_observer, OnWindowRemoved());
   CloseBrowserSynchronously(browser());
@@ -494,6 +492,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabSwitch) {
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
   AddTabAtIndexToBrowser(browser(), 1, GURL("about:blank"),
                          ui::PAGE_TRANSITION_TYPED, true);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
 
   EXPECT_EQ(content::Visibility::HIDDEN, window1_tab1->GetVisibility());
   auto* window1_tab2 = browser()->tab_strip_model()->GetWebContentsAt(1);

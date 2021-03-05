@@ -167,6 +167,8 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
   EXPECT_EQ(
       content::Visibility::VISIBLE,
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibility());
+  EXPECT_EQ(content::Visibility::HIDDEN,
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibility());
   tick_clock_.Advance(kInterval * 2);
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);

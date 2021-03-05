@@ -112,6 +112,10 @@
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
+#if defined(USE_AURA)
+#include "ui/aura/window_occlusion_tracker.h"
+#endif
+
 using base::UserMetricsAction;
 using content::WebContents;
 
@@ -179,6 +183,13 @@ ToolbarView::~ToolbarView() {
 }
 
 void ToolbarView::Init() {
+#if defined(USE_AURA)
+  // Avoid generating too many occlusion tracking calculation events before this
+  // function returns. The occlusion status will be computed only once once this
+  // function returns.
+  // See crbug.com/1183894#c2
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
+#endif
   auto location_bar = std::make_unique<LocationBarView>(
       browser_, browser_->profile(), browser_->command_controller(), this,
       display_mode_ != DisplayMode::NORMAL);
