@@ -679,7 +679,7 @@ const base::Feature kResamplingScrollEvents{"ResamplingScrollEvents",
 
 // Enables the device-memory, resource-width, viewport-width and DPR client
 // hints to be sent to third-party origins if the first-party has opted in to
-// receiving client hints, regardless of Feature Policy.
+// receiving client hints, regardless of Permissions Policy.
 const base::Feature kAllowClientHintsToThirdParty{
   "AllowClientHintsToThirdParty",
 #if defined(OS_ANDROID)
@@ -845,7 +845,7 @@ const base::Feature kDeclarativeShadowDOM{"DeclarativeShadowDOM",
 const base::Feature kInterestCohortAPIOriginTrial{
     "InterestCohortAPIOriginTrial", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable the availability of the "interest-cohort" feature policy.
+// Enable the availability of the "interest-cohort" permissions policy.
 const base::Feature kInterestCohortFeaturePolicy{
     "InterestCohortFeaturePolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 

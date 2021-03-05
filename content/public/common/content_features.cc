@@ -262,7 +262,7 @@ const base::Feature kExtraSafelistedRequestHeadersForOutOfBlinkCors{
     "ExtraSafelistedRequestHeadersForOutOfBlinkCors",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether Client Hints are guarded by FeaturePolicy.
+// Controls whether Client Hints are guarded by Permissions Policy.
 const base::Feature kFeaturePolicyForClientHints{
     "FeaturePolicyForClientHints", base::FEATURE_ENABLED_BY_DEFAULT};
 

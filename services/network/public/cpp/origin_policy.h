@@ -69,10 +69,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) OriginPolicyContents {
   // non-empty and to contain only valid origin policy IDs.
   std::vector<std::string> ids;
 
-  // The feature policy that is dictated by the origin policy, if any.
-  // https://w3c.github.io/webappsec-feature-policy/
+  // The permissions policy that is dictated by the origin policy, if any.
+  // https://w3c.github.io/webappsec-permissions-policy/
   // This is stored as a raw string, so it is not guaranteed to be an actual
-  // feature policy; Blink will attempt to parse and apply it.
+  // permissions policy; Blink will attempt to parse and apply it.
   base::Optional<std::string> feature_policy;
 
   // These two fields together represent the CSP that should be applied to the

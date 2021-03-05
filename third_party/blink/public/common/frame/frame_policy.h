@@ -13,10 +13,10 @@ namespace blink {
 
 // This structure contains the attributes of a frame which determine what
 // features are available during the lifetime of the framed document. Currently,
-// this includes the sandbox flags, the feature policy container policy, and
+// this includes the sandbox flags, the permissions policy container policy, and
 // document policy required policy. Used in the frame tree to track sandbox,
-// feature policy and document policy in the browser process, and transferred
-// over IPC during frame replication when site isolation is enabled.
+// permissions policy and document policy in the browser process, and
+// transferred over IPC during frame replication when site isolation is enabled.
 //
 // Unlike the attributes in FrameOwnerProperties, these attributes are never
 // updated after the framed document has been loaded, so two versions of this

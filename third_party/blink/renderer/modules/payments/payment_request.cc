@@ -747,7 +747,8 @@ bool AllowedToUsePaymentRequest(const ExecutionContext* execution_context) {
   if (execution_context->IsContextDestroyed())
     return false;
 
-  // 2. If Feature Policy is enabled, return the policy for "payment" feature.
+  // 2. If Permissions Policy is enabled, return the policy for "payment"
+  // feature.
   return execution_context->IsFeatureEnabled(
       mojom::blink::PermissionsPolicyFeature::kPayment,
       ReportOptions::kReportOnFailure);

@@ -28,7 +28,7 @@ namespace {
 
 // A helper method which is used to trigger a violation report for cases where
 // the |element.animate| API is used to animate a CSS property which is blocked
-// by the feature policy 'layout-animations'.
+// by the permissions policy 'layout-animations'.
 void ReportPermissionsPolicyViolationsIfNecessary(
     const ExecutionContext& context,
     const KeyframeEffectModelBase& effect) {

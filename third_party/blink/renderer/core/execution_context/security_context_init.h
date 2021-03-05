@@ -29,9 +29,9 @@ class CORE_EXPORT SecurityContextInit {
  public:
   explicit SecurityContextInit(ExecutionContext*);
 
-  // Init |feature_policy_| and |report_only_feature_policy_| by copying
+  // Init |permissions_policy_| and |report_only_permissions_policy_| by copying
   // state from another security context instance.
-  // Used to carry feature policy information from previous document
+  // Used to carry permissions policy information from previous document
   // to current document during XSLT navigation, because XSLT navigation
   // does not have header information available.
   void InitFeaturePolicyFrom(const SecurityContext& other);

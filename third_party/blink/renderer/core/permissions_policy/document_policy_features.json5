@@ -1,8 +1,8 @@
 {
-  // All document policy (https://w3c.github.io/webappsec-feature-policy/document-policy.html)
+  // All document policy (https://w3c.github.io/webappsec-permissions-policy/document-policy.html)
   // features are defined here.
   // All Features have to be defined in DocumentPolicyFeature enum as well
-  // (defined in third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom).
+  // (defined in third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom).
   // The enum value has to have the same name as the feature name here.
 
   parameters: {
@@ -10,7 +10,7 @@
     // which gets parsed from the header or the policy attribute.
     document_policy_name: {},
     // value type allowed in mojom::PolicyValueType which is defined in
-    // third_party/blink/public/mojom/feature_policy/policy_value.mojom.
+    // third_party/blink/public/mojom/permissions_policy/policy_value.mojom.
     value_type: {},
     // valid c++ expression strings, e.g. true/false, 1.0, -1.
     // or use reserved keyword 'min'/'max'.

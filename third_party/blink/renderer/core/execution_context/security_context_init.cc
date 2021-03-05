@@ -50,13 +50,12 @@ DocumentPolicy::ParsedDocumentPolicy FilterByOriginTrial(
   return filtered_policy;
 }
 
-// Helper function: Merge the feature policy strings from HTTP headers and the
-// origin policy (if any).
-// Headers go first, which means that the per-page headers override the
-// origin policy features.
+// Helper function: Merge the permissions policy strings from HTTP headers and
+// the origin policy (if any). Headers go first, which means that the per-page
+// headers override the origin policy features.
 //
-// TODO(domenic): we want to treat origin policy feature policy as a single
-// feature policy, not a header serialization, so it should be processed
+// TODO(domenic): we want to treat origin policy permissions policy as a single
+// permissions policy, not a header serialization, so it should be processed
 // differently.
 void MergeFeaturesFromOriginPolicy(WTF::StringBuilder& feature_policy,
                                    const WebOriginPolicy& origin_policy) {
@@ -224,14 +223,14 @@ void SecurityContextInit::ApplyFeaturePolicy(
   execution_context_->GetSecurityContext().SetFeaturePolicy(
       std::move(feature_policy));
 
-  // Report-only feature policy only takes effect when it is stricter than
-  // enforced feature policy, i.e. when enforced feature policy allows a feature
-  // while report-only feature policy do not. In such scenario, a report-only
-  // policy violation report will be generated, but the feature is still allowed
-  // to be used. Since child frames cannot loosen enforced feature policy, there
-  // is no need to inherit parent policy and container policy for report-only
-  // feature policy. For inherited policies, the behavior is dominated by
-  // enforced feature policy.
+  // Report-only permissions policy only takes effect when it is stricter than
+  // enforced permissions policy, i.e. when enforced permissions policy allows a
+  // feature while report-only permissions policy do not. In such scenario, a
+  // report-only policy violation report will be generated, but the feature is
+  // still allowed to be used. Since child frames cannot loosen enforced
+  // permissions policy, there is no need to inherit parent policy and container
+  // policy for report-only permissions policy. For inherited policies, the
+  // behavior is dominated by enforced permissions policy.
   if (!report_only_feature_policy_header.empty()) {
     std::unique_ptr<PermissionsPolicy> report_only_policy =
         PermissionsPolicy::CreateFromParentPolicy(

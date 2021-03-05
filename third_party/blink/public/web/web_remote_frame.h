@@ -104,7 +104,7 @@ class WebRemoteFrame : public WebFrame {
   virtual void SetReplicatedName(const WebString& name,
                                  const WebString& unique_name) = 0;
 
-  // Sets the Feature Policy header for the main frame.
+  // Sets the Permissions Policy header for the main frame.
   virtual void SetReplicatedFeaturePolicyHeader(
       const ParsedPermissionsPolicy& parsed_header) = 0;
 

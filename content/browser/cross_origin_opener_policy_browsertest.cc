@@ -2775,8 +2775,8 @@ IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault,
 }
 
 // Transfer a SharedArrayBuffer in between two COOP+COEP document with a
-// parent/child relationship. The child has set Feature-Policy:
-// cross-origin-isolated 'none'. As a result, it can't receive the object.
+// parent/child relationship. The child has set Permissions-Policy:
+// cross-origin-isolated=(). As a result, it can't receive the object.
 IN_PROC_BROWSER_TEST_P(
     NoSharedArrayBufferByDefault,
     CoopCoepTransferSharedArrayBufferToNoCrossOriginIsolatedIframe) {
@@ -2820,8 +2820,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Transfer a SharedArrayBuffer in between two COOP+COEP document with a
-// parent/child relationship. The child has set Feature-Policy:
-// cross-origin-isolated 'none'. This non-cross-origin-isolated document can
+// parent/child relationship. The child has set Permissions-Policy:
+// cross-origin-isolated=(). This non-cross-origin-isolated document can
 // transfer a SharedArrayBuffer toward the cross-origin-isolated one.
 // See https://crbug.com/1144838 for discussions about this behavior.
 IN_PROC_BROWSER_TEST_P(

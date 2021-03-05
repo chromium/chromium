@@ -135,7 +135,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   // them.
   if (ClientHintsPreferences::UserAgentClientHintEnabled() && ua) {
     // ShouldSendClientHint is called to make sure UA is controlled by
-    // FeaturePolicy.
+    // Permissions Policy.
     if (ShouldSendClientHint(ClientHintsMode::kStandard, policy,
                              resource_origin, is_1p_origin,
                              network::mojom::blink::WebClientHintsType::kUA,

@@ -528,10 +528,9 @@ bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
   return true;
 }
 
-// Helper function to generate a feature policy for a single feature and a list
-// of origins.
-// (Equivalent to the declared policy "feature origin1 origin2 ...".)
-// If the origins list is empty, it's treated as matches all origins
+// Helper function to generate a permissions policy for a single feature and a
+// list of origins. (Equivalent to the declared policy "feature origin1 origin2
+// ...".) If the origins list is empty, it's treated as matches all origins
 // (Equivalent to the declared policy "feature *")
 blink::ParsedPermissionsPolicyDeclaration
 CreateParsedPermissionsPolicyDeclaration(
@@ -9186,7 +9185,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(root->current_replication_state().feature_policy_header.empty());
 }
 
-// Test that the replicated feature policy header is correct in subframes as
+// Test that the replicated permissions policy header is correct in subframes as
 // they navigate.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        TestPolicyReplicationFromRemoteFrames) {
@@ -9235,8 +9234,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       root->child_at(0)->current_replication_state().feature_policy_header);
 }
 
-// Test that the replicated feature policy header is correct in remote proxies
-// after the local frame has navigated.
+// Test that the replicated permissions policy header is correct in remote
+// proxies after the local frame has navigated.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        TestFeaturePolicyReplicationToProxyOnNavigation) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -9293,7 +9292,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                    "document.featurePolicy.allowsFeature('geolocation')"));
 }
 
-// Test that the constructed feature policy is correct in sandboxed
+// Test that the constructed permissions policy is correct in sandboxed
 // frames. Sandboxed frames have an opaque origin, and if the frame policy,
 // which is constructed in the parent frame, cannot send that origin through
 // the browser process to the sandboxed frame, then the sandboxed frame's
@@ -9356,7 +9355,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(success);
 }
 
-// Test that the constructed feature policy is correct in sandboxed
+// Test that the constructed permissions policy is correct in sandboxed
 // frames. Sandboxed frames have an opaque origin, and if the frame policy,
 // which is constructed in the parent frame, cannot send that origin through
 // the browser process to the sandboxed frame, then the sandboxed frame's
@@ -9652,7 +9651,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // Test that creating a new remote frame at the same origin as its parent
-// results in the correct feature policy in the RemoteSecurityContext.
+// results in the correct permissions policy in the RemoteSecurityContext.
 // https://crbug.com/852102
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        FeaturePolicyConstructionInExistingProxy) {

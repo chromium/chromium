@@ -396,7 +396,7 @@ struct ClientHintsExtendedData {
     // in order to get the main frame URL, we should use the provided URL
     // instead. Otherwise, the current frame is an iframe and the main frame URL
     // was committed, so we can safely get it from it. Similarly, an
-    // in-navigation main frame doesn't yet have a feature policy.
+    // in-navigation main frame doesn't yet have a permissions policy.
     is_main_frame = !frame_tree_node || frame_tree_node->IsMainFrame();
     if (is_main_frame) {
       main_frame_url = url;
@@ -491,7 +491,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     // The `Sec-CH-UA` client hint is attached to all outgoing requests. This is
     // (intentionally) different than other client hints.
     // It's barred behind ShouldAddClientHints to make sure it's controlled by
-    // FeaturePolicy.
+    // Permissions Policy.
     //
     // https://wicg.github.io/client-hints-infrastructure/#abstract-opdef-append-client-hints-to-request
     if (ShouldAddClientHint(data, network::mojom::WebClientHintsType::kUA)) {
@@ -500,7 +500,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     }
     // The `Sec-CH-UA-Mobile client hint was also deemed "low entropy" and can
     // safely be sent with every request. Similarly to UA, ShouldAddClientHints
-    // makes sure it's controlled by FeaturePolicy.
+    // makes sure it's controlled by Permissions Policy.
     if (ShouldAddClientHint(data,
                             network::mojom::WebClientHintsType::kUAMobile)) {
       AddUAHeader(headers, network::mojom::WebClientHintsType::kUAMobile,
@@ -787,7 +787,7 @@ bool AreCriticalHintsMissing(
     const std::vector<network::mojom::WebClientHintsType>& critical_hints) {
   ClientHintsExtendedData data(url, frame_tree_node, delegate);
 
-  // Note: these only check for per-hint origin/feature policy settings, not
+  // Note: these only check for per-hint origin/permissions policy settings, not
   // origin-level or "browser-level" policies like disabiling JS or other
   // features.
   for (auto hint : critical_hints) {

@@ -597,10 +597,9 @@ TEST_F(FrameFetchContextHintsTest, MonitorDeviceMemorySecureTransport) {
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Width", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", false, "");
-  // Without a feature policy header, the client hints should be sent only to
-  // the first party origins.
-  // Device-memory is a legacy hint that's sent on Android regardless of Feature
-  // Policy delegation.
+  // Without a permissions policy header, the client hints should be sent only
+  // to the first party origins. Device-memory is a legacy hint that's sent on
+  // Android regardless of Permissions Policy delegation.
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
                "4");
@@ -909,7 +908,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
 }
 
 // Verify that the client hints should be attached for third-party subresources
-// fetched over secure transport, when specifically allowed by feature policy.
+// fetched over secure transport, when specifically allowed by permissions
+// policy.
 TEST_F(FrameFetchContextHintsTest, MonitorAllHintsFeaturePolicy) {
   RecreateFetchContext(
       KURL("https://www.example.com/"),
@@ -937,7 +937,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsFeaturePolicy) {
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
 
   // Verify that all client hints are sent to a third-party origin, with this
-  // feature policy header.
+  // permissions policy header.
   ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
   ExpectHeader("https://www.example.net/1.gif", "Device-Memory", true, "4");
 
@@ -985,11 +985,11 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kDpr);
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
-  // With a feature policy header, the client hints should be sent to the
+  // With a permissions policy header, the client hints should be sent to the
   // declared third party origins.
   ExpectHeader("https://www.example.net/1.gif", "Device-Memory", true, "4");
-  // Device-memory is a legacy hint that's sent on Android regardless of Feature
-  // Policy delegation.
+  // Device-memory is a legacy hint that's sent on Android regardless of
+  // Permissions Policy delegation.
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
                "4");
@@ -1003,8 +1003,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
   // Other hints not declared in the policy are still not attached.
   ExpectHeader("https://www.example.net/1.gif", "downlink", false, "");
   ExpectHeader("https://www.example.net/1.gif", "ect", false, "");
-  // DPR is a legacy hint that's sent on Android regardless of Feature Policy
-  // delegation.
+  // DPR is a legacy hint that's sent on Android regardless of Permissions
+  // Policy delegation.
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
 #else
@@ -1022,8 +1022,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
 }
 
 // Verify that the client hints are not attached for third-party subresources
-// fetched over insecure transport, even when specifically allowed by feature
-// policy.
+// fetched over insecure transport, even when specifically allowed by
+// permissions policy.
 TEST_F(FrameFetchContextHintsTest, MonitorHintsFeaturePolicyInsecureContext) {
   RecreateFetchContext(KURL("https://www.example.com/"), "ch-device-memory *");
   document->GetSettings()->SetScriptEnabled(true);

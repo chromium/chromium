@@ -1089,7 +1089,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in a non-loading state.
   void ResetLoadingState();
 
-  // Returns the feature policy which should be enforced on this RenderFrame.
+  // Returns the permissions policy which should be enforced on this
+  // RenderFrame.
   const blink::PermissionsPolicy* feature_policy() const {
     return feature_policy_.get();
   }
@@ -2491,10 +2492,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Update this frame's last committed origin.
   void SetLastCommittedOrigin(const url::Origin& origin);
 
-  // Set the |last_committed_origin_|, |isolation_info_|, and |feature_policy_|
-  // of |this| frame, inheriting the origin from |new_frame_creator| as
-  // appropriate (e.g. depending on whether |this| frame should be sandboxed /
-  // should have an opaque origin instead).
+  // Set the |last_committed_origin_|, |isolation_info_|, and
+  // |feature_policy_| of |this| frame, inheriting the origin from
+  // |new_frame_creator| as appropriate (e.g. depending on whether |this| frame
+  // should be sandboxed / should have an opaque origin instead).
   void SetOriginDependentStateOfNewFrame(const url::Origin& new_frame_creator);
 
   // Called when a navigation commits successfully to |url|. This will update
@@ -3175,12 +3176,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   network::mojom::WebSandboxFlags active_sandbox_flags_ =
       network::mojom::WebSandboxFlags::kNone;
 
-  // Parsed feature policy header. It is parsed from blink, received during
+  // Parsed permissions policy header. It is parsed from blink, received during
   // DidCommitProvisionalLoad. This is constant during the whole lifetime of
   // this document.
   blink::ParsedPermissionsPolicy feature_policy_header_;
 
-  // Tracks the feature policy which has been set on this frame.
+  // Tracks the permissions policy which has been set on this frame.
   std::unique_ptr<blink::PermissionsPolicy> feature_policy_;
 
   // Tracks the document policy which has been set on this frame.

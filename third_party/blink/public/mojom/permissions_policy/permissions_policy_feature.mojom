@@ -4,12 +4,12 @@
 
 module blink.mojom;
 
-// These values map to the features which can be controlled by Feature Policy.
+// These values map to the features which can be controlled by Permissions Policy.
 //
 // Features are listed in
 // https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md.
 // Not all listed features are supported in Blink, and many are gated by runtime
-// flags. See renderer/core/feature_policy/feature_policy_features.json5 for the
+// flags. See renderer/core/permissions_policy/permissions_policy_features.json5 for the
 // feature names which will be recognized in policy declarations.
 enum PermissionsPolicyFeature {
   kNotFound = 0,
@@ -131,6 +131,6 @@ enum PermissionsPolicyFeature {
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
-  // Also, run update_feature_policy_enum.py in
+  // Also, run update_permissions_policy_enum.py in
   // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
 };

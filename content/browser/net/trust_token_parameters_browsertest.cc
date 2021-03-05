@@ -178,7 +178,7 @@ class TrustTokenFeaturePolicyBrowsertest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
                        PassesNegativeValueToFactoryParams) {
-  // Since the trust-token-redemption Feature Policy feature is disabled by
+  // Since the trust-token-redemption Permissions Policy feature is disabled by
   // default in cross-site frames, the child's URLLoaderFactoryParams should be
   // populated with TrustTokenRedemptionPolicy::kForbid.
 
@@ -207,10 +207,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
                        PassesPositiveValueToFactoryParams) {
-  // Even though the trust-token-redemption Feature Policy feature is disabled
-  // by default in cross-site frames, the allow attribute on the iframe enables
-  // it for the b.com frame, so the child's URLLoaderFactoryParams should be
-  // populated with TrustTokenRedemptionPolicy::kPotentiallyPermit.
+  // Even though the trust-token-redemption Permissions Policy feature is
+  // disabled by default in cross-site frames, the allow attribute on the iframe
+  // enables it for the b.com frame, so the child's URLLoaderFactoryParams
+  // should be populated with TrustTokenRedemptionPolicy::kPotentiallyPermit.
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
                        PassesNegativeValueToFactoryParamsAfterCrash) {
-  // Since the trust-token-redemption Feature Policy feature is disabled by
+  // Since the trust-token-redemption Permissions Policy feature is disabled by
   // default in cross-site frames, the child's URLLoaderFactoryParams should be
   // populated with TrustTokenRedemptionPolicy::kForbid.
   //
@@ -276,10 +276,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
                        PassesPositiveValueToFactoryParamsAfterCrash) {
-  // Even though the trust-token-redemption Feature Policy feature is disabled
-  // by default in cross-site frames, the allow attribute on the iframe enables
-  // it for the b.com frame, so the child's URLLoaderFactoryParams should be
-  // populated with TrustTokenRedemptionPolicy::kPotentiallyPermit.
+  // Even though the trust-token-redemption Permissions Policy feature is
+  // disabled by default in cross-site frames, the allow attribute on the iframe
+  // enables it for the b.com frame, so the child's URLLoaderFactoryParams
+  // should be populated with TrustTokenRedemptionPolicy::kPotentiallyPermit.
   //
   // In particular, this should be true for factory params repopulated after a
   // network service crash!

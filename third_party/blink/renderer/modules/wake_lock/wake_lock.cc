@@ -87,9 +87,9 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
   // 2.1 If type is 'screen' and the document is not allowed to use the
   //     policy-controlled feature named "screen-wake-lock", reject promise with
   //     a "NotAllowedError" DOMException and return promise.
-  // [N.B. Per https://github.com/w3c/webappsec-feature-policy/issues/207 there
-  // is no official support for workers in the Feature Policy spec, but we can
-  // perform FP checks in workers in Blink]
+  // [N.B. Per https://github.com/w3c/webappsec-permissions-policy/issues/207
+  // there is no official support for workers in the Permissions Policy spec,
+  // but we can perform FP checks in workers in Blink]
   // 2.2. If the user agent denies the wake lock of this type for document,
   //      reject promise with a "NotAllowedError" DOMException and return
   //      promise.
@@ -103,7 +103,7 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // TODO: Check feature policy enabling for System Wake Lock
+  // TODO: Check permissions policy enabling for System Wake Lock
 
   if (context->IsDedicatedWorkerGlobalScope()) {
     // 3. If the current global object is the DedicatedWorkerGlobalScope object:

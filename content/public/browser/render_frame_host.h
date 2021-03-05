@@ -571,7 +571,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       blink::mojom::SuddenTerminationDisablerType disabler_type) = 0;
 
   // Returns true if the queried PermissionsPolicyFeature is allowed by
-  // feature policy.
+  // permissions policy.
   virtual bool IsFeatureEnabled(
       blink::mojom::PermissionsPolicyFeature feature) = 0;
 

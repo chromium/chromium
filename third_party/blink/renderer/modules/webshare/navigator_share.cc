@@ -220,7 +220,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   ExecutionContext* const execution_context =
       ExecutionContext::From(script_state);
 
-  // The feature policy is currently not enforced.
+  // The permissions policy is currently not enforced.
   LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
   window->CountUse(execution_context->IsFeatureEnabled(
                        mojom::blink::PermissionsPolicyFeature::kWebShare)

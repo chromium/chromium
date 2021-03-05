@@ -743,8 +743,8 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
               ReportOptions::kReportOnFailure,
               "Synchronous requests are disabled by document policy.");
 
-      // SyncXHR can be controlled by either feature policy or document policy
-      // during the migration period. See crbug.com/1146505.
+      // SyncXHR can be controlled by either permissions policy or document
+      // policy during the migration period. See crbug.com/1146505.
       if (sync_xhr_disabled_by_feature_policy ||
           sync_xhr_disabled_by_document_policy) {
         HandleNetworkError();

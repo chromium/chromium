@@ -1,11 +1,11 @@
 {
-  // All feature policy (https://github.com/w3c/webappsec-feature-policy)
+  // All permissions policy (https://github.com/w3c/webappsec-permissions-policy)
   // features are defined here.
   // All Features have to be defined in PermissionsPolicyFeature enum as well
-  // (defined in third_party/blink/public/mojom/feature_policy/feature_policy.mojom).
+  // (defined in third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom).
   // The enum value has to have the same name as the feature name here.
-  // This list is used to generate "feature_policy_helper.cc".
-  // TODO(yashard): Add all feature policy features here.
+  // This list is used to generate "permissions_policy_helper.cc".
+  // TODO(yashard): Add all permissions policy features here.
 
   parameters: {
     // "depends_on" specifies relationship to runtime features defined
@@ -26,7 +26,7 @@
 
     // feature_default: Default allowlist state for feature. This corresponds
     // to enum class |PermissionsPolicyFeatureDefault| in
-    // public/common/feature_policy/feature_policy_features.h
+    // public/common/permissions_policy/permissions_policy_features.h
     feature_default: {
       default: "EnableForSelf",
       valid_values: ["EnableForAll", "EnableForSelf"]

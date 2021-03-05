@@ -273,7 +273,7 @@ class NavigationSimulator {
   virtual void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) = 0;
 
-  // Simulate receiving Feature-Policy headers.
+  // Simulate receiving Permissions-Policy headers.
   virtual void SetFeaturePolicyHeader(
       blink::ParsedPermissionsPolicy feature_policy_header) = 0;
 

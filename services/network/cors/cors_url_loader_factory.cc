@@ -47,11 +47,11 @@ namespace {
 using IsConsistent = ::base::StrongAlias<class IsConsistentTag, bool>;
 
 // Record, for requests with associated Trust Tokens operations of operation
-// types requiring initiators to have the Trust Tokens Feature Policy feature
-// enabled, whether the browser process thinks it's possible for the initiating
-// frame to have the feature enabled. (If the answer is "no," it indicates
-// a misbehaving renderer in theory but, unfortunately, is more likely a false
-// positive due to inconsistent state; see crbug.com/1117458.)
+// types requiring initiators to have the Trust Tokens Permissions Policy
+// feature enabled, whether the browser process thinks it's possible for the
+// initiating frame to have the feature enabled. (If the answer is "no," it
+// indicates a misbehaving renderer in theory but, unfortunately, is more likely
+// a false positive due to inconsistent state; see crbug.com/1117458.)
 void HistogramWhetherTrustTokenFeaturePolicyConsistentWithBrowserOpinion(
     IsConsistent is_consistent) {
   UMA_HISTOGRAM_BOOLEAN(

@@ -217,7 +217,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       // Since ExecutionContext::IsFeatureEnabled returns
       // false in non-Document contexts, no worker should ever
       // execute a trust token redemption or signing operation,
-      // as these operations require the Feature Policy feature.
+      // as these operations require the Permissions Policy feature.
       network::mojom::TrustTokenRedemptionPolicy::kForbid, debug_tag);
 }
 

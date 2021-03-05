@@ -149,16 +149,16 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   void DisposePluginSoon(WebPluginContainerImpl*);
 
-  // Return the origin which is to be used for feature policy container
+  // Return the origin which is to be used for permissions policy container
   // policies, as "the origin of the URL in the frame's src attribute" (see
-  // https://wicg.github.io/feature-policy/#iframe-allow-attribute).
+  // https://w3c.github.io/webappsec-permissions-policy/#iframe-allow-attribute).
   // This method is intended to be overridden by specific frame classes.
   virtual scoped_refptr<const SecurityOrigin> GetOriginForFeaturePolicy()
       const {
     return SecurityOrigin::CreateUniqueOpaque();
   }
 
-  // Return a feature policy container policy for this frame, based on the
+  // Return a permissions policy container policy for this frame, based on the
   // frame attributes and the effective origin specified in the frame
   // attributes.
   virtual ParsedPermissionsPolicy ConstructContainerPolicy() const = 0;

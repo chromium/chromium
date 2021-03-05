@@ -90,11 +90,11 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
   TestWebContentsDelegate delegate_;
 };
 
-// Basic tests for feature policy checks through the
+// Basic tests for permissions policy checks through the
 // MediaDevicesPermissionChecker.  These tests are not meant to cover every edge
 // case as the PermissionsPolicy class itself is tested thoroughly in
-// feature_policy_unittest.cc and in
-// render_frame_host_feature_policy_unittest.cc.
+// permissions_policy_unittest.cc and in
+// render_frame_host_permissions_policy_unittest.cc.
 TEST_F(MediaDevicesPermissionCheckerTest, CheckPermissionWithFeaturePolicy) {
   // Mic and Camera should be enabled by default for a frame (if permission is
   // granted).

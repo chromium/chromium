@@ -129,7 +129,7 @@ namespace {
 // default on all other platforms.
 //
 // When the runtime flag is enabled, all client hints except UA are controlled
-// entirely by feature policy on all platforms. In that case, hints will
+// entirely by permissions policy on all platforms. In that case, hints will
 // generally be sent for first-party resources, and not for third-party
 // resources, unless specifically enabled by policy.
 

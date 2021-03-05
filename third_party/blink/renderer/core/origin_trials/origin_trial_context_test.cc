@@ -423,8 +423,8 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
   feature_map.Set("frobulate",
                   mojom::blink::PermissionsPolicyFeature::kFrobulate);
 
-  // Attempt to parse the "frobulate" feature policy. This will only work if the
-  // feature policy is successfully enabled via the origin trial.
+  // Attempt to parse the "frobulate" permissions policy. This will only work if
+  // the permissions policy is successfully enabled via the origin trial.
   scoped_refptr<const SecurityOrigin> security_origin =
       SecurityOrigin::CreateFromString(kFrobulateEnabledOrigin);
 

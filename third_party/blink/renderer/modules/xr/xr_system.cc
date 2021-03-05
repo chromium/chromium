@@ -1121,8 +1121,8 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
   if (!GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure)) {
-    // Only allow the call to be made if the appropriate feature policy is in
-    // place.
+    // Only allow the call to be made if the appropriate permissions policy is
+    // in place.
     query->RejectWithSecurityError(kFeaturePolicyBlocked, &exception_state);
     return promise;
   }

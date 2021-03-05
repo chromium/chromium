@@ -724,14 +724,14 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
   owner->IntrinsicSizingInfoChanged();
 }
 
-// Update the proxy's SecurityContext with new sandbox flags or feature policy
-// that were set during navigation. Unlike changes to the FrameOwner, which are
-// handled by RemoteFrame::DidUpdateFramePolicy, these changes should be
-// considered effective immediately.
+// Update the proxy's SecurityContext with new sandbox flags or permissions
+// policy that were set during navigation. Unlike changes to the FrameOwner,
+// which are handled by RemoteFrame::DidUpdateFramePolicy, these changes should
+// be considered effective immediately.
 //
 // These flags / policy are needed on the remote frame's SecurityContext to
-// ensure that sandbox flags and feature policy are inherited properly if this
-// proxy ever parents a local frame.
+// ensure that sandbox flags and permissions policy are inherited properly if
+// this proxy ever parents a local frame.
 void RemoteFrame::DidSetFramePolicyHeaders(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const WTF::Vector<ParsedPermissionsPolicyDeclaration>&

@@ -231,7 +231,7 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // Returns the currently active frame policy for this frame, including the
   // sandbox flags which were present at the time the document was loaded, and
-  // the feature policy container policy, which is set by the iframe's
+  // the permissions policy container policy, which is set by the iframe's
   // allowfullscreen, allowpaymentrequest, and allow attributes, along with the
   // origin of the iframe's src attribute (which may be different from the URL
   // of the document currently loaded into the frame). This does not include
@@ -377,11 +377,11 @@ class CONTENT_EXPORT FrameTreeNode {
   // Updates the active sandbox flags in this frame, in response to a
   // Content-Security-Policy header adding additional flags, in addition to
   // those given to this frame by its parent, or in response to the
-  // Feature-Policy header being set. Note that on navigation, these updates
+  // Permissions-Policy header being set. Note that on navigation, these updates
   // will be cleared, and the flags in the pending frame policy will be applied
   // to the frame.
   // Returns true iff this operation has changed state of either sandbox flags
-  // or feature policy.
+  // or permissions policy.
   bool UpdateFramePolicyHeaders(
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::ParsedPermissionsPolicy& parsed_header);

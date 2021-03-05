@@ -145,9 +145,9 @@ void FindClientHintsToRemove(const PermissionsPolicy* feature_policy,
   }
   for (size_t i = startHint; i < blink::kClientHintsMappingsCount; ++i) {
     // Remove the hint if any is true:
-    // * Feature policy is null (we're in a sync XHR case) and the hint is not
-    // sent by default.
-    // * Feature policy exists and doesn't allow for the hint.
+    // * Permissions policy is null (we're in a sync XHR case) and the hint is
+    // not sent by default.
+    // * Permissions policy exists and doesn't allow for the hint.
     if ((!feature_policy &&
          !IsClientHintSentByDefault(
              static_cast<network::mojom::WebClientHintsType>(i))) ||

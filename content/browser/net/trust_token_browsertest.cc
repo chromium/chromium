@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
   // Ensure an isolated world can execute Trust Tokens operations when its
   // window's main world can. In particular, this ensures that the
-  // redemtion-and-signing feature policy is appropriately propagated by the
+  // redemtion-and-signing permissions policy is appropriately propagated by the
   // browser process.
 
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});

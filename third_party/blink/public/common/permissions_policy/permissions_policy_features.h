@@ -15,7 +15,7 @@ namespace blink {
 // a feature when the feature is not declared in iframe 'allow' attribute.
 // See |PermissionsPolicy::InheritedValueForFeature| for usage.
 //
-// The 2 possibilities map directly to Feature Policy Allowlist semantics.
+// The 2 possibilities map directly to Permissions Policy Allowlist semantics.
 //
 // The default values for each feature are set in GetDefaultFeatureList.
 enum class PermissionsPolicyFeatureDefault {

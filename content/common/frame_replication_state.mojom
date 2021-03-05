@@ -53,8 +53,8 @@ struct FrameReplicationState {
   // scratch.
   string unique_name;
 
-  // Parsed feature policy header. May be empty if no header was sent with the
-  // document.
+  // Parsed permissions policy header. May be empty if no header was sent with
+  // the document.
   array<blink.mojom.ParsedPermissionsPolicyDeclaration> feature_policy_header;
 
   // Contains the currently active sandbox flags for this frame, including flags

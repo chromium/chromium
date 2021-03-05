@@ -28,10 +28,11 @@
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
 #endif
 
-// Integration tests for querying permissions that have a feature policy set.
-// These tests are not meant to cover every edge case as the PermissionsPolicy
-// class itself is tested thoroughly in feature_policy_unittest.cc and in
-// render_frame_host_feature_policy_unittest.cc. Instead they are meant to
+// Integration tests for querying permissions that have a permissions policy
+// set. These tests are not meant to cover every edge case as the
+// PermissionsPolicy class itself is tested thoroughly in
+// permissions_policy_unittest.cc and in
+// render_frame_host_permissions_policy_unittest.cc. Instead they are meant to
 // ensure that integration with content::PermissionContextBase works correctly.
 class PermissionContextBaseFeaturePolicyTest
     : public ChromeRenderViewHostTestHarness {

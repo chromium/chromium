@@ -305,7 +305,7 @@ class CORE_EXPORT Document : public ContainerNode,
   static Range* CreateRangeAdjustedToTreeScope(const TreeScope&,
                                                const Position&);
 
-  // Support JS introspection of frame policy (e.g. feature policy).
+  // Support JS introspection of frame policy (e.g. permissions policy).
   DOMFeaturePolicy* featurePolicy();
 
   MediaQueryMatcher& GetMediaQueryMatcher();
@@ -1084,7 +1084,7 @@ class CORE_EXPORT Document : public ContainerNode,
       ExecutionContext* execution_context);
 
   // Sends a query via Mojo to ask for the interest cohort. This can reject on
-  // permissions errors (e.g. preferences, content settings, feature policy,
+  // permissions errors (e.g. preferences, content settings, permissions policy,
   // etc.) or when the interest cohort is unavailable.
   // https://github.com/jkarlin/floc
   ScriptPromise interestCohort(ScriptState* script_state, ExceptionState&);
@@ -1823,7 +1823,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetBodyAttribute(const QualifiedName&, const AtomicString&);
 
   // Returns true if use of |method_name| for markup insertion is allowed by
-  // feature policy; otherwise returns false and throws a DOM exception.
+  // permissions policy; otherwise returns false and throws a DOM exception.
   bool AllowedToUseDynamicMarkUpInsertion(const char* method_name,
                                           ExceptionState&);
 
@@ -2136,7 +2136,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // TODO(tkent): Should it be moved to LocalFrame or LocalFrameView?
   Member<ViewportData> viewport_data_;
 
-  // This is set through feature policy 'vertical-scroll'.
+  // This is set through permissions policy 'vertical-scroll'.
   bool is_vertical_scroll_enforced_ = false;
 
   // The number of canvas elements on the document
@@ -2166,10 +2166,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<LazyLoadImageObserver> lazy_load_image_observer_;
 
-  // Tracks which feature policies have already been parsed, so as not to count
-  // them multiple times.
-  // The size of this vector is 0 until PermissionsPolicyFeatureObserved is
-  // called.
+  // Tracks which permissions policies have already been parsed, so as not to
+  // count them multiple times. The size of this vector is 0 until
+  // PermissionsPolicyFeatureObserved is called.
   Vector<bool> parsed_feature_policies_;
 
   Vector<bool> parsed_document_policies_;

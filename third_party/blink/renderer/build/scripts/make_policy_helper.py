@@ -17,7 +17,7 @@ class PermissionsPolicyFeatureWriter(json5_generator.Writer):
         runtime_features = []
         feature_policy_features = []
         # Note: there can be feature with same 'name' attribute in
-        # document_policy_features and in feature_policy_features.
+        # document_policy_features and in permissions_policy_features.
         # They are supposed to have the same 'depends_on' attribute.
         # However, their feature_policy_name and document_policy_name
         # might be different.

@@ -452,7 +452,7 @@ struct CommitNavigationParams {
   bool origin_agent_cluster = false;
 
   // Client-hints enabled; this is based on the top-level frame and should be
-  // further narrowed down by feature policy.
+  // further narrowed down by permissions policy.
   array<network.mojom.WebClientHintsType> enabled_client_hints;
 
   // Whether this is a cross browsing instance navigation.

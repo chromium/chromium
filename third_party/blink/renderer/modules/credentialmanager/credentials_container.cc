@@ -108,12 +108,12 @@ enum class RequiredOriginType {
   // policy must be enabled. By default "publickey-credentials-get" is not
   // inherited by cross-origin child frames, so if that policy is not
   // explicitly enabled, behavior is the same as that of
-  // |kSecureAndSameWithAncestors|. Note that feature policies can be
+  // |kSecureAndSameWithAncestors|. Note that permissions policies can be
   // expressed in various ways, e.g.: |allow| iframe attribute and/or
-  // feature-policy header, and may be inherited from parent browsing
-  // contexts. See Feature Policy spec.
+  // permissions-policy header, and may be inherited from parent browsing
+  // contexts. See Permissions Policy spec.
   kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy,
-  // Similar to the enum above, checks the "otp-credentials" feature policy.
+  // Similar to the enum above, checks the "otp-credentials" permissions policy.
   kSecureAndPermittedByWebOTPAssertionFeaturePolicy,
 };
 

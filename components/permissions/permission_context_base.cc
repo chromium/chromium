@@ -229,8 +229,8 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
                             PermissionStatusSource::INSECURE_ORIGIN);
   }
 
-  // Check whether the feature is enabled for the frame by feature policy. We
-  // can only do this when a RenderFrameHost has been provided.
+  // Check whether the feature is enabled for the frame by permissions policy.
+  // We can only do this when a RenderFrameHost has been provided.
   if (render_frame_host &&
       !PermissionAllowedByFeaturePolicy(render_frame_host)) {
     return PermissionResult(CONTENT_SETTING_BLOCK,
@@ -472,7 +472,7 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
 
 bool PermissionContextBase::PermissionAllowedByFeaturePolicy(
     content::RenderFrameHost* rfh) const {
-  // Some features don't have an associated feature policy yet. Allow those.
+  // Some features don't have an associated permissions policy yet. Allow those.
   if (feature_policy_feature_ ==
       blink::mojom::PermissionsPolicyFeature::kNotFound)
     return true;

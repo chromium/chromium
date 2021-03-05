@@ -222,8 +222,8 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
   content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
 
-  // Allowing by default but blocking (e.g. due to a feature policy) causes the
-  // indicator to be shown.
+  // Allowing by default but blocking (e.g. due to a permissions policy) causes
+  // the indicator to be shown.
   HostContentSettingsMapFactory::GetForProfile(profile())
       ->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                  CONTENT_SETTING_ALLOW);

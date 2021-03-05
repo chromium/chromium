@@ -683,7 +683,7 @@ void OnDataURLRetrieved(
 // Subframe navigations can optionally have associated Trust Tokens operations
 // (https://github.com/wicg/trust-token-api). If the operation's type is
 // "redemption" or "signing" (as opposed to "issuance"), the parent's frame
-// needs to have the trust-token-redemption Feature Policy feature enabled.
+// needs to have the trust-token-redemption Permissions Policy feature enabled.
 bool ParentNeedsTrustTokenFeaturePolicy(
     const mojom::BeginNavigationParams& begin_params) {
   if (!begin_params.trust_token_params)
@@ -693,8 +693,9 @@ bool ParentNeedsTrustTokenFeaturePolicy(
       begin_params.trust_token_params->type);
 }
 
-// Analyzes trusted sources of a frame's trust-token-redemption Feature Policy
-// feature to see if the feature is definitely disabled or potentially enabled.
+// Analyzes trusted sources of a frame's trust-token-redemption Permissions
+// Policy feature to see if the feature is definitely disabled or potentially
+// enabled.
 //
 // This information will be bound to a URLLoaderFactory; if the answer is
 // "definitely disabled," the network service will report a bad message if it
@@ -709,8 +710,8 @@ DetermineWhetherToForbidTrustTokenRedemption(
     const RenderFrameHostImpl* parent,
     const mojom::CommitNavigationParams& commit_params,
     const url::Origin& subframe_origin) {
-  // For main frame loads, the frame's feature policy is determined entirely by
-  // response headers, which are provided by the renderer.
+  // For main frame loads, the frame's permissions policy is determined entirely
+  // by response headers, which are provided by the renderer.
   if (!parent)
     return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
 
@@ -729,12 +730,12 @@ DetermineWhetherToForbidTrustTokenRedemption(
 }
 
 // When a frame creates its initial subresource loaders, it needs to know
-// whether the trust-token-redemption Feature Policy feature will be enabled
+// whether the trust-token-redemption Permissions Policy feature will be enabled
 // after the commit finishes, which is a little involved (see
 // DetermineWhetherToForbidTrustTokenRedemption). In contrast, if it needs to
 // make this decision once the frame has committted---for instance, to create
 // more loaders after the network service crashes---it can directly consult the
-// current Feature Policy state to determine whether the feature is enabled.
+// current Permissions Policy state to determine whether the feature is enabled.
 network::mojom::TrustTokenRedemptionPolicy
 DetermineAfterCommitWhetherToForbidTrustTokenRedemption(
     RenderFrameHostImpl* impl) {
@@ -2288,8 +2289,8 @@ bool RenderFrameHostImpl::CreateRenderFrame(
         policy_container_host()->CreatePolicyContainerForBlink();
 
   // Normally, the replication state contains effective frame policy, excluding
-  // sandbox flags and feature policy attributes that were updated but have not
-  // taken effect. However, a new RenderFrame should use the pending frame
+  // sandbox flags and permissions policy attributes that were updated but have
+  // not taken effect. However, a new RenderFrame should use the pending frame
   // policy, since it is being created as part of the navigation that will
   // commit it. (I.e., the RenderFrame needs to know the policy to use when
   // initializing the new document once it commits).
@@ -2762,10 +2763,10 @@ void RenderFrameHostImpl::DidNavigate(
   // FrameTreeNode::replication_state_ needs to be refreshed with the actual
   // values.
   if (!navigation_request->IsSameDocument()) {
-    // Feature policy's inheritance from parent frame's feature policy is
-    // through accessing parent frame's security context(either remote or local)
-    // when initializing child's security context, so the update to proxies is
-    // needed.
+    // Permissions policy's inheritance from parent frame's permissions policy
+    // is through accessing parent frame's security context(either remote or
+    // local) when initializing child's security context, so the update to
+    // proxies is needed.
     frame_tree_node()->UpdateFramePolicyHeaders(active_sandbox_flags_,
                                                 feature_policy_header_);
     // Document policy's inheritance from parent frame's required document
@@ -2902,11 +2903,11 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
         network::mojom::PrivateNetworkRequestPolicy::kAllow;
   }
 
-  // Construct the frame's feature policy only once we know its initial
-  // committed origin. It's necessary to wait for the origin because the feature
-  // policy's state depends on the origin, so the PermissionsPolicy object could
-  // be configured incorrectly if it were initialized before knowing the value
-  // of |last_committed_origin_|. More at crbug.com/1112959.
+  // Construct the frame's permissions policy only once we know its initial
+  // committed origin. It's necessary to wait for the origin because the
+  // permissions policy's state depends on the origin, so the PermissionsPolicy
+  // object could be configured incorrectly if it were initialized before
+  // knowing the value of |last_committed_origin_|. More at crbug.com/1112959.
   ResetFeaturePolicy();
 }
 
@@ -5019,9 +5020,9 @@ void RenderFrameHostImpl::DidChangeCSPAttribute(
 void RenderFrameHostImpl::DidChangeFramePolicy(
     const blink::FrameToken& child_frame_token,
     const blink::FramePolicy& frame_policy) {
-  // Ensure that a frame can only update sandbox flags or feature policy for its
-  // immediate children.  If this is not the case, the renderer is considered
-  // malicious and is killed.
+  // Ensure that a frame can only update sandbox flags or permissions policy for
+  // its immediate children.  If this is not the case, the renderer is
+  // considered malicious and is killed.
   RenderFrameHostImpl* child = FindAndVerifyChild(
       // TODO(iclelland): Rename this message
       child_frame_token, bad_message::RFH_SANDBOX_FLAGS);
@@ -5581,7 +5582,7 @@ void RenderFrameHostImpl::BeginNavigation(
   // If the request is bearing Trust Tokens parameters:
   // - it must not be a main-frame navigation, and
   // - for certain Trust Tokens operations, the frame's parent needs the
-  // trust-token-redemption Feature Policy feature.
+  // trust-token-redemption Permissions Policy feature.
   if (begin_params->trust_token_params && !GetParent()) {
     mojo::ReportBadMessage("RFHI: Trust Token params in main frame nav");
     return;

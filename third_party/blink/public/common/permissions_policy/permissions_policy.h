@@ -18,15 +18,15 @@
 
 namespace blink {
 
-// Feature Policy is a mechanism for controlling the availability of web
+// Permissions Policy is a mechanism for controlling the availability of web
 // platform features in a frame, including all embedded frames. It can be used
 // to remove features, automatically refuse API permission requests, or modify
 // the behaviour of features. (The specific changes which are made depend on the
 // feature; see the specification for details).
 //
-// Policies can be defined in the HTTP header stream, with the |Feature-Policy|
-// HTTP header, or can be set by the |allow| attributes on the iframe element
-// which embeds the document.
+// Policies can be defined in the HTTP header stream, with the
+// |Permissions-Policy| HTTP header, or can be set by the |allow| attributes on
+// the iframe element which embeds the document.
 //
 // See https://w3c.github.io/webappsec-permissions-policy/
 //
@@ -35,7 +35,7 @@ namespace blink {
 // Features
 // --------
 // Features which can be controlled by policy are defined by instances of enum
-// mojom::PermissionsPolicyFeature, declared in |feature_policy.mojom|.
+// mojom::PermissionsPolicyFeature, declared in |permissions_policy.mojom|.
 //
 // Allowlists
 // ----------
@@ -51,8 +51,8 @@ namespace blink {
 //
 // Declarations
 // ------------
-// A feature policy declaration is a mapping of a feature name to an allowlist.
-// A set of declarations is a declared policy.
+// A permissions policy declaration is a mapping of a feature name to an
+// allowlist. A set of declarations is a declared policy.
 //
 // Inherited Policy
 // ----------------
@@ -77,7 +77,7 @@ namespace blink {
 // If the default policy is in effect for a frame, then it controls how the
 // feature is inherited by any cross-origin iframes embedded by the frame. (See
 // the comments in |PermissionsPolicyFeatureDefault| in
-// feature_policy_features.h for specifics.)
+// permissions_policy_features.h for specifics.)
 //
 // Policy Inheritance
 // ------------------
@@ -86,12 +86,13 @@ namespace blink {
 // receive the same set of enabled features as the parent frame. Whether or not
 // features are inherited by cross-origin iframes without an explicit policy is
 // determined by the feature's default policy. (Again, see the comments in
-// |PermissionsPolicyFeatureDefault| in feature_policy_features.h for details)
+// |PermissionsPolicyFeatureDefault| in permissions_policy_features.h for
+// details)
 
-// This struct holds feature policy allowlist data that needs to be replicated
-// between a RenderFrame and any of its associated RenderFrameProxies. A list of
-// these form a ParsedPermissionsPolicy.
-// NOTE: These types are used for replication frame state between processes.
+// This struct holds permissions policy allowlist data that needs to be
+// replicated between a RenderFrame and any of its associated
+// RenderFrameProxies. A list of these form a ParsedPermissionsPolicy. NOTE:
+// These types are used for replication frame state between processes.
 struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
   ParsedPermissionsPolicyDeclaration();
   explicit ParsedPermissionsPolicyDeclaration(
@@ -195,17 +196,17 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   const Allowlist GetAllowlistForFeature(
       mojom::PermissionsPolicyFeature feature) const;
 
-  // Sets the declared policy from the parsed Feature-Policy HTTP header.
+  // Sets the declared policy from the parsed Permissions-Policy HTTP header.
   // Unrecognized features will be ignored.
   void SetHeaderPolicy(const ParsedPermissionsPolicy& parsed_header);
 
-  // Returns the current state of feature policies for |origin_|. This includes
-  // the |inherited_policies_| as well as the header policies.
+  // Returns the current state of permissions policies for |origin_|. This
+  // includes the |inherited_policies_| as well as the header policies.
   PermissionsPolicyFeatureState GetFeatureState() const;
 
   const url::Origin& GetOriginForTest() const { return origin_; }
 
-  // Returns the list of features which can be controlled by Feature Policy.
+  // Returns the list of features which can be controlled by Permissions Policy.
   const PermissionsPolicyFeatureList& GetFeatureList() const;
 
   bool IsFeatureEnabledByInheritedPolicy(

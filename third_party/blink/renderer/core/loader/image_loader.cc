@@ -78,7 +78,7 @@ bool CheckForUnoptimizedImagePolicy(ExecutionContext* context,
     return false;
 
   // Render the image as a placeholder image if the image is not sufficiently
-  // well-compressed, according to the unoptimized image feature policies on
+  // well-compressed, according to the unoptimized image policies on
   // |document|.
   if (RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
       !new_image->IsAcceptableCompressionRatio(*context)) {

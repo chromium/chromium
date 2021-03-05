@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
   NavigateAndWaitForResourcesCompeletion(main_page_url, 4);
 
   // Expect that the navigation history is not eligible for floc computation as
-  // the feature policy disallows it.
+  // the permissions policy disallows it.
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }
 
@@ -466,8 +466,8 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
                    .ExtractBool());
 }
 
-// Try configuring the feature policy anyway. Check that the API succeeds and
-// the history is eligible for floc computation.
+// Try configuring the permissions policy anyway. Check that the API succeeds
+// and the history is eligible for floc computation.
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
                        FeaturePolicyFeatureNotEffective) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();

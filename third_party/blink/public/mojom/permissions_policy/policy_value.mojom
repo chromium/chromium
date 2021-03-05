@@ -4,16 +4,16 @@
 
 module blink.mojom;
 
-// This enum defines the types of parameters used to specify a feature policy.
+// This enum defines the types of parameters used to specify a document policy.
 // TODO(crbug.com/1119481): Add the following types: inc/dec int, inc double, set.
 enum PolicyValueType {
   kNull,
   kBool,
   kDecDouble,
   // Valid enum value range depends on specific feature definition in
-  // /third_party/blink/renderer/core/feature_policy/document_policy_features.json5.
+  // /third_party/blink/renderer/core/permissions_policy/document_policy_features.json5.
   // The range check is performed upon parsing of document policy in
-  // /third_party/blink/renderer/core/feature_policy/document_policy_parser.cc.
+  // /third_party/blink/renderer/core/permissions_policy/document_policy_parser.cc.
   kEnum,
 };
 

@@ -100,7 +100,7 @@ void SessionDataDeleter::Run(
         // Fire and forget
         network::mojom::CookieManager::DeleteCookiesCallback());
 
-    // If the feature policy feature is enabled, delete the client hint
+    // If the permissions policy feature is enabled, delete the client hint
     // preferences
     if (base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints)) {
       host_content_settings_map->ClearSettingsForOneType(

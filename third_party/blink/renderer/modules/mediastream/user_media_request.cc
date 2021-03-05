@@ -497,7 +497,7 @@ bool UserMediaRequest::IsSecureContextUse(String& error_message) {
     window->CountUseOnlyInCrossOriginIframe(
         WebFeature::kGetUserMediaSecureOriginIframe);
 
-    // Feature policy deprecation messages.
+    // Permissions policy deprecation messages.
     if (Audio()) {
       if (!window->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kMicrophone,

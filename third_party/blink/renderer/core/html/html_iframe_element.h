@@ -48,7 +48,7 @@ class CORE_EXPORT HTMLIFrameElement final
   ~HTMLIFrameElement() override;
 
   DOMTokenList* sandbox() const;
-  // Support JS introspection of frame policy (e.g. feature policy)
+  // Support JS introspection of frame policy (e.g. permissions policy)
   DOMFeaturePolicy* featurePolicy();
 
   // Returns attributes that should be checked against Trusted Types

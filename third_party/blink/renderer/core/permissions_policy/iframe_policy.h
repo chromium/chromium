@@ -12,8 +12,8 @@
 
 namespace blink {
 
-// IFramePolicy inherits Policy. It represents the feature policy of an iframe
-// contained in a document, as seen from that document (not including any
+// IFramePolicy inherits Policy. It represents the permissions policy of an
+// iframe contained in a document, as seen from that document (not including any
 // information private to that frame). It is synthesized from the parent
 // document's policy and the iframe's container policy.
 class IFramePolicy final : public DOMFeaturePolicy {

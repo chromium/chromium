@@ -383,9 +383,9 @@ class CONTENT_EXPORT RenderFrameHostManager
   void OnDidUpdateFrameOwnerProperties(
       const blink::mojom::FrameOwnerProperties& properties);
 
-  // Notify the proxies that the active sandbox flags or feature policy header
-  // on the frame have been changed during page load. Sandbox flags can change
-  // when set by a CSP header.
+  // Notify the proxies that the active sandbox flags or permissions policy
+  // header on the frame have been changed during page load. Sandbox flags can
+  // change when set by a CSP header.
   void OnDidSetFramePolicyHeaders();
 
   // Send updated origin to all frame proxies when the frame navigates to a new

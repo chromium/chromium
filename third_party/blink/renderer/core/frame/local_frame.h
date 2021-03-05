@@ -577,11 +577,12 @@ class CORE_EXPORT LocalFrame final
   void MaybeLogAdClickNavigation();
 
   // Triggers a use counter if a feature, which is currently available in all
-  // frames, would be blocked by the introduction of feature policy. This takes
-  // two counters (which may be the same). It triggers |blockedCrossOrigin| if
-  // the frame is cross-origin relative to the top-level document, and triggers
-  // |blockedSameOrigin| if it is same-origin with the top level, but is
-  // embedded in any way through a cross-origin frame. (A->B->A embedding)
+  // frames, would be blocked by the introduction of permissions policy. This
+  // takes two counters (which may be the same). It triggers
+  // |blockedCrossOrigin| if the frame is cross-origin relative to the top-level
+  // document, and triggers |blockedSameOrigin| if it is same-origin with the
+  // top level, but is embedded in any way through a cross-origin frame.
+  // (A->B->A embedding)
   void CountUseIfFeatureWouldBeBlockedByFeaturePolicy(
       mojom::WebFeature blocked_cross_origin,
       mojom::WebFeature blocked_same_origin);
@@ -657,11 +658,11 @@ class CORE_EXPORT LocalFrame final
   void AdvanceFocusInForm(mojom::blink::FocusType focus_type) final;
   void ReportContentSecurityPolicyViolation(
       network::mojom::blink::CSPViolationPtr csp_violation) final;
-  // Updates the snapshotted policy attributes (sandbox flags and feature policy
-  // container policy) in the frame's FrameOwner. This is used when this frame's
-  // parent is in another process and it dynamically updates this frame's
-  // sandbox flags or container policy. The new policy won't take effect until
-  // the next navigation.
+  // Updates the snapshotted policy attributes (sandbox flags and permissions
+  // policy container policy) in the frame's FrameOwner. This is used when this
+  // frame's parent is in another process and it dynamically updates this
+  // frame's sandbox flags or container policy. The new policy won't take effect
+  // until the next navigation.
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) final;
   void OnScreensChange() final;
   void PostMessageEvent(

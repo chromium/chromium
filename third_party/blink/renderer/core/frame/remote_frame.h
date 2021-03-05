@@ -185,11 +185,11 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void DidSetFramePolicyHeaders(
       network::mojom::blink::WebSandboxFlags,
       const WTF::Vector<ParsedPermissionsPolicyDeclaration>&) override;
-  // Updates the snapshotted policy attributes (sandbox flags and feature policy
-  // container policy) in the frame's FrameOwner. This is used when this frame's
-  // parent is in another process and it dynamically updates this frame's
-  // sandbox flags or container policy. The new policy won't take effect until
-  // the next navigation.
+  // Updates the snapshotted policy attributes (sandbox flags and permissions
+  // policy container policy) in the frame's FrameOwner. This is used when this
+  // frame's parent is in another process and it dynamically updates this
+  // frame's sandbox flags or container policy. The new policy won't take effect
+  // until the next navigation.
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) override;
   void UpdateOpener(
       const base::Optional<blink::FrameToken>& opener_frame_token) override;

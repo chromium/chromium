@@ -69,7 +69,7 @@ using DocumentPolicyFeatureSet = HashSet<
 class FeatureContext;
 
 // This method defines the feature names which will be recognized by the parser
-// for the Feature-Policy HTTP header and the <iframe> "allow" attribute, as
+// for the Permissions-Policy HTTP header and the <iframe> "allow" attribute, as
 // well as the features which will be recognized by the document or iframe
 // policy object.
 const FeatureNameMap& GetDefaultFeatureNameMap();

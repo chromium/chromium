@@ -17,8 +17,8 @@ namespace blink {
 class ScriptState;
 class SecurityOrigin;
 
-// DOMFeaturePolicy provides an interface for feature policy introspection of a
-// document (DocumentPolicy) or an iframe (IFramePolicy).
+// DOMFeaturePolicy provides an interface for permissions policy introspection
+// of a document (DocumentPolicy) or an iframe (IFramePolicy).
 class CORE_EXPORT DOMFeaturePolicy : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

@@ -752,7 +752,7 @@ TEST_F(FeaturePolicyParserTest, ParseTooLongPolicy) {
       << policy_string.size();
 }
 
-// Test histogram counting the use of feature policies in header.
+// Test histogram counting the use of permissions policies in header.
 TEST_F(FeaturePolicyParserTest, HeaderHistogram) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Header";
   HistogramTester tester;
@@ -773,7 +773,7 @@ TEST_F(FeaturePolicyParserTest, HeaderHistogram) {
       1);
 }
 
-// Test counting the use of each feature policy only once per header.
+// Test counting the use of each permissions policy only once per header.
 TEST_F(FeaturePolicyParserTest, HistogramMultiple) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Header";
   HistogramTester tester;
@@ -800,7 +800,7 @@ TEST_F(FeaturePolicyParserTest, HistogramMultiple) {
       1);
 }
 
-// Test histogram counting the use of feature policies via "allow"
+// Test histogram counting the use of permissions policies via "allow"
 // attribute. This test parses two policies on the same document.
 TEST_F(FeaturePolicyParserTest, AllowHistogramSameDocument) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Allow";
@@ -832,7 +832,7 @@ TEST_F(FeaturePolicyParserTest, AllowHistogramSameDocument) {
       1);
 }
 
-// Test histogram counting the use of feature policies via "allow"
+// Test histogram counting the use of permissions policies via "allow"
 // attribute. This test parses two policies on different documents.
 TEST_F(FeaturePolicyParserTest, AllowHistogramDifferentDocument) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Allow";

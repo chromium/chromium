@@ -1158,7 +1158,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       "text-object.txt: ae52dd09-9746-4b7e-86a6-6ada5e2680c2");
 }
 
-// The trust-token-redemption Feature Policy feature, which is enabled by
+// The trust-token-redemption Permissions Policy feature, which is enabled by
 // default, is required in order to execute a Trust Tokens
 // (https://github.com/wicg/trust-token-api) redemption operation alongside a
 // subresource request. To enforce this requirement, the browser binds the

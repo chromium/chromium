@@ -663,10 +663,11 @@ struct URLLoaderFactoryParams {
   // redemption or signing operations.
   //
   // This is set to kForbid for requests from subframes with the
-  // `trust-token-redemption` Feature Policy feature disabled by (1) policies
-  // inherited from their parents, or (2) the frames' iframe tag attributes.
+  // `trust-token-redemption` Permissions Policy feature disabled by (1)
+  // policies inherited from their parents, or (2) the frames' iframe tag
+  // attributes.
   //
-  // Note: Response headers can also disable this Feature Policy feature.
+  // Note: Response headers can also disable this Permissions Policy feature.
   // This will not necessarily be reflected in the the enum's value. The
   // response headers' value is only available from an untrusted source.
   // - If the renderer behaves correctly, renderer-side checks guarantee that
@@ -676,8 +677,8 @@ struct URLLoaderFactoryParams {
   // propagating the renderer's untrusted report about the response headers'
   // value.
   //
-  // TODO(crbug.com/1071848): Once Feature Policy headers are available from a
-  // trusted source, it would be good to set this depending on the headers'
+  // TODO(crbug.com/1071848): Once Permissions Policy headers are available from
+  // a trusted source, it would be good to set this depending on the headers'
   // values, too.
   TrustTokenRedemptionPolicy trust_token_redemption_policy = kPotentiallyPermit;
 

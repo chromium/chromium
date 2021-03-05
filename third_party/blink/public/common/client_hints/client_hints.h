@@ -24,7 +24,7 @@ class PermissionsPolicy;
 // services/network/public/mojom/web_client_hints_types.mojom
 BLINK_COMMON_EXPORT extern const char* const kClientHintsHeaderMapping[];
 
-// Mapping from WebClientHintsType to the corresponding Feature-Policy (e.g.
+// Mapping from WebClientHintsType to the corresponding Permissions-Policy (e.g.
 // kDpr => kClientHintsDPR). The order matches the header mapping and the enum
 // order in services/network/public/mojom/web_client_hints_types.mojom
 BLINK_COMMON_EXPORT extern const mojom::PermissionsPolicyFeature
@@ -65,7 +65,7 @@ BLINK_COMMON_EXPORT
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type);
 
 // Add a list of Client Hints headers to be removed to the output vector, based
-// on FeaturePolicy and the url's origin.
+// on Permissions Policy and the url's origin.
 BLINK_COMMON_EXPORT void FindClientHintsToRemove(
     const PermissionsPolicy* feature_policy,
     const GURL& url,

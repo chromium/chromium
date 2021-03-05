@@ -57,8 +57,8 @@ class ParsedFeaturePolicies final
   }
 
  private:
-  // Tracks which feature policies have already been parsed, so as not to count
-  // them multiple times.
+  // Tracks which permissions policies have already been parsed, so as not to
+  // count them multiple times.
   Vector<bool> policies_;
 };
 
@@ -97,7 +97,7 @@ class ParsingContext {
   ParsedPermissionsPolicy ParsePermissionsPolicy(const String& policy);
 
  private:
-  // Following is the intermediate represetnation(IR) of feature policy.
+  // Following is the intermediate represetnation(IR) of permissions policy.
   // Parsing of syntax structures is done in this IR, but semantic checks, e.g.
   // whether feature_name is valid, are not yet performed.
   struct FeaturePolicyDeclarationNode {

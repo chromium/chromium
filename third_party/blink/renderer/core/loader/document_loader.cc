@@ -2046,7 +2046,7 @@ void DocumentLoader::CommitNavigation() {
   SecurityContextInit security_init(frame_->DomWindow());
 
   // The document constructed by XSLTProcessor and ScriptController should
-  // inherit Feature Policy and Document Policy from the previous Document.
+  // inherit Permissions Policy and Document Policy from the previous Document.
   // Note: In XSLT commit and JavaScript commit, |response_| no longer holds
   // header fields. Going through regular initialization will cause empty policy
   // even if there is header on xml document.
@@ -2060,7 +2060,7 @@ void DocumentLoader::CommitNavigation() {
   } else {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
-    // TODO(iclelland): Add Feature-Policy-Report-Only to Origin Policy.
+    // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
     security_init.ApplyFeaturePolicy(frame_.Get(), response_, origin_policy_,
                                      frame_policy_);
     // |document_policy_| is parsed in document loader because it is

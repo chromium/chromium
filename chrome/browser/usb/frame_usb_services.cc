@@ -23,8 +23,8 @@ using content::WebContents;
 
 namespace {
 
-// The renderer performs its own feature policy checks so a request that gets
-// to the browser process indicates malicious code.
+// The renderer performs its own permissions policy checks so a request that
+// gets to the browser process indicates malicious code.
 const char kPermissionsPolicyViolation[] =
     "Permissions policy blocks access to WebUSB.";
 

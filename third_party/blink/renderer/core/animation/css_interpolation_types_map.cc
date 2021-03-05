@@ -118,7 +118,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   PropertyHandle used_property =
       property.IsCSSProperty() ? property : PropertyHandle(css_property);
   // TODO(crbug.com/838263): Support site-defined list of acceptable properties
-  // through feature policy declarations.
+  // through permissions policy declarations.
   bool property_maybe_blocked_by_feature_policy =
       LayoutAnimationsPolicy::AffectedCSSProperties().Contains(&css_property);
   if (allow_all_animations_ || !property_maybe_blocked_by_feature_policy) {

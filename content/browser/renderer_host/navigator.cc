@@ -372,7 +372,7 @@ void Navigator::DidNavigate(
 
   if (!is_same_document_navigation) {
     // Navigating to a new location means a new, fresh set of http headers
-    // and/or <meta> elements - we need to reset Feature Policy.
+    // and/or <meta> elements - we need to reset Permissions Policy.
     frame_tree_node->ResetForNavigation(
         navigation_request->IsServedFromBackForwardCache());
   }

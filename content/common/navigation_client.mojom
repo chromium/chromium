@@ -131,8 +131,10 @@ struct DidCommitProvisionalLoadParams {
   // computed by the browser process.
   network.mojom.WebSandboxFlags sandbox_flags;
 
-  // The 'Feature-Policy' headers applied to the document.
-  // https://w3c.github.io/webappsec-permissions-policy/#feature-policy-http-header-field
+  // The 'Permissions-Policy' headers applied to the document.
+  // https://w3c.github.io/webappsec-permissions-policy/#permissions-policy-http-header-field
+  // Note: For backward compatibility, this field also contains
+  // 'Feature-Policy' headers applied to the document.
   array<blink.mojom.ParsedPermissionsPolicyDeclaration> feature_policy_header;
 
   // The 'Document-Policy' headers applied to the document.

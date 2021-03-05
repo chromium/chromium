@@ -524,7 +524,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Tracks which features have already been potentially violated in this
   // document. This helps to count them only once per page load.
-  // We don't use std::bitset to avoid to include feature_policy.mojom-blink.h.
+  // We don't use std::bitset to avoid to include
+  // permissions_policy.mojom-blink.h.
   mutable Vector<bool> potentially_violated_features_;
 
   // Token identifying the LocalFrame that this window was associated with at

@@ -2563,14 +2563,15 @@ void LocalFrame::CountUseIfFeatureWouldBeBlockedByFeaturePolicy(
   // Check if this frame is same-origin with the top-level
   if (!GetSecurityContext()->GetSecurityOrigin()->CanAccess(topOrigin)) {
     // This frame is cross-origin with the top-level frame, and so would be
-    // blocked without a feature policy.
+    // blocked without a permissions policy.
     UseCounter::Count(GetDocument(), blocked_cross_origin);
     return;
   }
 
   // Walk up the frame tree looking for any cross-origin embeds. Even if this
   // frame is same-origin with the top-level, if it is embedded by a cross-
-  // origin frame (like A->B->A) it would be blocked without a feature policy.
+  // origin frame (like A->B->A) it would be blocked without a permissions
+  // policy.
   const Frame* f = this;
   while (!f->IsMainFrame()) {
     if (!f->GetSecurityContext()->GetSecurityOrigin()->CanAccess(topOrigin)) {

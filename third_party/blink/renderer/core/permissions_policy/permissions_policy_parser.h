@@ -41,7 +41,7 @@ enum class FeaturePolicyAllowlistType {
 CORE_EXPORT const Vector<String> GetAvailableFeatures(ExecutionContext*);
 
 // FeaturePolicyParser is a collection of methods which are used to convert
-// Feature Policy declarations, in headers and iframe attributes, into
+// Permissions Policy declarations, in headers and iframe attributes, into
 // ParsedPermissionsPolicy structs. This class encapsulates all of the logic for
 // parsing feature names, origin lists, and threshold values.
 // Note that code outside of /renderer/ should not be parsing policy directives
@@ -54,7 +54,7 @@ class CORE_EXPORT FeaturePolicyParser {
   // Converts a header policy string into a vector of allowlists, one for each
   // feature specified. Unrecognized features are filtered out. The optional
   // ExecutionContext is used to determine if any origin trials affect the
-  // parsing. Example of a feature policy string:
+  // parsing. Example of a permissions policy string:
   //     "vibrate a.com b.com; fullscreen 'none'; payment 'self', payment *".
   static ParsedPermissionsPolicy ParseHeader(
       const String& feature_policy_header,
@@ -67,7 +67,7 @@ class CORE_EXPORT FeaturePolicyParser {
   // Converts a container policy string into a vector of allowlists, given self
   // and src origins provided, one for each feature specified. Unrecognized
   // features are filtered out. Example of a
-  // feature policy string:
+  // permissions policy string:
   //     "vibrate a.com 'src'; fullscreen 'none'; payment 'self', payment *".
   static ParsedPermissionsPolicy ParseAttribute(
       const String& policy,

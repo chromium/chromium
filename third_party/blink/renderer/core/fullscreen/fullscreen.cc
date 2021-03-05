@@ -271,7 +271,7 @@ bool AllowedToUseFullscreen(const Document& document,
   if (!document.GetFrame())
     return false;
 
-  // 2. If Feature Policy is enabled, return the policy for "fullscreen"
+  // 2. If Permissions Policy is enabled, return the policy for "fullscreen"
   // feature.
   return document.GetExecutionContext()->IsFeatureEnabled(
       mojom::blink::PermissionsPolicyFeature::kFullscreen, report_on_failure);

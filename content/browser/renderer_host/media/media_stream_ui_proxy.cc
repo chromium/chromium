@@ -27,7 +27,8 @@ bool IsFeatureEnabled(RenderFrameHost* rfh,
                       bool tests_use_fake_render_frame_hosts,
                       blink::mojom::PermissionsPolicyFeature feature) {
   // Some tests don't (or can't) set up the RenderFrameHost. In these cases we
-  // just ignore feature policy checks (there is no feature policy to test).
+  // just ignore permissions policy checks (there is no permissions policy to
+  // test).
   if (!rfh && tests_use_fake_render_frame_hosts)
     return true;
 

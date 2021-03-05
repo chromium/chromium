@@ -1328,9 +1328,8 @@ TEST_F(FeaturePolicyTest, TestUndefinedFeaturesInFramePolicy) {
 // Tests for proposed algorithm change. These tests construct policies in
 // various embedding scenarios, and verify that the proposed value for "should
 // feature be allowed in the child frame" matches what we expect. The points
-// where this differs from the current feature policy algorithm are called out
-// specifically.
-// See https://crbug.com/937131 for additional context.
+// where this differs from the current feature policy algorithm are called
+// out specifically. See https://crbug.com/937131 for additional context.
 
 TEST_F(FeaturePolicyTest, ProposedTestImplicitPolicy) {
   // +-----------------+
