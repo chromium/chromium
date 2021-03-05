@@ -214,20 +214,24 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   const PendingAccessRequest& pending_request = *queue.front();
   UpdateTrusted(pending_request.request, false /* is_trusted */);
 
-  std::vector<DesktopMediaList::Type> media_types = {
-      DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow,
-      DesktopMediaList::Type::kWebContents};
+  std::vector<DesktopMediaList::Type> media_types;
+  if (pending_request.request.video_type ==
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+    media_types = {DesktopMediaList::Type::kCurrentTab,
+                   DesktopMediaList::Type::kWebContents,
+                   DesktopMediaList::Type::kWindow,
+                   DesktopMediaList::Type::kScreen};
+  } else {
+    media_types = {DesktopMediaList::Type::kScreen,
+                   DesktopMediaList::Type::kWindow,
+                   DesktopMediaList::Type::kWebContents};
+  }
 
   // Avoid offering window-capture as a separate source, since PipeWire's
   // content-picker will offer both screen and window sources.
   // See crbug.com/1157006.
   if (content::desktop_capture::CanUsePipeWire()) {
     base::Erase(media_types, DesktopMediaList::Type::kWindow);
-  }
-
-  if (pending_request.request.video_type ==
-      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    media_types.push_back(DesktopMediaList::Type::kCurrentTab);
   }
 
   auto source_lists =
