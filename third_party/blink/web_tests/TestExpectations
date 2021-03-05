@@ -5723,3 +5723,6 @@ crbug.com/1181007 [ Linux ] http/tests/serviceworker/window-close-during-registr
 # Sheriff 2021-03-04
 crbug.com/1184745 [ Mac ] external/wpt/media-source/mediasource-changetype-play.html [ Pass Failure ]
 crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Pass Failure ]
+
+# DevTools roll
+crbug.com/1163046 http/tests/devtools/network/async-xhr-json-mime-type.js [ Skip ]
