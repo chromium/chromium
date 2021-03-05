@@ -156,7 +156,6 @@
     "libs/org_robolectric_sandbox",
     "libs/org_robolectric_shadowapi",
     "libs/org_robolectric_shadows_framework",
-    "libs/org_robolectric_shadows_multidex",
     "libs/org_robolectric_shadows_playservices",
     "libs/org_robolectric_utils",
     "libs/org_robolectric_utils_reflector",

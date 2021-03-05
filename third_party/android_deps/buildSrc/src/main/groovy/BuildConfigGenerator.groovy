@@ -664,6 +664,16 @@ class BuildConfigGenerator extends DefaultTask {
           def targetName = translateTargetName(dependency.id) + "_java"
           return !isTargetAutorolled(targetName)
         }
+        // TODO(crbug.com/1184780): Remove this once org_robolectric_shadows_multidex
+        // is updated to a newer version which does not need jetify.
+        if (dependency.directoryName == "org_robolectric_shadows_multidex") {
+            if (dependency.version != "4.3.1") {
+                throw new RuntimeException("Got a new version for org_robolectric_shadows_multidex. " +
+                    "If this new version don't need jetify, please move this dependency back to the " +
+                    "auto-generated section in //DEPS and //third_party/android_deps/BUILD.gn.")
+            }
+            return true
+        }
         return false
     }
 

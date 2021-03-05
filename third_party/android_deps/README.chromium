@@ -22,10 +22,16 @@ third_party/android_deps
 ├── BUILD.gn (partly generated)
 ├── libs (generated)
 │   ├── dependency_group_name_and_version
+│   │   ├── 3pp (generated)
+│   │   │   ├── 3pp.pb (generated)
+│   │   │   └── fetch.py (generated)
 │   │   ├── dependency_name_and_version.jar (third_party)
 │   │   ├── LICENSE (third_party)
 │   │   └── README.chromium (generated)
 │   └── other_dependency_group_name_and_version
+│       ├── 3pp (generated)
+│       │   ├── 3pp.pb (generated)
+│       │   └── fetch.py (generated)
 │       ├── other_dependency_name_and_version.jar (third_party)
 │       ├── LICENSE (third_party)
 │       └── README.chromium (generated)
