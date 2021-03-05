@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreInfo {
     // launch information, e.g. a task id for an ARC app.
     virtual void OnAppLaunched(aura::Window* window) {}
 
+    // Notifies when |window| has been initialized.
+    virtual void OnWindowInitialized(aura::Window* window) {}
+
    protected:
     ~Observer() override = default;
   };
@@ -65,6 +68,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreInfo {
   // Notifies observers to observe |window| and restore or save the window info
   // for |window|.
   void OnAppLaunched(aura::Window* window);
+
+  // Notifies observers that |window| has been initialized.
+  void OnWindowInitialized(aura::Window* window);
 
  private:
   base::ObserverList<Observer> observers_;

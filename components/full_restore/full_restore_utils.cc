@@ -12,13 +12,15 @@
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/window_info.h"
-#include "ui/aura/client/aura_constants.h"
+
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(FULL_RESTORE), int32_t*)
 
 namespace full_restore {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowIdKey, 0)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kRestoreWindowIdKey, 0)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIdKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(int32_t, kActivationIndexKey, nullptr)
 
 void SaveAppLaunchInfo(const base::FilePath& profile_path,
                        std::unique_ptr<AppLaunchInfo> app_launch_info) {
@@ -80,32 +82,11 @@ bool HasWindowInfo(int32_t restore_window_id) {
 
 void ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params) {
-  DCHECK(out_params);
-
   if (!ash::features::IsFullRestoreEnabled())
     return;
 
-  std::unique_ptr<WindowInfo> window_info = GetWindowInfo(restore_window_id);
-  if (!window_info)
-    return;
-
-  if (window_info->desk_id)
-    out_params->workspace = base::NumberToString(*window_info->desk_id);
-  out_params->visible_on_all_workspaces =
-      window_info->visible_on_all_workspaces.has_value();
-  if (window_info->current_bounds)
-    out_params->bounds = *window_info->current_bounds;
-  if (window_info->restore_bounds) {
-    out_params->init_properties_container.SetProperty(
-        aura::client::kRestoreBoundsKey, *window_info->restore_bounds);
-  }
-  if (window_info->window_state_type) {
-    // ToWindowShowState will make us lose some ash-specific types (left/right
-    // snap). Ash is responsible for restoring these states by checking
-    // GetWindowInfo.
-    out_params->show_state =
-        chromeos::ToWindowShowState(*window_info->window_state_type);
-  }
+  FullRestoreReadHandler::GetInstance()->ModifyWidgetParams(restore_window_id,
+                                                            out_params);
 }
 
 }  // namespace full_restore

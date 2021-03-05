@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "ash/public/cpp/ash_features.h"
@@ -444,7 +445,17 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
   auto window_info = ::full_restore::GetWindowInfo(window);
   ASSERT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
-  EXPECT_EQ(kActivationIndex, window_info->activation_index.value());
+  int32_t* index = window->GetProperty(::full_restore::kActivationIndexKey);
+  ASSERT_TRUE(index);
+  EXPECT_EQ(kActivationIndex, *index);
+
+  // Windows created from full restore are not activated. They will become
+  // activatable after a post task is run.
+  views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+  EXPECT_FALSE(widget->IsActive());
+  EXPECT_FALSE(widget->CanActivate());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(widget->CanActivate());
 
   EXPECT_EQ(0, ::full_restore::FetchRestoreWindowId(extension->id()));
 

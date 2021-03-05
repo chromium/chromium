@@ -16,6 +16,7 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/views/widget/widget.h"
 
 namespace full_restore {
 
@@ -70,6 +71,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // Fetches the restore id for the window from RestoreData for the given
   // |app_id|. |app_id| should be a Chrome app id.
   int32_t FetchRestoreWindowId(const std::string& app_id);
+
+  // Modifies |out_params| based on the window info associated with
+  // |restore_window_id|.
+  void ModifyWidgetParams(int32_t restore_window_id,
+                          views::Widget::InitParams* out_params);
 
  private:
   // Invoked when reading the restore data from |profile_path| is finished, and

@@ -49,4 +49,9 @@ void FullRestoreInfo::OnAppLaunched(aura::Window* window) {
     observer.OnAppLaunched(window);
 }
 
+void FullRestoreInfo::OnWindowInitialized(aura::Window* window) {
+  for (auto& observer : observers_)
+    observer.OnWindowInitialized(window);
+}
+
 }  // namespace full_restore

@@ -4,15 +4,20 @@
 
 #include "ash/wm/full_restore/full_restore_controller.h"
 
+#include <cstdint>
+
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
 #include "base/check_op.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
@@ -51,6 +56,8 @@ FullRestoreController::FullRestoreController() {
   g_instance = this;
 
   tablet_mode_observeration_.Observe(Shell::Get()->tablet_mode_controller());
+  full_restore_info_observeration_.Observe(
+      full_restore::FullRestoreInfo::GetInstance());
 }
 
 FullRestoreController::~FullRestoreController() {
@@ -95,6 +102,30 @@ void FullRestoreController::OnTabletModeEnded() {
 
 void FullRestoreController::OnTabletControllerDestroyed() {
   tablet_mode_observeration_.Reset();
+}
+
+void FullRestoreController::OnAppLaunched(aura::Window* window) {}
+
+void FullRestoreController::OnWindowInitialized(aura::Window* window) {
+  int32_t* activation_index =
+      window->GetProperty(full_restore::kActivationIndexKey);
+  if (!activation_index)
+    return;
+
+  // Window that are launched from full restore are not activatable initially to
+  // prevent them from taking activation when Widget::Show() is called. Make
+  // these windows activatable once they are launched. Use a post task since it
+  // is quite common for some widgets to explicitly call Show() after
+  // initialized.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](aura::Window* window) {
+                       views::Widget* widget =
+                           views::Widget::GetWidgetForNativeView(window);
+                       DCHECK(widget);
+                       widget->widget_delegate()->SetCanActivate(true);
+                     },
+                     window));
 }
 
 void FullRestoreController::SaveWindowImpl(
