@@ -52,10 +52,13 @@ void UnblockOnProfileCreation(base::RunLoop* run_loop,
 
 const char kMockExample[] = "walmart.com";
 const char kMockExampleFallbackURL[] = "https://www.walmart.com/cart";
+const char kMockExampleLinkURL[] = "https://www.walmart.com/shopping-cart/";
 const char kMockExampleURL[] = "http://www.walmart.com/mycart";
 
 const cart_db::ChromeCartContentProto kMockExampleProtoFallbackCart =
     BuildProto(kMockExample, kMockExampleFallbackURL);
+const cart_db::ChromeCartContentProto kMockExampleProtoLinkCart =
+    BuildProto(kMockExample, kMockExampleLinkURL);
 const cart_db::ChromeCartContentProto kMockExampleProto =
     BuildProto(kMockExample, kMockExampleURL);
 const char kMockAmazon[] = "amazon.com";
@@ -67,6 +70,8 @@ using ShoppingCarts =
     std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
 const ShoppingCarts kExpectedExampleFallbackCart = {
     {kMockExample, kMockExampleProtoFallbackCart}};
+const ShoppingCarts kExpectedExampleLinkCart = {
+    {kMockExample, kMockExampleProtoLinkCart}};
 const ShoppingCarts kExpectedExample = {{kMockExample, kMockExampleProto}};
 const ShoppingCarts kExpectedAmazon = {{kMockAmazon, kMockAmazonProto}};
 const ShoppingCarts kEmptyExpected = {};
@@ -75,6 +80,8 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
     const net::test_server::HttpRequest& request) {
   // This should be served from test data.
   if (request.relative_url == "/purchase.html")
+    return nullptr;
+  if (request.relative_url == "/product.html")
     return nullptr;
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -229,6 +236,21 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm) {
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
   WaitForCartCount(kExpectedExampleFallbackCart);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithLink) {
+  NavigateToURL("https://www.walmart.com/product.html");
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+  WaitForCartCount(kExpectedExampleLinkCart);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithWrongLink) {
+  // Mismatching eTLD+1 domain uses cart URL in the look-up table.
+  NavigateToURL("https://amazon.com/product.html");
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+  WaitForCartCount(kExpectedAmazon);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {

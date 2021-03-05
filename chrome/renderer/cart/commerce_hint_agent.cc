@@ -54,22 +54,22 @@ enum class CommerceEvent {
 void RecordCommerceEvent(CommerceEvent event) {
   switch (event) {
     case CommerceEvent::kAddToCartByForm:
-      VLOG(1) << "Commerce.AddToCart by POST form";
+      DVLOG(1) << "Commerce.AddToCart by POST form";
       break;
     case CommerceEvent::kAddToCartByURL:
-      VLOG(1) << "Commerce.AddToCart by URL";
+      DVLOG(1) << "Commerce.AddToCart by URL";
       break;
     case CommerceEvent::kVisitCart:
-      VLOG(1) << "Commerce.VisitCart";
+      DVLOG(1) << "Commerce.VisitCart";
       break;
     case CommerceEvent::kVisitCheckout:
-      VLOG(1) << "Commerce.VisitCheckout";
+      DVLOG(1) << "Commerce.VisitCheckout";
       break;
     case CommerceEvent::kPurchaseByForm:
-      VLOG(1) << "Commerce.Purchase by POST form";
+      DVLOG(1) << "Commerce.Purchase by POST form";
       break;
     case CommerceEvent::kPurchaseByURL:
-      VLOG(1) << "Commerce.Purchase by URL";
+      DVLOG(1) << "Commerce.Purchase by URL";
       break;
     default:
       NOTREACHED();
@@ -85,12 +85,37 @@ mojo::Remote<mojom::CommerceHintObserver> GetObserver(
   return observer;
 }
 
+base::Optional<GURL> ScanCartURL(content::RenderFrame* render_frame) {
+  blink::WebDocument doc = render_frame->GetWebFrame()->GetDocument();
+
+  base::Optional<GURL> best;
+  blink::WebVector<WebElement> elements =
+      doc.QuerySelectorAll(WebString("a[href]"));
+  for (WebElement element : elements) {
+    GURL link = doc.CompleteURL(element.GetAttribute("href"));
+    if (!link.is_valid())
+      continue;
+    link = link.GetAsReferrer();
+    // Only keep the shortest match. First match or most frequent match might
+    // work better, but we need larger validating corpus.
+    if (best && link.spec().size() >= best->spec().size())
+      continue;
+    if (!CommerceHintAgent::IsVisitCart(link))
+      continue;
+    DVLOG(2) << "Cart link: " << link;
+    best = link;
+  }
+  if (best)
+    DVLOG(1) << "Best cart link: " << *best;
+  return best;
+}
+
 void OnAddToCart(content::RenderFrame* render_frame) {
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame);
   if (!observer.is_bound())
     return;
-  observer->OnAddToCart();
+  observer->OnAddToCart(ScanCartURL(render_frame));
 }
 
 void OnVisitCart(content::RenderFrame* render_frame) {
@@ -323,7 +348,7 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
   const GURL& url(frame->GetDocument().Url());
 
   if (IsVisitCart(url) && IsSameDomainXHR(url.host(), request)) {
-    VLOG(1) << "In-cart XHR: " << request.Url();
+    DVLOG(1) << "In-cart XHR: " << request.Url();
     ExtractProducts();
   }
 }
@@ -385,7 +410,7 @@ void CommerceHintAgent::DidObserveLayoutShift(double score,
   const GURL url(frame->GetDocument().Url());
 
   if (IsVisitCart(url)) {
-    VLOG(1) << "In-cart layout shift: " << url;
+    DVLOG(1) << "In-cart layout shift: " << url;
     ExtractProducts();
   }
 }

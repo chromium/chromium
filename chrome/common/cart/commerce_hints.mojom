@@ -4,11 +4,13 @@
 
 module cart.mojom;
 
+import "url/mojom/url.mojom";
+
 // This service is implemented in the browser process and is used by the
 // renderer to notify the CommerceHint events.
 interface CommerceHintObserver {
-  // Add-to-cart action is detected.
-  OnAddToCart();
+  // Add-to-cart action is detected. |cart_url| is provided if found.
+  OnAddToCart(url.mojom.Url? cart_url);
 
   // Shopping cart page is visited.
   OnVisitCart();

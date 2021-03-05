@@ -25,7 +25,8 @@ namespace cart {
 namespace {
 
 // TODO(crbug/1164236): support multiple cart systems in the same domain.
-std::string eTLDPlusOne(const GURL& url) {
+// Returns eTLB+1 domain.
+std::string GetDomain(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
@@ -37,20 +38,20 @@ std::string eTLDPlusOne(const GURL& url) {
 class CommerceHintObserverImpl : public mojom::CommerceHintObserver {
  public:
   explicit CommerceHintObserverImpl(base::WeakPtr<CommerceHintService> service)
-      : service_(service) {}
+      : service_(std::move(service)) {}
 
   ~CommerceHintObserverImpl() override = default;
 
-  void OnAddToCart() override {
-    VLOG(1) << "Received OnAddToCart in the browser process";
+  void OnAddToCart(const base::Optional<GURL>& cart_url) override {
+    DVLOG(1) << "Received OnAddToCart in the browser process";
     if (!service_)
       return;
     service_->OnAddToCart(service_->WebContents()->GetLastCommittedURL(),
-                          base::nullopt);
+                          cart_url);
   }
 
   void OnVisitCart() override {
-    VLOG(1) << "Received OnVisitCart in the browser process";
+    DVLOG(1) << "Received OnVisitCart in the browser process";
     if (!service_)
       return;
     const GURL& main_frame_url = service_->WebContents()->GetLastCommittedURL();
@@ -58,14 +59,14 @@ class CommerceHintObserverImpl : public mojom::CommerceHintObserver {
   }
 
   void OnVisitCheckout() override {
-    VLOG(1) << "Received OnVisitCheckout in the browser process";
+    DVLOG(1) << "Received OnVisitCheckout in the browser process";
     if (!service_)
       return;
     service_->OnRemoveCart(service_->WebContents()->GetLastCommittedURL());
   }
 
   void OnPurchase() override {
-    VLOG(1) << "Received OnPurchase in the browser process";
+    DVLOG(1) << "Received OnPurchase in the browser process";
     if (!service_)
       return;
     service_->OnRemoveCart(service_->WebContents()->GetLastCommittedURL());
@@ -110,7 +111,7 @@ bool CommerceHintService::ShouldSkip(const GURL& url) {
   optimization_guide::OptimizationMetadata metadata;
   auto decision = optimization_guide_decider_->CanApplyOptimization(
       url, optimization_guide::proto::SHOPPING_PAGE_PREDICTOR, &metadata);
-  VLOG(1) << "SHOPPING_PAGE_PREDICTOR = " << static_cast<int>(decision);
+  DVLOG(1) << "SHOPPING_PAGE_PREDICTOR = " << static_cast<int>(decision);
   return optimization_guide::OptimizationGuideDecision::kFalse == decision;
 }
 
@@ -118,19 +119,25 @@ void CommerceHintService::OnAddToCart(const GURL& navigation_url,
                                       const base::Optional<GURL>& cart_url) {
   if (ShouldSkip(navigation_url))
     return;
+  base::Optional<GURL> validated_cart = cart_url;
+  if (cart_url && GetDomain(*cart_url) != GetDomain(navigation_url)) {
+    DVLOG(1) << "Reject cart URL with different eTLD+1 domain.";
+    validated_cart = base::nullopt;
+  }
   cart_db::ChromeCartContentProto proto;
   ConstructCartProto(&proto, navigation_url);
-  service_->AddCart(eTLDPlusOne(navigation_url), cart_url, std::move(proto));
+  service_->AddCart(GetDomain(navigation_url), validated_cart,
+                    std::move(proto));
 }
 
 void CommerceHintService::OnRemoveCart(const GURL& url) {
-  service_->DeleteCart(eTLDPlusOne(url));
+  service_->DeleteCart(GetDomain(url));
 }
 
 void CommerceHintService::ConstructCartProto(
     cart_db::ChromeCartContentProto* proto,
     const GURL& navigation_url) {
-  const std::string& domain = eTLDPlusOne(navigation_url);
+  const std::string& domain = GetDomain(navigation_url);
   proto->set_key(domain);
   proto->set_merchant(domain);
   proto->set_merchant_cart_url(navigation_url.spec());
