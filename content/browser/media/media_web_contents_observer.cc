@@ -374,8 +374,8 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnAudioOutputSinkChanged(const std::string& hashed_device_id) {
-  media_web_contents_observer_->session_controllers_manager()
-      ->OnAudioOutputSinkChanged(media_player_id_, hashed_device_id);
+  media_web_contents_observer_->OnAudioOutputSinkChanged(media_player_id_,
+                                                         hashed_device_id);
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
