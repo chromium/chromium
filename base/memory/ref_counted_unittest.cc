@@ -693,11 +693,11 @@ TEST(RefCountedDeathTest, TestAdoptRef) {
 
 #if defined(ARCH_CPU_64_BITS)
 TEST(RefCountedDeathTest, TestOverflowCheck) {
-  EXPECT_DCHECK_DEATH({
-    auto p = base::MakeRefCounted<Overflow>();
-    p->ref_count_ = std::numeric_limits<uint32_t>::max();
-    p->AddRef();
-  });
+  auto p = base::MakeRefCounted<Overflow>();
+  p->ref_count_ = std::numeric_limits<uint32_t>::max();
+  EXPECT_CHECK_DEATH(p->AddRef());
+  // Ensure `p` doesn't leak and fail lsan builds.
+  p->ref_count_ = 1;
 }
 #endif
 
