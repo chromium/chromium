@@ -42,7 +42,7 @@ AudioWorkletHandler::AudioWorkletHandler(
   for (const auto& param_name : param_handler_map_.Keys()) {
     param_value_map_.Set(param_name,
                          std::make_unique<AudioFloatArray>(
-                             audio_utilities::kRenderQuantumFrames));
+                             GetDeferredTaskHandler().RenderQuantumFrames()));
   }
 
   for (unsigned i = 0; i < options->numberOfInputs(); ++i)

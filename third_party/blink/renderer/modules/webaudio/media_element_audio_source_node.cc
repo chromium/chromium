@@ -141,7 +141,7 @@ void MediaElementAudioSourceHandler::SetFormat(uint32_t number_of_channels,
       double scale_factor = source_sample_rate / Context()->sampleRate();
       multi_channel_resampler_.reset(new MediaMultiChannelResampler(
           number_of_channels, scale_factor,
-          audio_utilities::kRenderQuantumFrames,
+          GetDeferredTaskHandler().RenderQuantumFrames(),
           CrossThreadBindRepeating(
               &MediaElementAudioSourceHandler::ProvideResamplerInput,
               CrossThreadUnretained(this))));
