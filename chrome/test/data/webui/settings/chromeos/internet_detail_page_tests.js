@@ -319,6 +319,23 @@ suite('InternetDetailPage', function() {
       });
     });
 
+    test('Connect button disabled when not connectable and locked', function() {
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
+      const cellularNetwork =
+          getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+      cellularNetwork.connectable = false;
+      cellularNetwork.typeProperties.cellular.simLocked = true;
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      return flushAsync().then(() => {
+        const connectButton = getButton('connectDisconnect');
+        assertFalse(connectButton.hasAttribute('hidden'));
+        assertTrue(connectButton.hasAttribute('disabled'));
+      });
+    });
+
     test('Cellular Scanning', function() {
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);

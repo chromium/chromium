@@ -47,6 +47,7 @@ namespace {
 
 const int kSimRetriesLeft = 3;
 const char kCellularDevicePath[] = "/device/stub_cellular_device";
+const char kCellularIccid[] = "iccid";
 
 const char kCellularTestApn1[] = "TEST.APN1";
 const char kCellularTestApnName1[] = "Test Apn 1";
@@ -185,6 +186,9 @@ class CrosNetworkConfigTest : public testing::Test {
         kCellularDevicePath, shill::kSIMLockStatusProperty, sim_value,
         /*notify_changed=*/false);
     helper().device_test()->SetDeviceProperty(
+        kCellularDevicePath, shill::kIccidProperty, base::Value(kCellularIccid),
+        /*notify_changed=*/false);
+    helper().device_test()->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMPresentProperty, base::Value(true),
         /*notify_changed=*/false);
 
@@ -201,9 +205,9 @@ class CrosNetworkConfigTest : public testing::Test {
     helper().ConfigureService(base::StringPrintf(
         R"({"GUID": "cellular_guid", "Type": "cellular",  "State": "idle",
             "Strength": 0, "Cellular.NetworkTechnology": "LTE",
-            "Cellular.ActivationState": "activated",
+            "Cellular.ActivationState": "activated", "Cellular.ICCID": "%s",
             "Profile": "%s"})",
-        NetworkProfileHandler::GetSharedProfilePath().c_str()));
+        kCellularIccid, NetworkProfileHandler::GetSharedProfilePath().c_str()));
     helper().ConfigureService(
         R"({"GUID": "vpn_guid", "Type": "vpn", "State": "association",
             "Provider": {"Type": "l2tpipsec"}})");
@@ -913,6 +917,7 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   ASSERT_TRUE(cellular);
   EXPECT_EQ(0, cellular->signal_strength);
   EXPECT_EQ("LTE", cellular->network_technology);
+  EXPECT_TRUE(cellular->sim_locked);
   EXPECT_EQ(mojom::ActivationStateType::kActivated, cellular->activation_state);
 
   properties = GetManagedProperties("vpn_guid");

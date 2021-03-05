@@ -1266,6 +1266,7 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
 }
 
 mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
+    NetworkStateHandler* network_state_handler,
     const NetworkState* network_state,
     const std::vector<mojom::VpnProviderPtr>& vpn_providers,
     const base::Value* properties) {
@@ -1407,6 +1408,18 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           GetInt32(cellular_dict, ::onc::cellular::kSignalStrength);
       cellular->support_network_scan =
           GetBoolean(cellular_dict, ::onc::cellular::kSupportNetworkScan);
+
+      const DeviceState* cellular_device =
+          network_state_handler->GetDeviceState(network_state->device_path());
+
+      // The cellular device only tracks whether the active SIM is locked. To
+      // determine whether |network_state| is locked, we check that the SIM is
+      // active by comparing the ICCID to the device's ICCID, then we check that
+      // the device is in a locked state.
+      cellular->sim_locked = cellular_device &&
+                             cellular_device->iccid() == cellular->iccid &&
+                             cellular_device->IsSimLocked();
+
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewCellular(std::move(cellular));
       break;
@@ -2010,8 +2023,9 @@ void CrosNetworkConfig::OnGetManagedProperties(
     std::move(callback).Run(nullptr);
     return;
   }
-  mojom::ManagedPropertiesPtr managed_properties = ManagedPropertiesToMojo(
-      network_state, vpn_providers_, &properties.value());
+  mojom::ManagedPropertiesPtr managed_properties =
+      ManagedPropertiesToMojo(network_state_handler_, network_state,
+                              vpn_providers_, &properties.value());
 
   if (managed_properties->type == mojom::NetworkType::kCellular) {
     std::vector<mojom::ApnPropertiesPtr> custom_apn_list =

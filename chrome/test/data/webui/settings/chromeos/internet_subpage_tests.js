@@ -279,6 +279,34 @@ suite('InternetSubpage', function() {
           });
         });
 
+    test('Select locked SIM shows details', async () => {
+      initSubpage(false /* isUpdatedCellularUiEnabled */);
+
+      internetSubpage.globalPolicy = {
+        allowOnlyPolicyNetworksToConnect: false,
+      };
+
+      // Add cellular network with locked SIM.
+      const lockedSim = OncMojo.getDefaultNetworkState(
+          chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular1');
+      lockedSim.typeState.cellular.simLocked = true;
+      addCellularNetworks([lockedSim]);
+
+      return flushAsync().then(async () => {
+        const networkList = internetSubpage.$$('#networkList');
+        assertTrue(!!networkList);
+
+        // Selecting this network should cause the the detail page to be shown
+        // instead of initiating a connection.
+        const showDetailPromise =
+            test_util.eventToPromise('show-detail', internetSubpage);
+
+        const event = {detail: lockedSim, target: networkList};
+        networkList.fire('selected', event);
+        await showDetailPromise;
+      });
+    });
+
     test('Deep link to tether on/off toggle w/ cellular', async () => {
       initSubpage(false /* isUpdatedCellularUiEnabled */);
       const mojom = chromeos.networkConfig.mojom;
