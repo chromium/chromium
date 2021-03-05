@@ -34,7 +34,8 @@ namespace {
 const CGFloat kOffsetToPinOmnibox = 100;
 }
 
-@interface NewTabPageViewController () <NewTabPageOmniboxPositioning>
+@interface NewTabPageViewController () <NewTabPageOmniboxPositioning,
+                                        UIGestureRecognizerDelegate>
 
 // View controller representing the NTP content suggestions. These suggestions
 // include the most visited site tiles, the shortcut tiles, the fake omnibox and
@@ -130,6 +131,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   UITapGestureRecognizer* singleTapRecognizer = [[UITapGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(handleSingleTapInView:)];
+  singleTapRecognizer.delegate = self;
   [self.view addGestureRecognizer:singleTapRecognizer];
 
   // Ensures that there is never any nested scrolling, since we are nesting the
@@ -416,6 +418,19 @@ const CGFloat kOffsetToPinOmnibox = 100;
 - (void)thumbStripDisabled {
   DCHECK(self.thumbStripEnabled);
   self.panGestureHandler = nil;
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// ContentSuggestions.
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
+  CGRect discBoundsInView =
+      [self.identityDiscButton convertRect:self.identityDiscButton.bounds
+                                    toView:self.view];
+  return (
+      CGRectContainsPoint(discBoundsInView, [touch locationInView:self.view]));
 }
 
 #pragma mark - Private
