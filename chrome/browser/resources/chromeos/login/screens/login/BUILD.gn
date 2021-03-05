@@ -1,0 +1,94 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+group("closure_compile") {
+  deps = [ ":closure_compile_local" ]
+}
+
+js_type_check("closure_compile_local") {
+  uses_legacy_modules = true
+  deps = [
+    ":active_directory_password_change",
+    ":encryption_migration",
+    ":gaia_password_changed",
+    ":offline_login",
+    ":public_session_terms_of_service",
+    ":supervision_transition",
+    ":update_required_card",
+  ]
+}
+
+###############################
+# Closure compiler libraries below
+
+js_library("active_directory_password_change") {
+  deps = [
+    "../../components/oobe_dialog:oobe_dialog",
+    "../../components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}
+
+js_library("encryption_migration") {
+  deps = [
+    "../../components:login_screen_behavior",
+    "../../components:multi_step_behavior",
+    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
+    "../../components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}
+
+js_library("gaia_password_changed") {
+  deps = [
+    "../..:login_ui_tools",
+    "../../components:login_screen_behavior",
+    "../../components:multi_step_behavior",
+    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/oobe_i18n_behavior:oobe_i18n_behavior",
+    "../../components/oobe_loading_dialog:oobe_loading_dialog",
+  ]
+}
+
+js_library("offline_login") {
+  deps = [
+    "../../components:login_screen_behavior",
+    "../../components/oobe_content_dialog:oobe_content_dialog",
+    "../../components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
+    "../../components/oobe_i18n_behavior:oobe_i18n_behavior",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+  ]
+}
+
+js_library("public_session_terms_of_service") {
+  deps = [
+    "../../components:login_screen_behavior",
+    "../../components:multi_step_behavior",
+    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/oobe_i18n_behavior:oobe_i18n_behavior",
+    "../../components/oobe_loading_dialog:oobe_loading_dialog",
+  ]
+}
+
+js_library("supervision_transition") {
+  deps = [
+    "../../components:login_screen_behavior",
+    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "../../components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
+    "../../components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}
+
+js_library("update_required_card") {
+  deps = [
+    "../../components:login_screen_behavior",
+    "../../components:multi_step_behavior",
+    "../../components:oobe_modal_dialog",
+    "../../components/oobe_dialog:oobe_dialog",
+    "../../components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
+    "../../components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}

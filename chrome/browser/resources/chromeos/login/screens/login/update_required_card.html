@@ -18,9 +18,29 @@
 -->
 <dom-module id="update-required-card-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="update_required_card.css">
+    <style include="oobe-dialog-host">
+      :host .content {
+        padding: 24px 24px 16px;
+      }
 
+      :host .message {
+        margin-bottom: 25px;
+        margin-top: 20px;
+      }
+
+      #adminMessageContainer {
+        color: var(--oobe-subheader-text-color);
+      }
+
+      .bold {
+        font-weight: bold;
+      }
+
+      .update-illustration {
+        height: 264px;
+        width: 264px;
+      }
+    </style>
     <oobe-dialog has-buttons for-step="update-required-message" role="dialog"
         id="update-required-dialog" title-key="updateRequiredTitle"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
@@ -33,8 +53,8 @@
       </div>
       <div slot="footer" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-             srcset="images/1x/updating_1x.svg 1x,
-                     images/2x/updating_2x.svg 2x">
+             srcset="../../images/1x/updating_1x.svg 1x,
+                     ../../images/2x/updating_2x.svg 2x">
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button inverse on-click="onUpdateClicked_"
@@ -85,8 +105,8 @@
       </div>
       <div slot="footer" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="images/1x/updating_1x.svg 1x,
-                    images/2x/updating_2x.svg 2x">
+            srcset="../../images/1x/updating_1x.svg 1x,
+                    ../../images/2x/updating_2x.svg 2x">
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button inverse on-click="onCellularPermissionAccepted_"
@@ -108,8 +128,8 @@
       </div>
       <div slot="footer" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="images/1x/updating_1x.svg 1x,
-                    images/2x/updating_2x.svg 2x">
+            srcset="../../images/1x/updating_1x.svg 1x,
+                    ../../images/2x/updating_2x.svg 2x">
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button inverse on-click="onSelectNetworkClicked_"
@@ -147,8 +167,8 @@
           <!-- Use lock image indicating that end-of-life has been reached and
              the device is disabled for further use  -->
           <img class="update-illustration oobe-illustration"
-          srcset="images/1x/device-disabled.svg 1x,
-                  images/2x/device-disabled.svg 2x">
+          srcset="../../images/1x/device-disabled.svg 1x,
+                  ../../images/2x/device-disabled.svg 2x">
         </div>
       </div>
     </oobe-dialog>

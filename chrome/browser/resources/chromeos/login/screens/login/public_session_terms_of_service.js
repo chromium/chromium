@@ -83,9 +83,8 @@ Polymer({
 
   /**
    * This is called when strings are updated.
-   * @override
    */
-  updateLocalizedContent(event) {
+  updateLocalizedContent() {
     this.i18nUpdateLocale();
   },
 
