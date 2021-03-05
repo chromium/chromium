@@ -514,50 +514,123 @@ UNTRUSTED_TEST(
       assertDeepEquals({id: 123456789, status: 'ready'}, response);
     });
 
-// Tests that addEventListener receives system bluetooth adapter added event.
+// Tests that:
+//   1) addEventListener receives system bluetooth adapter added event.
+//   2) removeEventListener stops receiving system bluetooth adapter added
+//      event.
 UNTRUSTED_TEST('UntrustedBluetoothAdapterAddedEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener(
           'bluetooth-adapter-added', resolve));
+
+  dpsl.system_events.bluetooth.addOnAdapterAddedListener(
+      shouldNeverBeCalledCallback);
+  dpsl.system_events.bluetooth.removeOnAdapterAddedListener(
+      shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) =>
+          dpsl.system_events.bluetooth.addOnAdapterAddedListener(resolve));
 });
 
-// Tests that addEventListener receives system bluetooth adapter removed event.
+// Tests that:
+//   1) addEventListener receives system bluetooth adapter removed event.
+//   2) removeEventListener stops receiving system bluetooth adapter removed
+//      event.
 UNTRUSTED_TEST('UntrustedBluetoothAdapterRemovedEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener(
           'bluetooth-adapter-removed', resolve));
+
+  dpsl.system_events.bluetooth.addOnAdapterRemovedListener(
+      shouldNeverBeCalledCallback);
+  dpsl.system_events.bluetooth.removeOnAdapterRemovedListener(
+      shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) =>
+          dpsl.system_events.bluetooth.addOnAdapterRemovedListener(resolve));
 });
 
-// Tests that addEventListener receives system bluetooth adapter property
-// changed event.
+// Tests that:
+//   1) addEventListener receives system bluetooth adapter property changed
+//      event.
+//   2) removeEventListener stops receiving system bluetooth adapter property
+//      changed event.
 UNTRUSTED_TEST(
     'UntrustedBluetoothAdapterPropertyChangedEventListener', async () => {
       await new Promise(
           (resolve) => chromeos.telemetry.addEventListener(
               'bluetooth-adapter-property-changed', resolve));
+
+      dpsl.system_events.bluetooth.addOnAdapterPropertyChangedListener(
+          shouldNeverBeCalledCallback);
+      dpsl.system_events.bluetooth.removeOnAdapterPropertyChangedListener(
+          shouldNeverBeCalledCallback);
+
+      await new Promise(
+          (resolve) =>
+              dpsl.system_events.bluetooth.addOnAdapterPropertyChangedListener(
+                  resolve));
     });
 
-// Tests that addEventListener receives system bluetooth device added event.
+// Tests that:
+//   1) addEventListener receives system bluetooth device added event.
+//   2) removeEventListener stops receiving system bluetooth device added event.
 UNTRUSTED_TEST('UntrustedBluetoothDeviceAddedEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener(
           'bluetooth-device-added', resolve));
+
+  dpsl.system_events.bluetooth.addOnDeviceAddedListener(
+      shouldNeverBeCalledCallback);
+  dpsl.system_events.bluetooth.removeOnDeviceAddedListener(
+      shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) =>
+          dpsl.system_events.bluetooth.addOnDeviceAddedListener(resolve));
 });
 
-// Tests that addEventListener receives system bluetooth device removed event.
+// Tests that:
+//   1) addEventListener receives system bluetooth device removed event.
+//   2) removeEventListener stops receiving system bluetooth device removed
+//      event.
 UNTRUSTED_TEST('UntrustedBluetoothDeviceRemovedEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener(
           'bluetooth-device-removed', resolve));
+
+  dpsl.system_events.bluetooth.addOnDeviceRemovedListener(
+      shouldNeverBeCalledCallback);
+  dpsl.system_events.bluetooth.removeOnDeviceRemovedListener(
+      shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) =>
+          dpsl.system_events.bluetooth.addOnDeviceRemovedListener(resolve));
 });
 
-// Tests that addEventListener receives system bluetooth device property changed
-// event.
+// Tests that:
+//   1) addEventListener receives system bluetooth device property changed
+//      event.
+//   2) removeEventListener stops receiving system bluetooth device property
+//      changed event.
 UNTRUSTED_TEST(
     'UntrustedBluetoothDevicePropertyChangedEventListener', async () => {
       await new Promise(
           (resolve) => chromeos.telemetry.addEventListener(
               'bluetooth-device-property-changed', resolve));
+
+      dpsl.system_events.bluetooth.addOnDevicePropertyChangedListener(
+          shouldNeverBeCalledCallback);
+      dpsl.system_events.bluetooth.removeOnDevicePropertyChangedListener(
+          shouldNeverBeCalledCallback);
+
+      await new Promise(
+          (resolve) =>
+              dpsl.system_events.bluetooth.addOnDevicePropertyChangedListener(
+                  resolve));
     });
 
 // Tests that addEventListener receives system lid closed event.

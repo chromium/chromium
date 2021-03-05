@@ -44,6 +44,7 @@ dpsl_internal.Message = {
       'DiagnosticsService.RunBatteryChargeRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
   SYSTEM_EVENTS_SERVICE_EVENTS: 'SystemEventsService.Events',
+  DPSL_EVENTS_SERVICE_EVENTS: 'EventsService.Events',
 };
 
 /**

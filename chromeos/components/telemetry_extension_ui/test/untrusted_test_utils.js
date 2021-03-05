@@ -22,3 +22,10 @@ async function verifyErrorMessage(promise, expectedErrorMessage) {
   }
   assertEquals(expectedErrorMessage, errorMessage);
 }
+
+/**
+ * Utility function representing a callback that should never be called.
+ */
+function shouldNeverBeCalledCallback() {
+  throw new Error('This callback should never be called.');
+}
