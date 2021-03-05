@@ -3290,6 +3290,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/ApplicationLifetime.java",
     "java/src/org/chromium/chrome/browser/ChromeBackupAgentImpl.java",
     "java/src/org/chromium/chrome/browser/ChromeBackupWatcher.java",
+    "java/src/org/chromium/chrome/browser/ChromePowerModeVoter.java",
     "java/src/org/chromium/chrome/browser/DevToolsServer.java",
     "java/src/org/chromium/chrome/browser/IntentHandler.java",
     "java/src/org/chromium/chrome/browser/IntentHelper.java",

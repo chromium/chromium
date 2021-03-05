@@ -22,6 +22,9 @@ specific_include_rules = {
   "ChromeKeyboardVisibilityDelegate\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
+  "ChromePowerModeVoter\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
   "ChromeTabbedActivity\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],

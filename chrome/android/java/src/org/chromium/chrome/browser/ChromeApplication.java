@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
@@ -58,6 +59,9 @@ public class ChromeApplication extends SplitCompatApplication {
                     new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized())
                             .start();
                 }
+
+                ApplicationStatus.registerStateListenerForAllActivities(
+                        ChromePowerModeVoter.getInstance());
 
                 // Initializes the support for dynamic feature modules (browser only).
                 ModuleUtil.initApplication();
