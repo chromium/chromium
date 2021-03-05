@@ -16,6 +16,8 @@
 #include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -178,6 +180,8 @@ void FullRestoreController::SaveWindowImpl(
   window_info.restore_bounds = window_state->GetRestoreBoundsInScreen();
   window_info.current_bounds = window->GetBoundsInScreen();
   window_info.window_state_type = window_state->GetStateType();
+  window_info.display_id =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
   full_restore::SaveWindowInfo(window_info);
 
   if (g_save_window_callback_for_testing)
