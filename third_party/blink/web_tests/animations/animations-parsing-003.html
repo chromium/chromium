@@ -22,8 +22,8 @@ test(() => {
   assert_equals(computedStyle.webkitAnimationDelay, '0s');
 
   style.animationDelay = "0s";
-  assert_not_equals(Object.keys(style).indexOf('animationDelay'), -1);
-  assert_not_equals(Object.keys(style).indexOf('webkitAnimationDelay'), -1);
+  assert_true("animationDelay" in style);
+  assert_true("webkitAnimationDelay" in style);
   assert_equals(style.animationDelay, '0s');
   assert_equals(computedStyle.animationDelay, '0s');
   assert_equals(style.webkitAnimationDelay, '0s');
@@ -103,8 +103,8 @@ test(() => {
   assert_equals(computedStyle.webkitAnimationIterationCount, '1');
 
   style.animationIterationCount = "4";
-  assert_not_equals(Object.keys(style).indexOf('animationIterationCount'), -1);
-  assert_not_equals(Object.keys(style).indexOf('webkitAnimationIterationCount'), -1);
+  assert_true("animationIterationCount" in style);
+  assert_true("webkitAnimationIterationCount" in style);
   assert_equals(style.animationIterationCount, '4');
   assert_equals(computedStyle.animationIterationCount, '4');
   assert_equals(style.webkitAnimationIterationCount, '4');

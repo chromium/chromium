@@ -95,16 +95,13 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   virtual bool CssPropertyMatches(CSSPropertyID, const CSSValue&) const = 0;
   virtual CSSStyleSheet* ParentStyleSheet() const { return nullptr; }
 
-  String AnonymousNamedGetter(const AtomicString& name);
-  // Note: AnonymousNamedSetter() can end up throwing an exception via
-  // SetPropertyInternal() even though it does not take an |ExceptionState| as
-  // an argument (see bug 829408).
-  NamedPropertySetterResult AnonymousNamedSetter(ScriptState*,
-                                                 const AtomicString& name,
-                                                 const String& value);
-  NamedPropertyDeleterResult AnonymousNamedDeleter(const AtomicString& name);
-  void NamedPropertyEnumerator(Vector<String>& names, ExceptionState&);
-  bool NamedPropertyQuery(const AtomicString&, ExceptionState&);
+  // Attributes with the "CSSProperty" extended attribute result in
+  // calls to Get/SetPropertyAttribute.
+  String GetPropertyAttribute(const AtomicString& name);
+  void SetPropertyAttribute(const ExecutionContext*,
+                            const AtomicString& name,
+                            const String& value,
+                            ExceptionState& exception_state);
 
  protected:
   CSSStyleDeclaration(ExecutionContext* context)

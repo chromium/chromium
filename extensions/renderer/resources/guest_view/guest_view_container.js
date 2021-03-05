@@ -7,6 +7,8 @@
 
 var $parseInt = require('safeMethods').SafeMethods.$parseInt;
 var $getComputedStyle = require('safeMethods').SafeMethods.$getComputedStyle;
+var $CSSStyleDeclaration =
+    require('safeMethods').SafeMethods.$CSSStyleDeclaration;
 var $Document = require('safeMethods').SafeMethods.$Document;
 var $Element = require('safeMethods').SafeMethods.$Element;
 var $EventTarget = require('safeMethods').SafeMethods.$EventTarget;
@@ -71,9 +73,9 @@ GuestViewContainer.prototype.createInternalElement = function() {
   var iframeElement = $Document.createElement(document, 'iframe');
 
   var style = $HTMLElement.style.get(iframeElement);
-  $Object.defineProperty(style, 'width', {value: '100%'});
-  $Object.defineProperty(style, 'height', {value: '100%'});
-  $Object.defineProperty(style, 'border', {value: '0px'});
+  $CSSStyleDeclaration.setProperty(style, 'width', '100%');
+  $CSSStyleDeclaration.setProperty(style, 'height', '100%');
+  $CSSStyleDeclaration.setProperty(style, 'border', '0px');
 
   return iframeElement;
 };

@@ -56,7 +56,7 @@ expect_static_member = (member_name, get_value_func) => {
 expect_style_member = (member_name) => {
   var testObject = document.createElement('div');
   var testInterface = testObject.style;
-  assert_own_property(testInterface, member_name);
+  assert_true(member_name in testInterface);
 }
 
 // Verify that the CSS supports return true for given member and value, and

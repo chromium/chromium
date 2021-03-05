@@ -1,0 +1,23 @@
+{% from 'templates/macros.tmpl' import license %}
+{{license()}}
+
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration_attributes.h"
+
+namespace blink {
+
+{% for property in properties %}
+void CSSStyleDeclarationAttributes::set{{property.name.to_upper_camel_case()}}(
+    ExecutionContext* execution_context, CSSStyleDeclaration& declaration,
+    const String& value, ExceptionState& exception_state) {
+  declaration.setProperty(
+      execution_context, "{{property.name}}", value, g_null_atom, exception_state);
+}
+
+String CSSStyleDeclarationAttributes::{{property.name.to_lower_camel_case()}}(
+    CSSStyleDeclaration& declaration) {
+  return declaration.getPropertyValue("{{property.name}}");
+}
+{% endfor %}
+
+} // namespace blink

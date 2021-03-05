@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1522 tests; 1495 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1522 tests; 1504 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS -apple-color-filter: _camel_cased_attribute v. CSS.supports
 PASS -apple-color-filter: _webkit_cased_attribute must only exist for -webkit-
 PASS -apple-color-filter: _dashed_attribute v. CSS.supports
@@ -12,31 +12,31 @@ PASS -apple-pay-button-type: _dashed_attribute v. CSS.supports
 PASS -apple-trailing-word: _camel_cased_attribute v. CSS.supports
 PASS -apple-trailing-word: _webkit_cased_attribute must only exist for -webkit-
 PASS -apple-trailing-word: _dashed_attribute v. CSS.supports
-FAIL -epub-caption-side: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-caption-side: _camel_cased_attribute v. CSS.supports
 PASS -epub-caption-side: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-caption-side: _dashed_attribute v. CSS.supports
-FAIL -epub-text-combine: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-combine: _camel_cased_attribute v. CSS.supports
 PASS -epub-text-combine: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-text-combine: _dashed_attribute v. CSS.supports
-FAIL -epub-text-emphasis: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-emphasis: _camel_cased_attribute v. CSS.supports
 PASS -epub-text-emphasis: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-text-emphasis: _dashed_attribute v. CSS.supports
-FAIL -epub-text-emphasis-color: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-emphasis-color: _camel_cased_attribute v. CSS.supports
 PASS -epub-text-emphasis-color: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-text-emphasis-color: _dashed_attribute v. CSS.supports
-FAIL -epub-text-emphasis-style: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-emphasis-style: _camel_cased_attribute v. CSS.supports
 PASS -epub-text-emphasis-style: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-text-emphasis-style: _dashed_attribute v. CSS.supports
-FAIL -epub-text-orientation: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-orientation: _camel_cased_attribute v. CSS.supports
 PASS -epub-text-orientation: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-text-orientation: _dashed_attribute v. CSS.supports
-FAIL -epub-text-transform: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-transform: _camel_cased_attribute v. CSS.supports
 PASS -epub-text-transform: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-text-transform: _dashed_attribute v. CSS.supports
-FAIL -epub-word-break: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-word-break: _camel_cased_attribute v. CSS.supports
 PASS -epub-word-break: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-word-break: _dashed_attribute v. CSS.supports
-FAIL -epub-writing-mode: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-writing-mode: _camel_cased_attribute v. CSS.supports
 PASS -epub-writing-mode: _webkit_cased_attribute must only exist for -webkit-
 PASS -epub-writing-mode: _dashed_attribute v. CSS.supports
 PASS -moz-animation: _camel_cased_attribute v. CSS.supports

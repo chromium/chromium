@@ -657,6 +657,30 @@ css_properties("make_core_generated_css_property_names") {
   ]
 }
 
+css_properties("make_core_generated_css_style_declaration_attributes") {
+  script = "../build/scripts/core/css/make_css_style_declaration_attributes.py"
+  other_inputs = [
+    "../build/scripts/core/css/templates/css_style_declaration_attributes.h.tmpl",
+    "../build/scripts/core/css/templates/css_style_declaration_attributes.cc.tmpl",
+  ]
+  outputs = [
+    "$blink_core_output_dir/css/css_style_declaration_attributes.h",
+    "$blink_core_output_dir/css/css_style_declaration_attributes.cc",
+  ]
+}
+
+css_properties("make_core_generated_css_style_declaration_attributes_idl") {
+  script =
+      "../build/scripts/core/css/make_css_style_declaration_attributes_idl.py"
+  other_inputs = [ "../build/scripts/core/css/templates/css_style_declaration_attributes.idl.tmpl" ]
+  outputs =
+      [ "$blink_core_output_dir/css/css_style_declaration_attributes.idl" ]
+}
+
+group("generated_css_idls") {
+  public_deps = [ ":make_core_generated_css_style_declaration_attributes_idl" ]
+}
+
 code_generator("make_core_generated_atrule_names") {
   script = "../build/scripts/core/css/parser/make_atrule_names.py"
   json_inputs = [ "css/parser/at_rule_names.json5" ]
@@ -1047,6 +1071,7 @@ targets_generating_sources = [
   ":make_core_generated_css_primitive_value_unit_trie",
   ":make_core_generated_css_property_instances",
   ":make_core_generated_css_property_names",
+  ":make_core_generated_css_style_declaration_attributes",
   ":make_core_generated_css_subclasses",
   ":make_core_generated_css_value_id_mappings",
   ":make_core_generated_css_value_keywords",

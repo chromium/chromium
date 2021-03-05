@@ -425,9 +425,7 @@ void CSSPropertyAttributeGet(const v8::FunctionCallbackInfo<v8::Value>& info) {
       V8CSSStyleDeclaration::ToWrappableUnsafe(info.This());
   const char* property_name =
       reinterpret_cast<const char*>(info.Data().As<v8::External>()->Value());
-  // TODO(andruud): AnonymousNamedGetter is not the best function.  Change the
-  // function to a more appropriate one.
-  auto&& return_value = blink_receiver->AnonymousNamedGetter(property_name);
+  auto&& return_value = blink_receiver->GetPropertyAttribute(property_name);
   bindings::V8SetReturnValue(info, return_value, info.GetIsolate(),
                              bindings::V8ReturnValue::kNonNullable);
 }
@@ -454,12 +452,10 @@ void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
   v8::Local<v8::Context> receiver_context = v8_receiver->CreationContext();
-  ScriptState* receiver_script_state = ScriptState::From(receiver_context);
-  // TODO(andruud): AnonymousNamedSetter is not the best function.  Change the
-  // function to a more appropriate one.  It's better to pass |exception_state|
-  // as the implementation of AnonymousNamedSetter needs it.
-  blink_receiver->AnonymousNamedSetter(receiver_script_state, property_name,
-                                       arg1_value);
+  ExecutionContext* execution_context =
+      ExecutionContext::From(receiver_context);
+  blink_receiver->SetPropertyAttribute(execution_context, property_name,
+                                       arg1_value, exception_state);
 }
 
 template <typename IDLType,

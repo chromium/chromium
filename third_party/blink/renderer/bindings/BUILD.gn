@@ -94,6 +94,10 @@ collect_idl_files("web_idl_in_core") {
   component = "core"
 
   inputs = static_idl_files_in_core
+  inputs += get_path_info(
+          [ "$root_gen_dir/third_party/blink/renderer/core/css/css_style_declaration_attributes.idl" ],
+          "abspath")
+  deps = [ "//third_party/blink/renderer/core:generated_css_idls" ]
 
   output = "${bindings_output_dir}/web_idl_in_core.pickle"
 }

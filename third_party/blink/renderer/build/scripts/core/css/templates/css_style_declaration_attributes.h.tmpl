@@ -1,0 +1,33 @@
+{% from 'templates/macros.tmpl' import license %}
+{{license()}}
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_DECLARATION_ATTRIBUTES_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_DECLARATION_ATTRIBUTES_H_
+
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace blink {
+
+class CSSStyleDeclaration;
+class ExecutionContext;
+class ExceptionState;
+
+// This class should only contain functions for attributes that _don't_ use
+// the "CSSProperty" extended attribute.
+//
+// See css_style_declaration_idl.tmpl for more information.
+class CSSStyleDeclarationAttributes {
+  STATIC_ONLY(CSSStyleDeclarationAttributes);
+ public:
+
+{% for property in properties %}
+  // {{property['runtime_flag']}}
+  static void set{{property.name.to_upper_camel_case()}}(ExecutionContext*, CSSStyleDeclaration&, const String&, ExceptionState&);
+  static String {{property.name.to_lower_camel_case()}}(CSSStyleDeclaration&);
+{% endfor %}
+
+}; // CSSStyleDeclarationAttributes
+
+} // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_DECLARATION_ATTRIBUTES_H_

@@ -39,6 +39,7 @@ function saveAccessors(original, safe, properties) {
 }
 
 var SafeMethods = {
+  $CSSStyleDeclaration: {},
   $CustomElementRegistry: {},
   $Document: {},
   $Element: {},
@@ -50,6 +51,10 @@ var SafeMethods = {
   $getComputedStyle: window.getComputedStyle,
   $parseInt: window.parseInt,
 };
+
+saveMethods(CSSStyleDeclaration, SafeMethods.$CSSStyleDeclaration, [
+  'setProperty',
+]);
 
 saveMethods(CustomElementRegistry, SafeMethods.$CustomElementRegistry, [
   'define',
