@@ -60,6 +60,7 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
       std::unique_ptr<ProjectorMetadataController> metadata_controller);
 
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
+  bool is_eligible() const { return is_speech_recognition_available_; }
 
  private:
   // Starts or stops the speech recognition session.

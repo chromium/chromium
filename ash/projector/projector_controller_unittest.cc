@@ -162,4 +162,12 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
   NotifyControllerForPartialSpeechResult(controller_.get());
 }
 
+TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailable) {
+  controller_->OnSpeechRecognitionAvailable(true);
+  EXPECT_TRUE(controller_->is_eligible());
+
+  controller_->OnSpeechRecognitionAvailable(false);
+  EXPECT_FALSE(controller_->is_eligible());
+}
+
 }  // namespace ash
