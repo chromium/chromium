@@ -5,13 +5,11 @@
 #include "chrome/browser/ui/views/extensions/print_job_confirmation_dialog_view.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -46,36 +44,21 @@ void PrintJobConfirmationDialogView::Show(
   // constrained_window::CreateBrowserModalDialogViews() (see below).
   BrowserView* const browser_view =
       parent ? BrowserView::GetBrowserViewForNativeWindow(parent) : nullptr;
-  ToolbarActionView* anchor_view = nullptr;
   ExtensionsToolbarContainer* const container =
       browser_view ? browser_view->toolbar_button_provider()
                          ->GetExtensionsToolbarContainer()
                    : nullptr;
-  if (container) {
-    anchor_view = container->GetViewForId(extension_id);
-  } else if (browser_view &&
-             !base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    BrowserActionsContainer* const browser_actions_container =
-        browser_view->toolbar_button_provider()->GetBrowserActionsContainer();
-    ToolbarActionView* const reference_view =
-        browser_actions_container
-            ? browser_actions_container->GetViewForId(extension_id)
-            : nullptr;
-    if (reference_view && reference_view->GetVisible())
-      anchor_view = reference_view;
-  }
+  ToolbarActionView* anchor_view =
+      container ? container->GetViewForId(extension_id) : nullptr;
+
   auto* print_job_confirmation_dialog_view = new PrintJobConfirmationDialogView(
       anchor_view, extension_name, extension_icon, print_job_title,
       printer_name, std::move(callback));
   if (anchor_view) {
+    DCHECK(container);
     views::Widget* const widget = views::BubbleDialogDelegateView::CreateBubble(
         print_job_confirmation_dialog_view);
-    if (container) {
-      container->ShowWidgetForExtension(widget, extension_id);
-    } else {
-      DCHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
-      widget->Show();
-    }
+    container->ShowWidgetForExtension(widget, extension_id);
   } else {
     constrained_window::CreateBrowserModalDialogViews(
         print_job_confirmation_dialog_view, parent)
