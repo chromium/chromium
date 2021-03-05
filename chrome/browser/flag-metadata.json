@@ -3646,6 +3646,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "notifications-via-helper-app",
+    "owners": [ "knollr", "peter" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "ntp-cache-one-google-bar",
     "owners": [ "aee", "mahmadi", "tiborg" ],
     "expiry_milestone": 92

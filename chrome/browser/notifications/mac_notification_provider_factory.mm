@@ -4,6 +4,8 @@
 
 #include "chrome/browser/notifications/mac_notification_provider_factory.h"
 
+#include "chrome/browser/service_sandbox_type.h"
+#include "chrome/common/child_process_host_flags.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
 
@@ -15,10 +17,9 @@ LaunchOutOfProcessProvider() {
   return content::ServiceProcessHost::Launch<
       mac_notifications::mojom::MacNotificationProvider>(
       content::ServiceProcessHost::Options()
+          .WithDisplayName("Notification Service")
           .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-          // TODO(knollr): Set the correct flags so the helper launches via
-          // the app which has set the alert notifications style:
-          //.WithChildFlags(chrome::kChildProcessHelperAlerts)
+          .WithChildFlags(chrome::kChildProcessHelperAlerts)
           .Pass());
 }
 

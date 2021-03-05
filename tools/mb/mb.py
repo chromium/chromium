@@ -1408,6 +1408,7 @@ class MetaBuildWrapper(object):
               'ChromiumUpdater.app/',
               'Content Shell.app/',
               'Google Chrome Framework.framework/',
+              'Google Chrome Helper (Alerts).app/',
               'Google Chrome Helper (GPU).app/',
               'Google Chrome Helper (Plugin).app/',
               'Google Chrome Helper (Renderer).app/',

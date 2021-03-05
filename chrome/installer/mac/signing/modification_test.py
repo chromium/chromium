@@ -21,8 +21,15 @@ def plist_read(*args):
         },
         '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/XPCServices/AlertNotificationService.xpc/Contents/Info.plist':
             {
-                'CFBundleIdentifier':
-                    bundle_id + '.AlertNotificationService.xpc'
+                'CFBundleIdentifier': bundle_id + '.AlertNotificationService'
+            },
+        '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Info.plist':
+            {
+                'CFBundleIdentifier': bundle_id + '.AlertNotificationService'
+            },
+        '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Resources/base.lproj/InfoPlist.strings':
+            {
+                'CFBundleDisplayName': 'Product'
             },
         '/$W/app-entitlements.plist': {
             'com.apple.application-identifier': bundle_id
@@ -383,7 +390,7 @@ class TestModification(unittest.TestCase):
             ),
         ])
 
-        self.assertEqual(6, kwargs['copy_files'].call_count)
+        self.assertEqual(7, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
@@ -398,20 +405,35 @@ class TestModification(unittest.TestCase):
                       '/$W/App Product Canary.app/Contents/Resources/app.icns'),
             mock.call(
                 '/$I/Product Packaging/document_canary.icns',
-                '/$W/App Product Canary.app/Contents/Resources/document.icns')
+                '/$W/App Product Canary.app/Contents/Resources/document.icns'),
+            mock.call(
+                '/$I/Product Packaging/app_canary.icns',
+                '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Resources/app.icns'
+            )
         ])
         kwargs['write_file'].assert_called_once_with(
             '/$W/App Product Canary.app/Contents/PkgInfo', 'APPLMooo')
 
-        self.assertEqual(7, kwargs['write_plist'].call_count)
+        self.assertEqual(9, kwargs['write_plist'].call_count)
         kwargs['write_plist'].assert_has_calls([
             mock.call(
                 {
                     'CFBundleIdentifier':
-                        'test.signing.bundle_id.canary.AlertNotificationService.xpc'
+                        'test.signing.bundle_id.canary.AlertNotificationService'
                 },
                 '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/XPCServices/AlertNotificationService.xpc/Contents/Info.plist',
                 'xml1'),
+            mock.call(
+                {
+                    'CFBundleIdentifier':
+                        'test.signing.bundle_id.canary.AlertNotificationService'
+                },
+                '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Info.plist',
+                'xml1'),
+            mock.call({
+                'CFBundleDisplayName': 'Product Canary'
+            }, '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Resources/base.lproj/InfoPlist.strings',
+                      'binary1'),
             mock.call(
                 {
                     'CFBundleDisplayName': 'Product Canary',

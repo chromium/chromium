@@ -109,6 +109,14 @@ def get_parts(config):
                 CodeSignOptions.HARDENED_RUNTIME,
                 entitlements='helper-plugin-entitlements.plist',
                 verify_options=verify_options),
+        'helper-alerts':
+            CodeSignedProduct(
+                '{0.framework_dir}/Helpers/{0.product} Helper (Alerts).app'
+                .format(config),
+                '{}.framework.AlertNotificationService'.format(
+                    config.base_bundle_id),
+                options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+                verify_options=verify_options),
         'app-mode-app':
             CodeSignedProduct(
                 '{.framework_dir}/Helpers/app_mode_loader'.format(config),

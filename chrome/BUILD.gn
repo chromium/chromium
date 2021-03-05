@@ -560,15 +560,20 @@ if (is_win) {
     }
   }
 
+  bundle_data("chrome_app_icon") {
+    sources = [ "app/theme/$branding_path_component/mac/app.icns" ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+
   bundle_data("chrome_resources") {
     sources = [
       "$root_out_dir/$chrome_mac_bundle_id.manifest",
-      "app/theme/$branding_path_component/mac/app.icns",
       "app/theme/$branding_path_component/mac/document.icns",
       "browser/ui/cocoa/applescript/scripting.sdef",
     ]
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
     public_deps = [
+      ":chrome_app_icon",
       ":chrome_app_strings",
       "//components/policy:chrome_manifest_bundle",
     ]
@@ -649,7 +654,12 @@ if (is_win) {
 
       output_name = chrome_helper_name + invoker.helper_name_suffix
 
-      info_plist_target = ":chrome_helper_plist"
+      if (defined(invoker.info_plist_target)) {
+        info_plist_target = invoker.info_plist_target
+      } else {
+        info_plist_target = ":chrome_helper_plist"
+      }
+
       extra_substitutions = [
         "CHROMIUM_BUNDLE_ID=$chrome_mac_bundle_id",
         "CHROMIUM_SHORT_NAME=$chrome_product_short_name",
@@ -667,6 +677,10 @@ if (is_win) {
         "//chrome/common:version_header",
         "//sandbox/mac:seatbelt",
       ]
+
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
 
       ldflags = []
 
@@ -690,16 +704,77 @@ if (is_win) {
     }
   }
 
-  foreach(helper_params, content_mac_helpers) {
-    _helper_target = helper_params[0]
-    _helper_bundle_id = helper_params[1]
-    _helper_suffix = helper_params[2]
-    chrome_helper_app("chrome_helper_app_${_helper_target}") {
-      helper_name_suffix = _helper_suffix
-      helper_bundle_id_suffix = _helper_bundle_id
-    }
+  # The following *_helper_params are added to the ones provided by //content
+  # listed in content_mac_helpers (see //content/public/app/mac_helpers.gni).
+  # These allow //chrome to add custom helper apps in addition to the ones
+  # provided by //content. The params here have the same form as the content
+  # helpers and are defined as a tuple of these elements:
+  #   target name - A short name to be used when defining the target for that
+  #                 helper variant.
+  #   bundle ID suffix - A string fragment to append to the CFBundleIdentifier of
+  #                      the helper.
+  #   app name suffix - A string fragment to append to the outer bundle name as
+  #                     well as the inner executable. This should be reflected in
+  #                     the target's output_name.
 
-    if (verify_dynamic_libraries) {
+  # Helper app to display alert notifications. This is necessary as an app can
+  # only display either banner or alert style notifications and the main app
+  # will display banners.
+  alert_helper_params = [
+    "alerts",
+    ".alerts",
+    " (Alerts)",
+  ]
+
+  # Merge all helper apps needed by //content and //chrome.
+  chrome_mac_helpers = content_mac_helpers + [ alert_helper_params ]
+
+  # Create all helper apps required by //content.
+  foreach(helper_params, content_mac_helpers) {
+    chrome_helper_app("chrome_helper_app_${helper_params[0]}") {
+      helper_name_suffix = helper_params[2]
+      helper_bundle_id_suffix = helper_params[1]
+    }
+  }
+
+  # Create app for the alert helper manually here as we want to modify the plist
+  # to set the alert style and add the app icon to its resources.
+  tweak_info_plist("chrome_helper_app_alerts_plist") {
+    deps = [ ":chrome_helper_plist" ]
+    info_plists = get_target_outputs(":chrome_helper_plist") +
+                  [ "app/helper-alerts-Info.plist" ]
+  }
+
+  # Create and bundle an InfoPlist.strings for the alert helper app.
+  # TODO(crbug.com/1182393): Disambiguate and localize alert helper app name.
+  compile_plist("chrome_helper_app_alerts_plist_strings") {
+    format = "binary1"
+    plist_templates = [ "app/helper-alerts-InfoPlist.strings" ]
+    substitutions = [ "CHROMIUM_FULL_NAME=$chrome_product_full_name" ]
+    output_name = "$target_gen_dir/helper_alerts_infoplist_strings/base.lproj/InfoPlist.strings"
+  }
+  bundle_data("chrome_helper_app_alerts_resources") {
+    sources = get_target_outputs(":chrome_helper_app_alerts_plist_strings")
+    outputs = [ "{{bundle_resources_dir}}/base.lproj/{{source_file_part}}" ]
+    public_deps = [ ":chrome_helper_app_alerts_plist_strings" ]
+  }
+
+  chrome_helper_app("chrome_helper_app_${alert_helper_params[0]}") {
+    helper_name_suffix = alert_helper_params[2]
+    helper_bundle_id_suffix = alert_helper_params[1]
+    info_plist_target = ":chrome_helper_app_alerts_plist"
+    deps = [
+      ":chrome_app_icon",
+      ":chrome_helper_app_alerts_resources",
+    ]
+  }
+
+  if (verify_dynamic_libraries) {
+    foreach(helper_params, chrome_mac_helpers) {
+      _helper_target = helper_params[0]
+      _helper_bundle_id = helper_params[1]
+      _helper_suffix = helper_params[2]
+
       action("verify_libraries_chrome_helper_app_${_helper_target}") {
         script = "//chrome/tools/build/mac/verify_dynamic_libraries.py"
         inputs = [ "${root_out_dir}/${chrome_helper_name}${_helper_suffix}.app/Contents/MacOS/${chrome_helper_name}${_helper_suffix}" ]
@@ -737,7 +812,7 @@ if (is_win) {
       "//components/crash/core/app:chrome_crashpad_handler",
     ]
 
-    foreach(helper_params, content_mac_helpers) {
+    foreach(helper_params, chrome_mac_helpers) {
       sources +=
           [ "$root_out_dir/${chrome_helper_name}${helper_params[2]}.app" ]
       public_deps += [ ":chrome_helper_app_${helper_params[0]}" ]
@@ -1119,7 +1194,7 @@ if (is_win) {
       _framework_binary_path,
     ]
 
-    foreach(helper_params, content_mac_helpers) {
+    foreach(helper_params, chrome_mac_helpers) {
       _chrome_symbols_sources += [ "$root_out_dir/${chrome_helper_name}${helper_params[2]}.app/Contents/MacOS/${chrome_helper_name}${helper_params[2]}" ]
     }
 
@@ -1153,7 +1228,7 @@ if (is_win) {
         "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
       ]
 
-      foreach(helper_params, content_mac_helpers) {
+      foreach(helper_params, chrome_mac_helpers) {
         deps += [ ":chrome_helper_app_${helper_params[0]}" ]
       }
     }
@@ -1187,7 +1262,7 @@ if (is_win) {
         "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
       ]
 
-      foreach(helper_params, content_mac_helpers) {
+      foreach(helper_params, chrome_mac_helpers) {
         _dsyms +=
             [ "$root_out_dir/${chrome_helper_name}${helper_params[2]}.dSYM" ]
         deps += [ ":chrome_helper_app_${helper_params[0]}" ]
