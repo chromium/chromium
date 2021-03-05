@@ -95,6 +95,19 @@ StyleResolverState::StyleResolverState(
                          parent_style,
                          layout_parent_style) {}
 
+StyleResolverState::StyleResolverState(Document& document,
+                                       Element& element,
+                                       const StyleRequest& style_request)
+    : StyleResolverState(document,
+                         element,
+                         element.GetPseudoElement(style_request.pseudo_id),
+                         style_request.type,
+                         style_request.IsPseudoStyleRequest()
+                             ? ElementType::kPseudoElement
+                             : ElementType::kElement,
+                         style_request.parent_override,
+                         style_request.layout_parent_override) {}
+
 StyleResolverState::~StyleResolverState() {
   // For performance reasons, explicitly clear HeapVectors and
   // HeapHashMaps to avoid giving a pressure on Oilpan's GC.
@@ -110,6 +123,10 @@ void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
 }
 
 scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
+  if (had_no_matched_properties_ &&
+      pseudo_request_type_ == PseudoElementStyleRequest::kForRenderer) {
+    return nullptr;
+  }
   return std::move(style_);
 }
 

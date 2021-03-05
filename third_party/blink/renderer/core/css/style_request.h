@@ -65,11 +65,6 @@ class StyleRequest {
         type(request_type),
         scrollbar_part(kNoPart),
         scrollbar(nullptr) {}
-
-  // The spec disallows inheritance for ::backdrop.
-  bool AllowsInheritance(const ComputedStyle* parent_style) const {
-    return parent_style && pseudo_id != kPseudoIdBackdrop;
-  }
 };
 
 // TODO(andruud): Callers should use StyleRequest directly.

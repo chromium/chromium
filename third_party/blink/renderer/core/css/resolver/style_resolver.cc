@@ -701,6 +701,19 @@ static void UpdateAnimationBaseComputedStyle(StyleResolverState& state,
                                               std::move(important_set));
 }
 
+static void IncrementResolvedStyleCounters(const StyleRequest& style_request,
+                                           Document& document) {
+  document.GetStyleEngine().IncStyleForElementCount();
+
+  if (style_request.IsPseudoStyleRequest()) {
+    INCREMENT_STYLE_STATS_COUNTER(document.GetStyleEngine(),
+                                  pseudo_elements_styled, 1);
+  } else {
+    INCREMENT_STYLE_STATS_COUNTER(document.GetStyleEngine(), elements_styled,
+                                  1);
+  }
+}
+
 scoped_refptr<ComputedStyle> StyleResolver::StyleForElement(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
@@ -721,45 +734,47 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   DCHECK(GetDocument().GetFrame());
   DCHECK(GetDocument().GetSettings());
 
-  GetDocument().GetStyleEngine().IncStyleForElementCount();
-  INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(), elements_styled,
-                                1);
-
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-  StyleResolverState state(GetDocument(), *element,
-                           style_request.parent_override,
-                           style_request.layout_parent_override);
+  StyleResolverState state(GetDocument(), *element, style_request);
 
-  // This function can return different results with different last 3 params,
-  // but we can only cache one base computed style for animations, thus we cache
-  // only when this function is called with default last 3 params.
   bool can_cache_animation_base_computed_style =
-      !style_request.parent_override && !style_request.layout_parent_override &&
-      style_request.matching_behavior == kMatchAllRules;
+      style_request.IsPseudoStyleRequest() ||
+      (!style_request.parent_override &&
+       !style_request.layout_parent_override &&
+       style_request.matching_behavior == kMatchAllRules);
   state.SetCanCacheBaseStyle(can_cache_animation_base_computed_style);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
-  ApplyBaseStyle(element, style_recalc_context, state, cascade,
+  ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade,
                  cascade.MutableMatchResult(), style_request.matching_behavior,
                  can_cache_animation_base_computed_style);
+
+  if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties())
+    return state.TakeStyle();
 
   if (ApplyAnimatedStyle(state, cascade)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   styles_animated, 1);
-    StyleAdjuster::AdjustComputedStyle(state, element);
+    StyleAdjuster::AdjustComputedStyle(
+        state, style_request.IsPseudoStyleRequest() ? nullptr : element);
   }
 
-  if (IsA<HTMLBodyElement>(*element)) {
-    GetDocument().GetTextLinkColors().SetTextColor(
-        state.Style()->GetCurrentColor());
+  IncrementResolvedStyleCounters(style_request, GetDocument());
+
+  if (!style_request.IsPseudoStyleRequest()) {
+    if (IsA<HTMLBodyElement>(*element)) {
+      GetDocument().GetTextLinkColors().SetTextColor(
+          state.Style()->GetCurrentColor());
+    }
+
+    if (element->IsMathMLElement())
+      ApplyMathMLCustomStyleProperties(element, state);
   }
 
-  if (element->IsMathMLElement())
-    ApplyMathMLCustomStyleProperties(element, state);
-
-  SetAnimationUpdateIfNeeded(state, *element);
+  if (Element* animating_element = state.GetAnimatingElement())
+    SetAnimationUpdateIfNeeded(state, *animating_element);
 
   if (state.Style()->HasViewportUnits())
     GetDocument().SetHasViewportUnits();
@@ -776,19 +791,28 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   return state.TakeStyle();
 }
 
-void StyleResolver::InitStyleAndApplyInheritance(Element& element,
-                                                 StyleResolverState& state) {
-  if (state.ParentStyle()) {
+static bool AllowsInheritance(const StyleRequest& style_request,
+                              const ComputedStyle* parent_style) {
+  // The spec disallows inheritance for ::backdrop.
+  return parent_style && style_request.pseudo_id != kPseudoIdBackdrop;
+}
+
+void StyleResolver::InitStyleAndApplyInheritance(
+    Element& element,
+    const StyleRequest& style_request,
+    StyleResolverState& state) {
+  if (AllowsInheritance(style_request, state.ParentStyle())) {
     scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
-    style->InheritFrom(*state.ParentStyle(),
-                       IsAtShadowBoundary(&element)
-                           ? ComputedStyle::kAtShadowBoundary
-                           : ComputedStyle::kNotAtShadowBoundary);
+    style->InheritFrom(
+        *state.ParentStyle(),
+        (!style_request.IsPseudoStyleRequest() && IsAtShadowBoundary(&element))
+            ? ComputedStyle::kAtShadowBoundary
+            : ComputedStyle::kNotAtShadowBoundary);
     state.SetStyle(std::move(style));
 
     // contenteditable attribute (implemented by -webkit-user-modify) should
     // be propagated from shadow host to distributed node.
-    if (element.AssignedSlot()) {
+    if (!style_request.IsPseudoStyleRequest() && element.AssignedSlot()) {
       if (Element* parent = element.parentElement()) {
         if (const ComputedStyle* shadow_host_style = parent->GetComputedStyle())
           state.Style()->SetUserModify(shadow_host_style->UserModify());
@@ -798,7 +822,8 @@ void StyleResolver::InitStyleAndApplyInheritance(Element& element,
     state.SetStyle(InitialStyleForElement(GetDocument()));
     state.SetParentStyle(ComputedStyle::Clone(*state.Style()));
     state.SetLayoutParentStyle(state.ParentStyle());
-    if (element != GetDocument().documentElement()) {
+    if (!style_request.IsPseudoStyleRequest() &&
+        element != GetDocument().documentElement()) {
       // Strictly, we should only allow the root element to inherit from
       // initial styles, but we allow getComputedStyle() for connected
       // elements outside the flat tree rooted at an unassigned shadow host
@@ -809,8 +834,9 @@ void StyleResolver::InitStyleAndApplyInheritance(Element& element,
       state.Style()->SetIsEnsuredOutsideFlatTree();
     }
   }
+  state.Style()->SetStyleType(style_request.pseudo_id);
 
-  if (element.IsLink()) {
+  if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
     state.Style()->SetIsLink();
     EInsideLink link_state = state.ElementLinkState();
     if (link_state != EInsideLink::kNotInsideLink) {
@@ -858,17 +884,20 @@ void StyleResolver::ApplyMathMLCustomStyleProperties(
 void StyleResolver::ApplyBaseStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
+    const StyleRequest& style_request,
     StyleResolverState& state,
     StyleCascade& cascade,
     MatchResult& match_result,
     RuleMatchingBehavior matching_behavior,
     bool can_cache_animation_base_computed_style) {
+  DCHECK(style_request.pseudo_id != kPseudoIdFirstLineInherited);
+
   bool base_is_usable = can_cache_animation_base_computed_style &&
                         CanReuseBaseComputedStyle(state);
   const ComputedStyle* animation_base_computed_style =
       base_is_usable ? CachedAnimationBaseComputedStyle(state) : nullptr;
   if (ShouldComputeBaseComputedStyle(animation_base_computed_style)) {
-    InitStyleAndApplyInheritance(*element, state);
+    InitStyleAndApplyInheritance(*element, style_request, state);
 
     GetDocument().GetStyleEngine().EnsureUAStyleForElement(*element);
 
@@ -879,7 +908,8 @@ void StyleResolver::ApplyBaseStyle(
     // get a higher priority.
     //
     // TODO(crbug.com/1046753): Remove this when canvastext is supported.
-    if (element == state.GetDocument().documentElement()) {
+    if (!style_request.IsPseudoStyleRequest() &&
+        element == state.GetDocument().documentElement()) {
       cascade.MutableMatchResult().AddMatchedProperties(
           DocumentElementUserAgentDeclarations());
     }
@@ -888,13 +918,32 @@ void StyleResolver::ApplyBaseStyle(
                                    selector_filter_, match_result,
                                    state.Style(), state.Style()->InsideLink());
 
-    MatchAllRules(state, collector,
-                  matching_behavior != kMatchAllRulesExcludingSMIL);
+    if (style_request.IsPseudoStyleRequest()) {
+      collector.SetPseudoElementStyleRequest(style_request);
+      GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
+          style_request.pseudo_id);
+    }
+
+    // TODO(obrufau): support styling nested pseudo-elements
+    if (style_request.IsPseudoStyleRequest() && element->IsPseudoElement()) {
+      MatchUARules(*element, collector);
+    } else {
+      MatchAllRules(
+          state, collector,
+          style_request.matching_behavior != kMatchAllRulesExcludingSMIL);
+    }
 
     if (tracker_)
       AddMatchedRulesToTracker(collector);
 
-    if (element->GetComputedStyle() &&
+    if (style_request.IsPseudoStyleRequest() &&
+        !collector.MatchedResult().HasMatchedProperties()) {
+      StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
+      state.SetHadNoMatchedProperties();
+      return;
+    }
+
+    if (!style_request.IsPseudoStyleRequest() && element->GetComputedStyle() &&
         element->GetComputedStyle()->TextAutosizingMultiplier() !=
             state.Style()->TextAutosizingMultiplier()) {
       // Preserve the text autosizing multiplier on style recalc. Autosizer will
@@ -915,7 +964,8 @@ void StyleResolver::ApplyBaseStyle(
     // Cache our original display.
     state.Style()->SetOriginalDisplay(state.Style()->Display());
 
-    StyleAdjuster::AdjustComputedStyle(state, element);
+    StyleAdjuster::AdjustComputedStyle(
+        state, style_request.IsPseudoStyleRequest() ? nullptr : element);
 
     DCHECK(ValidateBaseComputedStyle(animation_base_computed_style,
                                      *state.Style()));
@@ -924,6 +974,7 @@ void StyleResolver::ApplyBaseStyle(
   if (base_is_usable) {
     DCHECK(animation_base_computed_style);
     state.SetStyle(ComputedStyle::Clone(*animation_base_computed_style));
+    state.Style()->SetStyleType(style_request.pseudo_id);
     if (!state.ParentStyle()) {
       state.SetParentStyle(InitialStyleForElement(GetDocument()));
       state.SetLayoutParentStyle(state.ParentStyle());
@@ -972,111 +1023,10 @@ scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
   if (!element)
     return nullptr;
 
-  StyleResolverState state(
-      GetDocument(), *element, pseudo_style_request.pseudo_id,
-      pseudo_style_request.type, parent_style, parent_layout_object_style);
-
-  DCHECK(GetDocument().GetFrame());
-  DCHECK(GetDocument().GetSettings());
-  DCHECK(pseudo_style_request.pseudo_id != kPseudoIdFirstLineInherited);
-
-  SelectorFilterParentScope::EnsureParentStackIsPushed();
-
-  bool base_is_usable = CanReuseBaseComputedStyle(state);
-  const ComputedStyle* animation_base_computed_style =
-      base_is_usable ? CachedAnimationBaseComputedStyle(state) : nullptr;
-
-  // Since we don't use pseudo-elements in any of our quirk/print
-  // user agent rules, don't waste time walking those rules.
-
-  STACK_UNINITIALIZED StyleCascade cascade(state);
-
-  if (ShouldComputeBaseComputedStyle(animation_base_computed_style)) {
-    if (pseudo_style_request.AllowsInheritance(parent_style)) {
-      scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
-      style->InheritFrom(*parent_style);
-      state.SetStyle(std::move(style));
-    } else {
-      // ::backdrop inherits from initial styles. All other pseudo elements
-      // inherit from their originating element (::before/::after), or
-      // originating element descendants (::first-line/::first-letter).
-      DCHECK(pseudo_style_request.pseudo_id == kPseudoIdBackdrop);
-      state.SetStyle(InitialStyleForElement(GetDocument()));
-      state.SetParentStyle(ComputedStyle::Clone(*state.Style()));
-    }
-    state.Style()->SetStyleType(pseudo_style_request.pseudo_id);
-
-    // Check UA, user and author rules.
-    ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
-                                   selector_filter_,
-                                   cascade.MutableMatchResult(), state.Style(),
-                                   state.Style()->InsideLink());
-    collector.SetPseudoElementStyleRequest(pseudo_style_request);
-
-    GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
-        pseudo_style_request.pseudo_id);
-
-    // TODO(obrufau): support styling nested pseudo-elements
-    if (!element->IsPseudoElement())
-      MatchAllRules(state, collector, /* include_smil_properties */ false);
-    else
-      MatchUARules(*element, collector);
-
-    if (tracker_)
-      AddMatchedRulesToTracker(collector);
-
-    if (!collector.MatchedResult().HasMatchedProperties()) {
-      StyleAdjuster::AdjustComputedStyle(state, nullptr);
-      if (pseudo_style_request.type == PseudoElementStyleRequest::kForRenderer)
-        return nullptr;
-      return state.TakeStyle();
-    }
-
-    CascadeAndApplyMatchedProperties(state, cascade);
-
-    if (collector.MatchedResult().DependsOnContainerQueries())
-      state.Style()->SetDependsOnContainerQueries(true);
-
-    ApplyCallbackSelectors(state);
-
-    // Cache our original display.
-    state.Style()->SetOriginalDisplay(state.Style()->Display());
-
-    // FIXME: Passing 0 as the Element* introduces a lot of complexity
-    // in the StyleAdjuster::AdjustComputedStyle code.
-    StyleAdjuster::AdjustComputedStyle(state, nullptr);
-
-    DCHECK(ValidateBaseComputedStyle(animation_base_computed_style,
-                                     *state.Style()));
-  }
-
-  if (animation_base_computed_style) {
-    state.SetStyle(ComputedStyle::Clone(*animation_base_computed_style));
-    state.Style()->SetStyleType(pseudo_style_request.pseudo_id);
-    MaybeResetCascade(cascade);
-  }
-
-  state.SetCanCacheBaseStyle(true);
-  if (ApplyAnimatedStyle(state, cascade))
-    StyleAdjuster::AdjustComputedStyle(state, nullptr);
-
-  GetDocument().GetStyleEngine().IncStyleForElementCount();
-  INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
-                                pseudo_elements_styled, 1);
-
-  if (state.Style()->HasViewportUnits())
-    GetDocument().SetHasViewportUnits();
-
-  if (state.Style()->HasGlyphRelativeUnits())
-    UseCounter::Count(GetDocument(), WebFeature::kHasGlyphRelativeUnits);
-
-  if (PseudoElement* pseudo_element =
-          element->GetPseudoElement(pseudo_style_request.pseudo_id)) {
-    SetAnimationUpdateIfNeeded(state, *pseudo_element);
-    state.LoadPendingResources();
-  }
-
-  return state.TakeStyle();
+  StyleRequest style_request = pseudo_style_request;
+  style_request.parent_override = parent_style;
+  style_request.layout_parent_override = parent_layout_object_style;
+  return ResolveStyle(element, style_recalc_context, style_request);
 }
 
 scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
@@ -1561,12 +1511,13 @@ const CSSValue* StyleResolver::ComputeValue(
 scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
     Element& element,
     ActiveInterpolationsMap& interpolations) {
-  StyleResolverState state(GetDocument(), element);
+  StyleRequest style_request;
+  StyleResolverState state(GetDocument(), element, style_request);
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
   // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
   StyleRecalcContext style_recalc_context;
-  ApplyBaseStyle(&element, style_recalc_context, state, cascade,
+  ApplyBaseStyle(&element, style_recalc_context, style_request, state, cascade,
                  cascade.MutableMatchResult(), kMatchAllRules, true);
   ApplyInterpolations(state, cascade, interpolations);
 

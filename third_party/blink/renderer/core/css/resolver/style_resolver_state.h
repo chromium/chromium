@@ -63,6 +63,7 @@ class CORE_EXPORT StyleResolverState {
                      PseudoElementStyleRequest::RequestType,
                      const ComputedStyle* parent_style,
                      const ComputedStyle* layout_parent_style);
+  StyleResolverState(Document&, Element&, const StyleRequest&);
   StyleResolverState(const StyleResolverState&) = delete;
   StyleResolverState& operator=(const StyleResolverState&) = delete;
   ~StyleResolverState();
@@ -177,6 +178,9 @@ class CORE_EXPORT StyleResolverState {
   void SetCanCacheBaseStyle(bool state) { can_cache_base_style_ = state; }
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
 
+  bool HadNoMatchedProperties() const { return had_no_matched_properties_; }
+  void SetHadNoMatchedProperties() { had_no_matched_properties_ = true; }
+
  private:
   StyleResolverState(Document&,
                      Element&,
@@ -218,6 +222,10 @@ class CORE_EXPORT StyleResolverState {
   // True if the base style can be cached to optimize style recalculations for
   // animation updates or transition retargeting.
   bool can_cache_base_style_ = false;
+
+  // Set to true if a given style resolve produced an empty MatchResult.
+  // This is used to return a nullptr style for pseudo-element style resolves.
+  bool had_no_matched_properties_ = false;
 };
 
 }  // namespace blink

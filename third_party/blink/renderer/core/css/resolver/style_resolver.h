@@ -86,6 +86,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const CSSValue*,
       double offset);
 
+  // TODO(andruud): Remove this function, use ResolveStyle directly.
   scoped_refptr<ComputedStyle> PseudoStyleForElement(
       Element*,
       const StyleRecalcContext&,
@@ -168,9 +169,12 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
  private:
   void InitStyleAndApplyInheritance(Element& element,
+                                    const StyleRequest&,
                                     StyleResolverState& state);
+
   void ApplyBaseStyle(Element* element,
                       const StyleRecalcContext&,
+                      const StyleRequest&,
                       StyleResolverState& state,
                       StyleCascade& cascade,
                       MatchResult& match_result,
