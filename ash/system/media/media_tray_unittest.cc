@@ -87,7 +87,11 @@ class MediaTrayTest : public AshTestBase {
   ~MediaTrayTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(media::kGlobalMediaControlsForChromeOS);
+    base::FieldTrialParams params;
+    params.insert({media::kCrosGlobalMediaControlsPinParam.name, "heuristic"});
+
+    feature_list_.InitAndEnableFeatureWithParameters(
+        media::kGlobalMediaControlsForChromeOS, params);
     provider_ = std::make_unique<MockMediaNotificationProvider>();
     AshTestBase::SetUp();
 
