@@ -963,7 +963,9 @@ IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, UnderOneMinute) {
   tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 0,
                             is_ephemeral() ? 1 : 0);
   tester.ExpectUniqueSample("Profile.Guest.BlankState.Lifetime", 0, 1);
-  // TODO(https://crbug.com/1157764): Add test for |SigninTransferred| case.
+  tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime", 0);
+  // To reduce boilerplate code, |Profile.Guest.SigninTransferred.Lifetime| is
+  // tested in DiceWebSigninInterceptorBrowserTest::SwitchToGuest.
 }
 
 IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, OneHour) {
@@ -980,7 +982,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, OneHour) {
   tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 60,
                             is_ephemeral() ? 1 : 0);
   tester.ExpectUniqueSample("Profile.Guest.BlankState.Lifetime", 60, 1);
-  // TODO(https://crbug.com/1157764): Add test for |SigninTransferred| case.
+  tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
