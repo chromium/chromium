@@ -590,6 +590,7 @@ void DecoderStream<StreamType>::OnDecodeDone(
         // from being called back.
         fallback_weak_factory_.InvalidateWeakPtrs();
         pending_decode_requests_ = 0;
+        decoding_eos_ = false;
         state_ = STATE_REINITIALIZING_DECODER;
         SelectDecoder();
       } else {
