@@ -16275,15 +16275,15 @@ be describing additional metrics about the same event.
   <owner>benwells@chromium.org</owner>
   <summary>
     Features of a web app recorded at most once per day if a user interacted
-    with the web app. Recorded for both installed and promotable (installable)
-    web apps unless noted otherwise on the metric.
+    with the web app. Recorded for installed and/or promotable (installable) web
+    apps unless noted otherwise on the metric.
   </summary>
   <metric name="BackgroundDuration">
     <summary>
       Records the total duration (seconds, bucketed) that the app was open in
       the background in the last calendar day. Summed during the day and emitted
-      if the date changes. Recorded only for installed web apps that open with
-      standalone display mode.
+      if the date changes. Recorded only for installed web apps that are
+      currently open in a web app window.
     </summary>
     <aggregation>
       <history>
@@ -16316,8 +16316,8 @@ be describing additional metrics about the same event.
     <summary>
       Records the total duration (seconds, bucketed) that the app was open in
       the foreground in the last calendar day. Summed during the day and emitted
-      if the date changes. Recorded only for installed web apps that open with
-      standalone display mode.
+      if the date changes. Recorded only for installed web apps that are
+      currently open in a web app window.
     </summary>
     <aggregation>
       <history>
@@ -16363,8 +16363,8 @@ be describing additional metrics about the same event.
   <metric name="NumSessions">
     <summary>
       Records the total number of times the app was focused in the foreground in
-      the last calendar day. Recorded only for installed web apps that open with
-      standalone display mode.
+      the last calendar day. Recorded only for installed web apps that are
+      currently open in a web app window.
     </summary>
     <aggregation>
       <history>
