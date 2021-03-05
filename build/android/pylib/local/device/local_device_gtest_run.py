@@ -6,6 +6,7 @@ import contextlib
 import collections
 import itertools
 import logging
+import math
 import os
 import posixpath
 import subprocess
@@ -52,9 +53,6 @@ _EXTRA_TEST_LIST = (
         '.TestList')
 
 _SECONDS_TO_NANOS = int(1e9)
-
-# The amount of time a test executable may run before it gets killed.
-_TEST_TIMEOUT_SECONDS = 30*60
 
 # Tests that use SpawnedTestServer must run the LocalTestServerSpawner on the
 # host machine.
@@ -114,6 +112,16 @@ def _ExtractTestsFromFilter(gtest_filter):
   if '*' in gtest_filter:
     return None
   return patterns
+
+
+def _GetDeviceTimeoutMultiplier():
+  # Emulated devices typically run 20-150x slower than real-time.
+  # Give a way to control this through the DEVICE_TIMEOUT_MULTIPLIER
+  # environment variable.
+  multiplier = os.getenv("DEVICE_TIMEOUT_MULTIPLIER")
+  if multiplier:
+    return int(multiplier)
+  return 1
 
 
 def _MergeCoverageFiles(coverage_dir, profdata_dir):
@@ -435,7 +443,10 @@ class _ExeDelegate(object):
     pass
 
   def Clear(self, device):
-    device.KillAll(self._exe_file_name, blocking=True, timeout=30, quiet=True)
+    device.KillAll(self._exe_file_name,
+                   blocking=True,
+                   timeout=30 * _GetDeviceTimeoutMultiplier(),
+                   quiet=True)
 
 
 class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
@@ -491,7 +502,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
             # Some gtest suites, e.g. unit_tests, have data dependencies that
             # can take longer than the default timeout to push. See
             # crbug.com/791632 for context.
-            timeout=600)
+            timeout=600 * math.ceil(_GetDeviceTimeoutMultiplier() / 10))
         if not host_device_tuples:
           dev.RemovePath(device_root, force=True, recursive=True, rename=True)
           dev.RunShellCommand(['mkdir', '-p', device_root], check_return=True)
@@ -595,7 +606,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     @local_device_environment.handle_shard_failures_with(
         on_failure=self._env.DenylistDevice)
     def list_tests(dev):
-      timeout = 30
+      timeout = 30 * _GetDeviceTimeoutMultiplier()
       retries = 1
       if self._test_instance.wait_for_java_debugger:
         timeout = None
@@ -714,8 +725,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
   #override
   def _RunTest(self, device, test):
     # Run the test.
-    timeout = (self._test_instance.shard_timeout
-               * self.GetTool(device).GetTimeoutScale())
+    timeout = (self._test_instance.shard_timeout *
+               self.GetTool(device).GetTimeoutScale() *
+               _GetDeviceTimeoutMultiplier())
     if self._test_instance.wait_for_java_debugger:
       timeout = None
     if self._test_instance.store_tombstones:
