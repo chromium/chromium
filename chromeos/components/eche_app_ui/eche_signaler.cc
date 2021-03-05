@@ -4,6 +4,8 @@
 
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
 
+#include "chromeos/components/eche_app_ui/proto/exo_messages.pb.h"
+
 namespace chromeos {
 namespace eche_app {
 
@@ -20,23 +22,39 @@ EcheSignaler::~EcheSignaler() {
 
 void EcheSignaler::SendSignalingMessage(const std::vector<uint8_t>& signal) {
   std::string encoded_signal(signal.begin(), signal.end());
-  eche_connector_->SendMessage(encoded_signal);
+  proto::SignalingRequest request;
+  request.set_data(encoded_signal);
+  proto::ExoMessage message;
+  *message.mutable_request() = std::move(request);
+  eche_connector_->SendMessage(message.SerializeAsString());
 }
 
 void EcheSignaler::SetSignalingMessageObserver(
     mojo::PendingRemote<mojom::SignalingMessageObserver> observer) {
+  observer_.reset();
   observer_.Bind(std::move(observer));
 }
 
 void EcheSignaler::Bind(
     mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver) {
+  exchanger_.reset();
   exchanger_.Bind(std::move(receiver));
 }
 
 void EcheSignaler::OnMessageReceived(const std::string& payload) {
-  std::vector<uint8_t> encoded_payload(payload.begin(), payload.end());
+  proto::ExoMessage message;
+  message.ParseFromString(payload);
+  std::string signal;
+  if (message.has_request()) {
+    signal = message.request().data();
+  } else if (message.has_response()) {
+    signal = message.response().data();
+  } else {
+    signal = {};
+  }
+  std::vector<uint8_t> encoded_signal(signal.begin(), signal.end());
   if (observer_)
-    std::move(observer_)->OnReceivedSignalingMessage(encoded_payload);
+    std::move(observer_)->OnReceivedSignalingMessage(encoded_signal);
 }
 
 }  // namespace eche_app
