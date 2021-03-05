@@ -117,14 +117,6 @@ void PartitionAllocSupport::ReconfigureEarlyish(
 
   base::allocator::EnablePartitionAllocMemoryReclaimer();
 
-#if defined(OS_ANDROID)
-  // The thread cache consumes more memory, especially as long as periodic purge
-  // above is disabled. Don't use one on low-memory devices.
-  if (base::SysInfo::IsLowEndDevice()) {
-    base::DisablePartitionAllocThreadCacheForProcess();
-  }
-#endif  // defined(OS_ANDROID)
-
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
@@ -192,7 +184,18 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::ReconfigurePartitionAllocLazyCommit();
-#endif
+
+#if defined(OS_ANDROID)
+  // The thread cache consumes more memory. Don't use one on low-memory devices
+  // if thread cache purging is not enabled.
+  if (base::SysInfo::IsLowEndDevice() &&
+      !base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocThreadCachePeriodicPurge)) {
+    base::DisablePartitionAllocThreadCacheForProcess();
+  }
+#endif  // defined(OS_ANDROID)
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   EnablePCScanForMallocPartitionsIfNeeded();
   // No specified process type means this is the Browser process.
@@ -227,7 +230,17 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocThreadCachePeriodicPurge)) {
-    base::internal::ThreadCacheRegistry::Instance().StartPeriodicPurge();
+    auto& registry = base::internal::ThreadCacheRegistry::Instance();
+    registry.StartPeriodicPurge();
+
+#if defined(OS_ANDROID)
+    // Lower thread cache limits to avoid stranding too much memory in the
+    // caches.
+    if (base::SysInfo::IsLowEndDevice()) {
+      registry.SetThreadCacheMultiplier(
+          base::internal::ThreadCache::kDefaultMultiplier / 2.);
+    }
+#endif  // defined(OS_ANDROID)
   }
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

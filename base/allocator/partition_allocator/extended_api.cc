@@ -32,10 +32,12 @@ void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
 
 void DisablePartitionAllocThreadCacheForProcess() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  internal::DisableThreadCacheForRootIfEnabled(
-      base::internal::PartitionAllocMalloc::Allocator());
-  internal::DisableThreadCacheForRootIfEnabled(
-      base::internal::PartitionAllocMalloc::OriginalAllocator());
+  auto* regular_allocator = base::internal::PartitionAllocMalloc::Allocator();
+  auto* aligned_allocator =
+      base::internal::PartitionAllocMalloc::AlignedAllocator();
+  internal::DisableThreadCacheForRootIfEnabled(regular_allocator);
+  if (aligned_allocator != regular_allocator)
+    internal::DisableThreadCacheForRootIfEnabled(aligned_allocator);
   internal::DisableThreadCacheForRootIfEnabled(
       base::internal::PartitionAllocMalloc::AlignedAllocator());
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
