@@ -141,16 +141,16 @@ TEST_F(TrayBluetoothHelperLegacyTest, GetBluetoothState) {
       static_cast<FakeBluetoothAdapterClient*>(
           BluezDBusManager::Get()->GetBluetoothAdapterClient());
 
-  // Mark all adapters as not-visible to simulate no adapters.
-  adapter_client->SetVisible(false);
-  adapter_client->SetSecondVisible(false);
+  // Mark all adapters as not present to simulate no adapters.
+  adapter_client->SetPresent(false);
+  adapter_client->SetSecondPresent(false);
   helper.Initialize();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(BluetoothSystem::State::kUnavailable, helper.GetBluetoothState());
 
-  // Make adapter visible but turn it off.
-  adapter_client->SetVisible(true);
+  // Make adapter present but turn it off.
+  adapter_client->SetPresent(true);
   adapter_client
       ->GetProperties(
           dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath))
@@ -182,22 +182,22 @@ TEST_F(TrayBluetoothHelperLegacyTest, OnBluetoothSystemStateChanged) {
       static_cast<FakeBluetoothAdapterClient*>(
           BluezDBusManager::Get()->GetBluetoothAdapterClient());
 
-  // Mark all adapters as not-visible to simulate no adapters.
-  adapter_client->SetVisible(false);
-  adapter_client->SetSecondVisible(false);
+  // Mark all adapters as not present to simulate no adapters.
+  adapter_client->SetPresent(false);
+  adapter_client->SetSecondPresent(false);
   helper.Initialize();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(BluetoothSystem::State::kUnavailable, helper.GetBluetoothState());
   EXPECT_EQ(0u, observer.system_state_changed_count_);
 
-  // Turn off the adapter and make it visible to simulate a powered off adapter
+  // Turn off the adapter and make it present to simulate a powered off adapter
   // being added.
   adapter_client
       ->GetProperties(
           dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath))
       ->powered.ReplaceValue(false);
-  adapter_client->SetVisible(true);
+  adapter_client->SetPresent(true);
 
   EXPECT_EQ(BluetoothSystem::State::kPoweredOff, helper.GetBluetoothState());
   EXPECT_EQ(1u, observer.system_state_changed_count_);
@@ -220,7 +220,7 @@ TEST_F(TrayBluetoothHelperLegacyTest, OnBluetoothSystemStateChanged) {
   observer.Reset();
 
   // Remove the adapter.
-  adapter_client->SetVisible(false);
+  adapter_client->SetPresent(false);
   EXPECT_EQ(BluetoothSystem::State::kUnavailable, helper.GetBluetoothState());
   EXPECT_EQ(1u, observer.system_state_changed_count_);
   EXPECT_EQ(std::vector<BluetoothSystem::State>(
@@ -228,13 +228,13 @@ TEST_F(TrayBluetoothHelperLegacyTest, OnBluetoothSystemStateChanged) {
             observer.system_states_);
   observer.Reset();
 
-  // Turn on the adapter and make it visible to simulate a powered on adapter
+  // Turn on the adapter and make it present to simulate a powered on adapter
   // being added.
   adapter_client
       ->GetProperties(
           dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath))
       ->powered.ReplaceValue(true);
-  adapter_client->SetVisible(true);
+  adapter_client->SetPresent(true);
 
   EXPECT_EQ(BluetoothSystem::State::kPoweredOn, helper.GetBluetoothState());
   EXPECT_EQ(1u, observer.system_state_changed_count_);

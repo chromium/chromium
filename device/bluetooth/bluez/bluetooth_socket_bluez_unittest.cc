@@ -43,7 +43,7 @@ namespace bluez {
 class FakeInterceptableBluetoothProfileManagerClient
     : public bluez::FakeBluetoothProfileManagerClient {
  public:
-  FakeInterceptableBluetoothProfileManagerClient(
+  explicit FakeInterceptableBluetoothProfileManagerClient(
       base::RepeatingCallback<void(base::RepeatingCallback<void()>)>
           before_register_callback)
       : before_register_callback_(before_register_callback) {}
@@ -467,12 +467,12 @@ TEST_F(BluetoothSocketBlueZTest, Listen) {
 }
 
 TEST_F(BluetoothSocketBlueZTest, ListenBeforeAdapterStart) {
-  // Start off with an invisible adapter, register the profile, then make
-  // the adapter visible.
+  // Start off with a not present adapter, register the profile, then make
+  // the adapter present.
   bluez::FakeBluetoothAdapterClient* fake_bluetooth_adapter_client =
       static_cast<bluez::FakeBluetoothAdapterClient*>(
           bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient());
-  fake_bluetooth_adapter_client->SetVisible(false);
+  fake_bluetooth_adapter_client->SetPresent(false);
 
   {
     base::RunLoop run_loop;
@@ -507,10 +507,10 @@ TEST_F(BluetoothSocketBlueZTest, ListenBeforeAdapterStart) {
           bluez::FakeBluetoothProfileManagerClient::kRfcommUuid);
   EXPECT_TRUE(profile_service_provider == nullptr);
 
-  // Make the adapter visible. This should register a profile.
+  // Make the adapter present. This should register a profile.
   {
     base::RunLoop run_loop;
-    fake_bluetooth_adapter_client->SetVisible(true);
+    fake_bluetooth_adapter_client->SetPresent(true);
     run_loop.RunUntilIdle();
   }
 
@@ -532,7 +532,7 @@ TEST_F(BluetoothSocketBlueZTest, ListenBeforeAdapterStart) {
 }
 
 TEST_F(BluetoothSocketBlueZTest, ListenAcrossAdapterRestart) {
-  // The fake adapter starts off visible by default.
+  // The fake adapter starts off present by default.
   bluez::FakeBluetoothAdapterClient* fake_bluetooth_adapter_client =
       static_cast<bluez::FakeBluetoothAdapterClient*>(
           bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient());
@@ -570,18 +570,18 @@ TEST_F(BluetoothSocketBlueZTest, ListenAcrossAdapterRestart) {
           bluez::FakeBluetoothProfileManagerClient::kRfcommUuid);
   EXPECT_TRUE(profile_service_provider != nullptr);
 
-  // Make the adapter invisible, and fiddle with the profile fake to unregister
-  // the profile since this doesn't happen automatically.
+  // Make the adapter not present, and fiddle with the profile fake to
+  // unregister the profile since this doesn't happen automatically.
   {
     base::RunLoop run_loop;
-    fake_bluetooth_adapter_client->SetVisible(false);
+    fake_bluetooth_adapter_client->SetPresent(false);
     run_loop.RunUntilIdle();
   }
 
-  // Then make the adapter visible again. This should re-register the profile.
+  // Then make the adapter present again. This should re-register the profile.
   {
     base::RunLoop run_loop;
-    fake_bluetooth_adapter_client->SetVisible(true);
+    fake_bluetooth_adapter_client->SetPresent(true);
     run_loop.RunUntilIdle();
   }
 
@@ -603,15 +603,15 @@ TEST_F(BluetoothSocketBlueZTest, ListenAcrossAdapterRestart) {
 }
 
 // Regression test for crbug.com/1136391.
-// Some Chrome OS devices' unique chipset design leads to an "adapter invisible"
-// and a subsequent "adapter visible" event shortly after wake. Some clients
-// begin listening on a Socket on wake as well, and that led to racy behavior
-// within BluetoothSocketBlueZ. This test ensures BluetoothSocketBlueZ behaves
-// robustly when adapter visibility changes are occurring during profile
-// registration.
+// Some Chrome OS devices' unique chipset design leads to an "adapter not
+// present" event and a subsequent "adapter present" event shortly after wake.
+// Some clients begin listening on a Socket on wake as well, and that led to
+// racy behavior within BluetoothSocketBlueZ. This test ensures
+// BluetoothSocketBlueZ behaves robustly when adapter visibility changes are
+// occurring during profile registration.
 TEST_F(BluetoothSocketBlueZTest,
        ListenAfterSuspensionDuringPowerRestorationToAdapter) {
-  // The fake adapter starts off visible by default.
+  // The fake adapter starts off present by default.
   bluez::FakeBluetoothAdapterClient* fake_bluetooth_adapter_client =
       static_cast<bluez::FakeBluetoothAdapterClient*>(
           bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient());
@@ -625,7 +625,7 @@ TEST_F(BluetoothSocketBlueZTest,
             // crash.
             {
               base::RunLoop run_loop;
-              fake_bluetooth_adapter_client->SetVisible(false);
+              fake_bluetooth_adapter_client->SetPresent(false);
               run_loop.RunUntilIdle();
             }
 
@@ -645,7 +645,7 @@ TEST_F(BluetoothSocketBlueZTest,
   }
 
   // Make sure the profile was registered with the daemon, even though an
-  // "adapter not visible" event occurred in the middle of registration.
+  // "adapter not present" event occurred in the middle of registration.
   EXPECT_EQ(1U, success_callback_count_);
   EXPECT_EQ(0U, error_callback_count_);
   EXPECT_TRUE(last_socket_);
@@ -665,7 +665,7 @@ TEST_F(BluetoothSocketBlueZTest,
   // registration event. Ensure that this does *not* re-register the profile.
   {
     base::RunLoop run_loop;
-    fake_bluetooth_adapter_client->SetVisible(true);
+    fake_bluetooth_adapter_client->SetPresent(true);
     run_loop.RunUntilIdle();
   }
 
