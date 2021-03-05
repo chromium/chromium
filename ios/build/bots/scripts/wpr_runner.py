@@ -456,20 +456,7 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
     """Stops tsproxy and disables the machine's proxy settings."""
     if self.proxy_process is not None:
       os.kill(self.proxy_process.pid, signal.SIGINT)
-
-    network_services = subprocess.check_output(
-        ['networksetup', '-listallnetworkservices']).strip().split('\n')
-    if len(network_services) > 1:
-      # We ignore the first line as it is a description of the command's output.
-      network_services = network_services[1:]
-
-      for service in network_services:
-        # Disabled services have a '*' but calls should not include it
-        if service.startswith('*'):
-          service = service[1:]
-        subprocess.check_call(
-            ['networksetup', '-setsocksfirewallproxystate', service, 'off'])
-        LOGGER.info('Removed SOCKS proxy for service: %s.', service)
+    self.remove_proxy_settings()
 
   def wprgo_start(self, replay_path):
     """Starts WprGo serving the specified replay file.

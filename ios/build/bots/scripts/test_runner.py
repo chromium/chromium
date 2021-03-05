@@ -374,6 +374,24 @@ class TestRunner(object):
       if not os.path.exists(self.xctest_path):
         raise XCTestPlugInNotFoundError(self.xctest_path)
 
+  # TODO(crbug.com/1185295): Move this method to a utils class.
+  @staticmethod
+  def remove_proxy_settings():
+    """removes any proxy settings which may remain from a previous run."""
+    LOGGER.info('Removing any proxy settings.')
+    network_services = subprocess.check_output(
+        ['networksetup', '-listallnetworkservices']).strip().split('\n')
+    if len(network_services) > 1:
+      # We ignore the first line as it is a description of the command's output.
+      network_services = network_services[1:]
+
+      for service in network_services:
+        # Disabled services have a '*' but calls should not include it
+        if service.startswith('*'):
+          service = service[1:]
+        subprocess.check_call(
+            ['networksetup', '-setsocksfirewallproxystate', service, 'off'])
+
   def get_launch_command(self, test_app, out_dir, destination, shards=1):
     """Returns the command that can be used to launch the test app.
 
@@ -793,6 +811,7 @@ class SimulatorTestRunner(TestRunner):
 
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""
+    self.remove_proxy_settings()
     self.kill_simulators()
     self.wipe_simulator()
     self.wipe_derived_data()
