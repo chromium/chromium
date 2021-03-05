@@ -285,6 +285,25 @@ struct is_invocable_r
 template <typename F, typename... Args>
 struct is_invocable : is_invocable_r<void, F, Args...> {};
 
+namespace internal {
+
+// The indirection with std::is_enum<T> is required, because instantiating
+// std::underlying_type_t<T> when T is not an enum is UB prior to C++20.
+template <typename T, bool = std::is_enum<T>::value>
+struct IsScopedEnumImpl : std::false_type {};
+
+template <typename T>
+struct IsScopedEnumImpl<T, /*std::is_enum<T>::value=*/true>
+    : negation<std::is_convertible<T, std::underlying_type_t<T>>> {};
+
+}  // namespace internal
+
+// Implementation of C++23's std::is_scoped_enum
+//
+// Reference: https://en.cppreference.com/w/cpp/types/is_scoped_enum
+template <typename T>
+struct is_scoped_enum : internal::IsScopedEnumImpl<T> {};
+
 // Simplified implementation of C++20's std::iter_value_t.
 // As opposed to std::iter_value_t, this implementation does not restrict
 // the type of `Iter` and does not consider specializations of

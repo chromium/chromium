@@ -240,6 +240,14 @@ TEST(TemplateUtil, IsInvocable) {
   }
 }
 
+// is_scoped_enum
+TEST(TemplateUtil, IsScopedEnum) {
+  static_assert(!is_scoped_enum<int>::value, "");
+  static_assert(!is_scoped_enum<SimpleEnum>::value, "");
+  static_assert(!is_scoped_enum<EnumWithExplicitType>::value, "");
+  static_assert(is_scoped_enum<ScopedEnum>::value, "");
+}
+
 }  // namespace
 
 }  // namespace base
