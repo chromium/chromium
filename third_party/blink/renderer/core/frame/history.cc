@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/history_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -43,20 +44,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
-
-namespace {
-
-bool EqualIgnoringPathQueryAndFragment(const KURL& a, const KURL& b) {
-  return StringView(a.GetString(), 0, a.PathStart()) ==
-         StringView(b.GetString(), 0, b.PathStart());
-}
-
-bool EqualIgnoringQueryAndFragment(const KURL& a, const KURL& b) {
-  return StringView(a.GetString(), 0, a.PathEnd()) ==
-         StringView(b.GetString(), 0, b.PathEnd());
-}
-
-}  // namespace
 
 History::History(LocalDOMWindow* window)
     : ExecutionContextClient(window), last_state_object_requested_(nullptr) {}
@@ -274,34 +261,6 @@ KURL History::UrlForState(const String& url_string) {
   return KURL(DomWindow()->BaseURL(), url_string);
 }
 
-bool History::CanChangeToUrl(const KURL& url,
-                             const SecurityOrigin* document_origin,
-                             const KURL& document_url) {
-  if (!url.IsValid())
-    return false;
-
-  if (document_origin->IsGrantedUniversalAccess())
-    return true;
-
-  // We allow sandboxed documents, `data:`/`file:` URLs, etc. to use
-  // 'pushState'/'replaceState' to modify the URL fragment: see
-  // https://crbug.com/528681 for the compatibility concerns.
-  if (document_origin->IsOpaque() || document_origin->IsLocal())
-    return EqualIgnoringQueryAndFragment(url, document_url);
-
-  if (!EqualIgnoringPathQueryAndFragment(url, document_url))
-    return false;
-
-  scoped_refptr<const SecurityOrigin> requested_origin =
-      SecurityOrigin::Create(url);
-  if (requested_origin->IsOpaque() ||
-      !requested_origin->IsSameOriginWith(document_origin)) {
-    return false;
-  }
-
-  return true;
-}
-
 void History::StateObjectAdded(
     scoped_refptr<SerializedScriptValue> data,
     const String& /* title */,
@@ -317,8 +276,8 @@ void History::StateObjectAdded(
   }
 
   KURL full_url = UrlForState(url_string);
-  if (!CanChangeToUrl(full_url, DomWindow()->GetSecurityOrigin(),
-                      DomWindow()->Url())) {
+  if (!CanChangeToUrlForHistoryApi(full_url, DomWindow()->GetSecurityOrigin(),
+                                   DomWindow()->Url())) {
     // We can safely expose the URL to JavaScript, as a) no redirection takes
     // place: JavaScript already had this URL, b) JavaScript can only access a
     // same-origin History object.

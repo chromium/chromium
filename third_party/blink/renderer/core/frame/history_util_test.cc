@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/history.h"
+#include "third_party/blink/renderer/core/frame/history_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -10,9 +10,9 @@
 
 namespace blink {
 
-class HistoryTest : public testing::Test {};
+class HistoryUtilTest : public testing::Test {};
 
-TEST_F(HistoryTest, CanChangeToURL) {
+TEST_F(HistoryUtilTest, CanChangeToURL) {
   struct TestCase {
     const char* url;
     const char* document_url;
@@ -50,12 +50,12 @@ TEST_F(HistoryTest, CanChangeToURL) {
     KURL document_url(test.document_url);
     scoped_refptr<const SecurityOrigin> document_origin =
         SecurityOrigin::Create(document_url);
-    EXPECT_EQ(test.expected, History::CanChangeToUrl(url, document_origin.get(),
-                                                     document_url));
+    EXPECT_EQ(test.expected, CanChangeToUrlForHistoryApi(
+                                 url, document_origin.get(), document_url));
   }
 }
 
-TEST_F(HistoryTest, CanChangeToURLInFileOrigin) {
+TEST_F(HistoryUtilTest, CanChangeToURLInFileOrigin) {
   struct TestCase {
     const char* url;
     const char* document_url;
@@ -74,12 +74,12 @@ TEST_F(HistoryTest, CanChangeToURLInFileOrigin) {
     KURL document_url(test.document_url);
     scoped_refptr<const SecurityOrigin> document_origin =
         SecurityOrigin::Create(document_url);
-    EXPECT_EQ(test.expected, History::CanChangeToUrl(url, document_origin.get(),
-                                                     document_url));
+    EXPECT_EQ(test.expected, CanChangeToUrlForHistoryApi(
+                                 url, document_origin.get(), document_url));
   }
 }
 
-TEST_F(HistoryTest, CanChangeToURLInUniqueOrigin) {
+TEST_F(HistoryUtilTest, CanChangeToURLInUniqueOrigin) {
   struct TestCase {
     const char* url;
     const char* document_url;
@@ -110,8 +110,8 @@ TEST_F(HistoryTest, CanChangeToURLInUniqueOrigin) {
     KURL document_url(test.document_url);
     scoped_refptr<const SecurityOrigin> document_origin =
         SecurityOrigin::CreateUniqueOpaque();
-    EXPECT_EQ(test.expected, History::CanChangeToUrl(url, document_origin.get(),
-                                                     document_url));
+    EXPECT_EQ(test.expected, CanChangeToUrlForHistoryApi(
+                                 url, document_origin.get(), document_url));
   }
 }
 

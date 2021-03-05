@@ -88,6 +88,8 @@ blink_core_sources_frame = [
   "fullscreen_controller.h",
   "history.cc",
   "history.h",
+  "history_util.cc",
+  "history_util.h",
   "intervention.cc",
   "intervention.h",
   "intervention_report_body.cc",
