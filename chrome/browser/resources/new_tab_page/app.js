@@ -640,7 +640,8 @@ class AppElement extends PolymerElement {
 
   /** @private */
   onModulesLoadedAndVisibilityDeterminedChange_() {
-    if (this.modulesLoadedAndVisibilityDetermined_) {
+    if (this.modulesLoadedAndVisibilityDetermined_ &&
+        loadTimeData.getBoolean('modulesEnabled')) {
       this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
       this.moduleDescriptors_.forEach(({id}) => {
         chrome.metricsPrivate.recordBoolean(
