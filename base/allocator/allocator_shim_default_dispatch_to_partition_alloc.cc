@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/bits.h"
+#include "base/memory/nonscannable_memory.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/partition_alloc_buildflags.h"
@@ -402,6 +403,7 @@ void EnablePCScan() {
   pcscan.RegisterScannableRoot(Allocator());
   if (Allocator() != AlignedAllocator())
     pcscan.RegisterScannableRoot(AlignedAllocator());
+  internal::NonScannableAllocator::Instance().EnablePCScan();
 }
 #endif
 
@@ -463,18 +465,29 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
                                   &aligned_allocator_dumper);
   }
 
+  // Dump stats for nonscannable allocators.
+  auto& nonscannable_allocator =
+      base::internal::NonScannableAllocator::Instance();
+  base::SimplePartitionStatsDumper nonscannable_allocator_dumper;
+  if (auto* nonscannable_root = nonscannable_allocator.root())
+    nonscannable_root->DumpStats("malloc", true,
+                                 &nonscannable_allocator_dumper);
+
   struct mallinfo info = {0};
   info.arena = 0;  // Memory *not* allocated with mmap().
 
   // Memory allocated with mmap(), aka virtual size.
   info.hblks = allocator_dumper.stats().total_mmapped_bytes +
-               aligned_allocator_dumper.stats().total_mmapped_bytes;
+               aligned_allocator_dumper.stats().total_mmapped_bytes +
+               nonscannable_allocator_dumper.stats().total_mmapped_bytes;
   // Resident bytes.
   info.hblkhd = allocator_dumper.stats().total_resident_bytes +
-                aligned_allocator_dumper.stats().total_resident_bytes;
+                aligned_allocator_dumper.stats().total_resident_bytes +
+                nonscannable_allocator_dumper.stats().total_resident_bytes;
   // Allocated bytes.
   info.uordblks = allocator_dumper.stats().total_active_bytes +
-                  aligned_allocator_dumper.stats().total_active_bytes;
+                  aligned_allocator_dumper.stats().total_active_bytes +
+                  nonscannable_allocator_dumper.stats().total_active_bytes;
 
   return info;
 }

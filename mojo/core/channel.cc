@@ -14,7 +14,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/aligned_memory.h"
+#include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_handle.h"
@@ -61,9 +61,10 @@ const size_t kMaxAttachedHandles = 64;
 
 static_assert(alignof(std::max_align_t) >= kChannelMessageAlignment, "");
 Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
-  // No need to call base::AlignedAlloc() since malloc() already had the proper
-  // alignment.
-  void* ptr = malloc(size);
+  // Generic allocators (such as malloc) return a pointer that is suitably
+  // aligned for storing any type of object with a fundamental alignment
+  // requirement. Buffers have no additional alignment requirement beyond that.
+  void* ptr = base::AllocNonScannable(size);
   // Even though the allocator is configured in such a way that it crashes
   // rather than return nullptr, ASAN and friends don't know about that. This
   // CHECK() prevents Clusterfuzz from complaining. crbug.com/1180576.
