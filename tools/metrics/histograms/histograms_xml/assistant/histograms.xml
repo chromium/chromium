@@ -216,9 +216,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
-    (Android only) Reports user eligibility for the feature, but ignores if the
-    feature is enabled. The criteria includes: locale, agsa version and
-    available memory.
+    (Android only) Reports user eligibility for the feature when the mic is
+    clicked. This is reported even when the feature is disabled.
+
+    Before M90, this histogram was reported to multiple times per-search and at
+    other random points in time.
+
+    From M90 onwards, this histogram is reported to exactly once per mic click.
   </summary>
 </histogram>
 
@@ -228,7 +232,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>fgorski@chromium.org</owner>
   <summary>
     (Android only) Reports why users failed the eligibility check for the
-    feature.
+    feature. This metric is reported every time the mic button is clicked.
+
+    Before M90, this histogram only reported the FailureReason which failed the
+    eligibility check. If a client failed for multiple reasons, some would be
+    ignored.
+
+    From M90 onwards, this will report all FailureReasons that effect
+    eligibility.
   </summary>
 </histogram>
 

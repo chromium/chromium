@@ -59,8 +59,6 @@ public final class ChromePreferenceKeys {
     public static final String APP_LOCALE = "locale";
 
     /** Assistant voice search keys. */
-    public static final String ASSISTANT_LAST_VERSION = "Chrome.Assistant.LastVersion";
-    public static final String ASSISTANT_VOICE_SEARCH_SUPPORTED = "Chrome.Assistant.Supported";
     public static final String ASSISTANT_VOICE_SEARCH_ENABLED = "Chrome.Assistant.Enabled";
 
     /** Whether Autofill Assistant is enabled */
@@ -857,9 +855,7 @@ public final class ChromePreferenceKeys {
         // clang-format off
         return Arrays.asList(
                 ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT,
-                ASSISTANT_LAST_VERSION,
                 ASSISTANT_VOICE_SEARCH_ENABLED,
-                ASSISTANT_VOICE_SEARCH_SUPPORTED,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP,

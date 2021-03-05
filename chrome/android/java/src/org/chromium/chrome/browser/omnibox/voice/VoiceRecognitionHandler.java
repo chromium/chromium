@@ -134,6 +134,11 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     static final String EXTRA_INTENT_SENT_TIMESTAMP =
             "com.android.chrome.voice.INTENT_SENT_TIMESTAMP";
     /**
+     * Extra containing the email for the signed-in/syncing account on the device.
+     */
+    @VisibleForTesting
+    static final String EXTRA_INTENT_USER_EMAIL = "com.android.chrome.voice.INTENT_USER_EMAIL";
+    /**
      * Extra containing an integer that indicates which voice entrypoint the intent was initiated
      * from.
      *
@@ -656,7 +661,10 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             }
         }
 
-        if (startAGSAForAssistantVoiceSearch(activity, windowAndroid, source)) return;
+        if (mAssistantVoiceSearchServiceSupplier.hasValue()) {
+            mAssistantVoiceSearchServiceSupplier.get().reportUserEligibility();
+            if (startAGSAForAssistantVoiceSearch(activity, windowAndroid, source)) return;
+        }
 
         if (!startSystemForVoiceSearch(activity, windowAndroid, source)) {
             // TODO(wylieb): Emit histogram here to identify how many users are attempting to use
@@ -672,13 +680,13 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
      * and the result was a denial without an option to request them again, voice
      * functionality will become unavailable.
      *
+     * @param activity The current {@link Activity} that we're requesting permission for.
      * @param windowAndroid Used to request audio permissions from the Android system.
      * @param source The source of the mic button click, used to record metrics.
      * @return Whether audio permissions are granted.
      */
-    @VisibleForTesting
-    boolean ensureAudioPermissionGranted(
-            WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
+    private boolean ensureAudioPermissionGranted(
+            Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
         if (windowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)) return true;
 
         // If we don't have permission and also can't ask, then there's no more work left other
@@ -694,7 +702,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             }
 
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startVoiceRecognition(source);
+                startSystemForVoiceSearch(activity, windowAndroid, source);
             } else if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
                 notifyVoiceAvailabilityImpacted();
             }
@@ -709,7 +717,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
         // Check if we need to request audio permissions. If we don't, then trigger a permissions
         // prompt will appear and startVoiceRecognition will be called again.
-        if (!ensureAudioPermissionGranted(windowAndroid, source)) return false;
+        if (!ensureAudioPermissionGranted(activity, windowAndroid, source)) return false;
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(
@@ -741,8 +749,11 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
                 mAssistantVoiceSearchServiceSupplier.get();
         if (assistantVoiceSearchService == null) return false;
 
-        if (assistantVoiceSearchService.canRequestAssistantVoiceSearch()
-                && assistantVoiceSearchService.needsEnabledCheck()) {
+        // Check if the device meets the requirements to use Assistant voice search.
+        if (!assistantVoiceSearchService.canRequestAssistantVoiceSearch()) return false;
+
+        // Check if the consent prompt needs to be shown.
+        if (assistantVoiceSearchService.needsEnabledCheck()) {
             mDelegate.clearOmniboxFocus();
             AssistantVoiceSearchConsentUi.show(windowAndroid,
                     SharedPreferencesManager.getInstance(), mSettingsLauncher,
@@ -764,14 +775,14 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             return true;
         }
 
-        // Report the client's eligibility for Assistant voice search.
-        assistantVoiceSearchService.reportUserEligibility();
+        // Final check to see if Assistant voice search should be used.
         if (!assistantVoiceSearchService.shouldRequestAssistantVoiceSearch()) return false;
 
         Intent intent = assistantVoiceSearchService.getAssistantVoiceSearchIntent();
         intent.putExtra(EXTRA_VOICE_ENTRYPOINT, source);
         // Allows Assistant to track intent latency.
         intent.putExtra(EXTRA_INTENT_SENT_TIMESTAMP, System.currentTimeMillis());
+        intent.putExtra(EXTRA_INTENT_USER_EMAIL, assistantVoiceSearchService.getUserEmail());
 
         if (shouldAddPageUrl(source)) {
             String url = getUrl();

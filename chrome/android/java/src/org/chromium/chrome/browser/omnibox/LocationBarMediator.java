@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -282,7 +283,9 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mOmniboxPrerender = new OmniboxPrerender();
         mAssistantVoiceSearchServiceSupplier.set(new AssistantVoiceSearchService(mContext,
                 ExternalAuthUtils.getInstance(), mTemplateUrlServiceSupplier.get(),
-                GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance()));
+                GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance(),
+                IdentityServicesProvider.get().getIdentityManager(
+                        Profile.getLastUsedRegularProfile())));
         onAssistantVoiceSearchServiceChanged();
         mLocationBarLayout.onFinishNativeInitialization();
         setProfile(mProfileSupplier.get());
