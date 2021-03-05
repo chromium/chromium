@@ -1677,6 +1677,7 @@ void ArcSessionManager::OnExpandPropertyFilesAndReadSalt(
 }
 
 void ArcSessionManager::StopMiniArcIfNecessary() {
+  // This method should only be called before login.
   DCHECK(!profile_);
   pre_start_time_ = base::TimeTicks();
   VLOG(1) << "Stopping mini-ARC instance (if any)";
