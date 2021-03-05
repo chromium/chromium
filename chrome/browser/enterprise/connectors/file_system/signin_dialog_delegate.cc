@@ -174,11 +174,11 @@ void FileSystemSigninDialogDelegate::DidFinishNavigation(
 }
 
 void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
-    bool success,
+    const GoogleServiceAuthError& status,
     const std::string& access_token,
     const std::string& refresh_token) {
   token_fetcher_ = nullptr;
-  std::move(callback_).Run(success, access_token, refresh_token);
+  std::move(callback_).Run(status, access_token, refresh_token);
   GetWidget()->Close();
 }
 

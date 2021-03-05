@@ -39,6 +39,8 @@ class FileSystemDownloadController {
       const std::string& access_token);
 
   const std::string& GetFolderIdForTesting() const;
+  void NotifyAuthenFailureForTesting();
+  void NotifyResultForTesting(bool success);
 
  private:
   void TryCurrentApiCall();

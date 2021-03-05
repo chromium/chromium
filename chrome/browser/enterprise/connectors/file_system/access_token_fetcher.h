@@ -21,8 +21,9 @@ class AccessTokenFetcher : public OAuth2AccessTokenFetcherImpl,
  public:
   // Used in OnGetTokenSuccess/Failure; arguments are access_token and
   // refresh_token.
-  using TokenCallback =
-      base::OnceCallback<void(bool, const std::string&, const std::string&)>;
+  using TokenCallback = base::OnceCallback<void(const GoogleServiceAuthError&,
+                                                const std::string&,
+                                                const std::string&)>;
 
   AccessTokenFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -61,6 +62,14 @@ bool SetFileSystemOAuth2Tokens(PrefService* prefs,
                                const std::string& service_provider,
                                const std::string& access_token,
                                const std::string& refresh_token);
+
+// Clears the OAuth2 tokens for the given service provider.
+bool ClearFileSystemAccessToken(PrefService* prefs,
+                                const std::string& service_provider);
+bool ClearFileSystemRefreshToken(PrefService* prefs,
+                                 const std::string& service_provider);
+bool ClearFileSystemOAuth2Tokens(PrefService* prefs,
+                                 const std::string& service_provider);
 
 // Retrieves the OAuth2 tokens for the given service provider.  If a token
 // argument is null that token is not retrieved.  Returns true if all requested

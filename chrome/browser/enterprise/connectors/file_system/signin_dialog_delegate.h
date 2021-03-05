@@ -69,7 +69,7 @@ class FileSystemSigninDialogDelegate
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  void OnGotOAuthTokens(bool success,
+  void OnGotOAuthTokens(const GoogleServiceAuthError& status,
                         const std::string& access_token,
                         const std::string& refresh_token);
 

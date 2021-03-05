@@ -65,10 +65,10 @@ class AccessTokenFetcherTest : public testing::Test {
                        factory_.GetWeakPtr()));
   }
 
-  void OnResponse(bool success,
+  void OnResponse(const GoogleServiceAuthError& status,
                   const std::string& access_token,
                   const std::string& refresh_token) {
-    fetch_success_ = success;
+    fetch_success_ = (status.state() == GoogleServiceAuthError::State::NONE);
     access_token_fetched_ = access_token;
     refresh_token_fetched_ = refresh_token;
   }

@@ -55,6 +55,14 @@ const std::string& FileSystemDownloadController::GetFolderIdForTesting() const {
   return folder_id_;
 }
 
+void FileSystemDownloadController::NotifyAuthenFailureForTesting() {
+  authentication_retry_callback_.Run();
+}
+
+void FileSystemDownloadController::NotifyResultForTesting(bool success) {
+  std::move(download_callback_).Run(success);
+}
+
 bool FileSystemDownloadController::EnsureSuccessResponse(bool success,
                                                          int response_code) {
   if (!success) {
