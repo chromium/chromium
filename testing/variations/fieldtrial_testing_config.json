@@ -4289,7 +4289,9 @@
                         "session_rate": "==0"
                     },
                     "enable_features": [
-                        "IPH_LiveCaption"
+                        "IPH_LiveCaption",
+                        "LiveCaption",
+                        "UseSodaForLiveCaption"
                     ]
                 }
             ]
