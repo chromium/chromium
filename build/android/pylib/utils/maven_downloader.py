@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env python
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,10 +7,7 @@ import errno
 import logging
 import os
 import shutil
-import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-import devil_chromium  # pylint: disable=unused-import
 from devil.utils import cmd_helper
 from devil.utils import parallelizer
 
