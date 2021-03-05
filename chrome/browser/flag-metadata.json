@@ -873,7 +873,7 @@
   {
     "name": "dark-light-mode",
     "owners": [ "minch", "tclaiborne" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 100
   },
   {
     "name": "darken-websites-checkbox-in-themes-setting",
