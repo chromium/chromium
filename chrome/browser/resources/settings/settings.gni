@@ -59,7 +59,6 @@ settings_closure_flags =
     ]
 
 settings_migrated_imports = [
-  "chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.html",
   "chrome/browser/resources/settings/i18n_setup.html",
   "chrome/browser/resources/settings/ensure_lazy_loaded.html",
   "chrome/browser/resources/settings/search_engines_page/search_engines_browser_proxy.html",

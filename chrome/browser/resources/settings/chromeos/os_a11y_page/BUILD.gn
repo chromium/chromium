@@ -8,7 +8,6 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile_module") {
-  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":externs.m",
@@ -62,7 +61,7 @@ js_library("os_a11y_page.m") {
     "//chrome/browser/resources/settings:router.m",
     "//chrome/browser/resources/settings/a11y_page:captions_subpage.m",
     "//chrome/browser/resources/settings/a11y_page:live_caption_section.m",
-    "//chrome/browser/resources/settings/appearance_page:fonts_browser_proxy",
+    "//chrome/browser/resources/settings/appearance_page:fonts_browser_proxy.m",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/settings_page:settings_animated_pages.m",

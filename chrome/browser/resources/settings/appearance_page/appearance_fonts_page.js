@@ -15,7 +15,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.m.js';
 import {loadTimeData} from '../i18n_setup.js';
 
-import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './fonts_browser_proxy.js';
+import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './fonts_browser_proxy.m.js';
 
 
 /** @type {!Array<number>} */

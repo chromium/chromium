@@ -197,7 +197,6 @@ preprocess_if_expr("preprocess_v3") {
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
   out_manifest = "$target_gen_dir/$preprocess_v3_manifest"
   in_files = [
-    "appearance_page/fonts_browser_proxy.js",
     "chromeos/ensure_lazy_loaded.m.js",
     "chromeos/lazy_load.js",
     "chromeos/os_settings.js",
@@ -216,6 +215,7 @@ preprocess_if_expr("preprocess_gen_v3") {
   in_files = [
     "a11y_page/captions_subpage.m.js",
     "a11y_page/live_caption_section.m.js",
+    "appearance_page/fonts_browser_proxy.m.js",
     "about_page/about_page_browser_proxy.m.js",
     "chromeos/ambient_mode_page/album_item.m.js",
     "chromeos/ambient_mode_page/album_list.m.js",
@@ -688,6 +688,7 @@ group("polymer3_elements") {
     "../a11y_page:captions_subpage_module",
     "../a11y_page:live_caption_section_module",
     "../about_page:modulize",
+    "../appearance_page:modulize",
     "../prefs:modulize",
     "../prefs:prefs_module",
     "../settings_page:settings_animated_pages_module",

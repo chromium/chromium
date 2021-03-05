@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /**
@@ -14,24 +14,32 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  *       2: (string|undefined)}>,
  * }}
  */
-export let FontsData;
+/* #export */ let FontsData;
 
-/** @interface */
-export class FontsBrowserProxy {
-  /**
-   * @return {!Promise<!FontsData>} Fonts
-   */
-  fetchFontsData() {}
-}
-
-/**
- * @implements {FontsBrowserProxy}
- */
-export class FontsBrowserProxyImpl {
-  /** @override */
-  fetchFontsData() {
-    return sendWithPromise('fetchFontsData');
+cr.define('settings', function() {
+  /** @interface */
+  /* #export */ class FontsBrowserProxy {
+    /**
+     * @return {!Promise<!FontsData>} Fonts
+     */
+    fetchFontsData() {}
   }
-}
 
-addSingletonGetter(FontsBrowserProxyImpl);
+  /**
+   * @implements {settings.FontsBrowserProxy}
+   */
+  /* #export */ class FontsBrowserProxyImpl {
+    /** @override */
+    fetchFontsData() {
+      return cr.sendWithPromise('fetchFontsData');
+    }
+  }
+
+  cr.addSingletonGetter(FontsBrowserProxyImpl);
+
+  // #cr_define_end
+  return {
+    FontsBrowserProxy: FontsBrowserProxy,
+    FontsBrowserProxyImpl: FontsBrowserProxyImpl,
+  };
+});

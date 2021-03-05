@@ -8,7 +8,21 @@ import("../settings.gni")
 
 js_type_check("closure_compile") {
   uses_legacy_modules = true
-  deps = [ ":live_caption_section" ]
+  deps = [
+    ":captions_subpage",
+    ":live_caption_section",
+  ]
+}
+
+js_library("captions_subpage") {
+  deps = [
+    "../appearance_page:fonts_browser_proxy",
+    "../controls:settings_dropdown_menu",
+    "../prefs:prefs_behavior",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
 }
 
 js_library("live_caption_section") {
@@ -50,7 +64,7 @@ js_library("captions_browser_proxy") {
 js_library("captions_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/a11y_page/captions_subpage.m.js" ]
   deps = [
-    "../appearance_page:fonts_browser_proxy",
+    "../appearance_page:fonts_browser_proxy.m",
     "../controls:settings_dropdown_menu.m",
     "../prefs:prefs_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
