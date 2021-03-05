@@ -193,9 +193,6 @@ void SearchResultRanker::InitializeRankers(
             base::Unretained(this), default_config));
   }
 
-  search_ranking_event_logger_ =
-      std::make_unique<SearchRankingEventLogger>(profile_, search_controller);
-
   app_launch_event_logger_ = std::make_unique<app_list::AppLaunchEventLogger>();
 
   // Initialize on-device app ranking model.
@@ -339,13 +336,6 @@ void SearchResultRanker::Train(const AppLaunchData& app_launch_data) {
   }
 
   LogChipUsageMetrics(app_launch_data);
-}
-
-void SearchResultRanker::LogSearchResults(
-    const base::string16& trimmed_query,
-    const ash::SearchResultIdWithPositionIndices& results,
-    int launched_index) {
-  search_ranking_event_logger_->Log(trimmed_query, results, launched_index);
 }
 
 void SearchResultRanker::ZeroStateResultsDisplayed(

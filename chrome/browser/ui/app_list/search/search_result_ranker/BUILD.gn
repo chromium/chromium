@@ -24,7 +24,3 @@ proto_library("recurrence_ranker_proto") {
     "recurrence_ranker_config.proto",
   ]
 }
-
-proto_library("search_ranking_event_proto") {
-  sources = [ "search_ranking_event.proto" ]
-}

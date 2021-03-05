@@ -2949,6 +2949,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AppListNonAppImpressionCategory">
+  <obsolete>
+    Deprecated March 2021.
+  </obsolete>
   <int value="0" label="APPS"/>
   <int value="1" label="SEARCH_RESULTS"/>
   <int value="2" label="START"/>
@@ -2956,6 +2959,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AppListNonAppImpressionDeviceMode">
+  <obsolete>
+    Deprecated March 2021.
+  </obsolete>
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="FILE"/>
   <int value="2" label="HISTORY"/>
@@ -2968,6 +2974,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AppListNonAppImpressionFileExtension">
+  <obsolete>
+    Deprecated March 2021.
+  </obsolete>
   <int value="0" label=".3ga"/>
   <int value="1" label=".3gp"/>
   <int value="2" label=".aac"/>

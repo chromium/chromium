@@ -854,6 +854,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="AppListNonAppImpression">
+  <obsolete>
+    Deprecated March 2021.
+  </obsolete>
   <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
