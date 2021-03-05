@@ -31235,7 +31235,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3374" label="V8RTCRtpTransceiver_Stopped_AttributeGetter"/>
   <int value="3375" label="V8RTCRtpTransceiver_Stop_Method"/>
   <int value="3376" label="SecurePaymentConfirmation"/>
-  <int value="3377" label="CSSInvalidVariableUnset"/>
+  <int value="3377" label="OBSOLETE_CSSInvalidVariableUnset"/>
   <int value="3378" label="ElementInternalsShadowRoot"/>
   <int value="3379" label="AnyPiiFieldDetected_PredictedTypeMatch"/>
   <int value="3380" label="EmailFieldDetected_PredictedTypeMatch"/>
