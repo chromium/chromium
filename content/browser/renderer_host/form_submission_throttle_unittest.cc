@@ -21,7 +21,11 @@ class FormSubmissionTest : public RenderViewHostImplTestHarness {
         std::move(source_none);
     policy->self_origin = network::mojom::CSPSource::New(
         "https", "www.example.org", 443, "", false, false);
-    main_test_rfh()->AddContentSecurityPolicy(std::move(policy));
+    std::vector<network::mojom::ContentSecurityPolicyPtr> policies;
+    policies.emplace_back(std::move(policy));
+    static_cast<blink::mojom::PolicyContainerHost*>(
+        main_test_rfh()->policy_container_host())
+        ->AddContentSecurityPolicies(std::move(policies));
   }
 };
 

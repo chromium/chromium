@@ -2238,50 +2238,6 @@ void RenderFrameHostImpl::RenderProcessGone(
     OnAudibleStateChanged(false);
 }
 
-void RenderFrameHostImpl::ReportContentSecurityPolicyViolation(
-    network::mojom::CSPViolationPtr violation_params) {
-  GetAssociatedLocalFrame()->ReportContentSecurityPolicyViolation(
-      std::move(violation_params));
-}
-
-void RenderFrameHostImpl::SanitizeDataForUseInCspViolation(
-    bool is_redirect,
-    network::mojom::CSPDirectiveName directive,
-    GURL* blocked_url,
-    network::mojom::SourceLocation* source_location) const {
-  DCHECK(blocked_url);
-  DCHECK(source_location);
-  GURL source_location_url(source_location->url);
-
-  // The main goal of this is to avoid leaking information between potentially
-  // separate renderers, in the event of one of them being compromised.
-  // See https://crbug.com/633306.
-  bool sanitize_blocked_url = true;
-  bool sanitize_source_location = true;
-
-  // There is no need to sanitize data when it is same-origin with the current
-  // url of the renderer.
-  if (url::Origin::Create(*blocked_url)
-          .IsSameOriginWith(last_committed_origin_))
-    sanitize_blocked_url = false;
-  if (url::Origin::Create(source_location_url)
-          .IsSameOriginWith(last_committed_origin_))
-    sanitize_source_location = false;
-
-  // When a renderer tries to do a form submission, it already knows the url of
-  // the blocked url, except when it is redirected.
-  if (!is_redirect && directive == network::mojom::CSPDirectiveName::FormAction)
-    sanitize_blocked_url = false;
-
-  if (sanitize_blocked_url)
-    *blocked_url = blocked_url->GetOrigin();
-  if (sanitize_source_location) {
-    source_location->url = source_location_url.GetOrigin().spec();
-    source_location->line = 0u;
-    source_location->column = 0u;
-  }
-}
-
 void RenderFrameHostImpl::PerformAction(const ui::AXActionData& data) {
   AccessibilityPerformAction(data);
 }
@@ -3109,10 +3065,6 @@ void RenderFrameHostImpl::DidAddContentSecurityPolicies(
   TRACE_EVENT1("navigation",
                "RenderFrameHostImpl::OnDidAddContentSecurityPolicies",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id());
-
-  for (auto& policy : policies) {
-    AddContentSecurityPolicy(std::move(policy));
-  }
 }
 
 void RenderFrameHostImpl::CancelInitialHistoryLoad() {

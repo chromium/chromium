@@ -372,13 +372,7 @@ void Navigator::DidNavigate(
 
   if (!is_same_document_navigation) {
     // Navigating to a new location means a new, fresh set of http headers
-    // and/or <meta> elements - we need to reset CSP and Feature Policy.
-    // However, if the navigation is restoring the given |render_frame_host|
-    // from back-forward cache, it does not change the document in the given
-    // RenderFrameHost and the existing Content Security Policy should be kept.
-    if (!navigation_request->IsServedFromBackForwardCache())
-      render_frame_host->ResetContentSecurityPolicies();
-
+    // and/or <meta> elements - we need to reset Feature Policy.
     frame_tree_node->ResetForNavigation(
         navigation_request->IsServedFromBackForwardCache());
   }

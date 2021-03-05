@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -94,58 +95,6 @@ bool HeadersContainFrameAncestorsCSP(
                    network::mojom::CSPDirectiveName::FrameAncestors);
       });
 }
-
-class FrameAncestorCSPContext : public network::CSPContext {
- public:
-  FrameAncestorCSPContext(
-      network::CSPContext* csp_context,
-      const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies)
-      : csp_context_(csp_context) {
-    DCHECK(csp_context);
-
-    // TODO(arthursonzogni): Refactor CSPContext to its original state, it
-    // shouldn't own any ContentSecurityPolicies on its own. This should be
-    // defined by the implementation instead. Copies could be avoided here.
-    for (auto& policy : policies)
-      AddContentSecurityPolicy(mojo::Clone(policy));
-  }
-
-  void SetAncestor(RenderFrameHostImpl* ancestor_of_navigated_frame) {
-    DCHECK(ancestor_of_navigated_frame);
-    ancestor_of_navigated_frame_ = ancestor_of_navigated_frame;
-  }
-
-  // Copy constructor and copy assignment are unsupported.
-  FrameAncestorCSPContext(const FrameAncestorCSPContext&) = delete;
-  FrameAncestorCSPContext& operator=(const FrameAncestorCSPContext&) = delete;
-
- private:
-  void ReportContentSecurityPolicyViolation(
-      network::mojom::CSPViolationPtr violation_params) override {
-    // frame-ancestors should only be violated if there actually is an ancestor.
-    DCHECK(ancestor_of_navigated_frame_);
-
-    // CSP violations (if any) are reported via the disallowed ancestor of the
-    // navigated frame (because while the throttle runs the navigation hasn't
-    // committed yet and the target frame might not yet have a URLLoaderFactory
-    // that could be used to report the violation).  See also
-    // https://crbug.com/1111049.
-    return ancestor_of_navigated_frame_->ReportContentSecurityPolicyViolation(
-        std::move(violation_params));
-  }
-
-  void SanitizeDataForUseInCspViolation(
-      bool is_redirect,
-      network::mojom::CSPDirectiveName directive,
-      GURL* blocked_url,
-      network::mojom::SourceLocation* source_location) const override {
-    return csp_context_->SanitizeDataForUseInCspViolation(
-        is_redirect, directive, blocked_url, source_location);
-  }
-
-  network::CSPContext* const csp_context_;
-  RenderFrameHostImpl* ancestor_of_navigated_frame_;
-};
 
 // Returns the parent, including outer delegates in the case of portals.
 RenderFrameHostImpl* ParentOrOuterDelegate(RenderFrameHostImpl* frame) {
@@ -455,11 +404,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
   // navigation_request().common_params().source_location here instead.
   auto empty_source_location = network::mojom::SourceLocation::New();
 
-  // CSP frame-ancestors are checked against the URL of every parent.
-  FrameAncestorCSPContext csp_context(
-      NavigationRequest::From(navigation_handle())->GetRenderFrameHost(),
-      content_security_policy);
-
   // Check CSP frame-ancestors against every parent.
   // We enforce frame-ancestors in the outer delegate for portals, but not
   // for other uses of inner/outer WebContents (GuestViews).
@@ -467,9 +411,13 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
       ParentOrOuterDelegate(static_cast<RenderFrameHostImpl*>(
           navigation_handle()->GetRenderFrameHost()));
   while (parent) {
-    csp_context.SetAncestor(parent);
-
-    if (!csp_context.IsAllowedByCsp(
+    // CSP violations (if any) are reported via the disallowed ancestor of the
+    // navigated frame (because while the throttle runs the navigation hasn't
+    // committed yet and the target frame might not yet have a URLLoaderFactory
+    // that could be used to report the violation).
+    // See also https://crbug.com/1111049.
+    if (!RenderFrameHostCSPContext(parent).IsAllowedByCsp(
+            content_security_policy,
             network::mojom::CSPDirectiveName::FrameAncestors,
             parent->GetLastCommittedOrigin().GetURL(),
             navigation_handle()->WasServerRedirect(),

@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "content/browser/initiator_csp_context.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/prerender/prerender_host.h"
@@ -29,6 +28,8 @@
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/policy_container_navigation_bundle.h"
+#include "content/browser/renderer_host/render_frame_host_csp_context.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_package/web_bundle_handle.h"
 #include "content/common/content_export.h"
@@ -50,6 +51,7 @@
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -912,6 +914,7 @@ class CONTENT_EXPORT NavigationRequest
   // allows the navigation. This is called to perform the frame-src
   // and navigate-to checks.
   bool IsAllowedByCSPDirective(
+      const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies,
       network::CSPContext* context,
       network::mojom::CSPDirectiveName directive,
       bool has_followed_redirect,
@@ -924,7 +927,10 @@ class CONTENT_EXPORT NavigationRequest
   // Returns net::OK if the checks pass, and net::ERR_ABORTED or
   // net::ERR_BLOCKED_BY_CSP depending on which checks fail.
   net::Error CheckCSPDirectives(
-      RenderFrameHostImpl* parent,
+      RenderFrameHostCSPContext parent_context,
+      const PolicyContainerPolicies* parent_policies,
+      RenderFrameHostCSPContext initiator_context,
+      const PolicyContainerPolicies* initiator_policies,
       bool has_followed_redirect,
       bool url_upgraded_after_redirect,
       bool is_response_check,
@@ -1318,8 +1324,6 @@ class CONTENT_EXPORT NavigationRequest
   // The SiteInfo of this navigation, as obtained from
   // SiteInstanceImpl::ComputeSiteInfo().
   SiteInfo site_info_;
-
-  const std::unique_ptr<InitiatorCSPContext> initiator_csp_context_;
 
   base::OnceClosure on_start_checks_complete_closure_;
 

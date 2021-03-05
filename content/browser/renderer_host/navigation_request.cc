@@ -1130,9 +1130,6 @@ NavigationRequest::NavigationRequest(
       bindings_(FrameNavigationEntry::kInvalidBindings),
       from_begin_navigation_(from_begin_navigation),
       expected_render_process_host_id_(ChildProcessHost::kInvalidUniqueID),
-      initiator_csp_context_(std::make_unique<InitiatorCSPContext>(
-          std::move(common_params_->initiator_csp_info->initiator_csp),
-          std::move(navigation_initiator))),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
       // Store the old RenderFrameHost id at request creation to be used later.
@@ -3768,6 +3765,7 @@ void NavigationRequest::UpdateSiteInfo(
 }
 
 bool NavigationRequest::IsAllowedByCSPDirective(
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies,
     network::CSPContext* context,
     network::mojom::CSPDirectiveName directive,
     bool has_followed_redirect,
@@ -3787,29 +3785,41 @@ bool NavigationRequest::IsAllowedByCSPDirective(
   } else {
     url = common_params_->url;
   }
-  return context->IsAllowedByCsp(directive, url, has_followed_redirect,
-                                 is_response_check,
+  return context->IsAllowedByCsp(policies, directive, url,
+                                 has_followed_redirect, is_response_check,
                                  common_params_->source_location, disposition,
                                  begin_params_->is_form_submission);
 }
 
 net::Error NavigationRequest::CheckCSPDirectives(
-    RenderFrameHostImpl* parent,
+    RenderFrameHostCSPContext parent_context,
+    const PolicyContainerPolicies* parent_policies,
+    RenderFrameHostCSPContext initiator_context,
+    const PolicyContainerPolicies* initiator_policies,
     bool has_followed_redirect,
     bool url_upgraded_after_redirect,
     bool is_response_check,
     network::CSPContext::CheckCSPDisposition disposition) {
-  bool navigate_to_allowed = IsAllowedByCSPDirective(
-      initiator_csp_context_.get(),
-      network::mojom::CSPDirectiveName::NavigateTo, has_followed_redirect,
-      url_upgraded_after_redirect, is_response_check, disposition);
+  bool navigate_to_allowed = true;
+  if (base::FeatureList::IsEnabled(
+          features::kExperimentalContentSecurityPolicyFeatures) &&
+      initiator_policies) {
+    RenderFrameHostCSPContext initiator_csp_context(
+        RenderFrameHostImpl::FromFrameToken(GetInitiatorProcessID(),
+                                            GetInitiatorFrameToken().value()));
+
+    navigate_to_allowed = IsAllowedByCSPDirective(
+        initiator_policies->content_security_policies, &initiator_context,
+        network::mojom::CSPDirectiveName::NavigateTo, has_followed_redirect,
+        url_upgraded_after_redirect, is_response_check, disposition);
+  }
 
   bool frame_src_allowed = true;
-  if (parent) {
+  if (parent_policies) {
     frame_src_allowed = IsAllowedByCSPDirective(
-        parent, network::mojom::CSPDirectiveName::FrameSrc,
-        has_followed_redirect, url_upgraded_after_redirect, is_response_check,
-        disposition);
+        parent_policies->content_security_policies, &parent_context,
+        network::mojom::CSPDirectiveName::FrameSrc, has_followed_redirect,
+        url_upgraded_after_redirect, is_response_check, disposition);
   }
 
   if (navigate_to_allowed && frame_src_allowed)
@@ -3828,6 +3838,7 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
     bool has_followed_redirect,
     bool url_upgraded_after_redirect,
     bool is_response_check) {
+  DCHECK(policy_container_navigation_bundle_.has_value());
   if (common_params_->url.SchemeIs(url::kAboutScheme))
     return net::OK;
 
@@ -3837,6 +3848,9 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   }
 
   RenderFrameHostImpl* parent = frame_tree_node()->parent();
+  const PolicyContainerPolicies* parent_policies =
+      policy_container_navigation_bundle_->ParentPolicies();
+  DCHECK(!parent == !parent_policies);
   if (!parent &&
       frame_tree_node()
           ->current_frame_host()
@@ -3849,13 +3863,14 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
                  ->GetOuterDelegateNode()
                  ->current_frame_host()
                  ->GetParent();
+    // TODO(antoniosartori): If we want to keep checking frame-src for portals,
+    // consider storing a snapshot of the parent policies in the
+    // `policy_container_navigation_bundle_` at the beginning of the navigation.
+    parent_policies = &parent->policy_container_host()->policies();
   }
 
-  // TODO(andypaicu,https://crbug.com/837627): the current_frame_host is the
-  // wrong RenderFrameHost. We should be using the navigation initiator
-  // RenderFrameHost.
-  initiator_csp_context_->SetReportingRenderFrameHost(
-      frame_tree_node()->current_frame_host());
+  const PolicyContainerPolicies* initiator_policies =
+      policy_container_navigation_bundle_->InitiatorPolicies();
 
   // CSP checking happens in three phases, per steps 3-5 of
   // https://fetch.spec.whatwg.org/#main-fetch:
@@ -3868,15 +3883,32 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   // This sequence of events allows site owners to learn about (via step 1) any
   // requests that are upgraded in step 2.
 
+  RenderFrameHostCSPContext parent_context(parent);
+
+  // Note: the initiator RenderFrameHost could have been deleted by
+  // now. Then this RenderFrameHostCSPContext will do nothing and we won't
+  // report violations for this check.
+  //
+  // TODO(antoniosartori): Check that the initiator RenderFrameHost has not
+  // committed a new document in between, see failing WPT
+  // content-security-policy/navigate-to/spv-only-sent-to-initiator.sub.html
+  RenderFrameHostCSPContext initiator_context(
+      GetInitiatorFrameToken().has_value()
+          ? RenderFrameHostImpl::FromFrameToken(
+                GetInitiatorProcessID(), GetInitiatorFrameToken().value())
+          : nullptr);
+
   net::Error report_only_csp_status = CheckCSPDirectives(
-      parent, has_followed_redirect, url_upgraded_after_redirect,
-      is_response_check, network::CSPContext::CHECK_REPORT_ONLY_CSP);
+      parent_context, parent_policies, initiator_context, initiator_policies,
+      has_followed_redirect, url_upgraded_after_redirect, is_response_check,
+      network::CSPContext::CHECK_REPORT_ONLY_CSP);
 
   // upgrade-insecure-requests is handled in the network code for redirects,
   // only do the upgrade here if this is not a redirect.
   if (!has_followed_redirect && !frame_tree_node()->IsMainFrame()) {
-    if (network::ShouldUpgradeInsecureRequest(
-            parent->ContentSecurityPolicies())) {
+    DCHECK(parent_policies);
+    if (parent_policies && network::ShouldUpgradeInsecureRequest(
+                               parent_policies->content_security_policies)) {
       upgrade_if_insecure_ = true;
       network::UpgradeInsecureRequest(&common_params_->url);
       common_params_->referrer = Referrer::SanitizeForRequest(
@@ -3886,8 +3918,9 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   }
 
   net::Error enforced_csp_status = CheckCSPDirectives(
-      parent, has_followed_redirect, url_upgraded_after_redirect,
-      is_response_check, network::CSPContext::CHECK_ENFORCED_CSP);
+      parent_context, parent_policies, initiator_context, initiator_policies,
+      has_followed_redirect, url_upgraded_after_redirect, is_response_check,
+      network::CSPContext::CHECK_ENFORCED_CSP);
   if (enforced_csp_status != net::OK)
     return enforced_csp_status;
   return report_only_csp_status;

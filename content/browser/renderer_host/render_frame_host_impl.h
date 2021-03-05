@@ -263,7 +263,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public SiteInstanceImpl::Observer,
       public blink::mojom::BackForwardCacheControllerHost,
       public blink::mojom::LocalFrameHost,
-      public network::CSPContext,
       public blink::mojom::LocalMainFrameHost,
       public ui::AXActionHandlerBase,
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -482,15 +481,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // SiteInstanceImpl::Observer
   void RenderProcessGone(SiteInstanceImpl* site_instance,
                          const ChildProcessTerminationInfo& info) override;
-
-  // network::CSPContext
-  void ReportContentSecurityPolicyViolation(
-      network::mojom::CSPViolationPtr violation_params) override;
-  void SanitizeDataForUseInCspViolation(
-      bool is_redirect,
-      network::mojom::CSPDirectiveName directive,
-      GURL* blocked_url,
-      network::mojom::SourceLocation* source_location) const override;
 
   // ui::AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;
