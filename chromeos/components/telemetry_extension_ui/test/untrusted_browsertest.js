@@ -186,6 +186,12 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRunRoutineWithInterceptor', async () => {
   await dpsl.diagnostics.cpu.runFloatingPointAccuracyRoutine({duration: 94});
   await dpsl.diagnostics.cpu.runPrimeSearchRoutine(
       {lengthSeconds: 45, maximumNumber: 1110987654321});
+
+  // dpsl.diangostics.disk.* tests
+  await dpsl.diagnostics.disk.runLinearReadRoutine(
+      {lengthSeconds: 44, fileSizeMB: 135});
+  await dpsl.diagnostics.disk.runRandomReadRoutine(
+      {lengthSeconds: 23, fileSizeMB: 1749});
 });
 
 // Tests that runBatteryHealthRoutine returns the correct Object.

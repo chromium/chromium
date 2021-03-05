@@ -781,8 +781,6 @@ class TestDiagnosticsService {
 
   /** @override */
   getAvailableRoutines() {}
-  /** @override */
-  runDiskReadRoutine() {}
 
   /**
    * @override
@@ -962,6 +960,23 @@ class TestDiagnosticsService {
     let response = this.routineResponse;
     return Promise.resolve({response});
   }
+
+  /**
+   * @override
+   * @param {!chromeos.health.mojom.DiskReadRoutineTypeEnum} type
+   * @param {!number} lengthSeconds
+   * @param {!number} fileSizeMB
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runDiskReadRoutine(type, lengthSeconds, fileSizeMB) {
+    this.callHistory.push([
+      'runDiskReadRoutine',
+      {type: type, lengthSeconds: lengthSeconds, fileSizeMB: fileSizeMB}
+    ]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
 };
 
 // Tests with a fake Mojo diagnostics service.
@@ -1105,6 +1120,20 @@ TEST_F(
             [
               'runPrimeSearchRoutine',
               {lengthSeconds: 45, maxNum: BigInt(1110987654321)}
+            ],
+            [
+              'runDiskReadRoutine', {
+                type: chromeos.health.mojom.DiskReadRoutineTypeEnum.kLinearRead,
+                lengthSeconds: 44,
+                fileSizeMB: 135
+              }
+            ],
+            [
+              'runDiskReadRoutine', {
+                type: chromeos.health.mojom.DiskReadRoutineTypeEnum.kRandomRead,
+                lengthSeconds: 23,
+                fileSizeMB: 1749
+              }
             ]
           ],
           this.diagnosticsService.callHistory);

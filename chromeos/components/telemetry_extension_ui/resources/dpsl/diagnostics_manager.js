@@ -332,6 +332,43 @@
     }
   }
 
+
+  /**
+   * Diagnostics Disk Manager for dpsl.diagnostics.disk.* APIs.
+   */
+  class DiskManager {
+    /**
+     * Runs disk linear read test.
+     * @param {!dpsl.DiskReadRoutineParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runLinearReadRoutine(params) {
+      // TODO: rename fileSizeMb -> fileSizeMB in trusted.js.
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_DISK_READ_ROUTINE, {
+            type: 'linear-read',
+            lengthSeconds: params.lengthSeconds,
+            fileSizeMb: params.fileSizeMB
+          });
+    }
+
+    /**
+     * Runs disk random read test.
+     * @param {!dpsl.DiskReadRoutineParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runRandomReadRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_DISK_READ_ROUTINE, {
+            type: 'random-read',
+            lengthSeconds: params.lengthSeconds,
+            fileSizeMb: params.fileSizeMB
+          });
+    }
+  }
+
   /**
    * DPSL Diagnostics Manager for dpsl.diagnostics.* APIs.
    */
@@ -360,6 +397,12 @@
        * @public
        */
       this.cpu = new CpuManager();
+
+      /**
+       * @type {!DiskManager}
+       * @public
+       */
+      this.disk = new DiskManager();
     }
 
     /**
@@ -605,19 +648,19 @@
      * @public
      */
     async runDiskReadRoutine(type, lengthSeconds, fileSizeMb) {
+      console.warn(
+          'chromeos.diagnostics.runDiskReadRoutine API function is deprecated',
+          'and will be removed. Use',
+          'dpsl.diagnostics.disk.run{Linear/Random}ReadRoutine, instead');
+
       const message =
           /**
              @type {!dpsl_internal.DiagnosticsRunDiskReadRoutineRequest}
            */
           ({type: type, lengthSeconds: lengthSeconds, fileSizeMb: fileSizeMb});
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_DISK_READ_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_DISK_READ_ROUTINE, message));
     }
 
     /**

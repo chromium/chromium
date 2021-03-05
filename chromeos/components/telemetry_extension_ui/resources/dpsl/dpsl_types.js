@@ -205,6 +205,12 @@ dpsl.CpuRoutineDurationParams;
  * @typedef {{lengthSeconds: !number, maximumNumber: !number}}
  */
 dpsl.CpuPrimeSearchRoutineParams;
+
+/**
+ * Params object of dpsl.diagnostics.disk.run{Linear/Random}ReadRoutine()
+ * @typedef {{lengthSeconds: !number, fileSizeMB: !number}}
+ */
+dpsl.DiskReadRoutineParams;
 //////////////////// dpsl.system_events.* type definitions /////////////////////
 
 /**
