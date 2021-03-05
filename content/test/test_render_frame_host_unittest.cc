@@ -39,11 +39,13 @@ class TestRenderFrameHostTest : public RenderViewHostImplTestHarness,
 
   void DidStopLoading() override { events_.push_back("DidStopLoading"); }
 
-  void DocumentAvailableInMainFrame() override {
+  void DocumentAvailableInMainFrame(
+      RenderFrameHost* render_frame_host) override {
     events_.push_back("DocumentAvailableInMainFrame");
   }
 
-  void DocumentOnLoadCompletedInMainFrame() override {
+  void DocumentOnLoadCompletedInMainFrame(
+      RenderFrameHost* render_frame_host) override {
     events_.push_back("DocumentOnLoadCompletedInMainFrame");
   }
 

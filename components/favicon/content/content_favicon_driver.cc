@@ -229,7 +229,8 @@ void ContentFaviconDriver::DidFinishNavigation(
   FetchFavicon(url, navigation_handle->IsSameDocument());
 }
 
-void ContentFaviconDriver::DocumentOnLoadCompletedInMainFrame() {
+void ContentFaviconDriver::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   document_on_load_completed_ = true;
 }
 

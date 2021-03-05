@@ -107,7 +107,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                            extensions::UnloadedExtensionReason reason) override;
 
   // content::WebContentsObserver:
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

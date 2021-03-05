@@ -264,8 +264,9 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
     offliner_->SetBackgroundSnapshotControllerForTest(
         std::move(snapshot_controller));
     // Call complete loading.
-    offliner()->DocumentAvailableInMainFrame();
-    offliner()->DocumentOnLoadCompletedInMainFrame();
+    auto* main_frame = offliner()->web_contents()->GetMainFrame();
+    offliner()->DocumentAvailableInMainFrame(main_frame);
+    offliner()->DocumentOnLoadCompletedInMainFrame(main_frame);
     PumpLoop();
   }
 
@@ -843,7 +844,8 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarStartedTriesMet) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Guarantees low bar for saving is met.
-  offliner()->DocumentAvailableInMainFrame();
+  auto* main_frame = offliner()->web_contents()->GetMainFrame();
+  offliner()->DocumentAvailableInMainFrame(main_frame);
   // Timeout
   EXPECT_TRUE(offliner()->HandleTimeout(kRequestId));
   EXPECT_TRUE(SaveInProgress());
@@ -860,7 +862,8 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarCompletedTriesMet) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Guarantees low bar for saving is met.
-  offliner()->DocumentAvailableInMainFrame();
+  auto* main_frame = offliner()->web_contents()->GetMainFrame();
+  offliner()->DocumentAvailableInMainFrame(main_frame);
   // Timeout
   EXPECT_TRUE(offliner()->HandleTimeout(kRequestId));
   EXPECT_TRUE(SaveInProgress());
@@ -901,7 +904,8 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarNoRetryLimit) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Sets lowbar.
-  offliner()->DocumentAvailableInMainFrame();
+  auto* main_frame = offliner()->web_contents()->GetMainFrame();
+  offliner()->DocumentAvailableInMainFrame(main_frame);
   // Timeout
   EXPECT_FALSE(offliner()->HandleTimeout(kRequestId));
   EXPECT_FALSE(SaveInProgress());

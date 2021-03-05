@@ -324,7 +324,8 @@ void LoadingPredictorTabHelper::DidLoadResourceFromMemoryCache(
       navigation_id, resource_load_info);
 }
 
-void LoadingPredictorTabHelper::DocumentOnLoadCompletedInMainFrame() {
+void LoadingPredictorTabHelper::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!predictor_)
     return;

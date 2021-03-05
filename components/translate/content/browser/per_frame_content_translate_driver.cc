@@ -312,7 +312,8 @@ void PerFrameContentTranslateDriver::DOMContentLoaded(
   }
 }
 
-void PerFrameContentTranslateDriver::DocumentOnLoadCompletedInMainFrame() {
+void PerFrameContentTranslateDriver::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   if (translate::IsSubFrameLanguageDetectionEnabled() &&
       translate::IsTranslatableURL(web_contents()->GetURL())) {
     StartLanguageDetection();

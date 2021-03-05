@@ -146,7 +146,8 @@ void AppWindowMetricsTracker::RenderFrameCreated(
       clock_->NowTicks() - time_stamps_[State::kLaunchRequested]);
 }
 
-void AppWindowMetricsTracker::DocumentOnLoadCompletedInMainFrame() {
+void AppWindowMetricsTracker::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   State next_state = state_after_window_contents_load_.value();
   state_after_window_contents_load_.reset();
   SetState(next_state);

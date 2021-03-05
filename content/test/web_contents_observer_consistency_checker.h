@@ -51,8 +51,10 @@ class WebContentsObserverConsistencyChecker
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
-  void DocumentAvailableInMainFrame() override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentAvailableInMainFrame(
+      RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInMainFrame(
+      RenderFrameHost* render_frame_host) override;
   void DOMContentLoaded(RenderFrameHost* render_frame_host) override;
   void DidFinishLoad(RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;

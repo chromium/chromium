@@ -74,8 +74,10 @@ class BackgroundLoaderOffliner
   void CanDownload(base::OnceCallback<void(bool)> callback) override;
 
   // WebContentsObserver implementation.
-  void DocumentAvailableInMainFrame() override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentAvailableInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
   void RenderProcessGone(base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void DidFinishNavigation(

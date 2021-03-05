@@ -46,7 +46,8 @@ class AppWindowMetricsTracker : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
  private:
   // NOTE: Used in histograms - do not change order, or remove entries.
