@@ -140,10 +140,6 @@ constexpr char kJSSetIsEditingType[] = "setIsEditing";
 constexpr char kJSFieldFocusType[] = "formFocusChange";
 constexpr char kJSFieldFocus[] = "focused";
 
-// Notify when document is focused (Plugin -> Page)
-constexpr char kJSDocumentFocusChangedType[] = "documentFocusChanged";
-constexpr char kJSDocumentHasFocus[] = "hasFocus";
-
 // Request the thumbnail image for a particular page (Page -> Plugin)
 constexpr char kJSGetThumbnailType[] = "getThumbnail";
 constexpr char kJSGetThumbnailPage[] = "page";
@@ -1567,13 +1563,6 @@ void OutOfProcessInstance::EnteredEditMode() {
 
   pp::VarDictionary message;
   message.Set(kType, kJSSetIsEditingType);
-  PostMessage(message);
-}
-
-void OutOfProcessInstance::DocumentFocusChanged(bool document_has_focus) {
-  pp::VarDictionary message;
-  message.Set(pp::Var(kType), pp::Var(kJSDocumentFocusChangedType));
-  message.Set(pp::Var(kJSDocumentHasFocus), pp::Var(document_has_focus));
   PostMessage(message);
 }
 

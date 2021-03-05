@@ -74,6 +74,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
              const std::string& body) override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
+  void DocumentFocusChanged(bool document_has_focus) override;
 
   // PaintManager::Client
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,

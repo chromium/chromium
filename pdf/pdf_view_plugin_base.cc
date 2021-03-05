@@ -240,6 +240,13 @@ void PdfViewPluginBase::SetIsSelecting(bool is_selecting) {
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "documentFocusChanged");
+  message.SetBoolKey("hasFocus", document_has_focus);
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::HandleMessage(const base::Value& message) {
   using MessageHandler = void (PdfViewPluginBase::*)(const base::Value&);
   static constexpr auto kMessageHandlers =

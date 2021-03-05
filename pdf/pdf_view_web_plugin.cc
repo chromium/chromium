@@ -267,8 +267,6 @@ void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
 
 void PdfViewWebPlugin::EnteredEditMode() {}
 
-void PdfViewWebPlugin::DocumentFocusChanged(bool document_has_focus) {}
-
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
   NOTIMPLEMENTED();
 }
