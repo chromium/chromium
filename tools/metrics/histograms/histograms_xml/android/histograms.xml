@@ -1109,6 +1109,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.HomeButton.PerProfileType" enum="BrowserProfileType"
+    expires_after="2021-12-31">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the clicks on Home button in Android toolbar for each profile type.
+  </summary>
+</histogram>
+
 <histogram name="Android.InstantApps.ApiCallDurationWithApp" units="ms"
     expires_after="M81">
   <owner>sbirch@google.com</owner>

@@ -81,6 +81,7 @@ android_library("java") {
     "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
+    "//components/profile_metrics:browser_profile_type_enum_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
