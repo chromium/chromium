@@ -64,4 +64,19 @@ share_test(mock => {
         {title: title, text: '\ud9a3x', url: url}));
 }, 'successful share with Unicode characters');
 
+share_test(mock => {
+  const kMaxTitleLength = 16 * 1024;
+  const kMaxTextLength = 1 * 1024 * 1024;
+  const kMaxUrlLength = 16 * 1024;
+  const title = 'x'.repeat(kMaxTitleLength);
+  const text = 'y'.repeat(kMaxTextLength);
+  const prefix = 'https://example.com/?q=';
+  const url = prefix + 'z'.repeat(kMaxUrlLength - prefix.length);
+  mock.pushShareResult(title, text, url,
+                       ShareError.OK);
+  return callWithKeyDown(() => navigator.share(
+        {title: title, text: text, url: url})).then(
+        result => assert_equals(result, undefined));
+}, 'successful share with long strings');
+
 </script>

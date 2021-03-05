@@ -111,4 +111,32 @@ share_test(mock => {
   } );
 }, 'Failed file share does not lead to InvalidStateError');
 
+share_test(mock => {
+  const kMaxTitleLength = 16 * 1024;
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          title: 'x'.repeat(kMaxTitleLength + 1)
+      }),
+      'NotAllowedError'));
+}, 'share with excessive title');
+
+share_test(mock => {
+  const kMaxTextLength = 1 * 1024 * 1024;
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          text: 'y'.repeat(kMaxTextLength + 1)
+      }),
+      'NotAllowedError'));
+}, 'share with excessive text');
+
+share_test(mock => {
+  const kMaxUrlLength = 16 * 1024;
+  const prefix = 'https://example.com/?q=';
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          url: prefix + 'z'.repeat(kMaxUrlLength + 1 - prefix.length)
+      }),
+      'NotAllowedError'));
+}, 'share with excessive url');
+
 </script>
