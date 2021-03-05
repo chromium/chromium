@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
@@ -50,7 +51,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
     // The activity tab provider.
     private ActivityTabProvider mTabProvider;
 
-    private ButtonData mButtonData;
+    private ButtonDataImpl mButtonData;
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     private OnClickListener mOnClickListener;
 
@@ -103,20 +104,20 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         mModalDialogManagerObserver = new ModalDialogManagerObserver() {
             @Override
             public void onDialogAdded(PropertyModel model) {
-                mButtonData.isEnabled = false;
-                notifyObservers(mButtonData.canShow);
+                mButtonData.setEnabled(false);
+                notifyObservers(mButtonData.canShow());
             }
 
             @Override
             public void onLastDialogDismissed() {
-                mButtonData.isEnabled = true;
-                notifyObservers(mButtonData.canShow);
+                mButtonData.setEnabled(true);
+                notifyObservers(mButtonData.canShow());
             }
         };
         mModalDialogManager = modalDialogManager;
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
 
-        mButtonData = new ButtonData(false,
+        mButtonData = new ButtonDataImpl(false,
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_toolbar_share_offset_24dp),
                 mOnClickListener, R.string.share, true, null, true);
 
@@ -130,7 +131,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         }
         mScreenWidthDp = configuration.screenWidthDp;
         updateButtonVisibility(mTabProvider.get());
-        notifyObservers(mButtonData.canShow);
+        notifyObservers(mButtonData.canShow());
     }
 
     @Override
@@ -165,7 +166,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
     private void updateButtonVisibility(Tab tab) {
         if (tab == null || tab.getWebContents() == null || mTabProvider == null
                 || mTabProvider.get() == null || !isFeatureEnabled()) {
-            mButtonData.canShow = false;
+            mButtonData.setCanShow(false);
             return;
         }
 
@@ -177,11 +178,11 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         boolean isDeviceWideEnough = mScreenWidthDp > mMinimumWidthDp;
 
         if (mShareDelegateSupplier.get() == null || !isDeviceWideEnough) {
-            mButtonData.canShow = false;
+            mButtonData.setCanShow(false);
             return;
         }
 
-        mButtonData.canShow = mShareUtils.shouldEnableShare(tab);
+        mButtonData.setCanShow(mShareUtils.shouldEnableShare(tab));
     }
 
     private static boolean isFeatureEnabled() {

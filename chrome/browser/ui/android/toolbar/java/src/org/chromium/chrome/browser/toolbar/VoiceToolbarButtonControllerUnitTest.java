@@ -86,20 +86,20 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
     @Test
     public void onConfigurationChanged_screenWidthChanged() {
-        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow);
+        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
 
         // Screen width shrinks below the threshold (e.g. screen rotated).
         mConfiguration.screenWidthDp =
                 VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP - WIDTH_DELTA;
         mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
 
-        assertFalse(mVoiceToolbarButtonController.get(mTab).canShow);
+        assertFalse(mVoiceToolbarButtonController.get(mTab).canShow());
 
         // Make sure the opposite works as well.
         mConfiguration.screenWidthDp =
                 VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
         mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
 
-        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow);
+        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
     }
 }

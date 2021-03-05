@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
@@ -2520,13 +2521,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mOptionalButtonAnimator.end();
         }
 
-        mOptionalButton.setOnClickListener(buttonData.onClickListener);
-        mOptionalButton.setImageDrawable(buttonData.drawable);
+        ButtonSpec buttonSpec = buttonData.getButtonSpec();
+        mOptionalButton.setOnClickListener(buttonSpec.getOnClickListener());
+        mOptionalButton.setImageDrawable(buttonSpec.getDrawable());
         mOptionalButton.setContentDescription(
-                getContext().getResources().getString(buttonData.contentDescriptionResId));
-        mOptionalButton.setEnabled(buttonData.isEnabled);
+                getContext().getResources().getString(buttonSpec.getContentDescriptionResId()));
+        mOptionalButton.setEnabled(buttonData.isEnabled());
 
-        mOptionalButtonUsesTint = buttonData.supportsTinting;
+        mOptionalButtonUsesTint = buttonSpec.getSupportsTinting();
         if (mOptionalButtonUsesTint) {
             ApiCompatibilityUtils.setImageTintList(mOptionalButton, getTint());
         } else {

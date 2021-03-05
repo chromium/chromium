@@ -52,7 +52,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -99,8 +100,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @Captor
     private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
 
-    private ButtonData mButtonData;
-    private ButtonData mDisabledButtonData;
+    private ButtonDataImpl mButtonData;
+    private ButtonDataImpl mDisabledButtonData;
     private ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier;
 
     @Before
@@ -114,8 +115,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
                         .build();
-        mButtonData = new ButtonData(false, mDrawable, mOnClickListener, 0, false, null, true);
-        mDisabledButtonData = new ButtonData(false, null, null, 0, false, null, true);
+        mButtonData = new ButtonDataImpl(false, mDrawable, mOnClickListener, 0, false, null, true);
+        mDisabledButtonData = new ButtonDataImpl(false, null, null, 0, false, null, true);
         mIdentityDiscStateSupplier = new ObservableSupplierImpl<>();
         doReturn(mButtonData)
                 .when(mIdentityDiscController)
@@ -339,9 +340,10 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
 
-        mButtonData.contentDescriptionResId = 5;
-        mButtonData.canShow = true;
-        mButtonData.drawable = mDrawable;
+        mButtonData.setButtonSpec(
+                new ButtonSpec(mDrawable, mOnClickListener, /*contentDescriptionResId=*/5,
+                        /*supportsTinting=*/false, /*iphCommandBuilder=*/null));
+        mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_CLICK_HANDLER), mOnClickListener);
@@ -351,11 +353,13 @@ public class StartSurfaceToolbarMediatorUnitTest {
         Drawable testDrawable2 = mock(Drawable.class);
         doReturn(mMockConstantState).when(testDrawable2).getConstantState();
         doReturn(testDrawable2).when(mMockConstantState).newDrawable();
-        mButtonData.drawable = testDrawable2;
+        mButtonData.setButtonSpec(
+                new ButtonSpec(testDrawable2, mOnClickListener, /*contentDescriptionResId=*/5,
+                        /*supportsTinting=*/false, /*iphCommandBuilder=*/null));
         mMediator.updateIdentityDisc(mButtonData);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IMAGE), testDrawable2);
 
-        mButtonData.canShow = false;
+        mButtonData.setCanShow(false);
         mMediator.updateIdentityDisc(mButtonData);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
     }
@@ -372,7 +376,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
 
-        mButtonData.canShow = true;
+        mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), true);
 
@@ -390,13 +394,19 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         mMediator.setStartSurfaceMode(true);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        mButtonData.canShow = true;
-        mButtonData.iphCommandBuilder = new IPHCommandBuilder(mMockResources, "IdentityDisc", 0, 0)
-                                                .setOnDismissCallback(mDismissedCallback);
+        mButtonData.setCanShow(true);
+        IPHCommandBuilder iphCommandBuilder =
+                new IPHCommandBuilder(mMockResources, "IdentityDisc", 0, 0)
+                        .setOnDismissCallback(mDismissedCallback);
+        mButtonData.setButtonSpec(
+                new ButtonSpec(mDrawable, mOnClickListener, /*contentDescriptionResId=*/0,
+                        /*supportsTinting=*/false, /*iphCommandBuilder=*/iphCommandBuilder));
+
         mMediator.updateIdentityDisc(mButtonData);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), true);
 
-        verify(mMockCallback, times(1)).onResult(mButtonData.iphCommandBuilder);
+        verify(mMockCallback, times(1))
+                .onResult(mButtonData.getButtonSpec().getIPHCommandBuilder());
     }
 
     @Test
@@ -483,7 +493,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         mMediator.onNativeLibraryReady();
         verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
-        mButtonData.canShow = true;
+        mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         mMediator.setStartSurfaceMode(true);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
@@ -553,17 +563,18 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
 
-        mButtonData.canShow = true;
+        mButtonData.setCanShow(true);
+
         mIdentityDiscStateSupplier.set(true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), true);
 
-        mButtonData.canShow = false;
+        mButtonData.setCanShow(false);
         mIdentityDiscStateSupplier.set(false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
 
         // updateIdentityDisc() should properly handle a hint that contradicts the true value of
         // canShow.
-        mButtonData.canShow = false;
+        mButtonData.setCanShow(false);
         mIdentityDiscStateSupplier.set(true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
     }
@@ -704,9 +715,10 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
 
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
-        mButtonData.contentDescriptionResId = 5;
-        mButtonData.canShow = true;
-        mButtonData.drawable = mDrawable;
+        mButtonData.setCanShow(true);
+        mButtonData.setButtonSpec(
+                new ButtonSpec(mDrawable, mOnClickListener, /*contentDescriptionResId=*/5,
+                        /*supportsTinting=*/false, /*iphCommandBuilder=*/null));
         mMediator.updateIdentityDisc(mButtonData);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), true);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), true);

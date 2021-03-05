@@ -46,7 +46,7 @@ public class VoiceToolbarButtonController
 
     private final VoiceSearchDelegate mVoiceSearchDelegate;
 
-    private final ButtonData mButtonData;
+    private final ButtonDataImpl mButtonData;
     private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
 
     private Integer mMinimumWidthDp;
@@ -89,14 +89,14 @@ public class VoiceToolbarButtonController
         mModalDialogManagerObserver = new ModalDialogManagerObserver() {
             @Override
             public void onDialogAdded(PropertyModel model) {
-                mButtonData.isEnabled = false;
-                notifyObservers(mButtonData.canShow);
+                mButtonData.setEnabled(false);
+                notifyObservers(mButtonData.canShow());
             }
 
             @Override
             public void onLastDialogDismissed() {
-                mButtonData.isEnabled = true;
-                notifyObservers(mButtonData.canShow);
+                mButtonData.setEnabled(true);
+                notifyObservers(mButtonData.canShow());
             }
         };
         mModalDialogManager = modalDialogManager;
@@ -109,7 +109,7 @@ public class VoiceToolbarButtonController
             mVoiceSearchDelegate.startVoiceRecognition();
         };
 
-        mButtonData = new ButtonData(/*canShow=*/false, buttonDrawable, onClickListener,
+        mButtonData = new ButtonDataImpl(/*canShow=*/false, buttonDrawable, onClickListener,
                 R.string.accessibility_toolbar_btn_mic,
                 /*supportsTinting=*/true, /*iphCommandBuilder=*/null, /*isEnabled=*/true);
 
@@ -122,14 +122,14 @@ public class VoiceToolbarButtonController
             return;
         }
         mScreenWidthDp = configuration.screenWidthDp;
-        mButtonData.canShow = shouldShowVoiceButton(mActiveTabSupplier.get());
-        notifyObservers(mButtonData.canShow);
+        mButtonData.setCanShow(shouldShowVoiceButton(mActiveTabSupplier.get()));
+        notifyObservers(mButtonData.canShow());
     }
 
     /** Triggers checking and possibly updating the mic visibility */
     public void updateMicButtonState() {
-        mButtonData.canShow = shouldShowVoiceButton(mActiveTabSupplier.get());
-        notifyObservers(mButtonData.canShow);
+        mButtonData.setCanShow(shouldShowVoiceButton(mActiveTabSupplier.get()));
+        notifyObservers(mButtonData.canShow());
     }
 
     @Override
@@ -151,7 +151,7 @@ public class VoiceToolbarButtonController
 
     @Override
     public ButtonData get(Tab tab) {
-        mButtonData.canShow = shouldShowVoiceButton(tab);
+        mButtonData.setCanShow(shouldShowVoiceButton(tab));
         return mButtonData;
     }
 
