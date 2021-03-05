@@ -45,6 +45,9 @@ component("gpu") {
     "//media/gpu/vaapi/*",
     "//media/mojo/*",
     "//remoting/codec:encoder",
+
+    # TODO(crbug.com/1184041): Remove //remoting/host:common when the usage is removed.
+    "//remoting/host:common",
   ]
 
   if (is_mac) {

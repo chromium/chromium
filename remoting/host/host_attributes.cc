@@ -115,6 +115,8 @@ std::string GetHostAttributes() {
     }
   }
 
+  // TODO(crbug.com/1184041): Remove this and/or the entire HostAttributes class
+  // so we can remove //remoting/host:common from //media/gpu's visibility list.
   if (media::MediaFoundationVideoEncodeAccelerator
       ::PreSandboxInitialization() &&
       media::InitializeMediaFoundation()) {
