@@ -400,25 +400,21 @@ template("monochrome_public_common_apk_or_module_tmpl") {
           ]
         }
 
-        # For Trichrome, the native library is added to TrichromeLibrary.apk so it's not needed here.
-        if (is_monochrome) {
-          _libarcore_dir = get_label_info(
-                               "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
-                               "target_out_dir") +
-                           "/com_google_ar_core_java/jni"
+        _libarcore_dir = get_label_info(
+                             "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
+                             "target_out_dir") + "/com_google_ar_core_java/jni"
 
-          if (android_64bit_target_cpu) {
-            if (invoker.is_64_bit_browser) {
-              loadable_modules +=
-                  [ "$_libarcore_dir/arm64-v8a/libarcore_sdk_c.so" ]
-            } else {
-              secondary_abi_loadable_modules +=
-                  [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
-            }
-          } else {
+        if (android_64bit_target_cpu) {
+          if (invoker.is_64_bit_browser) {
             loadable_modules +=
+                [ "$_libarcore_dir/arm64-v8a/libarcore_sdk_c.so" ]
+          } else {
+            secondary_abi_loadable_modules +=
                 [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
           }
+        } else {
+          loadable_modules +=
+              [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
         }
       }
 

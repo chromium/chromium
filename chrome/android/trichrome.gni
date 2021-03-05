@@ -2,13 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/abi.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/util/version.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/modules/buildflags.gni")
-import("//device/vr/buildflags/buildflags.gni")
 
 if (!defined(default_trichrome_certdigest)) {
   default_trichrome_certdigest =
@@ -177,30 +175,6 @@ template("trichrome_library_apk_tmpl") {
       _secondary_out_dir = get_label_info(_trampoline, "root_out_dir")
       secondary_abi_loadable_modules =
           [ "$_secondary_out_dir/libcrashpad_handler_trampoline.so" ]
-    }
-
-    if (enable_arcore) {
-      _libarcore_dir = get_label_info(
-                           "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
-                           "target_out_dir") + "/com_google_ar_core_java/jni"
-      not_needed([ "_libarcore_dir" ])
-
-      _arcore_extra_deps = [ "//third_party/arcore-android-sdk-client:com_google_ar_core__unpack_aar" ]
-      not_needed([ "_arcore_extra_deps" ])
-
-      if (_include_primary_support) {
-        loadable_modules +=
-            [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
-        deps += _arcore_extra_deps
-      }
-      if (_include_secondary_support) {
-        if (enable_arcore) {
-          secondary_abi_loadable_modules += [
-            "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so",
-          ]
-          deps += _arcore_extra_deps
-        }
-      }
     }
 
     # http://crbug.com/1042107.

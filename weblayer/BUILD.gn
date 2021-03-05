@@ -10,7 +10,6 @@ import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
 import("//build/config/win/manifest.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -476,7 +475,6 @@ source_set("weblayer_lib_base") {
     "//content/public/common",
     "//content/public/renderer",
     "//content/public/utility",
-    "//device/vr/buildflags",
     "//gpu/config",
     "//net",
     "//net:net_resources",
@@ -517,18 +515,6 @@ source_set("weblayer_lib_base") {
       "browser/captive_portal_service_factory.h",
     ]
     deps += [ "//components/captive_portal/content" ]
-  }
-
-  if (enable_arcore) {
-    assert(is_android)
-    sources += [
-      "browser/xr/xr_integration_client_impl.cc",
-      "browser/xr/xr_integration_client_impl.h",
-    ]
-    deps += [
-      "//components/webxr/android",
-      "//device/vr/android/arcore",
-    ]
   }
 
   if (use_browser_spellchecker) {

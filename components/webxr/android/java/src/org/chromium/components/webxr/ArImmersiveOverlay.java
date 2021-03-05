@@ -23,7 +23,6 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
@@ -127,8 +126,7 @@ public class ArImmersiveOverlay
                 mNotificationToast.cancel();
             }
             int resId = R.string.immersive_fullscreen_api_notification;
-            mNotificationToast =
-                    Toast.makeText(ContextUtils.getApplicationContext(), resId, Toast.LENGTH_LONG);
+            mNotificationToast = Toast.makeText(mActivity, resId, Toast.LENGTH_LONG);
             mNotificationToast.setGravity(Gravity.TOP | Gravity.CENTER, 0, 0);
             mNotificationToast.show();
         }

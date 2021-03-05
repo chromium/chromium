@@ -5,7 +5,6 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//weblayer/variables.gni")
 
@@ -288,18 +287,6 @@ android_library("java") {
     "//url:gurl_java",
     "//url:origin_java",
   ]
-
-  if (enable_arcore) {
-    sources += [
-      "org/chromium/weblayer_private/ArCompositorDelegateProviderImpl.java",
-      "org/chromium/weblayer_private/ArCoreVersionUtils.java",
-    ]
-    deps += [
-      "//components/webxr/android:ar_java",
-      "//components/webxr/android:ar_java_interfaces",
-    ]
-  }
-
   srcjar_deps = [
     ":generated_enums",
     ":resource_id_javagen",
@@ -470,13 +457,6 @@ generate_jni("jni") {
     "org/chromium/weblayer_private/permissions/PermissionRequestUtils.java",
     "org/chromium/weblayer_private/resources/ResourceMapper.java",
   ]
-
-  if (enable_arcore) {
-    sources += [
-      "org/chromium/weblayer_private/ArCompositorDelegateProviderImpl.java",
-      "org/chromium/weblayer_private/ArCoreVersionUtils.java",
-    ]
-  }
 }
 
 android_library("base_module_interfaces_java") {
