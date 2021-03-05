@@ -219,8 +219,8 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // TODO(asamidoi): Remove this check after module loading for
-  // ServiceWorker is enabled by default (https://crbug.com/824647).
+  // TODO(crbug.com/824647): Remove this check after module loading for
+  // ServiceWorker is enabled by default.
   if (options->type() == "module" &&
       !RuntimeEnabledFeatures::ModuleServiceWorkerEnabled()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

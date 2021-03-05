@@ -131,7 +131,7 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   void ContinueWithUninstallingRegistration(
       scoped_refptr<ServiceWorkerRegistration> existing_registration,
       blink::ServiceWorkerStatusCode status);
-  void ContinueWithRegistrationForSameScriptUrl(
+  void ContinueWithRegistrationWithSameRegistrationOptions(
       scoped_refptr<ServiceWorkerRegistration> existing_registration,
       blink::ServiceWorkerStatusCode status);
   void UpdateAndContinue();

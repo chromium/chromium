@@ -225,9 +225,10 @@ void ServiceWorkerRegisterJob::SetPhase(Phase phase) {
   phase_ = phase;
 }
 
-// This function corresponds to the steps in [[Register]] following
-// "Let registration be the result of running the [[GetRegistration]] algorithm.
-// Throughout this file, comments in quotes are excerpts from the spec.
+// This function corresponds to the steps in the [[Register]] algorithm.
+// https://w3c.github.io/ServiceWorker/#register-algorithm
+// "4. Let registration be the result of running the Get Registration algorithm
+// passing job’s scope url as the argument."
 void ServiceWorkerRegisterJob::ContinueWithRegistration(
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> existing_registration) {
@@ -244,20 +245,19 @@ void ServiceWorkerRegisterJob::ContinueWithRegistration(
   }
 
   DCHECK(existing_registration->GetNewestVersion());
-  // We also compare |script_type| here to proceed with registration when the
-  // script type is changed.
-  // TODO(asamidoi): Update the spec comment once
-  // https://github.com/w3c/ServiceWorker/issues/1359 is resolved.
-  // "If scriptURL is equal to registration.[[ScriptURL]] and "update_via_cache
-  // is equal to registration.[[update_via_cache]], then:"
+  // "5.2. If newestWorker is not null, job’s script url equals newestWorker’s
+  // script url, job’s worker type equals newestWorker’s type, and job’s update
+  // via cache mode's value equals registration’s update via cache mode, then:"
   if (existing_registration->GetNewestVersion()->script_url() == script_url_ &&
-      existing_registration->update_via_cache() == update_via_cache_ &&
       existing_registration->GetNewestVersion()->script_type() ==
-          worker_script_type_) {
-    // "Set registration.[[Uninstalling]] to false."
-    existing_registration->AbortPendingClear(base::BindOnce(
-        &ServiceWorkerRegisterJob::ContinueWithRegistrationForSameScriptUrl,
-        weak_factory_.GetWeakPtr(), existing_registration));
+          worker_script_type_ &&
+      existing_registration->update_via_cache() == update_via_cache_) {
+    // Subsequent spec steps (5.2.1-5.2.2) are implemented in
+    // ContinueWithRegistrationWithSameRegistrationOptions().
+    existing_registration->AbortPendingClear(
+        base::BindOnce(&ServiceWorkerRegisterJob::
+                           ContinueWithRegistrationWithSameRegistrationOptions,
+                       weak_factory_.GetWeakPtr(), existing_registration));
     return;
   }
 
@@ -268,12 +268,11 @@ void ServiceWorkerRegisterJob::ContinueWithRegistration(
     return;
   }
 
-  // "Invoke Set Registration algorithm with job’s scope url and
-  // job’s update via cache mode."
+  // "6.1. Invoke Set Registration algorithm with job’s scope url and job’s
+  // update via cache mode."
   existing_registration->SetUpdateViaCache(update_via_cache_);
   set_registration(existing_registration);
-  // "Return the result of running the [[Update]] algorithm, or its equivalent,
-  // passing registration as the argument."
+  // "7. Invoke Update algorithm passing job as the argument."
   UpdateAndContinue();
 }
 
@@ -401,32 +400,30 @@ void ServiceWorkerRegisterJob::ContinueWithUninstallingRegistration(
   UpdateAndContinue();
 }
 
-void ServiceWorkerRegisterJob::ContinueWithRegistrationForSameScriptUrl(
-    scoped_refptr<ServiceWorkerRegistration> existing_registration,
-    blink::ServiceWorkerStatusCode status) {
+void ServiceWorkerRegisterJob::
+    ContinueWithRegistrationWithSameRegistrationOptions(
+        scoped_refptr<ServiceWorkerRegistration> existing_registration,
+        blink::ServiceWorkerStatusCode status) {
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     Complete(status);
     return;
   }
   set_registration(existing_registration);
 
-  // "If newestWorker is not null, scriptURL is equal to newestWorker.scriptURL,
-  // and job’s update via cache mode's value equals registration’s
-  // update via cache mode then:
-  // Return a promise resolved with registration."
   // We resolve only if there's an active version. If there's not,
   // then there is either no version or only a waiting version from
   // the last browser session; it makes sense to proceed with registration in
   // either case.
   DCHECK(!existing_registration->installing_version());
   if (existing_registration->active_version()) {
+    // "5.2.1. Invoke Resolve Job Promise with job and registration."
     ResolvePromise(status, std::string(), existing_registration.get());
+    // "5.2.2. Invoke Finish Job with job and abort these steps."
     Complete(blink::ServiceWorkerStatusCode::kOk);
     return;
   }
 
-  // "Return the result of running the [[Update]] algorithm, or its equivalent,
-  // passing registration as the argument."
+  // "7. Invoke Update algorithm passing job as the argument."
   UpdateAndContinue();
 }
 
