@@ -11,25 +11,56 @@
 <link rel="import" href="/components/oobe_carousel.html">
 <link rel="import" href="/components/oobe_slide.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/oobe_loading_dialog.html">
 
 <dom-module id="oobe-update-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="oobe_update.css">
-    <oobe-dialog for-step="cellular" tabindex="0"
-        subtitle-key="updateOverCellularPromptMessage"
-        aria-live="polite" has-buttons footer-shrinkable
+    <style include="oobe-dialog-host">
+      :host-context([new-layout]) {
+        --oobe-adaptive-dialog-content-top-padding: 0;
+      }
+
+      .progress-message {
+        color: var(--oobe-subheader-text-color);
+        margin-top: 32px;
+      }
+
+      .update-illustration {
+        height: 264px;
+        width: 264px;
+      }
+
+      .slide-view {
+        border: 1px solid var(--google-grey-400);
+        border-radius: 24px;
+        overflow: hidden;
+      }
+
+      :host-context(html:not([new-layout])) .slide-view {
+        height: 248px;
+      }
+      :host-context([new-layout]) .slide-view {
+        height: 380px;
+        margin: auto;
+        width: 380px;
+      }
+    </style>
+    <oobe-adaptive-dialog for-step="cellular" tabindex="0"
+        aria-live="polite" footer-shrinkable
         id="cellular-permission-dialog">
-      <hd-iron-icon slot="oobe-icon"
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
       <h1 slot="title">
         [[i18nRecursive(locale, 'updateOverCellularPromptTitle',
                         'productName')]]
       </h1>
-      <div slot="footer" class="flex layout vertical center-justified center">
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'updateOverCellularPromptMessage')]]
+      </p>
+      <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
             srcset="images/1x/updating_1x.svg 1x,
                     images/2x/updating_2x.svg 2x">
@@ -42,27 +73,31 @@
         <oobe-next-button id="cellular-permission-next" inverse
             on-click="onNextClicked_"></oobe-next-button>
       </div>
-    </oobe-dialog>
-    <oobe-dialog footer-shrinkable id="checking-for-updates-dialog"
-        for-step="checking"
-        title-key="checkingForUpdates" aria-live="polite">
-      <hd-iron-icon slot="oobe-icon"
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="checking-for-updates-dialog"
+        for-step="checking" aria-live="polite">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'checkingForUpdates')]]
+      </h1>
       <paper-progress slot="progress" id="checking-progress" indeterminate>
       </paper-progress>
-      <div slot="footer" class="flex layout vertical center-justified center">
+      <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
             srcset="images/1x/updating_1x.svg 1x,
                     images/2x/updating_2x.svg 2x">
       </div>
-    </oobe-dialog>
-    <oobe-dialog footer-shrinkable id="update-in-progress-dialog"
-        for-step="update"
-        title-key="updateStatusTitle" aria-live="polite">
-      <hd-iron-icon slot="oobe-icon"
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="update-in-progress-dialog"
+        for-step="update" aria-live="polite">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateStatusTitle')]]
+      </h1>
       <div slot="subtitle">
         <span id="better-update-percent">[[updateStatusMessagePercent]]</span>
         <span> | </span>
@@ -74,7 +109,7 @@
           value="[[betterUpdateProgressValue]]">
       </paper-progress>
       <div hidden="[[!showLowBatteryWarning]]" id="battery-warning"
-          class="slide-view" slot="footer">
+          class="slide-view" slot="content">
         <oobe-slide is-warning>
           <img slot="slide-img" class="update-illustration oobe-illustration"
               srcset="images/1x/update-charge.svg 1x,
@@ -88,7 +123,7 @@
         </oobe-slide>
       </div>
       <div hidden="[[showLowBatteryWarning]]" id="carousel" class="slide-view"
-          slot="footer">
+          slot="content">
         <oobe-carousel slide-duration-in-seconds=5
             auto-transition="[[getAutoTransition_(uiStep, autoTransition)]]"
             slide-label="slideLabel"
@@ -99,9 +134,7 @@
                 class="update-illustration oobe-illustration"
                 srcset="images/1x/update-no-waiting.svg 1x,
                         images/2x/update-no-waiting.svg 2x">
-            <div slot="title">
-              [[i18nDynamic(locale, 'slideUpdateTitle')]]
-            </div>
+            <div slot="title">[[i18nDynamic(locale, 'slideUpdateTitle')]]</div>
             <div slot="text">[[i18nDynamic(locale, 'slideUpdateText')]]</div>
           </oobe-slide>
           <oobe-slide slot="slides">
@@ -138,21 +171,18 @@
           </oobe-slide>
         </oobe-carousel>
       </div>
-    </oobe-dialog>
-    <oobe-dialog footer-shrinkable id="restarting-dialog" for-step="restart"
-        title-key="updateCompeletedRebootingMsg" aria-live="polite">
-      <hd-iron-icon slot="oobe-icon"
+    </oobe-adaptive-dialog>
+    <oobe-loading-dialog id="restarting-dialog"
+        text-key="updateCompeletedRebootingMsg" for-step="restart">
+    </oobe-loading-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="better-update-complete-dialog"
+        for-step="reboot" aria-live="polite">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
-      <paper-progress slot="progress" id="restarting-progress" indeterminate>
-      </paper-progress>
-    </oobe-dialog>
-    <oobe-dialog footer-shrinkable id="better-update-complete-dialog"
-        for-step="reboot"
-        title-key="updateCompeletedMsg" aria-live="polite">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
-    </oobe-dialog>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateCompeletedMsg')]]
+      </h1>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

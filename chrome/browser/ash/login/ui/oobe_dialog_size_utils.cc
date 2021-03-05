@@ -26,7 +26,7 @@ constexpr gfx::Insets kMinMargins{48, 48};
 // Sizes come from specs except min widths which are taken as maximal zoomed
 // display widths of smallest device ChromeTab (960x600).
 constexpr gfx::Size kMaxLandscapeDialogSize{1040, 680};
-constexpr gfx::Size kMinLandscapeDialogSize{738, 520};
+constexpr gfx::Size kMinLandscapeDialogSize{738, 540};
 constexpr gfx::Size kMaxPortraitDialogSize{680, 1040};
 constexpr gfx::Size kMinPortraitDialogSize{461, 704};
 

@@ -30,27 +30,54 @@
       }
 
       #slide-container {
+        display: flex;
+      }
+
+      :host-context(html:not([new-layout])) #slide-container {
+        flex-direction: row;
         max-height: calc(var(--oobe-slide-img-size) + 2 *
                          var(--oobe-slide-vertical-margin));
       }
+      :host-context([new-layout]) #slide-container {
+        align-items: center;
+        flex-direction: column;
+        justify-content: start;
+      }
 
-      #illustration-container {
+      :host-context(html:not([new-layout])) #illustration-container {
         height: var(--oobe-slide-img-size);
         margin: var(--oobe-slide-vertical-margin)
                 var(--oobe-slide-horizontal-margin);
         width: var(--oobe-slide-img-size);
       }
 
-      #context-container {
+      :host-context([new-layout]) #illustration-container {
+        height: var(--oobe-slide-img-size);
+        width: var(--oobe-slide-img-size);
+      }
+
+      :host-context(html:not([new-layout])) #context-container {
+        justify-content: center;
         padding-inline-end: var(--oobe-slide-horizontal-margin);
+      }
+
+      :host-context([new-layout]) #context-container {
+        align-items: center;
+        flex-direction: column;
+        justify-content: start;
+        margin-bottom: 32px; /* for navigation bar */
+      }
+
+      :host-context([new-layout]) #slide-title {
+        padding-top: 8px;
       }
 
       #slide-title ::slotted(*) {
         color: var(--google-blue-600);
         font-family: var(--oobe-header-font-family);
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 500; /* medium */
-        line-height: 32px;
+        line-height: 28px;
       }
 
       #slide-title[is-warning] ::slotted(*) {
@@ -66,17 +93,24 @@
         font-family: var(--oobe-default-font-family);
         font-size: 14px;
         font-weight: 400; /* regular */
+        line-height: 20px;
+      }
+
+      :host-context([new-layout]) #context-container ::slotted(*) {
+        padding-inline-end: 20px;
+        padding-inline-start: 20px;
+        text-align: center;
       }
 
       .multiline {
         white-space: normal;
       }
     </style>
-    <div id="slide-container" class="flex layout horizontal">
+    <div id="slide-container" class="flex layout">
       <div id="illustration-container" class="oobe-illustration">
         <slot name="slide-img"></slot>
       </div>
-      <div id="context-container" class="flex layout vertical center-justified">
+      <div id="context-container" class="flex layout vertical">
         <div id="slide-title" is-warning$="[[isWarning]]">
           <slot name="title" class="multiline"></slot>
         </div>
