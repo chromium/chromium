@@ -626,7 +626,7 @@
     },
     {
       name: "CSSPseudoDir",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPseudoIs",
