@@ -592,6 +592,23 @@ _ROOT_TYPES = ('android_apk', 'java_binary', 'java_annotation_processor',
 _RESOURCE_TYPES = ('android_assets', 'android_resources', 'system_java_library')
 
 
+class OrderedSet(collections.OrderedDict):
+  # Value |parameter| is present to avoid presubmit warning due to different
+  # number of parameters from overridden method.
+  @staticmethod
+  def fromkeys(iterable, value=None):
+    out = OrderedSet()
+    out.update(iterable)
+    return out
+
+  def add(self, key):
+    self[key] = True
+
+  def update(self, iterable):
+    for v in iterable:
+      self.add(v)
+
+
 def _ExtractMarkdownDocumentation(input_text):
   """Extract Markdown documentation from a list of input strings lines.
 
@@ -902,6 +919,10 @@ def _AddJarMapping(jar_to_target, configs):
       jar_to_target[jar] = config['gn_target']
 
 
+def _CompareClasspathPriority(dep):
+  return 1 if dep.get('low_classpath_priority') else 0
+
+
 def main(argv):
   parser = optparse.OptionParser()
   build_utils.AddDepfileOption(parser)
@@ -972,6 +993,11 @@ def main(argv):
   parser.add_option('--extra-classpath-jars',
       help='GYP-list of .jar files to include on the classpath when compiling, '
            'but not to include in the final binary.')
+  parser.add_option(
+      '--low-classpath-priority',
+      action='store_true',
+      help='Indicates that the library should be placed at the end of the '
+      'classpath.')
   parser.add_option(
       '--mergeable-android-manifests',
       help='GN-list of AndroidManifest.xml to include in manifest merging.')
@@ -1385,6 +1411,8 @@ def main(argv):
       deps_info['dex_path'] = options.dex_path
       if is_apk_or_module_target:
         all_dex_files.append(options.dex_path)
+    if options.low_classpath_priority:
+      deps_info['low_classpath_priority'] = True
     if options.type == 'android_apk':
       deps_info['apk_path'] = options.apk_path
       deps_info['incremental_apk_path'] = options.incremental_apk_path
@@ -1538,12 +1566,19 @@ def main(argv):
     # rebuilt.
     javac_interface_classpath = set(c['interface_jar_path']
                                     for c in direct_library_deps)
+
+    # Preserve order of |all_library_deps|. Move low priority libraries to the
+    # end of the classpath.
+    all_library_deps_sorted_for_classpath = sorted(
+        all_library_deps[::-1], key=_CompareClasspathPriority)
+
     # The classpath used for bytecode-rewritting.
-    javac_full_classpath = set(c['unprocessed_jar_path']
-                               for c in all_library_deps)
+    javac_full_classpath = OrderedSet.fromkeys(
+        c['unprocessed_jar_path']
+        for c in all_library_deps_sorted_for_classpath)
     # The classpath used for error prone.
-    javac_full_interface_classpath = set(c['interface_jar_path']
-                                         for c in all_library_deps)
+    javac_full_interface_classpath = OrderedSet.fromkeys(
+        c['interface_jar_path'] for c in all_library_deps_sorted_for_classpath)
 
     # Adding base module to classpath to compile against its R.java file
     if base_module_build_config:
@@ -1867,21 +1902,21 @@ def main(argv):
     ]
     config['javac']['processor_classes'] = [
         c['main_class'] for c in processor_deps.Direct()]
-    deps_info['javac_full_classpath'] = sorted(javac_full_classpath)
-    deps_info['javac_full_interface_classpath'] = sorted(
+    deps_info['javac_full_classpath'] = list(javac_full_classpath)
+    deps_info['javac_full_interface_classpath'] = list(
         javac_full_interface_classpath)
   elif options.type == 'android_app_bundle':
     # bundles require javac_full_classpath to create .aab.jar.info and require
     # javac_full_interface_classpath for lint.
-    javac_full_classpath = set()
-    javac_full_interface_classpath = set()
+    javac_full_classpath = OrderedSet()
+    javac_full_interface_classpath = OrderedSet()
     for d in deps.Direct('android_app_bundle_module'):
       javac_full_classpath.update(d['javac_full_classpath'])
       javac_full_interface_classpath.update(d['javac_full_interface_classpath'])
       javac_full_classpath.add(d['unprocessed_jar_path'])
       javac_full_interface_classpath.add(d['interface_jar_path'])
-    deps_info['javac_full_classpath'] = sorted(javac_full_classpath)
-    deps_info['javac_full_interface_classpath'] = sorted(
+    deps_info['javac_full_classpath'] = list(javac_full_classpath)
+    deps_info['javac_full_interface_classpath'] = list(
         javac_full_interface_classpath)
 
   if options.type in ('android_apk', 'dist_jar', 'android_app_bundle_module',

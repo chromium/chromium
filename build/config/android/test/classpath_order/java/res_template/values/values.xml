@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <integer name="{{resource_name}}">42</integer>
+</resources>

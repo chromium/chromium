@@ -51,6 +51,11 @@ java_group("guava_android_java") {
 
 java_group("robolectric_all_java") {
   testonly = true
+
+  # Prevent 'gn format' from sorting deps. In order for the classpath to be
+  # correct, newer robolectric android-all versions should be listed below older
+  # versions.
+  # NOSORT
   deps = [
     ":org_robolectric_annotations_java",
     ":org_robolectric_junit_java",
@@ -65,13 +70,14 @@ java_group("robolectric_all_java") {
     ":org_robolectric_shadows_playservices_java",
     ":org_robolectric_utils_java",
     ":org_robolectric_utils_reflector_java",
-    "//third_party/robolectric:android-all-10-robolectric-5803371_java",
+
     "//third_party/robolectric:android-all-4.4_r1-robolectric-r2_java",
     "//third_party/robolectric:android-all-5.0.2_r3-robolectric-r0_java",
     "//third_party/robolectric:android-all-7.1.0_r7-robolectric-r1_java",
     "//third_party/robolectric:android-all-8.0.0_r4-robolectric-r1_java",
     "//third_party/robolectric:android-all-8.1.0-robolectric-4611349_java",
     "//third_party/robolectric:android-all-9-robolectric-4913185-2_java",
+    "//third_party/robolectric:android-all-10-robolectric-5803371_java",
   ]
 }
 

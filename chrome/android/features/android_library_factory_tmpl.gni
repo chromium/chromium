@@ -23,6 +23,7 @@ import("//build/config/android/rules.gni")
 # Variables:
 #   sources: A list of all java factory files to be stripped.
 #   deps: Any deps needed by the generated Android library target.
+#   generator_deps: If |sources| is generated, any deps needed to generate |sources|.
 #
 # Example:
 #   android_library_factory("foo_java") {
@@ -73,6 +74,10 @@ template("android_library_factory") {
   _base_gen_dir = "${target_gen_dir}/${target_name}"
 
   action_foreach_with_pydeps(_process_factory_target_name) {
+    if (defined(invoker.generator_deps)) {
+      deps = invoker.generator_deps
+    }
+
     script = "//chrome/android/features/create_stripped_java_factory.py"
     sources = invoker.sources
     outputs =
@@ -91,5 +96,9 @@ template("android_library_factory") {
     }
     sources = get_target_outputs(":$_process_factory_target_name")
     jar_excluded_patterns = [ "*" ]
+
+    # Mark library as low priority so that android_library() which provides real implementation
+    # does not need to depend on factory.
+    low_classpath_priority = true
   }
 }
