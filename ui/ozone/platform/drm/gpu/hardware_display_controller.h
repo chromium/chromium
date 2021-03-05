@@ -131,13 +131,9 @@ class HardwareDisplayController {
   bool TestPageFlip(const DrmOverlayPlaneList& plane_list);
 
   // Return the supported modifiers for |fourcc_format| for this controller.
-  std::vector<uint64_t> GetSupportedModifiers(uint32_t fourcc_format) const;
+  std::vector<uint64_t> GetSupportedModifiers(uint32_t fourcc_format,
+                                              bool is_modeset = false) const;
 
-  // Return the supported modifiers for |fourcc_format| for this
-  // controller to be used for modeset buffers. Currently, this only exists
-  // because we can't provide valid AFBC buffers during modeset.
-  // See https://crbug.com/852675
-  // TODO: Remove this.
   std::vector<uint64_t> GetFormatModifiersForTestModeset(
       uint32_t fourcc_format);
 

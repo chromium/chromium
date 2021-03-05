@@ -386,7 +386,7 @@ bool ScreenManager::Modeset(const ControllerConfigsList& controllers_params) {
       uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
           display::DisplaySnapshot::PrimaryFormat());
       std::vector<uint64_t> modifiers =
-          controller->GetSupportedModifiers(fourcc_format);
+          controller->GetSupportedModifiers(fourcc_format, /*is_modeset=*/true);
       DrmOverlayPlane primary_plane = GetModesetBuffer(
           controller, gfx::Rect(params.origin, ModeSize(*params.mode)),
           modifiers, /*is_testing=*/false);

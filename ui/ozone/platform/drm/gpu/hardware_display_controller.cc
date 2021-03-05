@@ -241,13 +241,23 @@ std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
 }
 
 std::vector<uint64_t> HardwareDisplayController::GetSupportedModifiers(
-    uint32_t fourcc_format) const {
+    uint32_t fourcc_format,
+    bool is_modeset) const {
   if (preferred_format_modifier_.empty())
     return std::vector<uint64_t>();
 
   auto it = preferred_format_modifier_.find(fourcc_format);
-  if (it != preferred_format_modifier_.end())
-    return std::vector<uint64_t>{it->second};
+  if (it != preferred_format_modifier_.end()) {
+    uint64_t supported_modifier = it->second;
+    // AFBC for modeset buffers doesn't work correctly, as we can't fill it with
+    // a valid AFBC buffer (crbug.com/852675).
+    // For now, don't use AFBC for modeset buffers.
+    if (is_modeset &&
+        supported_modifier == DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
+      supported_modifier = DRM_FORMAT_MOD_LINEAR;
+    }
+    return std::vector<uint64_t>{supported_modifier};
+  }
 
   return GetFormatModifiers(fourcc_format);
 }
@@ -257,19 +267,7 @@ HardwareDisplayController::GetFormatModifiersForTestModeset(
     uint32_t fourcc_format) {
   // If we're about to test, clear the current preferred modifier.
   preferred_format_modifier_.clear();
-
-  std::vector<uint64_t> filtered_modifiers;
-  const auto& modifiers = GetFormatModifiers(fourcc_format);
-  for (auto modifier : modifiers) {
-    // AFBC for modeset buffers doesn't work correctly, as we can't fill it with
-    // a valid AFBC buffer. For now, don't use AFBC for modeset buffers.
-    // TODO: Use AFBC for modeset buffers if it is available.
-    // See https://crbug.com/852675.
-    if (modifier != DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
-      filtered_modifiers.push_back(modifier);
-    }
-  }
-  return filtered_modifiers;
+  return GetFormatModifiers(fourcc_format);
 }
 
 void HardwareDisplayController::UpdatePreferredModiferForFormat(
