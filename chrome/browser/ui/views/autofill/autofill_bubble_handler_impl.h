@@ -53,6 +53,10 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       content::WebContents* web_contents,
       SaveAddressProfileBubbleController* controller,
       bool is_user_gesture) override;
+  AutofillBubbleBase* ShowEditAddressProfileDialog(
+      content::WebContents* web_contents,
+      SaveAddressProfileBubbleController* controller) override;
+
   void OnPasswordSaved() override;
 
   // PersonalDataManagerObserver:

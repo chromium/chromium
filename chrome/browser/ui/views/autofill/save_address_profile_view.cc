@@ -18,6 +18,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -185,6 +187,18 @@ SaveAddressProfileView::SaveAddressProfileView(
   const AutofillProfile& profile = controller_->GetProfileToSave();
 
   // TODO(crbug.com/1167060): Update icons upon having final mocks
+  std::unique_ptr<views::ImageButton> edit_button =
+      views::CreateVectorImageButtonWithNativeTheme(
+          base::BindRepeating(
+              &SaveAddressProfileBubbleController::OnEditButtonClicked,
+              base::Unretained(controller_)),
+          vector_icons::kEditIcon, gfx::kFaviconSize);
+  edit_button->SetProperty(views::kCrossAxisAlignmentKey,
+                           views::LayoutAlignment::kEnd);
+  // TODO(crbug.com/1167060): User internationlized string.
+  edit_button->SetAccessibleName(u"Edit Address");
+  AddChildView(std::move(edit_button));
+
   std::unique_ptr<views::View> street_address_view =
       CreateStreetAddressView(profile, locale);
   if (street_address_view) {

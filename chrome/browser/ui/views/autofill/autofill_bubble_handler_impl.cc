@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
@@ -172,6 +173,12 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
   bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
                                : LocationBarBubbleDelegateView::AUTOMATIC);
   return bubble;
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowEditAddressProfileDialog(
+    content::WebContents* web_contents,
+    SaveAddressProfileBubbleController* controller) {
+  return new EditAddressProfileView(web_contents, controller);
 }
 
 void AutofillBubbleHandlerImpl::OnPasswordSaved() {

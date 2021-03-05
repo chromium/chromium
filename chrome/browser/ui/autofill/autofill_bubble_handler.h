@@ -51,6 +51,10 @@ class AutofillBubbleHandler {
       SaveAddressProfileBubbleController* controller,
       bool is_user_gesture) = 0;
 
+  virtual AutofillBubbleBase* ShowEditAddressProfileDialog(
+      content::WebContents* web_contents,
+      SaveAddressProfileBubbleController* controller) = 0;
+
   // TODO(crbug.com/964127): Wait for the integration with sign in after local
   // save to be landed to see if we need to merge password saved and credit card
   // saved functions.

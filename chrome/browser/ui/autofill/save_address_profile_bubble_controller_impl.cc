@@ -56,9 +56,21 @@ void SaveAddressProfileBubbleControllerImpl::OnUserDecision(
       .Run(decision, address_profile_);
 }
 
+void SaveAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
+  HideBubble();
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  edit_dialog_ = browser->window()
+                     ->GetAutofillBubbleHandler()
+                     ->ShowEditAddressProfileDialog(web_contents(), this);
+}
+
 void SaveAddressProfileBubbleControllerImpl::OnBubbleClosed() {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
+}
+
+void SaveAddressProfileBubbleControllerImpl::OnEditDialogClosed() {
+  edit_dialog_ = nullptr;
 }
 
 void SaveAddressProfileBubbleControllerImpl::OnPageActionIconClicked() {

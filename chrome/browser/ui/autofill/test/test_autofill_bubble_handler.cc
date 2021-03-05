@@ -57,6 +57,14 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
   return save_address_profile_bubble_view_.get();
 }
 
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowEditAddressProfileDialog(
+    content::WebContents* contents,
+    SaveAddressProfileBubbleController* controller) {
+  if (!edit_address_profile_bubble_view_)
+    edit_address_profile_bubble_view_ = std::make_unique<TestAutofillBubble>();
+  return edit_address_profile_bubble_view_.get();
+}
+
 void TestAutofillBubbleHandler::OnPasswordSaved() {}
 
 }  // namespace autofill

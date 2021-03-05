@@ -27,7 +27,9 @@ class MockSaveAddressProfileBubbleController
               OnUserDecision,
               (AutofillClient::SaveAddressProfileOfferUserDecision decision),
               (override));
+  MOCK_METHOD(void, OnEditButtonClicked, (), (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
+  MOCK_METHOD(void, OnEditDialogClosed, (), (override));
 };
 
 class SaveAddressProfileViewTest : public ChromeViewsTestBase {
