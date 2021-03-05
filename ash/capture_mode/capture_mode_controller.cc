@@ -330,6 +330,10 @@ CaptureModeController* CaptureModeController::Get() {
   return g_instance;
 }
 
+bool CaptureModeController::IsActive() const {
+  return capture_mode_session_ && !capture_mode_session_->is_shutting_down();
+}
+
 void CaptureModeController::SetSource(CaptureModeSource source) {
   if (source == source_)
     return;
@@ -395,11 +399,13 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
   delegate_->OnSessionStateChanged(/*started=*/true);
 
   capture_mode_session_ = std::make_unique<CaptureModeSession>(this);
+  capture_mode_session_->Initialize();
 }
 
 void CaptureModeController::Stop() {
   DCHECK(IsActive());
   capture_mode_session_->ReportSessionHistograms();
+  capture_mode_session_->Shutdown();
   capture_mode_session_.reset();
 
   delegate_->OnSessionStateChanged(/*started=*/false);

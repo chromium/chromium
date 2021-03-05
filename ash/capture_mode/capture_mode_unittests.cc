@@ -199,10 +199,6 @@ class CaptureModeSessionTestApi {
     return session_->capture_mode_bar_view_;
   }
 
-  views::Widget* capture_mode_bar_widget() const {
-    return session_->capture_mode_bar_widget_.get();
-  }
-
   CaptureModeSettingsView* capture_mode_settings_view() const {
     return session_->capture_mode_settings_view_;
   }
@@ -265,7 +261,7 @@ class CaptureModeTest : public AshTestBase {
   views::Widget* GetCaptureModeBarWidget() const {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
-    return CaptureModeSessionTestApi(session).capture_mode_bar_widget();
+    return session->capture_mode_bar_widget();
   }
 
   views::Widget* GetCaptureModeLabelWidget() const {
@@ -511,8 +507,7 @@ TEST_F(CaptureModeTest, StartStop) {
 
   // Closing the session should close the native window of capture mode bar
   // immediately.
-  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
-  auto* bar_window = test_api.capture_mode_bar_widget()->GetNativeWindow();
+  auto* bar_window = GetCaptureModeBarWidget()->GetNativeWindow();
   aura::WindowTracker tracker({bar_window});
   controller->Stop();
   EXPECT_TRUE(tracker.windows().empty());
