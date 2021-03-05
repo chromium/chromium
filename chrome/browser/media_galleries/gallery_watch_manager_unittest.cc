@@ -239,7 +239,13 @@ TEST_F(GalleryWatchManagerTest, MAYBE_Basic) {
   loop.Run();
 }
 
-TEST_F(GalleryWatchManagerTest, AddAndRemoveTwoWatches) {
+// TODO(crbug.com/1183482): Flaky on mac.
+#if defined(OS_MAC)
+#define MAYBE_AddAndRemoveTwoWatches DISABLED_AddAndRemoveTwoWatches
+#else
+#define MAYBE_AddAndRemoveTwoWatches AddAndRemoveTwoWatches
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_AddAndRemoveTwoWatches) {
   if (!GalleryWatchesSupported())
     return;
 
@@ -284,7 +290,13 @@ TEST_F(GalleryWatchManagerTest, AddAndRemoveTwoWatches) {
   EXPECT_TRUE(manager()->GetWatchSet(profile(), extension()->id()).empty());
 }
 
-TEST_F(GalleryWatchManagerTest, RemoveAllWatches) {
+// TODO(crbug.com/1182867): Flaky on mac.
+#if defined(OS_MAC)
+#define MAYBE_RemoveAllWatches DISABLED_RemoveAllWatches
+#else
+#define MAYBE_RemoveAllWatches RemoveAllWatches
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_RemoveAllWatches) {
   if (!GalleryWatchesSupported())
     return;
 
@@ -342,7 +354,13 @@ TEST_F(GalleryWatchManagerTest, DropWatchOnGalleryPermissionRevoked) {
   success_loop.Run();
 }
 
-TEST_F(GalleryWatchManagerTest, DropWatchOnStorageRemoved) {
+// TODO(crbug.com/1183212): flaky on mac.
+#if defined(OS_MAC)
+#define MAYBE_DropWatchOnStorageRemoved DISABLED_DropWatchOnStorageRemoved
+#else
+#define MAYBE_DropWatchOnStorageRemoved DropWatchOnStorageRemoved
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnStorageRemoved) {
   if (!GalleryWatchesSupported())
     return;
 
