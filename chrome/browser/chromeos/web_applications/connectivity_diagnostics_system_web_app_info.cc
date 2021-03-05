@@ -24,8 +24,9 @@ CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
   info->title = l10n_util::GetStringUTF16(IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
-      {{"app_icon_128.png", 128,
-        IDR_CONNECTIVITY_DIAGNOSTICS_APP_ICON_128_PNG}},
+      {{"app_icon_192.png", 192, IDR_CONNECTIVITY_DIAGNOSTICS_APP_ICON_192_PNG},
+       {"app_icon_256.png", 256,
+        IDR_CONNECTIVITY_DIAGNOSTICS_APP_ICON_256_PNG}},
       *info);
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;
