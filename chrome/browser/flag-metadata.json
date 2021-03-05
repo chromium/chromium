@@ -4015,6 +4015,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "overlay-scrollbars",
+    "owners": [ "chaopeng", "bokan", "input-dev" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "overlay-strategies",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & debugging on ChromeOS, which has no way to
