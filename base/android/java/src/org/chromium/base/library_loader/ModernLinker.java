@@ -27,22 +27,19 @@ class ModernLinker extends Linker {
 
     @Override
     @GuardedBy("mLock")
-    void loadLibraryImplLocked(String library, boolean isFixedAddressPermitted) {
-        // We expect to load monochrome, if it's not the case, log.
+    protected void loadLibraryImplLocked(
+            String library, long loadAddress, @RelroSharingMode int relroMode) {
+        // Only loading monochrome is supported.
         if (!"monochrome".equals(library) || DEBUG) {
-            Log.i(TAG, "loadLibraryImpl: %s, %b", library, isFixedAddressPermitted);
+            Log.i(TAG, "loadLibraryImplLocked: %s, %d", library, relroMode);
         }
         assert mState == State.INITIALIZED; // Only one successful call.
 
         String libFilePath = System.mapLibraryName(library);
-        boolean loadNoRelro = !isFixedAddressPermitted;
-        boolean provideRelro = isFixedAddressPermitted && mRelroProducer;
-        long loadAddress = isFixedAddressPermitted ? mBaseLoadAddress : 0;
-
-        if (loadNoRelro) {
+        if (relroMode == RelroSharingMode.NO_SHARING) {
             // System.loadLibrary() below implements the fallback.
             mState = State.DONE;
-        } else if (provideRelro) {
+        } else if (relroMode == RelroSharingMode.PRODUCE) {
             // Create the shared RELRO, and store it.
             LibInfo libInfo = new LibInfo();
             libInfo.mLibFilePath = libFilePath;
@@ -62,6 +59,7 @@ class ModernLinker extends Linker {
             // consuming RELRO is not expected with this Linker instance.
             mState = State.DONE_PROVIDE_RELRO;
         } else {
+            assert relroMode == RelroSharingMode.CONSUME;
             // Running in a child process, also with a fixed load address that is suitable for
             // shared RELRO.
             //
@@ -91,8 +89,7 @@ class ModernLinker extends Linker {
         try {
             System.loadLibrary(library);
         } catch (UnsatisfiedLinkError e) {
-            if (loadNoRelro || provideRelro) resetAndThrow("Cannot load without relro sharing");
-            resetAndThrow("Unable to load the library a second time with the system linker");
+            resetAndThrow("Failed at System.loadLibrary()");
         }
     }
 
