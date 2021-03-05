@@ -1144,7 +1144,9 @@ TEST(ProcessMitigationsTest, CetDisablePolicy) {
 }
 
 TEST(ProcessMitigationsTest, CheckWin10KernelTransactionManagerMitigation) {
-  if (base::win::GetVersion() < base::win::Version::WIN10_21H1)
+  const auto& ver = base::win::OSInfo::GetInstance()->version_number();
+  // TODO(wfh): Determine exactly which release/build this is enabled in.
+  if (ver.build < 20287)
     return;
   std::wstring test_policy_command = L"CheckPolicy ";
   test_policy_command += std::to_wstring(TESTPOLICY_KTMCOMPONENTFILTER);

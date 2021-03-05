@@ -256,7 +256,7 @@ OSInfo::WOW64Status OSInfo::GetWOW64StatusForProcess(HANDLE process_handle) {
 // static
 Version OSInfo::MajorMinorBuildToVersion(int major, int minor, int build) {
   if (major == 10) {
-    if (build >= 20287)
+    if (build >= 19043)
       return Version::WIN10_21H1;
     if (build >= 19042)
       return Version::WIN10_20H2;
