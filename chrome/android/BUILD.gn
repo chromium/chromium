@@ -1293,6 +1293,7 @@ android_library("chrome_test_java") {
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/android_deps/local_modifications/preconditions/javatests",
     "//third_party/android_sdk:android_support_chromium_java",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/android_sdk:android_test_mock_java",

@@ -464,8 +464,16 @@ android_aar_prebuilt("google_play_services_basement_java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
   ]
 
+  jar_excluded_patterns = []
+  if (!is_java_debug && !dcheck_always_on) {
+    # Omit the file since we use our own copy.
+    jar_excluded_patterns +=
+        [ "com/google/android/gms/common/internal/Preconditions.class" ]
+    deps += [ "//third_party/android_deps/local_modifications/preconditions:preconditions_gms_stub_java" ]
+  }
+
   # https://crbug.com/989505
-  jar_excluded_patterns = [ "META-INF/proguard/*" ]
+  jar_excluded_patterns += [ "META-INF/proguard/*" ]
   input_jars_paths = [ "$android_sdk/optional/org.apache.http.legacy.jar" ]
   bytecode_rewriter_target =
       "//build/android/bytecode:fragment_activity_replacer"
@@ -834,12 +842,20 @@ java_prebuilt("com_google_guava_guava_android_java") {
     ":com_google_j2objc_j2objc_annotations_java",
     ":org_checkerframework_checker_compat_qual_java",
   ]
+  bypass_platform_checks = true
+
+  jar_excluded_patterns = []
+  if (!is_java_debug && !dcheck_always_on) {
+    # Omit the file since we use our own copy.
+    jar_excluded_patterns += [ "com/google/common/base/Preconditions.class" ]
+    deps += [ "//third_party/android_deps/local_modifications/preconditions:preconditions_guava_stub_java" ]
+  }
 
   # Add a dep to com_google_guava_listenablefuture_java
   # because androidx_concurrent_futures also depends on it and to avoid
   # defining ListenableFuture.class twice.
   deps += [ ":com_google_guava_listenablefuture_java" ]
-  jar_excluded_patterns = [ "*/ListenableFuture.class" ]
+  jar_excluded_patterns += [ "*/ListenableFuture.class" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
