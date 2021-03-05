@@ -41,7 +41,8 @@ void AppUpdate::Uninitialize() {
 }
 
 void AppUpdate::FirstTaskRun() {
-  InstallCandidate(false, base::BindOnce(&AppUpdate::SetupDone, this));
+  InstallCandidate(updater_scope(),
+                   base::BindOnce(&AppUpdate::SetupDone, this));
 }
 
 void AppUpdate::SetupDone(int result) {

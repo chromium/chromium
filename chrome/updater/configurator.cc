@@ -17,6 +17,7 @@
 #include "chrome/updater/patcher.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/unzipper.h"
+#include "chrome/updater/updater_scope.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patcher.h"
@@ -47,7 +48,8 @@ namespace updater {
 Configurator::Configurator(std::unique_ptr<UpdaterPrefs> prefs)
     : prefs_(std::move(prefs)),
       external_constants_(CreateExternalConstants()),
-      activity_data_service_(std::make_unique<ActivityDataService>(false)),
+      activity_data_service_(
+          std::make_unique<ActivityDataService>(GetProcessScope())),
       unzip_factory_(base::MakeRefCounted<UnzipperFactory>()),
       patch_factory_(base::MakeRefCounted<PatcherFactory>()) {}
 Configurator::~Configurator() = default;

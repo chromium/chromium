@@ -42,7 +42,7 @@ const wchar_t kTaskDescription1[] =
 const wchar_t kTaskDescription2[] =
     L"Task 2 used only for Chrome Updater unit testing.";
 // A command-line switch used in testing.
-const char kTestSwitch[] = "a_switch";
+const char kUnitTestSwitch[] = "a_switch";
 
 class TaskSchedulerTests : public testing::Test {
  public:
@@ -255,7 +255,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
 
   base::CommandLine command_line2(
       executable_path.Append(kTestProcessExecutableName));
-  command_line2.AppendSwitch(kTestSwitch);
+  command_line2.AppendSwitch(kUnitTestSwitch);
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       kTaskName2, kTaskDescription2, command_line2,
       TaskScheduler::TRIGGER_TYPE_HOURLY, false));

@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/user_info.h"
 
@@ -169,13 +170,13 @@ HMODULE GetCurrentModuleHandle() {
 // The event name saved to the environment variable does not contain the
 // decoration added by GetNamedObjectAttributes.
 HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
-                                       bool is_machine,
+                                       UpdaterScope scope,
                                        HANDLE* unique_event) {
   DCHECK(unique_event);
 
   const std::wstring event_name = base::ASCIIToWide(base::GenerateGUID());
   NamedObjectAttributes attr;
-  GetNamedObjectAttributes(event_name.c_str(), is_machine, &attr);
+  GetNamedObjectAttributes(event_name.c_str(), scope, &attr);
 
   HRESULT hr = CreateEvent(&attr, unique_event);
   if (FAILED(hr))
@@ -190,7 +191,7 @@ HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
 }
 
 HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
-                                       bool is_machine,
+                                       UpdaterScope scope,
                                        HANDLE* unique_event) {
   DCHECK(unique_event);
 
@@ -202,7 +203,7 @@ HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
   }
 
   NamedObjectAttributes attr;
-  GetNamedObjectAttributes(event_name, is_machine, &attr);
+  GetNamedObjectAttributes(event_name, scope, &attr);
   *unique_event = ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str());
 
   if (!*unique_event) {
@@ -231,21 +232,25 @@ HRESULT CreateEvent(NamedObjectAttributes* event_attr, HANDLE* event_handle) {
 }
 
 void GetNamedObjectAttributes(const wchar_t* base_name,
-                              bool is_machine,
+                              UpdaterScope scope,
                               NamedObjectAttributes* attr) {
   DCHECK(base_name);
   DCHECK(attr);
 
   attr->name = kGlobalPrefix;
 
-  if (!is_machine) {
-    std::wstring user_sid;
-    GetProcessUser(nullptr, nullptr, &user_sid);
-    attr->name += user_sid;
-    GetCurrentUserDefaultSecurityAttributes(&attr->sa);
-  } else {
-    // Grant access to administrators and system.
-    GetAdminDaclSecurityAttributes(&attr->sa, GENERIC_ALL);
+  switch (scope) {
+    case UpdaterScope::kUser: {
+      std::wstring user_sid;
+      GetProcessUser(nullptr, nullptr, &user_sid);
+      attr->name += user_sid;
+      GetCurrentUserDefaultSecurityAttributes(&attr->sa);
+      break;
+    }
+    case UpdaterScope::kSystem:
+      // Grant access to administrators and system.
+      GetAdminDaclSecurityAttributes(&attr->sa, GENERIC_ALL);
+      break;
   }
 
   attr->name += base_name;

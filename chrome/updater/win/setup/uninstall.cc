@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/stl_util.h"
@@ -26,6 +27,7 @@
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/setup/setup_util.h"
@@ -75,8 +77,8 @@ void DeleteComInterfaces(HKEY root) {
 }
 
 int RunUninstallScript(bool uninstall_all) {
-  base::FilePath versioned_dir;
-  if (!GetVersionedDirectory(&versioned_dir)) {
+  base::Optional<base::FilePath> versioned_dir = GetVersionedDirectory();
+  if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
     return -1;
   }
@@ -87,7 +89,7 @@ int RunUninstallScript(bool uninstall_all) {
   if (!size || size >= MAX_PATH)
     return -1;
 
-  base::FilePath script_path = versioned_dir.AppendASCII(kUninstallScript);
+  base::FilePath script_path = versioned_dir->AppendASCII(kUninstallScript);
 
   std::wstring cmdline = cmd_path;
   base::StringAppendF(&cmdline, L" /Q /C \"%ls\" %ls",
@@ -114,10 +116,11 @@ int RunUninstallScript(bool uninstall_all) {
 // 3. Runs the uninstall script in the install directory of the updater.
 // The execution of this function and the script race each other but the script
 // loops and waits in between iterations trying to delete the install directory.
-int Uninstall(bool is_machine) {
-  VLOG(1) << __func__ << ", is_machine: " << is_machine;
-  DCHECK(!is_machine || ::IsUserAnAdmin());
-  HKEY key = is_machine ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+int Uninstall(UpdaterScope scope) {
+  VLOG(1) << __func__ << ", scope: " << scope;
+  DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
+  HKEY key =
+      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
@@ -135,7 +138,7 @@ int Uninstall(bool is_machine) {
   }
 
   DeleteComInterfaces(key);
-  if (is_machine)
+  if (scope == UpdaterScope::kSystem)
     DeleteComService();
   DeleteComServer(key);
 
@@ -144,7 +147,7 @@ int Uninstall(bool is_machine) {
 
 // Uninstalls this version of the updater, without uninstalling any other
 // versions. This version is assumed to not be the active version.
-int UninstallCandidate(bool is_machine) {
+int UninstallCandidate(UpdaterScope scope) {
   {
     auto scoped_com_initializer =
         std::make_unique<base::win::ScopedCOMInitializer>(

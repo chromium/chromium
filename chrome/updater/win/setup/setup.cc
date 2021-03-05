@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
@@ -31,6 +32,7 @@
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
@@ -99,10 +101,18 @@ std::vector<base::FilePath> GetSetupFiles(const base::FilePath& source_dir) {
 }  // namespace
 
 // TODO(crbug.com/1069976): use specific return values for different code paths.
-int Setup(bool is_machine) {
-  VLOG(1) << __func__ << ", is_machine: " << is_machine;
-  DCHECK(!is_machine || ::IsUserAnAdmin());
-  HKEY key = is_machine ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+int Setup(UpdaterScope scope) {
+  VLOG(1) << __func__ << ", scope: " << scope;
+  DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
+  HKEY key;
+  switch (scope) {
+    case UpdaterScope::kSystem:
+      key = HKEY_LOCAL_MACHINE;
+      break;
+    case UpdaterScope::kUser:
+      key = HKEY_CURRENT_USER;
+      break;
+  }
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
@@ -113,8 +123,8 @@ int Setup(bool is_machine) {
     LOG(ERROR) << "GetTempDir failed.";
     return -1;
   }
-  base::FilePath versioned_dir;
-  if (!GetVersionedDirectory(&versioned_dir)) {
+  base::Optional<base::FilePath> versioned_dir = GetVersionedDirectory();
+  if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
     return -1;
   }
@@ -141,7 +151,7 @@ int Setup(bool is_machine) {
   // versioned directory, hence the BaseName function call below.
   std::unique_ptr<WorkItemList> install_list(WorkItem::CreateWorkItemList());
   for (const auto& file : setup_files) {
-    const base::FilePath target_path = versioned_dir.Append(file.BaseName());
+    const base::FilePath target_path = versioned_dir->Append(file.BaseName());
     const base::FilePath source_path = source_dir.Append(file);
     install_list->AddCopyTreeWorkItem(source_path, target_path, temp_dir,
                                       WorkItem::ALWAYS);
@@ -161,13 +171,14 @@ int Setup(bool is_machine) {
 
   static constexpr base::FilePath::StringPieceType kUpdaterExe =
       FILE_PATH_LITERAL("updater.exe");
-  AddComServerWorkItems(key, versioned_dir.Append(kUpdaterExe),
+  AddComServerWorkItems(key, versioned_dir->Append(kUpdaterExe),
                         install_list.get());
 
-  AddComInterfacesWorkItems(key, versioned_dir.Append(kUpdaterExe),
+  AddComInterfacesWorkItems(key, versioned_dir->Append(kUpdaterExe),
                             install_list.get());
 
-  base::CommandLine run_updater_wake_command(versioned_dir.Append(kUpdaterExe));
+  base::CommandLine run_updater_wake_command(
+      versioned_dir->Append(kUpdaterExe));
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
 
 #if !defined(NDEBUG)

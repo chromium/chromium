@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/optional.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -116,13 +117,13 @@ int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
 std::unique_ptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(
     std::unique_ptr<ExternalConstants> next_provider) {
-  base::FilePath data_dir_path;
-  if (!GetBaseDirectory(&data_dir_path)) {
+  base::Optional<base::FilePath> data_dir_path = GetBaseDirectory();
+  if (!data_dir_path) {
     LOG(ERROR) << "Cannot find app data path.";
     return nullptr;
   }
   const base::FilePath override_file_path =
-      data_dir_path.AppendASCII(kDevOverrideFileName);
+      data_dir_path->AppendASCII(kDevOverrideFileName);
 
   JSONFileValueDeserializer parser(override_file_path,
                                    base::JSON_ALLOW_TRAILING_COMMAS);

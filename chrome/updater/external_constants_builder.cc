@@ -9,6 +9,7 @@
 
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util.h"
 
@@ -71,13 +72,13 @@ ExternalConstantsBuilder::ClearServerKeepAliveSeconds() {
 }
 
 bool ExternalConstantsBuilder::Overwrite() {
-  base::FilePath base_path;
-  if (!GetBaseDirectory(&base_path)) {
+  base::Optional<base::FilePath> base_path = GetBaseDirectory();
+  if (!base_path) {
     LOG(ERROR) << "Can't find base directory; can't save constant overrides.";
     return false;
   }
   const base::FilePath override_file_path =
-      base_path.AppendASCII(kDevOverrideFileName);
+      base_path.value().AppendASCII(kDevOverrideFileName);
   bool ok = JSONFileValueSerializer(override_file_path).Serialize(overrides_);
   written_ = written_ || ok;
   return ok;

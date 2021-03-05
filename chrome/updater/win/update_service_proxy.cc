@@ -26,6 +26,7 @@
 #include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 
 namespace updater {
@@ -272,11 +273,11 @@ void UpdaterObserver::OnCompleteOnSTA(const UpdateService::Result& result) {
                              base::BindOnce(std::move(callback_), result));
 }
 
-UpdateServiceProxy::UpdateServiceProxy(ServiceScope service_scope)
+UpdateServiceProxy::UpdateServiceProxy(UpdaterScope updater_scope)
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       com_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
-  DCHECK_EQ(service_scope, ServiceScope::kUser);
+  DCHECK_EQ(updater_scope, UpdaterScope::kUser);
 }
 
 UpdateServiceProxy::~UpdateServiceProxy() = default;

@@ -11,8 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
-#include "chrome/updater/service_scope.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -35,7 +35,7 @@ namespace updater {
 // All public functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
  public:
-  explicit UpdateServiceProxy(ServiceScope service_scope);
+  explicit UpdateServiceProxy(UpdaterScope updater_scope);
 
   // Overrides for updater::UpdateService.
   void GetVersion(

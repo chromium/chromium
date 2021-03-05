@@ -5,7 +5,7 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/updater/mac/update_service_internal_proxy.h"
 #include "chrome/updater/mac/update_service_proxy.h"
-#include "chrome/updater/service_scope.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 

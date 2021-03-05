@@ -10,13 +10,14 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "chrome/updater/updater_scope.h"
 #include "components/update_client/activity_data_service.h"
 
 namespace updater {
 
 class ActivityDataService final : public update_client::ActivityDataService {
  public:
-  explicit ActivityDataService(bool is_machine);
+  explicit ActivityDataService(UpdaterScope scope);
   ActivityDataService(const ActivityDataService&) = delete;
   ActivityDataService& operator=(const ActivityDataService&) = delete;
   ~ActivityDataService() override = default;
@@ -35,7 +36,7 @@ class ActivityDataService final : public update_client::ActivityDataService {
   int GetDaysSinceLastRollCall(const std::string& id) const override;
 
  private:
-  bool is_machine_;
+  UpdaterScope scope_;
 };
 
 }  // namespace updater

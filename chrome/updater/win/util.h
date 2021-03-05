@@ -15,6 +15,7 @@
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
@@ -51,12 +52,12 @@ HMODULE GetCurrentModuleHandle();
 
 // Creates a unique event name and stores it in the specified environment var.
 HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
-                                       bool is_machine,
+                                       UpdaterScope scope,
                                        HANDLE* unique_event);
 
 // Obtains a unique event name from specified environment var and opens it.
 HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
-                                       bool is_machine,
+                                       UpdaterScope scope,
                                        HANDLE* unique_event);
 
 struct NamedObjectAttributes {
@@ -72,7 +73,7 @@ struct NamedObjectAttributes {
 // both Admins and SYSTEM. This allows for cases where SYSTEM creates the named
 // object first. The default DACL for SYSTEM will not allow Admins access.
 void GetNamedObjectAttributes(const wchar_t* base_name,
-                              bool is_machine,
+                              UpdaterScope scope,
                               NamedObjectAttributes* attr);
 
 // Creates an event based on the provided attributes.

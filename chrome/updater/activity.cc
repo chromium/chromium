@@ -14,14 +14,14 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/updater/activity_impl.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 namespace {
 constexpr int kDaysUnknown = -2;
 }
 
-ActivityDataService::ActivityDataService(bool is_machine)
-    : is_machine_(is_machine) {}
+ActivityDataService::ActivityDataService(UpdaterScope scope) : scope_(scope) {}
 
 void ActivityDataService::GetActiveBits(
     const std::vector<std::string>& ids,
@@ -29,15 +29,15 @@ void ActivityDataService::GetActiveBits(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          [](const std::vector<std::string>& ids, bool is_machine) {
+          [](UpdaterScope scope, const std::vector<std::string>& ids) {
             std::set<std::string> result;
             for (const auto& id : ids) {
-              if (GetActiveBit(id, is_machine))
+              if (GetActiveBit(scope, id))
                 result.insert(id);
             }
             return result;
           },
-          ids, is_machine_),
+          scope_, ids),
       std::move(callback));
 }
 
@@ -47,16 +47,16 @@ void ActivityDataService::GetAndClearActiveBits(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          [](const std::vector<std::string>& ids, bool is_machine) {
+          [](UpdaterScope scope, const std::vector<std::string>& ids) {
             std::set<std::string> result;
             for (const auto& id : ids) {
-              if (GetActiveBit(id, is_machine))
+              if (GetActiveBit(scope, id))
                 result.insert(id);
-              ClearActiveBit(id, is_machine);
+              ClearActiveBit(scope, id);
             }
             return result;
           },
-          ids, is_machine_),
+          scope_, ids),
       std::move(callback));
 }
 

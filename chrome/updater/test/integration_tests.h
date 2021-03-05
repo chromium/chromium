@@ -7,31 +7,35 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "build/build_config.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace base {
 class CommandLine;
-class FilePath;
 class Version;
 }  // namespace base
 
 class GURL;
 
 namespace updater {
+
 namespace test {
 
 // Prints the updater.log file to stdout.
-void PrintLog();
+void PrintLog(UpdaterScope scope);
 
 // Removes traces of the updater from the system. It is best to run this at the
 // start of each test in case a previous crash or timeout on the machine running
 // the test left the updater in an installed or partially installed state.
-void Clean();
+void Clean(UpdaterScope scope);
 
 // Expects that the system is in a clean state, i.e. no updater is installed and
 // no traces of an updater exist. Should be run at the start and end of each
 // test.
-void ExpectClean();
+void ExpectClean(UpdaterScope scope);
 
 // Places the updater into test mode (use `url` as the update server and disable
 // CUP).
@@ -46,68 +50,120 @@ void CopyLog(const base::FilePath& src_dir);
 void SleepFor(int seconds);
 
 // Returns the path to the updater data dir.
-base::FilePath GetDataDirPath();
+base::Optional<base::FilePath> GetDataDirPath(UpdaterScope scope);
 
 // Expects that the updater is installed on the system.
-void ExpectInstalled();
+void ExpectInstalled(UpdaterScope scope);
 
 // Installs the updater.
-void Install();
+void Install(UpdaterScope scope);
 
 // Expects that the updater is installed on the system and the launchd tasks
 // are updated correctly.
-void ExpectActive();
+void ExpectActiveUpdater(UpdaterScope scope);
+
+void ExpectVersionActive(const std::string& version);
+void ExpectVersionNotActive(const std::string& version);
 
 // Uninstalls the updater. If the updater was installed during the test, it
 // should be uninstalled before the end of the test to avoid having an actual
 // live updater on the machine that ran the test.
-void Uninstall();
+void Uninstall(UpdaterScope scope);
 
 // Runs the wake client and wait for it to exit. Assert that it exits with
 // `exit_code`. The server should exit a few seconds after.
-void RunWake(int exit_code);
+void RunWake(UpdaterScope scope, int exit_code);
 
 // Registers the test app. As a result, the bundled updater is installed,
 // promoted and registered.
-void RegisterTestApp();
+void RegisterTestApp(UpdaterScope scope);
 
 // Runs the command and waits for it to exit or time out.
-bool Run(base::CommandLine command_line, int* exit_code);
+bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
 
 // Returns the path of the Updater executable.
-base::FilePath GetInstalledExecutablePath();
+base::Optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 
 // Returns the folder path under which the executable for the fake updater
 // should reside.
-base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version);
+base::Optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
+    UpdaterScope scope,
+    const base::Version& version);
 
 // Creates Prefs with the fake updater version set as active.
 void SetupFakeUpdaterPrefs(const base::Version& version);
 
 // Creates an install folder on the system with the fake updater version.
-void SetupFakeUpdaterInstallFolder(const base::Version& version);
+void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
+                                   const base::Version& version);
 
 // Sets up a fake updater on the system at a version lower than the test.
-void SetupFakeUpdaterLowerVersion();
+void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
 // Sets up a fake updater on the system at a version higher than the test.
-void SetupFakeUpdaterHigherVersion();
+void SetupFakeUpdaterHigherVersion(UpdaterScope scope);
 
 // Expects that this version of updater is uninstalled from the system.
-void ExpectCandidateUninstalled();
+void ExpectCandidateUninstalled(UpdaterScope scope);
 
 // Sets the active bit for `app_id`.
-void SetActive(const std::string& app_id);
+void SetActive(UpdaterScope scope, const std::string& app_id);
 
 // Expects that the active bit for `app_id` is set.
-void ExpectActive(const std::string& app_id);
+void ExpectActive(UpdaterScope scope, const std::string& app_id);
 
 // Expects that the active bit for `app_id` is unset.
-void ExpectNotActive(const std::string& app_id);
+void ExpectNotActive(UpdaterScope scope, const std::string& app_id);
+
+void SetFakeExistenceCheckerPath(const std::string& app_id);
+void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id);
+
+#if defined(OS_MAC)
+void RegisterApp(const std::string& app_id);
+#endif
 
 #if defined(OS_WIN)
 void ExpectInterfacesRegistered();
 #endif
+
+class IntegrationTestCommands
+    : public base::RefCountedThreadSafe<IntegrationTestCommands> {
+ public:
+  static scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommands();
+
+  virtual UpdaterScope scope() const = 0;
+
+  virtual void EnterTestMode(const GURL& url) const = 0;
+  virtual void Clean() const = 0;
+  virtual void ExpectClean() const = 0;
+  virtual void ExpectInstalled() const = 0;
+  virtual void ExpectCandidateUninstalled() const = 0;
+  virtual void Install() const = 0;
+  virtual void SetActive(const std::string& app_id) const = 0;
+  virtual void ExpectActiveUpdater() const = 0;
+  virtual void ExpectActive(const std::string& app_id) const = 0;
+  virtual void ExpectNotActive(const std::string& app_id) const = 0;
+  virtual void ExpectVersionActive(const std::string& version) const = 0;
+  virtual void ExpectVersionNotActive(const std::string& version) const = 0;
+  virtual void Uninstall() const = 0;
+#if defined(OS_MAC)
+  virtual void RegisterApp(const std::string& app_id) const = 0;
+  virtual void RegisterTestApp() const = 0;
+#endif
+  virtual void CopyLog() const = 0;
+  virtual void SetupFakeUpdaterHigherVersion() const = 0;
+  virtual void SetupFakeUpdaterLowerVersion() const = 0;
+  virtual void SetFakeExistenceCheckerPath(const std::string& app_id) const = 0;
+  virtual void ExpectAppUnregisteredExistenceCheckerPath(
+      const std::string& app_id) const = 0;
+  virtual void RunWake(int exit_code) const = 0;
+  virtual void PrintLog() const = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<IntegrationTestCommands>;
+
+  virtual ~IntegrationTestCommands() = default;
+};
 
 }  // namespace test
 }  // namespace updater

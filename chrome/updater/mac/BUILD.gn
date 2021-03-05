@@ -81,22 +81,6 @@ source_set("xpc_names") {
   frameworks = [ "Foundation.framework" ]
 }
 
-source_set("util") {
-  sources = [
-    "util.h",
-    "util.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/updater:base",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:version_header",
-  ]
-
-  frameworks = [ "Foundation.framework" ]
-}
-
 source_set("updater_setup_sources") {
   sources = [
     "setup/setup.h",
@@ -105,7 +89,6 @@ source_set("updater_setup_sources") {
 
   deps = [
     ":network_fetcher_sources",
-    ":util",
     ":xpc_names",
     "//base",
     "//chrome/common/mac:launchd",

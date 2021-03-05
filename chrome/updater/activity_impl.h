@@ -7,11 +7,13 @@
 
 #include <string>
 
+#include "chrome/updater/updater_scope.h"
+
 namespace updater {
 
-bool GetActiveBit(const std::string& id, bool is_machine_);
+bool GetActiveBit(UpdaterScope scope, const std::string& id);
 
-void ClearActiveBit(const std::string& id, bool is_machine_);
+void ClearActiveBit(UpdaterScope scope, const std::string& id);
 
 }  // namespace updater
 

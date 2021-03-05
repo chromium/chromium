@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
@@ -25,6 +26,7 @@
 #include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/test/integration_tests.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
@@ -44,10 +46,10 @@ base::FilePath GetInstallerPath() {
   return test_executable.DirName().AppendASCII("UpdaterSetup.exe");
 }
 
-base::FilePath GetProductPath() {
+base::Optional<base::FilePath> GetProductPath() {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &app_data_dir))
-    return base::FilePath();
+    return base::nullopt;
   return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING)
       .AppendASCII(UPDATER_VERSION_STRING);
@@ -59,33 +61,47 @@ std::wstring GetAppClientStateKey(const std::string& id) {
 
 }  // namespace
 
-base::FilePath GetInstalledExecutablePath() {
-  return GetProductPath().AppendASCII("updater.exe");
+base::Optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
+  base::Optional<base::FilePath> path = GetProductPath();
+  if (!path)
+    return base::nullopt;
+  return path->AppendASCII("updater.exe");
 }
 
-base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version) {
-  return GetProductPath().AppendASCII(version.GetString());
+base::Optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
+    UpdaterScope scope,
+    const base::Version& version) {
+  base::Optional<base::FilePath> path = GetProductPath();
+  if (!path)
+    return base::nullopt;
+  return path->AppendASCII(version.GetString());
 }
 
-base::FilePath GetDataDirPath() {
+base::Optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &app_data_dir))
-    return base::FilePath();
+    return base::nullopt;
   return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-void Clean() {
+void Clean(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Delete the Client / ClientState registry keys.
   // TODO(crbug.com/1062288): Delete the COM server items.
   // TODO(crbug.com/1062288): Delete the COM service items.
   // TODO(crbug.com/1062288): Delete the COM interfaces.
   // TODO(crbug.com/1062288): Delete the Wake task.
-  EXPECT_TRUE(base::DeletePathRecursively(GetProductPath()));
-  EXPECT_TRUE(base::DeletePathRecursively(GetDataDirPath()));
+  base::Optional<base::FilePath> path = GetProductPath();
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_TRUE(base::DeletePathRecursively(*path));
+  path = GetDataDirPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_TRUE(base::DeletePathRecursively(*path));
 }
 
-void ExpectClean() {
+void ExpectClean(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are no Client / ClientState registry
   // keys.
   // TODO(crbug.com/1062288): Assert there is no UpdateDev registry key.
@@ -95,8 +111,14 @@ void ExpectClean() {
   // TODO(crbug.com/1062288): Assert there are no Wake tasks.
 
   // Files must not exist on the file system.
-  EXPECT_FALSE(base::PathExists(GetProductPath()));
-  EXPECT_FALSE(base::PathExists(GetDataDirPath()));
+  base::Optional<base::FilePath> path = GetProductPath();
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_FALSE(base::PathExists(*path));
+  path = GetDataDirPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_FALSE(base::PathExists(*path));
 }
 
 void EnterTestMode(const GURL& url) {
@@ -107,7 +129,7 @@ void EnterTestMode(const GURL& url) {
                   .Overwrite());
 }
 
-void ExpectInstalled() {
+void ExpectInstalled(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are Client / ClientState registry
   // keys.
   // TODO(crbug.com/1062288): Assert there are COM server items.
@@ -116,40 +138,52 @@ void ExpectInstalled() {
   // TODO(crbug.com/1062288): Assert there are Wake tasks.
 
   // Files must exist on the file system.
-  EXPECT_TRUE(base::PathExists(GetProductPath()));
+  base::Optional<base::FilePath> path = GetProductPath();
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_TRUE(base::PathExists(*path));
 }
 
-void ExpectCandidateUninstalled() {
+void ExpectCandidateUninstalled(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are no side-by-side COM interfaces.
   // TODO(crbug.com/1062288): Assert there are no Wake tasks.
 
   // Files must not exist on the file system.
-  EXPECT_FALSE(base::PathExists(GetProductPath()));
+  base::Optional<base::FilePath> path = GetProductPath();
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_FALSE(base::PathExists(*path));
 }
 
-void ExpectActive() {
+void ExpectActiveUpdater(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert that COM interfaces point to this version.
 
   // Files must exist on the file system.
-  EXPECT_TRUE(base::PathExists(GetProductPath()));
+  base::Optional<base::FilePath> path = GetProductPath();
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_TRUE(base::PathExists(*path));
 }
 
-void Install() {
+void Install(UpdaterScope scope) {
   const base::FilePath path = GetInstallerPath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch(kInstallSwitch);
   int exit_code = -1;
-  ASSERT_TRUE(Run(command_line, &exit_code));
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
   EXPECT_EQ(0, exit_code);
 }
 
-void Uninstall() {
+void Uninstall(UpdaterScope scope) {
   if (::testing::Test::HasFailure())
-    PrintLog();
+    PrintLog(scope);
   // Copy logs from GetDataDirPath() before updater uninstalls itself
   // and deletes the path.
-  CopyLog(GetDataDirPath());
+  base::Optional<base::FilePath> data_dir_path = GetDataDirPath(scope);
+  EXPECT_TRUE(data_dir_path);
+  if (data_dir_path)
+    CopyLog(*data_dir_path);
 
   // Note: updater.exe --uninstall is run from the build dir, not the install
   // dir, because it is useful for tests to be able to run it to clean the
@@ -160,7 +194,7 @@ void Uninstall() {
   base::CommandLine command_line(path);
   command_line.AppendSwitch("uninstall");
   int exit_code = -1;
-  ASSERT_TRUE(Run(command_line, &exit_code));
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
   EXPECT_EQ(0, exit_code);
 
   // Uninstallation involves a race with the uninstall.cmd script and the
@@ -168,7 +202,7 @@ void Uninstall() {
   SleepFor(5);
 }
 
-void SetActive(const std::string& id) {
+void SetActive(UpdaterScope scope, const std::string& id) {
   // TODO(crbug/1159498): Standardize registry access.
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
@@ -177,7 +211,7 @@ void SetActive(const std::string& id) {
   EXPECT_EQ(key.WriteValue(kDidRun, L"1"), ERROR_SUCCESS);
 }
 
-void ExpectActive(const std::string& id) {
+void ExpectActive(UpdaterScope scope, const std::string& id) {
   // TODO(crbug/1159498): Standardize registry access.
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
@@ -188,7 +222,7 @@ void ExpectActive(const std::string& id) {
   EXPECT_EQ(value, L"1");
 }
 
-void ExpectNotActive(const std::string& id) {
+void ExpectNotActive(UpdaterScope scope, const std::string& id) {
   // TODO(crbug/1159498): Standardize registry access.
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),

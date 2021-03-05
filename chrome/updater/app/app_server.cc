@@ -26,6 +26,7 @@
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/update_service_internal_impl.h"
 #include "chrome/updater/update_service_internal_impl_inactive.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
 
@@ -102,6 +103,8 @@ void AppServer::MaybeUninstall() {
     base::CommandLine command_line(
         base::CommandLine::ForCurrentProcess()->GetProgram());
     command_line.AppendSwitch(kUninstallIfUnusedSwitch);
+    if (updater_scope() == UpdaterScope::kSystem)
+      command_line.AppendSwitch(kSystemSwitch);
     command_line.AppendSwitch("--enable-logging");
     command_line.AppendSwitchASCII("--vmodule", "*/chrome/updater/*=2");
     DVLOG(2) << "Launching uninstall command: "

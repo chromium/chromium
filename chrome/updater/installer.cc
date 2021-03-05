@@ -11,6 +11,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -35,13 +36,12 @@ static constexpr base::TaskTraits kTaskTraitsBlockWithSyncPrimitives = {
 
 // Returns the full path to the installation directory for the application
 // identified by the |app_id|.
-base::FilePath GetAppInstallDir(const std::string& app_id) {
-  base::FilePath app_install_dir;
-  if (GetBaseDirectory(&app_install_dir)) {
-    app_install_dir = app_install_dir.AppendASCII(kAppsDir);
-    app_install_dir = app_install_dir.AppendASCII(app_id);
-  }
-  return app_install_dir;
+base::Optional<base::FilePath> GetAppInstallDir(const std::string& app_id) {
+  base::Optional<base::FilePath> app_install_dir = GetBaseDirectory();
+  if (!app_install_dir)
+    return base::nullopt;
+
+  return app_install_dir->AppendASCII(kAppsDir).AppendASCII(app_id);
 }
 
 }  // namespace
@@ -96,12 +96,13 @@ void Installer::DeleteOlderInstallPaths() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  const base::FilePath app_install_dir = GetAppInstallDir(app_id_);
-  if (app_install_dir.empty() || !base::PathExists(app_install_dir)) {
+  const base::Optional<base::FilePath> app_install_dir =
+      GetAppInstallDir(app_id_);
+  if (!app_install_dir || !base::PathExists(*app_install_dir)) {
     return;
   }
 
-  base::FileEnumerator file_enumerator(app_install_dir, false,
+  base::FileEnumerator file_enumerator(*app_install_dir, false,
                                        base::FileEnumerator::DIRECTORIES);
   for (auto path = file_enumerator.Next(); !path.value().empty();
        path = file_enumerator.Next()) {
@@ -138,14 +139,15 @@ Installer::Result Installer::InstallHelper(
   if (pv_.CompareTo(manifest_version) > 0)
     return Result(update_client::InstallError::VERSION_NOT_UPGRADED);
 
-  const base::FilePath app_install_dir = GetAppInstallDir(app_id_);
-  if (app_install_dir.empty())
+  const base::Optional<base::FilePath> app_install_dir =
+      GetAppInstallDir(app_id_);
+  if (!app_install_dir)
     return Result(update_client::InstallError::NO_DIR_COMPONENT_USER);
-  if (!base::CreateDirectory(app_install_dir))
+  if (!base::CreateDirectory(*app_install_dir))
     return Result(kErrorCreateAppInstallDirectory);
 
   const auto versioned_install_dir =
-      app_install_dir.AppendASCII(manifest_version.GetString());
+      app_install_dir->AppendASCII(manifest_version.GetString());
   if (base::PathExists(versioned_install_dir)) {
     if (!base::DeletePathRecursively(versioned_install_dir))
       return Result(update_client::InstallError::CLEAN_INSTALL_DIR_FAILED);
@@ -226,10 +228,10 @@ bool Installer::GetInstalledFile(const std::string& file,
     return false;  // No component has been installed yet.
 
   const auto install_dir = GetCurrentInstallDir();
-  if (install_dir.empty())
+  if (!install_dir)
     return false;
 
-  *installed_file = install_dir.AppendASCII(file);
+  *installed_file = install_dir->AppendASCII(file);
   return true;
 }
 
@@ -237,10 +239,13 @@ bool Installer::Uninstall() {
   return false;
 }
 
-base::FilePath Installer::GetCurrentInstallDir() const {
+base::Optional<base::FilePath> Installer::GetCurrentInstallDir() const {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  return GetAppInstallDir(app_id_).AppendASCII(pv_.GetString());
+  base::Optional<base::FilePath> path = GetAppInstallDir(app_id_);
+  if (!path)
+    return base::nullopt;
+  return path->AppendASCII(pv_.GetString());
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

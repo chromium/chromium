@@ -94,11 +94,11 @@ void AppServerMac::ActiveDuty(
 }
 
 void AppServerMac::UninstallSelf() {
-  UninstallCandidate();
+  UninstallCandidate(updater_scope());
 }
 
 bool AppServerMac::SwapRPCInterfaces() {
-  return PromoteCandidate() == setup_exit_codes::kSuccess;
+  return PromoteCandidate(updater_scope()) == setup_exit_codes::kSuccess;
 }
 
 void AppServerMac::TaskStarted() {

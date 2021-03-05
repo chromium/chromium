@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/optional.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/updater/constants.h"
@@ -56,13 +57,12 @@ class AppServerTest : public AppServer {
 };
 
 void ClearPrefs() {
-  base::FilePath prefs_dir;
-  ASSERT_TRUE(GetBaseDirectory(&prefs_dir));
-  ASSERT_TRUE(
-      base::DeleteFile(prefs_dir.Append(FILE_PATH_LITERAL("prefs.json"))));
-  ASSERT_TRUE(GetVersionedDirectory(&prefs_dir));
-  ASSERT_TRUE(
-      base::DeleteFile(prefs_dir.Append(FILE_PATH_LITERAL("prefs.json"))));
+  for (const base::Optional<base::FilePath>& path :
+       {GetBaseDirectory(), GetVersionedDirectory()}) {
+    ASSERT_TRUE(path);
+    ASSERT_TRUE(
+        base::DeleteFile(path->Append(FILE_PATH_LITERAL("prefs.json"))));
+  }
 }
 
 class AppServerTestCase : public testing::Test {

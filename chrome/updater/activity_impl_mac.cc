@@ -8,12 +8,15 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 namespace {
 
-base::FilePath GetActiveFile(const std::string& id) {
+base::FilePath GetActiveFile(UpdaterScope scope, const std::string& id) {
+  // TODO(crbug.com/1096654): Add support for UpdaterScope::kSystem.
   return base::GetHomeDir()
       .AppendASCII("Library")
       .AppendASCII(COMPANY_SHORTNAME_STRING)
@@ -24,25 +27,14 @@ base::FilePath GetActiveFile(const std::string& id) {
 
 }  // namespace
 
-bool GetActiveBit(const std::string& id, bool is_machine_) {
-  if (is_machine_) {
-    // TODO(crbug.com/1096654): Add support for the machine case. Machine
-    // installs must look for values in each home dir.
-    return false;
-  } else {
-    base::FilePath path = GetActiveFile(id);
-    return base::PathExists(path) && base::PathIsWritable(path);
-  }
+bool GetActiveBit(UpdaterScope scope, const std::string& id) {
+  const base::FilePath path = GetActiveFile(scope, id);
+  return base::PathExists(path) && base::PathIsWritable(path);
 }
 
-void ClearActiveBit(const std::string& id, bool is_machine_) {
-  if (is_machine_) {
-    // TODO(crbug.com/1096654): Add support for the machine case. Machine
-    // installs must clear values in each home dir.
-  } else {
-    if (!base::DeleteFile(GetActiveFile(id)))
-      VLOG(2) << "Failed to clear activity bit at " << GetActiveFile(id);
-  }
+void ClearActiveBit(UpdaterScope scope, const std::string& id) {
+  if (!base::DeleteFile(GetActiveFile(scope, id)))
+    VLOG(2) << "Failed to clear activity bit at " << GetActiveFile(scope, id);
 }
 
 }  // namespace updater

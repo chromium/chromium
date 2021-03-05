@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/external_constants_builder.h"
@@ -24,11 +25,12 @@ namespace updater {
 namespace {
 
 void DeleteOverridesFile() {
-  base::FilePath target;
-  if (!GetBaseDirectory(&target)) {
+  base::Optional<base::FilePath> target = GetBaseDirectory();
+  if (!target) {
     LOG(ERROR) << "Could not get base directory to clean out overrides file.";
+    return;
   }
-  if (!base::DeleteFile(target.AppendASCII(kDevOverrideFileName))) {
+  if (!base::DeleteFile(target->AppendASCII(kDevOverrideFileName))) {
     // Note: base::DeleteFile returns `true` if there is no such file, which
     // is what we want; "file already doesn't exist" is not an error here.
     LOG(ERROR) << "Could not delete override file.";

@@ -21,8 +21,8 @@
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #import "chrome/updater/mac/xpc_service_names.h"
-#include "chrome/updater/service_scope.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "components/update_client/update_client_errors.h"
 
 using base::SysUTF8ToNSString;
@@ -143,12 +143,12 @@ using base::SysUTF8ToNSString;
 
 namespace updater {
 
-UpdateServiceProxy::UpdateServiceProxy(ServiceScope scope) {
+UpdateServiceProxy::UpdateServiceProxy(UpdaterScope scope) {
   switch (scope) {
-    case ServiceScope::kSystem:
+    case UpdaterScope::kSystem:
       client_.reset([[CRUUpdateServiceProxyImpl alloc] initPrivileged]);
       break;
-    case ServiceScope::kUser:
+    case UpdaterScope::kUser:
       client_.reset([[CRUUpdateServiceProxyImpl alloc] init]);
       break;
   }

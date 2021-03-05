@@ -11,6 +11,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
@@ -190,12 +191,13 @@ std::unique_ptr<PolicyManagerInterface> DMStorage::GetOmahaPolicyManager() {
 }
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
-  base::FilePath updater_versioned_path;
-  if (!GetVersionedDirectory(&updater_versioned_path))
+  base::Optional<base::FilePath> updater_versioned_path =
+      GetVersionedDirectory();
+  if (!updater_versioned_path)
     return nullptr;
 
   base::FilePath policy_cache_folder =
-      updater_versioned_path.AppendASCII(kPolicyCacheSubfolder);
+      updater_versioned_path->AppendASCII(kPolicyCacheSubfolder);
 
   return base::MakeRefCounted<DMStorage>(policy_cache_folder);
 }

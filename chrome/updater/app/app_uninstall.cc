@@ -58,7 +58,8 @@ void AppUninstall::FirstTaskRun() {
   // TODO(crbug.com/1114719): Implement --uninstall-self for Win.
   if (command_line->HasSwitch(kUninstallSelfSwitch)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce(&UninstallCandidate),
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&UninstallCandidate, updater_scope()),
         base::BindOnce(&AppUninstall::Shutdown, this));
     return;
   }
@@ -79,7 +80,8 @@ void AppUninstall::FirstTaskRun() {
 
   if (can_uninstall) {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce(&Uninstall, false),
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&Uninstall, updater_scope()),
         base::BindOnce(&AppUninstall::Shutdown, this));
     return;
   }

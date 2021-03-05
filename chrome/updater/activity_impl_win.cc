@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/constants.h"
 
 namespace updater {
@@ -24,41 +25,47 @@ std::wstring GetAppClientStateKey(const std::string& id) {
 
 }  // namespace
 
-bool GetActiveBit(const std::string& id, bool is_machine_) {
-  if (is_machine_) {
-    // TODO(crbug.com/1096654): Add support for the machine case. Machine
-    // installs must look for values under HKLM and under every HKU\<sid>.
-    return false;
-  } else {
-    // TODO(crbug/1159498): Standardize registry access.
-    base::win::RegKey key;
-    if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
-                 KEY_READ | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-      std::wstring value;
-      if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS && value == L"1")
-        return true;
+bool GetActiveBit(UpdaterScope scope, const std::string& id) {
+  switch (scope) {
+    case UpdaterScope::kUser: {
+      // TODO(crbug/1159498): Standardize registry access.
+      base::win::RegKey key;
+      if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
+                   KEY_READ | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
+        std::wstring value;
+        if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS && value == L"1")
+          return true;
+      }
+      return false;
     }
-    return false;
+    case UpdaterScope::kSystem:
+      // TODO(crbug.com/1096654): Add support for the machine case. Machine
+      // installs must look for values under HKLM and under every HKU\<sid>.
+      return false;
   }
 }
 
-void ClearActiveBit(const std::string& id, bool is_machine_) {
-  if (is_machine_) {
-    // TODO(crbug.com/1096654): Add support for the machine case. Machine
-    // installs must clear values under HKLM and under every HKU\<sid>.
-  } else {
-    // TODO(crbug/1159498): Standardize registry access.
-    base::win::RegKey key;
-    if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
-                 KEY_WRITE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-      const LONG result = key.WriteValue(kDidRun, L"0");
-      if (result) {
-        VLOG(2) << "Failed to clear HKCU activity key for " << id << ": "
-                << result;
+void ClearActiveBit(UpdaterScope scope, const std::string& id) {
+  switch (scope) {
+    case UpdaterScope::kUser: {
+      // TODO(crbug/1159498): Standardize registry access.
+      base::win::RegKey key;
+      if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
+                   KEY_WRITE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
+        const LONG result = key.WriteValue(kDidRun, L"0");
+        if (result) {
+          VLOG(2) << "Failed to clear HKCU activity key for " << id << ": "
+                  << result;
+        }
+      } else {
+        VLOG(2) << "Failed to open HKCU activity key with write for " << id;
       }
-    } else {
-      VLOG(2) << "Failed to open HKCU activity key with write for " << id;
+      break;
     }
+    case UpdaterScope::kSystem:
+      // TODO(crbug.com/1096654): Add support for the machine case. Machine
+      // installs must clear values under HKLM and under every HKU\<sid>.
+      break;
   }
 }
 

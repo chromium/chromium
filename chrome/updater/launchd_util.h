@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace base {
 class TimeDelta;
@@ -25,7 +26,8 @@ enum class LaunchctlPresence {
 // reached. Calls `callback` with 'true' if the expectation is met, and false
 // if |timeout| is reached.  Must be called in a sequence. The callback is
 // posted to the same sequence.
-void PollLaunchctlList(const std::string& service,
+void PollLaunchctlList(UpdaterScope scope,
+                       const std::string& service,
                        LaunchctlPresence expectation,
                        base::TimeDelta timeout,
                        base::OnceCallback<void(bool)> callback);

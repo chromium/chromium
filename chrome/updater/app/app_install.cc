@@ -106,7 +106,7 @@ void AppInstall::GetVersionDone(scoped_refptr<UpdateService>,
   }
 
   InstallCandidate(
-      false,
+      updater_scope(),
       base::BindOnce(
           [](SplashScreen* splash_screen, base::OnceCallback<void(int)> done,
              int result) {
