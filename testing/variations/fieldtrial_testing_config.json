@@ -7392,26 +7392,6 @@
             ]
         }
     ],
-    "UsernameFirstFlow": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Default",
-                    "disable_features": [
-                        "UsernameFirstFlow"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8ConcurrentInlining": [
         {
             "platforms": [
