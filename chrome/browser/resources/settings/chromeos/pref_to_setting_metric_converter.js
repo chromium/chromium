@@ -38,6 +38,14 @@
           value: {intValue: /** @type {number} */ (prefValue)}
         };
 
+      // os_privacy_page/os_privacy_page.js
+      case 'cros.device.peripheral_data_access_enabled':
+        return {
+          setting:
+              chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection,
+          value: {boolValue: /** @type {boolean} */ (prefValue)}
+        };
+
       // pref to setting metric not implemented.
       default:
         return null;

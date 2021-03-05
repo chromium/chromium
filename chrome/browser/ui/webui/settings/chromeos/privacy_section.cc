@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -274,8 +275,15 @@ std::string PrivacySection::GetSectionPath() const {
 
 bool PrivacySection::LogMetric(mojom::Setting setting,
                                base::Value& value) const {
-  // Unimplemented.
-  return false;
+  switch (setting) {
+    case mojom::Setting::kPeripheralDataAccessProtection:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Privacy.PeripheralDataAccessProtection",
+          value.GetBool());
+      return true;
+    default:
+      return false;
+  }
 }
 
 void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
