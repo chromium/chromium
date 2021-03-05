@@ -72,8 +72,8 @@ crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-004.html [ 
 crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-004v.html [ Failure ]
 crbug.com/1162704 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-015.html [ Failure ]
 crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-025.html [ Failure ]
-crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-026.html [ Failure ]
-crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-015.html [ Failure ]
+crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-026.html [ Pass ]
+crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-015.html [ Pass ]
 crbug.com/1173843 external/wpt/css/css-flexbox/frameset-crash.html [ Skip ]
 
 ### external/wpt/css/css-fonts/
@@ -600,7 +600,7 @@ crbug.com/591099 virtual/prefer_compositing_to_lcd_text/compositing/overflow/scr
 crbug.com/591099 paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Failure ]
 crbug.com/591099 virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Failure ]
 
-crbug.com/591099 external/wpt/css/css-flexbox/flexbox-min-width-auto-005.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/flexbox-min-width-auto-005.html [ Pass ]
 crbug.com/591099 external/wpt/css/css-flexbox/flexbox_align-items-stretch-3.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-heights-006.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-heights-014.html [ Failure ]
@@ -609,8 +609,8 @@ crbug.com/1132627 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-00
 crbug.com/1132627 external/wpt/css/css-flexbox/flex-aspect-ratio-img-column-011.html [ Failure ]
 crbug.com/721123 css3/flexbox/flexitem.html [ Failure ]
 crbug.com/721123 external/wpt/css/css-flexbox/flexitem-stretch-image.html [ Failure ]
-crbug.com/704294 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-006.html [ Failure ]
-crbug.com/704294 external/wpt/css/css-flexbox/canvas-dynamic-change-001.html [ Failure ]
+crbug.com/704294 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-006.html [ Pass ]
+crbug.com/704294 external/wpt/css/css-flexbox/canvas-dynamic-change-001.html [ Pass ]
 crbug.com/987000 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-007.html [ Failure ]
 crbug.com/987000 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-010.html [ Failure ]
 crbug.com/987000 external/wpt/css/css-flexbox/flex-aspect-ratio-img-column-012.html [ Failure ]

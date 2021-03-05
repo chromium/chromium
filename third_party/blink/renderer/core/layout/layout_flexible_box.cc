@@ -832,6 +832,8 @@ LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
       WillChildCrossSizeBeContainerCrossSize(child))
     cross_size_length = Length::FillAvailable();
 
+  // cross_size is border-box size if box-sizing is border-box, and
+  // content-box otherwise.
   LayoutUnit cross_size;
   if (cross_size_length.IsFixed()) {
     cross_size = LayoutUnit(cross_size_length.Value());
@@ -840,8 +842,7 @@ LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
            cross_size_length.IsFillAvailable());
     cross_size = MainAxisIsInlineAxis(child)
                      ? child.ComputePercentageLogicalHeight(cross_size_length)
-                     : AdjustBorderBoxLogicalWidthForBoxSizing(
-                           ValueForLength(cross_size_length, ContentWidth()));
+                     : ValueForLength(cross_size_length, ContentWidth());
   }
 
   LayoutSize aspect_ratio = child.IntrinsicSize();
@@ -856,10 +857,12 @@ LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
     } else {
       border_and_padding = main_axis_border_and_padding;
     }
+  } else {
+    if (child.StyleRef().BoxSizing() == EBoxSizing::kBorderBox)
+      cross_size -= cross_axis_border_and_padding;
   }
   double ratio =
       aspect_ratio.Width().ToFloat() / aspect_ratio.Height().ToFloat();
-  // TODO(cbiesinger): box sizing?
   if (IsHorizontalFlow())
     return LayoutUnit(cross_size * ratio) - border_and_padding;
   return LayoutUnit(cross_size / ratio) - border_and_padding;
