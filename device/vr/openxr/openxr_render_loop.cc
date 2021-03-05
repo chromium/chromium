@@ -272,6 +272,13 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     int16_t frame_index,
     GLuint id,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
+  // openxr_ and context_provider can be nullptr if we receive
+  // OnWebXrTokenSignaled after the session has ended. Ensure we don't crash in
+  // that case.
+  if (!openxr_ || !context_provider_) {
+    return;
+  }
+
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       texture_helper_.GetDevice();
   Microsoft::WRL::ComPtr<ID3D11Device5> d3d11_device5;
@@ -310,13 +317,11 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
 
   SubmitFrameWithTextureHandle(frame_index, mojo::PlatformHandle());
 
-  if (openxr_) {
-    // In order for the fence to be respected by the system, it needs to stick
-    // around until the next time the texture comes up for use. To avoid needing
-    // to remember the swap chain index, use frame_index %
-    // color_swapchain_images_.size() to keep them separated from one another.
-    openxr_->StoreFence(std::move(d3d11_fence), frame_index);
-  }
+  // In order for the fence to be respected by the system, it needs to stick
+  // around until the next time the texture comes up for use. To avoid needing
+  // to remember the swap chain index, use frame_index %
+  // color_swapchain_images_.size() to keep them separated from one another.
+  openxr_->StoreFence(std::move(d3d11_fence), frame_index);
 
   gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
   gl->DestroyGpuFenceCHROMIUM(id);
