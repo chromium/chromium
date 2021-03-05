@@ -118,8 +118,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.Usage.Count" enum="NetworkCellularUsage"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the number of times a ESim cellular network is connected as the only
+    network, or with other network or not connected at all.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.PSim.Usage.Count" enum="NetworkCellularUsage"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the number of times an PSim cellular network is connected as the only
+    network, or with other network or not connected at all.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.Usage.Count" enum="NetworkCellularUsage"
     expires_after="2021-06-30">
+  <obsolete>
+    Split into Network.Cellular.PSim.Usage.Count and
+    Network.Cellular.ESim.Usage.Count on 2/2021 in M91.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
