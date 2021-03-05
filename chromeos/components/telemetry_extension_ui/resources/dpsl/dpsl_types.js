@@ -192,6 +192,19 @@ dpsl.NvmeWearLevelRoutineParams;
  * @typedef {{expectedPowerType: !string}}
  */
 dpsl.PowerAcRoutineParams;
+
+/**
+ * Params object of dpsl.diagnostics.cpu.{runCacheRoutine(), runStressRoutine(),
+ * runFloatingPointAccuracyRoutine()}
+ * @typedef {{duration: !number}}
+ */
+dpsl.CpuRoutineDurationParams;
+
+/**
+ * Params object of dpsl.diagnostics.cpu.runPrimeSearchRoutine()
+ * @typedef {{lengthSeconds: !number, maximumNumber: !number}}
+ */
+dpsl.CpuPrimeSearchRoutineParams;
 //////////////////// dpsl.system_events.* type definitions /////////////////////
 
 /**

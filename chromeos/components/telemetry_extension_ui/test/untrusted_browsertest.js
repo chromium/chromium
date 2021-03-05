@@ -179,6 +179,13 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRunRoutineWithInterceptor', async () => {
       {expectedPowerType: 'Mains'});
   await dpsl.diagnostics.power.runAcDisconnectedRoutine(
       {expectedPowerType: 'Battery'});
+
+  // dpsl.diangostics.cpu.* tests
+  await dpsl.diagnostics.cpu.runCacheRoutine({duration: 30});
+  await dpsl.diagnostics.cpu.runStressRoutine({duration: 17});
+  await dpsl.diagnostics.cpu.runFloatingPointAccuracyRoutine({duration: 94});
+  await dpsl.diagnostics.cpu.runPrimeSearchRoutine(
+      {lengthSeconds: 45, maximumNumber: 1110987654321});
 });
 
 // Tests that runBatteryHealthRoutine returns the correct Object.

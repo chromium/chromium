@@ -284,6 +284,55 @@
   }
 
   /**
+   * Diagnostics CPU Manager for dpsl.diagnostics.cpu.* APIs.
+   */
+  class CpuManager {
+    /**
+     * Runs CPU cache test.
+     * @param {!dpsl.CpuRoutineDurationParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runCacheRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_CACHE_ROUTINE, params);
+    }
+
+    /**
+     * Runs CPU stress test.
+     * @param {!dpsl.CpuRoutineDurationParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runStressRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_STRESS_ROUTINE, params);
+    }
+
+    /**
+     * Runs CPU floating point accuracy test.
+     * @param {!dpsl.CpuRoutineDurationParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runFloatingPointAccuracyRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_FP_ACCURACY_ROUTINE, params);
+    }
+
+    /**
+     * Runs CPU prime number search test.
+     * @param {!dpsl.CpuPrimeSearchRoutineParams} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runPrimeSearchRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_PRIME_SEARCH_ROUTINE, params);
+    }
+  }
+
+  /**
    * DPSL Diagnostics Manager for dpsl.diagnostics.* APIs.
    */
   class DPSLDiagnosticsManager {
@@ -305,6 +354,12 @@
        * @public
        */
       this.power = new PowerManager();
+
+      /**
+       * @type {!CpuManager}
+       * @public
+       */
+      this.cpu = new CpuManager();
     }
 
     /**
@@ -447,17 +502,16 @@
      * @public
      */
     async runCpuCacheRoutine(duration) {
+      console.warn(
+          'chromeos.diagnostics.runCpuCacheRoutine API function is deprecated',
+          'and will be removed. Use dpsl.diagnostics.cpu.runCacheRoutine,',
+          'instead');
+
       const message =
           /** @type {!dpsl_internal.DiagnosticsRunCpuCacheRoutineRequest} */ (
               {duration: duration});
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_CACHE_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_CACHE_ROUTINE, message));
     }
 
     /**
@@ -467,17 +521,16 @@
      * @public
      */
     async runCpuStressRoutine(duration) {
+      console.warn(
+          'chromeos.diagnostics.runCpuStressRoutine API function is deprecated',
+          'and will be removed. Use dpsl.diagnostics.cpu.runStressRoutine,',
+          'instead');
+
       const message =
           /** @type {!dpsl_internal.DiagnosticsRunCpuStressRoutineRequest} */ (
               {duration: duration});
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_STRESS_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_STRESS_ROUTINE, message));
     }
 
     /**
@@ -487,17 +540,16 @@
      * @public
      */
     async runFloatingPointAccuracyRoutine(duration) {
+      console.warn(
+          'chromeos.diagnostics.runFloatingPointAccuracyRoutine API function',
+          'is deprecated and will be removed. Use',
+          'dpsl.diagnostics.cpu.runFloatingPointAccuracyRoutine, instead');
+
       const message =
           /** @type {!dpsl_internal.DiagnosticsRunFPAccuracyRoutineRequest} */
           ({duration: duration});
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_FP_ACCURACY_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_FP_ACCURACY_ROUTINE, message));
     }
 
     /**
@@ -576,19 +628,18 @@
      * @public
      */
     async runPrimeSearchRoutine(lengthSeconds, maximumNumber) {
+      console.warn(
+          'chromeos.diagnostics.runPrimeSearchRoutine API function is',
+          'deprecated and will be removed. Use',
+          'dpsl.diagnostics.cpu.runPrimeSearchRoutine, instead');
+
       const message =
           /**
              @type {!dpsl_internal.DiagnosticsRunPrimeSearchRoutineRequest}
            */
           ({lengthSeconds: lengthSeconds, maximumNumber: maximumNumber});
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_PRIME_SEARCH_ROUTINE,
-              message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_PRIME_SEARCH_ROUTINE, message));
     }
 
     /**

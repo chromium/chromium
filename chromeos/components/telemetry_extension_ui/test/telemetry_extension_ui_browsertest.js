@@ -782,15 +782,7 @@ class TestDiagnosticsService {
   /** @override */
   getAvailableRoutines() {}
   /** @override */
-  runCpuCacheRoutine() {}
-  /** @override */
-  runCpuStressRoutine() {}
-  /** @override */
   runDiskReadRoutine() {}
-  /** @override */
-  runFloatingPointAccuracyRoutine() {}
-  /** @override */
-  runPrimeSearchRoutine() {}
 
   /**
    * @override
@@ -913,6 +905,58 @@ class TestDiagnosticsService {
     this.callHistory.push([
       'runAcPowerRoutine',
       {expectedStatus: expectedStatus, expectedPowerType: expectedPowerType}
+    ]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @override
+   * @param {!number} duration
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runCpuCacheRoutine(duration) {
+    this.callHistory.push(['runCpuCacheRoutine', {duration: duration}]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @override
+   * @param {!number} duration
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runCpuStressRoutine(duration) {
+    this.callHistory.push(['runCpuStressRoutine', {duration: duration}]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @override
+   * @param {!number} duration
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runFloatingPointAccuracyRoutine(duration) {
+    this.callHistory.push(
+        ['runFloatingPointAccuracyRoutine', {duration: duration}]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @override
+   * @param {!number} lengthSeconds
+   * @param {!bigint} maxNum
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runPrimeSearchRoutine(lengthSeconds, maxNum) {
+    this.callHistory.push([
+      'runPrimeSearchRoutine', {lengthSeconds: lengthSeconds, maxNum: maxNum}
     ]);
 
     let response = this.routineResponse;
@@ -1054,6 +1098,13 @@ TEST_F(
                     chromeos.health.mojom.AcPowerStatusEnum.kDisconnected,
                 expectedPowerType: 'Battery'
               }
+            ],
+            ['runCpuCacheRoutine', {duration: 30}],
+            ['runCpuStressRoutine', {duration: 17}],
+            ['runFloatingPointAccuracyRoutine', {duration: 94}],
+            [
+              'runPrimeSearchRoutine',
+              {lengthSeconds: 45, maxNum: BigInt(1110987654321)}
             ]
           ],
           this.diagnosticsService.callHistory);
