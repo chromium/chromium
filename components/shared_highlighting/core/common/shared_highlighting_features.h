@@ -15,6 +15,8 @@ namespace shared_highlighting {
 // the feature is unlikely to work correctly.
 extern const base::Feature kSharedHighlightingUseBlocklist;
 
+extern const base::Feature kSharedHighlightingV2;
+
 }  // namespace shared_highlighting
 
 #endif  // COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_FEATURES_H_

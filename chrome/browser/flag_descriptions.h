@@ -1546,6 +1546,9 @@ extern const char kEnableVulkanDescription[];
 extern const char kSharedHighlightingUseBlocklistName[];
 extern const char kSharedHighlightingUseBlocklistDescription[];
 
+extern const char kSharedHighlightingV2Name[];
+extern const char kSharedHighlightingV2Description[];
+
 extern const char kPreemptiveLinkToTextGenerationName[];
 extern const char kPreemptiveLinkToTextGenerationDescription[];
 

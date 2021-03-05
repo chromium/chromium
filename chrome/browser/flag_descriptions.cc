@@ -2649,6 +2649,11 @@ const char kSharedHighlightingUseBlocklistDescription[] =
     "restrictions make it unlikely that a URL can be generated and actually "
     "work when shared.";
 
+const char kSharedHighlightingV2Name[] = "Shared Highlighting 2.0";
+const char kSharedHighlightingV2Description[] =
+    "Improvements to Shared Highlighting. Including ability to reshare or "
+    "remove a highlight.";
+
 const char kPreemptiveLinkToTextGenerationName[] =
     "Preemptive generation of link to text";
 const char kPreemptiveLinkToTextGenerationDescription[] =

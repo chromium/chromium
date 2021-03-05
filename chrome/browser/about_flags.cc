@@ -6518,6 +6518,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharedHighlightingUseBlocklistName,
      flag_descriptions::kSharedHighlightingUseBlocklistDescription, kOsAll,
      FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingUseBlocklist)},
+    {"shared-highlighting-v2", flag_descriptions::kSharedHighlightingV2Name,
+     flag_descriptions::kSharedHighlightingV2Description, kOsAll,
+     FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingV2)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"nearby-sharing", flag_descriptions::kNearbySharingName,

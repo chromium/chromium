@@ -4699,6 +4699,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "shared-highlighting-v2",
+    "owners": ["kmilka"],
+    "expiry_milestone": 92
+  },
+  {
     "name": "sharing-device-expiration",
     "owners": [ "//chrome/browser/sharing/OWNERS" ],
     "expiry_milestone": 86
