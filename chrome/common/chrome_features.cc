@@ -747,6 +747,9 @@ const base::Feature kPrivacyReorderedAndroid{"PrivacyReorderedAndroid",
 // Enables the privacy sandbox settings page.
 const base::Feature kPrivacySandboxSettings{"PrivacySandboxSettings",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<std::string> kPrivacySandboxSettingsURL{
+    &kPrivacySandboxSettings, "website-url",
+    "https://web.dev/digging-into-the-privacy-sandbox/"};
 
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.
