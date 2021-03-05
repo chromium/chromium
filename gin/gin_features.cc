@@ -58,6 +58,10 @@ const base::Feature kV8ExperimentalRegexpEngine{
 const base::Feature kV8Turboprop{"V8Turboprop",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables experimental Sparkplug compiler.
+const base::Feature kV8Sparkplug{"V8Sparkplug",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables fast API calls in TurboFan.
 const base::Feature kV8TurboFastApiCalls{"V8TurboFastApiCalls",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
