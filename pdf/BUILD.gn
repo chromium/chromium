@@ -140,6 +140,8 @@ if (enable_pdf) {
       "range_set.h",
       "thumbnail.cc",
       "thumbnail.h",
+      "ui/file_name.cc",
+      "ui/file_name.h",
       "ui/format_page_size.cc",
       "ui/format_page_size.h",
       "url_loader_wrapper.h",
@@ -344,7 +346,6 @@ if (enable_pdf) {
       "document_layout_unittest.cc",
       "document_loader_impl_unittest.cc",
       "draw_utils/coordinates_unittest.cc",
-      "out_of_process_instance_unittest.cc",
       "page_orientation_unittest.cc",
       "pdf_transform_unittest.cc",
       "pdf_utils/dates_unittest.cc",
@@ -364,6 +365,7 @@ if (enable_pdf) {
       "range_set_unittest.cc",
       "test/run_all_unittests.cc",
       "thumbnail_unittest.cc",
+      "ui/file_name_unittest.cc",
       "ui/format_page_size_unittest.cc",
     ]
 

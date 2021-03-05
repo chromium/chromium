@@ -32,7 +32,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
-#include "net/base/filename_util.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/document_attachment_info.h"
@@ -46,6 +45,7 @@
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ppapi_migration/value_conversions.h"
 #include "pdf/thumbnail.h"
+#include "pdf/ui/file_name.h"
 #include "pdf/ui/format_page_size.h"
 #include "ppapi/c/dev/ppb_cursor_control_dev.h"
 #include "ppapi/c/pp_errors.h"
@@ -74,7 +74,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "url/gurl.h"
 
 namespace chrome_pdf {
 
@@ -1042,7 +1041,7 @@ void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
   pp::VarDictionary message;
   message.Set(kType, kJSSaveDataType);
   message.Set(kJSToken, pp::Var(token));
-  message.Set(kJSFileName, pp::Var(GetFileNameFromUrl(GetURL())));
+  message.Set(kJSFileName, pp::Var(GetFileNameForSaveFromUrl(GetURL())));
   // This will be overwritten if the save is successful.
   message.Set(kJSDataToSave, pp::Var(pp::Var::Null()));
 
@@ -1219,17 +1218,6 @@ void OutOfProcessInstance::RotateClockwise() {
 
 void OutOfProcessInstance::RotateCounterclockwise() {
   engine()->RotateCounterclockwise();
-}
-
-// static
-std::string OutOfProcessInstance::GetFileNameFromUrl(const std::string& url) {
-  // Generate a file name. Unfortunately, MIME type can't be provided, since it
-  // requires IO.
-  base::string16 file_name = net::GetSuggestedFilename(
-      GURL(url), /*content_disposition=*/std::string(),
-      /*referrer_charset=*/std::string(), /*suggested_name=*/std::string(),
-      /*mime_type=*/std::string(), /*default_name=*/std::string());
-  return base::UTF16ToUTF8(file_name);
 }
 
 void OutOfProcessInstance::HandleGetThumbnailMessage(

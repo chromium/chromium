@@ -142,10 +142,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void RotateClockwise();
   void RotateCounterclockwise();
 
-  // Creates a file name for saving a PDF file, given the source URL. Exposed
-  // for testing.
-  static std::string GetFileNameFromUrl(const std::string& url);
-
  protected:
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
