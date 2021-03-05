@@ -119,76 +119,58 @@ chrome.test.runTests([
 
   async function noSuchTab() {
     const nonExistentTabId = 99999;
-    try {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: nonExistentTabId,
-        },
-        function: injectedFunction,
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(
-          `Error: No tab with id: ${nonExistentTabId}`, e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: nonExistentTabId,
+          },
+          function: injectedFunction,
+        }),
+        `Error: No tab with id: ${nonExistentTabId}`);
+    chrome.test.succeed();
   },
 
   async function noSuchFile() {
     const noSuchFile = 'no_such_file.js';
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
-    try {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: tab.id,
-        },
-        files: [noSuchFile],
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(
-          `Error: Could not load file: '${noSuchFile}'.`, e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          files: [noSuchFile],
+        }),
+        `Error: Could not load file: '${noSuchFile}'.`);
+    chrome.test.succeed();
   },
 
   async function noFilesSpecified() {
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
-    try {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: tab.id,
-        },
-        files: [],
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(EXACTLY_ONE_FILE_ERROR, e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          files: [],
+        }),
+        EXACTLY_ONE_FILE_ERROR);
+    chrome.test.succeed();
   },
 
   async function multipleFilesSpecified() {
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
-    try {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: tab.id,
-        },
-        files: ['script_file.js', 'script_file2.js'],
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(EXACTLY_ONE_FILE_ERROR, e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          files: ['script_file.js', 'script_file2.js'],
+        }),
+        EXACTLY_ONE_FILE_ERROR);
+    chrome.test.succeed();
   },
 
   async function disallowedPermission() {
@@ -196,24 +178,18 @@ chrome.test.runTests([
     let tab = await getSingleTab(query);
     const expectedTitle = 'Title Of Awesomeness';
     chrome.test.assertEq(expectedTitle, tab.title);
-    try {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: tab.id,
-        },
-        function: injectedFunction,
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(
-          `Error: Cannot access contents of url "${tab.url}". ` +
-              'Extension manifest must request permission ' +
-              'to access this host.',
-          e.toString());
-      tab = await getSingleTab(query);
-      chrome.test.assertEq(expectedTitle, tab.title);
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          function: injectedFunction,
+        }),
+        `Error: Cannot access contents of url "${tab.url}". ` +
+            'Extension manifest must request permission ' +
+            'to access this host.');
+    tab = await getSingleTab(query);
+    chrome.test.assertEq(expectedTitle, tab.title);
+    chrome.test.succeed();
   },
 ]);

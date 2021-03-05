@@ -232,19 +232,14 @@ chrome.test.runTests([
   },
   async function noSuchTab() {
     const nonExistentTabId = 99999;
-    try {
-      await removeCSS({
-        target: {
-          tabId: nonExistentTabId,
-        },
-        css: CSS,
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(
-          `Error: No tab with id: ${nonExistentTabId}`, e.toString());
-    }
+    await chrome.test.assertPromiseRejects(
+        removeCSS({
+          target: {
+            tabId: nonExistentTabId,
+          },
+          css: CSS,
+        }),
+        `Error: No tab with id: ${nonExistentTabId}`);
     await checkColors();
     chrome.test.succeed();
   },
@@ -274,20 +269,14 @@ chrome.test.runTests([
     // Note: We don't test the expected colors here, because that relies on the
     // extension having access to the host (in order to inject the script to
     // retrieve the colors), which it doesn't have here.
-    try {
-      await removeCSS({
-        target: {tabId},
-        css: CSS,
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(
-          'Error: Cannot access contents of the page. ' +
-              'Extension manifest must request permission to ' +
-              'access the respective host.',
-          e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        removeCSS({
+          target: {tabId},
+          css: CSS,
+        }),
+        'Error: Cannot access contents of the page. ' +
+            'Extension manifest must request permission to ' +
+            'access the respective host.');
+    chrome.test.succeed();
   },
 ]);

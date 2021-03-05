@@ -128,97 +128,73 @@ chrome.test.runTests([
 
   async function noSuchTab() {
     const nonExistentTabId = 99999;
-    try {
-      await chrome.scripting.insertCSS({
-        target: {
-          tabId: nonExistentTabId,
-        },
-        css: CSS_CYAN,
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(
-          `Error: No tab with id: ${nonExistentTabId}`, e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.insertCSS({
+          target: {
+            tabId: nonExistentTabId,
+          },
+          css: CSS_CYAN,
+        }),
+        `Error: No tab with id: ${nonExistentTabId}`);
+    chrome.test.succeed();
   },
 
   async function noSuchFile() {
     const noSuchFile = 'no_such_file.css';
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
-    try {
-      await chrome.scripting.insertCSS({
-        target: {
-          tabId: tab.id,
-        },
-        files: [noSuchFile],
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(
-          `Error: Could not load file: '${noSuchFile}'.`, e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.insertCSS({
+          target: {
+            tabId: tab.id,
+          },
+          files: [noSuchFile],
+        }),
+        `Error: Could not load file: '${noSuchFile}'.`);
+    chrome.test.succeed();
   },
 
   async function noFilesSpecified() {
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
-    try {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: tab.id,
-        },
-        files: [],
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(EXACTLY_ONE_FILE_ERROR, e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          files: [],
+        }),
+        EXACTLY_ONE_FILE_ERROR);
+    chrome.test.succeed();
   },
 
   async function multipleFilesSpecified() {
     const query = {url: 'http://example.com/*'};
     let tab = await getSingleTab(query);
-    try {
-      await chrome.scripting.executeScript({
-        target: {
-          tabId: tab.id,
-        },
-        files: ['css_file.css', 'css_file2.css'],
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(EXACTLY_ONE_FILE_ERROR, e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id,
+          },
+          files: ['css_file.css', 'css_file2.css'],
+        }),
+        EXACTLY_ONE_FILE_ERROR);
+    chrome.test.succeed();
   },
 
   async function disallowedPermission() {
     const query = {url: 'http://chromium.org/*'};
     const tab = await getSingleTab(query);
-    try {
-      await chrome.scripting.insertCSS({
-        target: {
-          tabId: tab.id,
-        },
-        css: CSS_CYAN,
-      });
-      chrome.test.fail('Invocation should have thrown');
-    } catch (e) {
-      chrome.test.assertTrue(e instanceof Error);
-      chrome.test.assertEq(
-          `Error: Cannot access contents of url "${tab.url}". ` +
-              'Extension manifest must request permission ' +
-              'to access this host.',
-          e.toString());
-      chrome.test.succeed();
-    }
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.insertCSS({
+          target: {
+            tabId: tab.id,
+          },
+          css: CSS_CYAN,
+        }),
+        `Error: Cannot access contents of url "${tab.url}". ` +
+            'Extension manifest must request permission ' +
+            'to access this host.');
+    chrome.test.succeed();
   },
 ]);
