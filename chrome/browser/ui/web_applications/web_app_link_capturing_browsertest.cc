@@ -18,11 +18,14 @@
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+
+using ui_test_utils::BrowserChangeObserver;
 
 namespace web_app {
 
@@ -56,11 +59,13 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
       metrics_waiter.AddWebFeatureExpectation(
           blink::mojom::WebFeature::kWebAppManifestCaptureLinks);
     }
+    BrowserChangeObserver observer(browser(),
+                                   BrowserChangeObserver::ChangeType::kAdded);
     app_id_ = web_app::InstallWebAppFromPage(browser(), start_url_);
     if (await_metric)
       metrics_waiter.Wait();
 
-    Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+    Browser* app_browser = observer.Wait();
     EXPECT_NE(app_browser, browser());
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
     chrome::CloseWindow(app_browser);
@@ -73,15 +78,22 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   void AddTab(Browser* browser, GURL url) {
-    auto observer = std::make_unique<content::TestNavigationObserver>(url);
-    observer->StartWatchingNewWebContents();
+    content::TestNavigationObserver observer(url);
+    observer.StartWatchingNewWebContents();
     chrome::AddTabAt(browser, url, /*index=*/-1, /*foreground=*/true);
-    observer->Wait();
+    observer.Wait();
   }
 
   void Navigate(Browser* browser, const GURL& url) {
     ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(), url,
                      LinkTarget::SELF, "");
+  }
+
+  Browser* GetNewBrowserFromNavigation(Browser* browser, const GURL& url) {
+    BrowserChangeObserver observer(browser,
+                                   BrowserChangeObserver::ChangeType::kAdded);
+    Navigate(browser, url);
+    return observer.Wait();
   }
 
   void ExpectTabs(Browser* test_browser, std::vector<GURL> urls) {
@@ -161,8 +173,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
   Navigate(browser(), out_of_scope_);
 
   // In scope navigation should open app window.
-  Navigate(browser(), in_scope_1_);
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1_});
@@ -202,8 +213,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
 
   // Navigations from a fresh about:blank page should reparent.
   // When no app window is open one should be created.
-  Navigate(browser(), in_scope_1_);
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   ExpectTabs(browser(), {NtpUrl()});
   ExpectTabs(app_browser, {in_scope_1_});
@@ -217,13 +227,12 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
   ExpectTabs(browser(), {NtpUrl(), about_blank_});
   reparent_web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   {
-    auto observer =
-        std::make_unique<content::TestNavigationObserver>(in_scope_2_);
-    observer->WatchExistingWebContents();
+    content::TestNavigationObserver observer(in_scope_2_);
+    observer.WatchExistingWebContents();
     ASSERT_TRUE(content::ExecuteScript(
         reparent_web_contents,
         base::StringPrintf("location = '%s';", in_scope_2_.spec().c_str())));
-    observer->Wait();
+    observer.Wait();
   }
   ExpectTabs(browser(), {NtpUrl()});
   ExpectTabs(app_browser, {in_scope_1_, in_scope_2_});
@@ -273,9 +282,8 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(browser(), {start_url_});
 }
 
-// Flaky test: https://crbug.com/1167176
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
-                       DISABLED_CaptureLinksNewClient) {
+                       CaptureLinksNewClient) {
   InstallTestApp("/web_apps/capture_links_new_client.html",
                  /*await_metric=*/true);
 
@@ -286,15 +294,13 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   Navigate(browser(), out_of_scope_);
 
   // In scope navigation should open an app window.
-  Navigate(browser(), in_scope_1_);
-  Browser* app_browser_1 = BrowserList::GetInstance()->GetLastActive();
+  Browser* app_browser_1 = GetNewBrowserFromNavigation(browser(), in_scope_1_);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser_1, app_id_));
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser_1, {in_scope_1_});
 
   // In scope navigation should open a new app window.
-  Navigate(browser(), in_scope_2_);
-  Browser* app_browser_2 = BrowserList::GetInstance()->GetLastActive();
+  Browser* app_browser_2 = GetNewBrowserFromNavigation(browser(), in_scope_2_);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser_2, app_id_));
   EXPECT_NE(app_browser_1, app_browser_2);
   ExpectTabs(browser(), {out_of_scope_});
@@ -341,8 +347,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
 
   // In scope navigation should open an app window (because there are none
   // already open).
-  Navigate(browser(), in_scope_1_);
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1_});

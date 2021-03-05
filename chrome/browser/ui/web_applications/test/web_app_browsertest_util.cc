@@ -47,6 +47,8 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/page_transition_types.h"
 
+using ui_test_utils::BrowserChangeObserver;
+
 namespace web_app {
 
 namespace {
@@ -181,6 +183,8 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
 }
 
 Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
+  BrowserChangeObserver observer(nullptr,
+                                 BrowserChangeObserver::ChangeType::kAdded);
   EXPECT_TRUE(
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
@@ -189,7 +193,8 @@ Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
               WindowOpenDisposition::CURRENT_TAB,
               apps::mojom::AppLaunchSource::kSourceTest)));
 
-  Browser* browser = chrome::FindLastActive();
+  Browser* browser = observer.Wait();
+  EXPECT_EQ(browser, chrome::FindLastActive());
   bool is_correct_app_browser =
       browser && GetAppIdFromApplicationName(browser->app_name()) == app_id;
   EXPECT_TRUE(is_correct_app_browser);
