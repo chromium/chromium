@@ -647,7 +647,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   // Perform same document navigation.
   if (same_document_navigation) {
     document_loader_->CommitSameDocumentNavigation(
-        url, frame_load_type, nullptr, request.ClientRedirect(), origin_window,
+        url, frame_load_type, nullptr, request.ClientRedirect(),
+        resource_request.HasUserGesture(), origin_window,
         request.GetTriggeringEventInfo() !=
             mojom::blink::TriggeringEventInfo::kNotFromEvent,
         nullptr /* extra_data */);

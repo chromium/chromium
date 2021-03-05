@@ -23,6 +23,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -668,6 +669,44 @@ void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
       this, base::as_bytes(base::make_span(kDisableLogMessage,
                                            strlen(kDisableLogMessage))));
   run_loop_disable_log_.Run();
+}
+
+FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(FrameTreeNode* node)
+    : WebContentsObserver(
+          node->current_frame_host()->delegate()->GetAsWebContents()),
+      frame_tree_node_id_(node->frame_tree_node_id()) {}
+
+FrameNavigateParamsCapturer::~FrameNavigateParamsCapturer() = default;
+
+void FrameNavigateParamsCapturer::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_ ||
+      navigations_remaining_ == 0) {
+    return;
+  }
+
+  --navigations_remaining_;
+  transitions_.push_back(navigation_handle->GetPageTransition());
+  urls_.push_back(navigation_handle->GetURL());
+  navigation_types_.push_back(
+      NavigationRequest::From(navigation_handle)->navigation_type());
+  is_same_documents_.push_back(navigation_handle->IsSameDocument());
+  did_replace_entries_.push_back(navigation_handle->DidReplaceEntry());
+  is_renderer_initiateds_.push_back(navigation_handle->IsRendererInitiated());
+  has_user_gestures_.push_back(navigation_handle->HasUserGesture());
+  if (!navigations_remaining_ &&
+      (!web_contents()->IsLoading() || !wait_for_load_))
+    loop_.Quit();
+}
+
+void FrameNavigateParamsCapturer::Wait() {
+  loop_.Run();
+}
+
+void FrameNavigateParamsCapturer::DidStopLoading() {
+  if (!navigations_remaining_)
+    loop_.Quit();
 }
 
 }  // namespace content

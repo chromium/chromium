@@ -51,6 +51,7 @@ class WebNavigationControl : public WebLocalFrame {
       WebFrameLoadType,
       const WebHistoryItem&,
       bool is_client_redirect,
+      bool has_transient_user_activation,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
   // Loads a JavaScript URL in the frame.

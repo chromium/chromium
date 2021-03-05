@@ -482,7 +482,8 @@ void FillNavigationParamsRequest(
     }
   }
 
-  navigation_params->had_transient_activation = common_params.has_user_gesture;
+  navigation_params->had_transient_user_activation =
+      common_params.has_user_gesture;
   navigation_params->web_bundle_physical_url =
       commit_params.web_bundle_physical_url;
   navigation_params->web_bundle_claimed_url =
@@ -3404,6 +3405,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     }
     bool is_client_redirect =
         !!(common_params->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+    bool has_transient_activation = common_params->has_user_gesture;
     DocumentState* original_document_state =
         DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
     std::unique_ptr<DocumentState> document_state =
@@ -3422,7 +3424,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     // Load the request.
     commit_status = frame_->CommitSameDocumentNavigation(
         url, load_type, item_for_history_navigation, is_client_redirect,
-        std::move(document_state));
+        has_transient_activation, std::move(document_state));
 
     // The load of the URL can result in this frame being removed. Use a
     // WeakPtr as an easy way to detect whether this has occured. If so, this
@@ -4795,8 +4797,9 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->should_update_history =
       !document_loader->HasUnreachableURL() && response.HttpStatusCode() != 404;
 
-  params->gesture = document_loader->HadUserGesture() ? NavigationGestureUser
-                                                      : NavigationGestureAuto;
+  params->gesture = document_loader->LastNavigationHadTransientUserActivation()
+                        ? NavigationGestureUser
+                        : NavigationGestureAuto;
 
   // Make navigation state a part of the DidCommitProvisionalLoad message so
   // that committed entry has it at all times.  Send a single HistoryItem for

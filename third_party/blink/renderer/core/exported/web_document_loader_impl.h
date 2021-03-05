@@ -87,7 +87,7 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   bool HasBeenLoadedAsWebArchive() const override;
   PreviewsState GetPreviewsState() const override;
   WebArchiveInfo GetArchiveInfo() const override;
-  bool HadUserGesture() const override;
+  bool LastNavigationHadTransientUserActivation() const override;
   bool IsListingFtpDirectory() const override;
 
   void Trace(Visitor*) const override;

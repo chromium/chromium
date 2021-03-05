@@ -80,6 +80,8 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // Whether the frame had a transient user activation
   // at the time this request was issued.
+  // TODO(mustaq): Combine this with had_transient_user_activation, or make it
+  // less confusing which of the two we should use in various scenarios.
   bool has_transient_user_activation = false;
 
   // The load type. See WebFrameLoadType.
@@ -321,7 +323,7 @@ struct BLINK_EXPORT WebNavigationParams {
   bool was_discarded = false;
   // Whether this navigation had a transient user activation
   // when inititated.
-  bool had_transient_activation = false;
+  bool had_transient_user_activation = false;
   // Whether this navigation has a sticky user activation flag.
   bool is_user_activated = false;
   // Whether the navigation should be allowed to invoke a text fragment anchor.

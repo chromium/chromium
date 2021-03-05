@@ -2795,8 +2795,6 @@ void RenderFrameHostImpl::DidNavigate(
   // the renderer process.
   last_http_status_code_ = params.http_status_code;
 
-  last_gesture_ = params.gesture;
-
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
 
@@ -9906,18 +9904,9 @@ void RenderFrameHostImpl::
   const bool browser_should_update_history =
       !browser_url_is_unreachable && browser_http_status_code != 404;
 
-  // On cross-document navigations, gesture will always be set to the
-  // CommonNavigationParams' has_user_gesture value.
-  // On same-document navigations, gesture will be set to the has_user_gesture
-  // value of the navigation that initially loaded the document (so, the last
-  // cross-document navigation).
-  // TODO(https://crbug.com/1172969): Make same-document navigations return the
-  // CommonNavigationParams' has_user_gesture value instead of the document's
-  // initial gesture value.
-  const bool browser_gesture =
-      is_same_document_navigation
-          ? (last_gesture_ == NavigationGesture::NavigationGestureUser)
-          : request->common_params().has_user_gesture;
+  // Gesture will always be set to the CommonNavigationParams'
+  // has_user_gesture value.
+  const bool browser_gesture = request->common_params().has_user_gesture;
   const bool renderer_gesture =
       (params.gesture == NavigationGesture::NavigationGestureUser);
 

@@ -25,7 +25,9 @@
 #include "content/common/frame_messages.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/browser/navigation_type.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -407,6 +409,98 @@ class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
   base::RunLoop run_loop_enable_log_;
   base::RunLoop run_loop_disable_log_;
   std::string last_message_;
+};
+
+// Captures various properties of the NavigationHandle on DidFinishNavigation.
+// By default, captures the next navigation and waits until the navigation
+// completely loads. Can be configured to not wait for load to finish, and also
+// to capture properties for multiple navigations, as we save the values in
+// arrays.
+class FrameNavigateParamsCapturer : public WebContentsObserver {
+ public:
+  // Observes navigation for the specified |node|.
+  explicit FrameNavigateParamsCapturer(FrameTreeNode* node);
+  ~FrameNavigateParamsCapturer() override;
+
+  // Start waiting for |navigations_remaining_| navigations to finish (and for
+  // load to finish if |wait_for_load_| is true).
+  void Wait();
+
+  // Sets the number of navigations to wait for.
+  void set_navigations_remaining(int count) {
+    DCHECK_GE(count, 0);
+    navigations_remaining_ = count;
+  }
+
+  // Sets |wait_for_load_| to determine whether to stop waiting when we receive
+  // DidFInishNavigation or DidStopLoading.
+  void set_wait_for_load(bool wait_for_load) { wait_for_load_ = wait_for_load; }
+
+  // Gets various captured parameters from the last navigation.
+  // Must only be called when we only capture a single navigation.
+  ui::PageTransition transition() const {
+    EXPECT_EQ(1U, transitions_.size());
+    return transitions_[0];
+  }
+  NavigationType navigation_type() const {
+    EXPECT_EQ(1U, navigation_types_.size());
+    return navigation_types_[0];
+  }
+  bool is_same_document() const {
+    EXPECT_EQ(1U, is_same_documents_.size());
+    return is_same_documents_[0];
+  }
+  bool is_renderer_initiated() const {
+    EXPECT_EQ(1U, is_renderer_initiateds_.size());
+    return is_renderer_initiateds_[0];
+  }
+  bool did_replace_entry() const {
+    EXPECT_EQ(1U, did_replace_entries_.size());
+    return did_replace_entries_[0];
+  }
+  bool has_user_gesture() const {
+    EXPECT_EQ(1U, has_user_gestures_.size());
+    return has_user_gestures_[0];
+  }
+
+  // Gets various captured parameters from all observed navigations.
+  const std::vector<ui::PageTransition>& transitions() { return transitions_; }
+  const std::vector<GURL>& urls() { return urls_; }
+  const std::vector<NavigationType>& navigation_types() {
+    return navigation_types_;
+  }
+  const std::vector<bool>& is_same_documents() { return is_same_documents_; }
+  const std::vector<bool>& did_replace_entries() {
+    return did_replace_entries_;
+  }
+  const std::vector<bool>& has_user_gestures() { return has_user_gestures_; }
+
+ private:
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+
+  void DidStopLoading() override;
+
+  // The id of the FrameTreeNode whose navigations to observe.
+  int frame_tree_node_id_;
+
+  // How many navigations remain to capture.
+  int navigations_remaining_ = 1;
+
+  // Whether to also wait for the load to complete.
+  bool wait_for_load_ = true;
+
+  // The saved properties of the NavigationHandle, captured on
+  // DidFinishNavigation. When Wait() finishes, these arrays should contain
+  // |navigations_remaining_|, as we always capture them for each navigations.
+  std::vector<ui::PageTransition> transitions_;
+  std::vector<GURL> urls_;
+  std::vector<NavigationType> navigation_types_;
+  std::vector<bool> is_same_documents_;
+  std::vector<bool> did_replace_entries_;
+  std::vector<bool> is_renderer_initiateds_;
+  std::vector<bool> has_user_gestures_;
+
+  base::RunLoop loop_;
 };
 
 }  // namespace content

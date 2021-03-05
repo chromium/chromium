@@ -7687,8 +7687,9 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
 
   local_frame->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item->Url(), WebFrameLoadType::kBackForward, item.Get(),
-      ClientRedirectPolicy::kNotClientRedirect, nullptr, /* origin_document */
-      false,                                             /* has_event */
+      ClientRedirectPolicy::kNotClientRedirect,
+      false /* has_transient_user_activation */, nullptr, /* origin_document */
+      false,                                              /* has_event */
       nullptr /* extra_data */);
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
 }

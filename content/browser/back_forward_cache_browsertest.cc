@@ -9699,4 +9699,69 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
       FROM_HERE);
 }
 
+// Regression test for crbug.com/1183313. Checks that CommitNavigationParam's
+// |has_user_gesture| value reflects the gesture from the latest navigation
+// after the commit finished.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTest,
+    SameDocumentNavAfterRestoringDocumentLoadedWithUserGesture) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL start_url(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a_foo(embedded_test_server()->GetURL("a.com", "/title1.html#foo"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  NavigationControllerImpl& controller = web_contents()->GetController();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  // Initial navigation (so that we can initiate a navigation from renderer).
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  // 1) Navigate to A with user gesture.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_a));
+    params_capturer.Wait();
+    EXPECT_TRUE(params_capturer.has_user_gesture());
+  }
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // 2) Navigate to B. A should be stored in the back-forward cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) GoBack to A. RenderFrameHost of A should be restored from the
+  // back-forward cache, and "has_user_gesture" is set to false correctly.
+  // Note that since this is a back-forward cache restore we create the
+  // DidCommitProvisionalLoadParams completely in the browser, so we got the
+  // correct value from the latest navigation. However, we did not update the
+  // renderer's navigation-related values, so the renderer's DocumentLoader
+  // still thinks the last "gesture" value is "true", which will get corrected
+  // on the next navigation.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    controller.GoBack();
+    params_capturer.Wait();
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    EXPECT_EQ(rfh_a, current_frame_host());
+    // The navigation doesn't have user gesture.
+    EXPECT_FALSE(params_capturer.has_user_gesture());
+  }
+
+  // 4) Same-document navigation to A#foo without user gesture. At this point
+  // we will update the renderer's DocumentLoader's latest gesture value to
+  // "no user gesture", and we'll get the correct gesture value in
+  // DidCommitProvisionalLoadParams.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    EXPECT_TRUE(
+        NavigateToURLFromRendererWithoutUserGesture(shell(), url_a_foo));
+    params_capturer.Wait();
+    // The navigation doesn't have user gesture.
+    EXPECT_FALSE(params_capturer.has_user_gesture());
+  }
+}
+
 }  // namespace content

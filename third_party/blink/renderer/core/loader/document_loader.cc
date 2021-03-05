@@ -267,8 +267,8 @@ struct SameSizeAsDocumentLoader
   scoped_refptr<SharedBuffer> data_buffer;
   base::UnguessableToken devtools_navigation_token;
   WebURLLoader::DeferType defers_loading;
+  bool last_navigation_had_transient_user_activation;
   bool had_sticky_activation;
-  bool had_transient_activation;
   bool is_browser_initiated;
   bool is_prerendering;
   bool is_same_origin_navigation;
@@ -379,8 +379,9 @@ DocumentLoader::DocumentLoader(
       in_commit_data_(false),
       data_buffer_(SharedBuffer::Create()),
       devtools_navigation_token_(params_->devtools_navigation_token),
+      last_navigation_had_transient_user_activation_(
+          params_->had_transient_user_activation),
       had_sticky_activation_(params_->is_user_activated),
-      had_transient_activation_(params_->had_transient_activation),
       is_browser_initiated_(params_->is_browser_initiated),
       is_prerendering_(params_->is_prerendering),
       was_discarded_(params_->was_discarded),
@@ -507,7 +508,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       std::move(service_worker_network_provider_);
   params->devtools_navigation_token = devtools_navigation_token_;
   params->is_user_activated = had_sticky_activation_;
-  params->had_transient_activation = had_transient_activation_;
+  params->had_transient_user_activation =
+      last_navigation_had_transient_user_activation_;
   params->is_browser_initiated = is_browser_initiated_;
   params->is_prerendering = is_prerendering_;
   params->was_discarded = was_discarded_;
@@ -1185,6 +1187,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     WebFrameLoadType frame_load_type,
     HistoryItem* history_item,
     ClientRedirectPolicy client_redirect_policy,
+    bool has_transient_user_activation,
     LocalDOMWindow* origin_window,
     bool has_event,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
@@ -1227,11 +1230,13 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
             WTF::Bind(&DocumentLoader::CommitSameDocumentNavigationInternal,
                       WrapWeakPersistent(this), url, frame_load_type,
                       WrapPersistent(history_item), client_redirect_policy,
-                      !!origin_window, has_event, std::move(extra_data)));
+                      has_transient_user_activation, !!origin_window, has_event,
+                      std::move(extra_data)));
   } else {
-    CommitSameDocumentNavigationInternal(url, frame_load_type, history_item,
-                                         client_redirect_policy, origin_window,
-                                         has_event, std::move(extra_data));
+    CommitSameDocumentNavigationInternal(
+        url, frame_load_type, history_item, client_redirect_policy,
+        has_transient_user_activation, origin_window, has_event,
+        std::move(extra_data));
   }
   return mojom::CommitResult::Ok;
 }
@@ -1241,6 +1246,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     WebFrameLoadType frame_load_type,
     HistoryItem* history_item,
     ClientRedirectPolicy client_redirect,
+    bool has_transient_user_activation,
     bool is_content_initiated,
     bool has_event,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
@@ -1280,6 +1286,10 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   }
   is_client_redirect_ =
       client_redirect == ClientRedirectPolicy::kClientRedirect;
+
+  last_navigation_had_transient_user_activation_ =
+      has_transient_user_activation;
+
   bool same_item_sequence_number =
       history_item_ && history_item &&
       history_item_->ItemSequenceNumber() == history_item->ItemSequenceNumber();

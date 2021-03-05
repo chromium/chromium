@@ -213,6 +213,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       WebFrameLoadType,
       HistoryItem*,
       ClientRedirectPolicy,
+      bool has_transient_user_activation,
       LocalDOMWindow* origin_window,
       bool has_event,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
@@ -292,7 +293,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   void SetCommitReason(CommitReason reason) { commit_reason_ = reason; }
 
-  bool HadTransientActivation() const { return had_transient_activation_; }
+  bool LastNavigationHadTransientUserActivation() const {
+    return last_navigation_had_transient_user_activation_;
+  }
 
   // Whether the navigation originated from the browser process. Note: history
   // navigation is always considered to be browser initiated, even if the
@@ -382,6 +385,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       WebFrameLoadType,
       HistoryItem*,
       ClientRedirectPolicy,
+      bool has_transient_user_activation,
       bool is_content_initiated,
       bool has_event,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
@@ -541,10 +545,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   WebURLLoader::DeferType defers_loading_ =
       WebURLLoader::DeferType::kNotDeferred;
 
+  // Whether the last navigation (cross-document or same-document) that
+  // committed in this DocumentLoader had transient activation.
+  bool last_navigation_had_transient_user_activation_ = false;
+
   // Whether this load request comes with a sitcky user activation.
   const bool had_sticky_activation_ = false;
-  // Whether this load request had a user activation when created.
-  const bool had_transient_activation_ = false;
 
   // Whether this load request was initiated by the browser.
   const bool is_browser_initiated_ = false;
