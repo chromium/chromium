@@ -172,6 +172,13 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRunRoutineWithInterceptor', async () => {
   await dpsl.diagnostics.nvme.runShortSelfTestRoutine();
   await dpsl.diagnostics.nvme.runLongSelfTestRoutine();
 
+  // dpsl.diangostics.power.* routines
+  await dpsl.diagnostics.power.runAcConnectedRoutine();
+  await dpsl.diagnostics.power.runAcDisconnectedRoutine();
+  await dpsl.diagnostics.power.runAcConnectedRoutine(
+      {expectedPowerType: 'Mains'});
+  await dpsl.diagnostics.power.runAcDisconnectedRoutine(
+      {expectedPowerType: 'Battery'});
 });
 
 // Tests that runBatteryHealthRoutine returns the correct Object.

@@ -240,6 +240,50 @@
   }
 
   /**
+   * Diagnostics Power Manager for dpsl.diagnostics.power.* APIs.
+   */
+  class PowerManager {
+    /**
+     * @param {(!dpsl.PowerAcRoutineParams)=} params
+     * @returns {?string}
+     * @private
+     */
+    _getExpectedPowerType(params) {
+      if (!params || !params.expectedPowerType)
+        return null;
+      return params.expectedPowerType;
+    }
+
+    /**
+     * Runs power ac connected-type test.
+     * @param {(!dpsl.PowerAcRoutineParams)=} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runAcConnectedRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_AC_POWER_ROUTINE, {
+            expectedStatus: 'connected',
+            expectedPowerType: this._getExpectedPowerType(params)
+          });
+    }
+
+    /**
+     * Runs power ac disconnected-type test.
+     * @param {(!dpsl.PowerAcRoutineParams)=} params
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runAcDisconnectedRoutine(params) {
+      return genericRunRoutine(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_AC_POWER_ROUTINE, {
+            expectedStatus: 'disconnected',
+            expectedPowerType: this._getExpectedPowerType(params)
+          });
+    }
+  }
+
+  /**
    * DPSL Diagnostics Manager for dpsl.diagnostics.* APIs.
    */
   class DPSLDiagnosticsManager {
@@ -255,6 +299,12 @@
        * @public
        */
       this.nvme = new NvmeManager();
+
+      /**
+       * @type {!PowerManager}
+       * @public
+       */
+      this.power = new PowerManager();
     }
 
     /**
@@ -374,6 +424,10 @@
      * @public
      */
     async runAcPowerRoutine(expectedStatus, expectedPowerType) {
+      console.warn(
+          'chromeos.diagnostics.runAcPowerRoutine API function is deprecated',
+          'and will be removed. Use dpsl.diagnostics.power.runAc*, instead');
+
       const message =
           /**
              @type {!dpsl_internal.DiagnosticsRunAcPowerRoutineRequest}
@@ -382,13 +436,8 @@
             expectedStatus: expectedStatus,
             expectedPowerType: expectedPowerType
           });
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_AC_POWER_ROUTINE, message));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_AC_POWER_ROUTINE, message));
     }
 
     /**

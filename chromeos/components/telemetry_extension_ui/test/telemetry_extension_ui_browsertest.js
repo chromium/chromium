@@ -782,8 +782,6 @@ class TestDiagnosticsService {
   /** @override */
   getAvailableRoutines() {}
   /** @override */
-  runAcPowerRoutine() {}
-  /** @override */
   runCpuCacheRoutine() {}
   /** @override */
   runCpuStressRoutine() {}
@@ -904,6 +902,22 @@ class TestDiagnosticsService {
     let response = this.routineResponse;
     return Promise.resolve({response});
   }
+
+  /**
+   * @override
+   * @param {!chromeos.health.mojom.AcPowerStatusEnum} expectedStatus
+   * @param {?string} expectedPowerType
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runAcPowerRoutine(expectedStatus, expectedPowerType) {
+    this.callHistory.push([
+      'runAcPowerRoutine',
+      {expectedStatus: expectedStatus, expectedPowerType: expectedPowerType}
+    ]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
 };
 
 // Tests with a fake Mojo diagnostics service.
@@ -1012,6 +1026,34 @@ TEST_F(
             [
               'runNvmeSelfTestRoutine',
               {type: chromeos.health.mojom.NvmeSelfTestTypeEnum.kLongSelfTest}
+            ],
+            [
+              'runAcPowerRoutine', {
+                expectedStatus:
+                    chromeos.health.mojom.AcPowerStatusEnum.kConnected,
+                expectedPowerType: null
+              }
+            ],
+            [
+              'runAcPowerRoutine', {
+                expectedStatus:
+                    chromeos.health.mojom.AcPowerStatusEnum.kDisconnected,
+                expectedPowerType: null
+              }
+            ],
+            [
+              'runAcPowerRoutine', {
+                expectedStatus:
+                    chromeos.health.mojom.AcPowerStatusEnum.kConnected,
+                expectedPowerType: 'Mains'
+              }
+            ],
+            [
+              'runAcPowerRoutine', {
+                expectedStatus:
+                    chromeos.health.mojom.AcPowerStatusEnum.kDisconnected,
+                expectedPowerType: 'Battery'
+              }
             ]
           ],
           this.diagnosticsService.callHistory);

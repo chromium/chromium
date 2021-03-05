@@ -185,6 +185,13 @@ dpsl.BatteryDischargeRoutineParams;
  * @typedef {{wearLevelThreshold: !number}}
  */
 dpsl.NvmeWearLevelRoutineParams;
+
+/**
+ * Params object of dpsl.diagnostics.power.{runAcConnectedRoutine(),
+ * runAcDisconnectedRoutine()}
+ * @typedef {{expectedPowerType: !string}}
+ */
+dpsl.PowerAcRoutineParams;
 //////////////////// dpsl.system_events.* type definitions /////////////////////
 
 /**
