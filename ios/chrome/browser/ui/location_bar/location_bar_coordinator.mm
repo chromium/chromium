@@ -7,15 +7,18 @@
 #import <CoreLocation/CoreLocation.h>
 
 #include "base/memory/ptr_util.h"
+#import "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
@@ -389,6 +392,15 @@
 
 - (void)locationBarCopyTapped {
   StoreURLInPasteboard(self.webState->GetVisibleURL());
+}
+
+- (void)recordShareButtonPressed {
+  if (!self.browserState) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration("iOS.LocationBar.ShareButton.PerProfileType",
+                                GetBrowserStateType(self.browserState));
 }
 
 #pragma mark - LocationBarConsumer
