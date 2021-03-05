@@ -1,0 +1,50 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [8, 158, 200, 200]
+      ]
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [300, 150],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#8888FF",
+      "invalidations": [
+        [0, 0, 100, 100]
+      ],
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

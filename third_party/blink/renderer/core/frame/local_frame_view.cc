@@ -3694,27 +3694,25 @@ IntPoint LocalFrameView::ConvertToContainingEmbeddedContentView(
 
 void LocalFrameView::SetTracksRasterInvalidations(
     bool track_raster_invalidations) {
+  if (!GetFrame().IsLocalRoot()) {
+    GetFrame().LocalFrameRoot().View()->SetTracksRasterInvalidations(
+        track_raster_invalidations);
+    return;
+  }
   if (track_raster_invalidations == is_tracking_raster_invalidations_)
     return;
 
   // Ensure the document is up-to-date before tracking invalidations.
   UpdateAllLifecyclePhasesForTest();
 
-  for (Frame* frame = &frame_->Tree().Top(); frame;
-       frame = frame->Tree().TraverseNext()) {
-    auto* local_frame = DynamicTo<LocalFrame>(frame);
-    if (!local_frame)
-      continue;
-    if (auto* layout_view = local_frame->ContentLayoutObject()) {
-      is_tracking_raster_invalidations_ = track_raster_invalidations;
-      if (paint_artifact_compositor_) {
-        paint_artifact_compositor_->SetTracksRasterInvalidations(
-            track_raster_invalidations);
-      }
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-        layout_view->Compositor()->UpdateTrackingRasterInvalidations();
-    }
+  is_tracking_raster_invalidations_ = track_raster_invalidations;
+  if (paint_artifact_compositor_) {
+    paint_artifact_compositor_->SetTracksRasterInvalidations(
+        track_raster_invalidations);
   }
+
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() && GetLayoutView())
+    GetLayoutView()->Compositor()->UpdateTrackingRasterInvalidations();
 
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"),
                        "LocalFrameView::setTracksPaintInvalidations",

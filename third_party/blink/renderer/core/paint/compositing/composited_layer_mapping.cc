@@ -1964,7 +1964,11 @@ bool CompositedLayerMapping::ShouldSkipPaintingSubtree() const {
 }
 
 bool CompositedLayerMapping::IsTrackingRasterInvalidations() const {
-  return GetLayoutObject().GetFrameView()->IsTrackingRasterInvalidations();
+  return GetLayoutObject()
+      .GetFrame()
+      ->LocalFrameRoot()
+      .View()
+      ->IsTrackingRasterInvalidations();
 }
 
 void CompositedLayerMapping::GraphicsLayersDidChange() {

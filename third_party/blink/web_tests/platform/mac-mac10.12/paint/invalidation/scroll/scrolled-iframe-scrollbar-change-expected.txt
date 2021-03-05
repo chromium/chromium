@@ -14,6 +14,9 @@
       "name": "LayoutView #document",
       "bounds": [800, 600],
       "backgroundColor": "#FF0000",
+      "invalidations": [
+        [0, 0, 800, 600]
+      ],
       "transform": 1
     },
     {
@@ -21,6 +24,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
+      "invalidations": [
+        [0, 0, 800, 600]
+      ],
       "transform": 1
     }
   ],
