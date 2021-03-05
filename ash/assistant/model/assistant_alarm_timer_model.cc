@@ -12,7 +12,7 @@
 
 namespace ash {
 
-using ::chromeos::assistant::AssistantTimer;
+using chromeos::assistant::AssistantTimer;
 
 AssistantAlarmTimerModel::AssistantAlarmTimerModel() = default;
 

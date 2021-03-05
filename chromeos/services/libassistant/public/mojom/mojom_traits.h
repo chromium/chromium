@@ -8,15 +8,18 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
+#include "base/time/time.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom-shared.h"
+#include "chromeos/services/libassistant/public/mojom/timer_controller.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
@@ -37,6 +40,7 @@ struct StructTraits<chromeos::libassistant::mojom::AndroidAppInfoDataView,
   static bool Read(chromeos::libassistant::mojom::AndroidAppInfoDataView data,
                    AndroidAppInfo* output);
 };
+
 template <>
 struct EnumTraits<chromeos::libassistant::mojom::AndroidAppStatus,
                   chromeos::assistant::AppStatus> {
@@ -156,6 +160,35 @@ struct EnumTraits<chromeos::libassistant::mojom::AssistantSuggestionType,
   static MojoSuggestionType ToMojom(AssistantSuggestionType input);
   static bool FromMojom(MojoSuggestionType input,
                         AssistantSuggestionType* output);
+};
+
+template <>
+struct StructTraits<chromeos::libassistant::mojom::AssistantTimerDataView,
+                    chromeos::assistant::AssistantTimer> {
+  using AssistantTimer = chromeos::assistant::AssistantTimer;
+
+  static const std::string& id(const AssistantTimer& input);
+  static const std::string& label(const AssistantTimer& input);
+  static const base::Time& fire_time(const AssistantTimer& input);
+  static const base::TimeDelta& original_duration(const AssistantTimer& input);
+  static const base::TimeDelta& remaining_time(const AssistantTimer& input);
+  static chromeos::assistant::AssistantTimerState state(
+      const AssistantTimer& input);
+
+  static bool Read(chromeos::libassistant::mojom::AssistantTimerDataView data,
+                   AssistantTimer* output);
+};
+
+template <>
+struct EnumTraits<chromeos::libassistant::mojom::AssistantTimerState,
+                  chromeos::assistant::AssistantTimerState> {
+  using AssistantTimerState = ::chromeos::assistant::AssistantTimerState;
+  using MojomAssistantTimerState =
+      ::chromeos::libassistant::mojom::AssistantTimerState;
+
+  static MojomAssistantTimerState ToMojom(AssistantTimerState input);
+  static bool FromMojom(MojomAssistantTimerState input,
+                        AssistantTimerState* output);
 };
 
 }  // namespace mojo

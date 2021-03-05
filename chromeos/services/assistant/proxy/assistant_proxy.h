@@ -14,6 +14,7 @@
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
+#include "chromeos/services/libassistant/public/mojom/timer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -62,6 +63,9 @@ class AssistantProxy {
   // Returns the controller that manages Libassistant settings.
   chromeos::libassistant::mojom::SettingsController& settings_controller();
 
+  // Returns the controller that manages timers.
+  chromeos::libassistant::mojom::TimerController& timer_controller();
+
   // The background thread is temporary exposed until the entire Libassistant
   // API is hidden behind this proxy API.
   base::Thread& background_thread() { return background_thread_; }
@@ -87,6 +91,8 @@ class AssistantProxy {
   mojo::PendingRemote<
       chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
   ExtractSpeakerIdEnrollmentController();
+  mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
+  ExtractTimerDelegate();
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner();
@@ -113,6 +119,8 @@ class AssistantProxy {
       media_controller_remote_;
   mojo::Remote<chromeos::libassistant::mojom::SettingsController>
       settings_controller_remote_;
+  mojo::Remote<chromeos::libassistant::mojom::TimerController>
+      timer_controller_;
 
   std::unique_ptr<ConversationControllerProxy> conversation_controller_proxy_;
   std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
@@ -129,6 +137,8 @@ class AssistantProxy {
   mojo::PendingRemote<
       chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
       speaker_id_enrollment_controller_;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
+      timer_delegate_;
 
   // The thread on which the Libassistant service runs.
   // Warning: must be the last object, so it is destroyed (and flushed) first.

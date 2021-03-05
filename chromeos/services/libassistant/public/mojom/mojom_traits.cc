@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/libassistant/public/mojom/mojom_traits.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 
 #include "base/notreached.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
@@ -28,11 +29,16 @@ using chromeos::assistant::AssistantFeedback;
 using chromeos::assistant::AssistantInteractionMetadata;
 using chromeos::assistant::AssistantNotification;
 using chromeos::assistant::AssistantSuggestion;
+using chromeos::assistant::AssistantTimer;
 using chromeos::libassistant::mojom::AndroidAppInfoDataView;
 using chromeos::libassistant::mojom::AssistantFeedbackDataView;
 using chromeos::libassistant::mojom::AssistantInteractionMetadataDataView;
 using chromeos::libassistant::mojom::AssistantNotificationDataView;
 using chromeos::libassistant::mojom::AssistantSuggestionDataView;
+using chromeos::libassistant::mojom::AssistantTimerDataView;
+using MojomAssistantTimerState =
+    chromeos::libassistant::mojom::AssistantTimerState;
+using AssistantTimerState = chromeos::assistant::AssistantTimerState;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AndroidAppStatus
@@ -489,6 +495,101 @@ bool EnumTraits<MojoSuggestionType, AssistantSuggestionType>::FromMojom(
   }
   NOTREACHED();
   return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantTimer
+////////////////////////////////////////////////////////////////////////////////
+
+const std::string& StructTraits<AssistantTimerDataView, AssistantTimer>::id(
+    const AssistantTimer& input) {
+  return input.id;
+}
+
+const std::string& StructTraits<AssistantTimerDataView, AssistantTimer>::label(
+    const AssistantTimer& input) {
+  return input.label;
+}
+
+const base::Time&
+StructTraits<AssistantTimerDataView, AssistantTimer>::fire_time(
+    const AssistantTimer& input) {
+  return input.fire_time;
+}
+
+const base::TimeDelta&
+StructTraits<AssistantTimerDataView, AssistantTimer>::original_duration(
+    const AssistantTimer& input) {
+  return input.original_duration;
+}
+
+const base::TimeDelta&
+StructTraits<AssistantTimerDataView, AssistantTimer>::remaining_time(
+    const AssistantTimer& input) {
+  return input.remaining_time;
+}
+
+chromeos::assistant::AssistantTimerState
+StructTraits<AssistantTimerDataView, AssistantTimer>::state(
+    const AssistantTimer& input) {
+  return input.state;
+}
+
+bool StructTraits<AssistantTimerDataView, AssistantTimer>::Read(
+    chromeos::libassistant::mojom::AssistantTimerDataView data,
+    AssistantTimer* output) {
+  if (!data.ReadId(&output->id))
+    return false;
+  if (!data.ReadLabel(&output->label))
+    return false;
+  if (!data.ReadFireTime(&output->fire_time))
+    return false;
+  if (!data.ReadOriginalDuration(&output->original_duration))
+    return false;
+  if (!data.ReadRemainingTime(&output->remaining_time))
+    return false;
+  if (!data.ReadState(&output->state))
+    return false;
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantTimerState
+////////////////////////////////////////////////////////////////////////////////
+
+MojomAssistantTimerState
+EnumTraits<MojomAssistantTimerState, AssistantTimerState>::ToMojom(
+    AssistantTimerState input) {
+  switch (input) {
+    case AssistantTimerState::kUnknown:
+      return MojomAssistantTimerState::kUnknown;
+    case AssistantTimerState::kScheduled:
+      return MojomAssistantTimerState::kScheduled;
+    case AssistantTimerState::kPaused:
+      return MojomAssistantTimerState::kPaused;
+    case AssistantTimerState::kFired:
+      return MojomAssistantTimerState::kFired;
+  }
+}
+
+bool EnumTraits<MojomAssistantTimerState, AssistantTimerState>::FromMojom(
+    MojomAssistantTimerState input,
+    AssistantTimerState* output) {
+  switch (input) {
+    case MojomAssistantTimerState::kUnknown:
+      *output = AssistantTimerState::kUnknown;
+      break;
+    case MojomAssistantTimerState::kScheduled:
+      *output = AssistantTimerState::kScheduled;
+      break;
+    case MojomAssistantTimerState::kPaused:
+      *output = AssistantTimerState::kPaused;
+      break;
+    case MojomAssistantTimerState::kFired:
+      *output = AssistantTimerState::kFired;
+      break;
+  }
+  return true;
 }
 
 }  // namespace mojo

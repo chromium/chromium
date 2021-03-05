@@ -17,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/assistant/internal/internal_util.h"
-#include "chromeos/assistant/internal/test_support/fake_alarm_timer_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/assistant/test_support/expect_utils.h"
@@ -68,20 +67,6 @@ const char* kNoValue = FakeAssistantManager::kNoValue;
 
 #define EXPECT_STATE(_state) \
   EXPECT_EQ(_state, assistant_manager_service()->GetState());
-
-// Adds an AlarmTimerEvent of the given |type| to |events|.
-void AddAlarmTimerEvent(std::vector<assistant_client::AlarmTimerEvent>* events,
-                        assistant_client::AlarmTimerEvent::Type type) {
-  events->push_back(assistant_client::AlarmTimerEvent());
-  events->back().type = type;
-}
-
-// Adds an AlarmTimerEvent of type TIMER with the given |state| to |events|.
-void AddTimerEvent(std::vector<assistant_client::AlarmTimerEvent>* events,
-                   assistant_client::Timer::State state) {
-  AddAlarmTimerEvent(events, assistant_client::AlarmTimerEvent::TIMER);
-  events->back().timer_data.state = state;
-}
 
 class AssistantAlarmTimerControllerMock
     : public ash::AssistantAlarmTimerController {
@@ -231,30 +216,10 @@ class AssistantManagerServiceImplTest : public testing::Test {
     return &fake_assistant_manager()->assistant_manager_internal();
   }
 
-  FakeAlarmTimerManager* fake_alarm_timer_manager() {
-    return static_cast<FakeAlarmTimerManager*>(
-        fake_assistant_manager_internal()->GetAlarmTimerManager());
-  }
-
   FakeServiceContext* fake_service_context() { return service_context_.get(); }
 
   action::CrosActionModule* action_module() {
     return assistant_manager_service_->action_module();
-  }
-
-  // Replace the |AssistantAlarmTimerControllerMock| with a |StrictMock|.
-  void UseStrictAlarmTimerControllerMock() {
-    // We can not have 2 instances of |AssistantAlarmTimerController| at the
-    // same time, so we must destroy the current version first.
-    alarm_timer_controller_ = nullptr;
-    alarm_timer_controller_ =
-        std::make_unique<StrictMock<AssistantAlarmTimerControllerMock>>();
-    fake_service_context()->set_assistant_alarm_timer_controller(
-        alarm_timer_controller_.get());
-  }
-
-  AssistantAlarmTimerControllerMock& alarm_timer_controller_mock() {
-    return *alarm_timer_controller_;
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -690,96 +655,6 @@ TEST_F(AssistantManagerServiceImplTest,
   EXPECT_CALL(observer, OnStateChanged).Times(0);
 
   Start();
-}
-
-TEST_F(AssistantManagerServiceImplTest,
-       ShouldNotifyAlarmTimerControllerOfOnlyRingingTimersInV1) {
-  UseStrictAlarmTimerControllerMock();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kAssistantTimersV2);
-
-  StartAndWaitForRunning();
-
-  EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
-      .WillOnce(Invoke([](const auto& timers) {
-        ASSERT_EQ(1u, timers.size());
-        EXPECT_EQ(AssistantTimerState::kFired, timers[0].state);
-      }));
-
-  std::vector<assistant_client::AlarmTimerEvent> events;
-
-  // Ignore NONE, ALARMs, and SCHEDULED/PAUSED timers.
-  AddAlarmTimerEvent(&events, assistant_client::AlarmTimerEvent::Type::NONE);
-  AddAlarmTimerEvent(&events, assistant_client::AlarmTimerEvent::Type::ALARM);
-  AddTimerEvent(&events, assistant_client::Timer::State::SCHEDULED);
-  AddTimerEvent(&events, assistant_client::Timer::State::PAUSED);
-
-  // Accept FIRED timers.
-  AddTimerEvent(&events, assistant_client::Timer::State::FIRED);
-
-  fake_alarm_timer_manager()->SetAllEvents(std::move(events));
-  fake_alarm_timer_manager()->NotifyRingingStateListeners();
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(AssistantManagerServiceImplTest,
-       ShouldNotifyAlarmTimerControllerOfAnyTimersInV2) {
-  UseStrictAlarmTimerControllerMock();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAssistantTimersV2);
-
-  // We expect OnTimerStateChanged() to be invoked when starting LibAssistant.
-  EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged).Times(1);
-
-  StartAndWaitForRunning();
-
-  testing::Mock::VerifyAndClearExpectations(&alarm_timer_controller_mock());
-
-  EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
-      .WillOnce(Invoke([](const auto& timers) {
-        ASSERT_EQ(3u, timers.size());
-        EXPECT_EQ(AssistantTimerState::kScheduled, timers[0].state);
-        EXPECT_EQ(AssistantTimerState::kPaused, timers[1].state);
-        EXPECT_EQ(AssistantTimerState::kFired, timers[2].state);
-      }));
-
-  std::vector<assistant_client::AlarmTimerEvent> events;
-
-  // Ignore NONE and ALARMs.
-  AddAlarmTimerEvent(&events, assistant_client::AlarmTimerEvent::Type::NONE);
-  AddAlarmTimerEvent(&events, assistant_client::AlarmTimerEvent::Type::ALARM);
-
-  // Accept SCHEDULED/PAUSED/FIRED timers.
-  AddTimerEvent(&events, assistant_client::Timer::State::SCHEDULED);
-  AddTimerEvent(&events, assistant_client::Timer::State::PAUSED);
-  AddTimerEvent(&events, assistant_client::Timer::State::FIRED);
-
-  fake_alarm_timer_manager()->SetAllEvents(std::move(events));
-  fake_alarm_timer_manager()->NotifyRingingStateListeners();
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(AssistantManagerServiceImplTest,
-       ShouldNotifyAlarmTimerControllerOfTimersWhenStartingLibAssistantInV2) {
-  UseStrictAlarmTimerControllerMock();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAssistantTimersV2);
-
-  // Pre-populate the AlarmTimerManager with a single scheduled timer.
-  std::vector<assistant_client::AlarmTimerEvent> events;
-  AddTimerEvent(&events, assistant_client::Timer::State::SCHEDULED);
-  fake_alarm_timer_manager()->SetAllEvents(std::move(events));
-
-  // Expect |timers| to be sent to AssistantAlarmTimerController.  Verify
-  // AssistantAlarmTimerController is notified of the scheduled timer.
-  EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
-      .WillOnce(Invoke([](const auto& timers) {
-        ASSERT_EQ(1u, timers.size());
-        EXPECT_EQ(AssistantTimerState::kScheduled, timers[0].state);
-      }));
-
-  // Start LibAssistant.
-  StartAndWaitForRunning();
 }
 
 class AssistantManagerMock : public FakeAssistantManager {

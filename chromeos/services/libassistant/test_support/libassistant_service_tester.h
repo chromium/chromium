@@ -79,10 +79,12 @@ class LibassistantServiceTester {
   mojo::Remote<mojom::SettingsController> settings_controller_;
   mojo::Remote<mojom::SpeakerIdEnrollmentController>
       speaker_id_enrollment_controller_;
+  mojo::Remote<mojom::TimerController> timer_controller_;
   mojo::PendingReceiver<mojom::AudioOutputDelegate>
       pending_audio_output_delegate_;
   mojo::PendingReceiver<mojom::MediaDelegate> pending_media_delegate_;
   mojo::PendingReceiver<mojom::PlatformDelegate> pending_platform_delegate_;
+  mojo::PendingReceiver<mojom::TimerDelegate> pending_timer_delegate_;
 
   mojo::Remote<mojom::LibassistantService> service_remote_;
   assistant::FakeAssistantManagerServiceDelegate

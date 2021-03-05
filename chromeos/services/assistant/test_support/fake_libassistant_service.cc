@@ -61,12 +61,16 @@ void FakeLibassistantService::Bind(
     mojo::PendingReceiver<
         chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
         speaker_id_enrollment_controller,
+    mojo::PendingReceiver<chromeos::libassistant::mojom::TimerController>
+        timer_controller,
     mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
         audio_output_delegate,
     mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
         media_delegate,
     mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
-        platform_delegate) {
+        platform_delegate,
+    mojo::PendingRemote<chromeos::libassistant::mojom::TimerDelegate>
+        timer_delegate) {
   service_controller_.Bind(std::move(service_controller),
                            std::move(settings_controller));
   media_controller_pending_receiver_ = std::move(media_controller);

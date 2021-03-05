@@ -39,6 +39,7 @@ class PlatformApi;
 class ServiceController;
 class SettingsController;
 class SpeakerIdEnrollmentController;
+class TimerController;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     : public mojom::LibassistantService {
@@ -67,9 +68,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
       mojo::PendingReceiver<mojom::SettingsController> settings_controller,
       mojo::PendingReceiver<mojom::SpeakerIdEnrollmentController>
           speaker_id_enrollment_controller,
+      mojo::PendingReceiver<mojom::TimerController> timer_controller,
       mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
       mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
-      mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate) override;
+      mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate,
+      mojo::PendingRemote<mojom::TimerDelegate> timer_delegate) override;
   void AddSpeechRecognitionObserver(
       mojo::PendingRemote<mojom::SpeechRecognitionObserver> observer) override;
   void AddAuthenticationStateObserver(
@@ -102,6 +105,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   std::unique_ptr<SettingsController> settings_controller_;
   std::unique_ptr<SpeakerIdEnrollmentController>
       speaker_id_enrollment_controller_;
+  std::unique_ptr<TimerController> timer_controller_;
 };
 
 }  // namespace libassistant

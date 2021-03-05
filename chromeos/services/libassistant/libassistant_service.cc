@@ -18,6 +18,7 @@
 #include "chromeos/services/libassistant/service_controller.h"
 #include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/speaker_id_enrollment_controller.h"
+#include "chromeos/services/libassistant/timer_controller.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -43,7 +44,8 @@ LibassistantService::LibassistantService(
       settings_controller_(std::make_unique<SettingsController>()),
       speaker_id_enrollment_controller_(
           std::make_unique<SpeakerIdEnrollmentController>(
-              audio_input_controller_.get())) {
+              audio_input_controller_.get())),
+      timer_controller_(std::make_unique<TimerController>()) {
   service_controller_->AddAndFireAssistantManagerObserver(
       conversation_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
@@ -56,6 +58,8 @@ LibassistantService::LibassistantService(
       speaker_id_enrollment_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
       settings_controller_.get());
+  service_controller_->AddAndFireAssistantManagerObserver(
+      timer_controller_.get());
 
   platform_api_->SetAudioInputProvider(
       &audio_input_controller_->audio_input_provider());
@@ -78,9 +82,11 @@ void LibassistantService::Bind(
     mojo::PendingReceiver<mojom::SettingsController> settings_controller,
     mojo::PendingReceiver<mojom::SpeakerIdEnrollmentController>
         speaker_id_enrollment_controller,
+    mojo::PendingReceiver<mojom::TimerController> timer_controller,
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
     mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
-    mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate) {
+    mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate,
+    mojo::PendingRemote<mojom::TimerDelegate> timer_delegate) {
   platform_delegate_.Bind(std::move(platform_delegate));
   audio_input_controller_->Bind(std::move(audio_input_controller),
                                 platform_delegate_.get());
@@ -95,6 +101,8 @@ void LibassistantService::Bind(
                             settings_controller_.get());
   speaker_id_enrollment_controller_->Bind(
       std::move(speaker_id_enrollment_controller));
+  timer_controller_->Bind(std::move(timer_controller),
+                          std::move(timer_delegate));
 }
 
 void LibassistantService::SetInitializeCallback(InitializeCallback callback) {

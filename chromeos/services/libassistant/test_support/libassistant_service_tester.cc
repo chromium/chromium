@@ -42,6 +42,7 @@ void LibassistantServiceTester::BindControllers() {
       pending_audio_output_delegate_remote;
   mojo::PendingRemote<mojom::MediaDelegate> pending_media_delegate_remote;
   mojo::PendingRemote<mojom::PlatformDelegate> pending_platform_delegate_remote;
+  mojo::PendingRemote<mojom::TimerDelegate> pending_timer_delegate_remote;
 
   pending_audio_output_delegate_ =
       pending_audio_output_delegate_remote.InitWithNewPipeAndPassReceiver();
@@ -49,6 +50,8 @@ void LibassistantServiceTester::BindControllers() {
       pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
   pending_platform_delegate_ =
       pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
+  pending_timer_delegate_ =
+      pending_timer_delegate_remote.InitWithNewPipeAndPassReceiver();
 
   service_.Bind(audio_input_controller_.BindNewPipeAndPassReceiver(),
                 conversation_controller_.BindNewPipeAndPassReceiver(),
@@ -57,9 +60,11 @@ void LibassistantServiceTester::BindControllers() {
                 service_controller_.BindNewPipeAndPassReceiver(),
                 settings_controller_.BindNewPipeAndPassReceiver(),
                 speaker_id_enrollment_controller_.BindNewPipeAndPassReceiver(),
+                timer_controller_.BindNewPipeAndPassReceiver(),
                 std::move(pending_audio_output_delegate_remote),
                 std::move(pending_media_delegate_remote),
-                std::move(pending_platform_delegate_remote));
+                std::move(pending_platform_delegate_remote),
+                std::move(pending_timer_delegate_remote));
 }
 
 void LibassistantServiceTester::FlushForTesting() {
@@ -70,6 +75,7 @@ void LibassistantServiceTester::FlushForTesting() {
   service_controller_.FlushForTesting();
   speaker_id_enrollment_controller_.FlushForTesting();
   service_remote_.FlushForTesting();
+  timer_controller_.FlushForTesting();
 }
 
 }  // namespace libassistant

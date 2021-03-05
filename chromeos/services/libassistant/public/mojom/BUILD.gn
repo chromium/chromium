@@ -22,6 +22,7 @@ mojom("mojom") {
     "settings_controller.mojom",
     "speaker_id_enrollment_controller.mojom",
     "speech_recognition_observer.mojom",
+    "timer_controller.mojom",
   ]
 
   deps = [
@@ -76,6 +77,14 @@ mojom("mojom") {
         {
           mojom = "chromeos.libassistant.mojom.AssistantSuggestion"
           cpp = "::chromeos::assistant::AssistantSuggestion"
+        },
+        {
+          mojom = "chromeos.libassistant.mojom.AssistantTimer"
+          cpp = "::chromeos::assistant::AssistantTimer"
+        },
+        {
+          mojom = "chromeos.libassistant.mojom.AssistantTimerState"
+          cpp = "::chromeos::assistant::AssistantTimerState"
         },
       ]
 

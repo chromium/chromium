@@ -69,6 +69,8 @@ source_set("internal") {
     "speaker_id_enrollment_controller.h",
     "system_provider_impl.cc",
     "system_provider_impl.h",
+    "timer_controller.cc",
+    "timer_controller.h",
     "util.cc",
     "util.h",
   ]
@@ -173,6 +175,7 @@ source_set("test_support") {
     "//services/network:test_support",
   ]
 }
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -188,6 +191,7 @@ source_set("unit_tests") {
     "speaker_id_enrollment_controller_unittest.cc",
     "speech_recognition_observer_unittest.cc",
     "system_provider_impl_unittest.cc",
+    "timer_controller_unittest.cc",
   ]
 
   deps = [

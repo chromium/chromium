@@ -59,12 +59,16 @@ class FakeLibassistantService
       mojo::PendingReceiver<
           chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
           speaker_id_enrollment_controller,
+      mojo::PendingReceiver<chromeos::libassistant::mojom::TimerController>
+          timer_controller,
       mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
           audio_output_delegate,
       mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
           media_delegate,
       mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
-          platform_delegate) override;
+          platform_delegate,
+      mojo::PendingRemote<chromeos::libassistant::mojom::TimerDelegate>
+          timer_delegate) override;
   void AddSpeechRecognitionObserver(
       mojo::PendingRemote<
           chromeos::libassistant::mojom::SpeechRecognitionObserver> observer)

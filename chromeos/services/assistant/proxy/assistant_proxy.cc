@@ -94,6 +94,8 @@ void AssistantProxy::BindControllers(
   mojo::PendingRemote<
       chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
       pending_speaker_id_enrollment_controller_remote;
+  mojo::PendingRemote<chromeos::libassistant::mojom::TimerDelegate>
+      pending_timer_delegate_remote;
 
   mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
       pending_media_delegate =
@@ -101,6 +103,10 @@ void AssistantProxy::BindControllers(
   mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
       pending_platform_delegate =
           pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
+      pending_timer_delegate =
+          pending_timer_delegate_remote.InitWithNewPipeAndPassReceiver();
+
   pending_audio_output_delegate_receiver_ =
       pending_audio_output_delegate_remote.InitWithNewPipeAndPassReceiver();
   libassistant_service_remote_->Bind(
@@ -112,9 +118,11 @@ void AssistantProxy::BindControllers(
       settings_controller_remote_.BindNewPipeAndPassReceiver(),
       pending_speaker_id_enrollment_controller_remote
           .InitWithNewPipeAndPassReceiver(),
+      timer_controller_.BindNewPipeAndPassReceiver(),
       std::move(pending_audio_output_delegate_remote),
       std::move(pending_media_delegate_remote),
-      std::move(pending_platform_delegate_remote));
+      std::move(pending_platform_delegate_remote),
+      std::move(pending_timer_delegate_remote));
 
   conversation_controller_proxy_ =
       std::make_unique<ConversationControllerProxy>(
@@ -128,6 +136,7 @@ void AssistantProxy::BindControllers(
       std::move(pending_speaker_id_enrollment_controller_remote);
   media_delegate_ = std::move(pending_media_delegate);
   platform_delegate_ = std::move(pending_platform_delegate);
+  timer_delegate_ = std::move(pending_timer_delegate);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -171,6 +180,12 @@ AssistantProxy::ExtractSpeakerIdEnrollmentController() {
   return std::move(speaker_id_enrollment_controller_);
 }
 
+mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
+AssistantProxy::ExtractTimerDelegate() {
+  DCHECK(timer_delegate_.is_valid());
+  return std::move(timer_delegate_);
+}
+
 ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {
   DCHECK(conversation_controller_proxy_);
   return *conversation_controller_proxy_;
@@ -192,6 +207,12 @@ chromeos::libassistant::mojom::SettingsController&
 AssistantProxy::settings_controller() {
   DCHECK(settings_controller_remote_.is_bound());
   return *settings_controller_remote_;
+}
+
+chromeos::libassistant::mojom::TimerController&
+AssistantProxy::timer_controller() {
+  DCHECK(timer_controller_.is_bound());
+  return *timer_controller_.get();
 }
 
 void AssistantProxy::AddSpeechRecognitionObserver(
