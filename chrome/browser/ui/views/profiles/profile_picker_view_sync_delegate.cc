@@ -156,14 +156,23 @@ void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
-  // Record the outcome, the decision of the user is not relevant for the
-  // metric.
-  ProfileMetrics::LogProfileAddSignInFlowOutcome(
-      ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSyncDisabled);
   sync_confirmation_callback_ = std::move(callback);
   DCHECK(!scoped_login_ui_service_observation_.IsObserving());
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
+
+  // Record the outcome, the decision of the user is not relevant for the
+  // metric.
+  ProfileMetrics::LogProfileAddSignInFlowOutcome(
+      ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSyncDisabled);
+
+  // Enterprise confirmation may or may not be shown before showing the disabled
+  // confirmation (in both cases it is disabled by an enterprise).
+  if (enterprise_confirmation_shown_) {
+    OpenSyncConfirmationDialogInBrowser(
+        chrome::FindLastActiveWithProfile(profile_));
+    return;
+  }
 
   // Open the browser and when it's done, show the confirmation dialog.
   std::move(open_browser_callback_)
