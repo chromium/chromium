@@ -2097,10 +2097,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         if (getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
             mUrlBar.setText("");
-            if (!hasFocus) {
-                mCurrentUrlFocusState = false;
-                return;
-            }
         }
 
         triggerUrlFocusAnimation(hasFocus, /* shouldShowKeyboard= */ hasFocus);
