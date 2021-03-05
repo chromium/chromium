@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/marketing_backend_connector.h"
+#include "chrome/browser/ash/login/marketing_backend_connector.h"
 
 #include <cstddef>
 

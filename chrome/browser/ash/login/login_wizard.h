@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/chromeos/login/oobe_screen.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 
 namespace chromeos {
 

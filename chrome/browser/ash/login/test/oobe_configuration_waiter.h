@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/oobe_configuration.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 
 namespace chromeos {
 

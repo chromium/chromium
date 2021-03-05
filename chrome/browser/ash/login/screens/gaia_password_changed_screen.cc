@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/login/reauth_stats.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 
 namespace chromeos {

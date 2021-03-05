@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/mojo_system_info_dispatcher.h"
+#include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
 
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
