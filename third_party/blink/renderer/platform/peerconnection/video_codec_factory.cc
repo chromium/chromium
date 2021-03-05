@@ -62,7 +62,9 @@ std::vector<webrtc::SdpVideoFormat> MergeFormats(
 std::unique_ptr<webrtc::VideoDecoder> CreateDecoder(
     webrtc::VideoDecoderFactory* factory,
     const webrtc::SdpVideoFormat& format) {
-  return factory ? factory->CreateVideoDecoder(format) : nullptr;
+  if (!IsFormatSupported(factory, format))
+    return nullptr;
+  return factory->CreateVideoDecoder(format);
 }
 
 std::unique_ptr<webrtc::VideoDecoder> Wrap(
