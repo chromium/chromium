@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.webkit.ValueCallback;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -115,8 +114,8 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
      */
     @Override
     @Nullable
-    public PageInfoSubpageController createHistoryController(PageInfoMainController mainController,
-            PageInfoRowView rowView, Button forgetSiteButton, String url) {
+    public PageInfoSubpageController createHistoryController(
+            PageInfoMainController mainController, PageInfoRowView rowView, String url) {
         return null;
     }
 

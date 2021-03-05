@@ -6,7 +6,6 @@ package org.chromium.components.page_info;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.widget.Button;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -197,8 +196,7 @@ public abstract class PageInfoControllerDelegate {
      */
     @Nullable
     public abstract PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, Button forgetSiteButton,
-            String url);
+            PageInfoMainController mainController, PageInfoRowView rowView, String url);
 
     /**
      * @return Returns the browser context associated with this dialog.

@@ -85,10 +85,9 @@ public class PageInfoCookiesController
                 new PageInfoCookiesPreference.PageInfoCookiesViewParams();
         params.thirdPartyCookieBlockingEnabled = mDelegate.cookieControlsShown();
         params.onCheckedChangedCallback = this::onCheckedChangedCallback;
-        params.onClearCallback = this::clearData;
+        params.onClearCallback = this::onClearCookiesClicked;
         params.onCookieSettingsLinkClicked = mDelegate::showCookieSettings;
-        params.disableCookieDeletion = WebsitePreferenceBridge.isCookieDeletionDisabled(
-                mMainController.getBrowserContext(), mFullUrl);
+        params.disableCookieDeletion = isDeletionDisabled();
         mSubPage.setParams(params);
         mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
         mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
@@ -118,9 +117,16 @@ public class PageInfoCookiesController
         mBridge.setThirdPartyCookieBlockingEnabledForSite(state);
     }
 
-    private void clearData() {
+    private void onClearCookiesClicked() {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_COOKIES_CLEARED);
+        clearData();
+    }
+
+    @Override
+    public void clearData() {
+        if (isDeletionDisabled()) return;
         if (mWebsite == null) return;
+
         new SiteDataCleaner().clearData(
                 mMainController.getBrowserContext(), mWebsite, mMainController::exitSubpage);
     }
@@ -163,5 +169,9 @@ public class PageInfoCookiesController
 
     public void setCookieControlsBridge(CookieControlsBridge cookieBridge) {
         mBridge = cookieBridge;
+    }
+
+    private boolean isDeletionDisabled() {
+        return WebsitePreferenceBridge.isCookieDeletionDisabled(mMainController.getBrowserContext(), mFullUrl);
     }
 }

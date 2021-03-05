@@ -5,9 +5,9 @@ package org.chromium.chrome.browser.page_info;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import org.chromium.chrome.R;
+import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
@@ -19,23 +19,25 @@ import org.chromium.components.page_info.PageInfoSubpageController;
  */
 public class PageInfoHistoryController implements PageInfoSubpageController {
     private final PageInfoMainController mMainController;
-    private final Button mForgetSiteButton;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
     private final String mTitle;
     private final String mPageUrl;
 
     public PageInfoHistoryController(PageInfoMainController mainController, PageInfoRowView rowView,
-            Button forgetSiteButton, PageInfoControllerDelegate delegate, String pageUrl) {
+            PageInfoControllerDelegate delegate, String pageUrl) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
         mPageUrl = pageUrl;
-        mForgetSiteButton = forgetSiteButton;
         mTitle = mRowView.getContext().getResources().getString(R.string.page_info_history_title);
 
         setupHistoryRow();
-        setupButton();
+    }
+
+    private void launchSubpage() {
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_OPENED);
+        mMainController.launchSubpage(this);
     }
 
     @Override
@@ -57,6 +59,8 @@ public class PageInfoHistoryController implements PageInfoSubpageController {
         rowParams.title = getRowTitle();
         rowParams.visible = mDelegate.isSiteSettingsAvailable();
         rowParams.iconResId = R.drawable.ic_history_googblue_24dp;
+        rowParams.clickCallback = this::launchSubpage;
+
         mRowView.setParams(rowParams);
     }
 
@@ -65,7 +69,6 @@ public class PageInfoHistoryController implements PageInfoSubpageController {
         return mTitle;
     }
 
-    private void setupButton() {
-        mForgetSiteButton.setVisibility(View.VISIBLE);
-    }
+    @Override
+    public void clearData() {}
 }

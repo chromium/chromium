@@ -446,6 +446,7 @@ android_library("chrome_java") {
     "//components/offline_items_collection/core:core_java",
     "//components/omnibox/browser:browser_java",
     "//components/page_info/android:java",
+    "//components/page_info/android:page_info_action_enum_java",
     "//components/paint_preview/browser/android:java",
     "//components/paint_preview/player/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",

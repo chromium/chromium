@@ -5,6 +5,7 @@
 package org.chromium.components.page_info;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -18,9 +19,11 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -143,6 +146,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
     // Bridge updating the CookieControlsView when cookie settings change.
     private CookieControlsBridge mCookieBridge;
+
+    // Dialog which is opened when clicking on forget site button.
+    private Dialog mForgetSiteDialog;
 
     /**
      * Creates the PageInfoController, but does not display it. Also initializes the corresponding
@@ -295,8 +301,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                     this, view2.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
 
             if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_HISTORY)) {
-                mHistoryController = mDelegate.createHistoryController(this,
-                        view2.getHistoryRowView(), view2.getForgetSiteButton(), mFullUrl.getSpec());
+                mHistoryController = mDelegate.createHistoryController(
+                        this, view2.getHistoryRowView(), mFullUrl.getSpec());
+                setupForgetSiteButton(view2.getForgetSiteButton());
             }
         } else {
             mView.showPerformanceInfo(mDelegate.shouldShowPerformanceBadge(mFullUrl));
@@ -368,6 +375,10 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             mCookieBridge.destroy();
             mCookieBridge = null;
         }
+        if (mForgetSiteDialog != null){
+            mForgetSiteDialog.dismiss();
+            mForgetSiteDialog = null;
+        }
     }
 
     /**
@@ -378,6 +389,29 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         // cannot interact with it. Hence, showing connection details is not relevant.
         return mContentPublisher == null && !mDelegate.isShowingOfflinePage()
                 && !mDelegate.isShowingPaintPreviewPage() && !mIsInternalPage;
+    }
+
+    private void setupForgetSiteButton(Button button) {
+        button.setOnClickListener((View v) -> {
+            recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_OPENED);
+            mForgetSiteDialog =
+                    new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
+                            .setTitle(R.string.page_info_forget_site_title)
+                            .setMessage(R.string.page_info_forget_site_message)
+                            .setPositiveButton(R.string.page_info_forget_site_confirmation_button,
+                                    (dialog, which) -> { clearData(); })
+                            .setNegativeButton(R.string.cancel,
+                                    (dialog, which) -> { mForgetSiteDialog = null; })
+                            .show();
+        });
+        button.setVisibility(View.VISIBLE);
+    }
+
+    private void clearData() {
+        recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_CLEARED);
+        if (mCookiesController != null) mCookiesController.clearData();
+        if (mPermissionsController != null) mPermissionsController.clearData();
+        if (mHistoryController != null) mHistoryController.clearData();
     }
 
     /**

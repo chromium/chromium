@@ -80726,6 +80726,9 @@ Called by update_scheduler_enums.py.-->
   <int value="14" label="Permission dialog opened"/>
   <int value="15" label="Permission deleted for site"/>
   <int value="16" label="(Deprecated) Permission changed for site"/>
+  <int value="17" label="Forget site dialog opened"/>
+  <int value="18" label="Forget site data cleared"/>
+  <int value="19" label="History page opened"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">

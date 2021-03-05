@@ -30,4 +30,9 @@ public interface PageInfoSubpageController {
      * Called after the subpage closes in order to perform any necessary cleanup.
      */
     void onSubpageRemoved();
+
+    /**
+     * Clears data related to the subpage
+     */
+    void clearData();
 }

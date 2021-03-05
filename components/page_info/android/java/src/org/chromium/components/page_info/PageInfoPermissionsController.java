@@ -15,8 +15,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
+import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
+import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.embedder_support.util.Origin;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -157,6 +163,23 @@ public class PageInfoPermissionsController
         int resId = R.plurals.page_info_permissions_summary_more_mixed;
         return resources.getQuantityString(resId, numPermissions - 2, perm1.name.toString(),
                 perm2.name.toString(), numPermissions - 2);
+    }
+
+    @Override
+    public void clearData() {
+        // Need to fetch data in order to clear it
+        WebsitePermissionsFetcher fetcher =
+                new WebsitePermissionsFetcher(mDelegate.getBrowserContext());
+        String origin = Origin.createOrThrow(mPageUrl).toString();
+        WebsiteAddress address = WebsiteAddress.create(origin);
+
+        // Asynchronous function, callback will clear the data
+        fetcher.fetchAllPreferences((Collection<Website> sites) -> {
+            Website site = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                    address, sites);
+            new SiteDataCleaner().resetPermissions(mDelegate.getBrowserContext(), site);
+            mMainController.refreshPermissions();
+        });
     }
 
     // SingleWebsiteSettings.Observer methods

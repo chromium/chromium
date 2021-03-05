@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -242,9 +241,9 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     }
 
     @Override
-    public PageInfoSubpageController createHistoryController(PageInfoMainController mainController,
-            PageInfoRowView rowView, Button forgetSiteButton, String url) {
-        return new PageInfoHistoryController(mainController, rowView, forgetSiteButton, this, url);
+    public PageInfoSubpageController createHistoryController(
+            PageInfoMainController mainController, PageInfoRowView rowView, String url) {
+        return new PageInfoHistoryController(mainController, rowView, this, url);
     }
 
     /**
