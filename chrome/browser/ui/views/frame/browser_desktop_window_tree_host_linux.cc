@@ -151,6 +151,7 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHost, public:
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 BrowserDesktopWindowTreeHost*
 BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
@@ -162,3 +163,4 @@ BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
                                                desktop_native_widget_aura,
                                                browser_view, browser_frame);
 }
+#endif

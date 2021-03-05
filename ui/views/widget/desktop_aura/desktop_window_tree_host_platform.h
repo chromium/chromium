@@ -158,6 +158,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties);
 
+  // Returns true if WindowShapeUpdater should update the window shape by
+  // window mask, otherwise false when window shape is already updated in views.
+  virtual bool ShouldUseLayerForShapedWindow() const;
+
   internal::NativeWidgetDelegate* const native_widget_delegate_;
   DesktopNativeWidgetAura* const desktop_native_widget_aura_;
 

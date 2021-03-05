@@ -217,10 +217,12 @@ void DesktopWindowTreeHostPlatform::OnNativeWidgetCreated(
 
 void DesktopWindowTreeHostPlatform::OnWidgetInitDone() {
   // WindowShape is updated from ShapeRects transformed from
-  // NonClientView::GetWindowMask. We can guarantee that |NonClientView| is
-  // created OnWidgetInitDone.
-  WindowShapeUpdater::CreateWindowShapeUpdater(
-      this, this->desktop_native_widget_aura());
+  // NonClientView::GetWindowMask. We can guarantee that |NonClientView|
+  // is created OnWidgetInitDone.
+  if (ShouldUseLayerForShapedWindow()) {
+    WindowShapeUpdater::CreateWindowShapeUpdater(
+        this, this->desktop_native_widget_aura());
+  }
 }
 
 void DesktopWindowTreeHostPlatform::OnActiveWindowChanged(bool active) {}
@@ -827,6 +829,10 @@ void DesktopWindowTreeHostPlatform::SetVisible(bool visible) {
 void DesktopWindowTreeHostPlatform::AddAdditionalInitProperties(
     const Widget::InitParams& params,
     ui::PlatformWindowInitProperties* properties) {}
+
+bool DesktopWindowTreeHostPlatform::ShouldUseLayerForShapedWindow() const {
+  return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHost:

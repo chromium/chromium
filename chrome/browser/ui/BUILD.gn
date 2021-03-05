@@ -3407,6 +3407,12 @@ static_library("ui") {
         "views/frame/browser_desktop_window_tree_host_linux.h",
       ]
     }
+    if (is_chromeos_lacros) {
+      sources += [
+        "views/frame/browser_desktop_window_tree_host_lacros.cc",
+        "views/frame/browser_desktop_window_tree_host_lacros.h",
+      ]
+    }
     if (use_gtk) {
       # This is the only component that can interact with gtk.
       deps += [ "//ui/gtk" ]
