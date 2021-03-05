@@ -109,6 +109,7 @@ TEST(DumpInfoTest, AllOptionalFieldsIsValid) {
                      "\"dump\": \"dump_string\","
                      "\"uptime\": \"123456789\","
                      "\"logfile\": \"logfile.log\","
+                     "\"attachments\": [\"file1.txt\", \"file2.img\"],"
                      "\"suffix\": \"suffix\","
                      "\"prev_app_name\": \"previous_app\","
                      "\"cur_app_name\": \"current_app\","
@@ -133,6 +134,10 @@ TEST(DumpInfoTest, AllOptionalFieldsIsValid) {
   ASSERT_EQ(123456789u, info->params().process_uptime);
   ASSERT_EQ("logfile.log", info->logfile());
 
+  auto attachments = info->attachments();
+  ASSERT_EQ(2u, attachments.size());
+  ASSERT_EQ("file1.txt", attachments[0]);
+  ASSERT_EQ("file2.img", attachments[1]);
   ASSERT_EQ("suffix", info->params().suffix);
   ASSERT_EQ("previous_app", info->params().previous_app_name);
   ASSERT_EQ("current_app", info->params().current_app_name);

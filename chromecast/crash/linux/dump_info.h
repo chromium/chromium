@@ -30,12 +30,14 @@ class DumpInfo {
   //
   // -crashed_process_dump: the full path of the dump written
   // -crashed_process_logfile: the full path of the logfile written
+  // -crashed_process_attachments: the full path of the attachments
   // -dump_time: the time of the dump written
   // -params: a structure containing other useful crash information
   DumpInfo(const std::string& crashed_process_dump,
            const std::string& crashed_process_logfile,
            const base::Time& dump_time,
-           const MinidumpParams& params);
+           const MinidumpParams& params,
+           const std::vector<std::string>* attachments = nullptr);
 
   ~DumpInfo();
 
@@ -44,6 +46,7 @@ class DumpInfo {
   }
   const std::string& logfile() const { return logfile_; }
   const base::Time& dump_time() const { return dump_time_; }
+  const std::vector<std::string>& attachments() const { return attachments_; }
 
   // Return a deep copy of the entry's JSON representation.
   // The format is:
@@ -53,6 +56,7 @@ class DumpInfo {
   //   "dump": <dump>,
   //   "uptime": <uptime>,
   //   "logfile": <logfile>,
+  //   "attachments": [<attachment_name>],
   //   "suffix": <suffix>,
   //   "prev_app_name": <prev_app_name>,
   //   "cur_app_name": <current_app_name>,
@@ -73,6 +77,7 @@ class DumpInfo {
 
   std::string crashed_process_dump_;
   std::string logfile_;
+  std::vector<std::string> attachments_;
   base::Time dump_time_;
   MinidumpParams params_;
   bool valid_;
