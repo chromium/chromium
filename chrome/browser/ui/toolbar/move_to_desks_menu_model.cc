@@ -29,6 +29,12 @@ MoveToDesksMenuModel::MoveToDesksMenuModel(
     AddCheckItem(IDC_MOVE_TO_DESK_1 + i, base::string16());
 }
 
+bool MoveToDesksMenuModel::MayHaveMnemonicsAt(int index) const {
+  // If the label is a user-created desk name, the user might have ampersands so
+  // don't process mnemonics for them.
+  return (index == assign_to_all_desks_item_index_);
+}
+
 bool MoveToDesksMenuModel::IsVisibleAt(int index) const {
   if (index == assign_to_all_desks_item_index_)
     return true;

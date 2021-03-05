@@ -23,6 +23,7 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
   ~MoveToDesksMenuModel() override = default;
 
   // SimpleMenuModel:
+  bool MayHaveMnemonicsAt(int index) const override;
   bool IsVisibleAt(int index) const override;
   base::string16 GetLabelAt(int index) const override;
   bool IsItemCheckedAt(int index) const override;
