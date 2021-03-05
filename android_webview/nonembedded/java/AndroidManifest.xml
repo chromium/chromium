@@ -156,8 +156,5 @@
             android:version="{{ trichrome_version }}"
             android:certDigest="{{ trichrome_certdigest }}" />
         {% endif %}
-
-        <!-- This tag indicates that this application optionally uses ARCore. -->
-        <meta-data android:name="com.google.ar.core" android:value="optional" />
     </application>
 </manifest>
