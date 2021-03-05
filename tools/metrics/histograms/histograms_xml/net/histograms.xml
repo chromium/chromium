@@ -1110,6 +1110,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.Request.Failure.HostSafetyStatus"
+    enum="HostSafetyStatus" expires_after="2021-08-30">
+  <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Logged each time a DNS lookup fails. Records how often the TLDs of queried
+    hostnames are numeric for non-IPv4 hostnames.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.Request.Success.HostSafetyStatus"
+    enum="HostSafetyStatus" expires_after="2021-08-30">
+  <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Logged each time a DNS lookup succeeds. Records how often the TLDs of
+    queried hostnames are numeric for non-IPv4 hostnames.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.Request.TotalTime" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
@@ -1571,6 +1591,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Protocol used to fetch upload streaming with allowHTTP1ForStreamingUpload:
     false property. This is recorded per fetch attempt regardless of result.
+  </summary>
+</histogram>
+
+<histogram name="Net.File.Request.Failure.HostSafetyStatus"
+    enum="HostSafetyStatus" expires_after="2021-08-30">
+  <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Logged each time a file URL request fails. Records how often the TLDs of
+    queried hostnames are numeric for non-IPv4 hostnames.
+  </summary>
+</histogram>
+
+<histogram name="Net.File.Request.Success.HostSafetyStatus"
+    enum="HostSafetyStatus" expires_after="2021-08-30">
+  <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Logged each time a file URL request succeeds. Records how often the TLDs of
+    queried hostnames are numeric for non-IPv4 hostnames.
   </summary>
 </histogram>
 
@@ -5138,6 +5178,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The time spent in closesocket call in UDPSocketWin::Close.</summary>
+</histogram>
+
+<histogram name="Net.Url.HostSafetyStatus" enum="HostSafetyStatus"
+    expires_after="2021-08-30">
+  <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Logged each time url/ canonicalizes a hostname with a numeric TLD that's not
+    an IPv4 hostname. Unlike other histograms that record HostSafetyStatus, this
+    one does not record the OK bucket, since it's both not terribly meaningful
+    and URLs are canonicalized so frequently.
+  </summary>
 </histogram>
 
 <histogram name="Net.URLRequest.ReferrerHasInformativePath"

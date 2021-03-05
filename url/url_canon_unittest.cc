@@ -12,6 +12,7 @@
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
+#include "url/url_canon_ip.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_test_utils.h"
 
@@ -2443,6 +2444,117 @@ TEST(URLCanonTest, IDNToASCII) {
   str = base::UTF8ToUTF16("xn--1⁄4");
   EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
   output.set_length(0);
+}
+
+TEST(URLCanonTest, URLSafetyStatus) {
+  const struct {
+    const char* host;
+    HostSafetyStatus expected_safety_status;
+  } kTestCases[] = {
+      // Empty components are ok.
+      {"", HostSafetyStatus::kOk},
+      {".", HostSafetyStatus::kOk},
+      {"..", HostSafetyStatus::kOk},
+
+      // Hostnames with purely non-numeric components are ok.
+      {"com", HostSafetyStatus::kOk},
+      {"a.com", HostSafetyStatus::kOk},
+      {"a.b.com", HostSafetyStatus::kOk},
+
+      // Hostnames with components with letters and numbers are ok.
+      {"1com", HostSafetyStatus::kOk},
+      {"0a.0com", HostSafetyStatus::kOk},
+      {"0xa.0xb.0xcom", HostSafetyStatus::kOk},
+      {"com1", HostSafetyStatus::kOk},
+      {"a1.com1", HostSafetyStatus::kOk},
+      {"a1.b1.com1", HostSafetyStatus::kOk},
+
+      // Hostnames components that are numbers that are before a final
+      // non-numeric component are ok.
+      {"1.com", HostSafetyStatus::kOk},
+      {"0.1.2com", HostSafetyStatus::kOk},
+
+      // Invalid hostnames are ok.
+      {"[", HostSafetyStatus::kOk},
+
+      // IPv6 hostnames are ok.
+      {"[::]", HostSafetyStatus::kOk},
+      {"[2001:db8::1]", HostSafetyStatus::kOk},
+
+      // IPv4 hostnames are ok.
+      {"1.2.3.4", HostSafetyStatus::kOk},
+      // IPv4 hostnames with creative representations are ok.
+      {"01.02.03.04", HostSafetyStatus::kOk},
+      {"0x1.0x2.0x3.0x4", HostSafetyStatus::kOk},
+      {"1.2", HostSafetyStatus::kOk},
+      {"1.2.3", HostSafetyStatus::kOk},
+      {"0", HostSafetyStatus::kOk},
+      {"0x0", HostSafetyStatus::kOk},
+      {"07", HostSafetyStatus::kOk},
+
+      // Hostnames with a final problematic top level domain.
+      {"a.0", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a.123", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a.123456", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a.999999999999999999", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a.0x1", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a.0xabcdef", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a.0XABCDEF", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a.07", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a.09", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {".0", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"foo.bar.0", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"1.bar.0", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"a..0", HostSafetyStatus::kTopLevelDomainIsNumeric},
+      {"1..0", HostSafetyStatus::kTopLevelDomainIsNumeric},
+
+      // Hostnames with problematic two highest level domains.
+      {"a.1.2", HostSafetyStatus::kTwoHighestLevelDomainsAreNumeric},
+      {"a.0x1.0x2f", HostSafetyStatus::kTwoHighestLevelDomainsAreNumeric},
+      {"a.06.09", HostSafetyStatus::kTwoHighestLevelDomainsAreNumeric},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    // Test with ASCII.
+    SCOPED_TRACE(test_case.host);
+    EXPECT_EQ(test_case.expected_safety_status,
+              CheckHostnameSafety(test_case.host,
+                                  Component(0, strlen(test_case.host))));
+
+    // Test with ASCII and terminal dot, which shouldn't affect results for
+    // anything that doesn't already end in a dot (or anything that only has
+    // dots).
+    std::string host_with_dot = test_case.host;
+    host_with_dot += ".";
+    EXPECT_EQ(test_case.expected_safety_status,
+              CheckHostnameSafety(host_with_dot.c_str(),
+                                  Component(0, host_with_dot.size())));
+
+    // Test with ASCII and characters that are not part of the component.
+    std::string host_with_bonus_characters = test_case.host;
+    host_with_bonus_characters = "00" + host_with_bonus_characters + "00";
+    EXPECT_EQ(test_case.expected_safety_status,
+              CheckHostnameSafety(host_with_bonus_characters.c_str(),
+                                  Component(2, strlen(test_case.host))));
+
+    // Test with UTF-16.
+    base::string16 utf16 = base::UTF8ToUTF16(test_case.host);
+    EXPECT_EQ(test_case.expected_safety_status,
+              CheckHostnameSafety(utf16.c_str(), Component(0, utf16.size())));
+
+    // Test with UTF-16 and terminal dot.
+    base::string16 utf16_with_dot = base::UTF8ToUTF16(host_with_dot);
+    EXPECT_EQ(test_case.expected_safety_status,
+              CheckHostnameSafety(utf16_with_dot.c_str(),
+                                  Component(0, utf16_with_dot.size())));
+
+    // Test with UTF-16 and characters that are not part of the component.
+    base::string16 utf16_with_bonus_characters =
+        base::UTF8ToUTF16(host_with_bonus_characters);
+    EXPECT_EQ(test_case.expected_safety_status,
+              CheckHostnameSafety(utf16_with_bonus_characters.c_str(),
+                                  Component(2, utf16.size())));
+  }
 }
 
 }  // namespace url

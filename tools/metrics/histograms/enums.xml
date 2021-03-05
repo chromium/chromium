@@ -37952,6 +37952,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="DEFAULT_NTP"/>
 </enum>
 
+<enum name="HostSafetyStatus">
+  <int value="0" label="OK"/>
+  <int value="1" label="Top level domain is numeric"/>
+  <int value="2" label="Two highest level domains are numeric"/>
+</enum>
+
 <enum name="HotseatInAppGesture">
   <int value="0" label="Swipe up the hotseat"/>
   <int value="1" label="Swipe down the hotseat"/>

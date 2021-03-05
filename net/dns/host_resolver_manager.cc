@@ -97,6 +97,8 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_client_socket.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon_ip.h"
 
 #if BUILDFLAG(ENABLE_MDNS)
 #include "net/dns/mdns_client_impl.h"
@@ -729,6 +731,17 @@ class HostResolverManager::RequestImpl
   void LogFinishRequest(int net_error, bool async_completion) {
     source_net_log_.EndEventWithNetErrorCode(
         NetLogEventType::HOST_RESOLVER_IMPL_REQUEST, net_error);
+
+    url::HostSafetyStatus host_safety_status = url::CheckHostnameSafety(
+        request_host_.host().c_str(),
+        url::Component(0, request_host_.host().size()));
+    if (net_error == net::OK) {
+      UMA_HISTOGRAM_ENUMERATION("Net.DNS.Request.Success.HostSafetyStatus",
+                                host_safety_status);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("Net.DNS.Request.Failure.HostSafetyStatus",
+                                host_safety_status);
+    }
 
     if (!parameters_.is_speculative) {
       DCHECK(!request_time_.is_null());
