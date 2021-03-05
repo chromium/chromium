@@ -8,6 +8,7 @@
 #import <MaterialComponents/MaterialTypography.h>
 
 #include "base/check_op.h"
+#include "base/ios/ns_range.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
@@ -111,22 +112,21 @@ const CGFloat kBottomLabelMargin = 8;
   label.numberOfLines = 0;
   label.textColor = [[MDCPalette greyPalette] tint700];
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  NSRange linkRange;
-  NSString* strippedText = ParseStringWithLink(text, &linkRange);
-  DCHECK_NE(NSNotFound, static_cast<NSInteger>(linkRange.location));
-  DCHECK_NE(0u, linkRange.length);
+
+  const StringWithTag parsedString = ParseStringWithLink(text);
+  DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
 
   NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:strippedText];
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
 
   // Sets the styling to mimic a link.
   UIColor* linkColor = [UIColor colorNamed:kBlueColor];
   [attributedText addAttribute:NSForegroundColorAttributeName
                          value:linkColor
-                         range:linkRange];
+                         range:parsedString.range];
 
   // Sets the line spacing on the attributed string.
-  NSInteger strLength = [strippedText length];
+  NSInteger strLength = parsedString.string.length;
   NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
   [style setLineSpacing:kLabelLineSpacing];
   [attributedText addAttribute:NSParagraphStyleAttributeName

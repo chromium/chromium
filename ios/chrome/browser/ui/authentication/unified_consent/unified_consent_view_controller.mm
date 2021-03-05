@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 
 #include "base/check_op.h"
+#include "base/ios/ns_range.h"
 #include "components/google/core/common/google_util.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
@@ -362,10 +363,12 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
       l10n_util::GetNSString(self.openSettingsStringId);
   GURL URL = google_util::AppendGoogleLocaleParam(
       GURL(kSettingsSyncURL), GetApplicationContext()->GetApplicationLocale());
-  NSRange range;
   NSString* text = self.customizeSyncLabel.text;
-  self.customizeSyncLabel.text = ParseStringWithLink(text, &range);
-  DCHECK(range.location != NSNotFound && range.length != 0);
+
+  const StringWithTag parsedString = ParseStringWithLink(text);
+  DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
+  self.customizeSyncLabel.text = parsedString.string;
+
   if (!showLink) {
     self.settingsLinkController = nil;
   } else {
@@ -377,7 +380,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
                                             }];
     [self.settingsLinkController setLinkColor:[UIColor colorNamed:kBlueColor]];
     [self.settingsLinkController
-        addLinkWithRange:range
+        addLinkWithRange:parsedString.range
                      url:URL
          accessibilityID:kAdvancedSigninSettingsLinkIdentifier];
   }

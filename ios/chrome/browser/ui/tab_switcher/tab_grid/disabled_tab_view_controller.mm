@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
 
+#include "base/ios/ns_range.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -67,11 +68,11 @@ NSMutableAttributedString* GetBodyString(TabGridPage page) {
   }
 
   NSString* fullText = l10n_util::GetNSString(messageID);
-  NSRange range;
-  fullText = ParseStringWithLink(fullText, &range);
+  const StringWithTag parsedString = ParseStringWithLink(fullText);
+  DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
 
   NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:fullText];
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
 
   NSDictionary* linkAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
@@ -81,7 +82,7 @@ NSMutableAttributedString* GetBodyString(TabGridPage page) {
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
     NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
   };
-  [attributedString setAttributes:linkAttributes range:range];
+  [attributedString setAttributes:linkAttributes range:parsedString.range];
 
   return attributedString;
 }

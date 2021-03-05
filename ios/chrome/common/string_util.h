@@ -7,26 +7,58 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
-#include <string>
 
-// Parses a string with an embedded link inside, delineated by BEGIN_LINK and
-// END_LINK. Returns the string without the link delimiters. If |out_link_range|
-// is not null, then it is filled out with the range of the link in the returned
-// string.
-// If no link is found, then it returns |text| and sets |out_link_range| to
-// {NSNotFound, 0}.
-NSString* ParseStringWithLink(NSString* text, NSRange* out_link_range);
+#include <string>
+#include <vector>
+
+// Stores a string and a NSRange corresponding to the sub-string that was
+// found between tag when looking for range with ParseStringWithTag.
+struct StringWithTag {
+  NSString* string;
+  NSRange range;
+};
+
+// Stores a string and a list of NSRange corresponding to the sub-string
+// that were found in tag when looking for range with ParseStringWithTags.
+struct StringWithTags {
+  NSString* string;
+  std::vector<NSRange> ranges;
+
+  StringWithTags();
+  StringWithTags(NSString* string, std::vector<NSRange> ranges);
+
+  StringWithTags(const StringWithTags& other);
+  StringWithTags& operator=(const StringWithTags& other);
+
+  StringWithTags(StringWithTags&& other);
+  StringWithTags& operator=(StringWithTags&& other);
+
+  ~StringWithTags();
+};
+
+// Parses a string with an embedded link inside, delineated by "BEGIN_LINK" and
+// "END_LINK". Returns the string without the delimiters. The function
+// asserts that there is at most one link.
+StringWithTag ParseStringWithLink(NSString* text);
+
+// Parses a string with embedded links inside, delineated by "BEGIN_LINK" and
+// "END_LINK". Returns the string without the delimiters and a list of all
+// ranges for text contained inside the tag delimiters.
+StringWithTags ParseStringWithLinks(NSString* text);
 
 // Parses a string with an embedded tag inside, delineated by |begin_tag| and
-// |end_tag|. Returns the string without the tag delimiters. If |out_tag_range|
-// is not null, then it is filled out with the range of the tag in the returned
-// string.
-// If no tag is found, then it returns |text| and sets |out_tag_range| to
-// {NSNotFound, 0}.
-NSString* ParseStringWithTag(NSString* text,
-                             NSRange* out_tag_range,
-                             NSString* begin_tag,
-                             NSString* end_tag);
+// |end_tag|. Returns the string without the delimiters. The function asserts
+// that there is at most one tag.
+StringWithTag ParseStringWithTag(NSString* text,
+                                 NSString* begin_tag,
+                                 NSString* end_tag);
+
+// Parses a string with embedded tags inside, delineated by |begin_tag| and
+// |end_tag|. Returns the string without the delimiters and a list of all ranges
+// for text contained inside the tag delimiters.
+StringWithTags ParseStringWithTags(NSString* text,
+                                   NSString* begin_tag,
+                                   NSString* end_tag);
 
 // Utility method that returns an NSCharacterSet containing Unicode graphics
 // and drawing characters (but not including the Braille Patterns characters).

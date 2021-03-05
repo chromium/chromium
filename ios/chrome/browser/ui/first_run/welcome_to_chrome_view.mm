@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/ios/ns_range.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -51,6 +52,10 @@ SizeClassIdiom GetSizeClassIdiom(UIUserInterfaceSizeClass size_class) {
       return UNSPECIFIED;
   }
 }
+
+// Tags used to embed TOS link.
+NSString* const kBeginTOSLinkTag = @"BEGIN_LINK_TOS[ \t]*";
+NSString* const kEndTOSLinkTag = @"[ \t]*END_LINK_TOS";
 
 // Accessibility identifier for the checkbox button.
 NSString* const kUMAMetricsButtonAccessibilityIdentifier =
@@ -478,15 +483,11 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   CGSize containerSize = self.containerView.bounds.size;
   containerSize.height = CGFLOAT_MAX;
   self.legacyTOSLabel.frame = {CGPointZero, containerSize};
-  NSString* TOSText = l10n_util::GetNSString(IDS_IOS_FIRSTRUN_AGREE_TO_TERMS);
-  NSRange tosLinkTextRange = NSMakeRange(NSNotFound, 0);
-  TOSText = ParseStringWithTag(TOSText, &tosLinkTextRange,
-                               @"BEGIN_LINK_TOS[ \t]*", @"[ \t]*END_LINK_TOS");
-
-  DCHECK_NE(NSNotFound, static_cast<NSInteger>(tosLinkTextRange.location));
-  DCHECK_NE(0u, tosLinkTextRange.length);
-
-  self.legacyTOSLabel.text = TOSText;
+  const StringWithTag parsedString = ParseStringWithTag(
+      l10n_util::GetNSString(IDS_IOS_FIRSTRUN_AGREE_TO_TERMS), kBeginTOSLinkTag,
+      kEndTOSLinkTag);
+  DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
+  self.legacyTOSLabel.text = parsedString.string;
 
   __weak WelcomeToChromeView* weakSelf = self;
   ProceduralBlockWithURL action = ^(const GURL& url) {
@@ -502,7 +503,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 
   _legacyTOSLabelLinkController =
       [[LabelLinkController alloc] initWithLabel:_legacyTOSLabel action:action];
-  [_legacyTOSLabelLinkController addLinkWithRange:tosLinkTextRange
+  [_legacyTOSLabelLinkController addLinkWithRange:parsedString.range
                                               url:GURL(kTermsOfServiceUrl)];
   [_legacyTOSLabelLinkController setLinkColor:[UIColor colorNamed:kBlueColor]];
 
@@ -698,15 +699,12 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   self.TOSTextView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
 
-  NSString* TOSText = l10n_util::GetNSString(IDS_IOS_FIRSTRUN_AGREE_TO_TERMS);
-  NSRange tosLinkTextRange = NSMakeRange(NSNotFound, 0);
-  TOSText = ParseStringWithTag(TOSText, &tosLinkTextRange,
-                               @"BEGIN_LINK_TOS[ \t]*", @"[ \t]*END_LINK_TOS");
+  const StringWithTag parsedString = ParseStringWithTag(
+      l10n_util::GetNSString(IDS_IOS_FIRSTRUN_AGREE_TO_TERMS), kBeginTOSLinkTag,
+      kEndTOSLinkTag);
+  DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
 
-  DCHECK_NE(NSNotFound, static_cast<NSInteger>(tosLinkTextRange.location));
-  DCHECK_NE(0u, tosLinkTextRange.length);
-
-  NSRange fullRange = NSMakeRange(0, TOSText.length);
+  NSRange fullRange = NSMakeRange(0, parsedString.string.length);
   NSURL* URL =
       [NSURL URLWithString:base::SysUTF8ToNSString(kTermsOfServiceUrl)];
   UIFont* font = [[MDCTypography fontLoader]
@@ -716,7 +714,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   style.alignment = NSTextAlignmentCenter;
 
   NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:TOSText];
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
   [attributedText addAttributes:@{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
     NSParagraphStyleAttributeName : style,
@@ -725,7 +723,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
                           range:fullRange];
   [attributedText addAttribute:NSLinkAttributeName
                          value:URL
-                         range:tosLinkTextRange];
+                         range:parsedString.range];
 
   self.TOSTextView.attributedText = attributedText;
 }

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
+#include "base/ios/ns_range.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -261,13 +262,11 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 
 // Configures text for Error Info Popover.
 - (NSAttributedString*)configureTextWithLink:(NSString*)text link:(GURL)link {
-  NSRange range;
+  const StringWithTag parsedString = ParseStringWithLink(text);
 
-  NSString* strippedText = ParseStringWithLink(text, &range);
-
-  NSRange fullRange = NSMakeRange(0, strippedText.length);
+  NSRange fullRange = NSMakeRange(0, parsedString.string.length);
   NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:strippedText];
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
   [attributedText addAttribute:NSForegroundColorAttributeName
                          value:[UIColor colorNamed:kTextSecondaryColor]
                          range:fullRange];
@@ -277,12 +276,12 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
              value:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
              range:fullRange];
 
-  if (range.location != NSNotFound && range.length != 0) {
+  if (parsedString.range != NSMakeRange(NSNotFound, 0)) {
     NSURL* URL = net::NSURLWithGURL(link);
     id linkValue = URL ? URL : @"";
     [attributedText addAttribute:NSLinkAttributeName
                            value:linkValue
-                           range:range];
+                           range:parsedString.range];
   }
 
   return attributedText;

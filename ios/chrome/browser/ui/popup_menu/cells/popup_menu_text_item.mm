@@ -31,10 +31,8 @@ const CGFloat kMaxHeight = 100;
 NSMutableAttributedString* GetAttributedString(NSString* imageName,
                                                NSString* message) {
   // Add a space to have a distance with the leading icon.
-  NSString* fullText = [@" " stringByAppendingString:message];
-
-  NSRange range;
-  fullText = ParseStringWithLink(fullText, &range);
+  const StringWithTag parsedString =
+      ParseStringWithLink([@" " stringByAppendingString:message]);
 
   NSDictionary* generalAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
@@ -43,7 +41,7 @@ NSMutableAttributedString* GetAttributedString(NSString* imageName,
   };
 
   NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:fullText
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string
                                              attributes:generalAttributes];
 
   NSDictionary* linkAttributes = @{
@@ -51,7 +49,7 @@ NSMutableAttributedString* GetAttributedString(NSString* imageName,
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
   };
-  [attributedString setAttributes:linkAttributes range:range];
+  [attributedString setAttributes:linkAttributes range:parsedString.range];
 
   // Create the leading enterprise icon.
   NSTextAttachment* attachment = [[NSTextAttachment alloc] init];

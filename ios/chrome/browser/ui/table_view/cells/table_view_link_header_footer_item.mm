@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 
+#include "base/ios/ns_range.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
@@ -108,12 +109,10 @@ CGFloat HorizontalPadding() {
 }
 
 - (void)setText:(NSString*)text {
-  NSRange range;
-
-  NSString* strippedText = ParseStringWithLink(text, &range);
-  NSRange fullRange = NSMakeRange(0, strippedText.length);
+  const StringWithTag parsedString = ParseStringWithLink(text);
+  NSRange fullRange = NSMakeRange(0, parsedString.string.length);
   NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:strippedText];
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
   [attributedText addAttribute:NSForegroundColorAttributeName
                          value:UIColor.cr_secondaryLabelColor
                          range:fullRange];
@@ -124,12 +123,12 @@ CGFloat HorizontalPadding() {
                        preferredFontForTextStyle:kTableViewSublabelFontStyle]
              range:fullRange];
 
-  if (range.location != NSNotFound && range.length != 0) {
+  if (parsedString.range != NSMakeRange(NSNotFound, 0)) {
     NSURL* URL = net::NSURLWithGURL(self.linkURL);
     id linkValue = URL ? URL : @"";
     [attributedText addAttribute:NSLinkAttributeName
                            value:linkValue
-                           range:range];
+                           range:parsedString.range];
   }
 
   self.textView.attributedText = attributedText;

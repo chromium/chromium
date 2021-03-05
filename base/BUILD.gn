@@ -1229,6 +1229,7 @@ component("base") {
       "ios/ios_util.mm",
       "ios/ns_error_util.h",
       "ios/ns_error_util.mm",
+      "ios/ns_range.h",
       "ios/scoped_critical_action.h",
       "ios/scoped_critical_action.mm",
       "message_loop/message_pump_io_ios.cc",

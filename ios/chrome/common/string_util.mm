@@ -17,59 +17,108 @@
 namespace {
 typedef BOOL (^ArrayFilterProcedure)(id object, NSUInteger index, BOOL* stop);
 typedef NSString* (^SubstringExtractionProcedure)(NSUInteger);
+NSString* const kBeginLinkTag = @"BEGIN_LINK[ \t]*";
+NSString* const kEndLinkTag = @"[ \t]*END_LINK";
 }
 
-NSString* ParseStringWithLink(NSString* text, NSRange* out_link_range) {
-  return ParseStringWithTag(text, out_link_range, @"BEGIN_LINK[ \t]*",
-                            @"[ \t]*END_LINK");
+StringWithTags::StringWithTags() = default;
+
+StringWithTags::StringWithTags(NSString* string, std::vector<NSRange> ranges)
+    : string([string copy]), ranges(ranges) {}
+
+StringWithTags::StringWithTags(const StringWithTags& other) = default;
+
+StringWithTags& StringWithTags::operator=(const StringWithTags& other) =
+    default;
+
+StringWithTags::StringWithTags(StringWithTags&& other) = default;
+
+StringWithTags& StringWithTags::operator=(StringWithTags&& other) = default;
+
+StringWithTags::~StringWithTags() = default;
+
+StringWithTag ParseStringWithLink(NSString* text) {
+  return ParseStringWithTag(text, kBeginLinkTag, kEndLinkTag);
 }
 
-NSString* ParseStringWithTag(NSString* text,
-                             NSRange* out_tag_range,
-                             NSString* begin_tag,
-                             NSString* end_tag) {
-  // Find the range within |text| and create a substring without the tag tags.
-  NSRange begin_range =
-      [text rangeOfString:begin_tag options:NSRegularExpressionSearch];
-  NSRange tag_text_range = NSMakeRange(NSNotFound, 0);
-  if (begin_range.length == 0) {
-    if (out_tag_range)
-      *out_tag_range = tag_text_range;
-    return text;
+StringWithTags ParseStringWithLinks(NSString* text) {
+  return ParseStringWithTags(text, kBeginLinkTag, kEndLinkTag);
+}
+
+StringWithTag ParseStringWithTag(NSString* text,
+                                 NSString* begin_tag,
+                                 NSString* end_tag) {
+  const StringWithTags parsed_string =
+      ParseStringWithTags(text, begin_tag, end_tag);
+
+  DCHECK_LE(parsed_string.ranges.size(), 1u);
+  return StringWithTag{parsed_string.string, parsed_string.ranges.empty()
+                                                 ? NSRange{NSNotFound, 0}
+                                                 : parsed_string.ranges[0]};
+}
+
+StringWithTags ParseStringWithTags(NSString* text,
+                                   NSString* begin_tag,
+                                   NSString* end_tag) {
+  NSMutableString* out_text = nil;
+  std::vector<NSRange> tag_ranges;
+
+  NSRange text_range{0, text.length};
+  do {
+    // Find the next |begin_tag| in |text_range|.
+    const NSRange begin_range = [text rangeOfString:begin_tag
+                                            options:NSRegularExpressionSearch
+                                              range:text_range];
+
+    // If no |begin_tag| is found, then there is no substitutions remainining.
+    if (begin_range.length == 0)
+      break;
+
+    // Find the next |end_tag| after the recently found |begin_tag|.
+    const NSUInteger after_begin_pos = NSMaxRange(begin_range);
+    const NSRange after_begin_range{
+        after_begin_pos,
+        text_range.length - (after_begin_pos - text_range.location)};
+    const NSRange end_range = [text rangeOfString:end_tag
+                                          options:NSRegularExpressionSearch
+                                            range:after_begin_range];
+
+    // If no |end_tag| is found, then there is no substitutions remaining.
+    if (end_range.length == 0)
+      break;
+
+    if (!out_text)
+      out_text = [[NSMutableString alloc] initWithCapacity:text.length];
+
+    const NSUInteger after_end_pos = NSMaxRange(end_range);
+    [out_text
+        appendString:[text
+                         substringWithRange:NSRange{text_range.location,
+                                                    begin_range.location -
+                                                        text_range.location}]];
+    [out_text
+        appendString:[text substringWithRange:NSRange{after_begin_pos,
+                                                      end_range.location -
+                                                          after_begin_pos}]];
+
+    const NSUInteger tag_length = end_range.location - after_begin_pos;
+    tag_ranges.push_back(NSRange{out_text.length - tag_length, tag_length});
+
+    text_range =
+        NSRange{after_end_pos,
+                text_range.length - (after_end_pos - text_range.location)};
+  } while (text_range.length != 0);
+
+  if (!out_text) {
+    DCHECK(tag_ranges.empty());
+    return StringWithTags(text, {});
   }
 
-  NSUInteger after_begin_tag = NSMaxRange(begin_range);
-  NSRange range_to_search_for_end_tag =
-      NSMakeRange(after_begin_tag, text.length - after_begin_tag);
-  NSRange end_range = [text rangeOfString:end_tag
-                                  options:NSRegularExpressionSearch
-                                    range:range_to_search_for_end_tag];
-  if (end_range.length == 0) {
-    if (out_tag_range)
-      *out_tag_range = tag_text_range;
-    return text;
-  }
+  // Append any remaining text without tags.
+  if (text_range.length != 0)
+    [out_text appendString:[text substringWithRange:text_range]];
 
-  tag_text_range.location = after_begin_tag;
-  tag_text_range.length = end_range.location - tag_text_range.location;
-  NSMutableString* out_text = [[NSMutableString alloc] init];
-  // First part - before the tag.
-  if (begin_range.location > 0)
-    [out_text appendString:[text substringToIndex:begin_range.location]];
-
-  // Tag part.
-  [out_text appendString:[text substringWithRange:tag_text_range]];
-
-  // Last part - after the tag.
-  NSUInteger after_end_tag = NSMaxRange(end_range);
-  if (after_end_tag < [text length]) {
-    [out_text appendString:[text substringFromIndex:after_end_tag]];
-  }
-
-  tag_text_range.location = begin_range.location;
-  if (out_tag_range)
-    *out_tag_range = tag_text_range;
-  return [NSString stringWithString:out_text];
+  return StringWithTags(out_text, tag_ranges);
 }
 
 // Ranges of unicode codepage containing drawing characters.

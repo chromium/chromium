@@ -45,11 +45,10 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName) {
     message = l10n_util::GetNSString(
         IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITHOUT_COMPANY_NAME);
   }
-  // Add a space to have a distanse with the leading icon.
-  NSString* fullText = [@" " stringByAppendingString:message];
 
-  NSRange range;
-  fullText = ParseStringWithLink(fullText, &range);
+  // Add a space to have a distanse with the leading icon.
+  const StringWithTag parsedString =
+      ParseStringWithLink([@" " stringByAppendingString:message]);
 
   NSDictionary* generalAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
@@ -57,7 +56,7 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName) {
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
   };
   NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:fullText
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string
                                              attributes:generalAttributes];
 
   NSDictionary* linkAttributes = @{
@@ -67,7 +66,7 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName) {
     NSLinkAttributeName :
         [NSString stringWithUTF8String:kChromeUIManagementURL],
   };
-  [attributedString setAttributes:linkAttributes range:range];
+  [attributedString setAttributes:linkAttributes range:parsedString.range];
 
   // Create the leading enterprise icon.
   NSTextAttachment* attachment = [[NSTextAttachment alloc] init];

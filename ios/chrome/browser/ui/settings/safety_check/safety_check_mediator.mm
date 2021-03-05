@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
 
+#include "base/ios/ns_range.h"
 #include "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -627,13 +628,11 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 // Configures check error info with a link for popovers.
 - (NSAttributedString*)attributedStringWithText:(NSString*)text
                                            link:(GURL)link {
-  NSRange range;
+  const StringWithTag parsedString = ParseStringWithLink(text);
 
-  NSString* strippedText = ParseStringWithLink(text, &range);
-
-  NSRange fullRange = NSMakeRange(0, strippedText.length);
+  NSRange fullRange = NSMakeRange(0, parsedString.string.length);
   NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:strippedText];
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
   [attributedText addAttribute:NSForegroundColorAttributeName
                          value:[UIColor colorNamed:kTextSecondaryColor]
                          range:fullRange];
@@ -643,12 +642,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
              value:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
              range:fullRange];
 
-  if (range.location != NSNotFound && range.length != 0) {
+  if (parsedString.range != NSMakeRange(NSNotFound, 0)) {
     NSURL* URL = net::NSURLWithGURL(link);
     id linkValue = URL ? URL : @"";
     [attributedText addAttribute:NSLinkAttributeName
                            value:linkValue
-                           range:range];
+                           range:parsedString.range];
   }
   return attributedText;
 }

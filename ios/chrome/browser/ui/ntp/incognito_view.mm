@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/incognito_view.h"
 
+#include "base/ios/ns_range.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -100,18 +101,18 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
       stringByTrimmingCharactersInSet:[NSCharacterSet
                                           whitespaceAndNewlineCharacterSet]];
 
-  NSRange emphasisRange;
-  listString =
-      ParseStringWithTag(listString, &emphasisRange, @"<em>", @"</em>");
+  const StringWithTag parsedString =
+      ParseStringWithTag(listString, @"<em>", @"</em>");
+
   NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:listString];
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
   [attributedText addAttribute:NSFontAttributeName
                          value:BodyFont()
                          range:NSMakeRange(0, attributedText.length)];
-  if (emphasisRange.location != NSNotFound) {
+  if (parsedString.range != NSMakeRange(NSNotFound, 0)) {
     [attributedText addAttribute:NSFontAttributeName
                            value:BoldBodyFont()
-                           range:emphasisRange];
+                           range:parsedString.range];
   }
   return attributedText;
 }
