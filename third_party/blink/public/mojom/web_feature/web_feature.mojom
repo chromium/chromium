@@ -3145,6 +3145,16 @@ enum WebFeature {
   kStorageFoundationFlush = 3827,
   kStorageFoundationFlushSync = 3828,
   kUnrestrictedSharedArrayBuffer = 3829,
+  kFeaturePolicyJSAPIAllowsFeatureIFrame = 3830,
+  kFeaturePolicyJSAPIAllowsFeatureDocument = 3831,
+  kFeaturePolicyJSAPIAllowsFeatureOriginIFrame = 3832,
+  kFeaturePolicyJSAPIAllowsFeatureOriginDocument = 3833,
+  kFeaturePolicyJSAPIAllowedFeaturesIFrame = 3834,
+  kFeaturePolicyJSAPIAllowedFeaturesDocument = 3835,
+  kFeaturePolicyJSAPIFeaturesIFrame = 3836,
+  kFeaturePolicyJSAPIFeaturesDocument = 3837,
+  kFeaturePolicyJSAPIGetAllowlistIFrame = 3838,
+  kFeaturePolicyJSAPIGetAllowlistDocument = 3839,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

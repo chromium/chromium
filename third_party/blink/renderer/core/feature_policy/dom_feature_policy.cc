@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/feature_policy/feature_policy_parser.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -29,6 +30,10 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
                                      const String& feature) const {
   ExecutionContext* execution_context =
       script_state ? ExecutionContext::From(script_state) : nullptr;
+  UseCounter::Count(execution_context,
+                    IsIFramePolicy()
+                        ? WebFeature::kFeaturePolicyJSAPIAllowsFeatureIFrame
+                        : WebFeature::kFeaturePolicyJSAPIAllowsFeatureDocument);
   if (FeatureAvailable(feature, execution_context)) {
     auto feature_name = GetDefaultFeatureNameMap().at(feature);
     return GetPolicy()->IsFeatureEnabled(feature_name);
@@ -43,12 +48,17 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
                                      const String& url) const {
   ExecutionContext* execution_context =
       script_state ? ExecutionContext::From(script_state) : nullptr;
+  UseCounter::Count(
+      execution_context,
+      IsIFramePolicy()
+          ? WebFeature::kFeaturePolicyJSAPIAllowsFeatureOriginIFrame
+          : WebFeature::kFeaturePolicyJSAPIAllowsFeatureOriginDocument);
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateFromString(url);
   if (!origin || origin->IsOpaque()) {
     context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kOther,
-        mojom::ConsoleMessageLevel::kWarning,
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
         "Invalid origin url for feature '" + feature + "': " + url + "."));
     return false;
   }
@@ -66,6 +76,10 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
 Vector<String> DOMFeaturePolicy::features(ScriptState* script_state) const {
   ExecutionContext* execution_context =
       script_state ? ExecutionContext::From(script_state) : nullptr;
+  UseCounter::Count(execution_context,
+                    IsIFramePolicy()
+                        ? WebFeature::kFeaturePolicyJSAPIFeaturesIFrame
+                        : WebFeature::kFeaturePolicyJSAPIFeaturesDocument);
   return GetAvailableFeatures(execution_context);
 }
 
@@ -73,6 +87,11 @@ Vector<String> DOMFeaturePolicy::allowedFeatures(
     ScriptState* script_state) const {
   ExecutionContext* execution_context =
       script_state ? ExecutionContext::From(script_state) : nullptr;
+  UseCounter::Count(
+      execution_context,
+      IsIFramePolicy()
+          ? WebFeature::kFeaturePolicyJSAPIAllowedFeaturesIFrame
+          : WebFeature::kFeaturePolicyJSAPIAllowedFeaturesDocument);
   Vector<String> allowed_features;
   for (const String& feature : GetAvailableFeatures(execution_context)) {
     auto feature_name = GetDefaultFeatureNameMap().at(feature);
@@ -87,6 +106,10 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
     const String& feature) const {
   ExecutionContext* execution_context =
       script_state ? ExecutionContext::From(script_state) : nullptr;
+  UseCounter::Count(execution_context,
+                    IsIFramePolicy()
+                        ? WebFeature::kFeaturePolicyJSAPIGetAllowlistIFrame
+                        : WebFeature::kFeaturePolicyJSAPIGetAllowlistDocument);
   if (FeatureAvailable(feature, execution_context)) {
     auto feature_name = GetDefaultFeatureNameMap().at(feature);
 
@@ -111,7 +134,8 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
 void DOMFeaturePolicy::AddWarningForUnrecognizedFeature(
     const String& feature) const {
   context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kOther, mojom::ConsoleMessageLevel::kWarning,
+      mojom::blink::ConsoleMessageSource::kOther,
+      mojom::blink::ConsoleMessageLevel::kWarning,
       "Unrecognized feature: '" + feature + "'."));
 }
 
