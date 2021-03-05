@@ -92,58 +92,57 @@ TEST(ClientSocketPool, GroupIdOperators) {
 
 TEST(ClientSocketPool, GroupIdToString) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kPartitionConnectionsByNetworkIsolationKey},
-      {features::kAppendFrameOriginToNetworkIsolationKey});
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
-  EXPECT_EQ("foo:80 <null>",
+  EXPECT_EQ("foo:80 <null null>",
             ClientSocketPool::GroupId(
                 HostPortPair("foo", 80), ClientSocketPool::SocketType::kHttp,
                 PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                 false /* disable_secure_dns */)
                 .ToString());
-  EXPECT_EQ("bar:443 <null>",
+  EXPECT_EQ("bar:443 <null null>",
             ClientSocketPool::GroupId(
                 HostPortPair("bar", 443), ClientSocketPool::SocketType::kHttp,
                 PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                 false /* disable_secure_dns */)
                 .ToString());
-  EXPECT_EQ("pm/bar:80 <null>",
+  EXPECT_EQ("pm/bar:80 <null null>",
             ClientSocketPool::GroupId(
                 HostPortPair("bar", 80), ClientSocketPool::SocketType::kHttp,
                 PrivacyMode::PRIVACY_MODE_ENABLED, NetworkIsolationKey(),
                 false /* disable_secure_dns */)
                 .ToString());
 
-  EXPECT_EQ("ssl/foo:80 <null>",
+  EXPECT_EQ("ssl/foo:80 <null null>",
             ClientSocketPool::GroupId(
                 HostPortPair("foo", 80), ClientSocketPool::SocketType::kSsl,
                 PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                 false /* disable_secure_dns */)
                 .ToString());
-  EXPECT_EQ("ssl/bar:443 <null>",
+  EXPECT_EQ("ssl/bar:443 <null null>",
             ClientSocketPool::GroupId(
                 HostPortPair("bar", 443), ClientSocketPool::SocketType::kSsl,
                 PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                 false /* disable_secure_dns */)
                 .ToString());
-  EXPECT_EQ("pm/ssl/bar:80 <null>",
+  EXPECT_EQ("pm/ssl/bar:80 <null null>",
             ClientSocketPool::GroupId(
                 HostPortPair("bar", 80), ClientSocketPool::SocketType::kSsl,
                 PrivacyMode::PRIVACY_MODE_ENABLED, NetworkIsolationKey(),
                 false /* disable_secure_dns */)
                 .ToString());
 
-  EXPECT_EQ("ssl/foo:443 <https://foo.com>",
+  EXPECT_EQ("ssl/foo:443 <https://foo.test https://bar.test>",
             ClientSocketPool::GroupId(
                 HostPortPair("foo", 443), ClientSocketPool::SocketType::kSsl,
                 PrivacyMode::PRIVACY_MODE_DISABLED,
-                NetworkIsolationKey(SchemefulSite(GURL("https://foo.com")),
-                                    SchemefulSite(GURL("https://foo.com"))),
+                NetworkIsolationKey(SchemefulSite(GURL("https://foo.test")),
+                                    SchemefulSite(GURL("https://bar.test"))),
                 false /* disable_secure_dns */)
                 .ToString());
 
-  EXPECT_EQ("dsd/pm/ssl/bar:80 <null>",
+  EXPECT_EQ("dsd/pm/ssl/bar:80 <null null>",
             ClientSocketPool::GroupId(
                 HostPortPair("bar", 80), ClientSocketPool::SocketType::kSsl,
                 PrivacyMode::PRIVACY_MODE_ENABLED, NetworkIsolationKey(),

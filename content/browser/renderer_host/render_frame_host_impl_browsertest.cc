@@ -188,13 +188,7 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
  public:
   using LifecycleState = RenderFrameHostImpl::LifecycleState;
   RenderFrameHostImplBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    // This makes the tests that check NetworkIsolationKeys make sure both the
-    // frame and top frame origins are correct, without significantly affecting
-    // other tests.
-    feature_list_.InitAndEnableFeature(
-        net::features::kAppendFrameOriginToNetworkIsolationKey);
-  }
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
   ~RenderFrameHostImplBrowserTest() override = default;
 
   // Return an URL for loading a local test file.
@@ -234,7 +228,6 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
 };
 

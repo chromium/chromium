@@ -252,9 +252,8 @@ class ProfileNetworkContextServiceCacheSameBrowsertest
   ~ProfileNetworkContextServiceCacheSameBrowsertest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {net::features::kSplitCacheByNetworkIsolationKey,
-             net::features::kAppendFrameOriginToNetworkIsolationKey});
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
     ProfileNetworkContextServiceBrowsertest::SetUp();
   }
 
@@ -296,9 +295,8 @@ class ProfileNetworkContextServiceCacheChangeBrowsertest
     : public ProfileNetworkContextServiceBrowsertest {
  public:
   ProfileNetworkContextServiceCacheChangeBrowsertest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{net::features::kAppendFrameOriginToNetworkIsolationKey, {}}},
-        {net::features::kSplitCacheByNetworkIsolationKey});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kSplitCacheByNetworkIsolationKey, {});
   }
   ~ProfileNetworkContextServiceCacheChangeBrowsertest() override = default;
 
@@ -322,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
   DCHECK_EQ(
       local_state->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "None scoped_feature_list_trial_group None");
+      "scoped_feature_list_trial_group None None");
   // Set the local state for the next test.
   local_state->SetString(
       "profile_network_context_service.http_cache_finch_experiment_groups",
@@ -342,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
   DCHECK_EQ(
       local_state->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "None scoped_feature_list_trial_group None");
+      "scoped_feature_list_trial_group None None");
 }
 
 class AmbientAuthenticationTestWithPolicy

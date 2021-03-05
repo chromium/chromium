@@ -217,8 +217,6 @@ NET_EXPORT extern const base::Feature kSameSiteDefaultChecksMethodRigorously;
 NET_EXPORT extern const base::Feature kCertVerifierBuiltinFeature;
 #endif
 
-NET_EXPORT extern const base::Feature kAppendFrameOriginToNetworkIsolationKey;
-
 // Turns off streaming media caching to disk when on battery power.
 NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCachingOnBattery;
 

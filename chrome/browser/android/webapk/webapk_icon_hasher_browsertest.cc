@@ -32,10 +32,8 @@ class WebApkIconHasherBrowserTest : public PlatformBrowserTest {
  public:
   WebApkIconHasherBrowserTest()
       : http_server_(net::EmbeddedTestServer::TYPE_HTTP) {
-    scoped_feature_list_.InitWithFeatures(
-        {net::features::kSplitCacheByNetworkIsolationKey,
-         net::features::kAppendFrameOriginToNetworkIsolationKey},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
   ~WebApkIconHasherBrowserTest() override = default;
 

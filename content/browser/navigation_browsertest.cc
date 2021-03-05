@@ -292,32 +292,16 @@ class NavigationGoToEntryAtOffsetBrowserTest : public NavigationBrowserTest {
   RenderFrameHostFactoryForHistoryBackInterceptor render_frame_host_factory_;
 };
 
-class NetworkIsolationNavigationBrowserTest
-    : public ContentBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class NetworkIsolationNavigationBrowserTest : public ContentBrowserTest {
  public:
-  NetworkIsolationNavigationBrowserTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          net::features::kAppendFrameOriginToNetworkIsolationKey);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          net::features::kAppendFrameOriginToNetworkIsolationKey);
-    }
-  }
+  NetworkIsolationNavigationBrowserTest() = default;
 
  protected:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     ContentBrowserTest::SetUpOnMainThread();
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NetworkIsolationNavigationBrowserTest,
-                         ::testing::Bool());
 
 class NavigationBrowserTestReferrerPolicy
     : public NavigationBrowserTest,
@@ -842,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
   EXPECT_EQ("\"done\"", done);
 }
 
-IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
                        BrowserNavigationNetworkIsolationKey) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   url::Origin origin = url::Origin::Create(url);
@@ -860,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
-IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
                        RenderNavigationIsolationInfo) {
   GURL url(embedded_test_server()->GetURL("/title2.html"));
   url::Origin origin = url::Origin::Create(url);
@@ -879,7 +863,7 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
-IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
                        SubframeIsolationInfo) {
   GURL url(embedded_test_server()->GetURL("/page_with_iframe.html"));
   GURL iframe_document = embedded_test_server()->GetURL("/title1.html");
@@ -4452,10 +4436,8 @@ class NetworkIsolationSplitCacheAppendIframeOrigin
     : public NavigationBaseBrowserTest {
  public:
   NetworkIsolationSplitCacheAppendIframeOrigin() {
-    feature_list_.InitWithFeatures(
-        {net::features::kSplitCacheByNetworkIsolationKey,
-         net::features::kAppendFrameOriginToNetworkIsolationKey},
-        {});
+    feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
 
  private:

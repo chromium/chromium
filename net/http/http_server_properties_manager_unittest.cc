@@ -44,14 +44,12 @@ using ::testing::StrictMock;
 
 enum class NetworkIsolationKeyMode {
   kDisabled,
-  kTopFrameOriginOnly,
-  kTopFrameOriginAndFrameOrigin,
+  kEnabled,
 };
 
 const NetworkIsolationKeyMode kNetworkIsolationKeyModes[] = {
     NetworkIsolationKeyMode::kDisabled,
-    NetworkIsolationKeyMode::kTopFrameOriginOnly,
-    NetworkIsolationKeyMode::kTopFrameOriginAndFrameOrigin,
+    NetworkIsolationKeyMode::kEnabled,
 };
 
 std::unique_ptr<base::test::ScopedFeatureList> SetNetworkIsolationKeyMode(
@@ -62,20 +60,9 @@ std::unique_ptr<base::test::ScopedFeatureList> SetNetworkIsolationKeyMode(
       feature_list->InitAndDisableFeature(
           features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
       break;
-    case NetworkIsolationKeyMode::kTopFrameOriginOnly:
-      feature_list->InitWithFeatures(
-          // enabled_features
-          {features::kPartitionHttpServerPropertiesByNetworkIsolationKey},
-          // disabled_features
-          {features::kAppendFrameOriginToNetworkIsolationKey});
-      break;
-    case NetworkIsolationKeyMode::kTopFrameOriginAndFrameOrigin:
-      feature_list->InitWithFeatures(
-          // enabled_features
-          {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-           features::kAppendFrameOriginToNetworkIsolationKey},
-          // disabled_features
-          {});
+    case NetworkIsolationKeyMode::kEnabled:
+      feature_list->InitAndEnableFeature(
+          features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
       break;
   }
   return feature_list;
