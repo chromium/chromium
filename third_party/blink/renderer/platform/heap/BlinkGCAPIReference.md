@@ -19,7 +19,7 @@ Unless otherwise noted, any of the primitives explained on this page require the
 
 ### GarbageCollected
 
-A class that wants the lifetime management of its instances to be managed by Oilpan, it must inherit from `GarbageCollected<T>`.
+A class that wants the lifetime management of its instances to be managed by Oilpan must inherit from `GarbageCollected<T>`.
 
 ```c++
 class YourClass : public GarbageCollected<YourClass> {
