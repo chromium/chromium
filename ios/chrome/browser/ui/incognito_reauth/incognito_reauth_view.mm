@@ -36,13 +36,17 @@ const CGFloat kVerticalContentPadding = 70.0f;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    // Add a dark view to block the content better. Using only a blur view
-    // (below) might be too revealing.
-    UIView* darkBackgroundView = [[UIView alloc] init];
-    darkBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
-    [self addSubview:darkBackgroundView];
-    darkBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    AddSameConstraints(self, darkBackgroundView);
+    // Increase blur intensity by layering some blur views to make
+    // content behind really not recognizeable.
+    for (int i = 0; i < 3; i++) {
+      UIBlurEffect* blurEffect =
+          [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+      UIVisualEffectView* blurView =
+          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      [self addSubview:blurView];
+      blurView.translatesAutoresizingMaskIntoConstraints = NO;
+      AddSameConstraints(self, blurView);
+    }
 
     UIBlurEffect* blurEffect =
         [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
@@ -53,11 +57,11 @@ const CGFloat kVerticalContentPadding = 70.0f;
     AddSameConstraints(self, blurBackgroundView);
 
     UIImage* incognitoLogo = [UIImage imageNamed:@"incognito_logo_reauth"];
-    UIImageView* logoView = [[UIImageView alloc] initWithImage:incognitoLogo];
-    logoView.translatesAutoresizingMaskIntoConstraints = NO;
-    [blurBackgroundView.contentView addSubview:logoView];
-    AddSameCenterXConstraint(logoView, blurBackgroundView);
-    [logoView.topAnchor
+    _logoView = [[UIImageView alloc] initWithImage:incognitoLogo];
+    _logoView.translatesAutoresizingMaskIntoConstraints = NO;
+    [blurBackgroundView.contentView addSubview:_logoView];
+    AddSameCenterXConstraint(_logoView, blurBackgroundView);
+    [_logoView.topAnchor
         constraintEqualToAnchor:blurBackgroundView.safeAreaLayoutGuide.topAnchor
                        constant:kVerticalContentPadding]
         .active = YES;
@@ -66,6 +70,9 @@ const CGFloat kVerticalContentPadding = 70.0f;
     _tabSwitcherButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_tabSwitcherButton setTitleColor:[UIColor whiteColor]
                              forState:UIControlStateNormal];
+    [_tabSwitcherButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.4]
+                             forState:UIControlStateHighlighted];
+
     [_tabSwitcherButton setTitle:l10n_util::GetNSString(
                                      IDS_IOS_INCOGNITO_REAUTH_GO_TO_NORMAL_TABS)
                         forState:UIControlStateNormal];
@@ -125,7 +132,7 @@ const CGFloat kVerticalContentPadding = 70.0f;
       [[IncognitoReauthViewLabel alloc] init];
   titleLabel.owner = self;
   titleLabel.numberOfLines = 0;
-  titleLabel.textColor = [UIColor whiteColor];
+  titleLabel.textColor = [UIColor colorWithWhite:1 alpha:0.95];
   titleLabel.textAlignment = NSTextAlignmentCenter;
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
@@ -149,12 +156,6 @@ const CGFloat kVerticalContentPadding = 70.0f;
       IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL,
       base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  [button addSubview:titleLabel];
-  AddSameConstraintsWithInsets(
-
-      button, titleLabel,
-      ChromeDirectionalEdgeInsetsMake(-kButtonPaddingV, -kButtonPaddingH,
-                                      -kButtonPaddingV, -kButtonPaddingH));
 
   if (@available(iOS 13.4, *)) {
     button.pointerInteractionEnabled = YES;
@@ -166,17 +167,36 @@ const CGFloat kVerticalContentPadding = 70.0f;
         initWithEffect:[UIVibrancyEffect
                            effectForBlurEffect:blurEffect
                                          style:UIVibrancyEffectStyleFill]];
+
+    [button addSubview:titleLabel];
     [effectView.contentView addSubview:button];
     backgroundView = effectView;
   } else {
     backgroundView = [[UIView alloc] init];
     [backgroundView addSubview:button];
+    [backgroundView addSubview:titleLabel];
   }
-  backgroundView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.2];
+  AddSameConstraintsWithInsets(
+
+      button, titleLabel,
+      ChromeDirectionalEdgeInsetsMake(-kButtonPaddingV, -kButtonPaddingH,
+                                      -kButtonPaddingV, -kButtonPaddingH));
+
+  backgroundView.backgroundColor =
+      [IncognitoReauthView blurButtonBackgroundColor];
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
 
   AddSameConstraints(backgroundView, button);
+
+  // Handle touch up and down events to create a "highlight" state.
+  // The normal button highlight state is not usable here because the actual
+  // button is transparent.
+  [button addTarget:self
+                action:@selector(blurButtonEventHandler)
+      forControlEvents:UIControlEventAllEvents];
+
   _authenticateButton = button;
+
   return backgroundView;
 }
 
@@ -192,6 +212,19 @@ const CGFloat kVerticalContentPadding = 70.0f;
   return YES;
 }
 
+#pragma mark - internal
+
+- (void)blurButtonEventHandler {
+  [UIView animateWithDuration:0.1
+                   animations:^{
+                     self.authenticateButtonBackgroundView.backgroundColor =
+                         [self.authenticateButton isHighlighted]
+                             ? [IncognitoReauthView
+                                   blurButtonHighlightBackgroundColor]
+                             : [IncognitoReauthView blurButtonBackgroundColor];
+                   }];
+}
+
 #pragma mark - IncognitoReauthViewLabelOwner
 
 - (void)labelDidLayout {
@@ -199,6 +232,16 @@ const CGFloat kVerticalContentPadding = 70.0f;
       std::min(kAuthenticateButtonBagroundMaxCornerRadius,
                self.authenticateButtonBackgroundView.frame.size.height / 2);
   self.authenticateButtonBackgroundView.layer.cornerRadius = cornerRadius;
+}
+
+#pragma mark - helpers
+
++ (UIColor*)blurButtonBackgroundColor {
+  return [UIColor colorWithWhite:1 alpha:0.15];
+}
+
++ (UIColor*)blurButtonHighlightBackgroundColor {
+  return [UIColor colorWithWhite:1 alpha:0.6];
 }
 
 @end

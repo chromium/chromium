@@ -568,6 +568,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       self.blockingView.layer.zPosition = FLT_MAX;
       // No need to show tab switcher button when already in the tab switcher.
       self.blockingView.tabSwitcherButton.hidden = YES;
+      // Hide the logo.
+      self.blockingView.logoView.hidden = YES;
 
       [self.blockingView.authenticateButton
                  addTarget:self.handler
