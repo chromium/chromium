@@ -681,7 +681,7 @@ class WebLocalFrame : public WebFrame {
   virtual void SetScrollOffset(const WebSize&) = 0;
 
   // The size of the document in this frame.
-  virtual WebSize DocumentSize() const = 0;
+  virtual gfx::Size DocumentSize() const = 0;
 
   // Returns true if the contents (minus scrollbars) has non-zero area.
   virtual bool HasVisibleContent() const = 0;

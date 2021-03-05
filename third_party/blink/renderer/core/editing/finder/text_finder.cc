@@ -618,7 +618,7 @@ void TextFinder::InvalidateFindMatchRects() {
 }
 
 void TextFinder::UpdateFindMatchRects() {
-  IntSize current_document_size = OwnerFrame().DocumentSize();
+  IntSize current_document_size(OwnerFrame().DocumentSize());
   if (document_size_for_current_find_match_rects_ != current_document_size) {
     document_size_for_current_find_match_rects_ = current_document_size;
     find_match_rects_are_valid_ = false;

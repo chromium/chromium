@@ -285,7 +285,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void DeprecatedStopLoading() override;
   WebSize GetScrollOffset() const override;
   void SetScrollOffset(const WebSize&) override;
-  WebSize DocumentSize() const override;
+  gfx::Size DocumentSize() const override;
   bool HasVisibleContent() const override;
   gfx::Rect VisibleContentRect() const override;
   void DispatchBeforePrintEvent(

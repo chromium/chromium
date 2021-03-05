@@ -796,12 +796,13 @@ void WebLocalFrameImpl::SetScrollOffset(const WebSize& offset) {
   }
 }
 
-WebSize WebLocalFrameImpl::DocumentSize() const {
+gfx::Size WebLocalFrameImpl::DocumentSize() const {
   if (!GetFrameView() || !GetFrameView()->GetLayoutView())
-    return WebSize();
+    return gfx::Size();
 
-  return PixelSnappedIntRect(GetFrameView()->GetLayoutView()->DocumentRect())
-      .Size();
+  return gfx::Size(
+      PixelSnappedIntRect(GetFrameView()->GetLayoutView()->DocumentRect())
+          .Size());
 }
 
 bool WebLocalFrameImpl::HasVisibleContent() const {

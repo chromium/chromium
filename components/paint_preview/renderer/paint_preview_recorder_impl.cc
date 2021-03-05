@@ -233,8 +233,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   // Default to using the clip rect.
   gfx::Rect bounds = params->clip_rect;
   auto document_size = frame->DocumentSize();
-  gfx::Rect document_rect =
-      gfx::Rect(0, 0, document_size.width, document_size.height);
+  gfx::Rect document_rect = gfx::Rect(document_size);
   if (bounds.IsEmpty() || params->clip_rect_is_hint) {
     // If the clip rect is empty or only a hint try to use the document size.
     if (!document_rect.IsEmpty())
