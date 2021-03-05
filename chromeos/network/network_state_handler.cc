@@ -1804,7 +1804,7 @@ NetworkStateHandler::MaybeCreateDefaultCellularNetwork() {
   // surfaces which attempt to show the network name will fall back to showing
   // the network type (i.e., "Cellular") instead.
   std::unique_ptr<NetworkState> network =
-      NetworkState::CreateDefaultCellular(device->path());
+      NetworkState::CreateDefaultCellular(device);
   UpdateGuid(network.get());
   return network;
 }

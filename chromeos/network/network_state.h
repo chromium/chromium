@@ -30,6 +30,8 @@ class MobileActivatorTest;
 
 namespace chromeos {
 
+class DeviceState;
+
 // Simple class to provide network state information about a network service.
 // This class should always be passed as a const* and should never be held
 // on to. Store network_state->path() (defined in ManagedState) instead and
@@ -274,7 +276,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   static bool StateIsPortalled(const std::string& connection_state);
   static bool ErrorIsValid(const std::string& error);
   static std::unique_ptr<NetworkState> CreateDefaultCellular(
-      const std::string& device_path);
+      const DeviceState* cellular_device);
 
   // Ignore changes to signal strength less than this value.
   constexpr static const int kSignalStrengthChangeThreshold = 5;

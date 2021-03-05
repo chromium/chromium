@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -612,12 +613,23 @@ bool NetworkState::ErrorIsValid(const std::string& error) {
 
 // static
 std::unique_ptr<NetworkState> NetworkState::CreateDefaultCellular(
-    const std::string& device_path) {
+    const DeviceState* cellular_device) {
   auto new_state = std::make_unique<NetworkState>(kDefaultCellularNetworkPath);
   new_state->set_type(shill::kTypeCellular);
   new_state->set_update_received();
   new_state->set_visible(true);
-  new_state->device_path_ = device_path;
+  new_state->device_path_ = cellular_device->path();
+  new_state->iccid_ = cellular_device->iccid();
+
+  // The default cellular service corresponds to the primary SIM slot. Copy the
+  // EID value from that SIM to the service.
+  for (const CellularSIMSlotInfo& sim : cellular_device->sim_slot_infos()) {
+    if (sim.primary) {
+      new_state->eid_ = sim.eid;
+      break;
+    }
+  }
+
   return new_state;
 }
 

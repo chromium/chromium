@@ -51,6 +51,9 @@ const char kShillManagerClientStubCellular[] = "/service/cellular1";
 const char kWifiGuid1[] = "wifi1";
 const char kWifiName1[] = "WiFi 1";
 
+const char kCellularIccid[] = "iccid";
+const char kCellularEid[] = "eid";
+
 const char kTetherGuid1[] = "tether1";
 const char kTetherGuid2[] = "tether2";
 const char kTetherName1[] = "Device1";
@@ -85,6 +88,17 @@ bool NetworkListContainsPath(const NetworkStateHandler::NetworkStateList& list,
                       [path](const NetworkState* network) {
                         return network->path() == path;
                       }) != list.end();
+}
+
+// Creates a list of cellular SIM slots with a single primary slot whose eid is
+// |eid|.
+base::Value GenerateSimSlotInfosWithEid(const std::string& eid) {
+  base::Value::ListStorage sim_slot_infos;
+  base::Value slot_info_item(base::Value::Type::DICTIONARY);
+  slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, eid);
+  slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
+  sim_slot_infos.push_back(std::move(slot_info_item));
+  return base::Value(sim_slot_infos);
 }
 
 class TestObserver final : public chromeos::NetworkStateHandlerObserver {
@@ -313,6 +327,12 @@ class NetworkStateHandlerTest : public testing::Test {
                             "stub_wifi_device1");
     device_test_->AddDevice(kShillManagerClientStubCellularDevice,
                             shill::kTypeCellular, "stub_cellular_device1");
+    device_test_->SetDeviceProperty(
+        kShillManagerClientStubCellularDevice, shill::kIccidProperty,
+        base::Value(kCellularIccid), /*notify_changed=*/true);
+    device_test_->SetDeviceProperty(
+        kShillManagerClientStubCellularDevice, shill::kSIMSlotInfoProperty,
+        GenerateSimSlotInfosWithEid(kCellularEid), /*notify_changed=*/true);
 
     manager_test_ = ShillManagerClient::Get()->GetTestInterface();
     ASSERT_TRUE(manager_test_);
@@ -2059,6 +2079,8 @@ TEST_F(NetworkStateHandlerTest, DefaultCellularNetwork) {
       false /* visible_only */, 0, &cellular_networks);
   ASSERT_EQ(1u, cellular_networks.size());
   EXPECT_TRUE(cellular_networks[0]->IsDefaultCellular());
+  EXPECT_EQ(kCellularIccid, cellular_networks[0]->iccid());
+  EXPECT_EQ(kCellularEid, cellular_networks[0]->eid());
 
   // Add a Cellular service. This should replace the default cellular network.
   AddService(kShillManagerClientStubCellular, "cellular1_guid", "cellular1",
