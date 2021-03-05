@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
@@ -84,12 +83,12 @@ HTMLDivElement* MediaControlElementsHelper::CreateDiv(const AtomicString& id,
 }
 
 // static
-WebSize MediaControlElementsHelper::GetSizeOrDefault(
+gfx::Size MediaControlElementsHelper::GetSizeOrDefault(
     const Element& element,
-    const WebSize& default_size) {
+    const gfx::Size& default_size) {
   float zoom_factor = 1.0f;
-  int width = default_size.width;
-  int height = default_size.height;
+  int width = default_size.width();
+  int height = default_size.height();
 
   if (LayoutBox* box = element.GetLayoutBox()) {
     width = box->LogicalWidth().Round();
@@ -99,7 +98,7 @@ WebSize MediaControlElementsHelper::GetSizeOrDefault(
   if (element.GetDocument().GetLayoutView())
     zoom_factor = element.GetDocument().GetLayoutView()->ZoomFactor();
 
-  return WebSize(round(width / zoom_factor), round(height / zoom_factor));
+  return gfx::Size(round(width / zoom_factor), round(height / zoom_factor));
 }
 
 // static

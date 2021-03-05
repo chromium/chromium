@@ -28,7 +28,6 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -95,6 +94,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -1227,32 +1227,32 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
   };
 
   // Current size of the media controls.
-  WebSize controls_size = size_;
+  gfx::Size controls_size(size_);
 
   // The video controls are more than one row so we need to allocate vertical
   // room and hide the overlay play button if there is not enough room.
   if (ShouldShowVideoControls()) {
     // Allocate vertical room for overlay play button if necessary.
     if (overlay_play_button_) {
-      WebSize overlay_play_button_size =
+      gfx::Size overlay_play_button_size =
           overlay_play_button_->GetSizeOrDefault();
-      if (controls_size.height >= overlay_play_button_size.height &&
-          controls_size.width >= kMinWidthForOverlayPlayButton) {
+      if (controls_size.height() >= overlay_play_button_size.height() &&
+          controls_size.width() >= kMinWidthForOverlayPlayButton) {
         overlay_play_button_->SetDoesFit(true);
-        controls_size.height -= overlay_play_button_size.height;
+        controls_size.Enlarge(0, -overlay_play_button_size.height());
       } else {
         overlay_play_button_->SetDoesFit(false);
       }
     }
 
-    controls_size.width -= kVideoButtonPadding;
+    controls_size.Enlarge(-kVideoButtonPadding, 0);
 
     // Allocate vertical room for the column elements.
     for (MediaControlElementBase* element : column_elements) {
-      WebSize element_size = element->GetSizeOrDefault();
-      if (controls_size.height - element_size.height >= 0) {
+      gfx::Size element_size = element->GetSizeOrDefault();
+      if (controls_size.height() - element_size.height() >= 0) {
         element->SetDoesFit(true);
-        controls_size.height -= element_size.height;
+        controls_size.Enlarge(0, -element_size.height());
       } else {
         element->SetDoesFit(false);
       }
@@ -1262,7 +1262,7 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
     play_button_->SetIsWanted(!overlay_play_button_ ||
                               !overlay_play_button_->DoesFit());
   } else {
-    controls_size.width -= kAudioButtonPadding;
+    controls_size.Enlarge(-kAudioButtonPadding, 0);
 
     // Undo any IsWanted/DoesFit changes made in the above block if we're
     // switching to act as audio controls.
@@ -1292,9 +1292,9 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
       continue;
 
     // Get the size of the element and see if we should allocate space to it.
-    WebSize element_size = element->GetSizeOrDefault();
+    gfx::Size element_size = element->GetSizeOrDefault();
     bool does_fit = add_elements && pair.second &&
-                    ((controls_size.width - element_size.width) >= 0);
+                    ((controls_size.width() - element_size.width()) >= 0);
     element->SetDoesFit(does_fit);
 
     if (element == mute_button_.Get())
@@ -1304,7 +1304,7 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
     // we cannot fit this element we should stop allocating space for other
     // elements.
     if (does_fit) {
-      controls_size.width -= element_size.width;
+      controls_size.Enlarge(-element_size.width(), 0);
       last_element = element;
     } else {
       add_elements = false;
@@ -1323,9 +1323,9 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
 
   // If we want to show the overflow button and we do not have any space to show
   // it then we should hide the last shown element.
-  int overflow_icon_width = overflow_menu_->GetSizeOrDefault().width;
+  int overflow_icon_width = overflow_menu_->GetSizeOrDefault().width();
   if (overflow_wanted && last_element &&
-      controls_size.width < overflow_icon_width) {
+      controls_size.width() < overflow_icon_width) {
     last_element->SetDoesFit(false);
     last_element->SetOverflowElementIsWanted(true);
 

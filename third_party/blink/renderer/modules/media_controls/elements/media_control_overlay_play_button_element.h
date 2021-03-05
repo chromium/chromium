@@ -24,7 +24,7 @@ class MODULES_EXPORT MediaControlOverlayPlayButtonElement final
 
   void OnMediaKeyboardEvent(Event* event) { DefaultEventHandler(*event); }
 
-  WebSize GetSizeOrDefault() const final;
+  gfx::Size GetSizeOrDefault() const final;
 
   void SetIsDisplayed(bool);
 
