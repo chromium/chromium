@@ -221,6 +221,10 @@
   "chrome/browser/test_dummy/internal/android/resources/resources.grd": {
     "includes": [1980],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/download_shelf/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [1990],
+  },
   # END chrome/browser section.
 
   # START chrome/ WebUI resources section

@@ -126,6 +126,8 @@
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
+#include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
+#include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/browser/ui/webui/media/media_feeds_ui.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "chrome/browser/ui/webui/memories/memories_ui.h"
@@ -732,6 +734,9 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ::mojom::web_app_internals::WebAppInternalsPageHandler, InternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      download_shelf::mojom::PageHandlerFactory, DownloadShelfUI>(map);
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
