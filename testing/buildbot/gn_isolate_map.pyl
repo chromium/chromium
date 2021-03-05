@@ -1118,15 +1118,15 @@
     "label": "//ash/keyboard/ui:keyboard_unittests",
     "type": "windowed_test_launcher",
   },
-  "lacros_tast_tests_amd64_generic": {
-    "label": "//chromeos/lacros:lacros_tast_tests_amd64_generic",
+  "lacros_smoke_tast_tests_amd64_generic": {
+    "label": "//chromeos/lacros:lacros_smoke_tast_tests_amd64_generic",
     "type": "generated_script",
     "args": [
       "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
-  "lacros_tast_tests_eve": {
-    "label": "//chromeos/lacros:lacros_tast_tests_eve",
+  "lacros_smoke_tast_tests_eve": {
+    "label": "//chromeos/lacros:lacros_smoke_tast_tests_eve",
     "type": "generated_script",
     "args": [
       "--logs-dir=${ISOLATED_OUTDIR}",

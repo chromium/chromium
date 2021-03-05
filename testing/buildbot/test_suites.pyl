@@ -3994,8 +3994,8 @@
       },
     },
 
-    'lacros_tast_tests_amd64_generic': {
-      'lacros_tast_tests_amd64_generic': {
+    'lacros_smoke_tast_tests_amd64_generic': {
+      'lacros_smoke_tast_tests_amd64_generic': {
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
           'dimension_sets': [
@@ -4012,8 +4012,8 @@
       },
     },
 
-    'lacros_tast_tests_eve': {
-      'lacros_tast_tests_eve': {
+    'lacros_smoke_tast_tests_eve': {
+      'lacros_smoke_tast_tests_eve': {
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
           'dimension_sets': [

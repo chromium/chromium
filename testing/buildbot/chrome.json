@@ -6629,8 +6629,8 @@
           "idempotent": false,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "lacros_tast_tests_eve",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_tast_tests_eve/",
+        "test": "lacros_smoke_tast_tests_eve",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_smoke_tast_tests_eve/",
         "trigger_script": {
           "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
         }

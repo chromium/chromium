@@ -283,7 +283,7 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_tast_tests_eve',
+          'gtest_tests': 'lacros_smoke_tast_tests_eve',
           'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
@@ -1649,7 +1649,7 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_tast_tests_amd64_generic',
+          'gtest_tests': 'lacros_smoke_tast_tests_amd64_generic',
         },
         'os_type': 'chromeos'
       },
@@ -2976,7 +2976,7 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_tast_tests_amd64_generic',
+          'gtest_tests': 'lacros_smoke_tast_tests_amd64_generic',
         },
         'os_type': 'chromeos'
       },
@@ -6426,7 +6426,7 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_tast_tests_amd64_generic',
+          'gtest_tests': 'lacros_smoke_tast_tests_amd64_generic',
           'skylab_tests': 'lacros_skylab_x86_64',
         },
         'swarming': {
