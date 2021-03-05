@@ -794,28 +794,28 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   gfx::Rect root_damage_rect = current_frame()->root_damage_rect;
 
   if (render_pass == root_render_pass) {
-    base::CheckedNumeric<int> display_area =
+    base::CheckedNumeric<int64_t> display_area =
         current_frame()->device_viewport_size.GetCheckedArea();
     gfx::Rect frame_buffer_damage =
         output_surface_->GetCurrentFramebufferDamage();
-    base::CheckedNumeric<int> root_damage_area =
+    base::CheckedNumeric<int64_t> root_damage_area =
         root_damage_rect.size().GetCheckedArea();
     if (display_area.IsValid() && root_damage_area.IsValid()) {
-      DCHECK_GT(static_cast<int>(display_area.ValueOrDie()), 0);
+      DCHECK_GT(static_cast<int64_t>(display_area.ValueOrDie()), 0);
       {
-        base::CheckedNumeric<int> frame_buffer_damage_area =
+        base::CheckedNumeric<int64_t> frame_buffer_damage_area =
             frame_buffer_damage.size().GetCheckedArea();
-        int ratio =
-            (frame_buffer_damage_area / display_area).ValueOrDefault(INT_MAX);
+        int64_t percentage = ((frame_buffer_damage_area * 100ll) / display_area)
+                                 .ValueOrDefault(INT_MAX);
         UMA_HISTOGRAM_PERCENTAGE(
             "Compositing.DirectRenderer.PartialSwap.FrameBufferDamage",
-            100ull * ratio);
+            percentage);
       }
       {
-        int ratio = (root_damage_area / display_area).ValueOrDie();
+        int64_t percentage =
+            ((root_damage_area * 100ll) / display_area).ValueOrDie();
         UMA_HISTOGRAM_PERCENTAGE(
-            "Compositing.DirectRenderer.PartialSwap.RootDamage",
-            100ull * ratio);
+            "Compositing.DirectRenderer.PartialSwap.RootDamage", percentage);
       }
 
       root_damage_rect.Union(frame_buffer_damage);
@@ -843,20 +843,20 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
       }
 
       // Total damage after all adjustments.
-      base::CheckedNumeric<int> total_damage_area =
+      base::CheckedNumeric<int64_t> total_damage_area =
           root_damage_rect.size().GetCheckedArea();
       {
-        int ratio = (total_damage_area / display_area).ValueOrDefault(INT_MAX);
+        int64_t percentage = ((total_damage_area * 100ll) / display_area)
+                                 .ValueOrDefault(INT_MAX);
         UMA_HISTOGRAM_PERCENTAGE(
-            "Compositing.DirectRenderer.PartialSwap.TotalDamage",
-            100ull * ratio);
+            "Compositing.DirectRenderer.PartialSwap.TotalDamage", percentage);
       }
       {
-        int ratio = ((total_damage_area - root_damage_area) / display_area)
-                        .ValueOrDefault(INT_MAX);
+        int64_t percentage =
+            (((total_damage_area - root_damage_area) * 100ll) / display_area)
+                .ValueOrDefault(INT_MAX);
         UMA_HISTOGRAM_PERCENTAGE(
-            "Compositing.DirectRenderer.PartialSwap.ExtraDamage",
-            100ull * ratio);
+            "Compositing.DirectRenderer.PartialSwap.ExtraDamage", percentage);
       }
     }
 
