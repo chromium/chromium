@@ -163,7 +163,7 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses the 'sizes' field of an icon, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-a-sizes-member-of-an-image
-  // Returns a vector of WebSize with the successfully parsed sizes, if any.
+  // Returns a vector of gfx::Size with the successfully parsed sizes, if any.
   // An empty vector if the field was not present or empty. "Any" is represented
   // by gfx::Size(0, 0).
   Vector<gfx::Size> ParseIconSizes(const JSONObject* icon);

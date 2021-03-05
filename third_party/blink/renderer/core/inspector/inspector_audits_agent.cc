@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -18,6 +17,8 @@
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "ui/gfx/geometry/size.h"
+
 namespace blink {
 
 using protocol::Maybe;
@@ -38,8 +39,8 @@ bool EncodeAsImage(char* body,
                    const String& encoding,
                    const double quality,
                    Vector<unsigned char>* output) {
-  const WebSize maximum_size = WebSize(kMaximumEncodeImageWidthInPixels,
-                                       kMaximumEncodeImageHeightInPixels);
+  const gfx::Size maximum_size = gfx::Size(kMaximumEncodeImageWidthInPixels,
+                                           kMaximumEncodeImageHeightInPixels);
   SkBitmap bitmap = WebImage::FromData(WebData(body, size), maximum_size);
   if (bitmap.isNull())
     return false;

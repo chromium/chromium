@@ -92,11 +92,11 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
   }
 
   KURL PickRightIcon(HeapVector<Member<ManifestImageResource>> icons,
-                     const WebSize& ideal_display_size) {
+                     const gfx::Size& ideal_display_size) {
     loader_->icons_ = std::move(icons);
 
     return loader_->PickBestIconForDisplay(GetContext(),
-                                           ideal_display_size.height);
+                                           ideal_display_size.height());
   }
 
   void LoadIcon(const KURL& url,
@@ -154,7 +154,7 @@ TEST_F(BackgroundFetchIconLoaderTest, PickIconRelativePath) {
   icons.push_back(
       CreateTestIcon(kBackgroundFetchImageLoaderIcon500x500, "500x500"));
 
-  KURL best_icon = PickRightIcon(std::move(icons), WebSize(500, 500));
+  KURL best_icon = PickRightIcon(std::move(icons), gfx::Size(500, 500));
   ASSERT_TRUE(best_icon.IsValid());
   EXPECT_EQ(best_icon, KURL(kBackgroundFetchImageLoaderIcon500x500FullPath));
 }
@@ -164,7 +164,7 @@ TEST_F(BackgroundFetchIconLoaderTest, PickIconFullPath) {
   icons.push_back(CreateTestIcon(kBackgroundFetchImageLoaderIcon500x500FullPath,
                                  "500x500"));
 
-  KURL best_icon = PickRightIcon(std::move(icons), WebSize(500, 500));
+  KURL best_icon = PickRightIcon(std::move(icons), gfx::Size(500, 500));
   ASSERT_TRUE(best_icon.IsValid());
   EXPECT_EQ(best_icon, KURL(kBackgroundFetchImageLoaderIcon500x500FullPath));
 }
@@ -182,7 +182,7 @@ TEST_F(BackgroundFetchIconLoaderTest, PickRightIcon) {
   icons.push_back(icon1);
   icons.push_back(icon2);
 
-  KURL best_icon = PickRightIcon(std::move(icons), WebSize(42, 42));
+  KURL best_icon = PickRightIcon(std::move(icons), gfx::Size(42, 42));
   ASSERT_TRUE(best_icon.IsValid());
   // We expect the smallest Icon larger than the ideal display size.
   EXPECT_EQ(best_icon, KURL(KURL(kBackgroundFetchImageLoaderBaseUrl),

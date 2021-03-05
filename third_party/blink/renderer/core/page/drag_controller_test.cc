@@ -34,11 +34,11 @@ class DragMockChromeClient : public RenderingTestChromeClient {
                      DragOperationsMask,
                      const SkBitmap& drag_image,
                      const gfx::Point& drag_image_offset) override {
-    last_drag_image_size = WebSize(drag_image.width(), drag_image.height());
+    last_drag_image_size = gfx::Size(drag_image.width(), drag_image.height());
     last_drag_image_offset = drag_image_offset;
   }
 
-  WebSize last_drag_image_size;
+  gfx::Size last_drag_image_size;
   gfx::Point last_drag_image_offset;
 };
 

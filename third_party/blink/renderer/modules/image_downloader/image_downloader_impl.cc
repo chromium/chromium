@@ -30,7 +30,7 @@ namespace {
 
 WTF::Vector<SkBitmap> DecodeImageData(const std::string& data,
                                       const std::string& mime_type,
-                                      const blink::WebSize& preferred_size) {
+                                      const gfx::Size& preferred_size) {
   // Decode the image using Blink's image decoder.
   blink::WebData buffer(data.data(), data.size());
   WTF::Vector<SkBitmap> bitmaps;
@@ -50,7 +50,7 @@ WTF::Vector<SkBitmap> DecodeImageData(const std::string& data,
 
 // Decodes a data: URL into one or more images, or no images in case of failure.
 WTF::Vector<SkBitmap> ImagesFromDataUrl(const blink::KURL& url,
-                                        const blink::WebSize& preferred_size) {
+                                        const gfx::Size& preferred_size) {
   std::string mime_type, data;
   if (!blink::network_utils::IsDataURLMimeTypeSupported(url, &data,
                                                         &mime_type) ||
@@ -179,7 +179,7 @@ void ImageDownloaderImpl::DownloadImage(const KURL& image_url,
       WTF::Bind(&ImageDownloaderImpl::DidDownloadImage, WrapPersistent(this),
                 max_bitmap_size, std::move(callback));
 
-  const WebSize preferred_dimensions(preferred_size, preferred_size);
+  const gfx::Size preferred_dimensions(preferred_size, preferred_size);
   if (!image_url.ProtocolIsData()) {
     FetchImage(image_url, is_favicon, preferred_dimensions, bypass_cache,
                std::move(download_callback));
@@ -212,7 +212,7 @@ void ImageDownloaderImpl::Dispose() {
 
 void ImageDownloaderImpl::FetchImage(const KURL& image_url,
                                      bool is_favicon,
-                                     const WebSize& preferred_size,
+                                     const gfx::Size& preferred_size,
                                      bool bypass_cache,
                                      DownloadCallback callback) {
   // Create an image resource fetcher and assign it with a call back object.
@@ -227,7 +227,7 @@ void ImageDownloaderImpl::FetchImage(const KURL& image_url,
 
 void ImageDownloaderImpl::DidFetchImage(
     DownloadCallback callback,
-    const WebSize& preferred_size,
+    const gfx::Size& preferred_size,
     MultiResolutionImageResourceFetcher* fetcher,
     const std::string& image_data,
     const WebString& mime_type) {
