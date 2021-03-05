@@ -14,7 +14,7 @@ import './search_engine_entry.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchEngine} from './search_engines_browser_proxy.m.js';
+import {SearchEngine} from './search_engines_browser_proxy.js';
 
 Polymer({
   is: 'settings-search-engines-list',

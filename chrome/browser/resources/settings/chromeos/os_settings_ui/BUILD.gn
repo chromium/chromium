@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [ ":os_settings_ui.m" ]
 }

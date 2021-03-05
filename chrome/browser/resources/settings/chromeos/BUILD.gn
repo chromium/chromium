@@ -202,6 +202,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_settings.js",
     "i18n_setup.js",
     "page_visibility.js",
+    "search_engines_page/search_engines_browser_proxy.js",
   ]
 }
 
@@ -480,7 +481,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "privacy_page/privacy_page_browser_proxy.m.js",
     "router.m.js",
     "search_settings.m.js",
-    "search_engines_page/search_engines_browser_proxy.m.js",
     "setting_id_param_util.m.js",
     "settings_page/settings_animated_pages.m.js",
     "settings_page/settings_section.m.js",
@@ -691,7 +691,6 @@ group("polymer3_elements") {
     "../appearance_page:modulize",
     "../prefs:modulize",
     "../prefs:prefs_module",
-    "../search_engines_page:modulize",
     "../settings_page:settings_animated_pages_module",
     "../settings_page:settings_section_module",
     "../settings_page:settings_subpage_module",

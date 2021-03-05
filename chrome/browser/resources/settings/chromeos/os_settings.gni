@@ -240,4 +240,6 @@ os_settings_auto_imports = settings_auto_imports +
                              "third_party/polymer/v1_0/components-chromium/iron-resizable-behavior/iron-resizable-behavior.html|IronResizableBehavior",
                            ]
 
+os_settings_closure_flags = settings_closure_flags
+
 os_settings_migrated_imports = settings_migrated_imports

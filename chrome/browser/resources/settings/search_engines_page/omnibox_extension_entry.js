@@ -19,7 +19,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.m.js';
 
-import {SearchEngine} from './search_engines_browser_proxy.m.js';
+import {SearchEngine} from './search_engines_browser_proxy.js';
 
 Polymer({
   is: 'settings-omnibox-extension-entry',

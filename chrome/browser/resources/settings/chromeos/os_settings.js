@@ -87,8 +87,7 @@ export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '../people_pa
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.m.js';
 export {Route, Router} from '../router.m.js';
-export {SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.m.js';
-export {SearchEngine, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.m.js';
+export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.js';
 export {getSearchManager, SearchRequest, SearchResult, setSearchManagerForTesting} from '../search_settings.m.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '../shared/nearby_contact_manager.m.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '../shared/nearby_share_settings.m.js';

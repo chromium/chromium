@@ -18,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.m.js';
+import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
 Polymer({
   is: 'settings-search-engine-entry',

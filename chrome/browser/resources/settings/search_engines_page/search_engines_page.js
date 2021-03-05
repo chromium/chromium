@@ -25,7 +25,7 @@ import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/po
 import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js';
 import {routes} from '../route.js';
 
-import {SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.m.js';
+import {SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
 Polymer({
   is: 'settings-search-engines-page',

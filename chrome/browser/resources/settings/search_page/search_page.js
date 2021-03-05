@@ -23,7 +23,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {routes} from '../route.js';
 import {Router} from '../router.m.js';
-import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.m.js';
+import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.js';
 
 Polymer({
   is: 'settings-search-page',

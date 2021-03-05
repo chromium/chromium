@@ -129,6 +129,7 @@ preprocess_if_expr("preprocess") {
     "reset_page/reset_browser_proxy.js",
     "route.js",
     "safety_check_page/safety_check_browser_proxy.js",
+    "search_engines_page/search_engines_browser_proxy.js",
     "settings.js",
     "settings_page/main_page_behavior.js",
     "settings_routes.js",
@@ -271,7 +272,6 @@ preprocess_if_expr("preprocess_generated") {
     "safety_check_page/safety_check_passwords_child.js",
     "safety_check_page/safety_check_safe_browsing_child.js",
     "safety_check_page/safety_check_updates_child.js",
-    "search_engines_page/search_engines_browser_proxy.m.js",
     "search_engines_page/omnibox_extension_entry.js",
     "search_engines_page/search_engine_dialog.js",
     "search_engines_page/search_engine_entry_css.js",
@@ -376,7 +376,6 @@ group("closure_compile") {
     "prefs:closure_compile",
     "privacy_page:closure_compile",
     "privacy_sandbox:closure_compile",
-    "search_engines_page:closure_compile",
     "settings_page:closure_compile",
   ]
 
@@ -527,7 +526,7 @@ js_library("settings") {
     "people_page:sync_browser_proxy.m",
     "privacy_page:privacy_page_browser_proxy.m",
     "safety_check_page:safety_check_browser_proxy",
-    "search_engines_page:search_engines_browser_proxy.m",
+    "search_engines_page:search_engines_browser_proxy",
     "settings_ui:settings_ui",
   ]
 }

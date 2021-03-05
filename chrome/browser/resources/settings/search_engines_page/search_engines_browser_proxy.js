@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /**
@@ -31,7 +31,7 @@
  *            urlLocked: boolean}}
  * @see chrome/browser/ui/webui/settings/search_engine_manager_handler.cc
  */
-/* #export */ let SearchEngine;
+export let SearchEngine;
 
 /**
  * @typedef {{
@@ -40,92 +40,83 @@
  *   extensions: !Array<!SearchEngine>
  * }}
  */
-/* #export */ let SearchEnginesInfo;
+export let SearchEnginesInfo;
 
-cr.define('settings', function() {
-  /** @interface */
-  /* #export */ class SearchEnginesBrowserProxy {
-    /** @param {number} modelIndex */
-    setDefaultSearchEngine(modelIndex) {}
+/** @interface */
+export class SearchEnginesBrowserProxy {
+  /** @param {number} modelIndex */
+  setDefaultSearchEngine(modelIndex) {}
 
-    /** @param {number} modelIndex */
-    removeSearchEngine(modelIndex) {}
+  /** @param {number} modelIndex */
+  removeSearchEngine(modelIndex) {}
 
-    /** @param {number} modelIndex */
-    searchEngineEditStarted(modelIndex) {}
+  /** @param {number} modelIndex */
+  searchEngineEditStarted(modelIndex) {}
 
-    searchEngineEditCancelled() {}
-
-    /**
-     * @param {string} searchEngine
-     * @param {string} keyword
-     * @param {string} queryUrl
-     */
-    searchEngineEditCompleted(searchEngine, keyword, queryUrl) {}
-
-    /** @return {!Promise<!SearchEnginesInfo>} */
-    getSearchEnginesList() {}
-
-    /**
-     * @param {string} fieldName
-     * @param {string} fieldValue
-     * @return {!Promise<boolean>}
-     */
-    validateSearchEngineInput(fieldName, fieldValue) {}
-  }
+  searchEngineEditCancelled() {}
 
   /**
-   * @implements {settings.SearchEnginesBrowserProxy}
+   * @param {string} searchEngine
+   * @param {string} keyword
+   * @param {string} queryUrl
    */
-  /* #export */ class SearchEnginesBrowserProxyImpl {
-    /** @override */
-    setDefaultSearchEngine(modelIndex) {
-      chrome.send('setDefaultSearchEngine', [modelIndex]);
-    }
+  searchEngineEditCompleted(searchEngine, keyword, queryUrl) {}
 
-    /** @override */
-    removeSearchEngine(modelIndex) {
-      chrome.send('removeSearchEngine', [modelIndex]);
-    }
+  /** @return {!Promise<!SearchEnginesInfo>} */
+  getSearchEnginesList() {}
 
-    /** @override */
-    searchEngineEditStarted(modelIndex) {
-      chrome.send('searchEngineEditStarted', [modelIndex]);
-    }
+  /**
+   * @param {string} fieldName
+   * @param {string} fieldValue
+   * @return {!Promise<boolean>}
+   */
+  validateSearchEngineInput(fieldName, fieldValue) {}
+}
 
-    /** @override */
-    searchEngineEditCancelled() {
-      chrome.send('searchEngineEditCancelled');
-    }
-
-    /** @override */
-    searchEngineEditCompleted(searchEngine, keyword, queryUrl) {
-      chrome.send('searchEngineEditCompleted', [
-        searchEngine,
-        keyword,
-        queryUrl,
-      ]);
-    }
-
-    /** @override */
-    getSearchEnginesList() {
-      return cr.sendWithPromise('getSearchEnginesList');
-    }
-
-    /** @override */
-    validateSearchEngineInput(fieldName, fieldValue) {
-      return cr.sendWithPromise(
-          'validateSearchEngineInput', fieldName, fieldValue);
-    }
+/**
+ * @implements {SearchEnginesBrowserProxy}
+ */
+export class SearchEnginesBrowserProxyImpl {
+  /** @override */
+  setDefaultSearchEngine(modelIndex) {
+    chrome.send('setDefaultSearchEngine', [modelIndex]);
   }
+
+  /** @override */
+  removeSearchEngine(modelIndex) {
+    chrome.send('removeSearchEngine', [modelIndex]);
+  }
+
+  /** @override */
+  searchEngineEditStarted(modelIndex) {
+    chrome.send('searchEngineEditStarted', [modelIndex]);
+  }
+
+  /** @override */
+  searchEngineEditCancelled() {
+    chrome.send('searchEngineEditCancelled');
+  }
+
+  /** @override */
+  searchEngineEditCompleted(searchEngine, keyword, queryUrl) {
+    chrome.send('searchEngineEditCompleted', [
+      searchEngine,
+      keyword,
+      queryUrl,
+    ]);
+  }
+
+  /** @override */
+  getSearchEnginesList() {
+    return sendWithPromise('getSearchEnginesList');
+  }
+
+  /** @override */
+  validateSearchEngineInput(fieldName, fieldValue) {
+    return sendWithPromise('validateSearchEngineInput', fieldName, fieldValue);
+  }
+}
 
   // The singleton instance_ is replaced with a test version of this wrapper
   // during testing.
-  cr.addSingletonGetter(SearchEnginesBrowserProxyImpl);
-
-  // #cr_define_end
-  return {
-    SearchEnginesBrowserProxy: SearchEnginesBrowserProxy,
-    SearchEnginesBrowserProxyImpl: SearchEnginesBrowserProxyImpl,
-  };
-});
+addSingletonGetter(SearchEnginesBrowserProxyImpl);
