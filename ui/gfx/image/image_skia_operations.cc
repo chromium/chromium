@@ -378,6 +378,8 @@ class ResizeSource : public ImageSkiaSource {
     const SkBitmap resized = skia::ImageOperations::Resize(
         image_rep.GetBitmap(), resize_method_, target_pixel_size.width(),
         target_pixel_size.height());
+    if (resized.colorType() == kUnknown_SkColorType)
+      return ImageSkiaRep();
     return ImageSkiaRep(resized, scale);
   }
 
