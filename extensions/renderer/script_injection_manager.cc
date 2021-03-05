@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
@@ -44,22 +45,21 @@ namespace {
 const int kScriptIdleTimeoutInMs = 200;
 
 // Returns the RunLocation that follows |run_location|.
-UserScript::RunLocation NextRunLocation(UserScript::RunLocation run_location) {
+base::Optional<mojom::RunLocation> NextRunLocation(
+    mojom::RunLocation run_location) {
   switch (run_location) {
-    case UserScript::DOCUMENT_START:
-      return UserScript::DOCUMENT_END;
-    case UserScript::DOCUMENT_END:
-      return UserScript::DOCUMENT_IDLE;
-    case UserScript::DOCUMENT_IDLE:
-      return UserScript::RUN_LOCATION_LAST;
-    case UserScript::UNDEFINED:
-    case UserScript::RUN_DEFERRED:
-    case UserScript::BROWSER_DRIVEN:
-    case UserScript::RUN_LOCATION_LAST:
-      break;
+    case mojom::RunLocation::kDocumentStart:
+      return mojom::RunLocation::kDocumentEnd;
+    case mojom::RunLocation::kDocumentEnd:
+      return mojom::RunLocation::kDocumentIdle;
+    case mojom::RunLocation::kDocumentIdle:
+      return base::nullopt;
+    case mojom::RunLocation::kUndefined:
+    case mojom::RunLocation::kRunDeferred:
+    case mojom::RunLocation::kBrowserDriven:
+      return base::nullopt;
   }
   NOTREACHED();
-  return UserScript::RUN_LOCATION_LAST;
 }
 
 }  // namespace
@@ -94,7 +94,7 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   // document_idle.
   void RunIdle();
 
-  void StartInjectScripts(UserScript::RunLocation run_location);
+  void StartInjectScripts(mojom::RunLocation run_location);
 
   // Indicate that the frame is no longer valid because it is starting
   // a new load or closing.
@@ -128,7 +128,7 @@ void ScriptInjectionManager::RFOHelper::Initialize() {
   // example the ExecuteScriptApiTest.FrameWithHttp204 test creates a child
   // frame at about:blank and expects to run injected scripts inside it.
   // This is all quite inconsistent however tests both depend on us queuing and
-  // not queueing the DOCUMENT_START events in the initial empty document.
+  // not queueing the kDocumentStart events in the initial empty document.
   if (!render_frame()->IsMainFrame()) {
     DidCreateDocumentElement();
   }
@@ -161,19 +161,19 @@ void ScriptInjectionManager::RFOHelper::DidCreateDocumentElement() {
   ExtensionFrameHelper::Get(render_frame())
       ->ScheduleAtDocumentStart(base::BindOnce(
           &ScriptInjectionManager::RFOHelper::StartInjectScripts,
-          weak_factory_.GetWeakPtr(), UserScript::DOCUMENT_START));
+          weak_factory_.GetWeakPtr(), mojom::RunLocation::kDocumentStart));
 }
 
 void ScriptInjectionManager::RFOHelper::DidFailProvisionalLoad() {
   auto it = manager_->frame_statuses_.find(render_frame());
   if (it != manager_->frame_statuses_.end() &&
-      it->second == UserScript::DOCUMENT_START) {
+      it->second == mojom::RunLocation::kDocumentStart) {
     // Since the provisional load failed, the frame stays at its previous loaded
     // state and origin (or the parent's origin for new/about:blank frames).
-    // Reset the frame to DOCUMENT_IDLE in order to reflect that the frame is
+    // Reset the frame to kDocumentIdle in order to reflect that the frame is
     // done loading, and avoid any deadlock in the system.
     //
-    // We skip injection of DOCUMENT_END and DOCUMENT_IDLE scripts, because the
+    // We skip injection of kDocumentEnd and kDocumentIdle scripts, because the
     // injections closely follow the DOMContentLoaded (and onload) events, which
     // are not triggered after a failed provisional load.
     // This assumption is verified in the checkDOMContentLoadedEvent subtest of
@@ -181,16 +181,17 @@ void ScriptInjectionManager::RFOHelper::DidFailProvisionalLoad() {
     constexpr bool kForceReset = true;
     InvalidateAndResetFrame(kForceReset);
     should_run_idle_ = false;
-    manager_->frame_statuses_[render_frame()] = UserScript::DOCUMENT_IDLE;
+    manager_->frame_statuses_[render_frame()] =
+        mojom::RunLocation::kDocumentIdle;
   }
 }
 
 void ScriptInjectionManager::RFOHelper::DidFinishDocumentLoad() {
   DCHECK(content::RenderThread::Get());
   ExtensionFrameHelper::Get(render_frame())
-      ->ScheduleAtDocumentEnd(
-          base::BindOnce(&ScriptInjectionManager::RFOHelper::StartInjectScripts,
-                         weak_factory_.GetWeakPtr(), UserScript::DOCUMENT_END));
+      ->ScheduleAtDocumentEnd(base::BindOnce(
+          &ScriptInjectionManager::RFOHelper::StartInjectScripts,
+          weak_factory_.GetWeakPtr(), mojom::RunLocation::kDocumentEnd));
 
   // We try to run idle in two places: a delayed task here and in response to
   // ContentRendererClient::RunScriptsAtDocumentIdle(). DidFinishDocumentLoad()
@@ -264,12 +265,13 @@ void ScriptInjectionManager::RFOHelper::RunIdle() {
   // task to RunIdle() was posted.
   if (should_run_idle_) {
     should_run_idle_ = false;
-    manager_->StartInjectScripts(render_frame(), UserScript::DOCUMENT_IDLE);
+    manager_->StartInjectScripts(render_frame(),
+                                 mojom::RunLocation::kDocumentIdle);
   }
 }
 
 void ScriptInjectionManager::RFOHelper::StartInjectScripts(
-    UserScript::RunLocation run_location) {
+    mojom::RunLocation run_location) {
   manager_->StartInjectScripts(render_frame(), run_location);
 }
 
@@ -370,11 +372,11 @@ void ScriptInjectionManager::InvalidateForFrame(content::RenderFrame* frame) {
 
 void ScriptInjectionManager::StartInjectScripts(
     content::RenderFrame* frame,
-    UserScript::RunLocation run_location) {
+    mojom::RunLocation run_location) {
   auto iter = frame_statuses_.find(frame);
   // We also don't execute if we detect that the run location is somehow out of
   // order. This can happen if:
-  // - The first run location reported for the frame isn't DOCUMENT_START, or
+  // - The first run location reported for the frame isn't kDocumentStart, or
   // - The run location reported doesn't immediately follow the previous
   //   reported run location.
   // We don't want to run because extensions may have requirements that scripts
@@ -383,10 +385,15 @@ void ScriptInjectionManager::StartInjectScripts(
   // Note that we check run_location > NextRunLocation() in the second clause
   // (as opposed to !=) because earlier signals (like DidCreateDocumentElement)
   // can happen multiple times, so we can receive earlier/equal run locations.
-  if ((iter == frame_statuses_.end() &&
-           run_location != UserScript::DOCUMENT_START) ||
-      (iter != frame_statuses_.end() &&
-           run_location > NextRunLocation(iter->second))) {
+  bool invalid_run_order = false;
+  if (iter == frame_statuses_.end()) {
+    invalid_run_order = (run_location != mojom::RunLocation::kDocumentStart);
+  } else {
+    base::Optional<mojom::RunLocation> next = NextRunLocation(iter->second);
+    if (next)
+      invalid_run_order = run_location > next.value();
+  }
+  if (invalid_run_order) {
     // We also invalidate the frame, because the run order of pending injections
     // may also be bad.
     InvalidateForFrame(frame);
@@ -403,9 +410,8 @@ void ScriptInjectionManager::StartInjectScripts(
   InjectScripts(frame, run_location);
 }
 
-void ScriptInjectionManager::InjectScripts(
-    content::RenderFrame* frame,
-    UserScript::RunLocation run_location) {
+void ScriptInjectionManager::InjectScripts(content::RenderFrame* frame,
+                                           mojom::RunLocation run_location) {
   // Find any injections that want to run on the given frame.
   ScriptInjectionVector frame_injections;
   for (auto iter = pending_injections_.begin();
@@ -446,7 +452,7 @@ void ScriptInjectionManager::InjectScripts(
 
 void ScriptInjectionManager::TryToInject(
     std::unique_ptr<ScriptInjection> injection,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     ScriptsRunInfo* scripts_run_info) {
   // Try to inject the script. If the injection is waiting (i.e., for
   // permission), add it to the list of pending injections. If the injection
@@ -487,8 +493,9 @@ void ScriptInjectionManager::HandleExecuteCode(
       activity_logging_enabled_));
 
   FrameStatusMap::const_iterator iter = frame_statuses_.find(render_frame);
-  UserScript::RunLocation run_location =
-      iter == frame_statuses_.end() ? UserScript::UNDEFINED : iter->second;
+  mojom::RunLocation run_location = iter == frame_statuses_.end()
+                                        ? mojom::RunLocation::kUndefined
+                                        : iter->second;
 
   ScriptsRunInfo scripts_run_info(render_frame, run_location);
   TryToInject(std::move(injection), run_location, &scripts_run_info);
@@ -504,9 +511,10 @@ void ScriptInjectionManager::HandleExecuteDeclarativeScript(
       user_script_set_manager_->GetInjectionForDeclarativeScript(
           script_id, render_frame, tab_id, url, extension_id);
   if (injection.get()) {
-    ScriptsRunInfo scripts_run_info(render_frame, UserScript::BROWSER_DRIVEN);
+    ScriptsRunInfo scripts_run_info(render_frame,
+                                    mojom::RunLocation::kBrowserDriven);
     // TODO(markdittmer): Use return value of TryToInject for error handling.
-    TryToInject(std::move(injection), UserScript::BROWSER_DRIVEN,
+    TryToInject(std::move(injection), mojom::RunLocation::kBrowserDriven,
                 &scripts_run_info);
 
     scripts_run_info.LogRun(activity_logging_enabled_);
@@ -532,7 +540,7 @@ void ScriptInjectionManager::HandlePermitScriptInjection(int64_t request_id) {
   pending_injections_.erase(iter);
 
   ScriptsRunInfo scripts_run_info(injection->render_frame(),
-                                  UserScript::RUN_DEFERRED);
+                                  mojom::RunLocation::kRunDeferred);
   ScriptInjection::InjectionResult res = injection->OnPermissionGranted(
       &scripts_run_info);
   if (res == ScriptInjection::INJECTION_BLOCKED)

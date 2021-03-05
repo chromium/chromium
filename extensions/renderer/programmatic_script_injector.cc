@@ -67,14 +67,14 @@ bool ProgrammaticScriptInjector::ExpectsResults() const {
 }
 
 bool ProgrammaticScriptInjector::ShouldInjectJs(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     const std::set<std::string>& executing_scripts) const {
   return params_->run_at == run_location &&
          params_->action_type == mojom::ActionType::kAddJavascript;
 }
 
 bool ProgrammaticScriptInjector::ShouldInjectOrRemoveCss(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     const std::set<std::string>& injected_stylesheets) const {
   return params_->run_at == run_location &&
          (params_->action_type == mojom::ActionType::kAddCss ||
@@ -119,7 +119,7 @@ PermissionsData::PageAccess ProgrammaticScriptInjector::CanExecuteOnFrame(
 }
 
 std::vector<blink::WebScriptSource> ProgrammaticScriptInjector::GetJsSources(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     std::set<std::string>* executing_scripts,
     size_t* num_injected_js_scripts) const {
   DCHECK_EQ(params_->run_at, run_location);
@@ -131,7 +131,7 @@ std::vector<blink::WebScriptSource> ProgrammaticScriptInjector::GetJsSources(
 }
 
 std::vector<blink::WebString> ProgrammaticScriptInjector::GetCssSources(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     std::set<std::string>* injected_stylesheets,
     size_t* num_injected_stylesheets) const {
   DCHECK_EQ(params_->run_at, run_location);
@@ -144,7 +144,7 @@ std::vector<blink::WebString> ProgrammaticScriptInjector::GetCssSources(
 
 void ProgrammaticScriptInjector::OnInjectionComplete(
     std::unique_ptr<base::Value> execution_result,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     content::RenderFrame* render_frame) {
   DCHECK(!result_.has_value());
   if (execution_result) {

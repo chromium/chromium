@@ -10,6 +10,7 @@
 
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -63,13 +64,13 @@ class ScriptInjector {
   // Returns true if the script should inject JS source at the given
   // |run_location|.
   virtual bool ShouldInjectJs(
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       const std::set<std::string>& executing_scripts) const = 0;
 
   // Returns true if the script should inject or remove CSS at the given
   // |run_location|.
   virtual bool ShouldInjectOrRemoveCss(
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       const std::set<std::string>& injected_stylesheets) const = 0;
 
   // Returns true if the script should execute on the given |frame|.
@@ -81,14 +82,14 @@ class ScriptInjector {
   // Returns the javascript sources to inject at the given |run_location|.
   // Only called if ShouldInjectJs() is true.
   virtual std::vector<blink::WebScriptSource> GetJsSources(
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       std::set<std::string>* executing_scripts,
       size_t* num_injected_js_scripts) const = 0;
 
   // Returns the css to inject at the given |run_location|.
   // Only called if ShouldInjectOrRemoveCss() is true.
   virtual std::vector<blink::WebString> GetCssSources(
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       std::set<std::string>* injected_stylesheets,
       size_t* num_injected_stylesheets) const = 0;
 
@@ -98,7 +99,7 @@ class ScriptInjector {
   // invalidated.
   virtual void OnInjectionComplete(
       std::unique_ptr<base::Value> execution_result,
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       content::RenderFrame* render_frame) = 0;
 
   // Notifies the script that injection will never occur.

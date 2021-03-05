@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/user_script_set.h"
 
@@ -71,7 +72,7 @@ class UserScriptSetManager : public content::RenderThreadObserver {
       std::vector<std::unique_ptr<ScriptInjection>>* injections,
       content::RenderFrame* render_frame,
       int tab_id,
-      UserScript::RunLocation run_location);
+      mojom::RunLocation run_location);
 
   // Get active extension IDs from |static_scripts| and each of
   // |programmatic_scripts_|.

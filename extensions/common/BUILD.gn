@@ -48,6 +48,7 @@ if (enable_extensions) {
       "mojom/guest_view.mojom",
       "mojom/keep_alive.mojom",
       "mojom/renderer.mojom",
+      "mojom/run_location.mojom",
       "mojom/url_pattern_set.mojom",
       "mojom/view_type.mojom",
     ]

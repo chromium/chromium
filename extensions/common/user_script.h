@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "extensions/common/host_id.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
@@ -53,27 +54,6 @@ class UserScript {
   // The last type of injected script; used for enum verification in IPC.
   // Update this if you add more injected script types!
   static const InjectionType INJECTION_TYPE_LAST = PROGRAMMATIC_SCRIPT;
-
-  // Locations that user scripts can be run inside the document.
-  // The three run locations must strictly follow each other in both load order
-  // (i.e., start *always* comes before end) and numerically, as we use
-  // arithmetic checking (e.g., curr == last + 1). So, no bitmasks here!!
-  enum RunLocation {
-    UNDEFINED,
-    DOCUMENT_START,  // After the documentElement is created, but before
-                     // anything else happens.
-    DOCUMENT_END,  // After the entire document is parsed. Same as
-                   // DOMContentLoaded.
-    DOCUMENT_IDLE,  // Sometime after DOMContentLoaded, as soon as the document
-                    // is "idle". Currently this uses the simple heuristic of:
-                    // min(DOM_CONTENT_LOADED + TIMEOUT, ONLOAD), but no
-                    // particular injection point is guaranteed.
-    RUN_DEFERRED,  // The user script's injection was deferred for permissions
-                   // reasons, and was executed at a later time.
-    BROWSER_DRIVEN,  // The user script will be injected when triggered by an
-                     // IPC in the browser process.
-    RUN_LOCATION_LAST  // Leave this as the last item.
-  };
 
   // Holds script file info.
   class File {
@@ -160,8 +140,10 @@ class UserScript {
   }
 
   // The place in the document to run the script.
-  RunLocation run_location() const { return run_location_; }
-  void set_run_location(RunLocation location) { run_location_ = location; }
+  mojom::RunLocation run_location() const { return run_location_; }
+  void set_run_location(mojom::RunLocation location) {
+    run_location_ = location;
+  }
 
   // Whether to emulate greasemonkey when running this script.
   bool emulate_greasemonkey() const { return emulate_greasemonkey_; }
@@ -276,7 +258,7 @@ class UserScript {
                        FileList* scripts);
 
   // The location to run the script inside the document.
-  RunLocation run_location_ = DOCUMENT_IDLE;
+  mojom::RunLocation run_location_ = mojom::RunLocation::kDocumentIdle;
 
   // The namespace of the script. This is used by Greasemonkey in the same way
   // as XML namespaces. Only used when parsing Greasemonkey-style scripts.

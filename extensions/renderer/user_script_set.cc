@@ -82,7 +82,7 @@ void UserScriptSet::GetInjections(
     std::vector<std::unique_ptr<ScriptInjection>>* injections,
     content::RenderFrame* render_frame,
     int tab_id,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     bool log_activity) {
   GURL document_url = GetDocumentUrlForFrame(render_frame->GetWebFrame());
   for (const std::unique_ptr<UserScript>& script : scripts_) {
@@ -180,7 +180,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetDeclarativeScriptInjection(
     const std::string& script_id,
     content::RenderFrame* render_frame,
     int tab_id,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     const GURL& document_url,
     bool log_activity) {
   for (const std::unique_ptr<UserScript>& script : scripts_) {
@@ -197,7 +197,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
     const UserScript* script,
     content::RenderFrame* render_frame,
     int tab_id,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     const GURL& document_url,
     bool is_declarative,
     bool log_activity) {
@@ -232,7 +232,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   }
 
   bool inject_css = !script->css_scripts().empty() &&
-                    run_location == UserScript::DOCUMENT_START;
+                    run_location == mojom::RunLocation::kDocumentStart;
   bool inject_js =
       !script->js_scripts().empty() && script->run_location() == run_location;
   if (inject_css || inject_js) {

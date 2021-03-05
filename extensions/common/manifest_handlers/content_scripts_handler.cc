@@ -24,6 +24,7 @@
 #include "extensions/common/host_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
@@ -40,17 +41,17 @@ using ContentScriptsKeys = content_scripts_api::ManifestKeys;
 
 namespace {
 
-UserScript::RunLocation ConvertRunLocation(content_scripts_api::RunAt run_at) {
+mojom::RunLocation ConvertRunLocation(content_scripts_api::RunAt run_at) {
   switch (run_at) {
     case content_scripts_api::RUN_AT_DOCUMENT_END:
-      return UserScript::DOCUMENT_END;
+      return mojom::RunLocation::kDocumentEnd;
     case content_scripts_api::RUN_AT_DOCUMENT_IDLE:
-      return UserScript::DOCUMENT_IDLE;
+      return mojom::RunLocation::kDocumentIdle;
     case content_scripts_api::RUN_AT_DOCUMENT_START:
-      return UserScript::DOCUMENT_START;
+      return mojom::RunLocation::kDocumentStart;
     case content_scripts_api::RUN_AT_NONE:
       NOTREACHED();
-      return UserScript::DOCUMENT_IDLE;
+      return mojom::RunLocation::kDocumentIdle;
   }
 }
 

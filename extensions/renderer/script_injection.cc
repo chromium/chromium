@@ -159,7 +159,7 @@ ScriptInjection::ScriptInjection(
     std::unique_ptr<ScriptInjector> injector,
     content::RenderFrame* render_frame,
     std::unique_ptr<const InjectionHost> injection_host,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     bool log_activity)
     : injector_(std::move(injector)),
       render_frame_(render_frame),
@@ -181,7 +181,7 @@ ScriptInjection::~ScriptInjection() {
 }
 
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(
-    UserScript::RunLocation current_location,
+    mojom::RunLocation current_location,
     ScriptsRunInfo* scripts_run_info,
     CompletionCallback async_completion_callback) {
   if (current_location < run_location_)
@@ -305,15 +305,15 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
 
   // For content scripts executing during page load, we run them asynchronously
   // in order to reduce UI jank experienced by the user. (We don't do this for
-  // DOCUMENT_START scripts, because there's no UI to jank until after those
+  // kDocumentStart scripts, because there's no UI to jank until after those
   // run, so we run them as soon as we can.)
   // Note: We could potentially also run deferred and browser-driven scripts
   // asynchronously; however, these are rare enough that there probably isn't
   // UI jank. If this changes, we can update this.
   bool should_execute_asynchronously =
       injector_->script_type() == UserScript::CONTENT_SCRIPT &&
-      (run_location_ == UserScript::DOCUMENT_END ||
-       run_location_ == UserScript::DOCUMENT_IDLE);
+      (run_location_ == mojom::RunLocation::kDocumentEnd ||
+       run_location_ == mojom::RunLocation::kDocumentIdle);
   blink::WebLocalFrame::ScriptExecutionType execution_option =
       should_execute_asynchronously
           ? blink::WebLocalFrame::kAsynchronousBlockingOnload
@@ -332,15 +332,15 @@ void ScriptInjection::OnJsInjectionCompleted(
   if (injection_host_->id().type() == HostID::EXTENSIONS && elapsed) {
     UMA_HISTOGRAM_TIMES("Extensions.InjectedScriptExecutionTime", *elapsed);
     switch (run_location_) {
-      case UserScript::DOCUMENT_START:
+      case mojom::RunLocation::kDocumentStart:
         UMA_HISTOGRAM_TIMES(
             "Extensions.InjectedScriptExecutionTime.DocumentStart", *elapsed);
         break;
-      case UserScript::DOCUMENT_END:
+      case mojom::RunLocation::kDocumentEnd:
         UMA_HISTOGRAM_TIMES(
             "Extensions.InjectedScriptExecutionTime.DocumentEnd", *elapsed);
         break;
-      case UserScript::DOCUMENT_IDLE:
+      case mojom::RunLocation::kDocumentIdle:
         UMA_HISTOGRAM_TIMES(
             "Extensions.InjectedScriptExecutionTime.DocumentIdle", *elapsed);
         break;

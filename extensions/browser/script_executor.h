@@ -15,6 +15,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 
 class GURL;
@@ -113,7 +114,7 @@ class ScriptExecutor {
                      FrameScope frame_scope,
                      const std::vector<int>& frame_ids,
                      MatchAboutBlank match_about_blank,
-                     UserScript::RunLocation run_at,
+                     mojom::RunLocation run_at,
                      ProcessType process_type,
                      const GURL& webview_src,
                      const GURL& script_url,

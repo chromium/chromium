@@ -27,6 +27,7 @@
 #include "extensions/common/api/web_view_internal.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/common/user_script.h"
@@ -176,17 +177,18 @@ std::unique_ptr<extensions::UserScript> ParseContentScript(
   }
   // run_at:
   if (script_value.run_at) {
-    UserScript::RunLocation run_at = UserScript::UNDEFINED;
+    extensions::mojom::RunLocation run_at =
+        extensions::mojom::RunLocation::kUndefined;
     switch (script_value.run_at) {
       case extensions::api::extension_types::RUN_AT_NONE:
       case extensions::api::extension_types::RUN_AT_DOCUMENT_IDLE:
-        run_at = UserScript::DOCUMENT_IDLE;
+        run_at = extensions::mojom::RunLocation::kDocumentIdle;
         break;
       case extensions::api::extension_types::RUN_AT_DOCUMENT_START:
-        run_at = UserScript::DOCUMENT_START;
+        run_at = extensions::mojom::RunLocation::kDocumentStart;
         break;
       case extensions::api::extension_types::RUN_AT_DOCUMENT_END:
-        run_at = UserScript::DOCUMENT_END;
+        run_at = extensions::mojom::RunLocation::kDocumentEnd;
         break;
     }
     // The default for run_at is RUN_AT_DOCUMENT_IDLE.

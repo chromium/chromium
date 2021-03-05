@@ -29,6 +29,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/image_util.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/script_constants.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -311,7 +312,7 @@ void RequestContentScript::InitScript(const HostID& host_id,
                                       const ScriptData& script_data) {
   script_.set_id(UserScript::GenerateUserScriptID());
   script_.set_host_id(host_id);
-  script_.set_run_location(UserScript::BROWSER_DRIVEN);
+  script_.set_run_location(mojom::RunLocation::kBrowserDriven);
   script_.set_match_all_frames(script_data.all_frames);
   script_.set_match_origin_as_fallback(
       script_data.match_about_blank

@@ -37,6 +37,7 @@
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
@@ -61,8 +62,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(content::SocketPermissionRequest::OperationType,
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::UserScript::InjectionType,
                           extensions::UserScript::INJECTION_TYPE_LAST)
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::UserScript::RunLocation,
-                          extensions::UserScript::RUN_LOCATION_LAST - 1)
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::RunLocation,
+                          extensions::mojom::RunLocation::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::ActionType,
                           extensions::mojom::ActionType::kMaxValue)
@@ -183,7 +184,7 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ExecuteCode_Params)
   IPC_STRUCT_MEMBER(bool, match_about_blank)
 
   // When to inject the code.
-  IPC_STRUCT_MEMBER(extensions::UserScript::RunLocation, run_at)
+  IPC_STRUCT_MEMBER(extensions::mojom::RunLocation, run_at)
 
   // Whether the request is coming from a <webview>.
   IPC_STRUCT_MEMBER(bool, is_web_view)
@@ -788,7 +789,7 @@ IPC_MESSAGE_ROUTED2(ExtensionHostMsg_ContentScriptsExecuting,
 IPC_MESSAGE_ROUTED4(ExtensionHostMsg_RequestScriptInjectionPermission,
                     std::string /* extension id */,
                     extensions::UserScript::InjectionType /* script type */,
-                    extensions::UserScript::RunLocation /* run location */,
+                    extensions::mojom::RunLocation /* run location */,
                     int64_t /* request id */)
 
 // Sent from the browser to the renderer in reply to a

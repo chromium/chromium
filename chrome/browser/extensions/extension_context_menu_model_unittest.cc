@@ -52,6 +52,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -730,7 +731,7 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
   base::RepeatingClosure increment_run_count(
       base::BindRepeating(&Increment, &run_count));
   action_runner->RequestScriptInjectionForTesting(
-      extension, UserScript::DOCUMENT_IDLE, increment_run_count);
+      extension, mojom::RunLocation::kDocumentIdle, increment_run_count);
 
   ExtensionContextMenuModel menu(extension, GetBrowser(),
                                  ExtensionContextMenuModel::PINNED, nullptr,
@@ -800,7 +801,7 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
 
   // Request another run.
   action_runner->RequestScriptInjectionForTesting(
-      extension, UserScript::DOCUMENT_IDLE, increment_run_count);
+      extension, mojom::RunLocation::kDocumentIdle, increment_run_count);
 
   // Change the mode to be "Run on all sites".
   menu.ExecuteCommand(kRunOnAllSites, 0);
@@ -833,7 +834,7 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
   EXPECT_TRUE(menu.IsCommandIdChecked(kRunOnAllSites));
 
   action_runner->RequestScriptInjectionForTesting(
-      extension, UserScript::DOCUMENT_IDLE, increment_run_count);
+      extension, mojom::RunLocation::kDocumentIdle, increment_run_count);
 
   // Return the mode to "Run on click".
   menu.ExecuteCommand(kRunOnClick, 0);

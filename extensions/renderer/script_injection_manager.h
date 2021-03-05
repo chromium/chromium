@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/user_script_set_manager.h"
@@ -53,8 +54,7 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   // document load states and IPCs.
   class RFOHelper;
 
-  using FrameStatusMap =
-      std::map<content::RenderFrame*, UserScript::RunLocation>;
+  using FrameStatusMap = std::map<content::RenderFrame*, mojom::RunLocation>;
 
   using ScriptInjectionVector = std::vector<std::unique_ptr<ScriptInjection>>;
 
@@ -72,15 +72,15 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
 
   // Starts the process to inject appropriate scripts into |frame|.
   void StartInjectScripts(content::RenderFrame* frame,
-                          UserScript::RunLocation run_location);
+                          mojom::RunLocation run_location);
 
   // Actually injects the scripts into |frame|.
   void InjectScripts(content::RenderFrame* frame,
-                     UserScript::RunLocation run_location);
+                     mojom::RunLocation run_location);
 
   // Try to inject and store injection if it has not finished.
   void TryToInject(std::unique_ptr<ScriptInjection> injection,
-                   UserScript::RunLocation run_location,
+                   mojom::RunLocation run_location,
                    ScriptsRunInfo* scripts_run_info);
 
   // Handle the ExecuteCode extension message.

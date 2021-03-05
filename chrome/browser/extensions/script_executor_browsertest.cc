@@ -22,6 +22,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -129,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
       HostID(HostID::EXTENSIONS, extension->id()),
       mojom::ActionType::kAddJavascript, kCode,
       ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
-      ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
+      ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
       ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
       GURL() /* script_url */, false /* user_gesture */,
       mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
@@ -211,11 +212,11 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         HostID(HostID::EXTENSIONS, extension->id()),
         mojom::ActionType::kAddJavascript, kCode,
         ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */, GURL() /* script_url */,
+        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),
@@ -232,11 +233,11 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         HostID(HostID::EXTENSIONS, extension->id()),
         mojom::ActionType::kAddJavascript, kCode,
         ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */, GURL() /* script_url */,
+        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),
@@ -263,11 +264,11 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         mojom::ActionType::kAddJavascript, kCode,
         ScriptExecutor::SPECIFIED_FRAMES,
         {frame1_id, frame2_id, kNonExistentFrameId},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */, GURL() /* script_url */,
+        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
     base::Value frame1_result("Frame 1");
@@ -287,11 +288,11 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         HostID(HostID::EXTENSIONS, extension->id()),
         mojom::ActionType::kAddJavascript, kCode,
         ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */, GURL() /* script_url */,
+        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),

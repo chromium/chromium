@@ -20,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 
 using content::BrowserThread;
 using content::BrowserContext;
@@ -138,11 +139,11 @@ bool UserScriptLoader::ParseMetadataHeader(const base::StringPiece& script_text,
         script->add_exclude_url_pattern(exclude);
       } else if (GetDeclarationValue(line, kRunAtDeclaration, &value)) {
         if (value == kRunAtDocumentStartValue)
-          script->set_run_location(UserScript::DOCUMENT_START);
+          script->set_run_location(mojom::RunLocation::kDocumentStart);
         else if (value == kRunAtDocumentEndValue)
-          script->set_run_location(UserScript::DOCUMENT_END);
+          script->set_run_location(mojom::RunLocation::kDocumentEnd);
         else if (value == kRunAtDocumentIdleValue)
-          script->set_run_location(UserScript::DOCUMENT_IDLE);
+          script->set_run_location(mojom::RunLocation::kDocumentIdle);
         else
           return false;
       }

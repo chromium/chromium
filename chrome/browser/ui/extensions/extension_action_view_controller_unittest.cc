@@ -35,6 +35,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -195,7 +196,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(action_runner);
   action_runner->RequestScriptInjectionForTesting(
-      extension.get(), extensions::UserScript::DOCUMENT_IDLE,
+      extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
       base::DoNothing());
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
@@ -243,7 +244,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   action_runner->RequestScriptInjectionForTesting(
-      extension.get(), extensions::UserScript::DOCUMENT_IDLE,
+      extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
       base::DoNothing());
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
@@ -496,7 +497,7 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
         // to inject a script.
         NavigateAndCommitActiveTab(kHasPermissionUrl);
         action_runner->RequestScriptInjectionForTesting(
-            extension.get(), extensions::UserScript::DOCUMENT_IDLE,
+            extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
             base::DoNothing());
         break;
       case PageAccessStatus::kGranted:
@@ -606,7 +607,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   action_runner->RequestScriptInjectionForTesting(
-      extension.get(), extensions::UserScript::DOCUMENT_IDLE,
+      extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
       base::DoNothing());
   EXPECT_EQ("extension name\nWants access to this site",
             base::UTF16ToUTF8(controller->GetTooltip(web_contents)));

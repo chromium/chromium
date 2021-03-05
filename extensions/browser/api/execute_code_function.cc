@@ -18,6 +18,7 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 
 namespace {
 
@@ -100,20 +101,20 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
           ? ScriptExecutor::MATCH_ABOUT_BLANK
           : ScriptExecutor::DONT_MATCH_ABOUT_BLANK;
 
-  UserScript::RunLocation run_at = UserScript::UNDEFINED;
+  mojom::RunLocation run_at = mojom::RunLocation::kUndefined;
   switch (details_->run_at) {
     case api::extension_types::RUN_AT_NONE:
     case api::extension_types::RUN_AT_DOCUMENT_IDLE:
-      run_at = UserScript::DOCUMENT_IDLE;
+      run_at = mojom::RunLocation::kDocumentIdle;
       break;
     case api::extension_types::RUN_AT_DOCUMENT_START:
-      run_at = UserScript::DOCUMENT_START;
+      run_at = mojom::RunLocation::kDocumentStart;
       break;
     case api::extension_types::RUN_AT_DOCUMENT_END:
-      run_at = UserScript::DOCUMENT_END;
+      run_at = mojom::RunLocation::kDocumentEnd;
       break;
   }
-  CHECK_NE(UserScript::UNDEFINED, run_at);
+  CHECK_NE(mojom::RunLocation::kUndefined, run_at);
 
   mojom::CSSOrigin css_origin = mojom::CSSOrigin::kAuthor;
   switch (details_->css_origin) {

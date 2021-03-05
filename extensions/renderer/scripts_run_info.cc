@@ -14,7 +14,7 @@
 namespace extensions {
 
 ScriptsRunInfo::ScriptsRunInfo(content::RenderFrame* render_frame,
-                               UserScript::RunLocation location)
+                               mojom::RunLocation location)
     : num_css(0u),
       num_js(0u),
       num_blocking_js(0u),
@@ -37,7 +37,7 @@ void ScriptsRunInfo::LogRun(bool send_script_activity) {
   base::TimeDelta elapsed = timer.Elapsed();
 
   switch (run_location_) {
-    case UserScript::DOCUMENT_START:
+    case mojom::RunLocation::kDocumentStart:
       UMA_HISTOGRAM_COUNTS_100("Extensions.InjectStart_CssCount", num_css);
       UMA_HISTOGRAM_COUNTS_100("Extensions.InjectStart_ScriptCount", num_js);
       if (num_blocking_js) {
@@ -47,7 +47,7 @@ void ScriptsRunInfo::LogRun(bool send_script_activity) {
         UMA_HISTOGRAM_TIMES("Extensions.InjectStart_Time", elapsed);
       }
       break;
-    case UserScript::DOCUMENT_END:
+    case mojom::RunLocation::kDocumentEnd:
       UMA_HISTOGRAM_COUNTS_100("Extensions.InjectEnd_ScriptCount", num_js);
       if (num_blocking_js) {
         UMA_HISTOGRAM_COUNTS_100("Extensions.InjectEnd_BlockingScriptCount",
@@ -56,7 +56,7 @@ void ScriptsRunInfo::LogRun(bool send_script_activity) {
         UMA_HISTOGRAM_TIMES("Extensions.InjectEnd_Time", elapsed);
       }
       break;
-    case UserScript::DOCUMENT_IDLE:
+    case mojom::RunLocation::kDocumentIdle:
       UMA_HISTOGRAM_COUNTS_100("Extensions.InjectIdle_ScriptCount", num_js);
       if (num_blocking_js) {
         UMA_HISTOGRAM_COUNTS_100("Extensions.InjectIdle_BlockingScriptCount",
@@ -65,12 +65,11 @@ void ScriptsRunInfo::LogRun(bool send_script_activity) {
         UMA_HISTOGRAM_TIMES("Extensions.InjectIdle_Time", elapsed);
       }
       break;
-    case UserScript::RUN_DEFERRED:
-    case UserScript::BROWSER_DRIVEN:
+    case mojom::RunLocation::kRunDeferred:
+    case mojom::RunLocation::kBrowserDriven:
       // TODO(rdevlin.cronin): Add histograms.
       break;
-    case UserScript::UNDEFINED:
-    case UserScript::RUN_LOCATION_LAST:
+    case mojom::RunLocation::kUndefined:
       NOTREACHED();
   }
 }

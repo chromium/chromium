@@ -44,7 +44,7 @@ UserScriptSetManager::GetInjectionForDeclarativeScript(
     return std::unique_ptr<ScriptInjection>();
 
   return user_script_set->GetDeclarativeScriptInjection(
-      script_id, render_frame, tab_id, UserScript::BROWSER_DRIVEN, url,
+      script_id, render_frame, tab_id, mojom::RunLocation::kBrowserDriven, url,
       activity_logging_enabled_);
 }
 
@@ -62,7 +62,7 @@ void UserScriptSetManager::GetAllInjections(
     std::vector<std::unique_ptr<ScriptInjection>>* injections,
     content::RenderFrame* render_frame,
     int tab_id,
-    UserScript::RunLocation run_location) {
+    mojom::RunLocation run_location) {
   static_scripts_.GetInjections(injections, render_frame, tab_id, run_location,
                                 activity_logging_enabled_);
   for (auto it = programmatic_scripts_.begin();

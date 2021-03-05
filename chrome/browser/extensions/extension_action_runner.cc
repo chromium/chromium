@@ -57,7 +57,7 @@ const int kRefreshRequiredActionsMask =
 }
 
 ExtensionActionRunner::PendingScript::PendingScript(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     base::RepeatingClosure permit_script)
     : run_location(run_location), permit_script(permit_script) {}
 
@@ -189,17 +189,16 @@ int ExtensionActionRunner::GetBlockedActions(const Extension* extension) {
   if (iter != pending_scripts_.end()) {
     for (const PendingScript& script : iter->second) {
       switch (script.run_location) {
-        case UserScript::DOCUMENT_START:
+        case mojom::RunLocation::kDocumentStart:
           blocked_actions |= BLOCKED_ACTION_SCRIPT_AT_START;
           break;
-        case UserScript::DOCUMENT_END:
-        case UserScript::DOCUMENT_IDLE:
-        case UserScript::BROWSER_DRIVEN:
+        case mojom::RunLocation::kDocumentEnd:
+        case mojom::RunLocation::kDocumentIdle:
+        case mojom::RunLocation::kBrowserDriven:
           blocked_actions |= BLOCKED_ACTION_SCRIPT_OTHER;
           break;
-        case UserScript::UNDEFINED:
-        case UserScript::RUN_DEFERRED:
-        case UserScript::RUN_LOCATION_LAST:
+        case mojom::RunLocation::kUndefined:
+        case mojom::RunLocation::kRunDeferred:
           NOTREACHED();
       }
     }
@@ -246,7 +245,7 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
 
 void ExtensionActionRunner::RequestScriptInjection(
     const Extension* extension,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     base::RepeatingClosure callback) {
   CHECK(extension);
   PendingScriptList& list = pending_scripts_[extension->id()];
@@ -295,7 +294,7 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
 void ExtensionActionRunner::OnRequestScriptInjectionPermission(
     const std::string& extension_id,
     UserScript::InjectionType script_type,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     int64_t request_id) {
   if (!crx_file::id_util::IdIsValid(extension_id)) {
     NOTREACHED() << "'" << extension_id << "' is not a valid id.";

@@ -157,7 +157,7 @@ const base::Optional<std::string> UserScriptInjector::GetInjectionKey() const {
 }
 
 bool UserScriptInjector::ShouldInjectJs(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     const std::set<std::string>& executing_scripts) const {
   return script_ && script_->run_location() == run_location &&
          !script_->js_scripts().empty() &&
@@ -165,9 +165,9 @@ bool UserScriptInjector::ShouldInjectJs(
 }
 
 bool UserScriptInjector::ShouldInjectOrRemoveCss(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     const std::set<std::string>& injected_stylesheets) const {
-  return script_ && run_location == UserScript::DOCUMENT_START &&
+  return script_ && run_location == mojom::RunLocation::kDocumentStart &&
          !script_->css_scripts().empty() &&
          ShouldInjectScripts(script_->css_scripts(), injected_stylesheets);
 }
@@ -222,7 +222,7 @@ PermissionsData::PageAccess UserScriptInjector::CanExecuteOnFrame(
 }
 
 std::vector<blink::WebScriptSource> UserScriptInjector::GetJsSources(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     std::set<std::string>* executing_scripts,
     size_t* num_injected_js_scripts) const {
   DCHECK(script_);
@@ -255,11 +255,11 @@ std::vector<blink::WebScriptSource> UserScriptInjector::GetJsSources(
 }
 
 std::vector<blink::WebString> UserScriptInjector::GetCssSources(
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     std::set<std::string>* injected_stylesheets,
     size_t* num_injected_stylesheets) const {
   DCHECK(script_);
-  DCHECK_EQ(UserScript::DOCUMENT_START, run_location);
+  DCHECK_EQ(mojom::RunLocation::kDocumentStart, run_location);
 
   std::vector<blink::WebString> sources;
 
@@ -280,7 +280,7 @@ std::vector<blink::WebString> UserScriptInjector::GetCssSources(
 
 void UserScriptInjector::OnInjectionComplete(
     std::unique_ptr<base::Value> execution_result,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     content::RenderFrame* render_frame) {}
 
 void UserScriptInjector::OnWillNotInject(InjectFailureReason reason,

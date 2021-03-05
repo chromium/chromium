@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/injection_host.h"
 #include "extensions/renderer/script_injector.h"
@@ -54,7 +55,7 @@ class ScriptInjection {
   ScriptInjection(std::unique_ptr<ScriptInjector> injector,
                   content::RenderFrame* render_frame,
                   std::unique_ptr<const InjectionHost> injection_host,
-                  UserScript::RunLocation run_location,
+                  mojom::RunLocation run_location,
                   bool log_activity);
   ~ScriptInjection();
 
@@ -66,7 +67,7 @@ class ScriptInjection {
   // |run_location_|).
   // If INJECTION_BLOCKED is returned, |async_completion_callback| will be
   // called upon completion.
-  InjectionResult TryToInject(UserScript::RunLocation current_location,
+  InjectionResult TryToInject(mojom::RunLocation current_location,
                               ScriptsRunInfo* scripts_run_info,
                               CompletionCallback async_completion_callback);
 
@@ -121,7 +122,7 @@ class ScriptInjection {
   std::unique_ptr<const InjectionHost> injection_host_;
 
   // The location in the document load at which we inject the script.
-  UserScript::RunLocation run_location_;
+  mojom::RunLocation run_location_;
 
   // This injection's request id. This will be -1 unless the injection is
   // currently waiting on permission.

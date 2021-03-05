@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
 
@@ -113,7 +114,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
     return RequiresUserConsentForScriptInjection(extension, type);
   }
   void RequestScriptInjectionForTesting(const Extension* extension,
-                                        UserScript::RunLocation run_location,
+                                        mojom::RunLocation run_location,
                                         base::RepeatingClosure callback) {
     return RequestScriptInjection(extension, run_location, callback);
   }
@@ -124,13 +125,13 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
  private:
   struct PendingScript {
-    PendingScript(UserScript::RunLocation run_location,
+    PendingScript(mojom::RunLocation run_location,
                   base::RepeatingClosure permit_script);
     PendingScript(const PendingScript& other);
     ~PendingScript();
 
     // The run location that the script wants to inject at.
-    UserScript::RunLocation run_location;
+    mojom::RunLocation run_location;
 
     // The callback to run when the script is permitted by the user.
     base::RepeatingClosure permit_script;
@@ -149,7 +150,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // |callback|. The only assumption that can be made about when (or if)
   // |callback| is run is that, if it is run, it will run on the current page.
   void RequestScriptInjection(const Extension* extension,
-                              UserScript::RunLocation run_location,
+                              mojom::RunLocation run_location,
                               base::RepeatingClosure callback);
 
   // Runs any pending injections for the corresponding extension.
@@ -158,7 +159,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // Handle the RequestScriptInjectionPermission message.
   void OnRequestScriptInjectionPermission(const std::string& extension_id,
                                           UserScript::InjectionType script_type,
-                                          UserScript::RunLocation run_location,
+                                          mojom::RunLocation run_location,
                                           int64_t request_id);
 
   // Grants permission for the given request to run.

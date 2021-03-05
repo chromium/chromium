@@ -186,7 +186,7 @@ void UserScript::File::Unpickle(const base::Pickle& pickle,
 
 void UserScript::Pickle(base::Pickle* pickle) const {
   // Write the simple types to the pickle.
-  pickle->WriteInt(run_location());
+  pickle->WriteInt(static_cast<int>(run_location()));
   pickle->WriteString(user_script_id_);
   pickle->WriteBool(emulate_greasemonkey());
   pickle->WriteBool(match_all_frames());
@@ -239,8 +239,9 @@ void UserScript::Unpickle(const base::Pickle& pickle,
   // Read the run location.
   int run_location = 0;
   CHECK(iter->ReadInt(&run_location));
-  CHECK(run_location >= 0 && run_location < RUN_LOCATION_LAST);
-  run_location_ = static_cast<RunLocation>(run_location);
+  CHECK(run_location >= static_cast<int>(mojom::RunLocation::kUndefined) &&
+        run_location <= static_cast<int>(mojom::RunLocation::kMaxValue));
+  run_location_ = static_cast<mojom::RunLocation>(run_location);
 
   CHECK(iter->ReadString(&user_script_id_));
   CHECK(iter->ReadBool(&emulate_greasemonkey_));

@@ -27,6 +27,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/value_builder.h"
 
@@ -61,7 +62,7 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
   // Request an injection for the given |extension|.
   void RequestInjection(const Extension* extension);
   void RequestInjection(const Extension* extension,
-                        UserScript::RunLocation run_location);
+                        mojom::RunLocation run_location);
 
   // Returns the number of times a given extension has had a script execute.
   size_t GetExecutionCountForExtension(const std::string& extension_id) const;
@@ -134,12 +135,12 @@ bool ExtensionActionRunnerUnitTest::RequiresUserConsent(
 
 void ExtensionActionRunnerUnitTest::RequestInjection(
     const Extension* extension) {
-  RequestInjection(extension, UserScript::DOCUMENT_IDLE);
+  RequestInjection(extension, mojom::RunLocation::kDocumentIdle);
 }
 
 void ExtensionActionRunnerUnitTest::RequestInjection(
     const Extension* extension,
-    UserScript::RunLocation run_location) {
+    mojom::RunLocation run_location) {
   runner()->RequestScriptInjectionForTesting(
       extension, run_location,
       GetExecutionCallbackForExtension(extension->id()));
@@ -427,13 +428,13 @@ TEST_F(ExtensionActionRunnerUnitTest, TestDifferentScriptRunLocations) {
 
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension));
 
-  RequestInjection(extension, UserScript::DOCUMENT_END);
+  RequestInjection(extension, mojom::RunLocation::kDocumentEnd);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_OTHER,
             runner()->GetBlockedActions(extension));
-  RequestInjection(extension, UserScript::DOCUMENT_IDLE);
+  RequestInjection(extension, mojom::RunLocation::kDocumentIdle);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_OTHER,
             runner()->GetBlockedActions(extension));
-  RequestInjection(extension, UserScript::DOCUMENT_START);
+  RequestInjection(extension, mojom::RunLocation::kDocumentStart);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_AT_START | BLOCKED_ACTION_SCRIPT_OTHER,
             runner()->GetBlockedActions(extension));
 

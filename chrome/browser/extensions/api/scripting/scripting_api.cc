@@ -20,6 +20,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -34,7 +35,8 @@ constexpr char kExactlyOneOfCssAndFilesError[] =
 // Note: CSS always injects as soon as possible, so we default to
 // document_start. Because of tab loading, there's no guarantee this will
 // *actually* inject before page load, but it will at least inject "soon".
-constexpr UserScript::RunLocation kCSSRunLocation = UserScript::DOCUMENT_START;
+constexpr mojom::RunLocation kCSSRunLocation =
+    mojom::RunLocation::kDocumentStart;
 
 // Converts the given `style_origin` to a CSSOrigin.
 mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
@@ -298,7 +300,7 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
       HostID(HostID::EXTENSIONS, extension()->id()),
       mojom::ActionType::kAddJavascript, std::move(code_to_execute),
       frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
-      UserScript::DOCUMENT_IDLE, ScriptExecutor::DEFAULT_PROCESS,
+      mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), std::move(script_url), user_gesture(),
       mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));

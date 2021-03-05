@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "third_party/blink/public/platform/web_string.h"
 
@@ -57,14 +58,14 @@ class UserScriptSet {
   void GetInjections(std::vector<std::unique_ptr<ScriptInjection>>* injections,
                      content::RenderFrame* render_frame,
                      int tab_id,
-                     UserScript::RunLocation run_location,
+                     mojom::RunLocation run_location,
                      bool log_activity);
 
   std::unique_ptr<ScriptInjection> GetDeclarativeScriptInjection(
       const std::string& script_id,
       content::RenderFrame* render_frame,
       int tab_id,
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       const GURL& document_url,
       bool log_activity);
 
@@ -87,7 +88,7 @@ class UserScriptSet {
       const UserScript* script,
       content::RenderFrame* render_frame,
       int tab_id,
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       const GURL& document_url,
       bool is_declarative,
       bool log_activity);

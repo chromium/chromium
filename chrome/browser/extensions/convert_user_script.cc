@@ -27,6 +27,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
 
@@ -136,11 +137,11 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   content_script.js = std::make_unique<std::vector<std::string>>();
   content_script.js->push_back("script.js");
 
-  if (script.run_location() == UserScript::DOCUMENT_START) {
+  if (script.run_location() == mojom::RunLocation::kDocumentStart) {
     content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_START;
-  } else if (script.run_location() == UserScript::DOCUMENT_END) {
+  } else if (script.run_location() == mojom::RunLocation::kDocumentEnd) {
     content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_END;
-  } else if (script.run_location() == UserScript::DOCUMENT_IDLE) {
+  } else if (script.run_location() == mojom::RunLocation::kDocumentIdle) {
     // This is the default, but store it just in case we change that.
     content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_IDLE;
   }

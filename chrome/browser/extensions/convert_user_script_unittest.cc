@@ -17,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -65,7 +66,7 @@ TEST_F(ExtensionFromUserScript, Basic) {
   ASSERT_EQ(1u, ContentScriptsInfo::GetContentScripts(extension.get()).size());
   const UserScript& script =
       *ContentScriptsInfo::GetContentScripts(extension.get())[0];
-  EXPECT_EQ(UserScript::DOCUMENT_IDLE, script.run_location());
+  EXPECT_EQ(mojom::RunLocation::kDocumentIdle, script.run_location());
   ASSERT_EQ(2u, script.globs().size());
   EXPECT_EQ("http://www.google.com/*", script.globs().at(0));
   EXPECT_EQ("http://www.yahoo.com/*", script.globs().at(1));
@@ -185,7 +186,7 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentStart) {
   ASSERT_EQ(1u, ContentScriptsInfo::GetContentScripts(extension.get()).size());
   const UserScript& script =
       *ContentScriptsInfo::GetContentScripts(extension.get())[0];
-  EXPECT_EQ(UserScript::DOCUMENT_START, script.run_location());
+  EXPECT_EQ(mojom::RunLocation::kDocumentStart, script.run_location());
 }
 
 TEST_F(ExtensionFromUserScript, RunAtDocumentEnd) {
@@ -220,7 +221,7 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentEnd) {
   ASSERT_EQ(1u, ContentScriptsInfo::GetContentScripts(extension.get()).size());
   const UserScript& script =
       *ContentScriptsInfo::GetContentScripts(extension.get())[0];
-  EXPECT_EQ(UserScript::DOCUMENT_END, script.run_location());
+  EXPECT_EQ(mojom::RunLocation::kDocumentEnd, script.run_location());
 }
 
 TEST_F(ExtensionFromUserScript, RunAtDocumentIdle) {
@@ -256,7 +257,7 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentIdle) {
   ASSERT_EQ(1u, ContentScriptsInfo::GetContentScripts(extension.get()).size());
   const UserScript& script =
       *ContentScriptsInfo::GetContentScripts(extension.get())[0];
-  EXPECT_EQ(UserScript::DOCUMENT_IDLE, script.run_location());
+  EXPECT_EQ(mojom::RunLocation::kDocumentIdle, script.run_location());
 }
 
 }  // namespace extensions
