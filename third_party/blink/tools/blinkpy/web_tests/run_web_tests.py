@@ -525,6 +525,8 @@ def parse_args(args):
             ),
             optparse.make_option(
                 '--test-list',
+                '--isolated-script-test-filter-file',
+                '--test-launcher-filter-file',
                 action='append',
                 metavar='FILE',
                 help=
