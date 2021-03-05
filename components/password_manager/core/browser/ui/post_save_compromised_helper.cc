@@ -33,8 +33,21 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentials(
     BubbleCallback callback) {
   DCHECK(profile_store);
   DCHECK(prefs);
+
+  const double last_check_completed =
+      prefs->GetDouble(prefs::kLastTimePasswordCheckCompleted);
+  // If the check was never completed then |kLastTimePasswordCheckCompleted|
+  // contains 0.
+  if (!last_check_completed ||
+      base::Time::Now() - base::Time::FromDoubleT(last_check_completed) >=
+          kMaxTimeSinceLastCheck) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), BubbleType::kNoBubble, 0));
+    return;
+  }
+
   callback_ = std::move(callback);
-  prefs_ = prefs;
   insecure_credentials_reader_ =
       std::make_unique<InsecureCredentialsReader>(profile_store, account_store);
   // Unretained(this) is safe here since `this` outlives
@@ -48,23 +61,12 @@ void PostSaveCompromisedHelper::OnGetAllInsecureCredentials(
     std::vector<InsecureCredential> insecure_credentials) {
   const bool compromised_password_changed =
       current_leak_ && !base::Contains(insecure_credentials, *current_leak_);
-  bubble_type_ = BubbleType::kNoBubble;
-  if (insecure_credentials.empty()) {
-    if (compromised_password_changed) {
-      // Obtain the timestamp of the last completed check. This is 0.0 in case
-      // the check never completely ran before.
-      const double last_check_completed =
-          prefs_->GetDouble(prefs::kLastTimePasswordCheckCompleted);
-      if (last_check_completed &&
-          base::Time::Now() - base::Time::FromDoubleT(last_check_completed) <
-              kMaxTimeSinceLastCheck) {
-        bubble_type_ = BubbleType::kPasswordUpdatedSafeState;
-      }
-    }
+  if (compromised_password_changed) {
+    bubble_type_ = insecure_credentials.empty()
+                       ? BubbleType::kPasswordUpdatedSafeState
+                       : BubbleType::kPasswordUpdatedWithMoreToFix;
   } else {
-    bubble_type_ = compromised_password_changed
-                       ? BubbleType::kPasswordUpdatedWithMoreToFix
-                       : BubbleType::kUnsafeState;
+    bubble_type_ = BubbleType::kNoBubble;
   }
   compromised_count_ = insecure_credentials.size();
   std::move(callback_).Run(bubble_type_, compromised_count_);

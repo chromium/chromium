@@ -22,9 +22,8 @@ class PostSaveCompromisedBubbleController
     kPasswordUpdatedSafeState = 0,
     // A compromised password was updated and there are more issues to fix.
     kPasswordUpdatedWithMoreToFix = 1,
-    // There are stored compromised credentials.
-    kUnsafeState = 2,
-    kMaxValue = kUnsafeState,
+    // kUnsafeState = 2, // was dropped
+    kMaxValue = kPasswordUpdatedWithMoreToFix,
   };
   explicit PostSaveCompromisedBubbleController(
       base::WeakPtr<PasswordsModelDelegate> delegate);

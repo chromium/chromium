@@ -103,9 +103,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     view = new MoveToAccountStoreBubbleView(web_contents, anchor_view);
   } else if (model_state == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
              model_state ==
-                 password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
-             model_state ==
-                 password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE) {
+                 password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX) {
     view = new PostSaveCompromisedBubbleView(web_contents, anchor_view);
   } else {
     NOTREACHED();

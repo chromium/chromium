@@ -30,9 +30,6 @@ class PostSaveCompromisedHelper {
     kPasswordUpdatedSafeState,
     // A compromised password was updated and there are more issues to fix.
     kPasswordUpdatedWithMoreToFix,
-    // A random password was saved/updated. There are stored compromised
-    // credentials.
-    kUnsafeState,
   };
 
   // The callback is told which bubble to bring up and how many compromised
@@ -65,8 +62,6 @@ class PostSaveCompromisedHelper {
 
   // Contains the entry for the currently leaked credentials if it was leaked.
   base::Optional<InsecureCredential> current_leak_;
-  // Profile prefs.
-  PrefService* prefs_ = nullptr;
   // Callback to notify the caller about the bubble type.
   BubbleCallback callback_;
   // BubbleType after the callback was executed.

@@ -53,13 +53,4 @@ TEST_F(PostSaveCompromisedBubbleViewTest, MoreToFixState) {
   view_->AcceptDialog();
 }
 
-TEST_F(PostSaveCompromisedBubbleViewTest, UnsafeState) {
-  CreateViewAndShow(password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE);
-  EXPECT_TRUE(view_->GetOkButton());
-  EXPECT_FALSE(view_->GetCancelButton());
-
-  EXPECT_CALL(*model_delegate_mock(), NavigateToPasswordCheckup);
-  view_->AcceptDialog();
-}
-
 }  // namespace

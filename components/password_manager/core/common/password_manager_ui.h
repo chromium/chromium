@@ -52,9 +52,6 @@ enum State {
 
   // A compromised password was updated and the user has more to fix.
   PASSWORD_UPDATED_MORE_TO_FIX,
-
-  // Remind the user to fix the compromised passwords.
-  PASSWORD_UPDATED_UNSAFE_STATE,
 };
 
 }  // namespace ui

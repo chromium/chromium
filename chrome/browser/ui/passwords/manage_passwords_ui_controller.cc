@@ -422,8 +422,7 @@ ManagePasswordsUIController::GetCurrentInteractionStats() const {
 
 size_t ManagePasswordsUIController::GetTotalNumberCompromisedPasswords() const {
   DCHECK(GetState() == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
-         GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
-         GetState() == password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE);
+         GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX);
   return post_save_compromised_helper_->compromised_count();
 }
 
@@ -447,8 +446,7 @@ void ManagePasswordsUIController::OnBubbleHidden() {
   if (GetState() == password_manager::ui::CONFIRMATION_STATE ||
       GetState() == password_manager::ui::AUTO_SIGNIN_STATE ||
       GetState() == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
-      GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
-      GetState() == password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE) {
+      GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX) {
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
     update_icon = true;
   }
@@ -877,9 +875,6 @@ void ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble(
       break;
     case PostSaveCompromisedHelper::BubbleType::kPasswordUpdatedWithMoreToFix:
       state = password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX;
-      break;
-    case PostSaveCompromisedHelper::BubbleType::kUnsafeState:
-      state = password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE;
       break;
   }
   passwords_data_.TransitionToState(state);

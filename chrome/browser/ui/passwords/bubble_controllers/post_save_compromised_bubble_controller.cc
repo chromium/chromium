@@ -25,9 +25,6 @@ PostSaveCompromisedBubbleController::PostSaveCompromisedBubbleController(
     case password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX:
       type_ = BubbleType::kPasswordUpdatedWithMoreToFix;
       break;
-    case password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE:
-      type_ = BubbleType::kUnsafeState;
-      break;
     default:
       NOTREACHED();
   }
@@ -56,10 +53,6 @@ base::string16 PostSaveCompromisedBubbleController::GetBody() {
       return l10n_util::GetPluralStringFUTF16(
           IDS_PASSWORD_MANAGER_MORE_TO_FIX_BODY_MESSAGE,
           delegate_->GetTotalNumberCompromisedPasswords());
-    case BubbleType::kUnsafeState:
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_PASSWORD_MANAGER_UNSAFE_STATE_BODY_MESSAGE,
-          delegate_->GetTotalNumberCompromisedPasswords());
   }
 }
 
@@ -74,8 +67,6 @@ base::string16 PostSaveCompromisedBubbleController::GetButtonText() const {
     case BubbleType::kPasswordUpdatedWithMoreToFix:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_CHECK_REMAINING_BUTTON);
-    case BubbleType::kUnsafeState:
-      return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CHECK_BUTTON);
   }
 }
 
@@ -87,9 +78,6 @@ int PostSaveCompromisedBubbleController::GetImageID(bool dark) const {
     case BubbleType::kPasswordUpdatedWithMoreToFix:
       return dark ? IDR_SAVED_PASSWORDS_NEUTRAL_STATE_DARK
                   : IDR_SAVED_PASSWORDS_NEUTRAL_STATE;
-    case BubbleType::kUnsafeState:
-      return dark ? IDR_SAVED_PASSWORDS_WARNING_STATE_DARK
-                  : IDR_SAVED_PASSWORDS_WARNING_STATE;
   }
 }
 
@@ -104,9 +92,6 @@ void PostSaveCompromisedBubbleController::OnAccepted() {
     case BubbleType::kPasswordUpdatedWithMoreToFix:
       referrer = PasswordCheckReferrer::kMoreToFixBubble;
       break;
-    case BubbleType::kUnsafeState:
-      referrer = PasswordCheckReferrer::kUnsafeStateBubble;
-      break;
   }
   if (delegate_)
     delegate_->NavigateToPasswordCheckup(referrer);
@@ -119,16 +104,7 @@ void PostSaveCompromisedBubbleController::OnSettingsClicked() {
 }
 
 base::string16 PostSaveCompromisedBubbleController::GetTitle() const {
-  switch (type_) {
-    case BubbleType::kPasswordUpdatedSafeState:
-    case BubbleType::kPasswordUpdatedWithMoreToFix:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UPDATED_BUBBLE_TITLE);
-    case BubbleType::kUnsafeState:
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_PASSWORD_MANAGER_COMPROMISED_REMINDER_TITLE,
-          delegate_->GetTotalNumberCompromisedPasswords());
-  }
+  return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UPDATED_BUBBLE_TITLE);
 }
 
 void PostSaveCompromisedBubbleController::ReportInteractions() {

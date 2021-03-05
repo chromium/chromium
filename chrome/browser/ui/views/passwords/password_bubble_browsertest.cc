@@ -67,8 +67,6 @@ class PasswordBubbleBrowserTest
     } else if (StartsWith(name, "MoreToFixState",
                           base::CompareCase::SENSITIVE)) {
       SetupMoreToFixState();
-    } else if (StartsWith(name, "UnsafeState", base::CompareCase::SENSITIVE)) {
-      SetupUnsafeState();
     } else {
       ADD_FAILURE() << "Unknown dialog type";
       return;
@@ -105,10 +103,6 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_SafeState) {
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_UnsafeState) {
   ShowAndVerifyUi();
 }
 
