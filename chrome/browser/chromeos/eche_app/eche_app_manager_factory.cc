@@ -8,7 +8,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
+#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
+#include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
+#include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
@@ -48,6 +52,9 @@ EcheAppManagerFactory::EcheAppManagerFactory()
           "EcheAppManager",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(phonehub::PhoneHubManagerFactory::GetInstance());
+  DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
+  DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
+  DependsOn(secure_channel::NearbyConnectorFactory::GetInstance());
 }
 
 EcheAppManagerFactory::~EcheAppManagerFactory() = default;
@@ -63,7 +70,23 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
   if (!phone_hub_manager)
     return nullptr;
 
-  return new EcheAppManager(phone_hub_manager,
+  device_sync::DeviceSyncClient* device_sync_client =
+      device_sync::DeviceSyncClientFactory::GetForProfile(profile);
+  if (!device_sync_client)
+    return nullptr;
+
+  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client =
+      multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile);
+  if (!multidevice_setup_client)
+    return nullptr;
+
+  secure_channel::SecureChannelClient* secure_channel_client =
+      secure_channel::SecureChannelClientProvider::GetInstance()->GetClient();
+  if (!secure_channel_client)
+    return nullptr;
+
+  return new EcheAppManager(phone_hub_manager, device_sync_client,
+                            multidevice_setup_client, secure_channel_client,
                             base::BindRepeating(&LaunchEcheApp, profile));
 }
 

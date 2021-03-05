@@ -42,13 +42,13 @@ bool IsEligibleForFeature(
   if (!local_device)
     return false;
   if (local_device->GetSoftwareFeatureState(SoftwareFeature::kEcheClient) ==
-      SoftwareFeatureState::kNotSupported) {
+      SoftwareFeatureState::kNotSupported)
     return false;
-  }
   if (host_status.first == HostStatus::kNoEligibleHosts)
     return false;
-  if (host_status.second.has_value())
+  if (host_status.second.has_value()) {
     return IsEligibleHost(*(host_status.second));
+  }
   for (const RemoteDeviceRef& device : remote_devices) {
     if (IsEligibleHost(device))
       return true;
@@ -73,8 +73,10 @@ EcheFeatureStatusProvider::EcheFeatureStatusProvider(
           phone_hub_manager->GetFeatureStatusProvider()),
       device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client),
-      connection_manager_(connection_manager) {
-  status_ = ComputeStatus();
+      connection_manager_(connection_manager),
+      current_phone_hub_feature_status_(
+          phone_hub_feature_status_provider_->GetStatus()),
+      status_(ComputeStatus()) {
   phone_hub_feature_status_provider_->AddObserver(this);
   connection_manager_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
