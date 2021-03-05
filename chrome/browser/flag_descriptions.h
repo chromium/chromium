@@ -2720,6 +2720,9 @@ extern const char kReleaseNotesNotificationDescription[];
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
+extern const char kArcResizeLockName[];
+extern const char kArcResizeLockDescription[];
+
 extern const char kScalableStatusAreaName[];
 extern const char kScalableStatusAreaDescription[];
 

@@ -15,6 +15,9 @@ namespace features {
 const base::Feature kAllowAmbientEQ{"AllowAmbientEQ",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kArcResizeLock{"ArcResizeLock",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kAutoNightLight{"AutoNightLight",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -153,6 +156,10 @@ bool IsAllowAmbientEQEnabled() {
 
 bool IsAltTabLimitedToActiveDesk() {
   return base::FeatureList::IsEnabled(kLimitAltTabToActiveDesk);
+}
+
+bool IsArcResizeLockEnabled() {
+  return base::FeatureList::IsEnabled(kArcResizeLock);
 }
 
 bool IsPerDeskShelfEnabled() {

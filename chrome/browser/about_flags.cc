@@ -5462,6 +5462,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppServiceExternalProtocolDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAppServiceExternalProtocol)},
 
+    {"arc-resize-lock", flag_descriptions::kArcResizeLockName,
+     flag_descriptions::kArcResizeLockDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kArcResizeLock)},
+
     {"full-restore", flag_descriptions::kFullRestoreName,
      flag_descriptions::kFullRestoreDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFullRestore)},

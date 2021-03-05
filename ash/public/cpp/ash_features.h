@@ -15,6 +15,10 @@ namespace features {
 // See https://crbug.com/1021193 for more details.
 ASH_PUBLIC_EXPORT extern const base::Feature kAllowAmbientEQ;
 
+// Enables resize lock for ARC++ and puts restrictions on window resizing.
+// TODO(takise): Remove this after the feature is fully launched.
+ASH_PUBLIC_EXPORT extern const base::Feature kArcResizeLock;
+
 // Enables the Auto Night Light feature which sets the default schedule type to
 // sunset-to-sunrise until the user changes it to something else. This feature
 // is not exposed to the end user, and is enabled only via cros_config for
@@ -197,6 +201,8 @@ ASH_PUBLIC_EXPORT bool IsAllowAmbientEQEnabled();
 ASH_PUBLIC_EXPORT bool IsAltTabLimitedToActiveDesk();
 
 ASH_PUBLIC_EXPORT bool IsPerDeskShelfEnabled();
+
+ASH_PUBLIC_EXPORT bool IsArcResizeLockEnabled();
 
 ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
 

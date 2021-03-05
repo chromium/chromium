@@ -189,6 +189,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "arc-resize-lock",
+    "owners": [ "takise" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "arc-usb-host",
     "owners": [ "lgcheng" ],
     "expiry_milestone": 76
