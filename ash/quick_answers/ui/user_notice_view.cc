@@ -26,6 +26,8 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -235,10 +237,10 @@ void UserNoticeView::InitLayout() {
   // Main-view Layout.
   main_view_ = AddChildView(std::make_unique<views::View>());
   auto* layout =
-      main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kMainViewInsets));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
+      main_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetInteriorMargin(kMainViewInsets)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
   // Assistant icon.
   auto* assistant_icon =
@@ -259,13 +261,25 @@ void UserNoticeView::InitLayout() {
 void UserNoticeView::InitContent() {
   // Layout.
   content_ = main_view_->AddChildView(std::make_unique<views::View>());
-  content_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kContentInsets,
-      kContentSpacingDip));
+
+  auto* layout =
+      content_->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetInteriorMargin(kContentInsets)
+      .SetCollapseMargins(true)
+      .SetDefault(views::kMarginsKey, gfx::Insets(/*top=*/0, /*left=*/0,
+                                                  /*bottom=*/kContentSpacingDip,
+                                                  /*right=*/0));
 
   // Title.
-  content_->AddChildView(
+  auto* title = content_->AddChildView(
       CreateLabel(title_, kTitleTextColor, kTitleFontSizeDelta));
+  // Set the maximum width of the label to the width it would need to be for the
+  // UserNoticeView to be the same width as the anchor, so its preferred size
+  // will be calculated correctly.
+  int maximum_width = GetActualLabelWidth(anchor_view_bounds_.width());
+  title->SetMaximumWidthSingleLine(maximum_width);
 
   // Description.
   auto* desc = content_->AddChildView(
@@ -273,13 +287,8 @@ void UserNoticeView::InitContent() {
                       IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_DESC_TEXT),
                   kDescTextColor, kDescFontSizeDelta));
   desc->SetMultiLine(true);
-  // BoxLayout does not necessarily size the height of multi-line labels
-  // properly (crbug/682266). The label is thus explicitly sized to the width
-  // (and height) it would need to be for the UserNoticeView to be the
-  // same width as the anchor, so its preferred size will be calculated
-  // correctly.
-  int desc_desired_width = GetActualLabelWidth(anchor_view_bounds_.width());
-  desc->SizeToFit(desc_desired_width);
+
+  desc->SetMaximumWidth(maximum_width);
 
   // Button bar.
   InitButtonBar();
@@ -289,10 +298,15 @@ void UserNoticeView::InitButtonBar() {
   // Layout.
   auto* button_bar = content_->AddChildView(std::make_unique<views::View>());
   auto* layout =
-      button_bar->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kButtonBarInsets,
-          kButtonSpacingDip));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+      button_bar->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetInteriorMargin(kButtonBarInsets)
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetCollapseMargins(true)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
+                              /*right=*/kButtonSpacingDip));
 
   // Manage-Settings button.
   auto settings_button = std::make_unique<CustomizedLabelButton>(
