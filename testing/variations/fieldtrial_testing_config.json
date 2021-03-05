@@ -4190,8 +4190,8 @@
                         "session_rate_impact": "IPH_KeyboardAccessoryBarSwiping"
                     },
                     "enable_features": [
-                        "IPH_KeyboardAccessoryPaymentOffer",
-                        "kAutofillEnableOffersInClankKeyboardAccessory"
+                        "AutofillEnableOffersInClankKeyboardAccessory",
+                        "IPH_KeyboardAccessoryPaymentOffer"
                     ]
                 }
             ]
