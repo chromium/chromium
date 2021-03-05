@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROME_CONTENT_BROWSER_CLIENT_WEBUI_PART_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROME_CONTENT_BROWSER_CLIENT_WEBUI_PART_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_
+#define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_
 
 #include "base/macros.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-class ChromeContentBrowserClientWebUIPart
+class ChromeContentBrowserClientTabStripPart
     : public ChromeContentBrowserClientParts {
  public:
-  ChromeContentBrowserClientWebUIPart();
-  ~ChromeContentBrowserClientWebUIPart() override;
+  ChromeContentBrowserClientTabStripPart();
+  ~ChromeContentBrowserClientTabStripPart() override;
 
   // ChromeContentBrowserClientParts:
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientWebUIPart);
+  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientTabStripPart);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROME_CONTENT_BROWSER_CLIENT_WEBUI_PART_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_

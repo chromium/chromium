@@ -16,15 +16,15 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/ui_base_switches.h"
 
-class ChromeContentBrowserClientWebUIPartTest : public InProcessBrowserTest {
+class ChromeContentBrowserClientTabStripPartTest : public InProcessBrowserTest {
  public:
-  std::unique_ptr<content::WebContents> CreateWebContents() {
+  std::unique_ptr<content::WebContents> CreateTabStripWebContents() {
     std::unique_ptr<content::WebContents> webui_contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(browser()->profile()));
     webui_contents->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(
-            GURL(chrome::kChromeUIExtensionsURL)));
+            GURL(chrome::kChromeUITabStripURL)));
     return webui_contents;
   }
 
@@ -32,8 +32,8 @@ class ChromeContentBrowserClientWebUIPartTest : public InProcessBrowserTest {
   std::unique_ptr<content::WebContents> webui_contents_;
 };
 
-IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientWebUIPartTest,
-                       HasDefaultFontSizes) {
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientTabStripPartTest,
+                       TabStripHasDefaultFontSizes) {
   const blink::web_pref::WebPreferences default_prefs;
   const int kDefaultFontSize = default_prefs.default_font_size;
   const int kDefaultFixedFontSize = default_prefs.default_fixed_font_size;
@@ -41,8 +41,8 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientWebUIPartTest,
   const int kDefaultMinimumLogicalFontSize =
       default_prefs.minimum_logical_font_size;
 
-  blink::web_pref::WebPreferences preexisting_prefs =
-      CreateWebContents()->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences preexisting_tab_strip_prefs =
+      CreateTabStripWebContents()->GetOrCreateWebPreferences();
 
   Profile* profile = browser()->profile();
   PrefService* profile_prefs = profile->GetPrefs();
@@ -55,17 +55,19 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientWebUIPartTest,
   profile_prefs->SetInteger(prefs::kWebKitMinimumLogicalFontSize,
                             kDefaultMinimumLogicalFontSize + 4);
 
-  EXPECT_EQ(kDefaultFontSize, preexisting_prefs.default_font_size);
-  EXPECT_EQ(kDefaultFixedFontSize, preexisting_prefs.default_fixed_font_size);
-  EXPECT_EQ(kDefaultMinimumFontSize, preexisting_prefs.minimum_font_size);
+  EXPECT_EQ(kDefaultFontSize, preexisting_tab_strip_prefs.default_font_size);
+  EXPECT_EQ(kDefaultFixedFontSize,
+            preexisting_tab_strip_prefs.default_fixed_font_size);
+  EXPECT_EQ(kDefaultMinimumFontSize,
+            preexisting_tab_strip_prefs.minimum_font_size);
   EXPECT_EQ(kDefaultMinimumLogicalFontSize,
-            preexisting_prefs.minimum_logical_font_size);
+            preexisting_tab_strip_prefs.minimum_logical_font_size);
 
-  blink::web_pref::WebPreferences new_prefs =
-      CreateWebContents()->GetOrCreateWebPreferences();
-  EXPECT_EQ(kDefaultFontSize, new_prefs.default_font_size);
-  EXPECT_EQ(kDefaultFixedFontSize, new_prefs.default_fixed_font_size);
-  EXPECT_EQ(kDefaultMinimumFontSize, new_prefs.minimum_font_size);
+  blink::web_pref::WebPreferences new_tab_strip_prefs =
+      CreateTabStripWebContents()->GetOrCreateWebPreferences();
+  EXPECT_EQ(kDefaultFontSize, new_tab_strip_prefs.default_font_size);
+  EXPECT_EQ(kDefaultFixedFontSize, new_tab_strip_prefs.default_fixed_font_size);
+  EXPECT_EQ(kDefaultMinimumFontSize, new_tab_strip_prefs.minimum_font_size);
   EXPECT_EQ(kDefaultMinimumLogicalFontSize,
-            new_prefs.minimum_logical_font_size);
+            new_tab_strip_prefs.minimum_logical_font_size);
 }
