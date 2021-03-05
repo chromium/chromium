@@ -388,6 +388,9 @@ These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
 
+* [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-pie-arm64-coverage-experimental-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-pie-arm64-coverage-experimental-rel))
+  * Experiment percentage: 4.0
+
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-perfetto-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-perfetto-rel))
   * Experiment percentage: 100.0
 

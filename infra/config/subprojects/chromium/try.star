@@ -427,6 +427,21 @@ try_.chromium_android_builder(
     ),
 )
 
+# TODO(crbug/1182468) Remove when experiment is done.
+try_.chromium_android_builder(
+    name = "android-pie-arm64-coverage-experimental-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builderless = True,
+    cores = 16,
+    goma_jobs = goma.jobs.J300,
+    ssd = True,
+    main_list_view = "try",
+    use_clang_coverage = True,
+    tryjob = try_.job(
+        experiment_percentage = 4,
+    ),
+)
+
 try_.chromium_android_builder(
     name = "android-pie-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
@@ -443,6 +458,7 @@ try_.chromium_android_builder(
     goma_jobs = goma.jobs.J150,
 )
 
+# TODO(crbug/1182468) Remove when coverage is enabled on CQ.
 try_.chromium_android_builder(
     name = "android-pie-arm64-coverage-rel",
     cores = 16,

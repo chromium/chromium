@@ -897,6 +897,17 @@ ci.android_builder(
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
+# TODO(crbug/1182468) Remove android coverage bots after coverage is
+# running on CQ.
+ci.android_builder(
+    name = "android-pie-arm64-coverage-experimental-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "builder_tester|arm64",
+        short_name = "p-cov",
+    ),
+)
+
 ci.android_builder(
     name = "android-pie-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,

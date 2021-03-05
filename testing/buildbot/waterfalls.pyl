@@ -1085,6 +1085,27 @@
         },
         'os_type': 'android',
       },
+      'android-pie-arm64-coverage-experimental-rel': {
+        'mixins': [
+          'enable_resultdb',
+          'isolate_profile_data',
+          'pie_fleet',
+          'walleye',
+        ],
+        'additional_compile_targets': [
+          'validate_expectations',
+          'monochrome_static_initializers',
+          'weblayer_shell',
+        ],
+        'test_suites': {
+          'gtest_tests': 'android_pie_rel_non_skia_renderer_gtests',
+          # TODO(crbug.com/1111436): Re-enable this if/when additional capacity
+          # has been deployed.
+          #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
+        },
+        'use_swarming': True,
+        'os_type': 'android',
+      },
       'android-pie-arm64-dbg': {
         'mixins': [
           'enable_resultdb',
