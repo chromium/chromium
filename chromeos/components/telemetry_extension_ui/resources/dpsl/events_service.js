@@ -22,7 +22,9 @@
     BLUETOOTH_ADAPTER_REMOVED: 'bluetooth-adapter-removed',
     BLUETOOTH_DEVICE_ADDED: 'bluetooth-device-added',
     BLUETOOTH_DEVICE_PROPERTY_CHANGED: 'bluetooth-device-property-changed',
-    BLUETOOTH_DEVICE_REMOVED: 'bluetooth-device-removed'
+    BLUETOOTH_DEVICE_REMOVED: 'bluetooth-device-removed',
+    LID_CLOSED: 'lid-closed',
+    LID_OPENED: 'lid-opened'
   }
 
   /**
@@ -179,6 +181,57 @@
   }
 
   /**
+   * Lid events observer for dpsl.system_events.lid.* APIs.
+   */
+  class LidObserver {
+    /**
+     * @param {!InternalEventTarget} eventTarget
+     */
+    constructor(eventTarget) {
+      /**
+       * @type {!InternalEventTarget}
+       * @const
+       * @private
+       */
+      this.eventTarget = eventTarget;
+    }
+
+    /**
+     * Starts listening on lid-closed events.
+     * @param {function()} callback
+     * @public
+     */
+    addOnLidClosedListener(callback) {
+      this.eventTarget.addEventListener(EVENTS.LID_CLOSED, callback);
+    }
+    /**
+     * Starts listening on lid-opened events.
+     * @param {function()} callback
+     * @public
+     */
+    addOnLidOpenedListener(callback) {
+      this.eventTarget.addEventListener(EVENTS.LID_OPENED, callback);
+    }
+
+    /**
+     * Stops listening on lid-closed events.
+     * @param {function()} callback
+     * @public
+     */
+    removeOnLidClosedListener(callback) {
+      this.eventTarget.removeEventListener(EVENTS.LID_CLOSED, callback);
+    }
+    /**
+     * Stops listening on lid-opened events.
+     * @param {function()} callback
+     * @public
+     */
+    removeOnLidOpenedListener(callback) {
+      this.eventTarget.removeEventListener(EVENTS.LID_OPENED, callback);
+    }
+  }
+
+  /**
    * DPSL Events service for dpsl.system_events.* APIs.
    */
   class DPSLEventsService {
@@ -190,6 +243,12 @@
        * @public
        */
       this.bluetooth = new BluetoothObserver(eventTarget);
+
+      /**
+       * @type {!LidObserver}
+       * @public
+       */
+      this.lid = new LidObserver(eventTarget);
     }
 
     /**

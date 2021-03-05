@@ -633,16 +633,32 @@ UNTRUSTED_TEST(
                   resolve));
     });
 
-// Tests that addEventListener receives system lid closed event.
+// Tests that:
+//   1) addEventListener receives system lid closed event.
+//   2) removeEventListener stops receiving system lid closed event.
 UNTRUSTED_TEST('UntrustedLidClosedEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener('lid-closed', resolve));
+
+  dpsl.system_events.lid.addOnLidClosedListener(shouldNeverBeCalledCallback);
+  dpsl.system_events.lid.removeOnLidClosedListener(shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) => dpsl.system_events.lid.addOnLidClosedListener(resolve));
 });
 
-// Tests that addEventListener receives system lid opened event.
+// Tests that:
+//   1) addEventListener receives system lid opened event.
+//   2) removeEventListener stops receiving system lid opened event.
 UNTRUSTED_TEST('UntrustedLidOpenedEventListener', async () => {
   await new Promise(
       (resolve) => chromeos.telemetry.addEventListener('lid-opened', resolve));
+
+  dpsl.system_events.lid.addOnLidOpenedListener(shouldNeverBeCalledCallback);
+  dpsl.system_events.lid.removeOnLidOpenedListener(shouldNeverBeCalledCallback);
+
+  await new Promise(
+      (resolve) => dpsl.system_events.lid.addOnLidOpenedListener(resolve));
 });
 
 // Tests that addEventListener receives system ac inserted event.
