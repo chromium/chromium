@@ -219,87 +219,7 @@ const char* const kGeolocationAuthorizationActionNewUser =
 
 - (BOOL)addLocationToNavigationItem:(web::NavigationItem*)item
                        browserState:(web::BrowserState*)browserState {
-  // If this is incognito mode or is not an Omnibox query, then do nothing.
-  //
-  // Check the URL with URLIsQueryURL:transition: here and not
-  // URLIsEligibleQueryURL:transition:, because we want to log the cases where
-  // we did not send the X-Geo header due to the Google search domain not being
-  // allow-listed.
-  DCHECK(item);
-  const GURL& url = item->GetURL();
-  if (!browserState || browserState->IsOffTheRecord() ||
-      ![self URLIsQueryURL:url transition:item->GetTransitionType()]) {
-    return NO;
-  }
-
-  if (![[OmniboxGeolocationConfig sharedInstance] URLHasEligibleDomain:url]) {
-    [self recordHeaderState:kHeaderStateNotSentDomainNotAllowed];
-    return NO;
-  }
-
-  // At this point, we should only have Omnibox query URLs that are eligible
-  // for geolocation.
-  DCHECK([self URLIsEligibleQueryURL:url transition:item->GetTransitionType()]);
-
-  HeaderState headerState;
-  if (!self.locationManager.locationServicesEnabled) {
-    headerState = kHeaderStateNotSentAuthorizationChromeDenied;
-  } else {
-    switch (self.localState.authorizationState) {
-      case geolocation::kAuthorizationStateNotDeterminedWaiting:
-      case geolocation::kAuthorizationStateNotDeterminedSystemPrompt:
-        if (self.locationManager.authorizationStatus ==
-                kCLAuthorizationStatusNotDetermined ||
-            [self shouldShowAuthorizationAlert]) {
-          headerState = kHeaderStateNotSentAuthorizationNotDetermined;
-        } else {
-          DCHECK(self.locationManager.authorizationStatus ==
-                     kCLAuthorizationStatusAuthorizedAlways ||
-                 self.locationManager.authorizationStatus ==
-                     kCLAuthorizationStatusAuthorizedWhenInUse);
-          headerState = kHeaderStateNotSentAuthorizationOmniboxDenied;
-        }
-        break;
-
-      case geolocation::kAuthorizationStateDenied:
-        switch (self.locationManager.authorizationStatus) {
-          case kCLAuthorizationStatusNotDetermined:
-            NOTREACHED();
-            // To keep the compiler quiet about headerState not being
-            // initialized in this switch case.
-            headerState = kHeaderStateNotSentAuthorizationChromeDenied;
-            break;
-          case kCLAuthorizationStatusRestricted:
-          case kCLAuthorizationStatusDenied:
-            headerState = kHeaderStateNotSentAuthorizationChromeDenied;
-            break;
-          case kCLAuthorizationStatusAuthorizedAlways:
-          case kCLAuthorizationStatusAuthorizedWhenInUse:
-            headerState = kHeaderStateNotSentAuthorizationOmniboxDenied;
-            break;
-        }
-        break;
-
-      case geolocation::kAuthorizationStateAuthorized: {
-        DCHECK(self.enabled);
-        CLLocation* currentLocation = [self.locationManager currentLocation];
-        if (!currentLocation) {
-          headerState = kHeaderStateNotSentLocationNotAvailable;
-        } else if (![currentLocation cr_isFreshEnough]) {
-          headerState = kHeaderStateNotSentLocationStale;
-        } else {
-          NSDictionary* locationHTTPHeaders =
-              @{ @"X-Geo" : [currentLocation cr_xGeoString] };
-          item->AddHttpRequestHeaders(locationHTTPHeaders);
-          headerState = kHeaderStateSent;
-        }
-        break;
-      }
-    }
-  }
-
-  [self recordHeaderState:headerState];
-  return headerState == kHeaderStateSent;
+  return NO;
 }
 
 - (void)finishPageLoadForWebState:(web::WebState*)webState
@@ -439,15 +359,9 @@ const char* const kGeolocationAuthorizationActionNewUser =
 }
 
 - (void)startUpdatingLocation {
-  // Note that GeolocationUpdater will stop itself automatically after 5
-  // seconds.
-  [self.locationManager startUpdatingLocation];
 }
 
 - (void)stopUpdatingLocation {
-  // Note that we don't need to initialize |locationManager_| here. If it's
-  // nil, then it's not running.
-  [_locationManager stopUpdatingLocation];
 }
 
 - (void)addLocationAndReloadWebState:(web::WebState*)webState {
