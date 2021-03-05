@@ -248,8 +248,20 @@ Polymer({
 
   /** @protected */
   getRunTestsAdditionalMessage() {
-    return this.batteryChargeStatus_.batteryState ===
-            chromeos.diagnostics.mojom.BatteryState.kFull ?
+    const batteryInfoMissing =
+        !this.batteryChargeStatus_ || !this.batteryHealth_;
+    const notCharging = this.batteryChargeStatus_.powerAdapterStatus ===
+        chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected;
+    if (notCharging || batteryInfoMissing) {
+      return '';
+    }
+
+    const disableRunButtonThreshold = 98;
+    const percentage = Math.round(
+        100 * this.batteryChargeStatus_.chargeNowMilliampHours /
+        this.batteryHealth_.chargeFullNowMilliampHours);
+
+    return percentage >= disableRunButtonThreshold ?
         loadTimeData.getString('batteryChargeTestFullMessage') :
         '';
   },

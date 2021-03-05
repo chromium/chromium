@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './routine_result_list.js';
@@ -261,8 +263,7 @@ Polymer({
 
   /** @protected */
   isStatusHidden_() {
-    return this.executionStatus_ === ExecutionProgress.kNotStarted ||
-        this.additionalMessage != '';
+    return this.executionStatus_ === ExecutionProgress.kNotStarted;
   },
 
   /**
@@ -305,10 +306,6 @@ Polymer({
 
   /** @protected */
   routineStatusChanged_() {
-    if (this.additionalMessage != '') {
-      this.executionStatus_ = ExecutionProgress.kNotStarted;
-    }
-
     switch (this.executionStatus_) {
       case ExecutionProgress.kNotStarted:
         // Do nothing since status is hidden when tests have not been started.

@@ -691,7 +691,7 @@ Try tapping the mic to ask me anything.
         <ph name="CPU_NAME">$1<ex>Intel(R) Celeron(R) N4020 CPU @ 1,10Ghz</ex></ph> (<ph name="THREAD_COUNT">$2<ex>8</ex></ph> threads, <ph name="CPU_MAX_CLOCK_SPEED">$3<ex>3.90</ex></ph>GHz)
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_FULL_MESSAGE" desc="The message shown when the battery is full and the charge test can not be run.">
-        Battery charge test cannot be conducted when full
+        To test battery charging rate, let your battery drain for a short period
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL" desc="The label for a battery's health.">
         Battery health
