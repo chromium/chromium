@@ -6,19 +6,18 @@
     * {
         font-family: ahem;
     }
-    body {
-      -webkit-writing-mode: vertical-lr;
-    }
 </style>
-<span id="text">
+<svg width="100%" height="100%">
+<text y="14" id="text">
     The quick brown fox jumped over the lazy dog.
-</span>
+</text>
+</svg>
 <script>
     var range = document.createRange();
     var textNode = document.getElementById("text").firstChild;
     range.setStart(textNode, 10);
-    range.setEnd(textNode, 25);
+    range.setEnd(textNode, 35);
     document.getSelection().addRange(range);
 
-    window.expectedResult = [document, 20, 68, 8, 68, document, 8, 248, 20, 248];
+    window.expectedResult = [document, 68, 12, 68, 24, document, 368, 12, 368, 24];
 </script>

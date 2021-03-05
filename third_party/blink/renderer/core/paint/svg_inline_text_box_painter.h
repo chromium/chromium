@@ -16,6 +16,7 @@ class ComputedStyle;
 class DocumentMarker;
 class Font;
 class LayoutSVGInlineText;
+class SelectionBoundsRecorder;
 class SVGInlineTextBox;
 class TextMarkerBase;
 class TextRun;
@@ -86,6 +87,14 @@ class SVGInlineTextBoxPainter {
   LayoutObject& InlineLayoutObject() const;
   LayoutObject& ParentInlineLayoutObject() const;
   LayoutSVGInlineText& InlineText() const;
+
+  void RecordSelectionBoundsForRange(
+      int start_position,
+      int end_position,
+      SelectionState selection_state,
+      const ComputedStyle& style,
+      PaintController& paint_controller,
+      base::Optional<SelectionBoundsRecorder>& bounds_recorder);
 
   const SVGInlineTextBox& svg_inline_text_box_;
 };

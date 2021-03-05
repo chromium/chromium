@@ -6428,6 +6428,12 @@ TEST_P(CompositedSelectionBoundsTest, Editable) {
 TEST_P(CompositedSelectionBoundsTest, EditableDiv) {
   RunTest("composited_selection_bounds_editable_div.html");
 }
+TEST_P(CompositedSelectionBoundsTest, SVGBasic) {
+  RunTest("composited_selection_bounds_svg_basic.html");
+}
+TEST_P(CompositedSelectionBoundsTest, SVGTextWithFragments) {
+  RunTest("composited_selection_bounds_svg_text_with_fragments.html");
+}
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if !defined(OS_ANDROID)
 TEST_P(CompositedSelectionBoundsTest, Input) {
