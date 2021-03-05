@@ -1519,7 +1519,7 @@ deps = {
   'src/third_party/usrsctp/usrsctplib':
     Var('chromium_git') + '/external/github.com/sctplab/usrsctp' + '@' + '6e00fe20dfd59a63e6b9060cfdfabeac860dbd1b',
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@941f027d3cab4e194e32b1eb75cdc3f8b622aae1',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@6691fcec0bce1d8f21f55de59d7b38a1c36a4d11',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '732a76d9d3c70d6aa487216495eeb28518349c3a',
