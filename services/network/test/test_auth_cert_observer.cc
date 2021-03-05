@@ -50,6 +50,12 @@ void TestAuthCertObserver::OnClearSiteData(const GURL& url,
   std::move(callback).Run();
 }
 
+void TestAuthCertObserver::OnLoadingStateUpdate(
+    mojom::LoadInfoPtr info,
+    OnLoadingStateUpdateCallback callback) {
+  std::move(callback).Run();
+}
+
 void TestAuthCertObserver::Clone(
     mojo::PendingReceiver<AuthenticationAndCertificateObserver> observer) {
   receivers_.Add(this, std::move(observer));

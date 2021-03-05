@@ -36,24 +36,9 @@ import "url/mojom/url.mojom";
 [EnableIf=is_android]
 import "mojo/public/mojom/base/application_state.mojom";
 
-struct LoadInfo {
-  int32 process_id;
-  int32 routing_id;
-  string host;
-  uint32 load_state;  // net::LoadState enum
-  mojo_base.mojom.String16 state_param;
-  uint64 upload_position;
-  uint64 upload_size;
-};
-
 // Implemented by the browser process. The network service sends messages to
 // the browser process over this interface.
 interface NetworkServiceClient {
-  // Called periodically to update the client about progress of the current
-  // loads. To avoid flooding the client, it has to ack the update before it can
-  // receive the next update.
-  OnLoadingStateUpdate(array<LoadInfo> infos) => ();
-
   // Called on every request completion to update the network traffic annotation
   // ID, and the total bytes received and sent.
   // |network_traffic_annotation_id_hash| represents the hash of unique tag that

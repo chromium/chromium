@@ -4,9 +4,21 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
+
+// Contains progress information for a particular load.
+struct LoadInfo {
+  mojo_base.mojom.TimeTicks timestamp;
+  string host;
+  uint32 load_state;  // net::LoadState enum
+  mojo_base.mojom.String16 state_param;
+  uint64 upload_position;
+  uint64 upload_size;
+};
 
 // This interface enables the UI to send client certificate selections back to
 // the network service.
@@ -124,6 +136,10 @@ interface AuthenticationAndCertificateObserver {
                   string header_value,
                   int32 load_flags) => ();
 
+  // Called periodically to update the client about progress of the current
+  // loads. To avoid flooding the client, it has to ack the update before it can
+  // receive the next update.
+  OnLoadingStateUpdate(LoadInfo info) => ();
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

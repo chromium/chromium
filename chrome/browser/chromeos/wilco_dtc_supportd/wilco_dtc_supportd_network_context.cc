@@ -117,6 +117,12 @@ void WilcoDtcSupportdNetworkContextImpl::OnClearSiteData(
   std::move(callback).Run();
 }
 
+void WilcoDtcSupportdNetworkContextImpl::OnLoadingStateUpdate(
+    network::mojom::LoadInfoPtr info,
+    OnLoadingStateUpdateCallback callback) {
+  std::move(callback).Run();
+}
+
 void WilcoDtcSupportdNetworkContextImpl::Clone(
     mojo::PendingReceiver<network::mojom::AuthenticationAndCertificateObserver>
         observer) {

@@ -92,10 +92,6 @@ namespace {
 
 NetworkService* g_network_service = nullptr;
 
-// The interval for calls to NetworkService::UpdateLoadStates
-constexpr auto kUpdateLoadStatesInterval =
-    base::TimeDelta::FromMilliseconds(250);
-
 std::unique_ptr<net::NetworkChangeNotifier> CreateNetworkChangeNotifierIfNeeded(
     net::NetworkChangeNotifier::ConnectionType initial_connection_type,
     net::NetworkChangeNotifier::ConnectionSubtype initial_connection_subtype,
@@ -811,10 +807,6 @@ NetworkService::CreateHttpAuthHandlerFactory(NetworkContext* network_context) {
   );
 }
 
-void NetworkService::OnBeforeURLRequest() {
-  MaybeStartUpdateLoadInfoTimer();
-}
-
 void NetworkService::OnDataPipeCreated(DataPipeUser user) {
   auto& entry = data_pipe_use_[user];
   ++entry.current;
@@ -841,92 +833,6 @@ void NetworkService::OnNetworkContextConnectionClosed(
   auto it = owned_network_contexts_.find(network_context);
   DCHECK(it != owned_network_contexts_.end());
   owned_network_contexts_.erase(it);
-}
-
-void NetworkService::MaybeStartUpdateLoadInfoTimer() {
-  if (waiting_on_load_state_ack_ || update_load_info_timer_.IsRunning())
-    return;
-
-  bool has_loader = false;
-  for (auto* network_context : network_contexts_) {
-    if (!network_context->url_request_context()->url_requests()->empty()) {
-      has_loader = true;
-      break;
-    }
-  }
-
-  if (!has_loader)
-    return;
-
-  update_load_info_timer_.Start(FROM_HERE, kUpdateLoadStatesInterval, this,
-                                &NetworkService::UpdateLoadInfo);
-}
-
-void NetworkService::UpdateLoadInfo() {
-  // For requests from the same {process_id, routing_id} pair, pick the most
-  // important. For ones from the browser, return all of them.
-  std::vector<mojom::LoadInfoPtr> infos;
-  std::map<std::pair<int32_t, int32_t>, mojom::LoadInfoPtr> frame_infos;
-
-  for (auto* network_context : network_contexts_) {
-    for (auto* loader :
-         *network_context->url_request_context()->url_requests()) {
-      auto* url_loader = URLLoader::ForRequest(*loader);
-      if (!url_loader)
-        continue;
-
-      auto process_id = url_loader->GetProcessId();
-      auto routing_id = url_loader->GetRenderFrameId();
-      if (routing_id == MSG_ROUTING_NONE) {
-        // If there is no routing_id, then the browser can't associate this with
-        // a page so no need to send.
-        continue;
-      }
-
-      auto load_info = mojom::LoadInfo::New();
-      load_info->process_id = process_id;
-      load_info->routing_id = routing_id;
-      load_info->host = loader->url().host();
-      auto load_state = loader->GetLoadState();
-      load_info->load_state = static_cast<uint32_t>(load_state.state);
-      load_info->state_param = std::move(load_state.param);
-      auto upload_progress = loader->GetUploadProgress();
-      load_info->upload_size = upload_progress.size();
-      load_info->upload_position = upload_progress.position();
-
-      if (process_id == 0) {
-        // Requests from the browser can't be compared to ones from child
-        // processes, so send them all without looking for the most interesting.
-        infos.push_back(std::move(load_info));
-        continue;
-      }
-
-      auto key = std::make_pair(process_id, routing_id);
-      auto existing = frame_infos.find(key);
-      if (existing == frame_infos.end() ||
-          LoadInfoIsMoreInteresting(*load_info, *existing->second)) {
-        frame_infos[key] = std::move(load_info);
-      }
-    }
-  }
-
-  for (auto& it : frame_infos)
-    infos.push_back(std::move(it.second));
-
-  if (infos.empty())
-    return;
-
-  DCHECK(!waiting_on_load_state_ack_);
-  waiting_on_load_state_ack_ = true;
-  client_->OnLoadingStateUpdate(
-      std::move(infos), base::BindOnce(&NetworkService::AckUpdateLoadInfo,
-                                       base::Unretained(this)));
-}
-
-void NetworkService::AckUpdateLoadInfo() {
-  DCHECK(waiting_on_load_state_ack_);
-  waiting_on_load_state_ack_ = false;
-  MaybeStartUpdateLoadInfoTimer();
 }
 
 void NetworkService::ReportMetrics() {

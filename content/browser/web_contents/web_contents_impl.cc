@@ -213,6 +213,10 @@ namespace content {
 
 namespace {
 
+// The window which we dobounce load info updates in.
+constexpr auto kUpdateLoadStatesInterval =
+    base::TimeDelta::FromMilliseconds(250);
+
 const int kMinimumDelayBetweenLoadingUpdatesMS = 100;
 
 using LifecycleState = RenderFrameHostImpl::LifecycleState;
@@ -4728,24 +4732,33 @@ void WebContentsImpl::DragSourceEndedAt(float client_x,
   }
 }
 
-void WebContentsImpl::LoadStateChanged(
-    const std::string& host,
-    const net::LoadStateWithParam& load_state,
-    uint64_t upload_position,
-    uint64_t upload_size) {
+void WebContentsImpl::LoadStateChanged(network::mojom::LoadInfoPtr load_info) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::LoadStateChanged", "host",
-                        host, "load_state", static_cast<int>(load_state.state));
-  base::string16 host16 = url_formatter::IDNToUnicode(host);
-  // Drop no-op updates.
-  if (load_state_.state == load_state.state &&
-      load_state_.param == load_state.param &&
-      upload_position_ == upload_position && upload_size_ == upload_size &&
-      load_state_host_ == host16) {
+                        load_info->host, "load_state", load_info->load_state);
+
+  // If the new load state isn't progressed as far as the current loading state
+  // or both are sending an upload and the upload is smaller, return early
+  // discarding the new load state.
+  if (load_info_timestamp_ + kUpdateLoadStatesInterval > load_info->timestamp &&
+      (load_state_.state > load_info->load_state ||
+       (load_state_.state == load_info->load_state &&
+        load_state_.state == net::LOAD_STATE_SENDING_REQUEST &&
+        upload_size_ > load_info->upload_size))) {
     return;
   }
-  load_state_ = load_state;
-  upload_position_ = upload_position;
-  upload_size_ = upload_size;
+
+  load_info_timestamp_ = load_info->timestamp;
+  base::string16 host16 = url_formatter::IDNToUnicode(load_info->host);
+  // Drop no-op updates.
+  if (load_state_.state == load_info->load_state &&
+      load_state_.param == load_info->state_param &&
+      upload_position_ == load_info->upload_position &&
+      upload_size_ == load_info->upload_size && load_state_host_ == host16) {
+    return;
+  }
+  load_state_ = net::LoadStateWithParam(
+      static_cast<net::LoadState>(load_info->load_state),
+      load_info->state_param);
   load_state_host_ = host16;
   if (load_state_.state == net::LOAD_STATE_READING_RESPONSE)
     SetNotWaitingForResponse();

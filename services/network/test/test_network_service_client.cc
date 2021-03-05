@@ -20,10 +20,6 @@ TestNetworkServiceClient::TestNetworkServiceClient(
 
 TestNetworkServiceClient::~TestNetworkServiceClient() {}
 
-void TestNetworkServiceClient::OnLoadingStateUpdate(
-    std::vector<mojom::LoadInfoPtr> infos,
-    OnLoadingStateUpdateCallback callback) {}
-
 void TestNetworkServiceClient::OnDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,

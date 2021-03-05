@@ -27,8 +27,6 @@ class TestNetworkServiceClient : public network::mojom::NetworkServiceClient {
   ~TestNetworkServiceClient() override;
 
   // network::mojom::NetworkServiceClient implementation:
-  void OnLoadingStateUpdate(std::vector<mojom::LoadInfoPtr> infos,
-                            OnLoadingStateUpdateCallback callback) override;
   void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
                        int64_t recv_bytes,
                        int64_t sent_bytes) override;

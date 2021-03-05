@@ -420,14 +420,6 @@ void ClearSessionStorageOnUIThread(
       std::move(origin_matcher), perform_storage_cleanup, std::move(callback)));
 }
 
-WebContents* GetWebContentsForStoragePartition(uint32_t process_id,
-                                               uint32_t routing_id) {
-  if (process_id != network::mojom::kBrowserProcessId) {
-    return WebContentsImpl::FromRenderFrameHostID(process_id, routing_id);
-  }
-  return WebContents::FromFrameTreeNodeId(routing_id);
-}
-
 BrowserContext* GetBrowserContextFromStoragePartition(
     base::WeakPtr<StoragePartitionImpl> weak_partition_ptr) {
   return weak_partition_ptr ? weak_partition_ptr->browser_context() : nullptr;
@@ -1757,6 +1749,20 @@ void StoragePartitionImpl::OnSSLCertificateError(
       GetWebContents(process_id, routing_id), net_error, ssl_info, fatal);
 }
 
+void StoragePartitionImpl::OnLoadingStateUpdate(
+    network::mojom::LoadInfoPtr info,
+    OnLoadingStateUpdateCallback callback) {
+  int process_id = auth_cert_observers_.current_context().process_id;
+  int routing_id = auth_cert_observers_.current_context().routing_id;
+
+  auto* web_contents = GetWebContents(process_id, routing_id);
+  if (web_contents) {
+    static_cast<WebContentsImpl*>(web_contents)
+        ->LoadStateChanged(std::move(info));
+  }
+  std::move(callback).Run();
+}
+
 void StoragePartitionImpl::Clone(
     mojo::PendingReceiver<network::mojom::AuthenticationAndCertificateObserver>
         observer) {
@@ -1845,8 +1851,8 @@ void StoragePartitionImpl::OnClearSiteData(const GURL& url,
   int routing_id = auth_cert_observers_.current_context().routing_id;
   auto browser_context_getter = base::BindRepeating(
       GetBrowserContextFromStoragePartition, weak_factory_.GetWeakPtr());
-  auto web_contents_getter = base::BindRepeating(
-      GetWebContentsForStoragePartition, process_id, routing_id);
+  auto web_contents_getter =
+      base::BindRepeating(GetWebContents, process_id, routing_id);
   ClearSiteDataHandler::HandleHeader(browser_context_getter,
                                      web_contents_getter, url, header_value,
                                      load_flags, std::move(callback));

@@ -292,6 +292,8 @@ class CONTENT_EXPORT StoragePartitionImpl
                        const std::string& header_value,
                        int load_flags,
                        OnClearSiteDataCallback callback) override;
+  void OnLoadingStateUpdate(network::mojom::LoadInfoPtr info,
+                            OnLoadingStateUpdateCallback callback) override;
 
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter() {
     return url_loader_factory_getter_;

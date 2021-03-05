@@ -79,6 +79,10 @@ namespace network {
 
 namespace {
 
+// The interval to send load updates.
+constexpr auto kUpdateLoadStatesInterval =
+    base::TimeDelta::FromMilliseconds(250);
+
 using ConcerningHeaderId = URLLoader::ConcerningHeaderId;
 
 // Cannot use 0, because this means "default" in
@@ -1649,6 +1653,45 @@ mojom::AuthenticationAndCertificateObserver* URLLoader::GetAuthCertObserver() {
   if (!auth_cert_observer_)
     return nullptr;
   return auth_cert_observer_.get();
+}
+
+void URLLoader::UpdateLoadInfo() {
+  DCHECK(!waiting_on_load_state_ack_);
+  auto load_info = mojom::LoadInfo::New();
+  load_info->timestamp = base::TimeTicks::Now();
+  load_info->host = url_request_->url().host();
+  auto load_state = url_request_->GetLoadState();
+  load_info->load_state = static_cast<uint32_t>(load_state.state);
+  load_info->state_param = std::move(load_state.param);
+  auto upload_progress = url_request_->GetUploadProgress();
+  load_info->upload_size = upload_progress.size();
+  load_info->upload_position = upload_progress.position();
+
+  waiting_on_load_state_ack_ = true;
+
+  auth_cert_observer_->OnLoadingStateUpdate(
+      std::move(load_info),
+      base::BindOnce(&URLLoader::AckUpdateLoadInfo, base::Unretained(this)));
+}
+
+void URLLoader::AckUpdateLoadInfo() {
+  DCHECK(waiting_on_load_state_ack_);
+  waiting_on_load_state_ack_ = false;
+  MaybeStartUpdateLoadInfoTimer();
+}
+
+void URLLoader::MaybeStartUpdateLoadInfoTimer() {
+  if (waiting_on_load_state_ack_ || update_load_info_timer_.IsRunning() ||
+      !auth_cert_observer_) {
+    return;
+  }
+
+  update_load_info_timer_.Start(FROM_HERE, kUpdateLoadStatesInterval, this,
+                                &URLLoader::UpdateLoadInfo);
+}
+
+void URLLoader::OnBeforeURLRequest() {
+  MaybeStartUpdateLoadInfoTimer();
 }
 
 net::LoadState URLLoader::GetLoadStateForTesting() const {

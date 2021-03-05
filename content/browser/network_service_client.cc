@@ -27,7 +27,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
-#include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
@@ -40,16 +39,6 @@
 #endif
 
 namespace content {
-namespace {
-
-WebContents* GetWebContents(int process_id, int routing_id) {
-  if (process_id != network::mojom::kBrowserProcessId) {
-    return WebContentsImpl::FromRenderFrameHostID(process_id, routing_id);
-  }
-  return WebContents::FromFrameTreeNodeId(routing_id);
-}
-
-}  // namespace
 
 NetworkServiceClient::NetworkServiceClient(
     mojo::PendingReceiver<network::mojom::NetworkServiceClient>
@@ -101,36 +90,6 @@ NetworkServiceClient::~NetworkServiceClient() {
     net::NetworkChangeNotifier::RemoveDNSObserver(this);
 #endif
   }
-}
-
-void NetworkServiceClient::OnLoadingStateUpdate(
-    std::vector<network::mojom::LoadInfoPtr> infos,
-    OnLoadingStateUpdateCallback callback) {
-  std::map<WebContents*, network::mojom::LoadInfo> info_map;
-
-  for (auto& info : infos) {
-    auto* web_contents = GetWebContents(info->process_id, info->routing_id);
-    if (!web_contents)
-      continue;
-
-    auto existing = info_map.find(web_contents);
-    if (existing == info_map.end() ||
-        network::LoadInfoIsMoreInteresting(*info, existing->second)) {
-      info_map[web_contents] = *info;
-    }
-  }
-
-  for (const auto& load_info : info_map) {
-    net::LoadStateWithParam load_state;
-    load_state.state = static_cast<net::LoadState>(load_info.second.load_state);
-    load_state.param = load_info.second.state_param;
-    static_cast<WebContentsImpl*>(load_info.first)
-        ->LoadStateChanged(load_info.second.host, load_state,
-                           load_info.second.upload_position,
-                           load_info.second.upload_size);
-  }
-
-  std::move(callback).Run();
 }
 
 void NetworkServiceClient::OnCertDBChanged() {

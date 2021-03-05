@@ -181,6 +181,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   mojom::AuthenticationAndCertificateObserver* GetAuthCertObserver();
 
+  void OnBeforeURLRequest();
+
   // mojom::AuthChallengeResponder:
   void OnAuthCredentials(
       const base::Optional<net::AuthCredentials>& credentials) override;
@@ -348,6 +350,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       int error_code,
       bool should_report_corb_blocking,
       base::Optional<mojom::BlockedByResponseReason> reason = base::nullopt);
+
+  // Starts the timer to call
+  // AuthenticationAndCertificateObserver::OnLoadingStateUpdate(), if timer
+  // isn't already running, |waiting_on_load_state_ack_| is false.
+  void MaybeStartUpdateLoadInfoTimer();
+
+  // Updates the load info if necessary.
+  void UpdateLoadInfo();
+
+  // Invoked once the browser has acknowledged receiving the previous LoadInfo.
+  // Starts timer call UpdateLoadInfo() again, if needed.
+  void AckUpdateLoadInfo();
 
   enum BlockResponseForCorbResult {
     // Returned when caller of BlockResponseForCorb doesn't need to continue,
@@ -549,6 +563,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Indicates whether fetch upload streaming is allowed/rejected over H/1.
   // Even if this is false but there is a QUIC/H2 stream, the upload is allowed.
   const bool allow_http1_for_streaming_upload_;
+
+  base::OneShotTimer update_load_info_timer_;
+  bool waiting_on_load_state_ack_ = false;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 

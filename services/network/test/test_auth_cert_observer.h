@@ -50,6 +50,8 @@ class TestAuthCertObserver
                        const std::string& header_value,
                        int32_t load_flags,
                        OnClearSiteDataCallback callback) override;
+  void OnLoadingStateUpdate(mojom::LoadInfoPtr info,
+                            OnLoadingStateUpdateCallback callback) override;
   void Clone(mojo::PendingReceiver<AuthenticationAndCertificateObserver>
                  observer) override;
 

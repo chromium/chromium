@@ -74,6 +74,8 @@ class WilcoDtcSupportdNetworkContextImpl
                        const std::string& header_value,
                        int32_t load_flags,
                        OnClearSiteDataCallback callback) override;
+  void OnLoadingStateUpdate(network::mojom::LoadInfoPtr info,
+                            OnLoadingStateUpdateCallback callback) override;
   void Clone(mojo::PendingReceiver<
              network::mojom::AuthenticationAndCertificateObserver> listener)
       override;
