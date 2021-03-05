@@ -39,6 +39,15 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.generator.AddJSONFileToModel('colors_test.json5')
         self.expected_output_file = 'colors_test_expected.css'
 
+    def testCustomDarkModeSelector(self):
+        expected_file_name = 'colors_test_custom_dark_toggle_expected.css'
+        self.generator.out_file_path = ('tools/style_variable_generator/' +
+                                        expected_file_name)
+        self.generator.generator_options = {
+            'dark_mode_selector': 'html[dark]:not(body)'
+        }
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
 
 class ProtoStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):

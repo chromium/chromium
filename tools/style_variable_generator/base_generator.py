@@ -131,6 +131,10 @@ class BaseGenerator:
         # of all variable names,
         self.context_map = dict()
 
+        # A dictionary of options used to alter generator function. See
+        # ./README.md for each generators list of options.
+        self.generator_options = {}
+
     def _SetVariableContext(self, name, context):
         if name in self.context_map:
             raise ValueError('Variable name "%s" is reused' % name)

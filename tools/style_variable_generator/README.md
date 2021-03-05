@@ -12,3 +12,36 @@ illustrations of each feature, as well as expected outputs in the corresponding
 \*_test_expected.\* files.
 
 Run `python style_variable_generator.py -h` for usage details.
+
+## Generator Options
+
+### CSS
+
+**Dark mode selector**
+
+`--generator-option 'dark_mode_selector=html[dark]'`
+
+Replaces the default media query (`@media (prefers-color-scheme: dark)`) which
+triggers colors to switch to dark mode with a custom css selector. The example
+above would produce
+
+```
+html[dark] {
+    ...dark mode colors
+}
+```
+
+instead of the default
+
+```
+@media (prefers-color-scheme: dark) {
+    html:not(body) {
+        ... colors
+    }
+}
+```
+
+This should only be used if you want to generate a stylesheet for testing where
+you can control the switch to dark/light mode, in production always prefer to
+use the default behavior which will respect operating system level dark mode
+switches.

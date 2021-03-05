@@ -59,8 +59,12 @@ class CSSStyleGenerator(BaseGenerator):
 
     def GetGlobals(self):
         return {
-            'css_color_from_rgb_var': self._CSSColorFromRGBVar,
-            'in_files': self.in_file_to_context.keys(),
+            'css_color_from_rgb_var':
+            self._CSSColorFromRGBVar,
+            'in_files':
+            self.in_file_to_context.keys(),
+            'dark_mode_selector':
+            self.generator_options.get('dark_mode_selector', None)
         }
 
     def GetCSSVarNames(self):
