@@ -272,6 +272,8 @@ void URLRequestJob::GetConnectionAttempts(ConnectionAttempts* out) const {
   out->clear();
 }
 
+void URLRequestJob::CloseConnectionOnDestruction() {}
+
 namespace {
 
 // Assuming |url| has already been stripped for use as a referrer, if

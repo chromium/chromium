@@ -610,6 +610,14 @@ void HttpCache::Transaction::GetConnectionAttempts(
               network_transaction_info_.old_connection_attempts.end());
 }
 
+void HttpCache::Transaction::CloseConnectionOnDestruction() {
+  if (network_trans_) {
+    network_trans_->CloseConnectionOnDestruction();
+  } else if (InWriters()) {
+    entry_->writers->CloseConnectionOnDestruction();
+  }
+}
+
 void HttpCache::Transaction::SetValidatingCannotProceed() {
   DCHECK(!reading_);
   // Ensure this transaction is waiting for a callback.

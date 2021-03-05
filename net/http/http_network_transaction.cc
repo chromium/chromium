@@ -148,7 +148,8 @@ HttpNetworkTransaction::~HttpNetworkTransaction() {
     // TODO(mbelshe): The stream_ should be able to compute whether or not the
     //                stream should be kept alive.  No reason to compute here
     //                and pass it in.
-    if (!stream_->CanReuseConnection() || next_state_ != STATE_NONE) {
+    if (!stream_->CanReuseConnection() || next_state_ != STATE_NONE ||
+        close_connection_on_destruction_) {
       stream_->Close(true /* not reusable */);
     } else if (stream_->IsResponseBodyComplete()) {
       // If the response body is complete, we can just reuse the socket.
@@ -538,6 +539,10 @@ void HttpNetworkTransaction::SetResponseHeadersCallback(
 int HttpNetworkTransaction::ResumeNetworkStart() {
   DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
   return DoLoop(OK);
+}
+
+void HttpNetworkTransaction::CloseConnectionOnDestruction() {
+  close_connection_on_destruction_ = true;
 }
 
 void HttpNetworkTransaction::OnStreamReady(const SSLConfig& used_ssl_config,

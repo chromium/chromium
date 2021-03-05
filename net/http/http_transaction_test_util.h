@@ -250,6 +250,8 @@ class MockNetworkTransaction
 
   void GetConnectionAttempts(ConnectionAttempts* out) const override;
 
+  void CloseConnectionOnDestruction() override;
+
   CreateHelper* websocket_handshake_stream_create_helper() {
     return websocket_handshake_stream_create_helper_;
   }

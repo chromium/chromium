@@ -225,6 +225,11 @@ void HttpCache::Writers::UpdatePriority() {
   }
 }
 
+void HttpCache::Writers::CloseConnectionOnDestruction() {
+  if (network_transaction_)
+    network_transaction_->CloseConnectionOnDestruction();
+}
+
 bool HttpCache::Writers::ContainsOnlyIdleWriters() const {
   return waiting_for_read_.empty() && !active_transaction_;
 }

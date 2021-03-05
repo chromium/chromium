@@ -125,6 +125,8 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
     return network_transaction_.get();
   }
 
+  void CloseConnectionOnDestruction();
+
   // Returns the load state of the |network_transaction_| if present else
   // returns LOAD_STATE_IDLE.
   LoadState GetLoadState() const;

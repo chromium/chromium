@@ -51,6 +51,7 @@ class ApplicationStatusListener;
 namespace net {
 
 class CertVerifier;
+class ClientSocketFactory;
 class CookieStore;
 class CTPolicyEnforcer;
 class CTVerifier;
@@ -313,6 +314,13 @@ class NET_EXPORT URLRequestContextBuilder {
       CreateHttpTransactionFactoryCallback
           create_http_network_transaction_factory);
 
+  // Sets a ClientSocketFactory so a test can mock out sockets. The
+  // ClientSocketFactory must be destroyed after the creates URLRequestContext.
+  void set_client_socket_factory_for_testing(
+      ClientSocketFactory* client_socket_factory_for_testing) {
+    client_socket_factory_for_testing_ = client_socket_factory_for_testing;
+  }
+
   // Creates a mostly self-contained URLRequestContext. May only be called once
   // per URLRequestContextBuilder. After this is called, the Builder can be
   // safely destroyed.
@@ -380,6 +388,8 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
+
+  ClientSocketFactory* client_socket_factory_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestContextBuilder);
 };

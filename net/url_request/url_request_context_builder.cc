@@ -554,6 +554,10 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 
   HttpNetworkSession::Context network_session_context;
   SetHttpNetworkSessionComponents(context.get(), &network_session_context);
+  // Unlike the other fields of HttpNetworkSession::Context,
+  // |client_socket_factory| is not mirrored in URLRequestContext.
+  network_session_context.client_socket_factory =
+      client_socket_factory_for_testing_;
 
   storage->set_http_network_session(std::make_unique<HttpNetworkSession>(
       http_network_session_params_, network_session_context));
