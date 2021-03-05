@@ -91,4 +91,10 @@ bool PrefetchProxyShouldPrefetchPosition(size_t position);
 // The maximum retry-after header value that will be persisted.
 base::TimeDelta PrefetchProxyMaxRetryAfterDelta();
 
+// Returns true if an ineligible prefetch request should be put on the network,
+// but not cached, to disguise the presence of cookies (or other criteria). The
+// return value is randomly decided based on variation params since always
+// sending the decoy request is expensive from a data use perspective.
+bool PrefetchProxySendDecoyRequestForIneligiblePrefetch();
+
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PARAMS_H_

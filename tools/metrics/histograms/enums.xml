@@ -61467,6 +61467,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="26" label="Prediction position not eligible"/>
   <int value="27" label="Prefetch Not Eligible: Retry-After not elasped"/>
   <int value="28" label="Connecting to the prefetch proxy previously failed"/>
+  <int value="29" label="Decoy request"/>
 </enum>
 
 <enum name="PrefetchRedirect">

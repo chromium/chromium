@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
@@ -167,6 +168,53 @@ bool ShouldStartSpareRenderer() {
   }
 
   return true;
+}
+
+bool ShouldConsiderDecoyRequestForStatus(PrefetchProxyPrefetchStatus status) {
+  switch (status) {
+    case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasCookies:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
+      // If the prefetch is not eligible because of cookie or a service worker,
+      // then maybe send a decoy.
+      return true;
+    case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleGoogleDomain:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleHostIsIPAddress:
+    case PrefetchProxyPrefetchStatus::
+        kPrefetchNotEligibleNonDefaultStoragePartition:
+    case PrefetchProxyPrefetchStatus::kPrefetchPositionIneligible:
+    case PrefetchProxyPrefetchStatus::kPrefetchIneligibleRetryAfter:
+    case PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable:
+      // These statuses don't relate to any user state, so don't send a decoy
+      // request.
+      return false;
+    case PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe:
+    case PrefetchProxyPrefetchStatus::kPrefetchUsedProbeSuccess:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailed:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotStarted:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotFinishedInTime:
+    case PrefetchProxyPrefetchStatus::kPrefetchFailedNetError:
+    case PrefetchProxyPrefetchStatus::kPrefetchFailedNon2XX:
+    case PrefetchProxyPrefetchStatus::kPrefetchFailedNotHTML:
+    case PrefetchProxyPrefetchStatus::kPrefetchSuccessful:
+    case PrefetchProxyPrefetchStatus::kNavigatedToLinkNotOnSRP:
+    case PrefetchProxyPrefetchStatus::kSubresourceThrottled:
+    case PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbeWithNSP:
+    case PrefetchProxyPrefetchStatus::kPrefetchUsedProbeSuccessWithNSP:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailedWithNSP:
+    case PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbeNSPAttemptDenied:
+    case PrefetchProxyPrefetchStatus::kPrefetchUsedProbeSuccessNSPAttemptDenied:
+    case PrefetchProxyPrefetchStatus::
+        kPrefetchNotUsedProbeFailedNSPAttemptDenied:
+    case PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbeNSPNotStarted:
+    case PrefetchProxyPrefetchStatus::kPrefetchUsedProbeSuccessNSPNotStarted:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailedNSPNotStarted:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy:
+      // These statuses should not be returned by the eligibility checks, and
+      // thus not be passed in here.
+      NOTREACHED();
+      return false;
+  }
 }
 
 }  // namespace
@@ -391,6 +439,7 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
     case PrefetchProxyPrefetchStatus::kPrefetchPositionIneligible:
     case PrefetchProxyPrefetchStatus::kPrefetchIneligibleRetryAfter:
     case PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy:
       return status;
     // These statuses we are going to update to, and this is the only place that
     // they are set so they are not expected to be passed in.
@@ -678,14 +727,19 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
   DCHECK(page_->url_loaders_.size() <
          PrefetchProxyMaximumNumberOfConcurrentPrefetches());
 
-  page_->srp_metrics_->prefetch_attempted_count_++;
-
   GURL url = page_->urls_to_prefetch_[0];
   page_->urls_to_prefetch_.erase(page_->urls_to_prefetch_.begin());
 
-  // The status is updated to be successful or failed when it finishes.
-  OnPrefetchStatusUpdate(
-      url, PrefetchProxyPrefetchStatus::kPrefetchNotFinishedInTime);
+  // Only update these metrics on normal prefetches.
+  if (page_->decoy_urls_.find(url) == page_->decoy_urls_.end()) {
+    page_->srp_metrics_->prefetch_attempted_count_++;
+    // The status is updated to be successful or failed when it finishes.
+    OnPrefetchStatusUpdate(
+        url, PrefetchProxyPrefetchStatus::kPrefetchNotFinishedInTime);
+  } else {
+    OnPrefetchStatusUpdate(
+        url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
+  }
 
   url::Origin origin = url::Origin::Create(url);
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(
@@ -765,8 +819,6 @@ void PrefetchProxyTabHelper::OnPrefetchRedirect(
     std::vector<std::string>* removed_headers) {
   DCHECK(PrefetchingActive());
 
-  page_->srp_metrics_->prefetch_total_redirect_count_++;
-
   // Copy the position ordering when there is a redirect so the metrics don't
   // miss out on redirects.
   auto position_iter = page_->original_prediction_ordering_.find(original_url);
@@ -774,6 +826,26 @@ void PrefetchProxyTabHelper::OnPrefetchRedirect(
     page_->original_prediction_ordering_.emplace(redirect_info.new_url,
                                                  position_iter->second);
   }
+
+  if (page_->decoy_urls_.find(original_url) != page_->decoy_urls_.end()) {
+    // Check whether the next url is eligible (without considering user data) to
+    // be prefetched as a decoy.
+    auto result =
+        CheckEligibilityOfURLSansUserData(profile_, redirect_info.new_url);
+    if (result.first && PrefetchProxySendDecoyRequestForIneligiblePrefetch()) {
+      page_->decoy_urls_.emplace(redirect_info.new_url);
+      page_->urls_to_prefetch_.push_back(redirect_info.new_url);
+    }
+
+    // Cancels the current request.
+    DCHECK(page_->url_loaders_.find(loader) != page_->url_loaders_.end());
+    page_->url_loaders_.erase(page_->url_loaders_.find(loader));
+
+    Prefetch();
+    return;
+  }
+
+  page_->srp_metrics_->prefetch_total_redirect_count_++;
 
   // Run the new URL through all the eligibility checks. In the mean time,
   // continue on with other Prefetches.
@@ -796,6 +868,22 @@ void PrefetchProxyTabHelper::OnPrefetchComplete(
     std::unique_ptr<std::string> body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(PrefetchingActive());
+
+  if (page_->decoy_urls_.find(url) != page_->decoy_urls_.end()) {
+    if (loader->CompletionStatus()) {
+      page_->prefetch_metrics_collector_->OnDecoyPrefetchComplete(
+          url, page_->original_prediction_ordering_.find(url)->second,
+          loader->ResponseInfo() ? loader->ResponseInfo()->Clone() : nullptr,
+          loader->CompletionStatus().value());
+    }
+
+    for (auto& observer : observer_list_) {
+      observer.OnDecoyPrefetchCompleted(url);
+    }
+
+    // Do nothing with the response, i.e.: don't cache it.
+    return;
+  }
 
   base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.NetError",
                            std::abs(loader->NetError()));
@@ -822,7 +910,6 @@ void PrefetchProxyTabHelper::OnPrefetchComplete(
     DCHECK(!head->proxy_server.is_direct());
 
     HandlePrefetchResponse(url, isolation_info, std::move(head),
-
                            std::move(body));
   }
 
@@ -1143,33 +1230,53 @@ content::ServiceWorkerContext* PrefetchProxyTabHelper::GetServiceWorkerContext(
 }
 
 // static
+std::pair<bool, base::Optional<PrefetchProxyPrefetchStatus>>
+PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(Profile* profile,
+                                                          const GURL& url) {
+  if (!IsProfileEligible(profile)) {
+    return std::make_pair(false, base::nullopt);
+  }
+
+  if (google_util::IsGoogleAssociatedDomainUrl(url)) {
+    return std::make_pair(
+        false, PrefetchProxyPrefetchStatus::kPrefetchNotEligibleGoogleDomain);
+  }
+
+  if (url.HostIsIPAddress()) {
+    return std::make_pair(
+        false,
+        PrefetchProxyPrefetchStatus::kPrefetchNotEligibleHostIsIPAddress);
+  }
+
+  if (!url.SchemeIs(url::kHttpsScheme)) {
+    return std::make_pair(
+        false,
+        PrefetchProxyPrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
+  }
+
+  PrefetchProxyService* prefetch_proxy_service =
+      PrefetchProxyServiceFactory::GetForProfile(profile);
+  if (!prefetch_proxy_service) {
+    return std::make_pair(false, base::nullopt);
+  }
+
+  if (!prefetch_proxy_service->proxy_configurator()
+           ->IsPrefetchProxyAvailable()) {
+    return std::make_pair(
+        false, PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable);
+  }
+
+  return std::make_pair(true, base::nullopt);
+}
+
+// static
 void PrefetchProxyTabHelper::CheckEligibilityOfURL(
     Profile* profile,
     const GURL& url,
     OnEligibilityResultCallback result_callback) {
-  if (!IsProfileEligible(profile)) {
-    std::move(result_callback).Run(url, false, base::nullopt);
-    return;
-  }
-
-  if (google_util::IsGoogleAssociatedDomainUrl(url)) {
-    std::move(result_callback)
-        .Run(url, false,
-             PrefetchProxyPrefetchStatus::kPrefetchNotEligibleGoogleDomain);
-    return;
-  }
-
-  if (url.HostIsIPAddress()) {
-    std::move(result_callback)
-        .Run(url, false,
-             PrefetchProxyPrefetchStatus::kPrefetchNotEligibleHostIsIPAddress);
-    return;
-  }
-
-  if (!url.SchemeIs(url::kHttpsScheme)) {
-    std::move(result_callback)
-        .Run(url, false,
-             PrefetchProxyPrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
+  auto no_user_data_check = CheckEligibilityOfURLSansUserData(profile, url);
+  if (!no_user_data_check.first) {
+    std::move(result_callback).Run(url, false, no_user_data_check.second);
     return;
   }
 
@@ -1194,14 +1301,6 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
       PrefetchProxyServiceFactory::GetForProfile(profile);
   if (!prefetch_proxy_service) {
     std::move(result_callback).Run(url, false, base::nullopt);
-    return;
-  }
-
-  if (!prefetch_proxy_service->proxy_configurator()
-           ->IsPrefetchProxyAvailable()) {
-    std::move(result_callback)
-        .Run(url, false,
-             PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable);
     return;
   }
 
@@ -1250,14 +1349,25 @@ void PrefetchProxyTabHelper::OnGotEligibilityResult(
 
   if (!eligible) {
     if (status) {
-      OnPrefetchStatusUpdate(url, status.value());
-
+      OnPrefetchStatusUpdate(url, *status);
       if (page_->prefetch_metrics_collector_) {
         page_->prefetch_metrics_collector_->OnMainframeResourceNotEligible(
             url, page_->original_prediction_ordering_.find(url)->second,
             *status);
       }
+
+      // Consider whether to send a decoy request to mask any user state (i.e.:
+      // cookies), and if so randomly decide whether to send a decoy request.
+      if (ShouldConsiderDecoyRequestForStatus(*status) &&
+          PrefetchProxySendDecoyRequestForIneligiblePrefetch()) {
+        page_->decoy_urls_.emplace(url);
+        page_->urls_to_prefetch_.push_back(url);
+        OnPrefetchStatusUpdate(
+            url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
+        Prefetch();
+      }
     }
+
     return;
   }
 
