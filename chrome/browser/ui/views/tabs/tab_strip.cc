@@ -2076,9 +2076,6 @@ void TabStrip::OnMouseEventInTab(views::View* source,
 }
 
 void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
-  if (!base::FeatureList::IsEnabled(features::kTabHoverCards))
-    return;
-
   // We don't want to show a hover card while the tabstrip is animating.
   if (bounds_animator_.IsAnimating()) {
     // Once we're animating the hover card should already be hidden.

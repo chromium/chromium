@@ -1381,9 +1381,6 @@ extern const char kTabGroupsFeedbackDescription[];
 extern const char kTabGroupsNewBadgePromoName[];
 extern const char kTabGroupsNewBadgePromoDescription[];
 
-extern const char kTabHoverCardsName[];
-extern const char kTabHoverCardsDescription[];
-
 extern const char kTabHoverCardImagesName[];
 extern const char kTabHoverCardImagesDescription[];
 

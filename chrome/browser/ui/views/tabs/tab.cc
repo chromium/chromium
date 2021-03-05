@@ -643,15 +643,8 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 base::string16 Tab::GetTooltipText(const gfx::Point& p) const {
-  // TODO(corising): Make sure that accessibility is solved properly for hover
-  // cards.
-  // Tab hover cards replace tooltips.
-  if (base::FeatureList::IsEnabled(features::kTabHoverCards))
-    return base::string16();
-
-  // Note: Anything that affects the tooltip text should be accounted for when
-  // calling TooltipTextChanged() from Tab::SetData().
-  return GetTooltipText(data_.title, GetAlertStateToShow(data_.alert_state));
+  // Tab hover cards replace tooltips for tabs.
+  return base::string16();
 }
 
 void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {

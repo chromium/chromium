@@ -46,39 +46,6 @@ void RecordFadeOutSmoothness(int smoothness) {
 }
 #endif
 
-// Get delay threshold based on flag settings option selected. This is for
-// user testing.
-// TODO(corising): remove this after user study is completed.
-base::TimeDelta GetMinimumTriggerDelay() {
-  int delay_group = base::GetFieldTrialParamByFeatureAsInt(
-      features::kTabHoverCards, features::kTabHoverCardsFeatureParameterName,
-      1);
-  switch (delay_group) {
-    case 2:
-      return base::TimeDelta::FromMilliseconds(150);
-    case 1:
-      return base::TimeDelta::FromMilliseconds(300);
-    case 0:
-    default:
-      return base::TimeDelta::FromMilliseconds(0);
-  }
-}
-
-base::TimeDelta GetMaximumTriggerDelay() {
-  int delay_group = base::GetFieldTrialParamByFeatureAsInt(
-      features::kTabHoverCards, features::kTabHoverCardsFeatureParameterName,
-      1);
-  switch (delay_group) {
-    case 2:
-      return base::TimeDelta::FromMilliseconds(500);
-    case 1:
-      return base::TimeDelta::FromMilliseconds(800);
-    case 0:
-    default:
-      return base::TimeDelta::FromMilliseconds(0);
-  }
-}
-
 base::TimeDelta GetShowDelay(int tab_width) {
   // Delay is calculated as a logarithmic scale and bounded by a minimum width
   // based on the width of a pinned tab and a maximum of the standard width.
@@ -98,17 +65,18 @@ base::TimeDelta GetShowDelay(int tab_width) {
   //           |___________________________________________ tab width
   //               |                                |
   //       pinned tab width               standard tab width
-  base::TimeDelta minimum_trigger_delay = GetMinimumTriggerDelay();
+  constexpr base::TimeDelta kMinimumTriggerDelay =
+      base::TimeDelta::FromMilliseconds(300);
   if (tab_width < TabStyle::GetPinnedWidth())
-    return minimum_trigger_delay;
-  base::TimeDelta maximum_trigger_delay = GetMaximumTriggerDelay();
+    return kMinimumTriggerDelay;
+  constexpr base::TimeDelta kMaximumTriggerDelay =
+      base::TimeDelta::FromMilliseconds(800);
   double logarithmic_fraction =
       std::log(tab_width - TabStyle::GetPinnedWidth() + 1) /
       std::log(TabStyle::GetStandardWidth() - TabStyle::GetPinnedWidth() + 1);
-  base::TimeDelta scaling_factor =
-      maximum_trigger_delay - minimum_trigger_delay;
+  base::TimeDelta scaling_factor = kMaximumTriggerDelay - kMinimumTriggerDelay;
   base::TimeDelta delay =
-      logarithmic_fraction * scaling_factor + minimum_trigger_delay;
+      logarithmic_fraction * scaling_factor + kMinimumTriggerDelay;
   return delay;
 }
 
